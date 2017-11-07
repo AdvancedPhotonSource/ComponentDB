@@ -6,6 +6,8 @@ package gov.anl.aps.cdb.portal.plugins.support.traveler;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
+import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
+import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 
 import gov.anl.aps.cdb.portal.controllers.ICdbDomainEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
@@ -34,27 +36,26 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.faces.component.html.HtmlInputText;
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
 
-public abstract class ItemTravelerController extends ItemControllerExtensionHelper {    
-    
+public abstract class ItemTravelerController extends ItemControllerExtensionHelper {
+
     private TravelerApi travelerApi;
     private static final Logger logger = Logger.getLogger(ItemTravelerController.class.getName());
 
     private PropertyValue propertyValue;
     private Traveler currentTravelerInstance;
     private DateFormat dateFormat;
-    private Date currentTravelerDeadline; 
-    private final Map statusOptions = new HashMap(); 
-    private final Map statusNames = new HashMap(); 
-    private String currentTravelerSelectedStatus; 
-    private String currentTravelerEditTitle; 
-    private String currentTravelerEditDescription; 
-    
-    private Integer travelerInstanceProgress; 
+    private Date currentTravelerDeadline;
+    private final Map statusOptions = new HashMap();
+    private final Map statusNames = new HashMap();
+    private String currentTravelerSelectedStatus;
+    private String currentTravelerEditTitle;
+    private String currentTravelerEditDescription;   
 
     private Form selectedTemplate;
     private Form selectedTravelerInstanceTemplate;
@@ -68,22 +69,23 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     private HtmlInputText travelerInstanceTitleInputText;
 
-    private final String TRAVELER_WEB_APP_URL = TravelerPluginManager.getTravelerWebApplicationUrl(); 
+    private final String TRAVELER_WEB_APP_URL = TravelerPluginManager.getTravelerWebApplicationUrl();
     private final String TRAVELER_WEB_APP_TEMPLATE_PATH = TravelerPluginManager.getTravelerWebApplicationTemplatePath();
-    private final String TRAVELER_WEB_APP_TRAVELER_PATH = TravelerPluginManager.getTravelerWebApplicationTravelerPath(); 
+    private final String TRAVELER_WEB_APP_TRAVELER_PATH = TravelerPluginManager.getTravelerWebApplicationTravelerPath();
     private final String TRAVELER_WEB_APP_TRAVELER_CONFIG_PATH = TravelerPluginManager.getTravelerWebApplicationTravelerConfigPath();
-        
+
     private List<Form> templatesForCurrent;
     private List<Traveler> travelersForCurrent;
-    
-    private PropertyType travelerTemplatePropertyType; 
+
+    private PropertyType travelerTemplatePropertyType;
+    private PropertyType travelerInstancePropertyType;
 
     @PostConstruct
     public void init() {
         getItemController().subscribeResetVariablesForCurrent(this);
-        
-        String webServiceUrl = TravelerPluginManager.getTravelerWebServiceUrl(); 
-        String username = TravelerPluginManager.getTravelerBasicAuthUsername(); 
+
+        String webServiceUrl = TravelerPluginManager.getTravelerWebServiceUrl();
+        String username = TravelerPluginManager.getTravelerBasicAuthUsername();
         String password = TravelerPluginManager.getTravelerBasicAuthPassword();
         try {
             travelerApi = new TravelerApi(webServiceUrl, username, password);
@@ -92,111 +94,135 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             SessionUtility.addErrorMessage("Error", error);
             logger.error(error);
         }
-        
+
         dateFormat = new SimpleDateFormat("y-M-d");
-        
+
         String initalized = "Initialized";
         String active = "Active";
         String submitted = "Submitted";
-        String completed = "Complted"; 
-        String frozen = "Frozen"; 
-        
+        String completed = "Complted";
+        String frozen = "Frozen";
+
         statusNames.put(0.0, initalized);
         statusNames.put(1.0, active);
-        statusNames.put(1.5, submitted); 
-        statusNames.put(2.0, completed); 
+        statusNames.put(1.5, submitted);
+        statusNames.put(2.0, completed);
         statusNames.put(3.0, frozen);
-         
-        List<SelectItem> initalizedStatusList = new ArrayList<>(); 
-        initalizedStatusList.add(getNewSelectItem(initalized, false)); 
-        initalizedStatusList.add(getNewSelectItem(active, false)); 
-        initalizedStatusList.add(getNewSelectItem(frozen, true)); 
-        initalizedStatusList.add(getNewSelectItem(submitted, true)); 
-        initalizedStatusList.add(getNewSelectItem(completed, true)); 
-        List<SelectItem> activeStatusList = new ArrayList<>(); 
-        activeStatusList.add(getNewSelectItem(initalized, true)); 
-        activeStatusList.add(getNewSelectItem(active, false)); 
-        activeStatusList.add(getNewSelectItem(frozen, false)); 
-        activeStatusList.add(getNewSelectItem(submitted, true)); 
-        activeStatusList.add(getNewSelectItem(completed, true)); 
-        List<SelectItem> submittedStatusList = new ArrayList<>(); 
-        submittedStatusList.add(getNewSelectItem(initalized, true)); 
-        submittedStatusList.add(getNewSelectItem(active, false)); 
-        submittedStatusList.add(getNewSelectItem(frozen, true)); 
-        submittedStatusList.add(getNewSelectItem(submitted, false)); 
-        submittedStatusList.add(getNewSelectItem(completed, false)); 
-        List<SelectItem> completedStatusList = new ArrayList<>(); 
-        completedStatusList.add(getNewSelectItem(initalized, true)); 
-        completedStatusList.add(getNewSelectItem(active, true)); 
-        completedStatusList.add(getNewSelectItem(frozen, true)); 
-        completedStatusList.add(getNewSelectItem(submitted, true)); 
-        completedStatusList.add(getNewSelectItem(completed, false)); 
+
+        List<SelectItem> initalizedStatusList = new ArrayList<>();
+        initalizedStatusList.add(getNewSelectItem(initalized, false));
+        initalizedStatusList.add(getNewSelectItem(active, false));
+        initalizedStatusList.add(getNewSelectItem(frozen, true));
+        initalizedStatusList.add(getNewSelectItem(submitted, true));
+        initalizedStatusList.add(getNewSelectItem(completed, true));
+        List<SelectItem> activeStatusList = new ArrayList<>();
+        activeStatusList.add(getNewSelectItem(initalized, true));
+        activeStatusList.add(getNewSelectItem(active, false));
+        activeStatusList.add(getNewSelectItem(frozen, false));
+        activeStatusList.add(getNewSelectItem(submitted, true));
+        activeStatusList.add(getNewSelectItem(completed, true));
+        List<SelectItem> submittedStatusList = new ArrayList<>();
+        submittedStatusList.add(getNewSelectItem(initalized, true));
+        submittedStatusList.add(getNewSelectItem(active, false));
+        submittedStatusList.add(getNewSelectItem(frozen, true));
+        submittedStatusList.add(getNewSelectItem(submitted, false));
+        submittedStatusList.add(getNewSelectItem(completed, false));
+        List<SelectItem> completedStatusList = new ArrayList<>();
+        completedStatusList.add(getNewSelectItem(initalized, true));
+        completedStatusList.add(getNewSelectItem(active, true));
+        completedStatusList.add(getNewSelectItem(frozen, true));
+        completedStatusList.add(getNewSelectItem(submitted, true));
+        completedStatusList.add(getNewSelectItem(completed, false));
 
         statusOptions.put(0.0, initalizedStatusList);
-        statusOptions.put(1.0, activeStatusList); 
-        statusOptions.put(1.5, submittedStatusList); 
-        statusOptions.put(2.0, completedStatusList); 
-        statusOptions.put(3.0, activeStatusList); 
-    }    
+        statusOptions.put(1.0, activeStatusList);
+        statusOptions.put(1.5, submittedStatusList);
+        statusOptions.put(2.0, completedStatusList);
+        statusOptions.put(3.0, activeStatusList);
+    }
 
     @Override
     public void resetExtensionVariablesForCurrent() {
         super.resetExtensionVariablesForCurrent();
-        templatesForCurrent = null; 
-        travelersForCurrent = null;         
-    } 
-    
+        templatesForCurrent = null;
+        travelersForCurrent = null;
+        propertyValue = null; 
+    }
+
     public void destroyTravelerTemplateFromCurrent(Form travelerTemplate) {
         List<PropertyValue> propertyValueInternalList = getCurrent().getPropertyValueInternalList();
         for (PropertyValue propertyValue : propertyValueInternalList) {
-            PropertyTypeHandler propertyTypeHandler = propertyValue.getPropertyType().getPropertyTypeHandler(); 
+            PropertyTypeHandler propertyTypeHandler = propertyValue.getPropertyType().getPropertyTypeHandler();
             if (propertyTypeHandler != null) {
                 if (propertyTypeHandler.getName().equals(TravelerTemplatePropertyTypeHandler.HANDLER_NAME)) {
                     if (propertyValue.getValue().equals(travelerTemplate.getId())) {
                         setCurrentEditPropertyValue(propertyValue);
                         deleteCurrentEditPropertyValue();
-                        templatesForCurrent.remove(travelerTemplate); 
-                        break; 
+                        templatesForCurrent.remove(travelerTemplate);
+                        break;
                     }
                 }
             }
-        }        
+        }
     }
-    
+
+    public void addTravelerInstanceToCurrent(String onSuccess) {
+        PropertyType travelerInstancePropertyType = getTravelerInstancePropertyType(); 
+        
+        if (travelerInstancePropertyType != null) {
+            propertyValue = getItemController().preparePropertyTypeValueAdd(travelerInstancePropertyType);
+            loadEntityAvailableTemplateList(getCurrent());
+            RequestContext.getCurrentInstance().execute(onSuccess);
+        } else {
+            SessionUtility.addErrorMessage("Traveler instance property type not found ",
+                    " Please contact your admin to add a property type with traveler template handler");
+        }
+    }
+
     public void addTravelerTemplateToCurrent(String onSuccess) {
         PropertyType travelerTemplatePropertyType = getTravelerTemplatePropertyType();
-        
+
         if (travelerTemplatePropertyType != null) {
-           propertyValue = getItemController().preparePropertyTypeValueAdd(travelerTemplatePropertyType);           
-       
-           RequestContext.getCurrentInstance().execute(onSuccess);
+            propertyValue = getItemController().preparePropertyTypeValueAdd(travelerTemplatePropertyType);
+            RequestContext.getCurrentInstance().execute(onSuccess);
         } else {
             SessionUtility.addErrorMessage("Traveler template property type not found ",
                     " Please contact your admin to add a property type with traveler template handler");
-        }               
+        }
     }
-    
-    public String getTravelerTemplateURL(String id) {        
+
+    public String getTravelerTemplateURL(String id) {
         String travelerInstanceUrl = TRAVELER_WEB_APP_URL + TRAVELER_WEB_APP_TEMPLATE_PATH;
         return travelerInstanceUrl.replace("FORM_ID", id);
     }
 
+    public PropertyType getTravelerInstancePropertyType() {
+        if (travelerInstancePropertyType == null) {
+            String travelerInstancePropertyTypeHandlerName = TravelerInstancePropertyTypeHandler.HANDLER_NAME; 
+            travelerInstancePropertyType = getFirstPropertyTypeWithHandler(travelerInstancePropertyTypeHandlerName); 
+        }        
+        return travelerInstancePropertyType;
+    }
+
     public PropertyType getTravelerTemplatePropertyType() {
         if (travelerTemplatePropertyType == null) {
-            List<PropertyType> availableItems = PropertyTypeController.getInstance().getAvailableItems();
             String travelerTemplateHandlerName = TravelerTemplatePropertyTypeHandler.HANDLER_NAME;
-            for (PropertyType propertyType : availableItems) {
-                PropertyTypeHandler propertyTypeHandler = propertyType.getPropertyTypeHandler();
-                if (propertyTypeHandler != null) {
-                    if (propertyTypeHandler.getName().equals(travelerTemplateHandlerName)) {
-                        travelerTemplatePropertyType = propertyType;
-                        return propertyType; 
-                    }
-                }
-            }
-            
+            travelerTemplatePropertyType = getFirstPropertyTypeWithHandler(travelerTemplateHandlerName);            
         }
         return travelerTemplatePropertyType;
+    }
+
+    public PropertyType getFirstPropertyTypeWithHandler(String propertyTypeHandlerName) {
+        List<PropertyType> availableItems = PropertyTypeController.getInstance().getAvailableItems();        
+        for (PropertyType propertyType : availableItems) {
+            PropertyTypeHandler propertyTypeHandler = propertyType.getPropertyTypeHandler();
+            if (propertyTypeHandler != null) {
+                if (propertyTypeHandler.getName().equals(propertyTypeHandlerName)) {                    
+                    return propertyType;
+                }
+            }
+        }
+        return null;
     }
 
     public List<Form> getTemplatesForCurrent() {
@@ -208,18 +234,34 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     public List<Traveler> getTravelersForCurrent() {
+        if (travelersForCurrent == null) {
+            travelersForCurrent = new ArrayList<>();
+            loadPropertyTravelerInstanceList(getCurrent().getPropertyValueInternalList(), travelersForCurrent);
+        }
         return travelersForCurrent;
     }
     
+    public String getFormName(Traveler traveler) {
+        if (traveler.getFormName() == null) {
+            try {
+                Form form = travelerApi.getForm(traveler.getReferenceForm());
+                traveler.setFormName(form.getTitle());
+            } catch (Exception ex) {
+                traveler.setFormName(traveler.getReferenceForm());           
+            }
+        }
+        return traveler.getFormName(); 
+    }
+
     private SelectItem getNewSelectItem(String label, Boolean disabled) {
         return new SelectItem(label, label, label, disabled);
     }
-    
+
     /**
      * Checks for property value and displays proper error message when null.
-     * Used to determine if a function should execute. 
-     * 
-     * @return boolean that determines if function should execute. 
+     * Used to determine if a function should execute.
+     *
+     * @return boolean that determines if function should execute.
      */
     private boolean checkPropertyValue() {
         if (propertyValue != null) {
@@ -232,11 +274,11 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     /**
-     * Checks for template and displays error message when null.
-     * Used to determine if a function should execute. 
-     * 
-     * @param template Template variable that needs to be checked. 
-     * @return boolean that determines if function should execute.  
+     * Checks for template and displays error message when null. Used to
+     * determine if a function should execute.
+     *
+     * @param template Template variable that needs to be checked.
+     * @return boolean that determines if function should execute.
      */
     private boolean checkSelectedTemplate(Form template) {
         if (template != null) {
@@ -247,13 +289,16 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             return false;
         }
     }
-    
+
     /**
-     * Creates a traveler template or Form. 
-     * Uses traveler API to create a traveler template or Form. Assigns the newly created id with property and saves. 
-     * 
-     * @param entityController controller for the entity currently being edited by the user. 
-     * @param onSuccessCommand Remote command to execute only on successful completion. 
+     * Creates a traveler template or Form. Uses traveler API to create a
+     * traveler template or Form. Assigns the newly created id with property and
+     * saves.
+     *
+     * @param entityController controller for the entity currently being edited
+     * by the user.
+     * @param onSuccessCommand Remote command to execute only on successful
+     * completion.
      */
     public void createTravelerTemplate(ICdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
@@ -276,14 +321,16 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             }
         }
     }
-    
 
     /**
-     * Links to an existing traveler template. 
-     * Uses an traveler template or Form fetched from traveler web service to assign id to property value and saves. 
-     * 
-     * @param entityController controller for the entity currently being edited by the user. 
-     * @param onSuccessCommand Remote command to execute only on successful completion. 
+     * Links to an existing traveler template. Uses an traveler template or Form
+     * fetched from traveler web service to assign id to property value and
+     * saves.
+     *
+     * @param entityController controller for the entity currently being edited
+     * by the user.
+     * @param onSuccessCommand Remote command to execute only on successful
+     * completion.
      */
     public void linkTravelerTemplate(ICdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
@@ -296,9 +343,10 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     /**
-     * Removes the id associated with template property. 
-     * 
-     * @param onSuccessCommand Remote command to execute only on successful completion. 
+     * Removes the id associated with template property.
+     *
+     * @param onSuccessCommand Remote command to execute only on successful
+     * completion.
      */
     public void unlinkTravelerTemplate(String onSuccessCommand) {
         if (checkPropertyValue()) {
@@ -309,9 +357,10 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     /**
-     * Generates a (traveler template)/form view URL using id and CDB properties. 
-     * 
-     * @param formId traveler template or form id to generate URL for. 
+     * Generates a (traveler template)/form view URL using id and CDB
+     * properties.
+     *
+     * @param formId traveler template or form id to generate URL for.
      * @return generated URL to traveler web application.
      */
     public String getTravelerTemplateUrl(String formId) {
@@ -320,24 +369,22 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     /**
-     * Generates a (traveler instance)/traveler view URL using id and CDB properties. 
-     * Uses currentTravlerInstance variable and its ID along with CDB properties to generate URL.
-     * 
+     * Generates a (traveler instance)/traveler view URL using id and CDB
+     * properties. Uses currentTravlerInstance variable and its ID along with
+     * CDB properties to generate URL.
+     *
      * @return generated URL to traveler web application.
      */
-    public String getCurrentTravelerInstanceUrl() {
-        if (currentTravelerInstance != null) {
+    public String getTravelerInstanceUrl(String travelerId) {        
             String travelerInstanceUrl = TRAVELER_WEB_APP_URL + TRAVELER_WEB_APP_TRAVELER_PATH;
-            return travelerInstanceUrl.replace("TRAVELER_ID", currentTravelerInstance.getId());
-        }
-        return "";
-
+            return travelerInstanceUrl.replace("TRAVELER_ID", travelerId);
     }
-    
+
     /**
-     * Generates a (traveler instance)/traveler configuration URL using id and CDB properties. 
-     * Uses currentTravlerInstance variable and its ID along with CDB properties to generate URL.
-     * 
+     * Generates a (traveler instance)/traveler configuration URL using id and
+     * CDB properties. Uses currentTravlerInstance variable and its ID along
+     * with CDB properties to generate URL.
+     *
      * @return generated configuration URL to traveler web application.
      */
     public String getCurrentTravelerInstanceConfigUrl() {
@@ -349,44 +396,45 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     /**
-     * Gets a string representation of status stored in traveler db.  
-     * Uses currentTravelerInstance variable and its status to generate string status. 
-     * 
-     * @return string representation of status. 
+     * Gets a string representation of status stored in traveler db. Uses
+     * currentTravelerInstance variable and its status to generate string
+     * status.
+     *
+     * @return string representation of status.
      */
     public String getCurrentTravelerStatus() {
         if (currentTravelerInstance != null) {
-            return (String)statusNames.get(currentTravelerInstance.getStatus()); 
+            return (String) statusNames.get(currentTravelerInstance.getStatus());
         }
         return "";
     }
-    
+
     public List<String> getCurrentTravelerStatusOptions() {
-        if(currentTravelerInstance != null) {
-            return (List<String>)statusOptions.get(currentTravelerInstance.getStatus()); 
+        if (currentTravelerInstance != null) {
+            return (List<String>) statusOptions.get(currentTravelerInstance.getStatus());
         }
-        return null; 
+        return null;
     }
-    
+
     public Double getStatusKey(String statusName) {
-        Iterator statusNamesIterator = statusNames.entrySet().iterator(); 
-        
-        while(statusNamesIterator.hasNext()) {
-            Map.Entry entry = (Map.Entry)statusNamesIterator.next(); 
+        Iterator statusNamesIterator = statusNames.entrySet().iterator();
+
+        while (statusNamesIterator.hasNext()) {
+            Map.Entry entry = (Map.Entry) statusNamesIterator.next();
             if (entry.getValue().equals(statusName)) {
-                return (Double)entry.getKey(); 
+                return (Double) entry.getKey();
             }
         }
-        
-        return -1.0; 
+
+        return -1.0;
     }
 
     /**
-     * Determines if the current owner owns the traveler instance.
-     * Uses currentTravlerInstance to determine if current user owns it.
-     * Currently, the traveler could only be configured by user who owns it. 
-     * 
-     * @return boolean, if user can configure the traveler instance. 
+     * Determines if the current owner owns the traveler instance. Uses
+     * currentTravlerInstance to determine if current user owns it. Currently,
+     * the traveler could only be configured by user who owns it.
+     *
+     * @return boolean, if user can configure the traveler instance.
      */
     public boolean getCurrentTravelerConfigPermission() {
         if (currentTravelerInstance != null) {
@@ -400,13 +448,14 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     /**
-     * Gets a (traveler instance)/traveler title. 
-     * Uses the traveler web API to get a title. 
-     * Default text is returned if fetch fails. 
-     * returned value is used for a link that user may click to get to traveler.
-     * 
-     * @param propertyValue value of propertyValue holds an id to a traveler instance. 
-     * @return String that will be displayed to user on link to traveler instance.
+     * Gets a (traveler instance)/traveler title. Uses the traveler web API to
+     * get a title. Default text is returned if fetch fails. returned value is
+     * used for a link that user may click to get to traveler.
+     *
+     * @param propertyValue value of propertyValue holds an id to a traveler
+     * instance.
+     * @return String that will be displayed to user on link to traveler
+     * instance.
      */
     public String getTravelerInstanceTitle(PropertyValue propertyValue) {
         if (propertyValue.getDisplayValue() != null) {
@@ -425,35 +474,39 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     /**
-     * Determines all entities that need to have (traveler templates)/forms loaded
-     * 
-     * @param entityController controller for the entity currently being edited by the user. 
+     * Determines all entities that need to have (traveler templates)/forms
+     * loaded
+     *
+     * @param entityController controller for the entity currently being edited
+     * by the user.
      */
     public void loadEntityAvailableTemplateList(CdbDomainEntity domainEntity) {
         if (checkPropertyValue()) {
-            availableTemplates = new ArrayList<>();            
-            if (domainEntity instanceof Item) {                
-                Item item = (Item) domainEntity; 
-                loadPropertyTravelerTemplateList(item.getPropertyValueDisplayList(), availableTemplates);
+            availableTemplates = new ArrayList<>();
+            if (domainEntity instanceof Item) {
+                Item item = (Item) domainEntity;
+                loadPropertyTravelerTemplateList(item.getPropertyValueInternalList(), availableTemplates);
                 if (item.getDerivedFromItem() != null) {
-                    loadPropertyTravelerTemplateList(item.getDerivedFromItem().getPropertyValueDisplayList(), availableTemplates);
+                    loadPropertyTravelerTemplateList(item.getDerivedFromItem().getPropertyValueInternalList(), availableTemplates);
                 }
             } else if (domainEntity instanceof ItemElement) {
-                ItemElement itemElement = (ItemElement) domainEntity; 
-                loadPropertyTravelerTemplateList(itemElement.getPropertyValueDisplayList(), availableTemplates);
+                ItemElement itemElement = (ItemElement) domainEntity;
+                loadPropertyTravelerTemplateList(itemElement.getPropertyValueList(), availableTemplates);
                 Item parentItem = itemElement.getParentItem();
                 Item containedItem = itemElement.getContainedItem();
-                loadPropertyTravelerTemplateList(parentItem.getPropertyValueDisplayList(), availableTemplates);
-                loadPropertyTravelerTemplateList(containedItem.getPropertyValueDisplayList(), availableTemplates);
-            }          
+                loadPropertyTravelerTemplateList(parentItem.getPropertyValueInternalList(), availableTemplates);
+                loadPropertyTravelerTemplateList(containedItem.getPropertyValueInternalList(), availableTemplates);
+            }
         }
     }
 
     /**
-     * Check all property values for templates and call function that add each one. 
-     * 
+     * Check all property values for templates and call function that add each
+     * one.
+     *
      * @param propertyValues List of properties for a specific entity.
-     * @param formList List of (traveler templates)/forms that will be displayed to the user. 
+     * @param formList List of (traveler templates)/forms that will be displayed
+     * to the user.
      */
     private void loadPropertyTravelerTemplateList(List<PropertyValue> propertyValues, List<Form> formList) {
         for (PropertyValue curPropertyValue : propertyValues) {
@@ -465,12 +518,14 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             }
         }
     }
-    
+
     /**
-     * Load the form from web service using its ID and add to list. 
-     * 
-     * @param formId id of the (traveler template)/form to fetch from web service
-     * @param formList List of (traveler templates)/forms that will be displayed to the user. 
+     * Load the form from web service using its ID and add to list.
+     *
+     * @param formId id of the (traveler template)/form to fetch from web
+     * service
+     * @param formList List of (traveler templates)/forms that will be displayed
+     * to the user.
      */
     private void addFormFromPropertyValue(String formId, List<Form> formList) {
         if (formId == null || formId.equals("")) {
@@ -483,13 +538,53 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             SessionUtility.addErrorMessage("Error", ex.getMessage());
         }
     }
-    
+
     /**
-     * Generates a name to be used in traveler application. 
-     * Allows the traveler application to request information from CDB. 
-     * 
-     * @param deviceObject Item or ItemElement that will get traveler instance property. 
-     * @return device name for traveler application. 
+     * Check all property values for traveler instances and call function that
+     * add each one.
+     *
+     * @param propertyValues List of properties for a specific entity.
+     * @param travelerList List of (traveler templates)/forms that will be
+     * displayed to the user.
+     */
+    private void loadPropertyTravelerInstanceList(List<PropertyValue> propertyValues, List<Traveler> travelerList) {
+        for (PropertyValue curPropertyValue : propertyValues) {
+            // Check that they use the traveler template handler. 
+            if (curPropertyValue.getPropertyType().getPropertyTypeHandler() != null) {
+                if (curPropertyValue.getPropertyType().getPropertyTypeHandler().getName().equals(TravelerInstancePropertyTypeHandler.HANDLER_NAME)) {
+                    addTravelerFromPropertyValue(curPropertyValue.getValue(), travelerList);
+                }
+            }
+        }
+    }
+
+    /**
+     * Load the traveler from web service using its ID and add to list.
+     *
+     * @param travelerId id of the (traveler instance)/traveler to fetch from
+     * web service
+     * @param travelerList List of (traveler instances)/travelers that will be
+     * displayed to the user.
+     */
+    private void addTravelerFromPropertyValue(String travelerId, List<Traveler> travelerList) {
+        if (travelerId == null || travelerId.equals("")) {
+            return;
+        }
+        try {
+            travelerList.add(travelerApi.getTraveler(travelerId));
+        } catch (CdbException ex) {
+            logger.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+        }
+    }
+
+    /**
+     * Generates a name to be used in traveler application. Allows the traveler
+     * application to request information from CDB.
+     *
+     * @param deviceObject Item or ItemElement that will get traveler instance
+     * property.
+     * @return device name for traveler application.
      * @throws CdbException when non valid object was submitted for device name.
      */
     private String getDeviceName(Object deviceObject) throws CdbException {
@@ -500,13 +595,16 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         } else {
             throw new CdbException("Device for traveler is not of valid CDB entity");
         }
-    } 
-    
+    }
+
     /**
-     * Create a traveler instance based on the currently selected template and entered title. 
-     * 
-     * @param entityController controller for the entity currently being edited by the user. 
-     * @param onSuccessCommand Remote command to execute only on successful completion
+     * Create a traveler instance based on the currently selected template and
+     * entered title.
+     *
+     * @param entityController controller for the entity currently being edited
+     * by the user.
+     * @param onSuccessCommand Remote command to execute only on successful
+     * completion
      */
     public void createTravelerInstance(ICdbDomainEntityController entityController, String onSuccessCommand) {
         if (checkPropertyValue()) {
@@ -521,7 +619,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
                                 travelerInstanceTitle,
                                 device);
                         setCurrentTravelerInstance(travelerInstance);
-                        
+
                         SessionUtility.addInfoMessage(
                                 "Traveler Instance Created",
                                 "Traveler Instance '" + travelerInstance.getId() + "' has been created");
@@ -542,36 +640,32 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             }
         }
     }
-    
+
     /**
-     * Load information about the traveler instance property currently loaded. 
-     * Add progress information based on its information which will be displayed to user.
-     * 
-     * @param onSuccessCommand Remote command to execute only on successful completion 
+     * Load information about the traveler instance property currently loaded.
+     * Add progress information based on its information which will be displayed
+     * to user.
+     *
+     * @param onSuccessCommand Remote command to execute only on successful
+     * completion
      */
-    public void loadCurrentTravelerInstance(String onSuccessCommand) {
-        if (checkPropertyValue()) {
-            try {
-                Traveler travelerInstance = travelerApi.getTraveler(propertyValue.getValue());
-                setCurrentTravelerInstance(travelerInstance);
-                //Load completion pie chart model
-                int totalInput = travelerInstance.getTotalInput();
-                int finishedInput = travelerInstance.getFinishedInput();
-                double progress = (finishedInput * 1.0) / (totalInput * 1.0) * 100; 
-                this.travelerInstanceProgress = (int) progress; 
-                //Show the GUI since all execution was successful. 
-                RequestContext.getCurrentInstance().execute(onSuccessCommand);
-            } catch (CdbException ex) {
-                logger.error(ex);
-                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
-            }
+    public void reloadCurrentTravelerInstance(String onSuccessCommand) {        
+        try {
+            Traveler travelerInstance = travelerApi.getTraveler(currentTravelerInstance.getId());
+            setCurrentTravelerInstance(travelerInstance);
+            //Show the GUI since all execution was successful. 
+            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+        } catch (CdbException ex) {
+            logger.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
         }
     }
-    
+
     /**
-     * Get a list of all (traveler templates)/forms for user to view. 
-     * 
-     * @param onSuccessCommand Remote command to execute only on successful completion
+     * Get a list of all (traveler templates)/forms for user to view.
+     *
+     * @param onSuccessCommand Remote command to execute only on successful
+     * completion
      */
     public void loadTravelerTemplates(String onSuccessCommand) {
         try {
@@ -585,7 +679,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     /**
-     * Load information about the traveler template property currently loaded.  
+     * Load information about the traveler template property currently loaded.
      */
     public void loadTravelerTemplateInformation() {
         if (propertyValue != null) {
@@ -602,9 +696,10 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         }
 
     }
-    
+
     /**
-     * Function gets called when user selects traveler template to set the default traveler instance title.
+     * Function gets called when user selects traveler template to set the
+     * default traveler instance title.
      */
     public void updateTravelerInstanceTitleInputText() {
         if (selectedTravelerInstanceTemplate != null) {
@@ -613,7 +708,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             }
         }
     }
-    
+
     public void updateTravelerInstanceConfiguration(String onSuccessCommand) {
         String travelerId = currentTravelerInstance.getId();
         String travelerTitle;
@@ -623,17 +718,17 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             travelerTitle = currentTravelerEditTitle;
         }
         String travelerDescription;
-        if(currentTravelerEditDescription == null) {
+        if (currentTravelerEditDescription == null) {
             travelerDescription = getCurrentTravelerInstanceDescription();
         } else {
-            travelerDescription = currentTravelerEditDescription; 
+            travelerDescription = currentTravelerEditDescription;
         }
-        
-        Double status = getStatusKey(currentTravelerSelectedStatus); 
-        
+
+        Double status = getStatusKey(currentTravelerSelectedStatus);
+
         UserInfo currentUser = (UserInfo) SessionUtility.getUser();
         String userName = currentUser.getUsername();
-        try { 
+        try {
             Traveler travelerInstance = travelerApi.updateTraveler(travelerId, userName, travelerTitle, travelerDescription, currentTravelerDeadline, status);
             setCurrentTravelerInstance(travelerInstance);
             RequestContext.getCurrentInstance().execute(onSuccessCommand);
@@ -642,14 +737,14 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
         }
     }
-    
+
     public void resetUpdateTravelerInstanceConfiguration() {
         currentTravelerSelectedStatus = null;
-        currentTravelerDeadline = null; 
+        currentTravelerDeadline = null;
         currentTravelerEditTitle = null;
-        currentTravelerEditDescription = null; 
+        currentTravelerEditDescription = null;
     }
-    
+
     public void setPropertyValue(PropertyValue propertyValue) {
         this.propertyValue = propertyValue;
     }
@@ -709,27 +804,23 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         return travelerInstanceTitleInputText;
     }
 
-    public Integer getTravelerInstanceProgress() {
-        return travelerInstanceProgress;
-    }
-
     public Traveler getCurrentTravelerInstance() {
         return currentTravelerInstance;
     }
-    
+
     public String getCurrentTravelerInstanceTitle() {
         if (currentTravelerInstance != null && currentTravelerInstance.getTitle() != null) {
             return currentTravelerInstance.getTitle();
         }
-       
+
         return "";
     }
-    
+
     public String getCurrentTravelerInstanceDescription() {
         if (currentTravelerInstance != null && currentTravelerInstance.getDescription() != null) {
-            return currentTravelerInstance.getDescription(); 
+            return currentTravelerInstance.getDescription();
         }
-        
+
         return "";
     }
 
@@ -744,16 +835,16 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     public Date getCurrentTravelerDeadline() {
         if (currentTravelerInstance.getDeadline() != null) {
-            String deadline = currentTravelerInstance.getDeadline(); 
-            String dateString = deadline.split("T")[0]; 
-            try { 
+            String deadline = currentTravelerInstance.getDeadline();
+            String dateString = deadline.split("T")[0];
+            try {
                 return dateFormat.parse(dateString);
             } catch (ParseException ex) {
                 logger.error(ex);
             }
         }
-        
-        return null; 
+
+        return null;
     }
 
     public void setCurrentTravelerDeadline(Date currentTravelerDeadline) {
@@ -762,7 +853,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     /**
      * Makes the default selection in the select one button widget.
-     * @return status of current traveler. 
+     *
+     * @return status of current traveler.
      */
     public String getCurrentTravelerSelectedStatus() {
         return getCurrentTravelerStatus();
@@ -773,7 +865,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     public String getCurrentTravelerEditTitle() {
-        return getCurrentTravelerInstanceTitle(); 
+        return getCurrentTravelerInstanceTitle();
     }
 
     public void setCurrentTravelerEditTitle(String currentTravelerEditTitle) {
