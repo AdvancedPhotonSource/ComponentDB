@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="travelerInstanceConfigureDialog" 
+              widgetVar="travelerInstanceConfigureDialogWidget" 
+              header="Configure Traveler Instance" 
+              styleClass="viewTransparentBackgroundDialog"
+              closable="false"
+              resizable="false"
+              modal="true"
+              focus="travelerStatusSelectOneButton">
+        <p:panelGrid columns="2" rendered="#{itemTravelerDomainInventoryController.currentTravelerInstance != null}">
+
+            <p:outputLabel for="travelerTemplateConfigTitle" 
+                           value="Title" 
+                           styleClass="entityDataLabel"/>            
+            <p:inputText id="travelerTemplateConfigTitle"
+                         value="#{itemTravelerDomainInventoryController.currentTravelerEditTitle}" 
+                         styleClass="entityDataEmphasizedText"/>            
+
+            <p:outputLabel for="travelerTemplateConfigDescription" value="Description" styleClass="entityDataLabel"/>
+            <p:inputTextarea id="travelerTemplateConfigDescription"
+                             value="#{itemTravelerDomainInventoryController.currentTravelerEditDescription}" 
+                             styleClass="entityDataEmphasizedText"/>
+
+
+            <p:outputLabel value="Deadline" styleClass="entityDataLabel"/>
+            <p:calendar value="#{itemTravelerDomainInventoryController.currentTravelerDeadline}" />
+
+
+            <p:outputLabel value="Status" styleClass="entityDataLabel"/>
+            <p:selectOneButton value="#{itemTravelerDomainInventoryController.currentTravelerSelectedStatus}" id="travelerStatusSelectOneButton"> 
+                <f:selectItems value="#{itemTravelerDomainInventoryController.currentTravelerStatusOptions}"/>
+            </p:selectOneButton>
+
+        </p:panelGrid>
+
+        <p:tooltip id="travelerInstanceStatusConfigurePanelGridRowToolTip"
+                   for="travelerStatusSelectOneButton"
+                   styleClass="viewTransparentBackground">
+            <ui:include src="travelerInstanceStatusDescriptionPanelGrid.xhtml" />
+        </p:tooltip>
+        
+        <f:facet name="footer" class="dialog">
+            <p:commandButton value="Update Traveler"
+                             update="travelerInstanceConfigureDialog" 
+                             action="#{itemTravelerDomainInventoryController.updateTravelerInstanceConfiguration('successTravelerInstanceConfigureDialog()')}"
+                             icon="ui-icon-check"/>
+            <p:commandButton value="Cancel" alt="Cancel" 
+                             action="#{itemTravelerDomainInventoryController.resetUpdateTravelerInstanceConfiguration()}"
+                             oncomplete="successTravelerInstanceConfigureDialog()" 
+                             icon="ui-icon-arrowreturnthick-1-w"/>
+        </f:facet>
+
+
+        <p:remoteCommand name="successTravelerInstanceConfigureDialog"
+                         oncomplete="PF('travelerInstanceConfigureDialogWidget').hide();
+                         updateTravelerInstanceInfoDialog();" />
+
+        <p:remoteCommand name="updateTravelerInstanceConfigureDialog" 
+                         update="travelerInstanceConfigureDialog" 
+                         oncomplete="PF('travelerInstanceConfigureDialogWidget').initPosition();
+                         PF('travelerInstanceConfigureDialogWidget').show();"/>
+
+    </p:dialog>
+
+
+</ui:composition>
+

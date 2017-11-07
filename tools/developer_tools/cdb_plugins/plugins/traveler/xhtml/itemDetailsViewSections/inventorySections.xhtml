@@ -8,9 +8,16 @@ See LICENSE file.
 <!--Auto-generated xhtml file. See tools/developer_tools/cdb_plugin-->
 
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
 
-  
+    <p:panel header="eTraveler Instances"
+             toggleable="true"
+             collapsed="#{itemTravelerDomainInventoryController.isCollapsedTravelerInstances}">
+
+        <ui:include src="../support/travelerInstanceList.xhtml" />
+
+    </p:panel>     
 
 
 </ui:composition>
