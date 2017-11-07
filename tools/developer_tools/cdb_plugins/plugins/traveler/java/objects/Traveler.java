@@ -35,6 +35,10 @@ public class Traveler extends TravelerObject {
     private LinkedList<SharedGroup> sharedGroup;
     private LinkedList<SharedWith> sharedWith; 
     private LinkedList<String> devices; 
+    
+    // Calculated cache variables 
+    private Integer progress; 
+    private String FormName; 
 
     public String getTitle() {
         return title;
@@ -114,6 +118,23 @@ public class Traveler extends TravelerObject {
 
     public String getDeadline() {
         return deadline;
+    } 
+
+    public Integer getProgress() {
+        if (progress == null) {
+            //Load completion pie chart model                
+            double doubleProgress = (finishedInput * 1.0) / (totalInput * 1.0) * 100; 
+            this.progress = (int) doubleProgress; 
+        }
+        return progress;
+    }
+
+    public String getFormName() {
+        return FormName;
+    }
+
+    public void setFormName(String FormName) {
+        this.FormName = FormName;
     }
       
 }
