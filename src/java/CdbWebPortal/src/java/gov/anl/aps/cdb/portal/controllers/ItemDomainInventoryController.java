@@ -167,12 +167,12 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     @Override
     public List<ItemDomainInventory> getItemListWithProject(ItemProject itemProject) {
         String projectName = itemProject.getName();
-        return itemDomainInventoryFacade.findByDomainAndProjectOrderByQrId(getDefaultDomainName(), projectName);
+        return itemDomainInventoryFacade.findByDomainAndProjectOrderByDerivedFromItem(getDefaultDomainName(), projectName);
     }
 
     @Override
     public List<ItemDomainInventory> getItemList() {
-        return itemDomainInventoryFacade.findByDomainOrderByQrId(getDefaultDomainName());
+        return itemDomainInventoryFacade.findByDomainOrderByDerivedFromItem(getDefaultDomainName());
     }
 
     @Override
