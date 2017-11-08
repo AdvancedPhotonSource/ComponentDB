@@ -9,8 +9,23 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
     <p:outputPanel rendered="#{entityController.renderCreateConfiguration}">
+        <h2>Select #{entityController.derivedFromItemTitle}.</h2>
+
+        <p:panelGrid columns="2" >
+            <h:outputText value="#{entityController.derivedFromItemTitle}"
+                          rendered="#{entityController.entityDisplayDerivedFromItem}"/>
+            <p:column rendered="#{entityController.entityDisplayDerivedFromItem}"
+                      id="itemSelectDataTableColumn">
+                <ui:include src="../../item/private/itemSelectDataTable.xhtml">
+                    <ui:param name="selectionController" value="#{entityController.defaultDomainDerivedFromDomainController}" />
+                    <ui:param name="selectionTarget" value="#{entityController.derivedFromItemForNewItems}" />
+                    <ui:param name="updateTarget" value="itemSelectDataTableColumn" />
+                    <ui:param name="immediateUpdate" value="#{true}"/>
+                </ui:include>
+            </p:column>
+        </p:panelGrid>
+
         <p:panelGrid columns="2" >
             <h:outputText value="Quantity" />
             <p:inputNumber minValue="#{entityController.minNewItemsToCreate}"
@@ -21,19 +36,8 @@ See LICENSE file.
         <p:outputPanel id='defaultValuesConfigurationOutputPanel' >
             <h2>Default Values for new items.</h2>
 
-            <p:panelGrid columns="2" >
-                <h:outputText value="#{entityController.derivedFromItemTitle}"
-                              rendered="#{entityController.entityDisplayDerivedFromItem}"/>
-                <p:column rendered="#{entityController.entityDisplayDerivedFromItem}"
-                          id="itemSelectDataTableColumn">
-                    <ui:include src="../../item/private/itemSelectDataTable.xhtml">
-                        <ui:param name="selectionController" value="#{entityController.defaultDomainDerivedFromDomainController}" />
-                        <ui:param name="selectionTarget" value="#{entityController.derivedFromItemForNewItems}" />
-                        <ui:param name="updateTarget" value="itemSelectDataTableColumn" />
-                        <ui:param name="immediateUpdate" value="#{true}"/>
-                    </ui:include>
-                </p:column>
-                
+            <p:panelGrid columns="2" >                
+
                 <ui:include src="itemMultiCreateConfigurationProjectObject.xhtml" />
 
                 <ui:include src="itemMultiCreateConfigurationEntityInfoObject.xhtml" />

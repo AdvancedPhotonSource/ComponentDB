@@ -38,10 +38,16 @@ See LICENSE file.
                                              value="#{propertyValueObject}" />
             </p:commandButton>
         </p:panelGrid>
-
-        <h:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="cellInput"
-                     rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}"/>
-        <p:tooltip for="httpLinkValue" value="Enter link value."/>
+        <p:panelGrid columns="3" 
+                     rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">
+            <p:outputLabel value="Link" />
+            <h:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="cellInput"/>
+            <p:tooltip for="httpLinkValue" value="Enter link value."/>
+            
+            <p:outputLabel value="Display Value" />
+            <h:inputText id="httpLinkDisplayValue" value="#{propertyValueObject.displayValue}" styleClass="cellInput"/>
+            <p:tooltip for="httpLinkDisplayValue" value="Enter display value."/>
+        </p:panelGrid>
 
         <h:inputText id="infoActionDisplayValue" value="#{propertyValueObject.value}" styleClass="cellInput"
                      rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"/>

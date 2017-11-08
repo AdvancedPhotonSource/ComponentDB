@@ -16,7 +16,7 @@ See LICENSE file.
     <ui:define name="additionalButtons">
         <p:commandButton id="#{childEntityTypeName}#{viewName}CreateManyButton"
                          value="Create Many"
-                         update="#{childEntityTypeName}#{viewName}CreateManyDialog"
+                         update="@form:#{childEntityTypeName}#{viewName}CreateManyDialog"
                          action="#{childEntityMultiEditController.prepareCreateMultipleItemsFromDialog(itemObject)}"
                          rendered="#{loginController.loggedIn}"
                          oncomplete="PF('#{childEntityTypeName}#{viewName}CreateManyDialogWidget').show()"
