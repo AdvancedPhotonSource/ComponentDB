@@ -41,6 +41,13 @@ See LICENSE file.
         <ui:include src="propertyValueListObjectValue.xhtml"/>
     </p:column>
 
+    <p:column sortBy="#{propertyValueObject.description}" headerText="Description"
+              filterBy="#{propertyValueObject.description}"
+              filterable="#{filterable}"
+              rendered="#{propertyValueSettingObject.displayDescription}">
+        <h:outputText value="#{propertyValueObject.description}"/>
+    </p:column>
+
     <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
               filterBy="#{propertyValueObject.tag}" 
               filterable="#{filterable}"
@@ -53,13 +60,6 @@ See LICENSE file.
               filterable="#{filterable}"
               rendered="#{propertyValueSettingObject.displayUnits}">
         <h:outputText value="#{propertyValueObject.units}"/>
-    </p:column>
-
-    <p:column sortBy="#{propertyValueObject.description}" headerText="Description"
-              filterBy="#{propertyValueObject.description}"
-              filterable="#{filterable}"
-              rendered="#{propertyValueSettingObject.displayDescription}">
-        <h:outputText value="#{propertyValueObject.description}"/>
     </p:column>
 
     <p:column sortBy="#{propertyValueObject.enteredByUser.username}" headerText="Entered By"
