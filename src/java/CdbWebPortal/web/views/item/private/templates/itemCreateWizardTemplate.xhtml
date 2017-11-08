@@ -21,7 +21,9 @@ See LICENSE file.
         <p:tab id="enforcedPropertyTypesTab"
             title="Necesary Properties"
             rendered="#{resources.EnabledEnforcedPropertiesForInventoryOfCatalogItem and entityEnforcedPropertyController.itemHasEditableEnforcedProperties}">
-            <ui:include src="../../../itemEnforcedProperties/private/itemEnforcedPropertyConfigurationPanel.xhtml" />
+            <ui:include src="#{resources.EnabledEnforcedPropertiesForInventoryOfCatalogItem 
+                               ? '../../../itemEnforcedProperties/private/itemEnforcedPropertyConfigurationPanel.xhtml' 
+                               : '../../../common/private/commonEmptyPage.xhtml' }" />            
         </p:tab>        
     </ui:define>
 
