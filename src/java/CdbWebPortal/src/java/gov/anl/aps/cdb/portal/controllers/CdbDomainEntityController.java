@@ -165,8 +165,6 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
                 // Update the current Edit value pointer to db info.
                 PropertyValue originalValue = propertyValueDbFacade.find(currentEditPropertyValue.getId());
                 currentEditPropertyValue.setValue(originalValue.getValue());
-                currentEditPropertyValue.setTargetValue("");
-                currentEditPropertyValue.setDisplayValue("");
                 currentEditPropertyValue.setTag(originalValue.getTag());
                 currentEditPropertyValue.setDescription(originalValue.getDescription());
                 currentEditPropertyValue.setUnits(originalValue.getUnits());
@@ -178,9 +176,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     }
 
-    public void updateEditProperty() {
-        // Will cause refetching of display value.
-        currentEditPropertyValue.setDisplayValue("");
+    public void updateEditProperty() {        
         this.update();
     }
 
