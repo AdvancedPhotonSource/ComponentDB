@@ -18,7 +18,9 @@ See LICENSE file.
     <ui:define name="additionalButtons">
         <p:commandButton value="Edit Property Requirements"
                          update="#{entityTypeName}EnforcedPropertyConfigurationDialog"
-                         rendered="#{isEntityWriteable and entityEnforcedPropertyController.itemHasEditableEnforcedProperties}" 
+                         rendered="#{resources.EnabledEnforcedPropertiesForInventoryOfCatalogItem 
+                                     and isEntityWriteable 
+                                     and entityEnforcedPropertyController.itemHasEditableEnforcedProperties}" 
                          onstart="PF('loadingDialog').show()"
                          oncomplete="PF('loadingDialog').hide(); PF('#{entityTypeName}EnforcedPropertyConfigurationDialogWidget').show()"
                          icon="fa fa-pencil">
@@ -28,8 +30,10 @@ See LICENSE file.
     </ui:define>
     
     <ui:define name="additionalPropertyListDialogs">
-        <ui:include src="../../../itemEnforcedProperties/private/itemEnforcedPropertyConfigurationDialog.xhtml" />
-    </ui:define>
+        <ui:include src="#{resources.EnabledEnforcedPropertiesForInventoryOfCatalogItem 
+                           ? '../../../itemEnforcedProperties/private/itemEnforcedPropertyConfigurationDialog.xhtml' 
+                           : '../../../common/private/commonEmptyPage.xhtml'}" />
+    </ui:define>        
     
 </ui:composition>
 

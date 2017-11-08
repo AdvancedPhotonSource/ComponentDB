@@ -148,10 +148,10 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-
-    public List<ItemDomainEntity> findByDomainOrderByQrId(String domainName) {
+    
+    private List<ItemDomainEntity> findByDomain(String domainName, String queryName) {
         try {
-            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameOrderByQrId")
+            return (List<ItemDomainEntity>) em.createNamedQuery(queryName)
                     .setParameter("domainName", domainName)
                     .getResultList();
         } catch (NoResultException ex) {
@@ -159,8 +159,16 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
+
+    public List<ItemDomainEntity> findByDomainOrderByQrId(String domainName) {
+        return findByDomain(domainName, "Item.findByDomainNameOrderByQrId"); 
+    }
     
-    public List<ItemDomainEntity> findByDomainAndProjectOrderByQrId(String domainName, String projectName) {
+    public List<ItemDomainEntity> findByDomainOrderByDerivedFromItem(String domainName) {
+        return findByDomain(domainName, "Item.findByDomainNameOrderByDerivedFromItem"); 
+    }
+    
+    private List<ItemDomainEntity> findByDomainAndProject(String domainName, String projectName, String queryName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndProjectOrderByQrId")
                     .setParameter("domainName", domainName)
@@ -170,6 +178,14 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         }
         return null;
+    }
+    
+    public List<ItemDomainEntity> findByDomainAndProjectOrderByQrId(String domainName, String projectName) {
+        return findByDomainAndProject(domainName, projectName, "Item.findByDomainNameAndProjectOrderByQrId"); 
+    }
+    
+    public List<ItemDomainEntity> findByDomainAndProjectOrderByDerivedFromItem(String domainName, String projectName) {
+        return findByDomainAndProject(domainName, projectName, "Item.findByDomainNameAndProjectOrderByDerivedFromItem"); 
     }
     
     public List<ItemDomainEntity> findItemsWithPermissionsOfDomain(Integer userId, Integer domainId) {
