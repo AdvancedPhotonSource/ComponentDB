@@ -12,22 +12,44 @@ See LICENSE file.
 
     <p:dataTable id="travelerInstanceListDataTable"
                  value="#{itemTravelerDomainInventoryController.travelersForCurrent}"
-                 var="travelerObject">                
+                 var="travelerObject"
+                 rowExpandMode="single">
+        
+        <p:ajax event="rowToggle"
+                listener="#{itemTravelerDomainInventoryController.loadTravelerListForBinder(travelerObject)}"/>
+        
+        <p:column>
+            <p:rowToggler rendered="#{travelerObject.binder}"/>
+        </p:column>
         
         <ui:include src="travelerInstanceListObject.xhtml" />
         
-        <p:column headerText="Action">
-            <p:commandLink id="#{entityTypeName}TravelerInfoButton"
-                           styleClass="fa-link-icon fa fa-info-circle" title="Display Information"
-                           onclick="PF('loadingDialog').show()"
-                           update="@form:travelerInstanceInfoDialog"
-                           oncomplete="PF('loadingDialog').hide();
-                                       PF('travelerInstanceInfoDialogWidget').show()">
-                <p:tooltip for="#{entityTypeName}TravelerInfoButton" value="Display traveler information."/>
-                <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
-                                             value="#{travelerObject}" />
-            </p:commandLink>
-        </p:column>
+        <ui:include src="travelerInstanceListActionObject.xhtml" />
+        
+        <p:rowExpansion styleClass="domainEntityRowExpansion"
+                        rendered="#{travelerObject.binder}">
+            <ui:param name="binderTravelerList"
+                      value="#{travelerObject.travelerList}" />
+            
+            <p:outputPanel rendered="#{binderTravelerList != null}">
+                <h3>
+                    Binder Contents
+                </h3>
+                <p:dataTable id="travelerInstanceListDataTable"
+                     value="#{binderTravelerList}"
+                     var="binderTravelerObject">
+                    <ui:include src="travelerInstanceListObject.xhtml">
+                        <ui:param name="travelerObject"
+                                  value="#{binderTravelerObject}" />
+                    </ui:include>
+
+                    <ui:include src="travelerInstanceListActionObject.xhtml">
+                        <ui:param name="travelerObject"
+                                  value="#{binderTravelerObject}" />
+                    </ui:include>
+                </p:dataTable>
+            </p:outputPanel>
+        </p:rowExpansion>
     
     </p:dataTable>   
 
