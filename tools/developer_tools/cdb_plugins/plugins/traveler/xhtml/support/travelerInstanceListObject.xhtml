@@ -10,7 +10,7 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html">      
         
         <p:column headerText="Title">
-            <h:outputLink value="#{itemTravelerDomainInventoryController.getTravelerInstanceUrl(travelerObject.id)}"
+            <h:outputLink value="#{itemTravelerDomainInventoryController.getBinderTravelerUrl(travelerObject)}"
                       target="_blank">
             <h:outputText value="#{travelerObject.title}" />
         </h:outputLink>
