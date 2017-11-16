@@ -24,9 +24,7 @@ See LICENSE file.
 
         <f:facet name="footer">
             <p:remoteCommand name="linkSelectedTravelerTemplate"
-                             action="#{itemTravelerDomainCatalogController.linkTravelerTemplate(
-                                       entityController, 
-                                       'successTravelerTemplateLinkDialog();')}"
+                             action="#{itemTravelerDomainCatalogController.linkTravelerTemplate('successTravelerTemplateLinkDialog();')}"
                              onstart="PF('loadingDialog').show();"
                              onerror="PF('loadingDialog').hide();"
                              oncomplete="PF('loadingDialog').hide();"
