@@ -6,8 +6,6 @@ package gov.anl.aps.cdb.portal.plugins.support.traveler;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
-import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
-import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 
 import gov.anl.aps.cdb.portal.controllers.ICdbDomainEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
@@ -23,6 +21,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.api.TravelerApi;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Binder;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.BinderTraveler;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.BinderWorksReference;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Form;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Forms;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Traveler;
@@ -36,7 +37,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import javax.faces.component.html.HtmlInputText;
 import org.apache.log4j.Logger;
@@ -55,7 +55,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     private final Map statusNames = new HashMap();
     private String currentTravelerSelectedStatus;
     private String currentTravelerEditTitle;
-    private String currentTravelerEditDescription;   
+    private String currentTravelerEditDescription;
 
     private Form selectedTemplate;
     private Form selectedTravelerInstanceTemplate;
@@ -72,13 +72,18 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     private final String TRAVELER_WEB_APP_URL = TravelerPluginManager.getTravelerWebApplicationUrl();
     private final String TRAVELER_WEB_APP_TEMPLATE_PATH = TravelerPluginManager.getTravelerWebApplicationTemplatePath();
     private final String TRAVELER_WEB_APP_TRAVELER_PATH = TravelerPluginManager.getTravelerWebApplicationTravelerPath();
+    private final String TRAVELER_WEB_APP_BINDER_PATH = TravelerPluginManager.getTravelerWebApplicationBinderPath(); 
     private final String TRAVELER_WEB_APP_TRAVELER_CONFIG_PATH = TravelerPluginManager.getTravelerWebApplicationTravelerConfigPath();
 
     private List<Form> templatesForCurrent;
-    private List<Traveler> travelersForCurrent;
+    private List<BinderTraveler> travelersForCurrent;
 
     private PropertyType travelerTemplatePropertyType;
     private PropertyType travelerInstancePropertyType;
+    private PropertyType travelerBinderPropertyType;
+
+    private Binder newBinder;
+    private List<Form> newBinderTemplateSelection;
 
     @PostConstruct
     public void init() {
@@ -146,7 +151,83 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         super.resetExtensionVariablesForCurrent();
         templatesForCurrent = null;
         travelersForCurrent = null;
-        propertyValue = null; 
+        propertyValue = null;
+        newBinder = null;
+        newBinderTemplateSelection = null;
+    }
+
+    public void addTravelerBinderToCurrent(String onSuccess) {
+        PropertyType travelerBinderPropertyType = getTravelerBinderPropertyType();
+
+        if (travelerBinderPropertyType != null) {
+            propertyValue = getItemController().preparePropertyTypeValueAdd(travelerBinderPropertyType);
+            newBinder = new Binder();
+            newBinderTemplateSelection = new ArrayList<>();
+            loadEntityAvailableTemplateList(getCurrent());
+            RequestContext.getCurrentInstance().execute(onSuccess);
+        } else {
+            SessionUtility.addErrorMessage("Traveler binder property type not found ",
+                    " Please contact your admin to add a property type with traveler binder handler");
+        }
+
+    }
+
+    public boolean isSelectedNewBinderTemplate(Form form) {
+        return newBinderTemplateSelection.contains(form);
+    }
+
+    public String createBinder() {
+        // Validataion before submission of anything... 
+        String newBinderTitle = newBinder.getTitle();
+        if (newBinderTitle == null || newBinderTitle.equals("")) {
+            SessionUtility.addErrorMessage("Error",
+                    "Please specify a binder title.");
+            return null;
+        }
+
+        if (newBinderTemplateSelection.size() == 0) {
+            SessionUtility.addErrorMessage("Error",
+                    "Please select traveler templates to create travelers for the binder.");
+            return null;
+        } else {
+            for (Form template : newBinderTemplateSelection) {
+                if (template.getTravelerInstanceName().equals("")) {
+                    SessionUtility.addErrorMessage("Error",
+                            "Please specify a title for traveler of template: '" + template.getTitle() + "'.");
+                    return null;
+                }
+            }
+        }
+
+        UserInfo currentUser = (UserInfo) SessionUtility.getUser();
+        String username = currentUser.getUsername();
+        try {
+            String device = getDeviceName(getCurrent());
+            newBinder = travelerApi.createBinder(newBinderTitle,
+                    newBinder.getDescription(), username);
+
+            String[] travelerIds = new String[newBinderTemplateSelection.size()];
+
+            for (int i = 0; i < newBinderTemplateSelection.size(); i++) {
+                Form selectedTemplate = newBinderTemplateSelection.get(i);
+                String templateId = selectedTemplate.getId();
+                String travelerName = selectedTemplate.getTravelerInstanceName();
+                Traveler newTraveler = travelerApi.createTraveler(templateId, username, travelerName, device);
+                travelerIds[i] = newTraveler.getId();
+            }
+
+            String newBinderId = newBinder.getId();
+            travelerApi.addWorkToBinder(newBinderId, travelerIds, username);
+
+            propertyValue.setValue(newBinderId);
+            this.savePropertyList();
+
+            return SessionUtility.getRedirectToCurrentView();
+
+        } catch (CdbException ex) {
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+        }
+        return null;
     }
 
     public void destroyTravelerTemplateFromCurrent(Form travelerTemplate) {
@@ -167,15 +248,15 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     public void addTravelerInstanceToCurrent(String onSuccess) {
-        PropertyType travelerInstancePropertyType = getTravelerInstancePropertyType(); 
-        
+        PropertyType travelerInstancePropertyType = getTravelerInstancePropertyType();
+
         if (travelerInstancePropertyType != null) {
             propertyValue = getItemController().preparePropertyTypeValueAdd(travelerInstancePropertyType);
             loadEntityAvailableTemplateList(getCurrent());
             RequestContext.getCurrentInstance().execute(onSuccess);
         } else {
             SessionUtility.addErrorMessage("Traveler instance property type not found ",
-                    " Please contact your admin to add a property type with traveler template handler");
+                    " Please contact your admin to add a property type with traveler instance handler");
         }
     }
 
@@ -196,28 +277,37 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         return travelerInstanceUrl.replace("FORM_ID", id);
     }
 
+    public PropertyType getTravelerBinderPropertyType() {
+        if (travelerBinderPropertyType == null) {
+            String travelerBinderPropertyTypeHandlerName = TravelerBinderPropertyTypeHandler.HANDLER_NAME;
+            travelerBinderPropertyType = getFirstPropertyTypeWithHandler(travelerBinderPropertyTypeHandlerName);
+        }
+
+        return travelerBinderPropertyType;
+    }
+
     public PropertyType getTravelerInstancePropertyType() {
         if (travelerInstancePropertyType == null) {
-            String travelerInstancePropertyTypeHandlerName = TravelerInstancePropertyTypeHandler.HANDLER_NAME; 
-            travelerInstancePropertyType = getFirstPropertyTypeWithHandler(travelerInstancePropertyTypeHandlerName); 
-        }        
+            String travelerInstancePropertyTypeHandlerName = TravelerInstancePropertyTypeHandler.HANDLER_NAME;
+            travelerInstancePropertyType = getFirstPropertyTypeWithHandler(travelerInstancePropertyTypeHandlerName);
+        }
         return travelerInstancePropertyType;
     }
 
     public PropertyType getTravelerTemplatePropertyType() {
         if (travelerTemplatePropertyType == null) {
             String travelerTemplateHandlerName = TravelerTemplatePropertyTypeHandler.HANDLER_NAME;
-            travelerTemplatePropertyType = getFirstPropertyTypeWithHandler(travelerTemplateHandlerName);            
+            travelerTemplatePropertyType = getFirstPropertyTypeWithHandler(travelerTemplateHandlerName);
         }
         return travelerTemplatePropertyType;
     }
 
     public PropertyType getFirstPropertyTypeWithHandler(String propertyTypeHandlerName) {
-        List<PropertyType> availableItems = PropertyTypeController.getInstance().getAvailableItems();        
+        List<PropertyType> availableItems = PropertyTypeController.getInstance().getAvailableItems();
         for (PropertyType propertyType : availableItems) {
             PropertyTypeHandler propertyTypeHandler = propertyType.getPropertyTypeHandler();
             if (propertyTypeHandler != null) {
-                if (propertyTypeHandler.getName().equals(propertyTypeHandlerName)) {                    
+                if (propertyTypeHandler.getName().equals(propertyTypeHandlerName)) {
                     return propertyType;
                 }
             }
@@ -233,24 +323,46 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         return templatesForCurrent;
     }
 
-    public List<Traveler> getTravelersForCurrent() {
+    public List<BinderTraveler> getTravelersForCurrent() {
         if (travelersForCurrent == null) {
             travelersForCurrent = new ArrayList<>();
-            loadPropertyTravelerInstanceList(getCurrent().getPropertyValueInternalList(), travelersForCurrent);
+            List<Traveler> travelerList = new ArrayList<>();
+            loadPropertyTravelerInstanceList(getCurrent().getPropertyValueInternalList(), travelerList);
+
+            List<Binder> binderList = new ArrayList<>();
+            loadPropertyTravelerBinderList(getCurrent().getPropertyValueInternalList(), binderList);
+
+            travelersForCurrent.addAll(travelerList);
+            travelersForCurrent.addAll(binderList);
         }
         return travelersForCurrent;
     }
-    
-    public String getFormName(Traveler traveler) {
-        if (traveler.getFormName() == null) {
-            try {
-                Form form = travelerApi.getForm(traveler.getReferenceForm());
-                traveler.setFormName(form.getTitle());
-            } catch (Exception ex) {
-                traveler.setFormName(traveler.getReferenceForm());           
+
+    public void loadTravelerListForBinder(Binder binder) {        
+        List<Traveler> travelerList = binder.getTravelerList();
+        if (travelerList == null) {
+            travelerList = new ArrayList<>();
+            for (BinderWorksReference work : binder.getWorks()) {
+                String travelerId = work.getId();
+                addTravelerFromTravelerId(travelerId, travelerList);
+            }
+            binder.setTravelerList(travelerList);
+        }
+    }
+
+    public String getFormName(BinderTraveler binderTraveler) {
+        if (binderTraveler.getFormName() == null) {
+            if (binderTraveler instanceof Traveler) {
+                Traveler traveler = (Traveler) binderTraveler;
+                try {
+                    Form form = travelerApi.getForm(traveler.getReferenceForm());
+                    traveler.setFormName(form.getTitle());
+                } catch (Exception ex) {
+                    traveler.setFormName(traveler.getReferenceForm());
+                }
             }
         }
-        return traveler.getFormName(); 
+        return binderTraveler.getFormName();
     }
 
     private SelectItem getNewSelectItem(String label, Boolean disabled) {
@@ -282,6 +394,15 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      */
     private boolean checkSelectedTemplate(Form template) {
         if (template != null) {
+            if (template.getId() != null) {
+                for (Form ittrTemplate : getTemplatesForCurrent()) {
+                    if (template.getId().equals(ittrTemplate.getId())) {
+                        SessionUtility.addWarningMessage("Template has already been added to current item"
+                                , "Selected traveler template is already a part of current item.");
+                        return false; 
+                    }
+                }
+            }
             return true;
         } else {
             SessionUtility.addWarningMessage("No Template Selected", "Traveler Template is not selected");
@@ -332,11 +453,11 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * @param onSuccessCommand Remote command to execute only on successful
      * completion.
      */
-    public void linkTravelerTemplate(ICdbDomainEntityController entityController, String onSuccessCommand) {
+    public void linkTravelerTemplate(String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTemplate)) {
                 propertyValue.setValue(selectedTemplate.getId());
-                entityController.savePropertyList();
+                savePropertyList();
                 RequestContext.getCurrentInstance().execute(onSuccessCommand);
             }
         }
@@ -375,9 +496,16 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      *
      * @return generated URL to traveler web application.
      */
-    public String getTravelerInstanceUrl(String travelerId) {        
-            String travelerInstanceUrl = TRAVELER_WEB_APP_URL + TRAVELER_WEB_APP_TRAVELER_PATH;
-            return travelerInstanceUrl.replace("TRAVELER_ID", travelerId);
+    public String getBinderTravelerUrl(BinderTraveler binderTraveler) {
+        String binderTravelerInstanceUrl = TRAVELER_WEB_APP_URL;
+        String id = binderTraveler.getId(); 
+        if (binderTraveler instanceof Traveler) {
+            binderTravelerInstanceUrl += TRAVELER_WEB_APP_TRAVELER_PATH;
+            return binderTravelerInstanceUrl.replace("TRAVELER_ID", id);
+        } else {
+            binderTravelerInstanceUrl += TRAVELER_WEB_APP_BINDER_PATH; 
+            return binderTravelerInstanceUrl.replace("BINDER_ID", id);
+        }                         
     }
 
     /**
@@ -481,22 +609,20 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * by the user.
      */
     public void loadEntityAvailableTemplateList(CdbDomainEntity domainEntity) {
-        if (checkPropertyValue()) {
-            availableTemplates = new ArrayList<>();
-            if (domainEntity instanceof Item) {
-                Item item = (Item) domainEntity;
-                loadPropertyTravelerTemplateList(item.getPropertyValueInternalList(), availableTemplates);
-                if (item.getDerivedFromItem() != null) {
-                    loadPropertyTravelerTemplateList(item.getDerivedFromItem().getPropertyValueInternalList(), availableTemplates);
-                }
-            } else if (domainEntity instanceof ItemElement) {
-                ItemElement itemElement = (ItemElement) domainEntity;
-                loadPropertyTravelerTemplateList(itemElement.getPropertyValueList(), availableTemplates);
-                Item parentItem = itemElement.getParentItem();
-                Item containedItem = itemElement.getContainedItem();
-                loadPropertyTravelerTemplateList(parentItem.getPropertyValueInternalList(), availableTemplates);
-                loadPropertyTravelerTemplateList(containedItem.getPropertyValueInternalList(), availableTemplates);
+        availableTemplates = new ArrayList<>();
+        if (domainEntity instanceof Item) {
+            Item item = (Item) domainEntity;
+            loadPropertyTravelerTemplateList(item.getPropertyValueInternalList(), availableTemplates);
+            if (item.getDerivedFromItem() != null) {
+                loadPropertyTravelerTemplateList(item.getDerivedFromItem().getPropertyValueInternalList(), availableTemplates);
             }
+        } else if (domainEntity instanceof ItemElement) {
+            ItemElement itemElement = (ItemElement) domainEntity;
+            loadPropertyTravelerTemplateList(itemElement.getPropertyValueList(), availableTemplates);
+            Item parentItem = itemElement.getParentItem();
+            Item containedItem = itemElement.getContainedItem();
+            loadPropertyTravelerTemplateList(parentItem.getPropertyValueInternalList(), availableTemplates);
+            loadPropertyTravelerTemplateList(containedItem.getPropertyValueInternalList(), availableTemplates);
         }
     }
 
@@ -552,7 +678,23 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             // Check that they use the traveler template handler. 
             if (curPropertyValue.getPropertyType().getPropertyTypeHandler() != null) {
                 if (curPropertyValue.getPropertyType().getPropertyTypeHandler().getName().equals(TravelerInstancePropertyTypeHandler.HANDLER_NAME)) {
-                    addTravelerFromPropertyValue(curPropertyValue.getValue(), travelerList);
+                    addTravelerFromTravelerId(curPropertyValue.getValue(), travelerList);
+                }
+            }
+        }
+    }
+
+    private void loadPropertyTravelerBinderList(List<PropertyValue> propertyValues, List<Binder> binderList) {
+        for (PropertyValue curPropertyValue : propertyValues) {
+            if (curPropertyValue.getPropertyType().getPropertyTypeHandler() != null) {
+                if (curPropertyValue.getPropertyType().getPropertyTypeHandler().getName().equals(TravelerBinderPropertyTypeHandler.HANDLER_NAME)) {
+                    String binderId = curPropertyValue.getValue();
+                    try {
+                        Binder binder = travelerApi.getBinder(binderId);
+                        binderList.add(binder);
+                    } catch (Exception ex) {
+                        SessionUtility.addErrorMessage("Error", ex.getMessage());
+                    }
                 }
             }
         }
@@ -566,7 +708,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * @param travelerList List of (traveler instances)/travelers that will be
      * displayed to the user.
      */
-    private void addTravelerFromPropertyValue(String travelerId, List<Traveler> travelerList) {
+    private void addTravelerFromTravelerId(String travelerId, List<Traveler> travelerList) {
         if (travelerId == null || travelerId.equals("")) {
             return;
         }
@@ -649,7 +791,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * @param onSuccessCommand Remote command to execute only on successful
      * completion
      */
-    public void reloadCurrentTravelerInstance(String onSuccessCommand) {        
+    public void reloadCurrentTravelerInstance(String onSuccessCommand) {
         try {
             Traveler travelerInstance = travelerApi.getTraveler(currentTravelerInstance.getId());
             setCurrentTravelerInstance(travelerInstance);
@@ -778,6 +920,22 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     public PropertyValue getPropertyValue() {
         return propertyValue;
+    }
+
+    public Binder getNewBinder() {
+        return newBinder;
+    }
+
+    public void setNewBinder(Binder newBinder) {
+        this.newBinder = newBinder;
+    }
+
+    public List<Form> getNewBinderTemplateSelection() {
+        return newBinderTemplateSelection;
+    }
+
+    public void setNewBinderTemplateSelection(List<Form> newBinderTemplateSelection) {
+        this.newBinderTemplateSelection = newBinderTemplateSelection;
     }
 
     public void setTravelerInstanceTitle(String travelerInstanceTitle) {
