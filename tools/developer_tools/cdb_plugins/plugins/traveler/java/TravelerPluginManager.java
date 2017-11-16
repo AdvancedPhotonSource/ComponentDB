@@ -24,6 +24,7 @@ public class TravelerPluginManager extends PluginManagerBase {
     private static final String TRAVELER_WEB_APPLICATION_URL_PROPERTY_NAME = "webApp.url";
     private static final String TRAVELER_WEB_APPLICATION_TEMPLATE_PATH_PROPERTY_NAME = "webApp.TemplatePath";     
     private static final String TRAVELER_WEB_APPLICATION_TRAVELER_PATH_PROPERTY_NAME = "webApp.TravelerPath";
+    private static final String TRAVELER_WEB_APPLICATION_BINDER_PATH_PROPERTY_NAME = "webApp.BinderPath";
     private static final String TRAVELER_WEB_APPLICATION_TRAVELER_CONFIG_PATH_PROPERTY_NAME = "webApp.TravelerConfigPath";
     
     public static String getTravelerWebServiceUrl() {
@@ -52,6 +53,10 @@ public class TravelerPluginManager extends PluginManagerBase {
     
     public static String getTravelerWebApplicationTravelerConfigPath(){
         return TRAVELER_PROPERTIES.getProperty(TRAVELER_WEB_APPLICATION_TRAVELER_CONFIG_PATH_PROPERTY_NAME);
+    }
+    
+    public static String getTravelerWebApplicationBinderPath() {
+        return TRAVELER_PROPERTIES.getProperty(TRAVELER_WEB_APPLICATION_BINDER_PATH_PROPERTY_NAME); 
     }
     
     /**
