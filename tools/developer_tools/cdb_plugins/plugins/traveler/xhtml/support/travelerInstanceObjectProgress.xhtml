@@ -10,7 +10,7 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
     
     <ui:param name="travelerInstanceProgressLabel"
-                              value="#{travelerObject.finishedInput}/#{travelerObject.totalInput}"/>                                        
+                              value="#{travelerObject.progressFinished}/#{travelerObject.progressTotal}"/>                                        
 
     <p:progressBar value="#{travelerObject.progress}" 
                    labelTemplate="${travelerInstanceProgressLabel}" 
