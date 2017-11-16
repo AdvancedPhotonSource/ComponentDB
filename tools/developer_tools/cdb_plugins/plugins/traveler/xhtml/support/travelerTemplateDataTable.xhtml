@@ -21,13 +21,15 @@ See LICENSE file.
                  paginatorPosition="bottom"
                  rows="#{resources.DialogSearchResultsDataTableNumberOfRows}"
                  paginatorAlwaysVisible="true"
-                 emptyMessage="No traveler templates found">
+                 emptyMessage="No traveler templates found">                
+        
         <p:ajax event="rowSelect" oncomplete="#{rowSelectEvent}" />
 
         <p:ajax event="rowDblselect" oncomplete="#{travelerTemplateDoubleClickSelectionEvent}" />
 
         <p:column sortBy="#{travelerTemplate.title}"
-                  headerText="Template Title" >
+                  headerText="Template Title"
+                  filterBy="#{travelerTemplate.title}">
             <h:outputText value="#{travelerTemplate.title}" />
             <h:outputLink target="_blank" value="#{itemTravelerDomainCatalogController.getTravelerTemplateUrl(travelerTemplate.id)}">
 
