@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.plugins.support.traveler.api;
 
+import com.google.gson.Gson;
 import gov.anl.aps.cdb.api.*;
 import gov.anl.aps.cdb.common.constants.CdbHttpHeader;
 import gov.anl.aps.cdb.common.constants.CdbProperty;
@@ -21,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.log4j.Logger;
+import org.primefaces.json.JSONObject;
 import org.primefaces.util.Base64;
 
 
@@ -222,18 +225,25 @@ public class TravelerRestApi {
      * @throws InvalidArgument in case of invalid input data
      */
     public static String preparePostData(Map<String, String> data) throws InvalidArgument {
-        try {
+        //try {
+            /*
             String postData = "";
             String separator = "";
             for (String key : data.keySet()) {
                 postData += separator + key + "=" + URLEncoder.encode(data.get(key), "UTF8");
                 separator = "&";
             }
+            */            
+            String postData = new Gson().toJson(data);
+            postData = new JSONObject(data).toString();
+            
             return postData;
+            /*
         } catch (UnsupportedEncodingException ex) {
             logger.error("Invalid argument: " + ex);
             throw new InvalidArgument(ex);
         }
+            */
     }
 
     /**
@@ -264,8 +274,8 @@ public class TravelerRestApi {
      */
     private static void sendPostData(Map<String, String> data, HttpURLConnection connection) throws InvalidArgument, CdbException {
         String postData = preparePostData(data);
-        try (DataOutputStream dos = new DataOutputStream(connection.getOutputStream())) {
-            dos.writeBytes(postData);
+        try (OutputStream dos = connection.getOutputStream()) {
+            dos.write(postData.getBytes("UTF-8")); 
             dos.flush();
         } catch (IOException ex) {
             logger.error(ex);
@@ -331,8 +341,9 @@ public class TravelerRestApi {
     private static void setPostRequestHeaders(HttpURLConnection connection) throws CdbException {
         try {
             connection.setDoOutput(true);
+            connection.setDoInput(true);
             connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("Content-Type", "application/json");
         } catch (ProtocolException ex) {
             logger.error(ex);
             throw new CdbException(ex);
