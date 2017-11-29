@@ -122,6 +122,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
 
     @Override
     public void prepareEntityUpdate(PropertyType propertyType) throws ObjectAlreadyExists {
+        propertyType.resetCachedVales();
         PropertyType existingPropertyType = propertyTypeFacade.findByName(propertyType.getName());
         if (existingPropertyType != null && !existingPropertyType.getId().equals(propertyType.getId())) {
             throw new ObjectAlreadyExists("Property type " + propertyType.getName() + " already exists.");
