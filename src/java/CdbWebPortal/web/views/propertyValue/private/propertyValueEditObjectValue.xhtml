@@ -18,7 +18,7 @@ See LICENSE file.
 
         <p:selectOneMenu id="selectedTextValue" value="#{propertyValueObject.value}" styleClass="entityDataText"
                          rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}">
-            <f:selectItems var="allowedPropertyValue" value="#{propertyValueObject.propertyType.allowedPropertyValueList}" 
+            <f:selectItems var="allowedPropertyValue" value="#{propertyValueObject.propertyType.sortedAllowedPropertyValueList}" 
                            itemLabel="#{allowedPropertyValue.value}" itemValue="#{allowedPropertyValue.value}"/>
         </p:selectOneMenu>
         <p:tooltip for="selectedTextValue" value="Select property value."/>
