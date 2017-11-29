@@ -10,11 +10,11 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
  *
  * @author djarosz
  */
-public class TravelerInstancePropertyTypeHandler extends AbstractPropertyTypeHandler {
+public class TravelerBinderPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
-    public static final String HANDLER_NAME = "Traveler Instance";   
+    public static final String HANDLER_NAME = "Traveler Binder";   
 
-    public TravelerInstancePropertyTypeHandler() {
+    public TravelerBinderPropertyTypeHandler() {
         super(HANDLER_NAME);
     }
    

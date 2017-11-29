@@ -10,18 +10,12 @@ import java.util.LinkedList;
  *
  * @author djarosz
  */
-public class Traveler extends TravelerObject {
-    
-    private String title; 
-    private String description; 
+public class Traveler extends BinderTraveler {
+        
     private double status; 
-    private String createdBy; 
-    private String createdOn; 
     private String referenceForm; 
-    private int totalInput;
-    private int finishedInput; 
-    private String updatedBy;
-    private String updatedOn; 
+    private double totalInput;
+    private double finishedInput;
     private boolean archived; 
     private LinkedList<String> notes; 
     private LinkedList<String> data; 
@@ -35,6 +29,9 @@ public class Traveler extends TravelerObject {
     private LinkedList<SharedGroup> sharedGroup;
     private LinkedList<SharedWith> sharedWith; 
     private LinkedList<String> devices; 
+    
+    // Calculated cache or temporary variables     
+    private String FormName; 
 
     public String getTitle() {
         return title;
@@ -60,11 +57,11 @@ public class Traveler extends TravelerObject {
         return referenceForm;
     }
 
-    public int getTotalInput() {
+    public double getTotalInput() {
         return totalInput;
     }
 
-    public int getFinishedInput() {
+    public double getFinishedInput() {
         return finishedInput;
     }
 
@@ -114,6 +111,32 @@ public class Traveler extends TravelerObject {
 
     public String getDeadline() {
         return deadline;
+    }    
+
+    public String getFormName() {
+        return FormName;
+    }
+
+    public void setFormName(String FormName) {
+        this.FormName = FormName;
+    }
+    
+    public double getTotalValue() {
+        return getTotalInput();
+    }
+    
+    public double getFinishedValue() {
+        return getFinishedInput(); 
+    }
+
+    @Override
+    public double getProgressTotal() {
+        return getTotalInput(); 
+    }
+
+    @Override
+    public double getProgressFinished() {
+        return getFinishedInput(); 
     }
       
 }

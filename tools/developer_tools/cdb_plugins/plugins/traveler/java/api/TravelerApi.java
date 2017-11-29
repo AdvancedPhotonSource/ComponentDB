@@ -14,6 +14,9 @@ import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Traveler;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Travelers;
 
 import gov.anl.aps.cdb.common.utilities.ArgumentUtility;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.TravelerPluginManager;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Binder;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Binders;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Form;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Forms;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.TravelerData;
@@ -93,6 +96,52 @@ public class TravelerApi extends TravelerRestApi  {
         return form; 
     }
     
+    public Binders getBinders() throws ExternalServiceError, CdbException {
+        String requestUrl = "/apis/binders/";
+        String jsonString = invokeGetRequest(requestUrl);
+        jsonString = "{\"binders\": " + jsonString + "}"; 
+        Binders binders = (Binders) TravelerObjectFactory.createObject(jsonString, Binders.class); 
+        return binders; 
+    }
+    
+    public Binder getBinder(String binderId) throws InvalidArgument, ObjectNotFound, ExternalServiceError, CdbException {
+        ArgumentUtility.verifyNonEmptyString("Binder ID", binderId);
+        String requestUrl = "/apis/binders/"+binderId+"/"; 
+        String jsonString = invokeGetRequest(requestUrl);
+        Binder binder = (Binder) TravelerObjectFactory.createObject(jsonString, Binder.class); 
+        return binder; 
+    }
+    
+    public Binder createBinder(String binderTitle, String description, String userName) throws InvalidArgument, CdbException {
+        ArgumentUtility.verifyNonEmptyString("Binder Title", binderTitle);
+        ArgumentUtility.verifyNonEmptyString("User Name", userName);
+        
+        String requestUrl = "/apis/create/binders/"; 
+        Map data = new HashMap(); 
+        
+        data.put("userName", userName);
+        data.put("description", description);
+        data.put("binderTitle", binderTitle); 
+        
+        String jsonString = invokePostRequest(requestUrl, data);
+        Binder binder = (Binder) TravelerObjectFactory.createObject(jsonString, Binder.class);         
+        
+        return binder;
+    }
+    
+    public Binder addWorkToBinder(String binderId, String[] travelerIds, String userName) throws CdbException {
+        String requestUrl = "/apis/addWork/binders/" + binderId + "/";
+        
+        Map data = new HashMap(); 
+        data.put("travelerIds", travelerIds);
+        data.put("userName", userName); 
+        
+        String jsonString = invokePostRequest(requestUrl, data); 
+        Binder binder = (Binder) TravelerObjectFactory.createObject(jsonString, Binder.class);         
+        
+        return binder;
+    }
+    
     public Form createForm(String formName, String userName, String html) throws InvalidArgument, ExternalServiceError, ObjectNotFound, CdbException{
         ArgumentUtility.verifyNonEmptyString("Form Name", formName);
         ArgumentUtility.verifyNonEmptyString("User Name", userName);
@@ -165,17 +214,35 @@ public class TravelerApi extends TravelerRestApi  {
      * @param args main arguments
      */
     public static void main(String[] args) {
-        String testUser = "api_write";
-        String testPass = "write"; 
-        String testHost = "http://127.0.0.1:3443";
-        
-        
+        String testUser = TravelerPluginManager.getTravelerBasicAuthUsername();
+        String testPass = TravelerPluginManager.getTravelerBasicAuthPassword(); 
+        String testHost = TravelerPluginManager.getTravelerWebServiceUrl();
+                
         try {
             TravelerApi apiClient = new TravelerApi(testHost, testUser, testPass); 
+            
+            Binders binders = apiClient.getBinders();
+            
+            String binderId = binders.getBinders().get(0).getId(); 
+            
+            Binder binder = apiClient.getBinder(binderId);
+            
+            Binder createdBinder = apiClient.createBinder("Created From CDB", "a description", "djarosz"); 
+                                                
             Travelers travelers = apiClient.getTravelers(); 
+            String[] travelerIds = new String[travelers.getTravelers().size()]; 
             for (int i = 0; i < travelers.getTravelers().size(); i++) {
-                System.out.println("---" + travelers.getTravelers().get(i).getTitle()); 
+                Traveler traveler = travelers.getTravelers().get(i);
+                System.out.println("---" + traveler.getTitle()); 
+                travelerIds[i] = traveler.getId(); 
             }
+            
+            apiClient.addWorkToBinder(createdBinder.getId(), travelerIds, "djarosz");
+            
+            if (true) {
+                return;
+            }
+            
             String travelerId = travelers.getTravelers().get(0).getId(); 
             Traveler traveler = apiClient.getTraveler(travelerId);
             System.out.println("\n getTravelerTest: " + traveler.getTitle()); 

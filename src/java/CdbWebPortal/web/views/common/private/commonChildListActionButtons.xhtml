@@ -14,6 +14,9 @@ See LICENSE file.
     <ui:param name="customizeDisplayChildEntityTypeName" value="#{customizeDisplayChildEntityTypeName != null 
                                                                   ? customizeDisplayChildEntityTypeName 
                                                                   :  childEntityTypeName}ListCustomizeDisplayDialogWidget" />
+    
+    <ui:param name="customizableListDataTable" value="#{customizableListDataTable != null 
+                                                        ? customizableListDataTable : true}" />
 
     <div class="actionButton">
 
@@ -29,7 +32,8 @@ See LICENSE file.
                          oncomplete="PF('loadingDialog').hide(); PF('#{customizeDisplayChildEntityTypeName}').show()" 
                          alt="Customize List" styleClass="actionButtonRight" 
                          update="@form" 
-                         icon="fa fa-wrench">
+                         icon="fa fa-wrench"
+                         rendered="#{customizableListDataTable}">
             <p:tooltip for="#{childEntityTypeName}ListCustomizeDisplayButton" value="Customize view."/>
         </p:commandButton>
         <p:commandButton id="#{childEntityTypeName}ListResetFiltersButton" action="#{childEntityController.resetListForView()}" 

@@ -85,7 +85,9 @@ See LICENSE file.
                          toggleable="true" 
                          collapsed="#{!entityController.displayPropertyList}">
                     <ui:insert name="itemProperties"/>
-                </p:panel>                
+                </p:panel>
+                
+                <ui:insert name="additonalPluginSections" />
 
                 <p:panel header="#{currentItemController.settingObject.displayItemElementSimpleView ? 'Assembly Listing' : 'Elements'}"
                          id="#{entityTypeName}ViewElementsPanel"

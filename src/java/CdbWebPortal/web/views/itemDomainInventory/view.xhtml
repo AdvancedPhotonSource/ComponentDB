@@ -35,6 +35,10 @@ See LICENSE file.
             <ui:param name="loadPropertyListDialogs" value="#{false}" />
         </ui:include>
     </ui:define>
+    
+    <ui:define name="additonalPluginSections" >
+        <ui:include src="../plugins/private/inventoryDetailsViewSections.xhtml"/>
+    </ui:define>
 
     <ui:define name="additionalRightItemPanels">
         <p:panel header="Catalog Item Properties" toggleable="true" collapsed="#{!entityController.displayDerivedFromPropertyList}">

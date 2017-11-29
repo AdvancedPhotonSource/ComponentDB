@@ -19,6 +19,9 @@ public class Form extends TravelerObject {
     private LinkedList<SharedWith> sharedWith; 
     private String updatedBy; 
     private String updatedOn; 
+    
+    // Calculated cache or temporary variables 
+    private String travelerInstanceName; 
 
     public String getHtml() {
         return html;
@@ -50,6 +53,17 @@ public class Form extends TravelerObject {
 
     public String getUpdatedOn() {
         return updatedOn;
+    }
+
+    public String getTravelerInstanceName() {
+        if (travelerInstanceName == null) {
+            travelerInstanceName = title; 
+        }
+        return travelerInstanceName;
+    }
+
+    public void setTravelerInstanceName(String travelerInstanceName) {
+        this.travelerInstanceName = travelerInstanceName;
     }
     
     
