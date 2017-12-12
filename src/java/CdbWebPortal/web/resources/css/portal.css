@@ -1156,6 +1156,10 @@ h2 {
     display: inline; 
 }
 
+.inlineFlexOutputPanel {
+    display: inline-flex; 
+}
+
 .fa-link-icon {
     padding: 4px;
     color: #4f4f4f !important; 
