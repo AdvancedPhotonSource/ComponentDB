@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:panelGrid columns="2">
+        <c:forEach items="#{propertyValueObject.propertyValueMetadataList}"
+                   var="propertyValueMetadataObject">       
+            <p:outputPanel>
+                <ui:param name="propertyTypeMetadata" value="#{propertyValueMetadataObject.propertyTypeMetadata}"/>
+                <ui:param name="propertyMetadata" value="#{propertyValueMetadataObject.propertyMetadata}"/>
+
+                <h:outputLabel value="#{propertyValueMetadataObject.propertyMetadata.metadataKey}" styleClass="entityDataEmphasizedLabel"/>
+                <p:commandLink id="propertyMetadataKeyRemoveCommandLink#{propertyMetadata.viewUUID}"
+                               styleClass="fa fa-link-icon fa-trash"
+                               rendered="#{propertyValueMetadataObject.isTrashFunctionalityAvaiable}"
+                               onclick="PF('propertyMetadataDestoryConfirmWidget').show()">
+                    <f:setPropertyActionListener target="#{propertyValueController.currentPropertyMetadata}"
+                                                 value="#{propertyValueMetadataObject}" />                                
+                </p:commandLink>
+                <p:tooltip for="propertyMetadataKeyRemoveCommandLink#{propertyMetadata.viewUUID}"
+                           value="Remove depreciated key from property value." />
+
+                <ui:param name="renderDescriptionDisplayCommandLink"
+                          value="#{propertyTypeMetadata != null and propertyTypeMetadata.description != null}" />
+
+                <p:commandLink id="propertyMetadataKeyDescriptionDisplayCommandLink#{propertyMetadata.viewUUID}"
+                               styleClass="fa fa-link-icon fa-info"
+                               rendered="#{propertyTypeMetadata.isHaveDescription}"
+                               />
+                <p:overlayPanel for="propertyMetadataKeyDescriptionDisplayCommandLink#{propertyMetadata.viewUUID}"
+                                rendered="#{propertyTypeMetadata != null and propertyTypeMetadata.description != null}"
+                                hideEffect="fade"
+                                showEffect="fade">
+                    <h:outputText value="#{propertyTypeMetadata.description}"/>
+                </p:overlayPanel>                            
+            </p:outputPanel>
+
+            <p:outputPanel>
+                <ui:param name="propertyTypeMetadata" value="#{propertyValueMetadataObject.propertyTypeMetadata}"/>
+
+
+                <!-- the property meta data needs to be refreshed to be appropriately updatable otherwise an exception occurs for new property values-->
+                <ui:param name="propertyMetadata"
+                          value="#{propertyValueObject.getPropertyMetadataForKey(propertyTypeMetadata.metadataKey)}"/>                            
+                <p:selectOneMenu value="#{propertyMetadata.metadataValue}"                                           
+                                 rendered="#{propertyTypeMetadata.isHaveAllowedValues}"
+                                 var="allowedPropertyMetadataValueObject">
+                    <f:selectItems value="#{propertyTypeMetadata.allowedPropertyMetadataValueList}"
+                                   var="allowedPropertyMetadataValue"
+                                   itemValue="#{allowedPropertyMetadataValue}"/>
+                    <p:column>
+                        <b>#{allowedPropertyMetadataValueObject.metadataValue}</b>
+                        <br/>                                    
+                        <h:outputText rendered="#{allowedPropertyMetadataValueObject.description != null}"
+                                      value="#{allowedPropertyMetadataValueObject.description}"/>
+                    </p:column>
+
+                </p:selectOneMenu>                            
+                <h:inputText value="#{propertyValueMetadataObject.propertyMetadata.metadataValue}"
+                             rendered="#{!propertyTypeMetadata.isHaveAllowedValues}"/>
+            </p:outputPanel>
+        </c:forEach>
+    </p:panelGrid>
+
+</ui:composition>
+
