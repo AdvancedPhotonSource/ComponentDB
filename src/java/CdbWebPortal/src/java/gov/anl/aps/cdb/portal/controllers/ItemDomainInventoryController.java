@@ -1003,11 +1003,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         itemElement.getEntityInfo().setOwnerUser(entityInfo.getOwnerUser());
         itemElement.getEntityInfo().setOwnerUserGroup(entityInfo.getOwnerUserGroup());
         itemElement.getEntityInfo().setIsGroupWriteable(entityInfo.getIsGroupWriteable());
-    } 
-
-    @Override
-    public Boolean getDisplayPropertyMetadata(PropertyValue propertyValue) {
-        return false; 
     }
 
     public boolean isRenderBomOptionalUnspecified(InventoryBillOfMaterialItem billOfMaterialsItem) {
