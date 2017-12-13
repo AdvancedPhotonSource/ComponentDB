@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:include src="../../common/private/commonChildEditListActionButtons.xhtml">
+        <ui:param name="childEntityTypeName" value="propertyTypeMetadata"/>
+        <ui:param name="customizableListDataTable" value="#{false}"/>                 
+        <ui:param name="displayAddButton" value="#{true}" />
+        <ui:param name="addActionOnComplete" value="addPropertyTypeMetadataKey()" />
+        <ui:param name="parentEntityController" value="#{propertyTypeController}" />
+        <ui:param name="saveAction" value="savePropertyTypeMetadataList"/>
+    </ui:include>
+
+    <ui:param name="propertyTypeObject"
+              value="#{propertyTypeController.current}" />
+
+    <p:remoteCommand name="addPropertyTypeMetadataKey" 
+                     update="propertyTypeMetadataEditListDataTable"
+                     onstart="PF('loadingDialog').show()"
+                     action="#{propertyTypeController.addPropertyTypeMetadataForCurrent()}"
+                     oncomplete="PF('loadingDialog').hide()"/>
+
+    <ui:include src="propertyTypeMetadataEditListDataTable.xhtml"/>
+
+</ui:composition>
+
