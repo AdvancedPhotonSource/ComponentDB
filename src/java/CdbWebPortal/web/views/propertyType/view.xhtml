@@ -34,9 +34,13 @@ See LICENSE file.
                 <ui:include src="private/propertyTypeDestroyDialog.xhtml"/>
             </div>
             <div class="middleCenterRightContent">
-                <p:accordionPanel multiple="false">
+                <p:accordionPanel multiple="false"
+                                  activeIndex="0,1">
                     <p:tab title="Allowed Property Values">
                         <ui:include src="../allowedPropertyValue/private/allowedPropertyValueView.xhtml"/>
+                    </p:tab>
+                    <p:tab title="Property Metadata Keys">
+                        <ui:include src="../propertyMetadata/private/propertyTypeMetadataList.xhtml" />
                     </p:tab>
                 </p:accordionPanel>
             </div>
