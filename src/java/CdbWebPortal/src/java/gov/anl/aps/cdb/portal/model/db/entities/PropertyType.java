@@ -105,6 +105,8 @@ public class PropertyType extends CdbEntity implements Serializable {
     @ManyToOne
     private PropertyTypeHandler propertyTypeHandler;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
+    private List<PropertyTypeMetadata> propertyTypeMetadataList; 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<AllowedPropertyValue> allowedPropertyValueList;
     
     private transient List<AllowedPropertyValue> sortedAllowedPropertyValueList;
@@ -270,9 +272,18 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    public List<PropertyTypeMetadata> getPropertyTypeMetadataList() {
+        return propertyTypeMetadataList;
+    }
+
+    public void setPropertyTypeMetadataList(List<PropertyTypeMetadata> propertyTypeMetadataList) {
+        this.propertyTypeMetadataList = propertyTypeMetadataList;
+    }
+
+    @XmlTransient
     public List<AllowedPropertyValue> getAllowedPropertyValueList() {
         return allowedPropertyValueList;
-    }
+    }   
 
     public List<AllowedPropertyValue> getSortedAllowedPropertyValueList() {
         if (sortedAllowedPropertyValueList == null) {
@@ -346,6 +357,6 @@ public class PropertyType extends CdbEntity implements Serializable {
     @Override
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.PropertyType[ id=" + id + " ]";
-    }
+    }        
 
 }
