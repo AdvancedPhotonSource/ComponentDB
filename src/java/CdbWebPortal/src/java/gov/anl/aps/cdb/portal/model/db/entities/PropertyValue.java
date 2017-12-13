@@ -111,6 +111,8 @@ public class PropertyValue extends CdbEntity implements Serializable {
 
     private transient String infoActionCommand;
     private transient boolean handlerInfoSet;
+    
+    private transient List<PropertyValueMetadata> propertyValueMetadataList; 
 
     public PropertyValue() {
     }
@@ -380,6 +382,45 @@ public class PropertyValue extends CdbEntity implements Serializable {
         this.targetValue = value;
     }
 
+    public List<PropertyValueMetadata> getPropertyValueMetadataList() {
+        if (propertyValueMetadataList == null) {
+            if (propertyType != null) {
+                
+                
+                List<PropertyTypeMetadata> propertyTypeMetadataList = propertyType.getPropertyTypeMetadataList();
+                propertyValueMetadataList = new ArrayList<>();
+                
+                for(PropertyTypeMetadata ptm : propertyTypeMetadataList) {
+                    PropertyValueMetadata valueMetadata;
+                    valueMetadata = new PropertyValueMetadata(this, ptm);
+                    propertyValueMetadataList.add(valueMetadata);
+                }
+                
+                // Show depreciated metadata values 
+                if (propertyMetadataList.size() > propertyValueMetadataList.size()) {
+                    for(PropertyMetadata propertyMetadata: propertyMetadataList) {
+                        String metadataKey = propertyMetadata.getMetadataKey();                    
+                        boolean skip = false; 
+                        for(PropertyValueMetadata pvm: propertyValueMetadataList) {
+                            if (pvm.getPropertyMetadata().getMetadataKey().equals(metadataKey)) {
+                                skip = true; 
+                                break; 
+                            }
+                        }
+                        if (skip) {
+                            continue;
+                        }
+                        
+                        propertyValueMetadataList.add(new PropertyValueMetadata(this, propertyMetadata)); 
+                    }
+                }
+                
+                
+            }
+        }
+        return propertyValueMetadataList;
+    }
+
     public void setPropertyMetadataValue(String key, String value) {
         if (propertyMetadataList == null) {
             propertyMetadataList = new ArrayList<>();
@@ -412,6 +453,12 @@ public class PropertyValue extends CdbEntity implements Serializable {
         if (propertyMetadata != null) {
             propertyMetadataList.remove(propertyMetadata);
         }
+    }
+    
+    public void removePropertyMetadataKey(PropertyValueMetadata propertyValueMetadata) {
+        String key = propertyValueMetadata.propertyMetadata.getMetadataKey();
+        propertyValueMetadataList.remove(propertyValueMetadata);
+        removePropertyMetadataKey(key);        
     }
 
     public PropertyMetadata getPropertyMetadataForKey(String key) {
@@ -476,6 +523,53 @@ public class PropertyValue extends CdbEntity implements Serializable {
     @Override
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.PropertyValue[ id=" + id + " ]";
+    }
+    
+    public class PropertyValueMetadata {
+        
+        PropertyTypeMetadata propertyTypeMetadata; 
+        PropertyMetadata propertyMetadata;
+        PropertyValue propertyValue;
+
+        public PropertyValueMetadata(PropertyValue propertyValue, PropertyTypeMetadata propertyTypeMetadata) {
+            this.propertyTypeMetadata = propertyTypeMetadata; 
+            this.propertyValue = propertyValue;
+            
+            this.propertyMetadata = propertyValue.getPropertyMetadataForKey(propertyTypeMetadata.getMetadataKey()); 
+            
+            if (this.propertyMetadata == null) {
+                String defaultValue = ""; 
+                if (this.propertyTypeMetadata.getIsHaveAllowedValues()) {
+                    defaultValue = this.propertyTypeMetadata.getAllowedPropertyMetadataValueList().get(0).getMetadataValue(); 
+                }
+                propertyValue.setPropertyMetadataValue(this.propertyTypeMetadata.getMetadataKey(), defaultValue);
+                this.propertyMetadata = propertyValue.getPropertyMetadataForKey(propertyTypeMetadata.getMetadataKey()); 
+            }
+            
+        }
+        
+        public PropertyValueMetadata(PropertyValue propertyValue, PropertyMetadata propertyMetadata) {
+            this.propertyMetadata = propertyMetadata; 
+            this.propertyValue = propertyValue;
+        }
+
+        public PropertyTypeMetadata getPropertyTypeMetadata() {
+            return propertyTypeMetadata;
+        }
+
+        public PropertyMetadata getPropertyMetadata() {
+            return propertyMetadata;
+        }
+
+        public PropertyValue getPropertyValue() {
+            return propertyValue;
+        }
+        
+        public boolean getIsTrashFunctionalityAvaiable() {
+            return propertyTypeMetadata == null; 
+        }
+        
+        
     }
 
 }
