@@ -113,6 +113,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
     private transient boolean handlerInfoSet;
     
     private transient List<PropertyValueMetadata> propertyValueMetadataList; 
+    private transient Boolean isHasPropertyMetadata = null; 
 
     public PropertyValue() {
     }
@@ -421,6 +422,23 @@ public class PropertyValue extends CdbEntity implements Serializable {
         return propertyValueMetadataList;
     }
 
+    public Boolean getIsHasPropertyMetadata() {
+        if (isHasPropertyMetadata == null) {
+            if (propertyType != null) {
+                if (propertyType.getPropertyTypeMetadataList().size() > 0) {
+                    isHasPropertyMetadata = true;                             
+                } else if (propertyMetadataList != null) {
+                    isHasPropertyMetadata = propertyMetadataList.size() > 0; 
+                } else {
+                    return false; 
+                }
+            } else {
+                return false; 
+            }          
+        }
+        return isHasPropertyMetadata;
+    }
+
     public void setPropertyMetadataValue(String key, String value) {
         if (propertyMetadataList == null) {
             propertyMetadataList = new ArrayList<>();
@@ -452,6 +470,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
         PropertyMetadata propertyMetadata = getPropertyMetadataForKey(key);
         if (propertyMetadata != null) {
             propertyMetadataList.remove(propertyMetadata);
+            isHasPropertyMetadata = null;
         }
     }
     
