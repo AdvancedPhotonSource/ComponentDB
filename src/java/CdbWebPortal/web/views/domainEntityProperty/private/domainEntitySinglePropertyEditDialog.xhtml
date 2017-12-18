@@ -9,7 +9,8 @@ See LICENSE file.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
 
     <ui:param name="useDefaultControllerPropertyValueObject" 
               value="#{useDefaultControllerPropertyValueObject != null 
@@ -18,20 +19,20 @@ See LICENSE file.
     <ui:param name="propertyValueObject" value="#{useDefaultControllerPropertyValueObject 
                                                   ? entityController.currentEditPropertyValue
                                                   : propertyValueObject}" /> 
-    
+
     <ui:param name="submitDialogWithAjax" value="#{submitDialogWithAjax != null 
                                                    ? submitDialogWithAjax 
                                                    : false}" />
-    
+
     <ui:param name="renderPropertyDeleteButton"
               value="#{renderPropertyDeleteButton != null 
                        ? renderPropertyDeleteButton 
                        : propertyValueObject.id != null and isEntityWriteable}" />
-    
+
     <ui:param name="includePropertyEditSupport" value="#{includePropertyEditSupport != null 
                                                          ? includePropertyEditSupport 
                                                          : true }" />
-    
+
     <ui:param name="singlePropertyEditDialogUpdateTarget" 
               value="#{singlePropertyEditDialogUpdateTarget != null 
                        ? singlePropertyEditDialogUpdateTarget
@@ -44,34 +45,97 @@ See LICENSE file.
               resizable="false"
               closable="false"
               modal="true">
-        <p:outputPanel rendered="#{propertyValueObject != null}">
+        <p:outputPanel id="#{entityTypeName}SinglePropertyEditOutputPanel"
+                       rendered="#{propertyValueObject != null}">
             <div>
 
-                <p:panelGrid columns="2" styleClass="createEntityDetails">
-                    <h:outputLabel for="propertyTypeName" value="Property Type" styleClass="entityDataEmphasizedLabel"/>
-                    <h:outputText id="propertyTypeName" value="#{propertyValueObject.propertyType.name}" title="Property Type"/>
+                <p:panelGrid styleClass="createEntityDetails">
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel for="propertyTypeName" value="Property Type" styleClass="entityDataEmphasizedLabel"/>
+                        </p:column>
+                        <p:column>
+                            <h:outputText id="propertyTypeName" value="#{propertyValueObject.propertyType.name}" title="Property Type"/>
+                        </p:column>
+                    </p:row>
 
-                    <h:outputLabel for="propertyValueValue" value="Value" styleClass="entityDataEmphasizedLabel"/>
-                    <p:column id="propertyValueValue" styleClass="entityDataEmphasizedText">
-                        <ui:include src="../../propertyValue/private/propertyValueEditObjectValue.xhtml" />
-                    </p:column>
+                    <p:row>
+                        <p:column>
+                            <h:outputLabel for="propertyValueValue" value="Value" styleClass="entityDataEmphasizedLabel"/>
+                        </p:column>
+                        <p:column>                            
+                            <ui:include src="../../propertyValue/private/propertyValueEditObjectValue.xhtml">
+                                <ui:param name="defaultStyleClass"
+                                          value="" />
+                            </ui:include>                            
+                        </p:column>
+                    </p:row>
 
-                    <h:outputLabel for="propertyValueTag" value="Tag" styleClass="entityDataEmphasizedLabel"/>
-                    <h:inputText id="propertyValueTag" value="#{propertyValueObject.tag}" />
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:panel header="Metadata"
+                                     collapsed="true"
+                                     toggleable="true">
+                                <ui:include src="../../propertyMetadata/private/propertyValueMetadataEditPanelGrid.xhtml"/> 
+                                
+                            </p:panel>
+                        </p:column>
+                    </p:row>
 
-                    <h:outputLabel for="propertyValueDescription" value="Description" styleClass="entityDataEmphasizedLabel"/>
-                    <h:inputText id="propertyValueDescription" value="#{propertyValueObject.description}" />
+                    <p:row>
+                        <p:column colspan="2">
+                            <p:panel toggleable="true"
+                                     collapsed="true"
+                                     header="Additional Attributes">
+                                <p:panelGrid>
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputLabel for="propertyValueTag" value="Tag" styleClass="entityDataEmphasizedLabel"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:inputText id="propertyValueTag" value="#{propertyValueObject.tag}" />
+                                        </p:column>
+                                    </p:row>
 
-                    <h:outputLabel for="propertyValueUnits" value="Units" styleClass="entityDataEmphasizedLabel"/>
-                    <h:inputText id="propertyValueUnits" value="#{propertyValueObject.units}" />
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputLabel for="propertyValueDescription" value="Description" styleClass="entityDataEmphasizedLabel"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:inputText id="propertyValueDescription" value="#{propertyValueObject.description}" />
+                                        </p:column>
+                                    </p:row>
 
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputLabel for="propertyValueUnits" value="Units" styleClass="entityDataEmphasizedLabel"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:inputText id="propertyValueUnits" value="#{propertyValueObject.units}" />
+                                        </p:column>
+                                    </p:row>
 
-                    <h:outputLabel for="propertyValueDynamic" value="Dynamic" styleClass="entityDataEmphasizedLabel"/>
-                    <p:selectBooleanCheckbox id="propertyValueDynamic" value="#{propertyValueObject.isDynamic}"/>
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputLabel for="propertyValueDynamic" value="Dynamic" styleClass="entityDataEmphasizedLabel"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectBooleanCheckbox id="propertyValueDynamic" value="#{propertyValueObject.isDynamic}"/>
+                                        </p:column>
+                                    </p:row>
 
-                    <h:outputLabel for="propertyValueUserWritable" value="User Writable" styleClass="entityDataEmphasizedLabel"/>
-                    <p:selectBooleanCheckbox id="propertyValueUserWritable" value="#{propertyValueObject.isUserWriteable}"/>
-
+                                    <p:row>
+                                        <p:column>
+                                            <h:outputLabel for="propertyValueUserWritable" value="User Writable" styleClass="entityDataEmphasizedLabel"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:selectBooleanCheckbox id="propertyValueUserWritable" value="#{propertyValueObject.isUserWriteable}"/>
+                                        </p:column>
+                                    </p:row>
+                                </p:panelGrid>
+                            </p:panel>
+                        </p:column>
+                    </p:row>                   
                 </p:panelGrid>
             </div>
         </p:outputPanel>
@@ -84,7 +148,7 @@ See LICENSE file.
                                  update="#{singlePropertyEditDialogUpdateTarget}"
                                  onstart="PF('loadingDialog').show()"
                                  oncomplete="PF('loadingDialog').hide(); 
-                                             PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
+                                 PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
                                  icon="fa fa-floppy-o"/>
 
                 <p:commandButton value="Delete" alt="Delete" 
@@ -95,13 +159,13 @@ See LICENSE file.
                                  rendered="#{renderPropertyDeleteButton}"
                                  onstart="PF('loadingDialog').show()"
                                  oncomplete="PF('loadingDialog').hide(); 
-                                             PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
+                                 PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
                                  icon="fa fa-icon-warning fa-trash"/>
 
                 <p:commandButton value="Close" 
                                  onstart="PF('loadingDialog').show()"
                                  oncomplete="PF('loadingDialog').hide(); 
-                                             PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
+                                 PF('#{entityTypeName}SinglePropertyEditDialogWidget').hide()"
                                  id="#{entityTypeName}SinglePropertyEditCoseButton"
                                  icon="fa fa-window-close-o"
                                  ajax="#{submitDialogWithAjax}"
@@ -112,6 +176,8 @@ See LICENSE file.
         </f:facet>
 
     </p:dialog>
+
+    <ui:include src="../../propertyMetadata/private/propertyValueMetadataEditPanelGridDestroyConfirmDialog.xhtml"/>
 
     <ui:include src="#{includePropertyEditSupport 
                        ? '../../propertyValue/private/propertyValueEditObjectValueSupport.xhtml' 

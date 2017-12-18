@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:include src="../../../../common/private/commonChildListActionButtons.xhtml">
+        <ui:param name="childEntityTypeName" value="travelerTemplate"/>
+        <ui:param name="customizableListDataTable" value="#{false}"/> 
+        <ui:param name="onCompleteAddButtonCommand" value="addTravelerTemplate()" />
+    </ui:include>
+
+    <p:remoteCommand name="addTravelerTemplate"
+                     onstart="PF('loadingDialog').show()"
+                     update="travelerTemplateAddDialog"
+                     oncomplete="PF('loadingDialog').hide()"
+                     action="#{itemTravelerDomainCatalogController.addTravelerTemplateToCurrent('PF(\'travelerTemplateAddDialogWidget\').show()')}" />
+
+
+    <ui:include src="travelerTemplateListDataTable.xhtml"/>
+    
+    <ui:include src="travelerTemplateAddDialog.xhtml" />
+    <ui:include src="travelerTemplateLinkDialog.xhtml" />
+
+</ui:composition>
+

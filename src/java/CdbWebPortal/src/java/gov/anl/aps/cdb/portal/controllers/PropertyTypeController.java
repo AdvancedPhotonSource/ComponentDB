@@ -6,15 +6,20 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.controllers.settings.PropertyTypeSettings;
+import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.ejb.EJB;
@@ -39,6 +44,12 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
 
     @EJB
     private PropertyTypeFacade propertyTypeFacade;    
+    
+    @EJB
+    private PropertyTypeMetadataFacade propertyTypeMetadataFacade;
+    
+    @EJB
+    private AllowedPropertyMetadataValueFacade allowedPropertyMetadataValueFacade;
 
     private final Boolean FILTER_VIEW_IS_INTERNAL = false; 
     private List<PropertyTypeCategory> fitlerViewSelectedPropertyTypeCategories = null;
@@ -122,6 +133,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
 
     @Override
     public void prepareEntityUpdate(PropertyType propertyType) throws ObjectAlreadyExists {
+        propertyType.resetCachedVales();
         PropertyType existingPropertyType = propertyTypeFacade.findByName(propertyType.getName());
         if (existingPropertyType != null && !existingPropertyType.getId().equals(propertyType.getId())) {
             throw new ObjectAlreadyExists("Property type " + propertyType.getName() + " already exists.");
@@ -201,6 +213,64 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
         }
         return filterViewDataModel;
 
+    }
+    
+    public void addPropertyTypeMetadataForCurrent() {
+        if (getCurrent() != null) {
+            PropertyTypeMetadata propertyTypeMetadata = new PropertyTypeMetadata();
+            propertyTypeMetadata.setPropertyType(getCurrent());
+            getCurrent().getPropertyTypeMetadataList().add(propertyTypeMetadata);
+        }
+    }
+    
+    public void removePropertyTypeMetadataForCurrent(PropertyTypeMetadata propertyTypeMetadata) {
+        String viewUUID = propertyTypeMetadata.getViewUUID();
+        List<PropertyTypeMetadata> propertyTypeMetadataList = getCurrent().getPropertyTypeMetadataList();
+        for (int i = 0; i < propertyTypeMetadataList.size(); i++) {
+            PropertyTypeMetadata ptm = propertyTypeMetadataList.get(i);
+            if (ptm.getViewUUID().equals(viewUUID)) {
+                propertyTypeMetadataList.remove(i);                
+                break; 
+            }           
+        }
+        
+        // Save the removed property type metadata 
+        if (propertyTypeMetadata.getId() != null) {            
+            propertyTypeMetadataFacade.remove(propertyTypeMetadata);
+            update();    
+        }
+    }
+    
+    public void savePropertyTypeMetadataList() {
+        update(); 
+    }
+    
+    public void addAllowedPropertyMetadataValue(PropertyTypeMetadata propertyTypeMetadata) {
+        if (propertyTypeMetadata.getAllowedPropertyMetadataValueList() == null) {
+            propertyTypeMetadata.setAllowedPropertyMetadataValueList(new ArrayList<>());
+        }
+        
+        AllowedPropertyMetadataValue allowedPropertyMetadataValue = new AllowedPropertyMetadataValue(); 
+        allowedPropertyMetadataValue.setPropertyTypeMetadata(propertyTypeMetadata);
+        propertyTypeMetadata.getAllowedPropertyMetadataValueList().add(allowedPropertyMetadataValue);
+    }
+    
+    public void removeAllowedPropertyMetadataValue(AllowedPropertyMetadataValue allowedPropertyMetadataValue) {
+        String viewUUID = allowedPropertyMetadataValue.getViewUUID();
+        PropertyTypeMetadata propertyTypeMetadata = allowedPropertyMetadataValue.getPropertyTypeMetadata();
+        List<AllowedPropertyMetadataValue> allowedPropertyMetadataValueList = propertyTypeMetadata.getAllowedPropertyMetadataValueList();
+        for (int i = 0; i < allowedPropertyMetadataValueList.size(); i++) {
+            AllowedPropertyMetadataValue apmv = allowedPropertyMetadataValueList.get(i);
+            if (apmv.getViewUUID() == viewUUID) {
+                allowedPropertyMetadataValueList.remove(i);
+                break; 
+            }
+        }
+        
+        if (allowedPropertyMetadataValue.getId() != null) {
+            allowedPropertyMetadataValueFacade.remove(allowedPropertyMetadataValue);
+            update();
+        }
     }
 
     @Override

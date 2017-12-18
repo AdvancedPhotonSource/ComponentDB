@@ -82,6 +82,18 @@ public class SessionUtility {
         }
         return null;
     }
+    
+    public static String getRedirectToCurrentView() {
+        String currentView = getCurrentViewId(); 
+        if (currentView.contains("?")) {
+            currentView += "&";
+        } else {
+            currentView += "?";
+        }
+        currentView += "faces-redirect=true";
+        
+        return currentView; 
+    }
 
     public static String getCurrentViewId() {
         FacesContext context = FacesContext.getCurrentInstance();

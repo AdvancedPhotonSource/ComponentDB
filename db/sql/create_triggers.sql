@@ -1,5 +1,3 @@
-use cdb; 
-
 DELIMITER //
 DROP TRIGGER IF EXISTS insert_item//
 CREATE TRIGGER insert_item BEFORE INSERT ON item

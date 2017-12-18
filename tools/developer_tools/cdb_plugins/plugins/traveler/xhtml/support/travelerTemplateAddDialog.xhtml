@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+
+    <p:dialog id="travelerTemplateAddDialog" 
+              widgetVar="travelerTemplateAddDialogWidget" 
+              header="Add eTraveler Template" 
+              styleClass="viewTransparentBackgroundDialog"
+              modal="true"
+              resizable="false">
+        <p:panelGrid id="travelerTemplateAddPanel"
+                     styleClass="centeredContent">
+            <p:row>
+                <p:column>
+                    <p:outputLabel value="New Template Title" styleClass="entityDataLabel" />
+                </p:column>
+                <p:column>
+                    <p:inputText styleClass="entityDataText" 
+                                 value="#{itemTravelerDomainCatalogController.travelerTemplateTitle}"/>
+                </p:column>
+            </p:row>            
+        </p:panelGrid>
+
+        <p:remoteCommand name="successTravelerTemplateAddDialog"
+                         update="travelerTemplateListDataTable"
+                         oncomplete="PF('travelerTemplateAddDialogWidget').hide();" />        
+
+        <f:facet name="footer">
+            <p:commandButton value="Create Traveler Template"                              
+                             action="#{itemTravelerDomainCatalogController.createTravelerTemplate(
+                                       entityController,
+                                       'successTravelerTemplateAddDialog();')}" 
+                             icon="ui-icon-plus"
+                             onstart="PF('loadingDialog').show();"
+                             onerror="PF('loadingDialog').hide();"
+                             oncomplete="PF('loadingDialog').hide();" />
+
+            <p:commandButton value="Link to existing traveler template"                              
+                             action="#{itemTravelerDomainCatalogController.loadTravelerTemplates('showTravelerTemplateLinkDialog();')}"
+                             onstart="PF('loadingDialog').show()"
+                             onerror="PF('loadingDialog').hide()"
+                             icon="ui-icon-search"
+                             oncomplete="PF('loadingDialog').hide(); "/>            
+        </f:facet>
+    </p:dialog>
+
+
+
+</ui:composition>
+

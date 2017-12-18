@@ -10,76 +10,82 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
     
-    <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) == null}"
-                   styleClass="inlineOutputPanel">
-        <h:inputText id="freeFormTextValue" value="#{propertyValueObject.value}" styleClass="cellInput"
-                     rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
-        <p:tooltip for="freeFormTextValue" value="Enter property value."/>
-
-        <p:selectOneMenu id="selectedTextValue" value="#{propertyValueObject.value}" styleClass="entityDataText"
-                         rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}">
-            <f:selectItems var="allowedPropertyValue" value="#{propertyValueObject.propertyType.allowedPropertyValueList}" 
-                           itemLabel="#{allowedPropertyValue.value}" itemValue="#{allowedPropertyValue.value}"/>
-        </p:selectOneMenu>
-        <p:tooltip for="selectedTextValue" value="Select property value."/>
-
-        <p:panelGrid columns="2" rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"
-                     styleClass="inlineOutputPanel">
-            <p:column>
-                <p:graphicImage id="imageValue" value="/propertyValue/images/#{propertyValueObject.value}.thumbnail" 
-                                alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"/>
-                <p:tooltip for="imageValue" value="Upload new image using upload action button."/>
-            </p:column>
-            <p:commandButton value="Upload Image"
-                             oncomplete="PF('propertyValueImageUploadDialogWidget').show()"
-                             icon="ui-icon-circle-arrow-n"
-                             update="@this">
-                <f:setPropertyActionListener target="#{propertyValueController.current}"
-                                             value="#{propertyValueObject}" />
-            </p:commandButton>
-        </p:panelGrid>
-        <p:panelGrid columns="3" 
-                     rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">
-            <p:outputLabel value="Link" />
-            <h:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="cellInput"/>
-            <p:tooltip for="httpLinkValue" value="Enter link value."/>
-            
-            <p:outputLabel value="Display Value" />
-            <h:inputText id="httpLinkDisplayValue" value="#{propertyValueObject.displayValue}" styleClass="cellInput"/>
-            <p:tooltip for="httpLinkDisplayValue" value="Enter display value."/>
-        </p:panelGrid>
-
-        <h:inputText id="infoActionDisplayValue" value="#{propertyValueObject.value}" styleClass="cellInput"
-                     rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"/>
-        <p:tooltip for="infoActionDisplayValue" value="Enter property value."/>
-
-        <p:outputPanel rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}"
+    <p:outputPanel>  
+        <ui:param name="defaultStyleClass"
+                  value="#{defaultStyleClass != null ? defaultStyleClass : 'cellInput'}" />
+                  
+        
+        <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) == null}"
                        styleClass="inlineOutputPanel">
-            <p:commandButton value="Upload Document" 
-                             icon="ui-icon-circle-arrow-n" 
-                             oncomplete="PF('propertyValueDocumentUploadDialogWidget').show()"
-                             update="@this">
-                <f:setPropertyActionListener target="#{propertyValueController.current}"
-                                             value="#{propertyValueObject}" />
-            </p:commandButton>
-            <h:inputText id="documentValue" value="#{propertyValueObject.value}"/>
-            <p:tooltip for="documentValue" value="Upload new document using upload action button."/>  
-            
+            <h:inputText id="freeFormTextValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
+                         rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
+            <p:tooltip for="freeFormTextValue" value="Enter property value."/>
+
+            <p:selectOneMenu id="selectedTextValue" value="#{propertyValueObject.value}" styleClass="entityDataText"
+                             rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}">
+                <f:selectItems var="allowedPropertyValue" value="#{propertyValueObject.propertyType.sortedAllowedPropertyValueList}" 
+                               itemLabel="#{allowedPropertyValue.value}" itemValue="#{allowedPropertyValue.value}"/>
+            </p:selectOneMenu>
+            <p:tooltip for="selectedTextValue" value="Select property value."/>
+
+            <p:panelGrid columns="2" rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"
+                         styleClass="inlineOutputPanel">
+                <p:column>
+                    <p:graphicImage id="imageValue" value="/propertyValue/images/#{propertyValueObject.value}.thumbnail" 
+                                    alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"/>
+                    <p:tooltip for="imageValue" value="Upload new image using upload action button."/>
+                </p:column>
+                <p:commandButton value="Upload Image"
+                                 oncomplete="PF('propertyValueImageUploadDialogWidget').show()"
+                                 icon="ui-icon-circle-arrow-n"
+                                 update="@this">
+                    <f:setPropertyActionListener target="#{propertyValueController.current}"
+                                                 value="#{propertyValueObject}" />
+                </p:commandButton>
+            </p:panelGrid>
+            <p:panelGrid columns="3" 
+                         rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}">
+                <p:outputLabel value="Link" />
+                <h:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"/>
+                <p:tooltip for="httpLinkValue" value="Enter link value."/>
+
+                <p:outputLabel value="Display Value" />
+                <h:inputText id="httpLinkDisplayValue" value="#{propertyValueObject.displayValue}" styleClass="#{defaultStyleClass}"/>
+                <p:tooltip for="httpLinkDisplayValue" value="Enter display value."/>
+            </p:panelGrid>
+
+            <h:inputText id="infoActionDisplayValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
+                         rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"/>
+            <p:tooltip for="infoActionDisplayValue" value="Enter property value."/>
+
+            <p:outputPanel rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}"
+                           styleClass="inlineOutputPanel">
+                <p:commandButton value="Upload Document" 
+                                 icon="ui-icon-circle-arrow-n" 
+                                 oncomplete="PF('propertyValueDocumentUploadDialogWidget').show()"
+                                 update="@this">
+                    <f:setPropertyActionListener target="#{propertyValueController.current}"
+                                                 value="#{propertyValueObject}" />
+                </p:commandButton>
+                <h:inputText id="documentValue" value="#{propertyValueObject.value}"/>
+                <p:tooltip for="documentValue" value="Upload new document using upload action button."/>  
+
+            </p:outputPanel>
+
+            <p:selectBooleanCheckbox id="booleanValue" value="#{propertyValueObject.booleanValue}"
+                                     styleClass="dataTableCheckbox"
+                                     rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}"/>
+            <p:tooltip for="booleanValue" value="Use checkbox to set property value to true."/>           
+
+            <p:calendar id="dateValue" value="#{propertyValueObject.dateValue}"
+                        rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
+            <p:tooltip for="dateValue" value="Use calendar to set date."/>
         </p:outputPanel>
 
-        <p:selectBooleanCheckbox id="booleanValue" value="#{propertyValueObject.booleanValue}"
-                                 styleClass="dataTableCheckbox"
-                                 rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}"/>
-        <p:tooltip for="booleanValue" value="Use checkbox to set property value to true."/>           
-
-        <p:calendar id="dateValue" value="#{propertyValueObject.dateValue}"
-                    rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
-        <p:tooltip for="dateValue" value="Use calendar to set date."/>
-    </p:outputPanel>
-
-    <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) != null}"
-                   styleClass="inlineOutputPanel">
-        <ui:include src="../../plugins/private/propertyEditObjectValues.xhtml" />
+        <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) != null}"
+                       styleClass="inlineOutputPanel">
+            <ui:include src="../../plugins/private/propertyEditObjectValues.xhtml" />
+        </p:outputPanel>
     </p:outputPanel>
 
 </ui:composition>

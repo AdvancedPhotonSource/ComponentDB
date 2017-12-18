@@ -19,7 +19,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
@@ -374,11 +373,6 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
     public boolean getEntityDisplayItemMemberships() {
         return true;
     } 
-
-    @Override
-    public Boolean getDisplayPropertyMetadata(PropertyValue propertyValue) {
-        return false; 
-    }
 
     @Override
     public String getStyleName() {

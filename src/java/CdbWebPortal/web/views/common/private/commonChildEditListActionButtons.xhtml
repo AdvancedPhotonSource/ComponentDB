@@ -12,6 +12,9 @@ See LICENSE file.
     <ui:param name="executeOnlyAddButtonOnComplete" value="#{addActionController == null}" />    
     <ui:param name="childEntityListDataTableId" value="#{childEntityTypeName}EditListDataTable" />
     
+    <ui:param name="customizableListDataTable" value="#{customizableListDataTable != null 
+                                                        ? customizableListDataTable : true}" />
+    
     <div class="actionButton">
         <p:commandButton id="#{childEntityTypeName}EditListAddButtonOnlyOnComplete"
                          rendered="#{executeOnlyAddButtonOnComplete and displayAddButton}"
@@ -37,7 +40,13 @@ See LICENSE file.
        
         <ui:include src="reusedParts/childListExportButtons.xhtml" />
        
-        <p:commandButton id="#{childEntityTypeName}EditListCustomizeDisplayButton" oncomplete="PF('#{childEntityTypeName}EditListCustomizeDisplayDialogWidget').show()" alt="Customize Edit List" styleClass="actionButtonRight" update="@form" icon="fa fa-wrench">
+        <p:commandButton id="#{childEntityTypeName}EditListCustomizeDisplayButton" 
+                         oncomplete="PF('#{childEntityTypeName}EditListCustomizeDisplayDialogWidget').show()" 
+                         alt="Customize Edit List" 
+                         styleClass="actionButtonRight" 
+                         update="@form" 
+                         rendered="#{customizableListDataTable}"
+                         icon="fa fa-wrench">
             <p:tooltip for="#{childEntityTypeName}EditListCustomizeDisplayButton" value="Customize view."/>
         </p:commandButton>
         <p:commandButton id="#{childEntityTypeName}EditListResetFiltersButton" action="#{childEntityController.resetListForEdit}" alt="Clear Filters" icon="fa fa-refresh" styleClass="actionButtonRight">

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="travelerBinderAddDialog" 
+              widgetVar="travelerBinderAddDialogWidget" 
+              header="Create Traveler Binder" 
+              resizable="false"
+              styleClass="viewTransparentBackgroundDialog">
+
+        <ui:param name="binder"
+                  value="#{itemTravelerDomainInventoryController.newBinder}" />
+
+        <p:outputPanel rendered="#{binder != null}">
+            <h3>Binder Details</h3>
+            <p:panelGrid columns="2" styleClass="centeredContent">
+
+                <h:outputLabel value="Title"/>
+                <h:inputText value="#{binder.title}"/>
+
+                <h:outputLabel value="Descriptions"/>
+                <h:inputText value="#{binder.description}" />
+
+            </p:panelGrid>
+            <h3>Travelers For Binder</h3>
+            <p:panelGrid columns="2" styleClass="centeredContent">
+                <h:outputText value="Select Traveler Templates" />
+                <p:dataTable id="travelerBinderTemplateSelectionListDataTable"
+                             value="#{itemTravelerDomainInventoryController.availableTemplates}"
+                             selection="#{itemTravelerDomainInventoryController.newBinderTemplateSelection}"
+                             rowKey="#{travelerTemplateObject.id}"
+                             var="travelerTemplateObject">
+                    <p:ajax event="rowSelect"
+                            update="travelerBinderTemplateSelectionListDataTable" />
+                    <p:ajax event="rowUnselect"
+                            update="travelerBinderTemplateSelectionListDataTable" />
+                    <p:ajax event="rowSelectCheckbox"
+                            update="travelerBinderTemplateSelectionListDataTable" />
+                    <p:ajax event="toggleSelect"
+                            update="travelerBinderTemplateSelectionListDataTable"/>
+                    <p:ajax event="rowUnselectCheckbox"
+                            update="travelerBinderTemplateSelectionListDataTable"/>
+
+                    <p:column selectionMode="multiple"/>
+
+                    <p:column sortBy="#{travelerTemplateObject.title}"
+                              headerText="Template Title" >
+                        <h:outputText value="#{travelerTemplateObject.title}" />
+                    </p:column>
+                    <p:column headerText="New Traveler Instance Title">
+                        <ui:param name="selectedTemplateObject"
+                                  value="#{itemTravelerDomainInventoryController.isSelectedNewBinderTemplate(travelerTemplateObject)}" />
+
+                        <p:outputPanel rendered="#{selectedTemplateObject}">
+                            <h:inputText value="#{travelerTemplateObject.travelerInstanceName}"/>
+                        </p:outputPanel>
+                        <p:outputPanel rendered="#{!selectedTemplateObject}">
+                            Please select the traveler template to specify title.
+                        </p:outputPanel>
+                    </p:column>
+                </p:dataTable>
+
+            </p:panelGrid>
+        </p:outputPanel>                
+
+        <f:facet name="footer">
+            <p:commandButton value="Create Binder"
+                             icon="fa fa-floppy-o"
+                             action="#{itemTravelerDomainInventoryController.createBinder()}"/>
+            
+            <p:commandButton value="Close"
+                             icon="fa fa-close"
+                             onclick="PF('travelerBinderAddDialogWidget').hide()"/>                             
+        </f:facet>
+    </p:dialog>
+
+
+
+</ui:composition>
+

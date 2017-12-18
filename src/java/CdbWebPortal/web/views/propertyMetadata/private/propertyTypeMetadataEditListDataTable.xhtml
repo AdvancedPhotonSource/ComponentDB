@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dataTable id="propertyTypeMetadataEditListDataTable"
+                 value="#{propertyTypeObject.propertyTypeMetadataList}"
+                 var="propertyTypeMetadataObject">
+        
+        <p:column exportable="false">
+            <p:rowToggler />
+        </p:column>
+        
+        <p:rowExpansion>
+            <p:panel header="Allowed Values"
+                     toggleable="true">
+                <ui:include src="allowedPropertyTypeMetadataValueEditList.xhtml" />
+            </p:panel> 
+        </p:rowExpansion>
+        
+        <p:column headerText="Key">
+            <h:inputText value="#{propertyTypeMetadataObject.metadataKey}" />            
+        </p:column>
+        <p:column headerText="Description">
+            <h:inputText value="#{propertyTypeMetadataObject.description}" />            
+        </p:column>
+
+        <p:column headerText="Actions">
+            <p:commandLink id="PropertyTypeMetadataDestroyButton" 
+                           styleClass="ui-icon ui-icon-trash" title="Delete" 
+                           update="propertyTypeMetadataEditListDataTable"
+                           immediate="true"
+                           onclick="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide()"
+                           action="#{propertyTypeController.removePropertyTypeMetadataForCurrent(propertyTypeMetadataObject)}">
+                <p:tooltip for="PropertyTypeMetadataDestroyButton" value="Delete Property Metadata entry."/>
+            </p:commandLink>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>
+

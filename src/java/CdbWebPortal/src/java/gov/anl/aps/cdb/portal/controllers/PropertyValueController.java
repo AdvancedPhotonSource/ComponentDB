@@ -7,8 +7,11 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.controllers.settings.PropertyValueSettings;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue.PropertyValueMetadata; 
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
@@ -33,7 +36,12 @@ import org.primefaces.model.StreamedContent;
 public class PropertyValueController extends CdbEntityController<PropertyValue, PropertyValueFacade, PropertyValueSettings> implements Serializable {   
     
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade propertyValueFacade;
+    private PropertyValueFacade propertyValueFacade;
+    
+    @EJB
+    private PropertyMetadataFacade propertyMetadataFacade; 
+    
+    private PropertyValueMetadata currentPropertyMetadata; 
 
     private static final Logger logger = Logger.getLogger(PropertyValueController.class.getName());
 
@@ -219,6 +227,25 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     @Override
     protected PropertyValueSettings createNewSettingObject() {
         return new PropertyValueSettings(this);
+    }
+
+    public PropertyValueMetadata getCurrentPropertyMetadata() {
+        return currentPropertyMetadata;
+    }
+
+    public void setCurrentPropertyMetadata(PropertyValueMetadata currentPropertyMetadata) {
+        this.currentPropertyMetadata = currentPropertyMetadata;
+    }
+    
+    public void removeCurrentPropertyMetadata() {
+        PropertyMetadata propertyMetadata = currentPropertyMetadata.getPropertyMetadata();
+        if (propertyMetadata.getId() != null) {
+            propertyMetadataFacade.remove(currentPropertyMetadata.getPropertyMetadata());
+            SessionUtility.addInfoMessage("Removed", "Property metadata has been removed.");
+        }
+        
+        PropertyValue propertyValue = currentPropertyMetadata.getPropertyValue();
+        propertyValue.removePropertyMetadataKey(currentPropertyMetadata);
     }
 
     /**

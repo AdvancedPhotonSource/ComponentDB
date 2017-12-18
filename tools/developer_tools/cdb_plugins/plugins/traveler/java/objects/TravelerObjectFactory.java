@@ -31,7 +31,7 @@ public class TravelerObjectFactory {
      * @return generated object
      */
     public static <T extends Object> T createObject(String jsonString, Class<T> objectClass) {
-        logger.debug("Converting JSON string to object " + objectClass + ": " + jsonString);
+        logger.debug("Converting JSON string to object " + objectClass);
         T object = gson.fromJson(jsonString, objectClass);
         return object;
     }
@@ -46,7 +46,7 @@ public class TravelerObjectFactory {
      * @throws CdbException in case of any errors
      */
     public static <T extends CdbObject> T createTravelerObject(String jsonString, Class<T> cdbClass) throws CdbException {
-        logger.debug("Converting JSON string to CDB object " + cdbClass + ": " + jsonString);
+        logger.debug("Converting JSON string to Traveler object " + cdbClass);
         T cdbObject = gson.fromJson(jsonString, cdbClass);
         cdbObject.decode();
         return cdbObject;
