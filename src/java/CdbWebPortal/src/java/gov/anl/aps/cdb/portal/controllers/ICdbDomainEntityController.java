@@ -47,6 +47,14 @@ public interface ICdbDomainEntityController<DomainEntity extends CdbDomainEntity
     public void setCurrentEditPropertyValue(PropertyValue currentEditPropertyValue);
     
     /**
+     * True when property metadata should be shown for the entity for a certain property value. 
+     * 
+     * @param propertyValue
+     * @return 
+     */
+    public Boolean getDisplayPropertyMetadata(PropertyValue propertyValue);
+    
+    /**
      * Save the list of properties for current item.
      */
     public void savePropertyList();

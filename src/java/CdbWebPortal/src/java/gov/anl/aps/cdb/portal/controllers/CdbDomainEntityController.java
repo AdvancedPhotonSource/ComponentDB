@@ -135,7 +135,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         return cdbDomainEntityImageList;
     }
     
-    public Boolean getDisplayPropertyMetadata(PropertyValue propertyValue) {        
+    public Boolean getDisplayPropertyMetadata(PropertyValue propertyValue) {
         // Maybe future property types will have internal property metadata. 
         // Temporarly done for disabling the metadata for specific entitiees. 
         return true; 
