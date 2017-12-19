@@ -10,6 +10,13 @@ See LICENSE file.
 
     <ui:param name="entityController" value="#{itemMultiEditDomainInventoryController}" />
     
+    <ui:define name="pluginOptionsAccordionPanelTabs">
+        <ui:include src="private/itemDomainInventoryMultiEditPluginConfigurationTab.xhtml" />
+    </ui:define>
+    
+    <ui:define name="pluginOptionsEditableListObject">
+        <ui:include src="private/itemDomainInventoryMultiEditPluginEditListObject.xhtml" />
+    </ui:define>
     
 </ui:composition>
 

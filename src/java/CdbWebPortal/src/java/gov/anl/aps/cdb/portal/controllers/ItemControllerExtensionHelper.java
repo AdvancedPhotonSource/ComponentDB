@@ -505,6 +505,11 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     @Override
     public String getEntityApplicationViewPath() {
         return getItemController().getEntityApplicationViewPath(); 
+    } 
+  
+    @Override
+    public Boolean getDisplayPropertyMetadata(PropertyValue propertyValue) {
+        return getItemController().getDisplayPropertyMetadata(propertyValue); 
     }
 
 }
