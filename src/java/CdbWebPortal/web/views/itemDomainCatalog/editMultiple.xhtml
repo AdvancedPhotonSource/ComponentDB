@@ -11,11 +11,15 @@ See LICENSE file.
     <ui:param name="entityController" value="#{itemMultiEditDomainCatalogController}" />
        
     <ui:define name="pluginOptionsAccordionPanelTabs">
-        <ui:include src="private/itemDomainCatalogMultiEditPluginConfigurationTab.xhtml" />
+        <ui:include src="../plugins/private/catalogMultiEditConfigurationTabs.xhtml" />
     </ui:define>
     
     <ui:define name="pluginOptionsEditableListObject">
-        <ui:include src="private/itemDomainCatalogMultiEditPluginEditListObject.xhtml" />
+        <ui:include src="../plugins/private/catalogMultiEditEditableListObject.xhtml" />
+    </ui:define>
+    
+    <ui:define name="pluginEditableListSupport">
+        <ui:include src="../plugins/private/catalogMultiEditEditableListSupport.xhtml" />
     </ui:define>
     
 </ui:composition>
