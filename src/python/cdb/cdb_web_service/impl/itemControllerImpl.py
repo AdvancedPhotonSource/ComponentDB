@@ -35,6 +35,27 @@ class ItemControllerImpl(CdbObjectManager):
     def getItemByQrId(self, itemQrId):
         return self.itemDbApi.getItemByQrId(itemQrId)
 
+    def getFirstItemRelationship(self, itemId, relationshipTypeName):
+        selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
+        selfElementId = selfElement.data['id']
+
+        return self.itemDbApi.getFirstItemElementRelationshipList(relationshipTypeName, selfElementId)
+
+    def addItemElementRelationship(self, firstItemId, secondItemId, relationshipTypeName, enteredByUserId,
+                                   relationshipDetails=None, description=None):
+        firstSelfElement = self.itemDbApi.getSelfElementByItemId(firstItemId)
+        firstSelfElementId = firstSelfElement.data['id']
+        secondSelfElement = self.itemDbApi.getSelfElementByItemId(secondItemId)
+        secondSelfElementId = secondSelfElement.data['id']
+
+        return self.itemDbApi.addValidItemElementRelationship(firstSelfElementId,
+                                                              secondSelfElementId,
+                                                              relationshipTypeName,
+                                                              enteredByUserId,
+                                                              relationshipDetails,
+                                                              description)
+
+
     def getItemByUniqueAttributes(self, domainName, itemName, itemIdentifier1=None, itemIdentifier2=None, derivedFromItemId=None):
         domain = self.itemDbApi.getDomainByName(domainName)
         return self.itemDbApi.getItemByUniqueAttributes(domain.data['id'], itemName, itemIdentifier1, itemIdentifier2, derivedFromItemId)

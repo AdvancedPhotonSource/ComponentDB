@@ -19,6 +19,8 @@ from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 
 class RelationshipTypeHandler(CdbDbEntityHandler):
 
+    LOCATION_RELATIONSHIP_TYPE_NAME = "Location"
+
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
 

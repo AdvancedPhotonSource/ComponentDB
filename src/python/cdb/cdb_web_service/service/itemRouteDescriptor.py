@@ -84,6 +84,24 @@ class ItemRouteDescriptor:
                 'method': ['GET']
             },
 
+            # Add a item element relationship between two items
+            {
+                'name': 'addItemRelationship',
+                'path': '%s/items/:(firstItemId)/:(secondItemId)/addItemElementRelationship/:(relationshipTypeName)' % contextRoot,
+                'controller': itemSessionController,
+                'action': 'addItemElementRelationship',
+                'method': ['POST']
+            },
+
+            # Get item element relationship list for first item
+            {
+                'name': 'getFirstItemRelationships',
+                'path': '%s/items/:(itemId)/firstItemElementRelationships/:(relationshipTypeName)' % contextRoot,
+                'controller': itemController,
+                'action': 'getFirstItemRelationship',
+                'method': ['GET']
+            },
+
             # Get properties for a particular item
             {
                 'name': 'getPropertiesForItemByItemId',

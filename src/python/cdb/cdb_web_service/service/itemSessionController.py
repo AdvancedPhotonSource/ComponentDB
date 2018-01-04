@@ -44,6 +44,39 @@ class ItemSessionController(CdbSessionController):
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
     @CdbSessionController.execute
+    def addItemElementRelationship(self, firstItemId, secondItemId, relationshipTypeName, relationshipDetails=None, description=None):
+        if not firstItemId:
+            raise InvalidRequest("Invalid first item id provided")
+        if not secondItemId:
+            raise InvalidRequest("Invalid second item id provided")
+        if not relationshipTypeName:
+            raise InvalidRequest("Invalid relationship type name provided")
+
+        relationshipTypeName = Encoder.decode(relationshipTypeName)
+
+        if relationshipDetails is not None:
+            relationshipDetails = Encoder.decode(relationshipDetails)
+        if description is not None:
+            description = Encoder.decode(description)
+
+        sessionUser = self.getSessionUser()
+        enteredByUserId = sessionUser.get('id')
+
+        itemElementRelationship = self.itemControllerImpl.addItemElementRelationship(firstItemId, secondItemId,
+                                                                                     relationshipTypeName,
+                                                                                     enteredByUserId,
+                                                                                     relationshipDetails, description)
+
+        response = itemElementRelationship.getFullJsonRep()
+
+        self.logger.debug("Returning item element relationship between item: %s and item: %s of type: %s : %s" %
+                          (firstItemId, secondItemId, relationshipTypeName, response))
+
+        return response
+
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
     def addPropertyValueToItemByItemId(self, itemId, propertyTypeName, tag=None, value=None, units=None, description=None,
                                       isUserWriteable=None, isDynamic=None):
         if not itemId:

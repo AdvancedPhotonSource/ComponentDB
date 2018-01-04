@@ -11,6 +11,7 @@ from cdb.common.objects.log import Log
 from cdb.common.objects.item import Item
 from cdb.common.objects.itemElement import ItemElement
 from cdb.common.objects.propertyValue import PropertyValue
+from cdb.common.objects.itemElementRelationship import ItemElementRelationship
 from cdb.common.api.cdbRestApi import CdbRestApi
 
 
@@ -265,6 +266,45 @@ class ItemRestApi(CdbRestApi):
         responseData = self.sendSessionRequest(url, method='POST')
 
         return Item(responseData)
+
+    def addItemRelationship(self, firstItemId, secondItemId, relationshipTypeName,
+                            relationshipDetails=None, description=None):
+        if firstItemId is None:
+            raise InvalidRequest("first item id must be provided")
+        if secondItemId is None:
+            raise InvalidRequest("second item id must be provided")
+        if relationshipTypeName is None or not len(relationshipTypeName):
+            raise InvalidRequest("relationship type name must be provided")
+
+        relationshipTypeName = Encoder.encode(relationshipTypeName)
+
+        url = "%s/items/%s/%s/addItemElementRelationship/%s" \
+              % (self.getContextRoot(), firstItemId, secondItemId, relationshipTypeName)
+
+        if relationshipDetails is not None:
+            relationshipDetails = Encoder.encode(relationshipDetails)
+            url = self._appendUrlParameter(url, "relationshipDetails", relationshipDetails)
+
+        if description is not None:
+            description = Encoder.encode(description)
+            url = self._appendUrlParameter(url, "description", description)
+
+        responseData = self.sendSessionRequest(url=url, method='POST')
+        return ItemElementRelationship(responseData)
+
+    def getFirstItemRelationshipList(self, itemId, relationshipTypeName):
+        if itemId is None:
+            raise InvalidRequest("item id must be provided")
+        if relationshipTypeName is None or not len(relationshipTypeName):
+            raise InvalidRequest("relationship type name must be provided")
+
+        relationshipTypeName = Encoder.encode(relationshipTypeName)
+
+        url = "%s/items/%s/firstItemElementRelationships/%s" % (self.getContextRoot(), itemId, relationshipTypeName)
+
+        responseData = self.sendRequest(url=url, method="GET")
+        return self.toCdbObjectList(responseData, ItemElementRelationship)
+
 
     def addItemElement(self, itemElementName, parentItemId, containedItemId = -1, description=None,
                        ownerUserId=None, ownerGroupId=None, isRequired=-1, isGroupWriteable=None):
