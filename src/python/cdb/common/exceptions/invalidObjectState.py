@@ -17,6 +17,6 @@ from cdb.common.exceptions.cdbException import CdbException
 
 #######################################################################
 
-class ObjectNotFound(CdbException):
+class InvalidObjectState(CdbException):
     def __init__ (self, error='', **kwargs):
         CdbException.__init__(self, error, cdbStatus.CDB_INVALID_OBJECT_STATE, **kwargs)
