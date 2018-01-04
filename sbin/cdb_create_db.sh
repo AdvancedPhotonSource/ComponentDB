@@ -191,6 +191,8 @@ STATIC_CDB_DB_TABLES="\
     domain \
     entity_type \
     allowed_entity_type_domain \
+    relationship_type_handler \
+    relationship_type \
 "
 
 executePopulateScripts "$STATIC_CDB_DB_TABLES"
@@ -236,8 +238,6 @@ CDB_DB_TABLES="\
     connector \
     item_connector \
     item_resource \
-    relationship_type_handler \
-    relationship_type \
     item_element_relationship \
     item_element_relationship_history \
     property_type_handler \

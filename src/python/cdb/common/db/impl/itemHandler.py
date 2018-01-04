@@ -551,22 +551,33 @@ class ItemHandler(CdbDbEntityHandler):
         relationshipType = self.relationshipTypeHandler.getRelationshipTypeByName(session, relationshipTypeName)
         relationshipTypeName = relationshipType.name
 
+        firstItemElement = self.getItemElementById(session, firstItemElementId)
+        secondItemElement = self.getItemElementById(session, secondItemElementId)
+
+        firstDomainName = firstItemElement.parentItem.domain.name
+        secondDomainName = secondItemElement.parentItem.domain.name
+
+        ierList = self.getItemElementRelationshipListByRelationshipTypeNameAndFirstItemElementId(session,
+                                                                                                 relationshipTypeName,
+                                                                                                 firstItemElementId)
+
         if relationshipTypeName == self.relationshipTypeHandler.LOCATION_RELATIONSHIP_TYPE_NAME:
-            firstItemElement = self.getItemElementById(session, firstItemElementId)
-            secondItemElement = self.getItemElementById(session, secondItemElementId)
-
-            firstDomainName = firstItemElement.parentItem.domain.name
-            secondDomainName = secondItemElement.parentItem.domain.name
-
             if firstDomainName == self.domainHandler.INVENTORY_DOMAIN_NAME and secondDomainName == self.domainHandler.LOCATION_DOMAIN_NAME:
-                ierList = self.getItemElementRelationshipListByRelationshipTypeNameAndFirstItemElementId(session, relationshipTypeName, firstItemElementId)
-
                 if ierList.__len__() > 0:
                     raise InvalidObjectState("Updating a location is currently not supported.")
                 else:
                     mayAdd = True
             else:
                 raise InvalidArgument("First item element should be inventory and second location. Invalid item element ids provided.")
+        elif relationshipTypeName == self.relationshipTypeHandler.MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME:
+            if firstDomainName == self.domainHandler.INVENTORY_DOMAIN_NAME and secondDomainName == self.domainHandler.MAARC_DOMAIN_NAME:
+                # Check for duplicates
+                for itemElementRelationship in ierList:
+                    if itemElementRelationship.first_item_element_id == firstItemElementId and itemElementRelationship.second_item_element_id == secondItemElementId:
+                        raise InvalidObjectState("The maarc connection relationship between the specified item elements already exists")
+                mayAdd = True
+            else:
+                raise InvalidArgument("First item element should be inventory and second maarc. Invalid item element ids provided.")
         else:
             raise InvalidArgument("Unsupported relationship type name has been specified: %s." % relationshipTypeName)
 
