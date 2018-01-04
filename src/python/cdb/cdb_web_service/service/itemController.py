@@ -60,6 +60,26 @@ class ItemController(CdbController):
         self.logger.debug('Returning item info for item in domain %s with name %s: %s' % (domainName, itemName, response))
         return response
 
+    @cherrypy.expose
+    @CdbController.execute
+    def getFirstItemRelationship(self, itemId, relationshipTypeName):
+        if not itemId:
+            raise InvalidRequest("Invalid item id provided")
+        if not relationshipTypeName:
+            raise InvalidRequest("Invalid relationship type name provided")
+
+        relationshipTypeName = Encoder.decode(relationshipTypeName)
+
+        itemElementRelationshipList = self.itemControllerImpl.getFirstItemRelationship(itemId, relationshipTypeName)
+
+        response = self.listToJson(itemElementRelationshipList)
+        self.logger.debug('Returning item element relationship list of type: %s for item: %s : %s' % (relationshipTypeName,
+                                                                                                      itemId,
+                                                                                                      response))
+
+        return response
+
+
     def getParentItems(self, itemId):
         if not itemId:
             raise InvalidRequest("Invalid item id provided")

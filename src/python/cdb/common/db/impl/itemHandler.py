@@ -4,7 +4,8 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
-from cdb.common.exceptions.invalidSession import InvalidSession
+
+from datetime import datetime
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import OperationalError
 
@@ -14,6 +15,7 @@ from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
 from cdb.common.exceptions.invalidArgument import InvalidArgument
 from cdb.common.exceptions.dbError import DbError
+from cdb.common.exceptions.invalidObjectState import InvalidObjectState
 from cdb.common.db.impl.entityInfoHandler import EntityInfoHandler
 from cdb.common.db.impl.entityTypeHandler import EntityTypeHandler
 from cdb.common.db.entities.item import Item
@@ -32,6 +34,7 @@ from cdb.common.db.entities.itemElementRelationship import ItemElementRelationsh
 from cdb.common.db.entities.itemConnector import ItemConnector
 from cdb.common.db.entities.itemElementLog import ItemElementLog
 from cdb.common.db.entities.itemElementRelationshipHistory import ItemElementRelationshipHistory
+from cdb.common.db.entities.relationshipType import RelationshipType
 from cdb.common.db.impl.cdbDbEntityHandler import CdbDbEntityHandler
 from cdb.common.db.impl.domainHandler import DomainHandler
 from cdb.common.db.impl.sourceHandler import SourceHandler
@@ -179,6 +182,15 @@ class ItemHandler(CdbDbEntityHandler):
 
     def getItemElementRelationshipById(self, session, id):
         return self._findDbObjById(session, ItemElementRelationship, id)
+
+    def getItemElementRelationshipListByRelationshipTypeNameAndFirstItemElementId(self, session, relationshipTypeName, firstItemElementId):
+        dbItemElementRelationshipList = session.query(ItemElementRelationship)\
+            .join(RelationshipType)\
+            .filter(ItemElementRelationship.first_item_element_id==firstItemElementId)\
+            .filter(RelationshipType.name==relationshipTypeName).all()
+
+        return dbItemElementRelationshipList
+
 
     def getItemByUniqueAttributes(self, session, domainId, name, itemIdentifier1, itemIdentifier2, derivedFromItemId):
         entityDisplayName = self._getEntityDisplayName(Item)
@@ -525,6 +537,56 @@ class ItemHandler(CdbDbEntityHandler):
         self.logger.debug('Added property value (type: %s) for item element id %s' % (propertyTypeName, itemElementId))
         return dbItemElementProperty
 
+    def addValidItemElementRelationship(self, session, firstItemElementId, secondItemElementId, relationshipTypeName,
+                                        enteredByUserId, relationshipDetails=None, description=None):
+        # defaults
+        firstItemConnectorId = None
+        secondItemConnectorId = None
+        linkItemElementId = None
+        resourceTypeName = None
+        label = None
+
+        mayAdd = False
+
+        relationshipType = self.relationshipTypeHandler.getRelationshipTypeByName(session, relationshipTypeName)
+        relationshipTypeName = relationshipType.name
+
+        if relationshipTypeName == self.relationshipTypeHandler.LOCATION_RELATIONSHIP_TYPE_NAME:
+            firstItemElement = self.getItemElementById(session, firstItemElementId)
+            secondItemElement = self.getItemElementById(session, secondItemElementId)
+
+            firstDomainName = firstItemElement.parentItem.domain.name
+            secondDomainName = secondItemElement.parentItem.domain.name
+
+            if firstDomainName == self.domainHandler.INVENTORY_DOMAIN_NAME and secondDomainName == self.domainHandler.LOCATION_DOMAIN_NAME:
+                ierList = self.getItemElementRelationshipListByRelationshipTypeNameAndFirstItemElementId(session, relationshipTypeName, firstItemElementId)
+
+                if ierList.__len__() > 0:
+                    raise InvalidObjectState("Updating a location is currently not supported.")
+                else:
+                    mayAdd = True
+            else:
+                raise InvalidArgument("First item element should be inventory and second location. Invalid item element ids provided.")
+        else:
+            raise InvalidArgument("Unsupported relationship type name has been specified: %s." % relationshipTypeName)
+
+        if mayAdd:
+            dbItemElementRelationship = self.addItemElementRelationship(session, firstItemElementId,
+                                                                        secondItemElementId,
+                                                                        firstItemConnectorId,
+                                                                        secondItemConnectorId, linkItemElementId,
+                                                                        relationshipTypeName,
+                                                                        relationshipDetails, resourceTypeName, label,
+                                                                        description)
+            # Add initial history item
+            self.addItemElementRelationshipHistory(session, dbItemElementRelationship.id, firstItemElementId,
+                                                   secondItemElementId, firstItemConnectorId,
+                                                   secondItemConnectorId, linkItemElementId, relationshipDetails,
+                                                   resourceTypeName, label, description, enteredByUserId)
+
+            return dbItemElementRelationship
+
+
     def addItemElementRelationship(self, session, firstItemElementId, secondItemElementId, firstItemConnectorId, secondItemConnectorId,
                                    linkItemElementId, relationshipTypeName, relationshipDetails, resourceTypeName, label, description ):
         if firstItemElementId is None:
@@ -563,7 +625,10 @@ class ItemHandler(CdbDbEntityHandler):
         return dbItemElementRelationship
 
     def addItemElementRelationshipHistory(self, session, itemRelationshipId, firstItemElementId, secondItemElementId, firstItemConnectorId, secondItemConnectorId,
-                                   linkItemElementId, relationshipDetails, resourceTypeName, label, description, enteredByUserId, enteredOnDateTime ):
+                                   linkItemElementId, relationshipDetails, resourceTypeName, label, description, enteredByUserId, enteredOnDateTime=None):
+        if enteredOnDateTime is None:
+            enteredOnDateTime = datetime.now()
+
         firstItemElement = self.getItemElementById(session, firstItemElementId)
         secondItemElement = self.getItemElementById(session, secondItemElementId)
         dbItemElementRelationship = self.getItemElementRelationshipById(session, itemRelationshipId)

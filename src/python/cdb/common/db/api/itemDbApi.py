@@ -206,7 +206,7 @@ class ItemDbApi(CdbDbApi):
         session = kwargs['session']
         dbRelationshipType = self.relationshipTypeHandler.getRelationshipTypeByName(session, name)
         return dbRelationshipType.getCdbObject()
-    
+
     @CdbDbApi.executeTransaction
     def addItem(self, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
                 itemIdentifier1 = None, itemIdentifier2 = None, qrId = None, description = None,
@@ -407,7 +407,7 @@ class ItemDbApi(CdbDbApi):
         session = kwargs['session']
         dbItemSource = self.itemHandler.addItemSource(session, itemId, sourceName, partNumber, cost, description, isVendor, isManufacturer, contactInfo, url)
         return dbItemSource.getCdbObject()
-    
+
     @CdbDbApi.executeTransaction
     def addItemCategory(self, name, description, domainName, **kwargs):
         """
@@ -467,7 +467,7 @@ class ItemDbApi(CdbDbApi):
         session = kwargs['session']
         dbItemCategory = self.itemHandler.addItemItemProject(session, itemId, itemProjectName)
         return dbItemCategory.getCdbObject()
-    
+
     @CdbDbApi.executeTransaction
     def addItemType(self, name, description, domainName, **kwargs):
         """
@@ -525,7 +525,7 @@ class ItemDbApi(CdbDbApi):
         session = kwargs['session']
         dbItemType = self.itemHandler.addItemItemCategory(session, itemId, categoryName)
         return dbItemType.getCdbObject()
-    
+
     @CdbDbApi.executeTransaction
     def addItemItemType(self, itemId, typeName, **kwargs):
         """
@@ -603,11 +603,53 @@ class ItemDbApi(CdbDbApi):
         dbItemElement = self.itemHandler.getSelfElementByItemId(session, itemId)
         return dbItemElement.getCdbObject()
 
+    @CdbDbApi.executeQuery
+    def getFirstItemElementRelationshipList(self, relationshipTypeName, itemElementId, **kwargs):
+        """
+        Fetches a list of relationships for item element listed as first_item_element in the relationship table.
+
+        :param relationshipTypeName:
+        :param itemElementId:
+        :return:
+        """
+        session = kwargs['session']
+
+        dbItemElementRelationshipList = self.itemHandler.getItemElementRelationshipListByRelationshipTypeNameAndFirstItemElementId(session,
+                                                                                                                                   relationshipTypeName,
+                                                                                                                                   itemElementId)
+        return self.toCdbObjectList(dbItemElementRelationshipList)
+
+
+    @CdbDbApi.executeTransaction
+    def addValidItemElementRelationship(self, firstItemElementId, secondItemElementId, relationshipTypeName,
+                                        enteredByUserId, relationshipDetails=None, description=None, **kwargs):
+        """
+        Add a simple item element relationship with checks. (To be used from the web service)
+
+        :param firstItemElementId:
+        :param secondItemElementId:
+        :param relationshipTypeName:
+        :param description:
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+
+        dbItemElementRelationship = self.itemHandler.addValidItemElementRelationship(session,
+                                                                                     firstItemElementId,
+                                                                                     secondItemElementId,
+                                                                                     relationshipTypeName,
+                                                                                     enteredByUserId,
+                                                                                     relationshipDetails,
+                                                                                     description)
+
+        return dbItemElementRelationship.toCdbObject()
+
     @CdbDbApi.executeTransaction
     def addItemElementRelationship(self, firstItemElementId, secondItemElementId, firstItemConnectorId, secondItemConnectorId,
                                    linkItemElementId, relationshipTypeName, relationshipDetails, resourceTypeName, label, description, **kwargs):
         """
-        Add an item element relationship.
+        Add an item element relationship. Unrestricted to be used only by the developer.
 
         :param firstItemElementId:
         :param secondItemElementId:
