@@ -14,6 +14,10 @@ from cdb.common.db.impl.entityTypeHandler import EntityTypeHandler
 
 class DomainHandler(CdbDbEntityHandler):
 
+    CATALOG_DOMAIN_NAME = "Catalog"
+    INVENTORY_DOMAIN_NAME = "Inventory"
+    LOCATION_DOMAIN_NAME = "Location"
+
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
         self.entityTypeHandler = EntityTypeHandler()
