@@ -574,7 +574,7 @@ class ItemHandler(CdbDbEntityHandler):
                 # Check for duplicates
                 for itemElementRelationship in ierList:
                     if itemElementRelationship.first_item_element_id == firstItemElementId and itemElementRelationship.second_item_element_id == secondItemElementId:
-                        raise InvalidObjectState("The maarc connection relationship between the specified item elements already exists")
+                        raise ObjectAlreadyExists("The maarc connection relationship between the specified item elements already exists")
                 mayAdd = True
             else:
                 raise InvalidArgument("First item element should be inventory and second maarc. Invalid item element ids provided.")
