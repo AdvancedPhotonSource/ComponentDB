@@ -38,6 +38,14 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     }
     
     /**
+     * Subscribe to itemMultiEditExtensionController (subscribeResetVariablesForMultiEdit) and override method to reset appropriate variables. 
+     */
+    public void resetExtensionVariablesForMultiEdit() {
+        
+    }
+    
+    
+    /**
      * Subscribe to cdbEntityController (subscribePrepareInsertForCurrent) and override the method to reset appropriate variables. 
      */
     public void prepareInsertForCurrent() {

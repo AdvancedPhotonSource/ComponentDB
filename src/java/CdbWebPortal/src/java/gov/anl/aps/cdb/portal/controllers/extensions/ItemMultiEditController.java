@@ -24,9 +24,11 @@ import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -101,6 +103,13 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     protected boolean isInputValueDialogOpen; 
     
     protected boolean renderMultiCreateConfigurationDialog = false;     
+    
+    private Set<ItemControllerExtensionHelper> subscribedResetForMultiEditControllerHelpers;
+    
+    public ItemMultiEditController() {
+        super();
+        subscribedResetForMultiEditControllerHelpers = new HashSet<>(); 
+    }
 
     protected enum MultipleEditMenu {
         selection("Selection"),
@@ -376,7 +385,15 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         storedPropertyValueBeforeSingleEditInformation = null;
         newItemAssignDefaultProject = null;
         isInputValueDialogOpen = false; 
-        renderMultiCreateConfigurationDialog = false; 
+        renderMultiCreateConfigurationDialog = false;         
+        
+        for (ItemControllerExtensionHelper helper : subscribedResetForMultiEditControllerHelpers) {
+            helper.resetExtensionVariablesForMultiEdit(); 
+        }
+    }
+    
+    public void subscribeResetForMultiEdit(ItemControllerExtensionHelper helper) {
+        subscribedResetForMultiEditControllerHelpers.add(helper); 
     }
 
     public int getMinNewItemsToCreate() {
