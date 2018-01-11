@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
 import gov.anl.aps.cdb.portal.controllers.ICdbDomainEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -72,7 +73,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     private final String TRAVELER_WEB_APP_URL = TravelerPluginManager.getTravelerWebApplicationUrl();
     private final String TRAVELER_WEB_APP_TEMPLATE_PATH = TravelerPluginManager.getTravelerWebApplicationTemplatePath();
     private final String TRAVELER_WEB_APP_TRAVELER_PATH = TravelerPluginManager.getTravelerWebApplicationTravelerPath();
-    private final String TRAVELER_WEB_APP_BINDER_PATH = TravelerPluginManager.getTravelerWebApplicationBinderPath(); 
+    private final String TRAVELER_WEB_APP_BINDER_PATH = TravelerPluginManager.getTravelerWebApplicationBinderPath();
     private final String TRAVELER_WEB_APP_TRAVELER_CONFIG_PATH = TravelerPluginManager.getTravelerWebApplicationTravelerConfigPath();
 
     private List<Form> templatesForCurrent;
@@ -85,9 +86,16 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     private Binder newBinder;
     private List<Form> newBinderTemplateSelection;
 
+    // Multi-Edit 
+    private Map<String, List<Form>> multiEditTravelerTemplateListForItems;
+    protected Form multiEditSelectedTemplate;
+
     @PostConstruct
     public void init() {
         getItemController().subscribeResetVariablesForCurrent(this);
+        getItemController().getItemMultiEditController().subscribeResetForMultiEdit(this);
+        resetExtensionVariablesForCurrent();
+        resetExtensionVariablesForMultiEdit();
 
         String webServiceUrl = TravelerPluginManager.getTravelerWebServiceUrl();
         String username = TravelerPluginManager.getTravelerBasicAuthUsername();
@@ -154,6 +162,12 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         propertyValue = null;
         newBinder = null;
         newBinderTemplateSelection = null;
+    }
+
+    @Override
+    public void resetExtensionVariablesForMultiEdit() {
+        super.resetExtensionVariablesForMultiEdit();
+        multiEditTravelerTemplateListForItems = new HashMap<>();
     }
 
     public void addTravelerBinderToCurrent(String onSuccess) {
@@ -260,12 +274,19 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         }
     }
 
+    public void addTravelerTemplateToNewCurrentItem(Item currentItem) {
+        setCurrent(currentItem);
+        addTravelerTemplateToCurrent(null);
+    }
+
     public void addTravelerTemplateToCurrent(String onSuccess) {
         PropertyType travelerTemplatePropertyType = getTravelerTemplatePropertyType();
 
         if (travelerTemplatePropertyType != null) {
             propertyValue = getItemController().preparePropertyTypeValueAdd(travelerTemplatePropertyType);
-            RequestContext.getCurrentInstance().execute(onSuccess);
+            if (onSuccess != null) {
+                RequestContext.getCurrentInstance().execute(onSuccess);
+            }
         } else {
             SessionUtility.addErrorMessage("Traveler template property type not found ",
                     " Please contact your admin to add a property type with traveler template handler");
@@ -314,6 +335,39 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         }
         return null;
     }
+    
+    public void applyMultiEditSelectedTemplateToAllSelectedItems() {
+        ItemMultiEditController itemMultiEditController = getItemController().getItemMultiEditController();
+        List<Item> selectedItemsToEdit = itemMultiEditController.getSelectedItemsToEdit();
+        PropertyType travelerTemplatePropertyType = getTravelerTemplatePropertyType();
+        
+        for (Item item : selectedItemsToEdit) {
+            loadTemplatesFormMultiEditItem(item);
+            List<Form> templatesForMultiEditItem = getTemplatesForMultiEditItem(item);
+            if (checkSelectedTemplate(templatesForMultiEditItem, multiEditSelectedTemplate)) {
+                PropertyValue propValue = getItemController().preparePropertyTypeValueAdd(item, travelerTemplatePropertyType);
+                propValue.setValue(multiEditSelectedTemplate.getId());                
+            }                        
+        }
+    }
+
+    public void loadTemplatesFormMultiEditItem(Item item) {
+        List<Form> templateList = new ArrayList<>();
+
+        if (item.getPropertyValueInternalList() != null) {
+            loadPropertyTravelerTemplateList(item.getPropertyValueInternalList(), templateList);
+        }
+
+        multiEditTravelerTemplateListForItems.put(item.getViewUUID(), templateList);
+    }
+
+    public List<Form> getTemplatesForMultiEditItem(Item item) {
+        try {
+            return multiEditTravelerTemplateListForItems.get(item.getViewUUID());
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 
     public List<Form> getTemplatesForCurrent() {
         if (templatesForCurrent == null) {
@@ -338,7 +392,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         return travelersForCurrent;
     }
 
-    public void loadTravelerListForBinder(Binder binder) {        
+    public void loadTravelerListForBinder(Binder binder) {
         List<Traveler> travelerList = binder.getTravelerList();
         if (travelerList == null) {
             travelerList = new ArrayList<>();
@@ -393,13 +447,24 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * @return boolean that determines if function should execute.
      */
     private boolean checkSelectedTemplate(Form template) {
+        return checkSelectedTemplate(getTemplatesForCurrent(), template);         
+    }
+    
+    /**
+     * Checks for template and displays error message when null. Used to
+     * determine if a function should execute.
+     *
+     * @param templatesList list of templates to look through for the template
+     * @param template Template variable that needs to be checked.
+     * @return boolean that determines if function should execute.
+     */
+    private boolean checkSelectedTemplate(List<Form> templatesList, Form template) {
         if (template != null) {
             if (template.getId() != null) {
-                for (Form ittrTemplate : getTemplatesForCurrent()) {
+                for (Form ittrTemplate : templatesList) {
                     if (template.getId().equals(ittrTemplate.getId())) {
-                        SessionUtility.addWarningMessage("Template has already been added to current item"
-                                , "Selected traveler template is already a part of current item.");
-                        return false; 
+                        SessionUtility.addWarningMessage("Template has already been added to current item", "Selected traveler template is already a part of current item.");
+                        return false;
                     }
                 }
             }
@@ -409,6 +474,21 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             logger.error("Traveler Template is not selected");
             return false;
         }
+    }
+
+    public void createTravelerTemplateAndSelectNewTemplate(String onSuccess) {
+        try {
+            multiEditSelectedTemplate = createTravelerTemplate();
+            RequestContext.getCurrentInstance().execute(onSuccess);
+        } catch (CdbException ex) {
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+            logger.error(ex);
+        }
+    }
+
+    public Form createTravelerTemplate() throws CdbException {
+        UserInfo currentUser = (UserInfo) SessionUtility.getUser();
+        return travelerApi.createForm(travelerTemplateTitle, currentUser.getUsername(), "");
     }
 
     /**
@@ -427,11 +507,12 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             if (!travelerTemplateTitle.equals("") && travelerTemplateTitle != null) {
                 Form form;
                 try {
-                    UserInfo currentUser = (UserInfo) SessionUtility.getUser();
-                    form = travelerApi.createForm(travelerTemplateTitle, currentUser.getUsername(), "");
+                    form = createTravelerTemplate();
                     SessionUtility.addInfoMessage("Template Created", "Traveler Template '" + form.getId() + "' has been created");
                     propertyValue.setValue(form.getId());
-                    entityController.savePropertyList();
+                    if (getCurrent().getId() != null) {
+                        entityController.savePropertyList();
+                    }
                     RequestContext.getCurrentInstance().execute(onSuccessCommand);
                 } catch (CdbException ex) {
                     SessionUtility.addErrorMessage("Error", ex.getMessage());
@@ -457,11 +538,13 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTemplate)) {
                 propertyValue.setValue(selectedTemplate.getId());
-                savePropertyList();
+                if (getCurrent().getId() != null) {
+                    savePropertyList();
+                }
                 RequestContext.getCurrentInstance().execute(onSuccessCommand);
             }
         }
-    }
+    }        
 
     /**
      * Removes the id associated with template property.
@@ -498,14 +581,14 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      */
     public String getBinderTravelerUrl(BinderTraveler binderTraveler) {
         String binderTravelerInstanceUrl = TRAVELER_WEB_APP_URL;
-        String id = binderTraveler.getId(); 
+        String id = binderTraveler.getId();
         if (binderTraveler instanceof Traveler) {
             binderTravelerInstanceUrl += TRAVELER_WEB_APP_TRAVELER_PATH;
             return binderTravelerInstanceUrl.replace("TRAVELER_ID", id);
         } else {
-            binderTravelerInstanceUrl += TRAVELER_WEB_APP_BINDER_PATH; 
+            binderTravelerInstanceUrl += TRAVELER_WEB_APP_BINDER_PATH;
             return binderTravelerInstanceUrl.replace("BINDER_ID", id);
-        }                         
+        }
     }
 
     /**
@@ -660,6 +743,9 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         try {
             formList.add(travelerApi.getForm(formId));
         } catch (CdbException ex) {
+            Form form = new Form(formId);
+            form.setTitle("Error fetching id: " + formId);
+            formList.add(form);
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getMessage());
         }
@@ -812,7 +898,9 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     public void loadTravelerTemplates(String onSuccessCommand) {
         try {
             travelerTemplates = travelerApi.getForms();
-            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+            if (onSuccessCommand != null) {
+                RequestContext.getCurrentInstance().execute(onSuccessCommand);
+            }
         } catch (CdbException ex) {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getMessage());
@@ -912,6 +1000,14 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     public Form getSelectedTemplate() {
         return selectedTemplate;
+    }
+
+    public Form getMultiEditSelectedTemplate() {
+        return multiEditSelectedTemplate;
+    }
+
+    public void setMultiEditSelectedTemplate(Form multiEditSelectedTemplate) {
+        this.multiEditSelectedTemplate = multiEditSelectedTemplate;
     }
 
     public List<Form> getAvailableTemplates() {

@@ -14,7 +14,7 @@ import java.io.Serializable;
  */
 public class TravelerObject implements Serializable{
     
-    private String _id; 
+    protected String _id; 
     private int __v;
 
     public String getId() {
