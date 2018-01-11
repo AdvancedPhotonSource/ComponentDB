@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+    
+    <p:remoteCommand name="showTravelerTemplateMultiEditApplyToAllDialog"
+                     onstart="resetTravelerTemplateMultiEditApplyAllPanelsToDefault()"
+                     oncomplete="PF('travelerTemplateMultiEditApplyToAllDialogWidget').show()" />
+
+    <p:dialog widgetVar="travelerTemplateMultiEditApplyToAllDialogWidget"
+              id="travelerTemplateMultiEditApplyToAllDialog"
+              header="Apply the template to all selected items." 
+              styleClass="viewTransparentBackgroundDialog"
+              modal="true"
+              resizable="false">
+        
+        <p:remoteCommand name="resetTravelerTemplateMultiEditApplyAllPanelsToDefault"
+                         onstart="PF('travelerTemplateApplyAllMultiEditCreateLinkWidget').collapse();
+                                     PF('travelerTemplateApplyAllMultiEditCreateLinkSelectionWidget').expand();
+                                     PF('travelerTemplateApplyAllMultiEditSummaryWidget').collapse();" 
+                         update="travelerTemplateMultiEditApplyToAllOutputPanel"
+                         oncomplete="PF('travelerTemplateMultiEditApplyToAllDialogWidget').initPosition();"/>
+                        
+
+        <p:remoteCommand name="applyAllTemplateCreateNewSelectionMade"
+                         update="travelerTemplateMultiEditApplyToAllOutputPanel"
+                         onstart="PF('travelerTemplateApplyAllMultiEditCreateLinkSelectionWidget').toggle();
+                                  PF('travelerTemplateApplyAllMultiEditCreateLinkWidget').toggle();"
+                         oncomplete="PF('travelerTemplateMultiEditApplyToAllDialogWidget').initPosition();"/>
+
+        <p:remoteCommand name="applyAllTemplateSelectionMade"
+                         update="travelerTemplateMultiEditApplyToAllOutputPanel
+                                 travelerTemplateMultiEditApplyToAllCommandButton"
+                         onstart="PF('travelerTemplateApplyAllMultiEditCreateLinkWidget').toggle();
+                                     PF('travelerTemplateApplyAllMultiEditSummaryWidget').toggle();"
+                         oncomplete="PF('travelerTemplateMultiEditApplyToAllDialogWidget').initPosition();"/>
+
+
+        <p:outputPanel id="travelerTemplateMultiEditApplyToAllOutputPanel">
+
+
+            <p:panel id="travelerTemplateApplyAllMultiEditCreateLinkSelection"
+                     widgetVar="travelerTemplateApplyAllMultiEditCreateLinkSelectionWidget"
+                     collapsed="false"
+                     toggleable="true">
+                <p:selectOneRadio id="travelerTemplateApplyAllMultiEditIfCreateSelectOne"
+                                  value="#{itemTravelerDomainCatalogController.applyAllCreateNew}"
+                                  onclick="applyAllTemplateCreateNewSelectionMade()">
+                    <f:selectItem itemValue="#{false}" itemLabel="Select Existing Template" />
+                    <f:selectItem itemValue="#{true}" itemLabel="Create New Template" />                
+                </p:selectOneRadio>            
+            </p:panel>
+
+            <p:panel id="travelerTemplateApplyAllMultiEditCreateLink"
+                     widgetVar="travelerTemplateApplyAllMultiEditCreateLinkWidget"
+                     collapsed="true"
+                     toggleable="true">                
+                <p:outputPanel rendered="#{itemTravelerDomainCatalogController.applyAllCreateNew}">
+                    <ui:include src="travelerTemplateCreateConfigurationPanelGrid.xhtml">
+                        <ui:param name="viewName"
+                                  value="multiEdit" />
+                    </ui:include>
+                    <p:commandButton value="Create Template"
+                                     icon="fa fa-plus"
+                                     update="@parent"
+                                     onstart="PF('loadingDialog').show()"
+                                     oncomplete="PF('loadingDialog').hide();"
+                                     action="#{itemTravelerDomainCatalogController.createTravelerTemplateAndSelectNewTemplate('applyAllTemplateSelectionMade()')}"/>
+                </p:outputPanel>
+
+                <p:outputPanel rendered="#{!itemTravelerDomainCatalogController.applyAllCreateNew}">
+                    <ui:include src="travelerTemplateDataTable.xhtml">
+                        <ui:param name="travelerTemplateList" value="#{itemTravelerDomainCatalogController.travelerTemplates}" />
+                        <ui:param name="travelerSelectedValue" value="#{itemTravelerDomainCatalogController.multiEditSelectedTemplate}" />
+                        <ui:param name="dataTableId" value="multiEditTravelerTemplatesDataTable" />
+                        <ui:param name="rowSelectEvent" value="applyAllTemplateSelectionMade()" />
+                    </ui:include> 
+                </p:outputPanel>
+
+            </p:panel>
+
+            <p:panel id="travelerTemplateApplyAllMultiEditSummary"
+                     widgetVar="travelerTemplateApplyAllMultiEditSummaryWidget"
+                     collapsed="true"
+                     toggleable="true">
+                <ui:param name="applyAllTravelerTemplate"
+                          value="#{itemTravelerDomainCatalogController.multiEditSelectedTemplate}" />                
+                <p:panelGrid rendered="#{applyAllTravelerTemplate != null}" >
+
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Selected Traveler Template" />
+                        </p:column>
+                        <p:column>
+                            <h:outputText value="#{applyAllTravelerTemplate.title}" />
+                        </p:column>
+                    </p:row>
+
+                    <p:row>
+                        <p:column colspan="2">
+                            <h:outputLink value="#{itemTravelerDomainCatalogController.getTravelerTemplateURL(applyAllTravelerTemplate.id)}"
+                                          target="_blank">
+                                <h:outputText value="Go to traveler template" />
+                            </h:outputLink>
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>         
+
+            </p:panel>
+
+
+
+        </p:outputPanel>
+
+        <f:facet name="footer">
+            <p:commandButton id="travelerTemplateMultiEditApplyToAllCommandButton"
+                             icon="fa fa-plus"
+                             value="Apply template to all"
+                             update="@form"
+                             action="#{itemTravelerDomainCatalogController.applyMultiEditSelectedTemplateToAllSelectedItems()}"
+                             disabled="#{itemTravelerDomainCatalogController.multiEditSelectedTemplate == null}"/> 
+
+            <p:commandButton icon="fa fa-refresh"
+                             value="Reset"
+                             action="#{itemTravelerDomainCatalogController.prepareMultiEditAppplyTempalteToAllItems()}"
+                             update="travelerTemplateMultiEditApplyToAllCommandButton"
+                             onstart="PF('loadingDialog').show();
+                                      resetTravelerTemplateMultiEditApplyAllPanelsToDefault()"
+                             oncomplete="PF('loadingDialog').hide();"/> 
+
+            <p:commandButton icon="fa fa-times"
+                             value="Close"
+                             onclick="PF('travelerTemplateMultiEditApplyToAllDialogWidget').hide()"/> 
+        </f:facet>
+
+
+    </p:dialog>
+
+
+</ui:composition>
+
