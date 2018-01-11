@@ -8,6 +8,9 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:param name="travelerSuccessUpdateTarget"
+              value="#{travelerSuccessUpdateTarget != null ? travelerSuccessUpdateTarget : 'travelerTemplateListDataTable'}" />
 
     <p:dialog id="travelerTemplateLinkDialog" 
               widgetVar="travelerTemplateLinkDialogWidget" 
@@ -39,7 +42,7 @@ See LICENSE file.
                          oncomplete="PF('travelerTemplateLinkDialogWidget').initPosition();
                          PF('travelerTemplateLinkDialogWidget').show();"/>
         <p:remoteCommand name="successTravelerTemplateLinkDialog"
-                         update="travelerTemplateListDataTable"
+                         update="#{travelerSuccessUpdateTarget}"
                          oncomplete="PF('loadingDialog').hide();
                          PF('travelerTemplateLinkDialogWidget').hide();
                          PF('travelerTemplateAddDialogWidget').hide();" />
