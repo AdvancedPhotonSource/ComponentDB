@@ -23,7 +23,7 @@ See LICENSE file.
                                        showTravelerTemplateMultiEditApplyToAllDialog()"
                            action="#{itemTravelerDomainCatalogController.prepareMultiEditAppplyTempalteToAllItems()}"
                            update="@form:travelerTemplateMultiEditApplyToAllDialog"
-                           title="Apply #{columnHeader} values to all items."/> 
+                           title="Apply traveler template value to all items."/> 
         </f:facet>
 
         <p:commandLink styleClass="fa fa-link-icon fa-search" 
@@ -36,10 +36,7 @@ See LICENSE file.
         <p:commandLink styleClass="fa fa-link-icon fa-plus" 
                        title="Add a traveler template to item"
                        action="#{itemTravelerDomainCatalogController.addTravelerTemplateToNewCurrentItem(itemObject)}"
-                       oncomplete="PF('travelerTemplateAddDialogWidget').show()">
-            <f:setPropertyActionListener target="#{itemTravelerDomainCatalogController.current}"
-                                         value="#{itemObject}" />
-        </p:commandLink>
+                       oncomplete="PF('travelerTemplateAddDialogWidget').show()"/>
             
 
         <p:overlayPanel id="travelerTemplateListing"
