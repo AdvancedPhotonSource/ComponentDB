@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    
+
+    <p:dialog widgetVar="travelerInstanceMultiEditApplyToAllDialogWidget"
+              id="travelerInstanceMultiEditApplyToAllDialog"
+              header="Create an instance for each item in the multi-edit list." 
+              styleClass="viewTransparentBackgroundDialog"
+              modal="true"
+              resizable="false">
+        
+        <ui:include src="travelerInstanceCreateConfiguration.xhtml">
+            <ui:param name="overrideTravelerTemplateList"
+                      value="#{true}" />
+            <ui:param name="travelerTemplateList"
+                      value="#{itemTravelerDomainInventoryController.multiEditAvailableTemplateForApplyAll}" />
+            <ui:param name="viewName"
+                      value="multiEditApplyAll"/>
+            <ui:param name="additonalTravelerTemplateEmptyMessage"
+                      value="Parent catalog items in the list do not share a common template." /> 
+        </ui:include>                        
+        
+        
+        <f:facet name="footer">
+            <p:commandButton id="travelerInstanceMultiEditApplyToAllCommandButton"
+                             icon="fa fa-plus"
+                             onclick="PF('loadingDialog').show()"
+                             process="@form:travelerInstanceMultiEditApplyToAllDialog"
+                             action="#{itemTravelerDomainInventoryController.createTravelerInstanceForEachSelectedItem('travelerInstanceMultiEditApplyToAllSuccess();')}"
+                             oncomplete="PF('loadingDialog').hide()"
+                             value="Create a traveler instance for each item"/> 
+
+            <p:remoteCommand name="travelerInstanceMultiEditApplyToAllSuccess"
+                             update="@form:#{entityTypeName}MultiEditItemDataTable"
+                             oncomplete="PF('travelerInstanceMultiEditApplyToAllDialogWidget').hide()" />
+            
+            
+        </f:facet>
+
+
+    </p:dialog>
+
+
+</ui:composition>
+
