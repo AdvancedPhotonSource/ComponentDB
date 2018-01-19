@@ -95,5 +95,23 @@ public abstract class PluginManagerBase {
     public static Properties getDefaultPropertiesForPlugin(String pluginName) {
         return ConfigurationUtility.loadProperties(generateDefaultPropertiesPath(pluginName));
     }
+    
+    /**
+     * Override to display an extras tab for configuration on the multi edit screen. 
+     * 
+     * @return display the extra tab when true
+     */
+    public boolean pluginHasCatalogMultiEditExtras() {
+        return false;
+    }
+    
+    /**
+     * Override to display an extras tab for configuration on the multi edit screen. 
+     * 
+     * @return display the extra tab when true
+     */
+    public boolean pluginHasInventoryMultiEditExtras() {
+        return false;
+    }
 
 }

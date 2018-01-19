@@ -30,6 +30,9 @@ public class CdbPluginManager implements Serializable {
 
     Set<PluginManagerBase> pluginManagerSet = null;
 
+    private Boolean displayMultiEditExtrasCatalog = null;
+    private Boolean displayMultiEditExtrasInventory = null;
+
     public CdbPluginManager() {
         pluginManagerSet = new ArraySet<>();
         PluginRegistrar.registerPlugins(this);
@@ -48,17 +51,18 @@ public class CdbPluginManager implements Serializable {
     public void registerPlugin(PluginManagerBase pluginManager) {
         pluginManagerSet.add(pluginManager);
     }
-    
+
     /**
-     * Functionality returns a list of all property type handler names in plug-ins.
+     * Functionality returns a list of all property type handler names in
+     * plug-ins.
      */
     public List<String> getAllPluginPropertyTypeHandlerNames() {
         List<String> propertyTypeHandlerNames = new ArrayList<>();
-        
-        for (PluginManagerBase pluginManager: pluginManagerSet) {
+
+        for (PluginManagerBase pluginManager : pluginManagerSet) {
             PropertyTypeHandlerInterface pluginPropertyTypeHandler = pluginManager.getPluginPropertyTypeHandler();
             if (pluginPropertyTypeHandler != null) {
-                propertyTypeHandlerNames.add(pluginPropertyTypeHandler.getName()); 
+                propertyTypeHandlerNames.add(pluginPropertyTypeHandler.getName());
             }
         }
         return propertyTypeHandlerNames;
@@ -103,6 +107,32 @@ public class CdbPluginManager implements Serializable {
             }
         }
         return null;
+    }
+
+    public boolean isDisplayMultiEditExtrasCatalog() {
+        if (displayMultiEditExtrasCatalog == null) {
+            displayMultiEditExtrasCatalog = false; 
+            for (PluginManagerBase pluginManager : pluginManagerSet) {
+                if (pluginManager.pluginHasCatalogMultiEditExtras()) {
+                    displayMultiEditExtrasCatalog = true; 
+                    break; 
+                }
+            }
+        }
+        return displayMultiEditExtrasCatalog;
+    }
+
+    public boolean isDisplayMultiEditExtrasInventory() {
+        if (displayMultiEditExtrasInventory == null) {
+            displayMultiEditExtrasInventory = false; 
+            for (PluginManagerBase pluginManager : pluginManagerSet) {
+                if (pluginManager.pluginHasInventoryMultiEditExtras()) {
+                    displayMultiEditExtrasInventory = true; 
+                    break; 
+                }
+            }
+        }
+        return displayMultiEditExtrasInventory;
     }
 
 }
