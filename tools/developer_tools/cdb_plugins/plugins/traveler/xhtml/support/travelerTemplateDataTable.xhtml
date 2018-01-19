@@ -8,7 +8,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="http://xmlns.jcp.org/jsf/core">           
 
     <p:dataTable id="#{dataTableId}"
                  widgetVar="travelerTemplatesDataTableWidget"
@@ -21,9 +21,12 @@ See LICENSE file.
                  paginatorPosition="bottom"
                  rows="#{resources.DialogSearchResultsDataTableNumberOfRows}"
                  paginatorAlwaysVisible="true"
-                 emptyMessage="No traveler templates found">                
+                 emptyMessage="No traveler templates found. #{additonalTravelerTemplateEmptyMessage}">                
         
-        <p:ajax event="rowSelect" oncomplete="#{rowSelectEvent}" />
+        <p:ajax event="rowSelect" process="#{dataTableId}" 
+                oncomplete="#{rowSelectEvent}" />
+        <p:ajax event="rowUnselect" process="#{dataTableId}" 
+                oncomplete="#{rowUnselectEvent}" />
 
         <p:ajax event="rowDblselect" oncomplete="#{travelerTemplateDoubleClickSelectionEvent}" />
 
