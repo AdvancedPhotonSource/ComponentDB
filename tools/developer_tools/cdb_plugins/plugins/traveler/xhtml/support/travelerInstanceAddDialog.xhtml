@@ -7,55 +7,52 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+
+    <ui:param name="travelerInstanceSaveFromMultiEditScreen" 
+              value="#{travelerInstanceSaveFromMultiEditScreen != null 
+                       ? travelerInstanceSaveFromMultiEditScreen 
+                       : false }" />
+
+    <ui:param name="travelerInstanceSuccessUpdateTarget" 
+              value="#{travelerInstanceSuccessUpdateTarget != null 
+                       ? travelerInstanceSuccessUpdateTarget 
+                       : 'travelerInstanceListDataTable'}" />
 
     <p:dialog id="travelerInstanceAddDialog" 
               widgetVar="travelerInstanceAddDialogWidget" 
               header="Create Traveler Instance From Template" 
               resizable="false"
+              modal="true"
               styleClass="viewTransparentBackgroundDialog">
-        <ui:include src="travelerTemplateDataTable.xhtml">
-            <ui:param name="travelerTemplateList" value="#{itemTravelerDomainInventoryController.availableTemplates}" />
-            <ui:param name="travelerSelectedValue" value="#{itemTravelerDomainInventoryController.selectedTravelerInstanceTemplate}" /> 
-            <ui:param name="rowSelectEvent" value="updateTravelerInstanceInputText();" />
-            <ui:param name="dataTableId" value="travelerInstanceDataTable" />
-        </ui:include>
-        <p:panelGrid styleClass="centeredContent">
-            <p:row>
-                <p:column>
-                    <p:outputLabel value="Traveler Instance Title" styleClass="entityDataLabel" />
-                </p:column>
-                <p:column>
-                    <p:inputText styleClass="entityDataText" 
-                                 value="#{itemTravelerDomainInventoryController.travelerInstanceTitle}"
-                                 id="travelerInstanceTitleInputText"
-                                 binding="#{itemTravelerDomainInventoryController.travelerInstanceTitleInputText}"
-                                 />
-                </p:column>
-            </p:row>          
-        </p:panelGrid>
+        <ui:include src="travelerInstanceCreateConfiguration.xhtml" />
 
         <f:facet name="footer">
-            <p:commandButton value="Create Traveler Instance Using Selection"
-                             onstart="PF('loadingDialog').show();"
-                             onerror="PF('loadingDialog').hide();"
-                             oncomplete="PF('loadingDialog').hide();"
-                             action="#{itemTravelerDomainInventoryController.createTravelerInstance(
-                                       entityController,
-                                       'successTravelerInstanceAddDialog();')}" />
-        </f:facet>
-
-        <p:remoteCommand name="updateTravelerInstanceInputText"
-                         onstart="PF('loadingDialog').show();"
-                         onerror="PF('loadingDialog').hide();"
-                         action="#{itemTravelerDomainInventoryController.updateTravelerInstanceTitleInputText()}"
-                         update="travelerInstanceTitleInputText"
-                         oncomplete="PF('loadingDialog').hide();"/>
+            <p:outputPanel rendered="#{!travelerInstanceSaveFromMultiEditScreen}">
+                <p:commandButton value="Create Traveler Instance Using Selection"
+                                 onstart="PF('loadingDialog').show();"
+                                 onerror="PF('loadingDialog').hide();"
+                                 process="@form:travelerInstanceAddDialog"
+                                 oncomplete="PF('loadingDialog').hide();"
+                                 action="#{itemTravelerDomainInventoryController.createTravelerInstance(
+                                           entityController,
+                                           'successTravelerInstanceAddDialog();')}" />
+            </p:outputPanel>
+            <p:outputPanel rendered="#{travelerInstanceSaveFromMultiEditScreen}">                
+                <p:commandButton value="Create Traveler Instance Using Selection and Save Item"
+                                 onstart="PF('loadingDialog').show();"
+                                 onerror="PF('loadingDialog').hide();"
+                                 process="@form:travelerInstanceAddDialog"
+                                 oncomplete="PF('loadingDialog').hide();"
+                                 action="#{itemTravelerDomainInventoryController.saveMultiEditTravelerInstance(
+                                           'successTravelerInstanceAddDialog();')}" />
+            </p:outputPanel>
+        </f:facet>       
 
         <p:remoteCommand name="successTravelerInstanceAddDialog"
                          oncomplete="PF('travelerInstanceAddDialogWidget').hide();"
-                         update="travelerInstanceListDataTable"/>        
+                         update="#{travelerInstanceSuccessUpdateTarget}"/>        
     </p:dialog>
 
 

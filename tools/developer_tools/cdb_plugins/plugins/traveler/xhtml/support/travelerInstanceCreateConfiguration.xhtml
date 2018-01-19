@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:outputPanel id="#{viewName}travelerInstanceCreateConfigurationPanel">
+
+        <ui:param name="overrideTravelerTemplateList"
+                  value="#{overrideTravelerTemplateList != null ? overrideTravelerTemplateList : false}"/>
+        <ui:param name="travelerTemplateList"
+                  value="#{overrideTravelerTemplateList 
+                           ? travelerTemplateList
+                           : itemTravelerDomainInventoryController.availableTemplates }" />
+        <ui:param name="additonalTravelerTemplateEmptyMessage"
+                  value="#{additonalTravelerTemplateEmptyMessage != null 
+                           ? additonalTravelerTemplateEmptyMessage 
+                           : 'Please verify the catalog item has traveler templates specified.'}" />
+
+        <ui:include src="travelerTemplateDataTable.xhtml">
+            <ui:param name="travelerTemplateList" value="#{travelerTemplateList}" />
+            <ui:param name="travelerSelectedValue" value="#{itemTravelerDomainInventoryController.selectedTravelerInstanceTemplate}" /> 
+            <ui:param name="rowSelectEvent" value="updateConfigurationPanel();" />
+            <ui:param name="rowUnselectEvent" value="updateConfigurationPanel();" />
+            <ui:param name="dataTableId" value="#{viewName}TravelerInstanceDataTable" />
+            <ui:param name="additonalTravelerTemplateEmptyMessage"
+                      value="#{additonalTravelerTemplateEmptyMessage}" /> 
+        </ui:include>
+
+        <p:panelGrid styleClass="centeredContent">
+            <p:row>
+                <p:column>
+                    <p:outputLabel value="Traveler Instance Title" styleClass="entityDataLabel" />
+                </p:column>
+                <p:column>
+                    <p:inputText styleClass="entityDataText" 
+                                 value="#{itemTravelerDomainInventoryController.travelerInstanceTitle}"
+                                 id="#{viewName}travelerInstanceTitleInputText"                             
+                                 />
+                </p:column>
+            </p:row>          
+        </p:panelGrid>
+
+
+        <p:remoteCommand name="updateConfigurationPanel"
+                         onstart="PF('loadingDialog').show();"
+                         onerror="PF('loadingDialog').hide();"
+                         process="@this"
+                         update="#{viewName}travelerInstanceCreateConfigurationPanel"
+                         oncomplete="PF('loadingDialog').hide();"/>
+
+    </p:outputPanel>
+
+
+
+</ui:composition>
+
