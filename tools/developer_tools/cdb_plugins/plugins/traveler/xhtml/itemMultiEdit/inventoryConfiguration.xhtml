@@ -11,13 +11,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:panel header="eTraveler Templates"
-             toggleable="true"
-             collapsed="#{itemTravelerDomainCatalogController.isCollapsedTravelerTemplates}">
-
-        <ui:include src="../support/travelerTemplateList.xhtml" />
-
-    </p:panel>        
-
-
+    <p:selectBooleanCheckbox value="#{itemTravelerDomainInventoryController.isDisplayMultiEditTravelerInstance}"
+                             onchange="onUpdateOptionsChange()"/>
+    <p:outputLabel value="Traveler Intance" />
 </ui:composition>

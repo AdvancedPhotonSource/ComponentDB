@@ -22,6 +22,14 @@ public class Form extends TravelerObject {
     
     // Calculated cache or temporary variables 
     private String travelerInstanceName; 
+    
+    public Form() {
+        super();
+    }
+    public Form(String formId) {
+        super();
+        _id = formId; 
+    }
 
     public String getHtml() {
         return html;
@@ -29,6 +37,10 @@ public class Form extends TravelerObject {
 
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getCreatedBy() {

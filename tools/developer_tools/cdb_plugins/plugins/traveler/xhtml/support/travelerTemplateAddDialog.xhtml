@@ -7,8 +7,10 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
+    
+    <ui:param name="travelerSuccessUpdateTarget"
+              value="#{travelerSuccessUpdateTarget != null ? travelerSuccessUpdateTarget : 'travelerTemplateListDataTable'}" />
 
     <p:dialog id="travelerTemplateAddDialog" 
               widgetVar="travelerTemplateAddDialogWidget" 
@@ -16,21 +18,11 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               modal="true"
               resizable="false">
-        <p:panelGrid id="travelerTemplateAddPanel"
-                     styleClass="centeredContent">
-            <p:row>
-                <p:column>
-                    <p:outputLabel value="New Template Title" styleClass="entityDataLabel" />
-                </p:column>
-                <p:column>
-                    <p:inputText styleClass="entityDataText" 
-                                 value="#{itemTravelerDomainCatalogController.travelerTemplateTitle}"/>
-                </p:column>
-            </p:row>            
-        </p:panelGrid>
+        
+        <ui:include src="travelerTemplateCreateConfigurationPanelGrid.xhtml"/>
 
         <p:remoteCommand name="successTravelerTemplateAddDialog"
-                         update="travelerTemplateListDataTable"
+                         update="#{travelerSuccessUpdateTarget}"
                          oncomplete="PF('travelerTemplateAddDialogWidget').hide();" />        
 
         <f:facet name="footer">

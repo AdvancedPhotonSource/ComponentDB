@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--Auto-generated xhtml file. See tools/developer_tools/cdb_plugin-->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:column rendered="#{itemTravelerDomainInventoryController.isDisplayMultiEditTravelerInstance}">
+
+        <f:facet name="header">            
+            Traveler Instance
+            <p:commandLink styleClass="fa fa-link-icon fa-cogs"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();
+                                       PF('travelerInstanceMultiEditApplyToAllDialogWidget').show()"
+                           action="#{itemTravelerDomainInventoryController.prepareMultiEditAppplyInstanceToAllItems()}"
+                           update="@form:travelerInstanceMultiEditApplyToAllDialog"
+                           title="Apply traveler instnace values to all items."/> 
+        </f:facet>
+
+        <p:commandLink styleClass="fa fa-link-icon fa-search" 
+                       title="View traveler instance list"
+                       onstart="PF('loadingDialog').show()"
+                       action="#{itemTravelerDomainInventoryController.loadTravelerInstancesForMultiEditItem(itemObject)}"
+                       update="@parent:travelerInstanceListing"
+                       oncomplete="PF('loadingDialog').hide();
+                       PF('travelerInstanceListing#{itemObject.viewUUID}Widget').show()"/>
+        <p:commandLink styleClass="fa fa-link-icon fa-plus" 
+                       title="Add a traveler instance to item"
+                       update="@form:travelerInstanceAddDialog"
+                       onclick="PF('loadingDialog').show()"
+                       action="#{itemTravelerDomainInventoryController.prepareAddTravelerInstanceOnMultiEdit(itemObject)}"
+                       oncomplete="PF('loadingDialog').hide();
+                                   PF('travelerInstanceAddDialogWidget').show();"/>
+
+        <p:overlayPanel id="travelerInstanceListing"
+                        widgetVar="travelerInstanceListing#{itemObject.viewUUID}Widget">
+            <p:dataTable value="#{itemTravelerDomainInventoryController.getInstancesForMultiEditItem(itemObject)}"
+                         var="travelerObject">
+                <ui:include src="../support/travelerInstanceListObject.xhtml" />
+            </p:dataTable>                            
+        </p:overlayPanel>
+
+    </p:column>
+
+</ui:composition>

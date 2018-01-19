@@ -12,6 +12,15 @@ import java.util.List;
  * @author djarosz
  */
 public class Binder extends BinderTraveler {
+    
+    public Binder() {
+        super();
+    }
+    
+    public Binder(String id) {
+        super();
+        this._id = id; 
+    }
         
     private double totalValue;
     private double inProgressValue;

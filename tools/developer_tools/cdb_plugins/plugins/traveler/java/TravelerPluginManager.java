@@ -68,5 +68,15 @@ public class TravelerPluginManager extends PluginManagerBase {
     public String getTravelerUrl() {
         return getTravelerWebApplicationUrl();
     }
+
+    @Override
+    public boolean pluginHasCatalogMultiEditExtras() {
+        return true; 
+    }
+
+    @Override
+    public boolean pluginHasInventoryMultiEditExtras() {
+        return true; 
+    }
     
 }
