@@ -11,6 +11,11 @@ import java.util.LinkedList;
  * @author djarosz
  */
 public class Traveler extends BinderTraveler {
+    
+    public Traveler(String id) {
+        super();
+        this._id = id; 
+    }
         
     private double status; 
     private String referenceForm; 
