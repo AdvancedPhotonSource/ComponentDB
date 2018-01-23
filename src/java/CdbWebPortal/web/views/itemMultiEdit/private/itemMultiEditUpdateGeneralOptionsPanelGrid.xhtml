@@ -37,6 +37,21 @@ See LICENSE file.
                                  onchange="onUpdateOptionsChange()"/>
         <h:outputText value="QrId"
                       rendered="#{entityController.entityDisplayQrId}"/>
+        
+        <p:selectBooleanCheckbox value="#{entityController.updateItemCategory}"
+                                 onchange="onUpdateOptionsChange()"
+                                 rendered="#{entityController.entityDisplayItemCategory}" />
+        
+        <h:outputText value="#{entityController.itemItemCategoryTitle}"
+                      rendered="#{entityController.entityDisplayItemCategory}" />
+        
+        <p:selectBooleanCheckbox value="#{entityController.updateItemType}"
+                                 onchange="onUpdateOptionsChange()"
+                                 rendered="#{entityController.entityDisplayItemType}" />
+        
+        <h:outputText value="#{entityController.itemItemTypeTitle}"
+                      rendered="#{entityController.entityDisplayItemType}" />
+        
 
     </p:panelGrid>
 

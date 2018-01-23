@@ -72,6 +72,22 @@ See LICENSE file.
         <ui:include src="../../../item/private/templateDefaults/itemFieldEditValues/itemQrId.xhtml" />
     </p:column>
     
+    <p:column rendered="#{entityController.updateItemCategory}"
+              headerText="#{entityController.itemItemCategoryTitle}">               
+        <ui:include src="../../../item/private/templateDefaults/itemFieldEditValues/itemItemCategory.xhtml">
+            <ui:param name="itemItemCategoryUpdateTarget"
+                      value="@form:#{entityTypeName}MultiEditItemDataTable" />
+        </ui:include>
+    </p:column>
+    
+    <p:column rendered="#{entityController.updateItemType}"
+              headerText="#{entityController.itemItemTypeTitle}">        
+        <ui:include src="../../../item/private/templateDefaults/itemFieldEditValues/itemItemType.xhtml">
+            <ui:param name="itemItemTypeUpdateTarget"
+                      value="@form:#{entityTypeName}MultiEditItemDataTable" />
+        </ui:include>
+    </p:column>              
+    
     <ui:include src="../itemMultiEditEditableListEntityInfoObject.xhtml"/>
 
     <ui:include src="../itemMultiEditEditableListPropertyObject.xhtml"/>
