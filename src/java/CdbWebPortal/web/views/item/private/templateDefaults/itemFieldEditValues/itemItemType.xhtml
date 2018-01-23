@@ -6,12 +6,19 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:p="http://primefaces.org/ui">
     
     <p:column id="itemType#{viewName}"
               rendered="#{entityController.entityDisplayItemType}">
+        
+        <ui:param name="defaultItemItemTypeUpdateTarget"
+                  value="itemTypeSelectCB#{viewName}" />
+        
+        <ui:param name="itemItemTypeUpdateTarget"
+                  value="#{itemItemTypeUpdateTarget != null 
+                           ? itemItemTypeUpdateTarget 
+                           : defaultItemItemTypeUpdateTarget}"/>
+        
         <ui:include src="editWidgets/itemItemTypeSelectCheckboxMenu.xhtml">
             <ui:param name="onHide"
                       value="itemTypeSelectCBUpdate#{viewName}()"/>
@@ -19,7 +26,9 @@ See LICENSE file.
         
         
         <p:remoteCommand name="itemTypeSelectCBUpdate#{viewName}"
-                         update="itemTypeSelectCB#{viewName}" />
+                         onstart="PF('loadingDialog').show()"
+                         update="#{itemItemTypeUpdateTarget}"
+                         oncomplete="PF('loadingDialog').hide()"/>
     </p:column>
 
 </ui:composition>

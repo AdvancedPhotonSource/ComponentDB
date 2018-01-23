@@ -263,6 +263,16 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      */
     public List<ItemType> getAvailableItemTypesForCurrentItem();
     
+    
+    /**
+     * Get a list of item types based on state of item. 
+     * Example: selected categories. 
+     *      
+     * @param item
+     * @return 
+     */
+    public List<ItemType> getAvailableItemTypes(Item item); 
+    
     /**
      * True when item has primary image
      * 
@@ -411,14 +421,14 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * 
      * @return 
      */
-    public boolean isDisabledItemItemType();
+    public boolean isDisabledItemItemType(Item item);
     
     /**
      * Generates a display string based on current item type selection.
      * 
      * @return 
      */
-    public String getCurrentItemItemTypeEditString();
+    public String getItemItemTypeEditString(Item item);
     
     /**
      * Fetch the object that holds all of the settings for the item controller.

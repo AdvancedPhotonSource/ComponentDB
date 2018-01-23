@@ -119,9 +119,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected DataModel allowedChildItemSelectDataModel = null;
 
     protected List<ItemCategory> domainItemCategoryList = null;
-
-    protected List<ItemType> availableItemTypesForCurrentItem = null;
-    protected List<ItemCategory> lastKnownItemCategoryListForCurrentItem = null;
+    
     protected ItemElement newItemElementForCurrent = null; 
     protected Boolean newItemElementForCurrentSaveButtonEnabled = false; 
 
@@ -301,53 +299,58 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     @Override
     protected void resetVariablesForCurrent() {
         super.resetVariablesForCurrent();
-        availableItemTypesForCurrentItem = null;
-        lastKnownItemCategoryListForCurrentItem = null;
         newItemElementForCurrent = null; 
         newItemElementForCurrentSaveButtonEnabled = false; 
     }
-
+    
     public List<ItemType> getAvailableItemTypesForCurrentItem() {
-        Item currentItem = getCurrent();
-        if (currentItem != null) {
-            if (getEntityDisplayItemCategory()) {
-                List<ItemCategory> itemCategoryList = currentItem.getItemCategoryList();
+        return getAvailableItemTypes(getCurrent()); 
+    }
 
-                if (lastKnownItemCategoryListForCurrentItem != null) {
-                    if (lastKnownItemCategoryListForCurrentItem.size() != itemCategoryList.size()) {
-                        availableItemTypesForCurrentItem = null;
+    public List<ItemType> getAvailableItemTypes(Item item) {
+        List<ItemType> availableItemType = null; 
+        if (item != null) {
+            if (getEntityDisplayItemCategory()) {
+                List<ItemCategory> itemCategoryList = item.getItemCategoryList();
+
+                if (item.getLastKnownItemCategoryList() != null) {
+                    if (item.getLastKnownItemCategoryList().size() != itemCategoryList.size()) {
+                        item.setAvailableItemTypes(null);
                     } else {
-                        for (ItemCategory itemCategory : lastKnownItemCategoryListForCurrentItem) {
+                        for (ItemCategory itemCategory : item.getLastKnownItemCategoryList()) {
                             if (itemCategoryList.contains(itemCategory) == false) {
-                                availableItemTypesForCurrentItem = null;
+                                item.setAvailableItemTypes(null);                                
                                 break;
                             }
                         }
                     }
                 } else {
-                    availableItemTypesForCurrentItem = null;
+                    item.setAvailableItemTypes(null);                    
                 }
-                lastKnownItemCategoryListForCurrentItem = itemCategoryList;
+                item.setLastKnownItemCategoryList(itemCategoryList);                
 
-                if (availableItemTypesForCurrentItem == null) {
-                    availableItemTypesForCurrentItem = getAvaiableTypesForItemCategoryList(itemCategoryList);
-                    updateItemTypeListBasedOnNewAvailableTypes(availableItemTypesForCurrentItem, currentItem);
+                if (item.getAvailableItemTypes() == null) {
+                    List<ItemType> avaiableTypesForItemCategoryList = getAvaiableTypesForItemCategoryList(itemCategoryList);
+                    item.setAvailableItemTypes(avaiableTypesForItemCategoryList);
+                    updateItemTypeListBasedOnNewAvailableTypes(item);
                 }
             } else {
-                // Item does not have item category to pick from
-                availableItemTypesForCurrentItem = itemTypeFacade.findByDomainName(getDefaultDomainName());
+                // Item does not have item category to pick from                
+                item.setAvailableItemTypes(itemTypeFacade.findByDomainName(getDefaultDomainName()));
             }
+            availableItemType = item.getAvailableItemTypes(); 
         }
-
-        return availableItemTypesForCurrentItem;
+        
+        return availableItemType; 
     }
 
-    private void updateItemTypeListBasedOnNewAvailableTypes(List<ItemType> avaiableItemTypes, Item item) {
+    private void updateItemTypeListBasedOnNewAvailableTypes(Item item) {
         if (item.getItemTypeList() != null) {
             List<ItemType> itemItemTypeList = new ArrayList<>(item.getItemTypeList());
+            List<ItemType> availableItemTypes = item.getAvailableItemTypes();
 
             for (ItemType itemType : itemItemTypeList) {
-                if (avaiableItemTypes.contains(itemType) == false) {
+                if (availableItemTypes.contains(itemType) == false) {
                     item.getItemTypeList().remove(itemType);
                 }
             }
@@ -387,10 +390,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return avaiableItemTypes;
     }
 
-    public String getCurrentItemItemTypeEditString() {
-        Item item = getCurrent();
+    public String getItemItemTypeEditString(Item item) {        
         if (item != null) {
-            if (isDisabledItemItemType()) {
+            if (isDisabledItemItemType(item)) {
                 return "First Select " + getItemItemCategoryTitle();
             } else {
                 return item.getEditItemTypeString(getItemItemTypeTitle());
@@ -399,8 +401,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return "";
     }
 
-    public boolean isDisabledItemItemType() {
-        List<ItemType> avaiableItemTypesForCurrentItem = getAvailableItemTypesForCurrentItem();
+    public boolean isDisabledItemItemType(Item item) {
+        List<ItemType> avaiableItemTypesForCurrentItem = getAvailableItemTypes(item); 
         if (avaiableItemTypesForCurrentItem != null) {
             return avaiableItemTypesForCurrentItem.isEmpty();
         }

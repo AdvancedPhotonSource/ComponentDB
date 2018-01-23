@@ -37,3 +37,8 @@ h1 {
 .ui-dialog {
     background: #d5ebf5; 
 }
+
+.catalogItemPropertiesPanel {
+    background-color: #f1efe2; 
+    border-radius: 10px;
+}

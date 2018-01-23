@@ -77,6 +77,8 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     protected boolean updateProject = false;
     protected boolean updateDescription = false;
     protected boolean updateQrId = false;
+    protected boolean updateItemType = false; 
+    protected boolean updateItemCategory = false; 
 
     protected boolean updateOwnerUser = false;
     protected boolean updateOwnerGroup = false;
@@ -789,6 +791,22 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     public void setUpdateDescription(boolean updateDescription) {
         this.updateDescription = updateDescription;
+    }
+
+    public boolean isUpdateItemType() {
+        return updateItemType;
+    }
+
+    public void setUpdateItemType(boolean updateItemType) {
+        this.updateItemType = updateItemType;
+    }
+
+    public boolean isUpdateItemCategory() {
+        return updateItemCategory;
+    }
+
+    public void setUpdateItemCategory(boolean updateItemCategory) {
+        this.updateItemCategory = updateItemCategory;
     }
 
     public boolean isUpdateQrId() {
