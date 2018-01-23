@@ -12,6 +12,7 @@ import java.util.List;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import javax.faces.model.DataModel;
@@ -321,13 +322,18 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     }
 
     @Override
-    public boolean isDisabledItemItemType() {
-        return getItemController().isDisabledItemItemType();
+    public boolean isDisabledItemItemType(Item item) {
+        return getItemController().isDisabledItemItemType(item);
     } 
     
     @Override
-    public String getCurrentItemItemTypeEditString() {
-        return getItemController().getCurrentItemItemTypeEditString();
+    public String getItemItemTypeEditString(Item item) {
+        return getItemController().getItemItemTypeEditString(item);
+    }
+
+    @Override
+    public List<ItemType> getAvailableItemTypes(Item item) {
+        return getItemController().getAvailableItemTypes(item); 
     }
     
     @Override

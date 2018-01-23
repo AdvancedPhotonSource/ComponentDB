@@ -229,6 +229,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient ItemController itemDomainController = null; 
     
     private transient TreeNode assemblyRootTreeNode = null;
+    
+    private transient List<ItemType> availableItemTypes = null;
+    private transient List<ItemCategory> lastKnownItemCategoryList = null;
 
     public Item() {
     }
@@ -702,7 +705,21 @@ public class Item extends CdbDomainEntity implements Serializable {
         return itemSourceString;
     }
 
+    public List<ItemType> getAvailableItemTypes() {
+        return availableItemTypes;
+    }
 
+    public void setAvailableItemTypes(List<ItemType> availableItemTypes) {
+        this.availableItemTypes = availableItemTypes;
+    }
+
+    public List<ItemCategory> getLastKnownItemCategoryList() {
+        return lastKnownItemCategoryList;
+    }
+
+    public void setLastKnownItemCategoryList(List<ItemCategory> lastKnownItemCategoryList) {
+        this.lastKnownItemCategoryList = lastKnownItemCategoryList;
+    }
 
     @XmlTransient
     public List<ItemResource> getItemResourceList() {
