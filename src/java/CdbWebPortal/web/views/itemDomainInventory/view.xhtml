@@ -41,7 +41,10 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="additionalRightItemPanels">
-        <p:panel header="Catalog Item Properties" toggleable="true" collapsed="#{!entityController.displayDerivedFromPropertyList}">
+        <p:panel header="Catalog Item Properties" 
+                 toggleable="true" 
+                 styleClass="catalogItemPropertiesPanel"
+                 collapsed="#{!entityController.displayDerivedFromPropertyList}">
             <ui:include src="../domainEntityProperty/private/domainEntityAdditionalPropertyList.xhtml">
                 <ui:param name="additionalEntityController" value="#{itemDomainCatalogController}"/>
                 <ui:param name="entityObject" value="#{domainEntityObject.derivedFromItem}" />
