@@ -10,13 +10,12 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:selectCheckboxMenu id="itemTypeSelectCB#{viewName}"
-                          label="#{entityController.currentItemItemTypeEditString}"
+                          label="#{entityController.getItemItemTypeEditString(itemObject)}"
                           onHide="#{onHide}"                          
                           value="#{itemObject.itemTypeList}" converter="itemTypeConverter"
-                          disabled="#{entityController.disabledItemItemType}"
+                          disabled="#{entityController.isDisabledItemItemType(itemObject)}"
                           filter="true" filterMatchMode="contains" >
-        <f:selectItems value="#{entityController.availableItemTypesForCurrentItem}" /> 
-
+        <f:selectItems value="#{entityController.getAvailableItemTypes(itemObject)}" /> 
     </p:selectCheckboxMenu>
    
 
