@@ -7,8 +7,10 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMAARCSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMAARC;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -24,8 +26,16 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     
     protected final String FILE_ENTITY_TYPE_NAME = "File"; 
     
+    protected final String FILE_PROPERTY_TYPE_NAME = "File";
+    
+    private Integer filePropertyTypeId = null; 
+    private boolean attemptedFetchFilePropertyType = false; 
+    
     @EJB
     ItemDomainMAARCFacade itemDomainMAARCFacade; 
+    
+    @EJB
+    PropertyTypeFacade propertyTypeFacade; 
     
     @Override
     protected ItemDomainMAARC instenciateNewItemDomainEntity() {
@@ -139,6 +149,17 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
         }
                 
         return result; 
+    } 
+
+    public Integer getFilePropertyTypeId() {
+        if (filePropertyTypeId == null && !attemptedFetchFilePropertyType) {
+            PropertyType filePropertyType = propertyTypeFacade.findByName(FILE_PROPERTY_TYPE_NAME);
+            if (filePropertyType != null) {
+                filePropertyTypeId = filePropertyType.getId(); 
+            }
+            attemptedFetchFilePropertyType = true;
+        }
+        return filePropertyTypeId;
     }
 
     @Override
