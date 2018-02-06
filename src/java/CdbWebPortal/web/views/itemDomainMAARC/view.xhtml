@@ -20,6 +20,10 @@ See LICENSE file.
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processPreRender()}"/>
     </f:metadata>
+    
+    <ui:define name="itemElements">
+        <ui:include src="private/itemDomainMAARCItemElementList.xhtml"/>
+    </ui:define>
 
     <ui:define name="additionalRightItemPanels">
         <p:panel header="Related Inventory Items"

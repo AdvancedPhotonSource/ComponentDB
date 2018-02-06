@@ -33,8 +33,10 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import org.apache.log4j.Logger;
+import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.RequestContext;
 import org.primefaces.event.DragDropEvent;
+import org.primefaces.event.ReorderEvent;
 import org.primefaces.model.TreeNode;
 
 @Named("itemElementController")
@@ -56,12 +58,19 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     private List<ItemElement> sortableItemElementList = null;   
 
     private ItemController currentSettingsItemController = null;
-
+    
+    private ItemController currentItemReorderController = null; 
+    
     public ItemElementController() {
     }
 
     public static ItemElementController getInstance() {
         return (ItemElementController) SessionUtility.findBean("itemElementController");
+    }
+    
+    public void resetCurrentItemVariables() {
+        currentSettingsItemController = null;
+        currentItemReorderController = null; 
     }
 
     public ItemController getCurrentSettingsItemController() {
@@ -479,6 +488,52 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
 
     public Item getSelectedParentItem() {
         return selectedParentItem;
+    }
+    
+    public void onListDataTableRowReorder(ReorderEvent event) {
+        DataTable dataTable = (DataTable) event.getSource();
+        List<ItemElement> itemElementList = (List<ItemElement>) dataTable.getValue();
+        
+        ItemElement ie = itemElementList.get(0); 
+        Item parentItem = ie.getParentItem();
+        currentItemReorderController = ItemController.findDomainControllerForItem(parentItem);
+        if (!currentItemReorderController.getCurrent().equals(parentItem)) {
+            // controller is not displaying parent item. 
+            return;
+        }
+        
+        // Verify list belongs to same item
+        int origSize = parentItem.getItemElementDisplayList().size();
+        if (itemElementList.size() == origSize) {
+            for (ItemElement itemElement : itemElementList) {
+                if (!itemElement.getParentItem().equals(parentItem)) {
+                    // Invalid list in the data table. 
+                    return;
+                }
+            }
+        }
+        
+        // Update the sort order of the list items
+        for (int i = 0; i < itemElementList.size(); i++) {
+            ItemElement itemElement = itemElementList.get(i); 
+            float orderedNumber = i;
+            itemElement.setSortOrder(orderedNumber);            
+        }  
+        
+        currentItemReorderController.setHasElementReorderChangesForCurrent(true);
+    } 
+    
+    public void performReorderSaveOperations() {        
+        if (currentItemReorderController != null) {
+            currentItemReorderController.update();                
+        }        
+    }
+    
+    public boolean getHasReorderChanges() {
+        if (currentItemReorderController != null) {
+            return currentItemReorderController.getHasElementReorderChangesForCurrent(); 
+        }
+        return false; 
     }
 
     /**

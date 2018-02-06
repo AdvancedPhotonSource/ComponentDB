@@ -44,7 +44,13 @@ See LICENSE file.
     </ui:define>
     
     <ui:define name="itemProperties">
-        <ui:include src="../itemPropertyList.xhtml" />
+        <ui:include src="../itemPropertyList.xhtml" >
+            <ui:param name="loadPropertyListDialogs" value="#{false}" />
+        </ui:include>
+    </ui:define>
+    
+    <ui:define name="itemPropertiesSupport">
+        <ui:include src="../../../domainEntityProperty/private/domainEntityPropertyListDialogs.xhtml" />
     </ui:define>
     
     <ui:define name="itemElements">

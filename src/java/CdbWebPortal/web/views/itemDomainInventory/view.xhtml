@@ -8,8 +8,7 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                template="../item/private/templates/itemViewTemplate.xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                template="../item/private/templates/itemViewTemplate.xhtml">
 
     <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
 
@@ -73,8 +72,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="additionalViewItemContent">
-        <ui:include src="private/itemDomainInventoryBillOfMaterialsEditDialog.xhtml" />     
-        <ui:include src="../domainEntityProperty/private/domainEntityPropertyListDialogs.xhtml" />
+        <ui:include src="private/itemDomainInventoryBillOfMaterialsEditDialog.xhtml" />             
         <ui:include src="private/itemDomainInventoryLocationHistoryDialog.xhtml" />
     </ui:define>
 

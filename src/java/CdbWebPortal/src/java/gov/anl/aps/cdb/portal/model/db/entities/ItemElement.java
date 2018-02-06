@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -154,6 +155,12 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public Object getCustomizableSortOrder() {
         if (sortByPropertyTypeId == null) {
+            if (derivedFromItemElement != null && parentItem != null) {                
+                String inventoryDomain = ItemDomainName.inventory.getValue();
+                if (parentItem.getDomain().getName().equals(inventoryDomain)) {
+                    return derivedFromItemElement.getSortOrder(); 
+                }
+            }
             return getSortOrder();
         } else {
             return getPropertyValue(sortByPropertyTypeId);

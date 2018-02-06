@@ -7,9 +7,11 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMAARCSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMAARC;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -26,12 +28,20 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
     protected final String FILE_ENTITY_TYPE_NAME = "File";
     public static final String MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME = "MAARC Connection";
+    protected final String FILE_PROPERTY_TYPE_NAME = "File";
+  
+  
+    private Integer filePropertyTypeId = null; 
+    private boolean attemptedFetchFilePropertyType = false;
 
     private List<ItemElementRelationship> relatedInventoryRelationshipsForCurrent = null;
 
     @EJB
     ItemDomainMAARCFacade itemDomainMAARCFacade;
-
+  
+    @EJB
+    PropertyTypeFacade propertyTypeFacade; 
+  
     @Override
     protected ItemDomainMAARC instenciateNewItemDomainEntity() {
         return new ItemDomainMAARC();
@@ -167,8 +177,19 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
                 break;
             }
         }
+      
+        return result; 
+    } 
 
-        return result;
+    public Integer getFilePropertyTypeId() {
+        if (filePropertyTypeId == null && !attemptedFetchFilePropertyType) {
+            PropertyType filePropertyType = propertyTypeFacade.findByName(FILE_PROPERTY_TYPE_NAME);
+            if (filePropertyType != null) {
+                filePropertyTypeId = filePropertyType.getId(); 
+            }
+            attemptedFetchFilePropertyType = true;
+        }
+        return filePropertyTypeId;
     }
 
     @Override
