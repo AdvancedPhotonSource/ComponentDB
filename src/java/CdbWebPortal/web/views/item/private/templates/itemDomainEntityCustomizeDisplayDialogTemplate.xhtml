@@ -17,8 +17,7 @@ See LICENSE file.
         <p:tab title="Display #{entityTypeDisplayName} Columns">
             <p:panelGrid columns="2">
 
-                <p:selectBooleanCheckbox id="displayDescription" value="#{entitySettingObject.displayDescription}"/>  
-                <h:outputLabel for="displayDescription" value="Display Description" styleClass="dialogDataLabel"/>
+                <ui:include src="../templateDefaults/customizeDisplayDialog/domainEntityCommonCustomizeDisplayContents.xhtml" />
 
                 <ui:insert name="domainEntitySpecificColumns" />
 

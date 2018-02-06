@@ -21,12 +21,23 @@ See LICENSE file.
                          rendered="#{loginController.loggedIn}"
                          oncomplete="PF('#{childEntityTypeName}#{viewName}CreateManyDialogWidget').show()"
                          icon="fa fa-plus">
-            <p:tooltip for="#{childEntityTypeName}#{viewName}EditButton" value="Create Many #{childEntityTypeName} Items" />            
-        </p:commandButton>               
+            <p:tooltip for="#{childEntityTypeName}#{viewName}CreateManyButton" 
+                       value="Create many #{childEntityTypeName} Items" />            
+        </p:commandButton>
+        
+        <p:commandButton id='#{childEntityTypeName}#{viewName}EditAllButton'
+                         value="Edit All"
+                         icon="fa fa-object-group"
+                         rendered="#{loginController.loggedIn}"
+                         action="#{itemMultiEditDomainInventoryController.editAllItemsDerivedFromItem(itemObject)}">
+            <p:tooltip for="#{childEntityTypeName}#{viewName}EditAllButton"
+                       value="Edit all #{childEntityTypeName} items for which current user has permissions"/>
+        </p:commandButton>
 
         <p:commandButton id="#{childEntityTypeName}#{viewName}TrackSparesButton"
                          value="Track Spares"
                          rendered="#{isEntityWriteable}"
+                         icon="fa fa-archive"
                          onclick="showItemSparePartsConfigurationDialog()">
             <p:tooltip for="#{childEntityTypeName}#{viewName}EditButton" value="Edit #{childEntityTypeName}" />
         </p:commandButton>               

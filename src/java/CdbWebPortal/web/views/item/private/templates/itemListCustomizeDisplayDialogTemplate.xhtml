@@ -19,69 +19,7 @@ See LICENSE file.
     
     <ui:define name="domainEntitySpecificColumns">
         
-        <p:selectBooleanCheckbox id="displayItemIdentifier1" 
-                                 value="#{entitySettingObject.displayItemIdentifier1}"
-                                 rendered="#{entityController.entityDisplayItemIdentifier1}"/>  
-        <h:outputLabel for="displayItemIdentifier1" 
-                       value="Display #{entityController.itemIdentifier1Title}" 
-                       styleClass="dialogDataLabel"
-                       rendered="#{entityController.entityDisplayItemIdentifier1}"/>
-        
-        <p:selectBooleanCheckbox id="displayItemIdentifier2" 
-                                 value="#{entitySettingObject.displayItemIdentifier2}"
-                                 rendered="#{entityController.entityDisplayItemIdentifier2}"/>  
-        <h:outputLabel for="displayItemIdentifier2" 
-                       value="Display #{entityController.itemIdentifier2Title}" 
-                       styleClass="dialogDataLabel"
-                       rendered="#{entityController.entityDisplayItemIdentifier2}"/>
-
-        <p:selectBooleanCheckbox id="displayItemType" 
-                                 value="#{entitySettingObject.displayItemType}"
-                                 rendered="#{entityController.entityDisplayItemType}"/>  
-        <h:outputLabel for="displayItemType" 
-                       value="Display #{entityController.itemItemTypeTitle}" 
-                       styleClass="dialogDataLabel"
-                       rendered="#{entityController.entityDisplayItemType}"/>
-
-        <p:selectBooleanCheckbox id="displayItemCategory" 
-                                 value="#{entitySettingObject.displayItemCategory}"
-                                 rendered="#{entityController.entityDisplayItemCategory}"/>  
-        <h:outputLabel for="displayItemCategory" 
-                       value="Display #{entityController.itemItemCategoryTitle}" 
-                       styleClass="dialogDataLabel"
-                       rendered="#{entityController.entityDisplayItemCategory}"/>
-        
-        <p:selectBooleanCheckbox id="displayItemProject" 
-                                 value="#{entitySettingObject.displayItemProject}"
-                                 rendered="#{entityController.entityDisplayItemProject}"/>  
-        <h:outputLabel for="displayItemProject" 
-                       value="Display Project" 
-                       styleClass="dialogDataLabel"
-                       rendered="#{entityController.entityDisplayItemProject}"/>
-        
-        <p:selectBooleanCheckbox id="displayItemSources" 
-                                 value="#{entitySettingObject.displayItemSources}"
-                                 rendered="#{entityController.entityDisplayItemSources}"/>  
-        <h:outputLabel for="displayItemSources" 
-                       value="Display Sources" 
-                       styleClass="dialogDataLabel"
-                       rendered="#{entityController.entityDisplayItemSources}"/>
-        
-        <p:selectBooleanCheckbox id="displayItemEntityTypes" 
-                                 value="#{entitySettingObject.displayItemEntityTypes}"
-                                 rendered="#{entityController.entityDisplayItemEntityTypes}"/>  
-        <h:outputLabel for="displayItemEntityTypes" 
-                       value="Display Entity Types" 
-                       styleClass="dialogDataLabel"
-                       rendered="#{entityController.entityDisplayItemEntityTypes}"/>
-        
-        <p:selectBooleanCheckbox id="displayQrId" 
-                                 value="#{entitySettingObject.displayQrId}"
-                                 rendered="#{entityController.entityDisplayQrId}"/>  
-        <h:outputLabel for="displayQrId" 
-                       value="Display QR Id" 
-                       styleClass="dialogDataLabel"
-                       rendered="#{entityController.entityDisplayQrId}"/>
+        <ui:include src="../templateDefaults/customizeDisplayDialog/itemCommonCustomizeDisplayContents.xhtml"/>
         
         <ui:insert name="additionalItemSpecificColumns" />
     </ui:define>

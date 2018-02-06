@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"                
+                xmlns:ui="http://java.sun.com/jsf/facelets"                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:param name="elementsEntityTypeName" value="#{itemElementController.entityTypeName}"/>
+    <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
+        <ui:param name="childEntityTypeName" value="#{elementsEntityTypeName}"/>
+        <ui:param name="customizableListDataTable" value="#{false}"/> 
+    </ui:include>
+    <p:dataTable id="#{elementsEntityTypeName}ListDataTable"
+                 value="#{itemObject.itemElementDisplayList}"
+                 var="itemElementObject">
+        <ui:param name="containedItemListObject"
+                  value="#{itemElementObject.containedItem}"/>
+        <p:column headerText="Assigned Identifier">
+            <h:outputText value="#{itemElementObject.name}" />
+        </p:column>
+        <p:column headerText="Item"
+                  exportFunction="#{containedItemListObject.getName()}">
+            <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="itemObject"
+                          value="#{containedItemListObject}"/>
+                <ui:param name="displayString"
+                          value="#{containedItemListObject.name}" />
+            </ui:include>
+        </p:column>
+        <p:column headerText="File Reference"
+                  exportable="false">
+            <ui:param name="filePropertyTypeId"
+                      value="#{itemDomainMAARCController.filePropertyTypeId}" />
+            <ui:include src="../../propertyValue/private/propertyValueDomainEntityListDataTableColumnObject.xhtml">
+                <ui:param name="propertyValueInformation" 
+                          value="#{containedItemListObject.getPropertyValueInformation(filePropertyTypeId)}"/>
+            </ui:include>                                
+        </p:column>
+    </p:dataTable>
+</ui:composition>
+
+

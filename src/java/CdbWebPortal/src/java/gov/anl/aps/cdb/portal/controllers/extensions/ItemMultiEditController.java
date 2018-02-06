@@ -383,6 +383,23 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         SessionUtility.navigateTo(desiredPath);
         renderMultiCreateConfigurationDialog = false;
     }
+    
+    public void editAllItemsDerivedFromItem(Item item) {
+        resetMultiEditVariables();
+        setActiveIndex(MultipleEditMenu.updateItems.ordinal());
+               
+        LoginController loginController = LoginController.getInstance();
+        List<Item> derivedFromItemList = item.getDerivedFromItemList();
+        selectedItemsToEdit = new ArrayList<>(); 
+        for (Item derivedItem : derivedFromItemList) {
+            if (loginController.isEntityWriteable(derivedItem.getEntityInfo())) {
+                selectedItemsToEdit.add(derivedItem);
+            }
+        }
+                
+        String desiredPath = getEntityApplicationViewPath() + "/" + EDIT_MULTIPLE_REDIRECT; 
+        SessionUtility.navigateTo(desiredPath);
+    }
 
     protected void resetMultiEditVariables() {
         multiEditMode = null;

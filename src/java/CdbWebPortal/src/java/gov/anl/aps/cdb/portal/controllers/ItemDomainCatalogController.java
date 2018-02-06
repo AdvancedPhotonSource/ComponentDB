@@ -312,6 +312,11 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
             displayInventorySpares = SparePartsBean.isItemContainSparePartConfiguration(getCurrent());
         }
         return displayInventorySpares;
+    } 
+
+    @Override
+    public boolean getEntityHasSortableElements() {
+        return true; 
     }
 
     @Override

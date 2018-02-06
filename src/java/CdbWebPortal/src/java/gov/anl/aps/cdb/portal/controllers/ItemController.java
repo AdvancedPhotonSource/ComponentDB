@@ -135,6 +135,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected Integer domainId = null;
     
     protected Domain defaultControllerDomain = null;
+    
+    protected Boolean hasElementReorderChangesForCurrent = false; 
 
     public ItemController() {
     }
@@ -209,6 +211,15 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             return getDefaultDomain().getItemIdentifier2Label();
         }
         return null;         
+    }
+    
+    /**
+     * Return true if item elements can be sorted when user has permissions to update item. 
+     * 
+     * @return 
+     */
+    public boolean getEntityHasSortableElements() {
+        return false; 
     }
     
     public boolean getEntityDisplayItemElementsForCurrent() {
@@ -299,8 +310,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     @Override
     protected void resetVariablesForCurrent() {
         super.resetVariablesForCurrent();
-        newItemElementForCurrent = null; 
-        newItemElementForCurrentSaveButtonEnabled = false; 
+        newItemElementForCurrent = null;
+        newItemElementForCurrentSaveButtonEnabled = false;
+        hasElementReorderChangesForCurrent = false;
+        ItemElementController.getInstance().resetCurrentItemVariables();
     }
     
     public List<ItemType> getAvailableItemTypesForCurrentItem() {
@@ -1449,6 +1462,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public void setItemElementListTreeTableRootNode(TreeNode itemElementListTreeTableRootNode) {
         this.itemElementListTreeTableRootNode = itemElementListTreeTableRootNode;
+    }
+
+    public Boolean getHasElementReorderChangesForCurrent() {
+        return hasElementReorderChangesForCurrent;
+    }
+
+    public void setHasElementReorderChangesForCurrent(Boolean hasElementReorderChangesForCurrent) {
+        this.hasElementReorderChangesForCurrent = hasElementReorderChangesForCurrent;
     }
 
     @Override

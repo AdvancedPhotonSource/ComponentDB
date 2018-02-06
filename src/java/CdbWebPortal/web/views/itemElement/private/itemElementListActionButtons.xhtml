@@ -7,25 +7,37 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
-    
-    <!-- showAddButton param specifies if a simple assambly item should be shown --> 
-    
-    <ui:param name="showAddButton" value="#{showAddButton != null ? showAddButton : true}" />
+                template="../../common/private/commonChildListActionButtons.xhtml">
 
-    <ui:include src="../../common/private/commonChildListActionButtons.xhtml">        
+    <ui:define name="variables">
+        <!-- showAddButton param specifies if a simple assambly item should be shown --> 
+        <ui:param name="showAddButton" value="#{showAddButton != null ? showAddButton : true}" />
+
         <ui:param name="parentEntityController" value="#{entityController}"/>
         <ui:param name="listCustomizeOnStartCommand" value="itemElementCustomizeOnStartCommand()" />
         <ui:param name="isParentEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
         <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
         <ui:param name="onCompleteAddButtonCommand" value="#{showAddButton ? 'showAddNewAssemblyItemDialog()' : null}" /> 
-    </ui:include>
-   
-    <ui:include src="#{showAddButton ? 'itemElementAddNewAssemblyItemDialog.xhtml' : '../../common/private/commonEmptyPage.xhtml' }" />
+    </ui:define>
     
-    <p:remoteCommand name="itemElementCustomizeOnStartCommand"
-                     action="#{itemElementController.setCurrentSettingsItemController(currentItemController)}"/>
+    <ui:define name="additionalButtons">        
+            <p:commandButton value="Save New Order"
+                             icon="fa fa-floppy-o"
+                             update="@form"
+                             action="#{itemElementController.performReorderSaveOperations()}" 
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             rendered="#{isEntityWriteable and itemElementController.hasReorderChanges}"/>        
+    </ui:define>
+    
+
+    <ui:define name="additionalContent">
+        <ui:include src="#{showAddButton ? 'itemElementAddNewAssemblyItemDialog.xhtml' : '../../common/private/commonEmptyPage.xhtml' }" />
+
+        <p:remoteCommand name="itemElementCustomizeOnStartCommand"
+                         action="#{itemElementController.setCurrentSettingsItemController(currentItemController)}"/>
+    </ui:define>
+
 </ui:composition>
 
 

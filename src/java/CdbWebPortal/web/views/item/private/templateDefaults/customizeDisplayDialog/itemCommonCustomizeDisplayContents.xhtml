@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:selectBooleanCheckbox id="#{viewName}displayItemIdentifier1" 
+                             value="#{entitySettingObject.displayItemIdentifier1}"
+                             rendered="#{entityController.entityDisplayItemIdentifier1}"/>  
+    <h:outputLabel for="#{viewName}displayItemIdentifier1" 
+                   value="Display #{entityController.itemIdentifier1Title}" 
+                   styleClass="dialogDataLabel"
+                   rendered="#{entityController.entityDisplayItemIdentifier1}"/>
+
+    <p:selectBooleanCheckbox id="#{viewName}displayItemIdentifier2" 
+                             value="#{entitySettingObject.displayItemIdentifier2}"
+                             rendered="#{entityController.entityDisplayItemIdentifier2}"/>  
+    <h:outputLabel for="#{viewName}displayItemIdentifier2" 
+                   value="Display #{entityController.itemIdentifier2Title}" 
+                   styleClass="dialogDataLabel"
+                   rendered="#{entityController.entityDisplayItemIdentifier2}"/>
+
+    <p:selectBooleanCheckbox id="#{viewName}displayItemType" 
+                             value="#{entitySettingObject.displayItemType}"
+                             rendered="#{entityController.entityDisplayItemType}"/>  
+    <h:outputLabel for="#{viewName}displayItemType" 
+                   value="Display #{entityController.itemItemTypeTitle}" 
+                   styleClass="dialogDataLabel"
+                   rendered="#{entityController.entityDisplayItemType}"/>
+
+    <p:selectBooleanCheckbox id="#{viewName}displayItemCategory" 
+                             value="#{entitySettingObject.displayItemCategory}"
+                             rendered="#{entityController.entityDisplayItemCategory}"/>  
+    <h:outputLabel for="#{viewName}displayItemCategory" 
+                   value="Display #{entityController.itemItemCategoryTitle}" 
+                   styleClass="dialogDataLabel"
+                   rendered="#{entityController.entityDisplayItemCategory}"/>
+
+    <p:selectBooleanCheckbox id="#{viewName}displayItemProject" 
+                             value="#{entitySettingObject.displayItemProject}"
+                             rendered="#{entityController.entityDisplayItemProject}"/>  
+    <h:outputLabel for="#{viewName}displayItemProject" 
+                   value="Display Project" 
+                   styleClass="dialogDataLabel"
+                   rendered="#{entityController.entityDisplayItemProject}"/>
+
+    <p:selectBooleanCheckbox id="#{viewName}displayItemSources" 
+                             value="#{entitySettingObject.displayItemSources}"
+                             rendered="#{entityController.entityDisplayItemSources}"/>  
+    <h:outputLabel for="#{viewName}displayItemSources" 
+                   value="Display Sources" 
+                   styleClass="dialogDataLabel"
+                   rendered="#{entityController.entityDisplayItemSources}"/>
+
+    <p:selectBooleanCheckbox id="#{viewName}displayItemEntityTypes" 
+                             value="#{entitySettingObject.displayItemEntityTypes}"
+                             rendered="#{entityController.entityDisplayItemEntityTypes}"/>  
+    <h:outputLabel for="#{viewName}displayItemEntityTypes" 
+                   value="Display Entity Types" 
+                   styleClass="dialogDataLabel"
+                   rendered="#{entityController.entityDisplayItemEntityTypes}"/>
+
+    <p:selectBooleanCheckbox id="#{viewName}displayQrId" 
+                             value="#{entitySettingObject.displayQrId}"
+                             rendered="#{entityController.entityDisplayQrId}"/>  
+    <h:outputLabel for="#{viewName}displayQrId" 
+                   value="Display QR Id" 
+                   styleClass="dialogDataLabel"
+                   rendered="#{entityController.entityDisplayQrId}"/>
+
+</ui:composition>

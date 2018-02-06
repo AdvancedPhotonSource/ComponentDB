@@ -34,7 +34,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -76,7 +75,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.inventory.getValue();
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";
 
-    private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());   
+    private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
 
     private List<PropertyValue> filteredPropertyValueList = null;
 
@@ -96,39 +95,41 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     private ListDataModel inventoryItemsWithRequiredConnector = null;
     private ItemDomainInventory selectedSecondItemWithRequiredConnection = null;
 
+    private List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
+
     private boolean connectionEditRendered = false;
 
-    private ItemDomainInventory lastInventoryItemRequestedLocationMenuModel = null;   
-    
+    private ItemDomainInventory lastInventoryItemRequestedLocationMenuModel = null;
+
     @EJB
     private ItemElementRelationshipFacade itemElementRelationshipFacade;
 
     @EJB
     private RelationshipTypeFacade relationshipTypeFacade;
-    
+
     @EJB
-    private ItemDomainInventoryFacade itemDomainInventoryFacade; 
+    private ItemDomainInventoryFacade itemDomainInventoryFacade;
 
     @EJB
     private ConnectorFacade connectorFacade;
 
     public ItemDomainInventoryController() {
-        super();        
+        super();
     }
 
     public static ItemDomainInventoryController getInstance() {
         return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);
     }
-    
+
     @Override
     protected ItemCreateWizardController getItemCreateWizardController() {
-        return ItemCreateWizardDomainInventoryController.getInstance(); 
-    }   
-    
+        return ItemCreateWizardDomainInventoryController.getInstance();
+    }
+
     @Override
     public ItemMultiEditController getItemMultiEditController() {
-        return ItemMultiEditDomainInventoryController.getInstance(); 
-    } 
+        return ItemMultiEditDomainInventoryController.getInstance();
+    }
 
     @Override
     public ItemEnforcedPropertiesController getItemEnforcedPropertiesController() {
@@ -164,6 +165,32 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return null;
     }
 
+    public boolean isCollapsedRelatedMAARCItemsForCurrent() {
+        return getRelatedMAARCRelationshipsForCurrent().size() < 1;
+    }
+
+    public List<ItemElementRelationship> getRelatedMAARCRelationshipsForCurrent() {
+        if (relatedMAARCRelationshipsForCurrent == null) {
+            List<ItemElementRelationship> itemElementRelationshipList = getCurrent().getSelfElement().getItemElementRelationshipList();
+            relatedMAARCRelationshipsForCurrent = new ArrayList<>();
+            String maarcRelationshipName = ItemDomainMAARCController.MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME;
+
+            for (ItemElementRelationship ier : itemElementRelationshipList) {
+                if (ier.getRelationshipType().getName().equals(maarcRelationshipName)) {
+                    relatedMAARCRelationshipsForCurrent.add(ier);
+                }
+            }
+        }
+
+        return relatedMAARCRelationshipsForCurrent;
+    } 
+
+    @Override
+    protected void resetVariablesForCurrent() {
+        super.resetVariablesForCurrent(); 
+        relatedMAARCRelationshipsForCurrent = null;         
+    }
+
     @Override
     public List<ItemDomainInventory> getItemListWithProject(ItemProject itemProject) {
         String projectName = itemProject.getName();
@@ -194,7 +221,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         }
         return inventoryItem.getLocation();
     }
-    
+
     public List<ItemElementRelationship> getItemCableRelationshipList(Item inventoryItem) {
         if (inventoryItem.getItemCableConnectionsRelationshipList() == null) {
             List<ItemElementRelationship> cableRelationshipList;
@@ -203,20 +230,20 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         }
         return inventoryItem.getItemCableConnectionsRelationshipList();
     }
-    
+
     public boolean getDisplayItemCableRelationshipList() {
         if (getCurrent() != null) {
             List<ItemElementRelationship> itemCableRelationshipList = getItemCableRelationshipList(getCurrent());
-            return itemCableRelationshipList != null && !itemCableRelationshipList.isEmpty();             
-        } 
-        return false; 
+            return itemCableRelationshipList != null && !itemCableRelationshipList.isEmpty();
+        }
+        return false;
     }
 
     public void createItemCableConnectionRelationshipForCurrent() {
         resetConnectorVairables();
         connectionEditRendered = true;
     }
-    
+
     public void cancelCreateItemCableConnectionRelationshipForCurrent() {
         resetConnectorVairables();
     }
@@ -258,30 +285,30 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             } else {
                 // This should not happen. 
                 SessionUtility.addErrorMessage("Error", "Cable was not created sucessfully.");
-                currentConnectionCable = null; 
+                currentConnectionCable = null;
             }
         }
-        
-        updateConnectorTypesForCurrentCable();       
+
+        updateConnectorTypesForCurrentCable();
 
     }
-    
+
     public void updateConnectorTypesForCurrentCable() {
-        if (currentConnectionCable != null) {                        
-            boolean isDirect = ItemDomainCableController.getIsDirectConnectionForItem(currentConnectionCable); 
-            ConnectorType connectorType = selectedConnectorOfCurrentItem.getConnectorType(); 
-            boolean connectorGender =  selectedConnectorOfCurrentItem.getIsMale(); 
-            
+        if (currentConnectionCable != null) {
+            boolean isDirect = ItemDomainCableController.getIsDirectConnectionForItem(currentConnectionCable);
+            ConnectorType connectorType = selectedConnectorOfCurrentItem.getConnectorType();
+            boolean connectorGender = selectedConnectorOfCurrentItem.getIsMale();
+
             firstCableItemConnector.getConnector().setConnectorType(connectorType);
             secondCableItemConnector.getConnector().setConnectorType(connectorType);
             firstCableItemConnector.getConnector().setIsMale(!connectorGender);
-            
-            if (isDirect) {                
+
+            if (isDirect) {
                 secondCableItemConnector.getConnector().setIsMale(connectorGender);
-            } else {                                
+            } else {
                 secondCableItemConnector.getConnector().setIsMale(!connectorGender);
             }
-            
+
             loadAvailableInventoryItemListWithSecondItemConnector();
         }
     }
@@ -325,16 +352,16 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
         ItemElementRelationship currentToCableRelationship = createItemElementRelationshipToCableConnector(getCurrent(), currentConnectionCable, firstItemConnector, firstCableItemConnector);
         ItemElementRelationship secondToCableRelationship = createItemElementRelationshipToCableConnector(selectedSecondItemWithRequiredConnection, currentConnectionCable, secondItemConnector, secondCableItemConnector);
-        
+
         // New cable item still needs a list for item element relationships. 
         ItemElement cableSelfElement = currentConnectionCable.getSelfElement();
         cableSelfElement.setItemElementRelationshipList1(new ArrayList<>());
-        
+
         // Add the apporpriate item relationships to the model. 
         addItemElementRelationshipToItem(getCurrent(), currentToCableRelationship, false);
-        addItemElementRelationshipToItem(selectedSecondItemWithRequiredConnection, secondToCableRelationship, false);                        
+        addItemElementRelationshipToItem(selectedSecondItemWithRequiredConnection, secondToCableRelationship, false);
         addItemElementRelationshipToItem(currentConnectionCable, currentToCableRelationship, true);
-        addItemElementRelationshipToItem(currentConnectionCable, secondToCableRelationship, true);        
+        addItemElementRelationshipToItem(currentConnectionCable, secondToCableRelationship, true);
 
         this.update();
 
@@ -353,7 +380,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         } else {
             ierList = selfElement.getItemElementRelationshipList();
         }
-        ierList.add(ier); 
+        ierList.add(ier);
     }
 
     private ItemElementRelationship createItemElementRelationshipToCableConnector(Item item,
@@ -464,7 +491,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public void setSelectedSecondItemWithRequiredConnection(ItemDomainInventory selectedInventoryItemWithRequiredConnection) {
         this.selectedConnectorOfSecondItem = null;
         this.selectedSecondItemWithRequiredConnection = selectedInventoryItemWithRequiredConnection;
-    } 
+    }
 
     public DefaultMenuModel getItemLocataionDefaultMenuModel(ItemDomainInventory item) {
         lastInventoryItemRequestedLocationMenuModel = item;
@@ -587,7 +614,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         }
 
         return false;
-    }       
+    }
 
     public List<ItemElementRelationshipHistory> getItemLocationRelationshipHistory(Item item) {
         String locationRelationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue();
@@ -601,8 +628,8 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         }
 
         return null;
-    }    
-    
+    }
+
     @Override
     public void resetListDataModel() {
         super.resetListDataModel();
@@ -767,7 +794,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public void prepareAddItemDerivedFromItem(Item item) {
         super.prepareAddItemDerivedFromItem(item);
         prepareBillOfMaterialsForCurrentItem();
-    }   
+    }
 
     public void prepareBillOfMaterialsForCurrentItem() {
         // Prepare bill of materials if not yet done so. 
@@ -856,7 +883,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         showOptionalPartsInBom = false;
         currentItemBOMTreeHasOptionalItems = null;
 
-    }   
+    }
 
     public TreeNode getCurrentItemBOMListTree() {
         if (currentItemBOMListTree == null) {
@@ -1189,7 +1216,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         if (getCurrent().getContainedInBOM() != null) {
             return getCurrent().getContainedInBOM().isApplyPermissionToAllNewParts();
         }
-        return false; 
+        return false;
     }
 
     private void setPermissionsForItemToCurrentItem(ItemDomainInventory inventoryItem) {
@@ -1253,7 +1280,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             clearItemElementsForItem(item);
             updatePermissionOnAllNewPartsIfNeeded();
             addItemElementsFromBillOfMaterials(item);
-        }               
+        }
     }
 
     private void clearItemElementsForItem(ItemDomainInventory item) {
@@ -1287,7 +1314,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public String getInventoryItemElementDisplayString(ItemElement itemElement) {
         if (itemElement != null) {
             if (itemElement.getContainedItem() != null) {
-                ItemDomainInventory inventoryItem = (ItemDomainInventory) itemElement.getContainedItem();                
+                ItemDomainInventory inventoryItem = (ItemDomainInventory) itemElement.getContainedItem();
                 return getItemDisplayString(inventoryItem);
             }
 
@@ -1504,7 +1531,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             return getCurrent().toString();
         }
         return "";
-    }  
+    }
 
     public boolean getIsCurrentItemHaveConnectors() {
         Item item = getCurrent();
@@ -1524,8 +1551,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
         return false;
     }
-
-    
 
     @Override
     public String getEntityTypeName() {
@@ -1648,14 +1673,14 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     @Override
     protected ItemDomainInventory instenciateNewItemDomainEntity() {
-        return new ItemDomainInventory(); 
+        return new ItemDomainInventory();
     }
 
     @Override
     protected ItemDomainInventoryFacade getEntityDbFacade() {
-        return itemDomainInventoryFacade;         
+        return itemDomainInventoryFacade;
     }
-    
+
     @Override
     public boolean getEntityDisplayItemConnectors() {
         return false;

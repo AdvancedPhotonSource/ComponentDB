@@ -6,44 +6,51 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
-
-    <ui:param name="childEntityTypeNames" value="#{childEntityTypeName}s"/>
-    <ui:param name="childEntityListDataTableId" value="#{childEntityTypeName}ListDataTable"/>
-
-    <ui:param name="customizeDisplayChildEntityTypeName" value="#{customizeDisplayChildEntityTypeName != null 
-                                                                  ? customizeDisplayChildEntityTypeName 
-                                                                  :  childEntityTypeName}ListCustomizeDisplayDialogWidget" />
+                xmlns:p="http://primefaces.org/ui">    
+    <ui:insert name="variables" />
     
-    <ui:param name="customizableListDataTable" value="#{customizableListDataTable != null 
-                                                        ? customizableListDataTable : true}" />
-
-    <div class="actionButton">
-
-        <ui:include src="reusedParts/childListAddButton.xhtml" />
-        <ui:include src="reusedParts/childListEditButton.xhtml" />
-
-        <ui:insert name="additionalButtons" />
-
-        <ui:include src="reusedParts/childListExportButtons.xhtml"/>        
+    <p:outputPanel id='#{childEntityTypeName}ListCustomizeButtonsOutputpanel'>
         
-        <p:commandButton id="#{childEntityTypeName}ListCustomizeDisplayButton" 
-                         onstart="PF('loadingDialog').show(); #{listCustomizeOnStartCommand}"
-                         oncomplete="PF('loadingDialog').hide(); PF('#{customizeDisplayChildEntityTypeName}').show()" 
-                         alt="Customize List" styleClass="actionButtonRight" 
-                         update="@form" 
-                         icon="fa fa-wrench"
-                         rendered="#{customizableListDataTable}">
-            <p:tooltip for="#{childEntityTypeName}ListCustomizeDisplayButton" value="Customize view."/>
-        </p:commandButton>
-        <p:commandButton id="#{childEntityTypeName}ListResetFiltersButton" action="#{childEntityController.resetListForView()}" 
-                         alt="Clear Filters" icon="fa fa-refresh" styleClass="actionButtonRight"
-                         rendered="#{displayListResetFiltersButton}">
-            <p:tooltip for="#{childEntityTypeName}ListResetFiltersButton" value="Reset filters."/>
-        </p:commandButton>
+        <ui:param name="childEntityTypeNames" value="#{childEntityTypeName}s"/>       
+        <ui:param name="childEntityListDataTableId" value="#{childEntityTypeName}ListDataTable"/>
 
-        <p:commandButton id="#{childEntityTypeName}ListNoOp" style="visibility:hidden" value="NoOp"/>
-        <p:defaultCommand target="#{childEntityTypeName}ListNoOp"/>
-    </div>
+        <ui:param name="customizeDisplayChildEntityTypeName" value="#{customizeDisplayChildEntityTypeName != null 
+                                                                      ? customizeDisplayChildEntityTypeName 
+                                                                      :  childEntityTypeName}ListCustomizeDisplayDialogWidget" />
+
+        <ui:param name="customizableListDataTable" value="#{customizableListDataTable != null 
+                                                            ? customizableListDataTable : true}" />
+
+        <div class="actionButton">
+
+            <ui:include src="reusedParts/childListAddButton.xhtml" />
+            <ui:include src="reusedParts/childListEditButton.xhtml" />
+
+            <ui:insert name="additionalButtons" />
+
+            <ui:include src="reusedParts/childListExportButtons.xhtml"/>        
+
+            <p:commandButton id="#{childEntityTypeName}ListCustomizeDisplayButton" 
+                             onstart="PF('loadingDialog').show(); #{listCustomizeOnStartCommand}"
+                             oncomplete="PF('loadingDialog').hide(); PF('#{customizeDisplayChildEntityTypeName}').show()" 
+                             alt="Customize List" styleClass="actionButtonRight" 
+                             update="@form" 
+                             icon="fa fa-wrench"
+                             rendered="#{customizableListDataTable}">
+                <p:tooltip for="#{childEntityTypeName}ListCustomizeDisplayButton" value="Customize view."/>
+            </p:commandButton>
+            <p:commandButton id="#{childEntityTypeName}ListResetFiltersButton" action="#{childEntityController.resetListForView()}" 
+                             alt="Clear Filters" icon="fa fa-refresh" styleClass="actionButtonRight"
+                             rendered="#{displayListResetFiltersButton}">
+                <p:tooltip for="#{childEntityTypeName}ListResetFiltersButton" value="Reset filters."/>
+            </p:commandButton>
+
+            <p:commandButton id="#{childEntityTypeName}ListNoOp" style="visibility:hidden" value="NoOp"/>
+            <p:defaultCommand target="#{childEntityTypeName}ListNoOp"/>
+        </div>
+        
+    </p:outputPanel>
+
+    <ui:insert name="additionalContent"/>          
 
 </ui:composition>
