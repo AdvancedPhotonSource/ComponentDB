@@ -119,7 +119,7 @@ eval $cmd
 cmd="cat $configFile | sed 's?CdbSoftwareVersion=.*?CdbSoftwareVersion=${CDB_SOFTWARE_VERSION} ($CDB_DATE)?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 
-cmd="cat $configFile | sed 's?CdbSoftwareVersionUrl=.*?CdbSoftwareVersionUrl=${CDB_REPOSITORY_FULL_URL}?g' > $configFile.2 && m    v $configFile.2 $configFile"
+cmd="cat $configFile | sed 's?CdbSoftwareVersionUrl=.*?CdbSoftwareVersionUrl=${CDB_REPOSITORY_FULL_URL}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 
 for cssFile in portal; do
