@@ -55,6 +55,12 @@ JAVA_HOME=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
 CDB_WEB_SERVICE_HOST=`hostname -f`
 CDB_DATE=`date +%Y.%m.%d`
 
+CDB_REPOSITORY_URL=https://github.com/AdvancedPhotonSource/ComponentDB
+CDB_REPOSITORY_MILESTONES_PATH=/milestones
+CDB_REPOSITORY_RELEASES_PATH=/releases
+
+CDB_REPOSITORY_FULL_URL="$CDB_REPOSITORY_URL$CDB_REPOSITORY_MILESTONES_PATH"
+
 if [ ! -z $2 ]; then
     DEPLOY_MODE=$2
     if [ $DEPLOY_MODE = "Dev" ]; then
@@ -64,6 +70,7 @@ fi
 
 if [[ -z $CDB_SOFTWARE_VERSION ]]; then
     CDB_SOFTWARE_VERSION=`cat $CDB_ROOT_DIR/etc/version`
+    CDB_REPOSITORY_FULL_URL="$CDB_REPOSITORY_URL$CDB_REPOSITORY_RELEASES_PATH"
 fi
 
 if [ ! -f $CDB_DIST_DIR/$CDB_BUILD_WAR_FILE ]; then
@@ -110,6 +117,9 @@ configFile=WEB-INF/classes/resources.properties
 cmd="cat $configFile | sed 's?CdbPortalTitle=.*?CdbPortalTitle=${CDB_PORTAL_TITLE}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 cmd="cat $configFile | sed 's?CdbSoftwareVersion=.*?CdbSoftwareVersion=${CDB_SOFTWARE_VERSION} ($CDB_DATE)?g' > $configFile.2 && mv $configFile.2 $configFile"
+eval $cmd
+
+cmd="cat $configFile | sed 's?CdbSoftwareVersionUrl=.*?CdbSoftwareVersionUrl=${CDB_REPOSITORY_FULL_URL}?g' > $configFile.2 && m    v $configFile.2 $configFile"
 eval $cmd
 
 for cssFile in portal; do
