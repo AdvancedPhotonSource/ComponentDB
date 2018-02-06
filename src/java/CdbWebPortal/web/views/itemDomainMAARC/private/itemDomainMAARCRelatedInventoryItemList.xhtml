@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:include src="../../common/private/commonChildListActionButtons.xhtml">        
+        <ui:param name="childEntityController" value="#{itemDomainInventoryController}"/>
+        <ui:param name="childEntityTypeName" value="#{entityTypeName}InventoryRelationship"/>
+        <ui:param name="customizeDisplayChildEntityTypeName" 
+                  value="#{itemDomainInventoryController.entityTypeName}MaarcRelationship" />        
+    </ui:include>
+
+    <p:dataTable id="#{entityTypeName}InventoryRelationshipListDataTable"
+                 value="#{entityController.relatedInventoryRelationshipsForCurrent}"
+                 var="itemElementRelationship">                
+        <ui:include src="../../itemDomainInventory/private/itemDomainInventoryListObject.xhtml">
+            <ui:param name="itemListObject"
+                      value="#{itemElementRelationship.firstItemElement.parentItem}"/> 
+            <ui:param name="entityController"
+                      value="#{itemDomainInventoryController}" />
+        </ui:include>
+    </p:dataTable>
+    
+    <ui:include src="../../item/private/itemBasicListCustomDisplayDialog.xhtml" >
+        <ui:param name="viewName" value="MaarcRelationship"/>
+        <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
+    </ui:include>
+
+</ui:composition>

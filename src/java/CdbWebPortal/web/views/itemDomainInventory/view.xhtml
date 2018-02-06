@@ -23,6 +23,7 @@ See LICENSE file.
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{itemElementController.processPreRender()}"/>
         <f:event type="preRenderComponent" listener="#{itemMemberViewController.processPreRender()}" />
+        <f:event type="preRenderComponent" listener="#{itemDomainMAARCController.processPreRender()}"/>
     </f:metadata>
 
     <ui:define name="viewPanelGrid">
@@ -49,6 +50,12 @@ See LICENSE file.
                 <ui:param name="entityObject" value="#{domainEntityObject.derivedFromItem}" />
             </ui:include>
         </p:panel>
+        
+        <p:panel header="Related MAARC Items"
+                 toggleable="true"
+                 collapsed="#{entityController.collapsedRelatedMAARCItemsForCurrent}">
+            <ui:include src="private/itemDomainInventoryRelatedMAARCItemList.xhtml"/>                        
+        </p:panel>
     </ui:define>
 
     <ui:define name="additionalLeftItemPanels">        
@@ -57,7 +64,7 @@ See LICENSE file.
                  rendered="#{resources.EnabledConnectorAndConnectionsFunctionality}"
                  collapsed="#{!itemDomainInventoryController.displayItemCableRelationshipList}">
             <ui:include src="private/itemDomainInventoryConnectionsList.xhtml" />
-        </p:panel>
+        </p:panel>                
     </ui:define>
 
     <ui:define name="itemElements">
