@@ -124,7 +124,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
     @Override
     public boolean getEntityDisplayItemMemberships() {
-        return false;
+        return true;
     }
 
     @Override
