@@ -56,7 +56,7 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
         assertNotNull(item);
         item.setItemCategoryList(new ArrayList());
         // Should be disabled until category is selected
-        assertTrue(itemDomainCatalogController.isDisabledItemItemType());               
+        assertTrue(itemDomainCatalogController.isDisabledItemItemType(item));               
         // Generated item type list should be empty
         List<ItemType> itemTypes = itemDomainCatalogController.getAvailableItemTypesForCurrentItem();
         assertTrue(itemTypes == null || itemTypes.isEmpty());
