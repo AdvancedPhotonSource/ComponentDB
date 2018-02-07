@@ -204,6 +204,7 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
             this.itemCategoryFacade = cdbTest.getItemCategoryFacade();
             this.listFacade = cdbTest.getListFacade();
             this.userInfoFacade = cdbTest.getUserInfoFacade();
+            this.itemElementController = new ItemElementController(); 
         }                
        
         public boolean isListDifferentTestable(List<Object> originalList, List<Object> listToCompare) {

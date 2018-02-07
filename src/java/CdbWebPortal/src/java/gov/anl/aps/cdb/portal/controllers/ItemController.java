@@ -132,6 +132,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected ItemProjectController itemProjectController = null;        
     protected SettingController settingController; 
     
+    protected ItemElementController itemElementController; 
+    
     protected Integer domainId = null;
     
     protected Domain defaultControllerDomain = null;
@@ -313,7 +315,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         newItemElementForCurrent = null;
         newItemElementForCurrentSaveButtonEnabled = false;
         hasElementReorderChangesForCurrent = false;
-        ItemElementController.getInstance().resetCurrentItemVariables();
+        getItemElementController().resetCurrentItemVariables();
     }
     
     public List<ItemType> getAvailableItemTypesForCurrentItem() {
@@ -2099,6 +2101,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             settingController = SettingController.getInstance();
         }
         return settingController; 
+    }
+    
+    public ItemElementController getItemElementController() {
+        if (itemElementController == null) {
+            itemElementController = ItemElementController.getInstance();
+        }           
+        return itemElementController;
     }
 
     @FacesConverter(value = "itemConverter", forClass = Item.class)

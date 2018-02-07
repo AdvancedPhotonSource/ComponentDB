@@ -47,7 +47,7 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
 
     private List<ItemDomainInventory> inventorySparesList = null;
     private List<ItemDomainInventory> inventoryNonSparesList = null;
-    private Boolean displayInventorySpares = null;
+    private Boolean displayInventorySpares = null;        
     
     @EJB
     ItemDomainCatalogFacade itemDomainCatalogFacade;    
@@ -432,6 +432,6 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
     @Override
     protected ItemDomainCatalogSettings createNewSettingObject() {
         return new ItemDomainCatalogSettings(this);
-    }
+    }   
 
 }
