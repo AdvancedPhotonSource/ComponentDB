@@ -1,0 +1,49 @@
+/*
+ * Copyright (c) UChicago Argonne, LLC. All rights reserved.
+ * See LICENSE file.
+ */
+@import url("portal.css");
+
+.defaultBackground {
+    background: linear-gradient(to bottom right, #f7f7f2 0%, #d5ebf5 100%);
+}
+
+html, body {
+    background: linear-gradient(
+      rgba(230, 242, 255, 0.95), 
+      rgba(204, 229, 255, 1)
+    ),
+    /** Provided By: https://flic.kr/p/acCF3G **/
+    url(../images/server-rack.jpg); 
+    background-size: cover;
+}
+
+
+#bottom {
+    background: linear-gradient(to bottom right, #f7f7f2 0%, #d5ebf5 100%);
+}
+
+.domainEntityRowExpansion {
+    background: linear-gradient(to bottom right, #f7f7f2 0%, #d5ebf5 100%);
+}
+
+input, textarea {
+    background: transparent;
+}
+
+h1 {
+    color: #efeab9;
+}
+
+.ui-accordion .ui-accordion-content {
+    background: transparent;
+}
+
+.ui-panelgrid .ui-panelgrid-cell {
+    background: transparent; 
+}
+
+.ui-panel {
+    border: 0px; 
+    background: transparent; 
+}
