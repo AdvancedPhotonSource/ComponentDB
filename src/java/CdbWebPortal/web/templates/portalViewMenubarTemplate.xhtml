@@ -30,6 +30,10 @@ See LICENSE file.
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') and 
                                       !fn:startsWith(view.viewId, '/views/itemDomainInventory/browse') ? 'activeMenuItem' : ''} "/>
             
+            <p:menuitem value="Machine Design" 
+                        id="machineDesignMenubarButton" url="/views/itemDomainMachineDesign/list"
+                        styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/') ? 'activeMenuItem' : ''} "/>
+            
             <p:menuitem value="MAARC" id="maarcMenubarButton" url="/views/itemDomainMAARC/list" 
                         rendered="#{resources.EnabledMAARCDomainFunctionality}"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMAARC/') ? 'activeMenuItem' : ''} "/>

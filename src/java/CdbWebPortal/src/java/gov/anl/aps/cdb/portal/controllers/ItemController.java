@@ -453,7 +453,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     protected String getEntityViewsDirectory(String domainName) {
-        return "itemDomain" + domainName;
+        return "itemDomain" + domainName.replaceAll("\\s", "");
     }        
 
     @Override
