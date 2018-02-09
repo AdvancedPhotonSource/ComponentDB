@@ -209,8 +209,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
     @Override
     public String getStyleName() {
-        // TODO -- Update with a new style.
-        return "inventory";
+        return "maarc";
     }
 
     @Override

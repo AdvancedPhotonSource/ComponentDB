@@ -5,6 +5,7 @@ INSERT INTO `domain` VALUES
 (2,'Catalog','Item domain for managing catalog items.', 'Model Number', 'Alternate Name', 'Function', 'Technical System'),
 (3,'Inventory','Item domain for managing inventory items', 'Serial Number', NULL, NULL, NULL),
 (4,'Cable', 'Item domain for managing cable items', NULL, NULL, NULL, NULL),
-(5,'MAARC', 'Item domain for managing measurement archive items', NULL, NULL, NULL, NULL);
+(5,'MAARC', 'Item domain for managing measurement archive items', NULL, NULL, NULL, NULL),
+(6,'Machine Design', 'Item domain for managing the design of machines', NULL, NULL, NULL, NULL);
 /*!40000 ALTER TABLE `domain` ENABLE KEYS */;
 UNLOCK TABLES;
