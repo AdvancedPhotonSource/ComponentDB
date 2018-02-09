@@ -19,7 +19,8 @@ See LICENSE file.
                   exportable="false">
             <p:commandLink id="#{entityTypeName}TravelerDestroyButton"
                            styleClass="fa-link-icon fa-icon-warning fa fa-trash" title="Delete"
-                           onstart="PF('confirmDeleteTraveler#{templateObject.id}Widget').show();">
+                           onstart="PF('confirmDeleteTraveler#{templateObject.id}Widget').show();"
+                           rendered="#{isEntityWriteable}">
                 <p:tooltip for="#{entityTypeName}TravelerDestroyButton" value="Delete traveler template entry."/>
             </p:commandLink>
 
