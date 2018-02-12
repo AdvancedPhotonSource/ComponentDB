@@ -48,6 +48,8 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 
@@ -1275,7 +1277,15 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             Date enteredOnDateTime = new Date();
             UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
 
-            for (PropertyValue propertyValue : cloningFromPropertyValueList) {
+            for (PropertyValue propertyValue : cloningFromPropertyValueList) {                
+                PropertyTypeHandlerInterface handler;
+                handler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+                if (handler != null) {
+                    if (handler.isPropertyCloneable() == false) {
+                        continue;
+                    }
+                }
+                
                 PropertyValue newPropertyValue = new PropertyValue();
                 newPropertyValue.setPropertyType(propertyValue.getPropertyType());
                 newPropertyValue.setValue(propertyValue.getValue());
