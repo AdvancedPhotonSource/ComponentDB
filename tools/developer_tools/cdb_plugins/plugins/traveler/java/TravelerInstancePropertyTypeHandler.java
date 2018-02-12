@@ -17,5 +17,10 @@ public class TravelerInstancePropertyTypeHandler extends AbstractPropertyTypeHan
     public TravelerInstancePropertyTypeHandler() {
         super(HANDLER_NAME);
     }
+    
+    @Override
+    public boolean isPropertyCloneable() {
+        return false;
+    }
    
 }

@@ -16,6 +16,11 @@ public class TravelerBinderPropertyTypeHandler extends AbstractPropertyTypeHandl
 
     public TravelerBinderPropertyTypeHandler() {
         super(HANDLER_NAME);
+    }    
+
+    @Override
+    public boolean isPropertyCloneable() {
+        return false;
     }
    
 }
