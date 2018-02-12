@@ -143,7 +143,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
      * style will be applied to the location that lead to the lowest location.
      * @return
      */
-    public DefaultMenuModel generateLocationMenuModel(String baseNodeName, String setLocationController, String setLocationMethod, ItemDomainLocation lowestLocation) {
+    public DefaultMenuModel generateLocationMenuModel(String baseNodeName, String setLocationController, String setLocationMethod, ItemDomainLocation lowestLocation, String updateTarget) {
         DefaultMenuModel generatedMenuModel = new DefaultMenuModel();
         List<ItemDomainLocation> locationHierarchyList = null;
         if (lowestLocation != null) {
@@ -152,7 +152,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         DefaultSubMenu defaultSubMenu;
         defaultSubMenu = new DefaultSubMenu(baseNodeName);
         generatedMenuModel.addElement(defaultSubMenu);
-        generateLocationMenuModel(defaultSubMenu, getItemsWithNoParentsRootNode(), setLocationController, setLocationMethod, locationHierarchyList);
+        generateLocationMenuModel(defaultSubMenu, getItemsWithNoParentsRootNode(), setLocationController, setLocationMethod, locationHierarchyList, updateTarget);
 
         return generatedMenuModel;
     }
@@ -171,7 +171,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
      * @param locationHierarchy - Apply location selected style to menu items in
      * the list.
      */
-    private void generateLocationMenuModel(DefaultSubMenu locationSubmenu, TreeNode locationTreeNode, String setLocationController, String setLocationMethod, List<ItemDomainLocation> locationHierarchy) {
+    private void generateLocationMenuModel(DefaultSubMenu locationSubmenu, TreeNode locationTreeNode, String setLocationController, String setLocationMethod, List<ItemDomainLocation> locationHierarchy, String updateTarget) {
         if (locationTreeNode.getData() != null) {
             ItemDomainLocation locationItem = (ItemDomainLocation) locationTreeNode.getData();
             boolean applyLocationActiveStyle = false; 
@@ -191,17 +191,17 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
                     }
                 }
                 locationSubmenu.addElement(childLocationSubMenu);
-                addLocationMenuItemToSubmenu(childLocationSubMenu, locationItem, setLocationController, setLocationMethod, applyLocationActiveStyle);
+                addLocationMenuItemToSubmenu(childLocationSubMenu, locationItem, setLocationController, setLocationMethod, applyLocationActiveStyle, updateTarget);
                 for (TreeNode childLocationTreeNode : locationTreeNode.getChildren()) {
-                    generateLocationMenuModel(childLocationSubMenu, childLocationTreeNode, setLocationController, setLocationMethod, locationHierarchy);
+                    generateLocationMenuModel(childLocationSubMenu, childLocationTreeNode, setLocationController, setLocationMethod, locationHierarchy, updateTarget);
                 }
             } else {
-                addLocationMenuItemToSubmenu(locationSubmenu, locationItem, setLocationController, setLocationMethod, applyLocationActiveStyle);
+                addLocationMenuItemToSubmenu(locationSubmenu, locationItem, setLocationController, setLocationMethod, applyLocationActiveStyle, updateTarget);
             }
         } else // root node 
         if (locationTreeNode.getChildCount() > 0) {
             for (TreeNode childLocationTreeNode : locationTreeNode.getChildren()) {
-                generateLocationMenuModel(locationSubmenu, childLocationTreeNode, setLocationController, setLocationMethod, locationHierarchy);
+                generateLocationMenuModel(locationSubmenu, childLocationTreeNode, setLocationController, setLocationMethod, locationHierarchy, updateTarget);
             }
         }
     }
@@ -220,7 +220,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
      * @param applayActiveLocationStyle - Apply location selected style to menu items in
      * the list.
      */
-    private void addLocationMenuItemToSubmenu(DefaultSubMenu submenu, ItemDomainLocation locationItem, String setLocationController, String setLocationMethod, boolean applayActiveLocationStyle) {
+    private void addLocationMenuItemToSubmenu(DefaultSubMenu submenu, ItemDomainLocation locationItem, String setLocationController, String setLocationMethod, boolean applayActiveLocationStyle, String updateTarget) {
         DefaultMenuItem locationMenuItem = new DefaultMenuItem();
         locationMenuItem.setValue(locationItem.getName());
 
@@ -234,7 +234,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
             String findLocationMethod = "itemDomainLocationController.findById(" + locationItem.getId() + ")";
             onClick += findLocationMethod + ")}";
             locationMenuItem.setCommand(onClick);
-            locationMenuItem.setUpdate("@form");
+            locationMenuItem.setUpdate(updateTarget);
         }
         submenu.addElement(locationMenuItem);
     }
