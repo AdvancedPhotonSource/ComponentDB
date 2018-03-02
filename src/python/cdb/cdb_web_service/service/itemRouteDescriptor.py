@@ -93,6 +93,15 @@ class ItemRouteDescriptor:
                 'method': ['POST']
             },
 
+            # Add a item element relationship between two items
+            {
+                'name': 'addItemRelationshipByQrId',
+                'path': '%s/items/:(firstItemQrId)/:(secondItemQrId)/addItemElementRelationshipByQrId/:(relationshipTypeName)' % contextRoot,
+                'controller': itemSessionController,
+                'action': 'addItemElementRelationship',
+                'method': ['POST']
+            },
+
             # Get item element relationship list for first item
             {
                 'name': 'getFirstItemRelationships',

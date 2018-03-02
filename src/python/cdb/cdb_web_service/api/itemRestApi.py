@@ -267,6 +267,21 @@ class ItemRestApi(CdbRestApi):
 
         return Item(responseData)
 
+    def addItemRelationshipByQrId(self, firstItemQrId, secondItemQrId, relationshipTypeName,
+                            relationshipDetails=None, description=None):
+        if firstItemQrId is None:
+            raise InvalidRequest("first item qr id must be provided")
+        if secondItemQrId is None:
+            raise InvalidRequest("second item qr id must be provided")
+
+        relationshipTypeName = Encoder.encode(relationshipTypeName)
+
+        url = "%s/items/%s/%s/addItemElementRelationshipByQrId/%s" \
+              % (self.getContextRoot(), firstItemQrId, secondItemQrId, relationshipTypeName)
+
+        return self.__finalizeAddItemRelationship(url, relationshipDetails, description)
+
+
     def addItemRelationship(self, firstItemId, secondItemId, relationshipTypeName,
                             relationshipDetails=None, description=None):
         if firstItemId is None:
@@ -281,6 +296,9 @@ class ItemRestApi(CdbRestApi):
         url = "%s/items/%s/%s/addItemElementRelationship/%s" \
               % (self.getContextRoot(), firstItemId, secondItemId, relationshipTypeName)
 
+        return self.__finalizeAddItemRelationship(url, relationshipDetails, description)
+
+    def __finalizeAddItemRelationship(self, url, relationshipDetails, description):
         if relationshipDetails is not None:
             relationshipDetails = Encoder.encode(relationshipDetails)
             url = self._appendUrlParameter(url, "relationshipDetails", relationshipDetails)
