@@ -548,6 +548,8 @@ class ItemHandler(CdbDbEntityHandler):
 
         mayAdd = False
 
+        existingItemElementRelationship = None
+
         relationshipType = self.relationshipTypeHandler.getRelationshipTypeByName(session, relationshipTypeName)
         relationshipTypeName = relationshipType.name
 
@@ -564,7 +566,16 @@ class ItemHandler(CdbDbEntityHandler):
         if relationshipTypeName == self.relationshipTypeHandler.LOCATION_RELATIONSHIP_TYPE_NAME:
             if firstDomainName == self.domainHandler.INVENTORY_DOMAIN_NAME and secondDomainName == self.domainHandler.LOCATION_DOMAIN_NAME:
                 if ierList.__len__() > 0:
-                    raise InvalidObjectState("Updating a location is currently not supported.")
+                    # Only one is allowed update
+                    if ierList.__len__() > 1:
+                        raise InvalidObjectState("Item has multiple location relationships.")
+
+                    locationRelationship = ierList[0]
+                    if locationRelationship.second_item_element_id == secondItemElementId:
+                        raise InvalidObjectState("Item is already in the specified location")
+
+                    existingItemElementRelationship = locationRelationship
+                    mayAdd = True
                 else:
                     mayAdd = True
             else:
@@ -588,7 +599,7 @@ class ItemHandler(CdbDbEntityHandler):
                                                                         secondItemConnectorId, linkItemElementId,
                                                                         relationshipTypeName,
                                                                         relationshipDetails, resourceTypeName, label,
-                                                                        description)
+                                                                        description, existingItemElementRelationship)
             # Add initial history item
             self.addItemElementRelationshipHistory(session, dbItemElementRelationship.id, firstItemElementId,
                                                    secondItemElementId, firstItemConnectorId,
@@ -599,13 +610,18 @@ class ItemHandler(CdbDbEntityHandler):
 
 
     def addItemElementRelationship(self, session, firstItemElementId, secondItemElementId, firstItemConnectorId, secondItemConnectorId,
-                                   linkItemElementId, relationshipTypeName, relationshipDetails, resourceTypeName, label, description ):
+                                   linkItemElementId, relationshipTypeName, relationshipDetails, resourceTypeName, label, description,
+                                   existingRelationship = None):
         if firstItemElementId is None:
             raise InvalidArgument("First item element Id must be specified for a item element relationship")
 
         firstItemElement = self.getItemElementById(session, firstItemElementId)
 
-        dbItemElementRelationship = ItemElementRelationship()
+        if existingRelationship is None:
+            dbItemElementRelationship = ItemElementRelationship()
+        else:
+            dbItemElementRelationship = existingRelationship
+
         dbItemElementRelationship.firstItemElement = firstItemElement
 
         if secondItemElementId is not None:
