@@ -501,8 +501,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public static ItemController findDomainControllerForItem(Item item) {
-        String domainName = item.getDomain().getName();
-        return findDomainController(domainName);
+        if (item.getDomain() != null) {
+            String domainName = item.getDomain().getName();
+            domainName = domainName.replace(" ", ""); 
+            return findDomainController(domainName);
+        }
+        return null; 
     }
 
     public static ItemController findDomainController(String domainName) {
@@ -902,18 +906,32 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public void validateCreateSingleItemElementSimpleDialog(String onSuccessCommand, String errorSummary) {
         ItemDomainEntity item = getCurrent(); 
         try { 
+            beforeValidateItemElement();
             prepareAddItemElement(item, newItemElementForCurrent);                       
             checkItemElementsForItem(item);
             
             newItemElementForCurrentSaveButtonEnabled = true; 
             RequestContext.getCurrentInstance().execute(onSuccessCommand);                         
-        } catch (CdbException ex) {            
+        } catch (CdbException ex) {  
+            failedValidateItemElement();
             SessionUtility.addErrorMessage(errorSummary, ex.getErrorMessage()); 
+        } catch (CloneNotSupportedException ex) {
+            failedValidateItemElement();
+            SessionUtility.addErrorMessage(errorSummary, ex.getMessage()); 
         } finally {
             item.getFullItemElementList().remove(newItemElementForCurrent); 
             item.resetItemElementDisplayList();            
         }                        
     }
+    
+    public void beforeValidateItemElement() throws CloneNotSupportedException, CdbException {
+        
+    }
+    
+    public void failedValidateItemElement() {
+        
+    }
+    
     
     public void deleteItemConnector(ItemConnector itemConnector) {
         Item item = getCurrent();
@@ -1462,6 +1480,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public ItemElement getNewItemElementForCurrent() {
         return newItemElementForCurrent;
+    }
+
+    public void setNewItemElementForCurrent(ItemElement newItemElementForCurrent) {
+        this.newItemElementForCurrent = newItemElementForCurrent;
     }
 
     public Boolean getNewItemElementForCurrentSaveButtonEnabled() {
