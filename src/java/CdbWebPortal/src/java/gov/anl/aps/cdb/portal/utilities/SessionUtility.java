@@ -12,6 +12,7 @@ import javax.faces.application.NavigationHandler;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
+import org.primefaces.context.RequestContext;
 
 /**
  * Session utility class.
@@ -166,6 +167,10 @@ public class SessionUtility {
     public static Object getRole() {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         return sessionMap.get(ROLE_KEY);
+    }
+    
+    public static void executeRemoteCommand(String commandName) {
+        RequestContext.getCurrentInstance().execute(commandName);
     }
     
     /**
