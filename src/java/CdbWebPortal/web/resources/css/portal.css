@@ -33,6 +33,10 @@ a:link:hover, a:visited:hover  {
     color: black;
 }
 
+.fullyHideablePanel.ui-hidden-container {
+    padding: 0;
+}
+
 #contentContainer {
     min-height: 95%;
     margin-bottom: 15px;
