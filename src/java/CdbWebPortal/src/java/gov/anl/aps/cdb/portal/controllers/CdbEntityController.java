@@ -896,10 +896,16 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void performCreateOperations(EntityType entity) throws CdbException, RuntimeException {
         performCreateOperations(entity, false);
     }
-
+    
     public void performCreateOperations(EntityType entity, boolean skipSystemLog) throws CdbException, RuntimeException {
+        performCreateOperations(entity, skipSystemLog, false);
+    }
+
+    public void performCreateOperations(EntityType entity, boolean skipSystemLog, boolean skipUpdateCurrent) throws CdbException, RuntimeException {
         try {
-            setCurrent(entity);
+            if (!skipUpdateCurrent) {
+                setCurrent(entity);
+            }
             EntityType newEntity = entity;
             prepareEntityInsert(entity);
             getEntityDbFacade().create(entity);
@@ -911,7 +917,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             if (!skipSystemLog) {
                 addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Created: " + entity.toString());
             }
-            setCurrent(findById((Integer) newEntityId));
+            if (!skipUpdateCurrent) {
+                setCurrent(findById((Integer) newEntityId));
+            }
 
             entity.setPersitanceErrorMessage(null);
         } catch (CdbException ex) {
