@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">   
+
+    <p:dialog id="machineDesignElementAssignInventoryDialog" 
+              widgetVar="machineDesignElementAssignInventoryDialogWidget"
+              styleClass="viewTransparentBackgroundDialog"
+              resizable="false"
+              closable="false"
+              modal="true"
+              header="Assign an inventory item to machine design element">
+
+        <p:outputPanel id="machineDesignElementAssignInventoryPanel"
+                       rendered="#{itemDomainMachineDesignController.displayAssignToDataTable}">
+            <ui:include src="itemDomainMachineDesignItemElementSelectInventoryDataTable.xhtml" >
+                <ui:param name="viewName"
+                          value="Assign" />
+                <ui:param name="updateTarget" value="machineDesignElementAssignInventoryPanel" />
+            </ui:include>
+        </p:outputPanel>
+
+        <f:facet name="footer">                                                   
+            <p:commandButton value="Save"
+                             icon="fa fa-save"
+                             action="#{itemDomainMachineDesignController.updateInstalledInventoryItem()}"
+                             update="@form"
+                             oncomplete="PF('machineDesignElementAssignInventoryDialogWidget').hide()" />
+
+            <p:commandButton value="Close" 
+                             icon="fa fa-window-close"
+                             oncomplete="PF('machineDesignElementAssignInventoryDialogWidget').hide()"
+                             action="#{itemDomainMachineDesignController.cancelCreateSingleItemElementSimpleDialog()}"/>
+        </f:facet>
+
+    </p:dialog>
+
+</ui:composition>
+
+

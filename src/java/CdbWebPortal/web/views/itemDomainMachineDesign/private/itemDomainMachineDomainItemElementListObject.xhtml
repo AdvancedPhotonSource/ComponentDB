@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">      
+
+
+    <p:column headerText="Element Name">
+        #{itemElementObject.name}
+    </p:column>
+    <p:column headerText="Machine Design" >
+        <ui:param name="machineDesignItemObject"
+                  value="#{itemElementObject.machineDesignItem}" />
+
+        <p:outputPanel rendered="#{itemDomainMachineDesignController.currentItemTemplate 
+                                   or (!itemDomainMachineDesignController.currentItemTemplate 
+                                   and !machineDesignItemObject.isItemTemplate)}">
+            <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="itemObject" value="#{machineDesignItemObject}" />
+                <ui:param name="displayString" value="#{itemElementObject.machineDesignDisplayString}" />
+                <ui:param name="viewName" value="machineDesign" />
+            </ui:include>        
+        </p:outputPanel>
+        
+        <p:outputPanel rendered="#{!itemDomainMachineDesignController.currentItemTemplate 
+                                   and machineDesignItemObject.isItemTemplate}">
+            <h:outputText value="Placeholder for template '#{itemElementObject.machineDesignDisplayString}'"/>
+            <p:commandLink id="createMachineDesignItem" 
+                           styleClass="fa fa-link-icon fa-plus" 
+                           title="Create Machine Design Item"
+                           onclick="PF('loadingDialog').show()"
+                           update="@form:machineDesignElementCreateFromTemplateDialog"
+                           action="#{itemDomainMachineDesignController.prepareCreateMachineDesignFromTemplate()}"
+                           oncomplete="PF('machineDesignElementCreateFromTemplateDialogWidget').show(); PF('loadingDialog').hide();"
+                           rendered="#{isEntityWriteable}">
+                <f:setPropertyActionListener target="#{itemDomainMachineDesignController.newItemElementForCurrent}"
+                                             value="#{itemElementObject}"/>
+            </p:commandLink>            
+        </p:outputPanel>
+        
+        
+
+    </p:column>
+    <p:column headerText="Catalog">
+        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+            <ui:param name="itemObject" value="#{itemElementObject.catalogItem}" />
+            <ui:param name="displayString" value="#{itemElementObject.catalogDisplayString}" />
+            <ui:param name="viewName" value="catalog" />
+        </ui:include>
+    </p:column>
+    <p:column headerText="Installation Inventory"
+              rendered="#{itemDomainMachineDesignController.currentHasInventoryItem}">
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="itemObject" value="#{itemElementObject.inventoryItem}" />
+                <ui:param name="displayString" value="#{itemElementObject.inventoryDisplayString}" />
+                <ui:param name="viewName" value="inventory" />
+            </ui:include>
+
+            <p:commandLink id="assignInventoryItem" 
+                           styleClass="fa fa-link-icon fa-pencil" 
+                           title="Edit assigned inventory"
+                           update="@form:machineDesignElementAssignInventoryDialog"
+                           action="#{itemDomainMachineDesignController.prepareUpdateInstalledInventoryItem()}"
+                           oncomplete="PF('machineDesignElementAssignInventoryDialogWidget').show()"
+                           rendered="#{itemElementObject.itemCanHaveInventoryItem and isEntityWriteable}">
+                <f:setPropertyActionListener target="#{itemDomainMachineDesignController.newItemElementForCurrent}"
+                                             value="#{itemElementObject}"/>
+            </p:commandLink>
+        </p:outputPanel>
+    </p:column>    
+
+</ui:composition>
+
+
