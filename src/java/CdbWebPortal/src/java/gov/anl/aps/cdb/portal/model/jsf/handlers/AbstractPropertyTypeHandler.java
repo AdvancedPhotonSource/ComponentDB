@@ -147,4 +147,10 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
     public String getPropertyEditPage(){
         return null; 
     }
+
+    @Override
+    public boolean isPropertyCloneable() {
+        return true; 
+    }
+
 }

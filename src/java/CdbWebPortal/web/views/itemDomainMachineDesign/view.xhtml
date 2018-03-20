@@ -8,9 +8,9 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../item/private/templates/itemViewTemplate.xhtml">
-    
+
     <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
-    
+
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:event type="preRenderComponent" 
@@ -24,6 +24,18 @@ See LICENSE file.
         <f:event type="preRenderComponent" 
                  listener="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
+    
+    <ui:define name="viewPanelGrid">
+        <ui:include src="private/itemDomainMachineDesignPanelGrid.xhtml" />
+    </ui:define>
+
+    <ui:define name="itemElements">
+        <ui:include src="private/itemDomainMachineDomainItemElementList.xhtml" />
+    </ui:define>
+    
+    <ui:define name="additionalRightItemPanels">
+        <ui:include src="private/itemDomainMachineDesignCreatedFromTemplatePanel.xhtml" />
+    </ui:define>
 
 </ui:composition>
 

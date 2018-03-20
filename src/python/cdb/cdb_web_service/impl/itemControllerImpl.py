@@ -41,7 +41,21 @@ class ItemControllerImpl(CdbObjectManager):
 
         return self.itemDbApi.getFirstItemElementRelationshipList(relationshipTypeName, selfElementId)
 
+    def addItemElementRelationshipByQrId(self, firstItemQrId, secondItemQrId, relationshipTypeName, enteredByUserId,
+                                   relationshipDetails=None, description=None):
+        firstItemId = self.itemDbApi.getItemByQrId(firstItemQrId).data['id']
+        secondItemId = self.itemDbApi.getItemByQrId(secondItemQrId).data['id']
+
+        return self.__addItemElementRelationship(firstItemId, secondItemId, relationshipTypeName, enteredByUserId,
+                                                 relationshipDetails, description)
+
+
     def addItemElementRelationship(self, firstItemId, secondItemId, relationshipTypeName, enteredByUserId,
+                                   relationshipDetails=None, description=None):
+        return self.__addItemElementRelationship(firstItemId, secondItemId, relationshipTypeName, enteredByUserId,
+                                   relationshipDetails, description)
+
+    def __addItemElementRelationship(self, firstItemId, secondItemId, relationshipTypeName, enteredByUserId,
                                    relationshipDetails=None, description=None):
         firstSelfElement = self.itemDbApi.getSelfElementByItemId(firstItemId)
         firstSelfElementId = firstSelfElement.data['id']

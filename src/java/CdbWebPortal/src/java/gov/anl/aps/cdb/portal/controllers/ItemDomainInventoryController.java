@@ -492,8 +492,12 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         this.selectedConnectorOfSecondItem = null;
         this.selectedSecondItemWithRequiredConnection = selectedInventoryItemWithRequiredConnection;
     }
-
+    
     public DefaultMenuModel getItemLocataionDefaultMenuModel(ItemDomainInventory item) {
+        return getItemLocataionDefaultMenuModel(item, "@form");
+    }
+
+    public DefaultMenuModel getItemLocataionDefaultMenuModel(ItemDomainInventory item, String updateTarget) {
         lastInventoryItemRequestedLocationMenuModel = item;
         if (item != null) {
             if (item.getLocationMenuModel() == null) {
@@ -508,7 +512,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 }
                 ItemDomainLocation lowestLocation = item.getLocation();
 
-                itemLocationMenuModel = itemDomainLocationController.generateLocationMenuModel(locationString, inventoryControllerName, "updateLocationForLastRequestedMenuModel", lowestLocation);
+                itemLocationMenuModel = itemDomainLocationController.generateLocationMenuModel(locationString, inventoryControllerName, "updateLocationForLastRequestedMenuModel", lowestLocation, updateTarget);
                 item.setLocationMenuModel(itemLocationMenuModel);
             }
             return item.getLocationMenuModel();

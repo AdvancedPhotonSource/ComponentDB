@@ -54,7 +54,7 @@ See LICENSE file.
                     </div>
                     <div id="topCenter" class="topCenterContent">
                         <ui:insert name="topCenter">
-                            <h1 class="title">#{resources.CdbPortalTitle}</h1>
+                            <h1 class="title">#{resources.CdbPortalTitle}</h1>                            
                         </ui:insert>
                     </div>
                 </div>
@@ -105,6 +105,25 @@ See LICENSE file.
             <div id="bottom" class="bottomContent">
                 <ui:insert name="bottom">
                     <h:form prependId="false">
+                        <h:outputText style="display: none" id="viewOpenPageIdHiddenText"
+                                      value="#{clientViewManagerController.viewUUID}"/>
+                        
+                        <input style="display: none"
+                               id="viewCurrentPageIdHiddenText"/>                                                
+                        
+                        <p:remoteCommand name="prepareNewViewID"
+                                         action="#{clientViewManagerController.generateNewViewUUID()}"
+                                         update="viewOpenPageIdHiddenText"
+                                         oncomplete="setCurrentPageViewId()" /> 
+                        
+                        <p:remoteCommand name="prepareTestExistingViewID" 
+                                         update="viewOpenPageIdHiddenText"
+                                         oncomplete="testExistingPageId()" /> 
+                        
+                        <p:remoteCommand name="verifyViewOpenPageIdHiddenText"
+                                         update="viewOpenPageIdHiddenText"
+                                         oncomplete="completeVerifyViewOpenPage()"/>
+                        
                         <p:growl id="messages" showDetail="true" autoUpdate="true"/>
                         <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
                                        onidle="displaySessionTimeout()">
@@ -113,6 +132,42 @@ See LICENSE file.
                             <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" 
                                     immediate="true" async="true"/> 
                         </p:idleMonitor>
+                        
+                        <p:dialog widgetVar="invalidUseOfBackButtonDialogWidget"
+                                  modal="true"
+                                  closable="false"
+                                  styleClass="viewTransparentBackgroundDialog"
+                                  draggable="false"
+                                  resizable="false"
+                                  header="Use of back button is not allowed">
+                            To avoid invalid session data, usage of back button is not allowed.                             
+                            <f:facet name="footer">
+                                <p:commandButton value="Go back to home" 
+                                                 icon="fa fa-home"
+                                                 onclick="handleSessionTimeout('#{pathContextRoot}');" />
+                                <p:commandButton value="Go to last session URL" 
+                                                 icon="fa fa-arrow-right"
+                                                 action="#{clientViewManagerController.redrectToLastShownUrl()}" />
+                            </f:facet>
+                        </p:dialog>
+                        
+                        <p:dialog widgetVar="invalidUseOfMultipleTabsDialogWidget"
+                                  modal="true"
+                                  closable="false"
+                                  styleClass="viewTransparentBackgroundDialog"
+                                  draggable="false"
+                                  resizable="false"
+                                  header="Use of tabs or windows is not allowed">
+                            To avoid invalid session data, usage of multiple browser windows/tabs is not allowed. 
+                            <f:facet name="footer">
+                                <p:commandButton value="Go back to home"
+                                                 icon="fa fa-home"
+                                                 onclick="handleSessionTimeout('#{pathContextRoot}');" />
+                                <p:commandButton value="Go to last session URL" 
+                                                 icon="fa fa-arrow-right"
+                                                 action="#{clientViewManagerController.redrectToLastShownUrl()}" />
+                            </f:facet>
+                        </p:dialog>                                        
 
                         <p:dialog widgetVar="sessionTimeoutDialogWidget"
                                   modal="true"
@@ -124,6 +179,7 @@ See LICENSE file.
                             <p:outputLabel value="Your session has expired due to inactivity." />
                             <f:facet name="footer">
                                 <p:commandButton value="Go back to home" 
+                                                 icon="fa fa-home"
                                                  onclick="handleSessionTimeout('#{pathContextRoot}');" />
                             </f:facet>
                         </p:dialog>                       

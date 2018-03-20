@@ -126,4 +126,10 @@ public interface PropertyTypeHandlerInterface {
      * @return
      */
     public abstract String getPropertyEditPage();
+    
+    /**
+     * Some properties should not be clone-able 
+     * this attribute allows specifying if a property wit this handler can be cloned.
+     */
+    public abstract boolean isPropertyCloneable();
 }

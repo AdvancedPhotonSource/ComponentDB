@@ -299,11 +299,8 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public ItemController getItemDomainController() {
-        if (itemDomainController == null) {
-            if (domain != null) {
-                String domainName = domain.getName();
-                itemDomainController = ItemController.findDomainController(domainName);
-            }
+        if (itemDomainController == null) {            
+            itemDomainController = ItemController.findDomainControllerForItem(this);            
         }
 
         return itemDomainController;
@@ -394,6 +391,30 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setDescription(String description) {
         this.getSelfElement().setDescription(description);
+    }
+        
+    public List<ItemElementRelationship> getItemElementRelationshipList() {
+        return getSelfElement().getItemElementRelationshipList();
+    }
+
+    public void setItemElementRelationshipList(List<ItemElementRelationship> itemElementRelationshipList) {
+        getSelfElement().setItemElementRelationshipList(itemElementRelationshipList);
+    }
+    
+    public List<ItemElementRelationship> getItemElementRelationshipList1() {
+        return getSelfElement().getItemElementRelationshipList1();
+    }
+
+    public void setItemElementRelationshipList1(List<ItemElementRelationship> itemElementRelationshipList1) {
+        getSelfElement().setItemElementRelationshipList1(itemElementRelationshipList1);
+    }
+    
+    public List<ItemElementRelationship> getItemElementRelationshipList2() {
+        return getSelfElement().getItemElementRelationshipList2();
+    }
+
+    public void setItemElementRelationshipList2(List<ItemElementRelationship> itemElementRelationshipList2) {
+        getSelfElement().setItemElementRelationshipList2(itemElementRelationshipList2);
     }
 
     /**

@@ -41,6 +41,11 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     @Override
     protected EntityManager getEntityManager() {
         return em;
+    } 
+    
+    public Item findItem(Object id) {
+        // Find any item type item not only of derived domain 
+        return getEntityManager().find(Item.class, id);
     }
 
     @Override
@@ -83,7 +88,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
                 if (containedItem != null) {
                     Boolean nonExistantItem = true;
                     if (containedItem.getId() != null) {
-                        ItemDomainEntity dbItem = find(containedItem.getId());
+                        Item dbItem = findItem(containedItem.getId());
                         if (dbItem == null) {
                             // Not yet existend in DB. 
                             populateItemsToAdd(containedItem);

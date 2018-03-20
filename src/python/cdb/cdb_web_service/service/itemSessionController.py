@@ -44,13 +44,23 @@ class ItemSessionController(CdbSessionController):
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
     @CdbSessionController.execute
-    def addItemElementRelationship(self, firstItemId, secondItemId, relationshipTypeName, relationshipDetails=None, description=None):
-        if not firstItemId:
+    def addItemElementRelationship(self, relationshipTypeName, firstItemId=None, secondItemId=None,
+                                   firstItemQrId=None, secondItemQrId=None,
+                                   relationshipDetails=None, description=None):
+        if not firstItemId and not firstItemQrId:
             raise InvalidRequest("Invalid first item id provided")
-        if not secondItemId:
+        if not secondItemId and not secondItemQrId:
             raise InvalidRequest("Invalid second item id provided")
         if not relationshipTypeName:
             raise InvalidRequest("Invalid relationship type name provided")
+
+        usingQrIds = None
+        if firstItemId and secondItemId:
+            usingQrIds = False
+        elif firstItemQrId and secondItemQrId:
+            usingQrIds = True
+        else:
+            raise InvalidRequest("Must either specify both qrIds or both Ids")
 
         relationshipTypeName = Encoder.decode(relationshipTypeName)
 
@@ -62,15 +72,29 @@ class ItemSessionController(CdbSessionController):
         sessionUser = self.getSessionUser()
         enteredByUserId = sessionUser.get('id')
 
-        itemElementRelationship = self.itemControllerImpl.addItemElementRelationship(firstItemId, secondItemId,
-                                                                                     relationshipTypeName,
-                                                                                     enteredByUserId,
-                                                                                     relationshipDetails, description)
+        logMessageStart = "Returning item element relationship between "
+
+        if usingQrIds:
+            itemElementRelationship = self.itemControllerImpl.addItemElementRelationshipByQrId(firstItemQrId, secondItemQrId,
+                                                                                               relationshipTypeName,
+                                                                                               enteredByUserId,
+                                                                                               relationshipDetails,
+                                                                                               description)
+
+            logMessageStart += "item qr: %s and item qr: %s" % (firstItemQrId, secondItemQrId)
+        else:
+            itemElementRelationship = self.itemControllerImpl.addItemElementRelationship(firstItemId, secondItemId,
+                                                                                         relationshipTypeName,
+                                                                                         enteredByUserId,
+                                                                                         relationshipDetails, description)
+
+            logMessageStart += "item id: %s and item id: %s" % (firstItemId, secondItemId)
+
 
         response = itemElementRelationship.getFullJsonRep()
 
-        self.logger.debug("Returning item element relationship between item: %s and item: %s of type: %s : %s" %
-                          (firstItemId, secondItemId, relationshipTypeName, response))
+        self.logger.debug("%s of type: %s : %s" %
+                          (logMessageStart, relationshipTypeName, response))
 
         return response
 

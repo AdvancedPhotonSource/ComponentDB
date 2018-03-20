@@ -48,6 +48,8 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 
@@ -499,8 +501,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public static ItemController findDomainControllerForItem(Item item) {
-        String domainName = item.getDomain().getName();
-        return findDomainController(domainName);
+        if (item.getDomain() != null) {
+            String domainName = item.getDomain().getName();
+            domainName = domainName.replace(" ", ""); 
+            return findDomainController(domainName);
+        }
+        return null; 
     }
 
     public static ItemController findDomainController(String domainName) {
@@ -900,18 +906,32 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public void validateCreateSingleItemElementSimpleDialog(String onSuccessCommand, String errorSummary) {
         ItemDomainEntity item = getCurrent(); 
         try { 
+            beforeValidateItemElement();
             prepareAddItemElement(item, newItemElementForCurrent);                       
             checkItemElementsForItem(item);
             
             newItemElementForCurrentSaveButtonEnabled = true; 
             RequestContext.getCurrentInstance().execute(onSuccessCommand);                         
-        } catch (CdbException ex) {            
+        } catch (CdbException ex) {  
+            failedValidateItemElement();
             SessionUtility.addErrorMessage(errorSummary, ex.getErrorMessage()); 
+        } catch (CloneNotSupportedException ex) {
+            failedValidateItemElement();
+            SessionUtility.addErrorMessage(errorSummary, ex.getMessage()); 
         } finally {
             item.getFullItemElementList().remove(newItemElementForCurrent); 
             item.resetItemElementDisplayList();            
         }                        
     }
+    
+    public void beforeValidateItemElement() throws CloneNotSupportedException, CdbException {
+        
+    }
+    
+    public void failedValidateItemElement() {
+        
+    }
+    
     
     public void deleteItemConnector(ItemConnector itemConnector) {
         Item item = getCurrent();
@@ -1275,7 +1295,15 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             Date enteredOnDateTime = new Date();
             UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
 
-            for (PropertyValue propertyValue : cloningFromPropertyValueList) {
+            for (PropertyValue propertyValue : cloningFromPropertyValueList) {                
+                PropertyTypeHandlerInterface handler;
+                handler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+                if (handler != null) {
+                    if (handler.isPropertyCloneable() == false) {
+                        continue;
+                    }
+                }
+                
                 PropertyValue newPropertyValue = new PropertyValue();
                 newPropertyValue.setPropertyType(propertyValue.getPropertyType());
                 newPropertyValue.setValue(propertyValue.getValue());
@@ -1452,6 +1480,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public ItemElement getNewItemElementForCurrent() {
         return newItemElementForCurrent;
+    }
+
+    public void setNewItemElementForCurrent(ItemElement newItemElementForCurrent) {
+        this.newItemElementForCurrent = newItemElementForCurrent;
     }
 
     public Boolean getNewItemElementForCurrentSaveButtonEnabled() {

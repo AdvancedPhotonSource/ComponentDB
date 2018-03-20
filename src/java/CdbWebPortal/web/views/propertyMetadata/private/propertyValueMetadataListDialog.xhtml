@@ -20,16 +20,27 @@ See LICENSE file.
         <ui:param name="propertyValueObject" value="#{propertyValueController.current}"/>
 
         <p:outputPanel rendered="#{propertyValueObject != null}">
+            <ui:param name="filterablePropertyValueMetadataList"
+                      value="#{facesUtility.displayFiltersForList(propertyValueObject.propertyMetadataList, 10)}" />
+            
             <p:scrollPanel style="max-height: 550px"
                            mode="native"
                            rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueObject)}">
                 <p:dataTable id="#{entityTypeName}PropertyValueMetadataListDataTable"
                              value="#{propertyValueObject.propertyMetadataList}"                     
                              var="metadata">
-                    <p:column headerText="Key">
-                        <h:outputText value="#{metadata.metadataKey}" />
+                    <p:column headerText="Key"
+                              filterBy="#{metadata.metadataKey}"
+                              filterable="#{filterablePropertyValueMetadataList}"
+                              sortable="true"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{metadata.metadataKey}"/>
                     </p:column>
-                    <p:column headerText="Value">
+                    <p:column headerText="Value"
+                              filterBy="#{metadata.metadataValue}"
+                              filterable="#{filterablePropertyValueMetadataList}"
+                              sortable="true"
+                              filterMatchMode="contains">
                         <h:outputText value="#{metadata.metadataValue}" />
                     </p:column>
                 </p:dataTable>
