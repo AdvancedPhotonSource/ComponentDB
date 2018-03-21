@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -47,6 +48,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private ItemDomainMachineDesign templateForElement = null;
     protected DataModel installedInventorySelectionForCurrentElement;
     protected DataModel machineDesignTemplatesSelectionList;
+    private DataModel topLevelMachineDesignSelectionList;
     private List<KeyValueObject> machineDesignNameList = null;
     private List<String> nameParts = null;
     private String machineDesignName = null;
@@ -247,18 +249,18 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 SessionUtility.addWarningMessage("Missing data", "Please fill in all name parameters");
                 return;
             }
-            
+
             createMachineDesignFromTemplateForEditItemElement();
-            ItemDomainMachineDesign newItem = (ItemDomainMachineDesign) newItemElementForCurrent.getContainedItem();            
+            ItemDomainMachineDesign newItem = (ItemDomainMachineDesign) newItemElementForCurrent.getContainedItem();
             // Create item
             performCreateOperations(newItem, false, true);
-            
+
             // Update element 
-            ItemElementController instance = ItemElementController.getInstance();                        
+            ItemElementController instance = ItemElementController.getInstance();
             instance.setCurrent(newItemElementForCurrent);
-            instance.update(); 
-           
-            SessionUtility.executeRemoteCommand(onSucess); 
+            instance.update();
+
+            SessionUtility.executeRemoteCommand(onSucess);
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
         } catch (CloneNotSupportedException ex) {
@@ -291,6 +293,48 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         return machineDesignTemplatesSelectionList;
     }
 
+    public DataModel getTopLevelMachineDesignSelectionList() {
+        if (topLevelMachineDesignSelectionList == null) {
+            List<ItemDomainMachineDesign> itemsWithoutParents = getItemsWithoutParents();
+            List<ItemElement> itemElementMemberList = current.getItemElementMemberList();
+
+            if (itemElementMemberList != null) {
+                if (itemElementMemberList.size() == 0) {
+                    // current item has no parents
+                    itemsWithoutParents.remove(current);
+                } else {
+                    // Be definition machine design item should only have one parent
+                    Item parentItem = null;
+                    
+                    while (itemElementMemberList.size() != 0) {
+                        ItemElement parentElement = itemElementMemberList.get(0);
+                        parentItem = parentElement.getParentItem(); 
+                        
+                        itemElementMemberList = parentItem.getItemElementMemberList(); 
+                    }
+                    
+                    itemsWithoutParents.remove(parentItem);
+                }                
+            }                        
+                        
+            String templateEntityName = EntityTypeName.template.getValue();
+            EntityType templateEntityType = entityTypeFacade.findByName(templateEntityName);
+            
+            int index = 0; 
+            while (index < itemsWithoutParents.size()) {
+                Item item = itemsWithoutParents.get(index); 
+                if (item.getEntityTypeList().contains(templateEntityType)) {
+                    itemsWithoutParents.remove(index);
+                } else {
+                    index++; 
+                }
+            }             
+
+            topLevelMachineDesignSelectionList = new ListDataModel(itemsWithoutParents);
+        }
+        return topLevelMachineDesignSelectionList;
+    }
+
     public void resetItemElementEditVariables() {
         newItemElementForCurrentSaveButtonEnabled = false;
         displayAssignToDataTable = false;
@@ -305,6 +349,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         inventoryForElement = null;
         templateForElement = null;
         machineDesignTemplatesSelectionList = null;
+        topLevelMachineDesignSelectionList = null;
         machineDesignNameList = null;
         machineDesignName = null;
         nameParts = null;
@@ -323,10 +368,18 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 if (catalogForElement != null || inventoryForElement != null) {
                     newItemElementForCurrentSaveButtonEnabled = true;
                 }
-            } else if (templateForElement != null) {
-                generateTemplateForElementMachineDesignNameVars();
+            } else if (!createCatalogElement) {
+                // Machine design
+                 if (machineDesignItemCreateFromTemplate == null) {
+                    if (newItemElementForCurrent.getContainedItem() != null) {
+                        newItemElementForCurrentSaveButtonEnabled = true; 
+                    }
+                } else if (machineDesignItemCreateFromTemplate) {
+                    if (templateForElement != null) {
+                        generateTemplateForElementMachineDesignNameVars();
+                    }
+                } 
             }
-
         }
     }
 
@@ -361,14 +414,14 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
         newItemElementForCurrentSaveButtonEnabled = allValuesForTitleGenerationsFilledIn();
     }
-    
+
     private boolean allValuesForTitleGenerationsFilledIn() {
         for (KeyValueObject keyValue : machineDesignNameList) {
             if (keyValue.getValue() == null || keyValue.getValue().equals("")) {
                 return false;
             }
         }
-        return true; 
+        return true;
     }
 
     public void generateMachineDesignName() {
@@ -396,7 +449,9 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 newItemElementForCurrent.setContainedItem(catalogForElement);
             }
         } else if (!createCatalogElement) {
-            if (machineDesignItemCreateFromTemplate) {
+            if (machineDesignItemCreateFromTemplate == null) {
+                
+            } else if (machineDesignItemCreateFromTemplate) {
                 createMachineDesignFromTemplateForEditItemElement();
             }
 
