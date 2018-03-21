@@ -30,6 +30,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCable;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
@@ -183,12 +184,12 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         }
 
         return relatedMAARCRelationshipsForCurrent;
-    } 
+    }
 
     @Override
     protected void resetVariablesForCurrent() {
-        super.resetVariablesForCurrent(); 
-        relatedMAARCRelationshipsForCurrent = null;         
+        super.resetVariablesForCurrent();
+        relatedMAARCRelationshipsForCurrent = null;
     }
 
     @Override
@@ -492,7 +493,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         this.selectedConnectorOfSecondItem = null;
         this.selectedSecondItemWithRequiredConnection = selectedInventoryItemWithRequiredConnection;
     }
-    
+
     public DefaultMenuModel getItemLocataionDefaultMenuModel(ItemDomainInventory item) {
         return getItemLocataionDefaultMenuModel(item, "@form");
     }
@@ -1343,23 +1344,28 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     @Override
-    public String getItemDisplayString(ItemDomainInventory item) {
+    public String getItemDisplayString(Item item) {
         if (item != null) {
-            if (item.getDerivedFromItem() != null) {
-                String result = item.getDerivedFromItem().getName();
+            if (item instanceof ItemDomainInventory) {
+                if (item.getDerivedFromItem() != null) {
+                    String result = item.getDerivedFromItem().getName();
 
-                //Tag to help user identify the item
-                String tag = item.getName();
-                if (tag != null && !tag.isEmpty()) {
-                    result += " - [" + tag + "]";
+                    //Tag to help user identify the item
+                    String tag = item.getName();
+                    if (tag != null && !tag.isEmpty()) {
+                        result += " - [" + tag + "]";
+                    }
+
+                    return result;
+                } else {
+                    return "No inventory item defied";
                 }
-
-                return result;
             } else {
-                return "No inventory item defied";
+                return getItemItemController(item).getItemDisplayString(item);
             }
         }
         return null;
+
     }
 
     private void checkUniquenessBetweenNewItemsToAdd() throws CdbException {
