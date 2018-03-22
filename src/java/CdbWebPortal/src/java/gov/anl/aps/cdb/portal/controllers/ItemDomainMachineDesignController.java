@@ -140,6 +140,23 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         return validTitle;
     }
 
+    public String prepareCreateTemplate() {
+        String createRedirect = super.prepareCreate();
+
+        ItemDomainMachineDesign current = getCurrent();
+        String templateEntityTypeName = EntityTypeName.template.getValue();
+        EntityType templateEntityType = entityTypeFacade.findByName(templateEntityTypeName);
+        try {
+            current.setEntityTypeList(new ArrayList<>());
+        } catch (CdbException ex) {
+            Logger.getLogger(ItemDomainMachineDesignController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        current.getEntityTypeList().add(templateEntityType);
+
+        return createRedirect;
+
+    }
+
     // <editor-fold defaultstate="collapsed" desc="Element creation implementation ">   
     // <editor-fold defaultstate="collapsed" desc="Functionality">
     public void machineDesignElementAddTypeSelectionChange(String intermediateStepCommand, String finalStepCommand) {
@@ -305,30 +322,30 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 } else {
                     // Be definition machine design item should only have one parent
                     Item parentItem = null;
-                    
+
                     while (itemElementMemberList.size() != 0) {
                         ItemElement parentElement = itemElementMemberList.get(0);
-                        parentItem = parentElement.getParentItem(); 
-                        
-                        itemElementMemberList = parentItem.getItemElementMemberList(); 
+                        parentItem = parentElement.getParentItem();
+
+                        itemElementMemberList = parentItem.getItemElementMemberList();
                     }
-                    
+
                     itemsWithoutParents.remove(parentItem);
-                }                
-            }                        
-                        
+                }
+            }
+
             String templateEntityName = EntityTypeName.template.getValue();
             EntityType templateEntityType = entityTypeFacade.findByName(templateEntityName);
-            
-            int index = 0; 
+
+            int index = 0;
             while (index < itemsWithoutParents.size()) {
-                Item item = itemsWithoutParents.get(index); 
+                Item item = itemsWithoutParents.get(index);
                 if (item.getEntityTypeList().contains(templateEntityType)) {
                     itemsWithoutParents.remove(index);
                 } else {
-                    index++; 
+                    index++;
                 }
-            }             
+            }
 
             topLevelMachineDesignSelectionList = new ListDataModel(itemsWithoutParents);
         }
@@ -370,15 +387,15 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 }
             } else if (!createCatalogElement) {
                 // Machine design
-                 if (machineDesignItemCreateFromTemplate == null) {
+                if (machineDesignItemCreateFromTemplate == null) {
                     if (newItemElementForCurrent.getContainedItem() != null) {
-                        newItemElementForCurrentSaveButtonEnabled = true; 
+                        newItemElementForCurrentSaveButtonEnabled = true;
                     }
                 } else if (machineDesignItemCreateFromTemplate) {
                     if (templateForElement != null) {
                         generateTemplateForElementMachineDesignNameVars();
                     }
-                } 
+                }
             }
         }
     }
@@ -450,7 +467,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
             }
         } else if (!createCatalogElement) {
             if (machineDesignItemCreateFromTemplate == null) {
-                
+
             } else if (machineDesignItemCreateFromTemplate) {
                 createMachineDesignFromTemplateForEditItemElement();
             }

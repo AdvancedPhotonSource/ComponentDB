@@ -15,8 +15,11 @@ See LICENSE file.
         <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>        
     </f:metadata>
 
-    <ui:param name="entityController" value="#{itemDomainMachineDesignController}"/>        
+    <ui:param name="entityController" value="#{itemDomainMachineDesignController}"/>
     
+    <ui:define name="itemEditPanelGrid">
+        <ui:include src="private/itemDomainMachineDesignListCreatePanelGrid.xhtml" /> 
+    </ui:define>    
     
 </ui:composition>
 
