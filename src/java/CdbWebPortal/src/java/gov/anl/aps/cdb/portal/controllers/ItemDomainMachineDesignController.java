@@ -224,13 +224,12 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         Item currentContainedItem = newItemElementForCurrent.getContainedItem();
 
         if (inventoryForElement != null) {
-            if (!currentContainedItem.equals(inventoryForElement)) {
+            if (currentContainedItem.equals(inventoryForElement)) {
+                SessionUtility.addInfoMessage("No update", "Inventory selected is same as before");
+            } else if (verifyValidUnusedInventoryItem(inventoryForElement)) {
                 updateNecessary = true;
                 newItemElementForCurrent.setContainedItem(inventoryForElement);
-            } else {
-                SessionUtility.addInfoMessage("No update", "Inventory selected is same as before");
             }
-
         } else if (currentContainedItem.getDomain().getId() == ItemDomainName.INVENTORY_ID) {
             // Item is unselected, select catalog item
             updateNecessary = true;
@@ -246,6 +245,20 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         }
 
         resetItemElementEditVariables();
+    }
+
+    private boolean verifyValidUnusedInventoryItem(Item inventoryItem) {
+        for (ItemElement itemElement : inventoryItem.getItemElementMemberList()) {
+            Item item = itemElement.getParentItem();
+            if (item instanceof ItemDomainMachineDesign) {
+                SessionUtility.addWarningMessage("Inventory item used",
+                        "Inventory item cannot be saved, used in: " + item.toString());
+                return false;
+            }
+        }
+
+        return true;
+
     }
 
     @Override
@@ -404,8 +417,8 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         if (newItemElementForCurrent != null) {
             if (createCatalogElement) {
                 if (catalogForElement != null || inventoryForElement != null) {
-                    newItemElementForCurrentSaveButtonEnabled = true;
-                }
+                            newItemElementForCurrentSaveButtonEnabled = true;
+                        }
             } else if (!createCatalogElement) {
                 // Machine design
                 if (machineDesignItemCreateFromTemplate == null) {
@@ -482,7 +495,11 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         if (createCatalogElement) {
             originalForElement = newItemElementForCurrent.getContainedItem();
             if (inventoryForElement != null) {
-                newItemElementForCurrent.setContainedItem(inventoryForElement);
+                if (verifyValidUnusedInventoryItem(inventoryForElement)) {
+                    newItemElementForCurrent.setContainedItem(inventoryForElement);    
+                } else {
+                    throw new CdbException("Inventory item selected has already been used."); 
+                }                
             } else if (catalogForElement != null) {
                 newItemElementForCurrent.setContainedItem(catalogForElement);
             }
