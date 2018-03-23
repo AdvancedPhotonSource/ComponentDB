@@ -57,6 +57,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private boolean displayCreateMachineDesignFromTemplateContent = false;
     // </editor-fold>
 
+    private List<String> selectedListDisplayOptions = null;
     private boolean templateRelationshipInfoLoaded = false;
     private Item createdFromTemplateForCurrentItem = null;
     private List<Item> machineDesignItemsCreatedFromCurrent = null;
@@ -334,22 +335,42 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 }
             }
 
-            String templateEntityName = EntityTypeName.template.getValue();
-            EntityType templateEntityType = entityTypeFacade.findByName(templateEntityName);
-
-            int index = 0;
-            while (index < itemsWithoutParents.size()) {
-                Item item = itemsWithoutParents.get(index);
-                if (item.getEntityTypeList().contains(templateEntityType)) {
-                    itemsWithoutParents.remove(index);
-                } else {
-                    index++;
-                }
-            }
+            removeTemplatesFromList(itemsWithoutParents);
 
             topLevelMachineDesignSelectionList = new ListDataModel(itemsWithoutParents);
         }
         return topLevelMachineDesignSelectionList;
+    }
+
+    private void removeTemplatesFromList(List<ItemDomainMachineDesign> itemList) {
+        String templateEntityName = EntityTypeName.template.getValue();
+        EntityType templateEntityType = entityTypeFacade.findByName(templateEntityName);
+
+        int index = 0;
+        while (index < itemList.size()) {
+            Item item = itemList.get(index);
+            if (item.getEntityTypeList().contains(templateEntityType)) {
+                itemList.remove(index);
+            } else {
+                index++;
+            }
+        }
+    }
+
+    private void removeMachineDesignFromList(List<ItemDomainMachineDesign> itemList) {
+        String templateEntityName = EntityTypeName.template.getValue();
+        EntityType templateEntityType = entityTypeFacade.findByName(templateEntityName);
+
+        int index = 0;
+        while (index < itemList.size()) {
+            Item item = itemList.get(index);
+            // Does not contain template entity type
+            if (!item.getEntityTypeList().contains(templateEntityType)) {
+                itemList.remove(index);
+            } else {
+                index++;
+            }
+        }
     }
 
     public void resetItemElementEditVariables() {
@@ -567,7 +588,54 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     // </editor-fold>    // </editor-fold>
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Base class overrides">     
+    // <editor-fold defaultstate="collapsed" desc="Base class overrides">               
+    @Override
+    public void processPreRenderList() {
+        super.processPreRenderList();
+
+        if (selectedListDisplayOptions == null) {
+            selectedListDisplayOptions = new ArrayList<>();
+            selectedListDisplayOptions.add("t");
+            selectedListDisplayOptions.add("m");
+        }
+    }
+
+    @Override
+    public void createListDataModel() {
+        if (selectedListDisplayOptions.size() == 0) {
+            setListDataModel(new ListDataModel());
+        } else if (!selectedListDisplayOptions.contains("c")) {
+            // No children
+            List<ItemDomainMachineDesign> itemsWithoutParents = getItemsWithoutParents();
+            if (!selectedListDisplayOptions.contains("t")) {
+                // remove templates 
+                removeTemplatesFromList(itemsWithoutParents);
+            } else if (!selectedListDisplayOptions.contains("m")) {
+                // remove machine desings 
+                removeMachineDesignFromList(itemsWithoutParents);
+            }
+
+            setListDataModel(new ListDataModel(itemsWithoutParents));
+
+        } else // with Children 
+        {
+            if (selectedListDisplayOptions.size() == 1) {
+                // Only children is selected 
+                setListDataModel(new ListDataModel());
+            } else {
+                List<ItemDomainMachineDesign> itemList = getItemList();
+                if (!selectedListDisplayOptions.contains("t")) {
+                    // remove templates                
+                    removeTemplatesFromList(itemList);
+                } else if (!selectedListDisplayOptions.contains("m")) {
+                    removeMachineDesignFromList(itemList);
+                }
+                setListDataModel(new ListDataModel(itemList));
+            }
+        }
+
+    }
+
     @Override
     protected void checkItem(ItemDomainMachineDesign item) throws CdbException {
         super.checkItem(item);
@@ -711,4 +779,13 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     }
 
     // </editor-fold>
+    public List<String> getSelectedListDisplayOptions() {
+        return selectedListDisplayOptions;
+    }
+
+    public void setSelectedListDisplayOptions(List<String> selectedListDisplayOptions) {
+        this.selectedListDisplayOptions = selectedListDisplayOptions;
+        listDataModel = null;
+    }
+
 }

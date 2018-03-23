@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+
+    <h:outputLabel styleClass="entityDataEmphasizedLabel"
+                   value="List display options:" />
+    <p:selectManyButton id="itemDomainMachineDesignListDisplayOptionsSelectManyButton"
+                        onchange="itemDomainMachineDesignListDisplayOptionsSelectManyButtonChanged()"
+                        value="#{entityController.selectedListDisplayOptions}">
+        <f:selectItem itemLabel="Machine Design" itemValue="m" />
+        <f:selectItem itemLabel="Templates" itemValue="t" />
+        <f:selectItem itemLabel="Children" itemValue="c" />
+    </p:selectManyButton>
+
+    <p:remoteCommand name="itemDomainMachineDesignListDisplayOptionsSelectManyButtonChanged"
+                     onstart="PF('loadingDialog').show()"
+                     oncomplete="PF('loadingDialog').hide()"
+                     update="@form"/>
+
+</ui:composition>
+
+
