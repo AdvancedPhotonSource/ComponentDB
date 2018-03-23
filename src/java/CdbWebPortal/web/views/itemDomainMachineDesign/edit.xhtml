@@ -24,6 +24,10 @@ See LICENSE file.
         <f:event type="preRenderComponent" 
                  listener="#{itemMemberViewController.processPreRender()}" />        
     </f:metadata>
+    
+    <ui:define name="editPanelGrid">
+        <ui:include src="private/itemDomainMachineDesignEditPanelGrid.xhtml" />
+    </ui:define>
 
 </ui:composition>
 

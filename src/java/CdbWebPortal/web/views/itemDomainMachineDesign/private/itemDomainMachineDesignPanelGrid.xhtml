@@ -25,6 +25,13 @@ See LICENSE file.
             </p:outputPanel>
         </p:outputPanel>
     </ui:define>
+    
+    <ui:define name="itemEntityTypeValue">
+        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemEntityType.xhtml">
+            <!--Prevent future possible inplace edit for entity type.-->
+            <ui:param name="isEntityWriteable" value="#{false}" />
+        </ui:include>
+    </ui:define>
 
 </ui:composition>
 
