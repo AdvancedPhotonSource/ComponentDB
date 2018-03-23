@@ -310,7 +310,7 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * @param item
      * @return 
      */
-    public String getItemDisplayString(ItemDomainEntity item);
+    public String getItemDisplayString(Item item);
     
     /**
      * Class may be subscribed to ItemProjectController to execute code when item project changes. 

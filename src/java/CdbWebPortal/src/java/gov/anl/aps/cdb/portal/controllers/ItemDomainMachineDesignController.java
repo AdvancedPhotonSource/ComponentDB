@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -47,6 +48,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private ItemDomainMachineDesign templateForElement = null;
     protected DataModel installedInventorySelectionForCurrentElement;
     protected DataModel machineDesignTemplatesSelectionList;
+    private DataModel topLevelMachineDesignSelectionList;
     private List<KeyValueObject> machineDesignNameList = null;
     private List<String> nameParts = null;
     private String machineDesignName = null;
@@ -55,6 +57,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private boolean displayCreateMachineDesignFromTemplateContent = false;
     // </editor-fold>
 
+    private List<String> selectedListDisplayOptions = null;
     private boolean templateRelationshipInfoLoaded = false;
     private Item createdFromTemplateForCurrentItem = null;
     private List<Item> machineDesignItemsCreatedFromCurrent = null;
@@ -138,6 +141,23 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         return validTitle;
     }
 
+    public String prepareCreateTemplate() {
+        String createRedirect = super.prepareCreate();
+
+        ItemDomainMachineDesign current = getCurrent();
+        String templateEntityTypeName = EntityTypeName.template.getValue();
+        EntityType templateEntityType = entityTypeFacade.findByName(templateEntityTypeName);
+        try {
+            current.setEntityTypeList(new ArrayList<>());
+        } catch (CdbException ex) {
+            Logger.getLogger(ItemDomainMachineDesignController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        current.getEntityTypeList().add(templateEntityType);
+
+        return createRedirect;
+
+    }
+
     // <editor-fold defaultstate="collapsed" desc="Element creation implementation ">   
     // <editor-fold defaultstate="collapsed" desc="Functionality">
     public void machineDesignElementAddTypeSelectionChange(String intermediateStepCommand, String finalStepCommand) {
@@ -204,13 +224,12 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         Item currentContainedItem = newItemElementForCurrent.getContainedItem();
 
         if (inventoryForElement != null) {
-            if (!currentContainedItem.equals(inventoryForElement)) {
+            if (currentContainedItem.equals(inventoryForElement)) {
+                SessionUtility.addInfoMessage("No update", "Inventory selected is same as before");
+            } else if (verifyValidUnusedInventoryItem(inventoryForElement)) {
                 updateNecessary = true;
                 newItemElementForCurrent.setContainedItem(inventoryForElement);
-            } else {
-                SessionUtility.addInfoMessage("No update", "Inventory selected is same as before");
             }
-
         } else if (currentContainedItem.getDomain().getId() == ItemDomainName.INVENTORY_ID) {
             // Item is unselected, select catalog item
             updateNecessary = true;
@@ -226,6 +245,20 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         }
 
         resetItemElementEditVariables();
+    }
+
+    private boolean verifyValidUnusedInventoryItem(Item inventoryItem) {
+        for (ItemElement itemElement : inventoryItem.getItemElementMemberList()) {
+            Item item = itemElement.getParentItem();
+            if (item instanceof ItemDomainMachineDesign) {
+                SessionUtility.addWarningMessage("Inventory item used",
+                        "Inventory item cannot be saved, used in: " + item.toString());
+                return false;
+            }
+        }
+
+        return true;
+
     }
 
     @Override
@@ -247,18 +280,18 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 SessionUtility.addWarningMessage("Missing data", "Please fill in all name parameters");
                 return;
             }
-            
+
             createMachineDesignFromTemplateForEditItemElement();
-            ItemDomainMachineDesign newItem = (ItemDomainMachineDesign) newItemElementForCurrent.getContainedItem();            
+            ItemDomainMachineDesign newItem = (ItemDomainMachineDesign) newItemElementForCurrent.getContainedItem();
             // Create item
             performCreateOperations(newItem, false, true);
-            
+
             // Update element 
-            ItemElementController instance = ItemElementController.getInstance();                        
+            ItemElementController instance = ItemElementController.getInstance();
             instance.setCurrent(newItemElementForCurrent);
-            instance.update(); 
-           
-            SessionUtility.executeRemoteCommand(onSucess); 
+            instance.update();
+
+            SessionUtility.executeRemoteCommand(onSucess);
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
         } catch (CloneNotSupportedException ex) {
@@ -291,6 +324,68 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         return machineDesignTemplatesSelectionList;
     }
 
+    public DataModel getTopLevelMachineDesignSelectionList() {
+        if (topLevelMachineDesignSelectionList == null) {
+            List<ItemDomainMachineDesign> itemsWithoutParents = getItemsWithoutParents();
+            List<ItemElement> itemElementMemberList = current.getItemElementMemberList();
+
+            if (itemElementMemberList != null) {
+                if (itemElementMemberList.size() == 0) {
+                    // current item has no parents
+                    itemsWithoutParents.remove(current);
+                } else {
+                    // Be definition machine design item should only have one parent
+                    Item parentItem = null;
+
+                    while (itemElementMemberList.size() != 0) {
+                        ItemElement parentElement = itemElementMemberList.get(0);
+                        parentItem = parentElement.getParentItem();
+
+                        itemElementMemberList = parentItem.getItemElementMemberList();
+                    }
+
+                    itemsWithoutParents.remove(parentItem);
+                }
+            }
+
+            removeTemplatesFromList(itemsWithoutParents);
+
+            topLevelMachineDesignSelectionList = new ListDataModel(itemsWithoutParents);
+        }
+        return topLevelMachineDesignSelectionList;
+    }
+
+    private void removeTemplatesFromList(List<ItemDomainMachineDesign> itemList) {
+        String templateEntityName = EntityTypeName.template.getValue();
+        EntityType templateEntityType = entityTypeFacade.findByName(templateEntityName);
+
+        int index = 0;
+        while (index < itemList.size()) {
+            Item item = itemList.get(index);
+            if (item.getEntityTypeList().contains(templateEntityType)) {
+                itemList.remove(index);
+            } else {
+                index++;
+            }
+        }
+    }
+
+    private void removeMachineDesignFromList(List<ItemDomainMachineDesign> itemList) {
+        String templateEntityName = EntityTypeName.template.getValue();
+        EntityType templateEntityType = entityTypeFacade.findByName(templateEntityName);
+
+        int index = 0;
+        while (index < itemList.size()) {
+            Item item = itemList.get(index);
+            // Does not contain template entity type
+            if (!item.getEntityTypeList().contains(templateEntityType)) {
+                itemList.remove(index);
+            } else {
+                index++;
+            }
+        }
+    }
+
     public void resetItemElementEditVariables() {
         newItemElementForCurrentSaveButtonEnabled = false;
         displayAssignToDataTable = false;
@@ -305,6 +400,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         inventoryForElement = null;
         templateForElement = null;
         machineDesignTemplatesSelectionList = null;
+        topLevelMachineDesignSelectionList = null;
         machineDesignNameList = null;
         machineDesignName = null;
         nameParts = null;
@@ -321,12 +417,20 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         if (newItemElementForCurrent != null) {
             if (createCatalogElement) {
                 if (catalogForElement != null || inventoryForElement != null) {
-                    newItemElementForCurrentSaveButtonEnabled = true;
+                            newItemElementForCurrentSaveButtonEnabled = true;
+                        }
+            } else if (!createCatalogElement) {
+                // Machine design
+                if (machineDesignItemCreateFromTemplate == null) {
+                    if (newItemElementForCurrent.getContainedItem() != null) {
+                        newItemElementForCurrentSaveButtonEnabled = true;
+                    }
+                } else if (machineDesignItemCreateFromTemplate) {
+                    if (templateForElement != null) {
+                        generateTemplateForElementMachineDesignNameVars();
+                    }
                 }
-            } else if (templateForElement != null) {
-                generateTemplateForElementMachineDesignNameVars();
             }
-
         }
     }
 
@@ -361,14 +465,14 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
         newItemElementForCurrentSaveButtonEnabled = allValuesForTitleGenerationsFilledIn();
     }
-    
+
     private boolean allValuesForTitleGenerationsFilledIn() {
         for (KeyValueObject keyValue : machineDesignNameList) {
             if (keyValue.getValue() == null || keyValue.getValue().equals("")) {
                 return false;
             }
         }
-        return true; 
+        return true;
     }
 
     public void generateMachineDesignName() {
@@ -391,12 +495,18 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         if (createCatalogElement) {
             originalForElement = newItemElementForCurrent.getContainedItem();
             if (inventoryForElement != null) {
-                newItemElementForCurrent.setContainedItem(inventoryForElement);
+                if (verifyValidUnusedInventoryItem(inventoryForElement)) {
+                    newItemElementForCurrent.setContainedItem(inventoryForElement);    
+                } else {
+                    throw new CdbException("Inventory item selected has already been used."); 
+                }                
             } else if (catalogForElement != null) {
                 newItemElementForCurrent.setContainedItem(catalogForElement);
             }
         } else if (!createCatalogElement) {
-            if (machineDesignItemCreateFromTemplate) {
+            if (machineDesignItemCreateFromTemplate == null) {
+
+            } else if (machineDesignItemCreateFromTemplate) {
                 createMachineDesignFromTemplateForEditItemElement();
             }
 
@@ -495,7 +605,54 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     // </editor-fold>    // </editor-fold>
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Base class overrides">     
+    // <editor-fold defaultstate="collapsed" desc="Base class overrides">               
+    @Override
+    public void processPreRenderList() {
+        super.processPreRenderList();
+
+        if (selectedListDisplayOptions == null) {
+            selectedListDisplayOptions = new ArrayList<>();
+            selectedListDisplayOptions.add("t");
+            selectedListDisplayOptions.add("m");
+        }
+    }
+
+    @Override
+    public void createListDataModel() {
+        if (selectedListDisplayOptions.size() == 0) {
+            setListDataModel(new ListDataModel());
+        } else if (!selectedListDisplayOptions.contains("c")) {
+            // No children
+            List<ItemDomainMachineDesign> itemsWithoutParents = getItemsWithoutParents();
+            if (!selectedListDisplayOptions.contains("t")) {
+                // remove templates 
+                removeTemplatesFromList(itemsWithoutParents);
+            } else if (!selectedListDisplayOptions.contains("m")) {
+                // remove machine desings 
+                removeMachineDesignFromList(itemsWithoutParents);
+            }
+
+            setListDataModel(new ListDataModel(itemsWithoutParents));
+
+        } else // with Children 
+        {
+            if (selectedListDisplayOptions.size() == 1) {
+                // Only children is selected 
+                setListDataModel(new ListDataModel());
+            } else {
+                List<ItemDomainMachineDesign> itemList = getItemList();
+                if (!selectedListDisplayOptions.contains("t")) {
+                    // remove templates                
+                    removeTemplatesFromList(itemList);
+                } else if (!selectedListDisplayOptions.contains("m")) {
+                    removeMachineDesignFromList(itemList);
+                }
+                setListDataModel(new ListDataModel(itemList));
+            }
+        }
+
+    }
+
     @Override
     protected void checkItem(ItemDomainMachineDesign item) throws CdbException {
         super.checkItem(item);
@@ -639,4 +796,13 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     }
 
     // </editor-fold>
+    public List<String> getSelectedListDisplayOptions() {
+        return selectedListDisplayOptions;
+    }
+
+    public void setSelectedListDisplayOptions(List<String> selectedListDisplayOptions) {
+        this.selectedListDisplayOptions = selectedListDisplayOptions;
+        listDataModel = null;
+    }
+
 }

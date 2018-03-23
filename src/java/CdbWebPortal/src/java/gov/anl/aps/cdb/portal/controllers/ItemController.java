@@ -551,6 +551,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     protected static String getDomainControllerName(String domainName) {
+        domainName = domainName.replace(" ", ""); 
         return "itemDomain" + domainName + "Controller";
     }
 
@@ -1146,11 +1147,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return super.prepareCreate();
     }
 
-    public String getItemDisplayString(ItemDomainEntity item) {
+    public String getItemDisplayString(Item item) {
         return item.toString();
     }
 
-    public String getItemMembmershipPartIdentifier(ItemDomainEntity item) {
+    public String getItemMembmershipPartIdentifier(Item item) {
         return getItemDisplayString(item);
     }
 

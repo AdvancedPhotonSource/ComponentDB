@@ -18,9 +18,10 @@ See LICENSE file.
                           onchange="machineDesignCreateOptionChange()">
             <f:selectItem itemValue="#{true}" itemLabel="Create From Template" />
             <f:selectItem itemValue="#{false}" itemLabel="Create New"/>
+            <f:selectItem itemLabel="Select Existing Top Level Machine Design" />
         </p:selectOneRadio>                                                                                                                
     </p:panelGrid>
-    
+
     <p:remoteCommand name="machineDesignCreateOptionChange"
                      action="#{itemDomainMachineDesignController.machineDesignItemCreateFromTemplateChange('machineDesignElementContainedItemSelectionMade()')}" />
     <p:remoteCommand name="machineDesignElementItemCreation"
@@ -39,8 +40,20 @@ See LICENSE file.
             <ui:param name="selectDataModel" value="#{itemDomainMachineDesignController.machineDesignTemplatesSelectionList}" />
             <ui:param name="additionalSelectionMadeRemoteCommands" value="machineDesignElementContainedItemSelectionMade();" />
         </ui:include>
-    </p:panel>        
-    
+    </p:panel>       
+
+    <p:panel header="Select existing top level machine design"
+             rendered="#{itemDomainMachineDesignController.machineDesignItemCreateFromTemplate == null}">
+        <ui:include src="../../item/private/itemSelectDataTable.xhtml">
+            <ui:param name="viewName" value="machineDesignSelection" />
+            <ui:param name="updateTarget" value="machineDesignElementAddOutputpanel" />
+            <ui:param name="selectionValue" value="#{newItemElement.containedItem}" />
+            <ui:param name="selectionTarget" value="#{newItemElement.containedItem}" />
+            <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+            <ui:param name="selectDataModel" value="#{itemDomainMachineDesignController.topLevelMachineDesignSelectionList}" />
+            <ui:param name="additionalSelectionMadeRemoteCommands" value="machineDesignElementContainedItemSelectionMade();" />
+        </ui:include>
+    </p:panel>
 
 </ui:composition>
 

@@ -17,7 +17,8 @@ See LICENSE file.
                      requiredMessage="#{entityController.nameTitle} is required"
                      onkeyup="updateName#{viewName}()"/>
         <p:remoteCommand name="updateName#{viewName}"
-                         update="name#{viewName}" />
+                         update="name#{viewName}"
+                         process="name#{viewName}"/>
         <p:message for="nameInputText#{viewName}" />
     </p:column>
 
