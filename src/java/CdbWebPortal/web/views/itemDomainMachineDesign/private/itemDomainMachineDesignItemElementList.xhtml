@@ -21,7 +21,7 @@ See LICENSE file.
             <p:commandLink oncomplete="PF('#{entityTypeName}ItemElementDestroyDialogWidget').show(); "
                            styleClass="fa fa-link-icon fa-trash" title="Delete" update="@form"
                            rendered="#{loginController.isEntityWriteable(itemElementObject.entityInfo)}">
-                <f:setPropertyActionListener target="#{itemDomainMachineDesignController.newItemElementForCurrent}"
+                <f:setPropertyActionListener target="#{itemDomainMachineDesignController.currentEditItemElement}"
                                              value="#{itemElementObject}" />
             </p:commandLink>
         </p:column>

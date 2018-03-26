@@ -39,7 +39,7 @@ See LICENSE file.
                            action="#{itemDomainMachineDesignController.prepareCreateMachineDesignFromTemplate()}"
                            oncomplete="PF('machineDesignElementCreateFromTemplateDialogWidget').show(); PF('loadingDialog').hide();"
                            rendered="#{isEntityWriteable}">
-                <f:setPropertyActionListener target="#{itemDomainMachineDesignController.newItemElementForCurrent}"
+                <f:setPropertyActionListener target="#{itemDomainMachineDesignController.currentEditItemElement}"
                                              value="#{itemElementObject}"/>
             </p:commandLink>            
         </p:outputPanel>
@@ -70,7 +70,7 @@ See LICENSE file.
                            action="#{itemDomainMachineDesignController.prepareUpdateInstalledInventoryItem()}"
                            oncomplete="PF('machineDesignElementAssignInventoryDialogWidget').show()"
                            rendered="#{itemElementObject.itemCanHaveInventoryItem and isEntityWriteable}">
-                <f:setPropertyActionListener target="#{itemDomainMachineDesignController.newItemElementForCurrent}"
+                <f:setPropertyActionListener target="#{itemDomainMachineDesignController.currentEditItemElement}"
                                              value="#{itemElementObject}"/>
             </p:commandLink>
         </p:outputPanel>
