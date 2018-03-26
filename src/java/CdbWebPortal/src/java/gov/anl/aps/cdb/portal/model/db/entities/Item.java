@@ -210,6 +210,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String itemSourceString = null;
     private transient String itemProjectString = null;
     private transient String qrIdDisplay = null;
+    private transient String qrIdFilter = null; 
 
     private transient List<ItemElementRelationship> itemCableConnectionsRelationshipList;
     private transient List<Connector> itemAvaliableConnectorsList; 
@@ -363,6 +364,8 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public void setQrId(Integer qrId) {
+        this.qrIdDisplay = null;
+        this.qrIdFilter = null; 
         this.qrId = qrId;
     }
 
@@ -383,6 +386,14 @@ public class Item extends CdbDomainEntity implements Serializable {
             qrIdDisplay = "-";
         }
         return qrIdDisplay;
+    }
+
+    public String getQrIdFilter() {
+        if (qrIdFilter == null) {
+            String dispQr = getQrIdDisplay();
+            qrIdFilter = dispQr + " " + qrId + " " + dispQr.replace(" ", ""); 
+        }
+        return qrIdFilter;
     }
 
     public String getDescription() {
