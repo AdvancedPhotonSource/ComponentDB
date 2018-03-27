@@ -19,7 +19,7 @@ public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     private static final String IcmsUrl = IcmsLinkPluginManager.getIcmsUrlString(); 
 
     public IcmsLinkPropertyTypeHandler() {
-        super(HANDLER_NAME, DisplayType.HTTP_LINK);
+        super(HANDLER_NAME, DisplayType.GENERATED_HTTP_LINK);
     }
 
     public static String formatIcmsLink(String contentId) {

@@ -19,7 +19,7 @@ public class AmosLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     private static final String AmosUrl = AmosLinkPluginManager.getAmosUrlString(); 
 
     public AmosLinkPropertyTypeHandler() {
-        super(HANDLER_NAME, DisplayType.HTTP_LINK);
+        super(HANDLER_NAME, DisplayType.GENERATED_HTTP_LINK);
     }
 
     public static String formatOrderId(String orderId) {
