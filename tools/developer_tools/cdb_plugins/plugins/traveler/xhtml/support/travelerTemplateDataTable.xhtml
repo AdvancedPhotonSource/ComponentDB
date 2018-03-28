@@ -11,12 +11,12 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">           
 
     <p:dataTable id="#{dataTableId}"
-                 widgetVar="travelerTemplatesDataTableWidget"
+                 widgetVar="#{dataTableId}Widget"
                  var="travelerTemplate" 
-                 value="#{travelerTemplateList}" 
+                 value="#{travelerTemplateList}"                  
                  selectionMode="single"
                  rowKey="#{travelerTemplate}"
-                 selection="#{travelerSelectedValue}"
+                 selection="#{travelerSelectedValue}"                 
                  paginator="true" 
                  paginatorPosition="bottom"
                  rows="#{resources.DialogSearchResultsDataTableNumberOfRows}"
@@ -32,7 +32,8 @@ See LICENSE file.
 
         <p:column sortBy="#{travelerTemplate.title}"
                   headerText="Template Title"
-                  filterBy="#{travelerTemplate.title}">
+                  filterBy="#{travelerTemplate.title}"
+                  filterMatchMode="contains">
             <h:outputText value="#{travelerTemplate.title}" />
             <h:outputLink target="_blank" value="#{itemTravelerDomainCatalogController.getTravelerTemplateUrl(travelerTemplate.id)}">
 

@@ -25,7 +25,8 @@ See LICENSE file.
               header="Create Traveler Instance From Template" 
               resizable="false"
               modal="true"
-              styleClass="viewTransparentBackgroundDialog">
+              styleClass="viewTransparentBackgroundDialog"
+              onShow="PF('#{viewName}TravelerInstanceDataTableWidget').filter()">
         <ui:include src="travelerInstanceCreateConfiguration.xhtml" />
 
         <f:facet name="footer">
