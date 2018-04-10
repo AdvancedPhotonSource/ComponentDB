@@ -158,6 +158,10 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     public boolean displayImageValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.IMAGE);
     }
+    
+    public boolean displayGeneratedHttpLinkValue(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.GENERATED_HTTP_LINK);
+    }
 
     public boolean displayHttpLinkValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.HTTP_LINK);

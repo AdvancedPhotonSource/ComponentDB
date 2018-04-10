@@ -215,8 +215,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
         UserInfo currentUser = (UserInfo) SessionUtility.getUser();
         String username = currentUser.getUsername();
-        try {
-            String device = getDeviceName(getCurrent());
+        try {            
             newBinder = travelerApi.createBinder(newBinderTitle,
                     newBinder.getDescription(), username);
 
@@ -226,7 +225,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
                 Form selectedTemplate = newBinderTemplateSelection.get(i);
                 String templateId = selectedTemplate.getId();
                 String travelerName = selectedTemplate.getTravelerInstanceName();
-                Traveler newTraveler = travelerApi.createTraveler(templateId, username, travelerName, device);
+                Traveler newTraveler = createActiveTraveler(templateId, travelerName);                
                 travelerIds[i] = newTraveler.getId();
             }
 
@@ -318,7 +317,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             if (travelerInstanceTitle != null && !travelerInstanceTitle.isEmpty()) {
                 List<Item> selectedItemsToEdit = getItemController().getItemMultiEditController().getSelectedItemsToEdit();
                 for (int i = 0; i < selectedItemsToEdit.size(); i++) {
-                    Item item = selectedItemsToEdit.get(i); 
+                    Item item = selectedItemsToEdit.get(i);
                     setCurrent(item);
                     saveMultiEditTravelerInstance(null);
                 }
@@ -337,25 +336,25 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     public void saveMultiEditTravelerInstance(String onSuccessCommand) {
         Item current = getCurrent();
         List<Item> selectedItemsToEdit = getItemController().getItemMultiEditController().getSelectedItemsToEdit();
-        int index = -1; 
+        int index = -1;
         for (int i = 0; i < selectedItemsToEdit.size(); i++) {
             if (current == selectedItemsToEdit.get(i)) {
-                index = i; 
-                break; 
+                index = i;
+                break;
             }
         }
-        
+
         if (getItemController().getItemMultiEditController().performSaveOperationsOnItem(current)) {
             // Save to proceed with creation of traveler instance. 
             addTravelerInstanceToCurrent(null);
-            createTravelerInstance(getItemController(), onSuccessCommand);                        
+            createTravelerInstance(getItemController(), onSuccessCommand);
         }
-        
+
         if (index != -1) {
             selectedItemsToEdit.remove(index);
-            selectedItemsToEdit.add(index, getCurrent()); 
+            selectedItemsToEdit.add(index, getCurrent());
         }
-        
+
     }
 
     public void prepareAddTravelerInstanceOnMultiEdit(Item currentItem) {
@@ -962,13 +961,11 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             if (checkSelectedTemplate(selectedTravelerInstanceTemplate)) {
                 if (!travelerInstanceTitle.equals("") || travelerInstanceTitle != null) {
                     try {
-                        String device = getDeviceName(entityController.getCurrent());
-                        UserInfo currentUser = (UserInfo) SessionUtility.getUser();
-                        Traveler travelerInstance = travelerApi.createTraveler(
+                        
+                        Traveler travelerInstance = createActiveTraveler(
                                 selectedTravelerInstanceTemplate.getId(),
-                                currentUser.getUsername(),
-                                travelerInstanceTitle,
-                                device);
+                                travelerInstanceTitle); 
+
                         setCurrentTravelerInstance(travelerInstance);
 
                         SessionUtility.addInfoMessage(
@@ -991,6 +988,25 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
             }
         }
+    }
+
+    private Traveler createActiveTraveler(String templateId, String travelerName) throws CdbException {
+        String device = getDeviceName(this.getCurrent());
+        UserInfo currentUser = (UserInfo) SessionUtility.getUser();
+        String userName = currentUser.getUsername();
+
+        Traveler travelerInstance = travelerApi.createTraveler(
+                templateId,
+                userName,
+                travelerName,
+                device);
+
+        String travelerId = travelerInstance.getId();
+        travelerInstance = travelerApi.updateTraveler(travelerId,
+                userName, travelerName,
+                "", null, getStatusKey("Active"));
+        
+        return travelerInstance; 
     }
 
     /**
@@ -1174,7 +1190,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     public Form getSelectedTravelerInstanceTemplate() {
         return selectedTravelerInstanceTemplate;
     }
-    
+
     public Traveler getCurrentTravelerInstance() {
         return currentTravelerInstance;
     }

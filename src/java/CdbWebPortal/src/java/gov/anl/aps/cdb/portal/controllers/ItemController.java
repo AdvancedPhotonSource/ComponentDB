@@ -122,8 +122,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     protected List<ItemCategory> domainItemCategoryList = null;
     
-    protected ItemElement newItemElementForCurrent = null; 
-    protected Boolean newItemElementForCurrentSaveButtonEnabled = false; 
+    protected ItemElement currentEditItemElement = null; 
+    protected Boolean currentEditItemElementSaveButtonEnabled = false;     
 
     protected Boolean cloneProperties = false;
     protected Boolean cloneCreateItemElementPlaceholders = false;
@@ -314,8 +314,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     @Override
     protected void resetVariablesForCurrent() {
         super.resetVariablesForCurrent();
-        newItemElementForCurrent = null;
-        newItemElementForCurrentSaveButtonEnabled = false;
+        currentEditItemElement = null;
+        currentEditItemElementSaveButtonEnabled = false;
         hasElementReorderChangesForCurrent = false;
         getItemElementController().resetCurrentItemVariables();
     }
@@ -879,39 +879,39 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public void prepareCreateSingleItemElementSimpleDialog() {
         Item item = getCurrent(); 
         if (item != null) {
-            newItemElementForCurrent = createItemElement(getCurrent()); 
+            currentEditItemElement = createItemElement(getCurrent()); 
         }        
     }
     
     public void cancelCreateSingleItemElementSimpleDialog() {
-        newItemElementForCurrent = null; 
-        newItemElementForCurrentSaveButtonEnabled = false; 
+        currentEditItemElement = null; 
+        currentEditItemElementSaveButtonEnabled = false; 
     }
     
     public void saveCreateSingleItemElementSimpleDialog() {
         Item currentItem = getCurrent(); 
         if (currentItem != null) {
-            prepareAddItemElement(getCurrent(), newItemElementForCurrent);
+            prepareAddItemElement(getCurrent(), currentEditItemElement);
         }
         
         update();
         
-        newItemElementForCurrent = null;
+        currentEditItemElement = null;
     }
     
     public void changeItemCreateSingleItemElementSimpleDialog() {
-        newItemElementForCurrent.setContainedItem(null);
-        newItemElementForCurrentSaveButtonEnabled = false; 
+        currentEditItemElement.setContainedItem(null);
+        currentEditItemElementSaveButtonEnabled = false; 
     }
     
     public void validateCreateSingleItemElementSimpleDialog(String onSuccessCommand, String errorSummary) {
         ItemDomainEntity item = getCurrent(); 
         try { 
             beforeValidateItemElement();
-            prepareAddItemElement(item, newItemElementForCurrent);                       
+            prepareAddItemElement(item, currentEditItemElement);                       
             checkItemElementsForItem(item);
             
-            newItemElementForCurrentSaveButtonEnabled = true; 
+            currentEditItemElementSaveButtonEnabled = true; 
             RequestContext.getCurrentInstance().execute(onSuccessCommand);                         
         } catch (CdbException ex) {  
             failedValidateItemElement();
@@ -920,7 +920,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             failedValidateItemElement();
             SessionUtility.addErrorMessage(errorSummary, ex.getMessage()); 
         } finally {
-            item.getFullItemElementList().remove(newItemElementForCurrent); 
+            item.getFullItemElementList().remove(currentEditItemElement); 
             item.resetItemElementDisplayList();            
         }                        
     }
@@ -1479,16 +1479,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         this.itemToClone = itemToClone;
     }
 
-    public ItemElement getNewItemElementForCurrent() {
-        return newItemElementForCurrent;
+    public ItemElement getCurrentEditItemElement() {
+        return currentEditItemElement;
     }
 
-    public void setNewItemElementForCurrent(ItemElement newItemElementForCurrent) {
-        this.newItemElementForCurrent = newItemElementForCurrent;
+    public void setCurrentEditItemElement(ItemElement newItemElementForCurrent) {
+        this.currentEditItemElement = newItemElementForCurrent;
     }
 
-    public Boolean getNewItemElementForCurrentSaveButtonEnabled() {
-        return newItemElementForCurrentSaveButtonEnabled;
+    public Boolean getCurrentEditItemElementSaveButtonEnabled() {
+        return currentEditItemElementSaveButtonEnabled;
     }
 
     public TreeNode getItemElementListTreeTableRootNode() {

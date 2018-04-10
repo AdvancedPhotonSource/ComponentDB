@@ -19,7 +19,7 @@ public class ParisLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     private static final String ParisUrl = ParisLinkPluginManager.getParisUrlString(); 
 
     public ParisLinkPropertyTypeHandler() {
-        super(HANDLER_NAME, DisplayType.HTTP_LINK);
+        super(HANDLER_NAME, DisplayType.GENERATED_HTTP_LINK);
     }
 
     public static String formatParisLink(String poId) {     

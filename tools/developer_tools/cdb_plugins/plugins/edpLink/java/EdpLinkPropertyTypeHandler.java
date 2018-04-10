@@ -22,7 +22,7 @@ public class EdpLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     private static final String EdpUrl = EdpLinkPluginManager.getUrlStringProperty(); 
 
     public EdpLinkPropertyTypeHandler() {
-        super(HANDLER_NAME, DisplayType.HTTP_LINK);
+        super(HANDLER_NAME, DisplayType.GENERATED_HTTP_LINK);
     }
 
     public static String formatCollectionId(String collectionId) {

@@ -188,29 +188,29 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 }
             }
 
-            newItemElementForCurrent.setContainedItem(newMachineDesign);
+            currentEditItemElement.setContainedItem(newMachineDesign);
 
             SessionUtility.executeRemoteCommand(finalStepCommand);
         }
     }
 
     public void newMachineDesignElementContainedItemValueChanged() {
-        String name = newItemElementForCurrent.getContainedItem().getName();
+        String name = currentEditItemElement.getContainedItem().getName();
         if (!name.equals("")) {
             if (isCurrentItemTemplate()) {
                 if (!verifyValidTemplateName(name, true)) {
-                    newItemElementForCurrentSaveButtonEnabled = false;
+                    currentEditItemElementSaveButtonEnabled = false;
                     return;
                 }
             }
             if (itemDomainMachineDesignFacade.findByName(name).size() != 0) {
                 SessionUtility.addWarningMessage("Non-unique name", "Please change the name and try again");
-                newItemElementForCurrentSaveButtonEnabled = false;
+                currentEditItemElementSaveButtonEnabled = false;
             } else {
-                newItemElementForCurrentSaveButtonEnabled = true;
+                currentEditItemElementSaveButtonEnabled = true;
             }
         } else {
-            newItemElementForCurrentSaveButtonEnabled = false;
+            currentEditItemElementSaveButtonEnabled = false;
         }
 
     }
@@ -221,26 +221,26 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     public void updateInstalledInventoryItem() {
         boolean updateNecessary = false;
-        Item currentContainedItem = newItemElementForCurrent.getContainedItem();
+        Item currentContainedItem = currentEditItemElement.getContainedItem();
 
         if (inventoryForElement != null) {
             if (currentContainedItem.equals(inventoryForElement)) {
                 SessionUtility.addInfoMessage("No update", "Inventory selected is same as before");
             } else if (verifyValidUnusedInventoryItem(inventoryForElement)) {
                 updateNecessary = true;
-                newItemElementForCurrent.setContainedItem(inventoryForElement);
+                currentEditItemElement.setContainedItem(inventoryForElement);
             }
         } else if (currentContainedItem.getDomain().getId() == ItemDomainName.INVENTORY_ID) {
             // Item is unselected, select catalog item
             updateNecessary = true;
-            newItemElementForCurrent.setContainedItem(currentContainedItem.getDerivedFromItem());
+            currentEditItemElement.setContainedItem(currentContainedItem.getDerivedFromItem());
         } else {
             SessionUtility.addInfoMessage("No update", "Inventory item not selected");
         }
 
         if (updateNecessary) {
             ItemElementController itemElementController = ItemElementController.getInstance();
-            itemElementController.setCurrent(newItemElementForCurrent);
+            itemElementController.setCurrent(currentEditItemElement);
             itemElementController.update();
         }
 
@@ -270,7 +270,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     public void prepareCreateMachineDesignFromTemplate() {
         resetItemElementEditVariables();
         displayCreateMachineDesignFromTemplateContent = true;
-        templateForElement = newItemElementForCurrent.getMachineDesignItem();
+        templateForElement = currentEditItemElement.getMachineDesignItem();
         generateTemplateForElementMachineDesignNameVars();
     }
 
@@ -282,13 +282,13 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
             }
 
             createMachineDesignFromTemplateForEditItemElement();
-            ItemDomainMachineDesign newItem = (ItemDomainMachineDesign) newItemElementForCurrent.getContainedItem();
+            ItemDomainMachineDesign newItem = (ItemDomainMachineDesign) currentEditItemElement.getContainedItem();
             // Create item
             performCreateOperations(newItem, false, true);
 
             // Update element 
             ItemElementController instance = ItemElementController.getInstance();
-            instance.setCurrent(newItemElementForCurrent);
+            instance.setCurrent(currentEditItemElement);
             instance.update();
 
             SessionUtility.executeRemoteCommand(onSucess);
@@ -302,7 +302,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     public void prepareUpdateInstalledInventoryItem() {
         resetItemElementEditVariables();
         displayAssignToDataTable = true;
-        catalogForElement = newItemElementForCurrent.getCatalogItem();
+        catalogForElement = currentEditItemElement.getCatalogItem();
     }
 
     public DataModel getInstalledInventorySelectionForCurrentElement() {
@@ -387,7 +387,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     }
 
     public void resetItemElementEditVariables() {
-        newItemElementForCurrentSaveButtonEnabled = false;
+        currentEditItemElementSaveButtonEnabled = false;
         displayAssignToDataTable = false;
         displayCreateItemElementContent = false;
         displayCreateMachineDesignFromTemplateContent = false;
@@ -414,16 +414,16 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     }
 
     public void verifyItemElementContainedItemSelection() {
-        if (newItemElementForCurrent != null) {
+        if (currentEditItemElement != null) {
             if (createCatalogElement) {
                 if (catalogForElement != null || inventoryForElement != null) {
-                            newItemElementForCurrentSaveButtonEnabled = true;
+                            currentEditItemElementSaveButtonEnabled = true;
                         }
             } else if (!createCatalogElement) {
                 // Machine design
                 if (machineDesignItemCreateFromTemplate == null) {
-                    if (newItemElementForCurrent.getContainedItem() != null) {
-                        newItemElementForCurrentSaveButtonEnabled = true;
+                    if (currentEditItemElement.getContainedItem() != null) {
+                        currentEditItemElementSaveButtonEnabled = true;
                     }
                 } else if (machineDesignItemCreateFromTemplate) {
                     if (templateForElement != null) {
@@ -463,7 +463,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     public void titleGenerationValueChange() {
         generateMachineDesignName();
 
-        newItemElementForCurrentSaveButtonEnabled = allValuesForTitleGenerationsFilledIn();
+        currentEditItemElementSaveButtonEnabled = allValuesForTitleGenerationsFilledIn();
     }
 
     private boolean allValuesForTitleGenerationsFilledIn() {
@@ -493,15 +493,15 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     public void beforeValidateItemElement() throws CloneNotSupportedException, CdbException {
         super.beforeValidateItemElement();
         if (createCatalogElement) {
-            originalForElement = newItemElementForCurrent.getContainedItem();
+            originalForElement = currentEditItemElement.getContainedItem();
             if (inventoryForElement != null) {
                 if (verifyValidUnusedInventoryItem(inventoryForElement)) {
-                    newItemElementForCurrent.setContainedItem(inventoryForElement);    
+                    currentEditItemElement.setContainedItem(inventoryForElement);    
                 } else {
                     throw new CdbException("Inventory item selected has already been used."); 
                 }                
             } else if (catalogForElement != null) {
-                newItemElementForCurrent.setContainedItem(catalogForElement);
+                currentEditItemElement.setContainedItem(catalogForElement);
             }
         } else if (!createCatalogElement) {
             if (machineDesignItemCreateFromTemplate == null) {
@@ -510,7 +510,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 createMachineDesignFromTemplateForEditItemElement();
             }
 
-            ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) newItemElementForCurrent.getContainedItem();
+            ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) currentEditItemElement.getContainedItem();
             checkItem(containedItem);
         }
     }
@@ -536,13 +536,13 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         clone.getItemElementRelationshipList().add(itemElementRelationship);
 
         clone.setEntityTypeList(new ArrayList<>());
-        newItemElementForCurrent.setContainedItem(clone);
+        currentEditItemElement.setContainedItem(clone);
     }
 
     @Override
     public void failedValidateItemElement() {
         super.failedValidateItemElement();
-        newItemElementForCurrent.setContainedItem(originalForElement);
+        currentEditItemElement.setContainedItem(originalForElement);
     }
 
     // </editor-fold>

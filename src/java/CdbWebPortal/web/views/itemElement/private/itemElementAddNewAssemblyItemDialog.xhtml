@@ -28,7 +28,7 @@ See LICENSE file.
               header="Add New Item Element">
 
         <ui:param name="newItemElement"
-                  value="#{currentItemController.newItemElementForCurrent}"
+                  value="#{currentItemController.currentEditItemElement}"
                   />
 
         <ui:param name="updateAddNewAssemblyItemDialogIds"
@@ -119,7 +119,7 @@ See LICENSE file.
                                  update="addNewAssemblyItemDialogSelectOptionsPanel @this"
                                  onstart="PF('loadingDialog').show()"
                                  oncomplete="PF('loadingDialog').hide()"
-                                 disabled="#{!currentItemController.newItemElementForCurrentSaveButtonEnabled}" 
+                                 disabled="#{!currentItemController.currentEditItemElementSaveButtonEnabled}" 
                                  action="#{currentItemController.validateCreateSingleItemElementSimpleDialog('onSuccessDialogAddItemElementValidation()', 'Error Adding Assembly Item')}"                                 
                                  icon="ui-icon-plus"/>
 

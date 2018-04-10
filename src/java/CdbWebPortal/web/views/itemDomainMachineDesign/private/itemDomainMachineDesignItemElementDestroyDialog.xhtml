@@ -15,7 +15,7 @@ See LICENSE file.
                      severity="alert" 
                      styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
         <ui:param name="itemElementObject"
-                  value="#{entityController.newItemElementForCurrent}" />
+                  value="#{entityController.currentEditItemElement}" />
         <p:commandButton value="Yes" 
                          id="#{entityTypeName}DestroyItemElementDialogYesConfirmButton"
                          oncomplete="PF('#{entityTypeName}ItemElementDestroyDialogWidget').hide()" 

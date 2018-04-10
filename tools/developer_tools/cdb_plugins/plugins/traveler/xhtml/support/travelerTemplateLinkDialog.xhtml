@@ -40,7 +40,8 @@ See LICENSE file.
         <p:remoteCommand name="showTravelerTemplateLinkDialog" 
                          update="travelerTemplateLinkDialog"
                          oncomplete="PF('travelerTemplateLinkDialogWidget').initPosition();
-                         PF('travelerTemplateLinkDialogWidget').show();"/>
+                         PF('travelerTemplateLinkDialogWidget').show();
+                         PF('travelerTemplatesDataTableWidget').filter()"/>
         <p:remoteCommand name="successTravelerTemplateLinkDialog"
                          update="#{travelerSuccessUpdateTarget}"
                          oncomplete="PF('loadingDialog').hide();
