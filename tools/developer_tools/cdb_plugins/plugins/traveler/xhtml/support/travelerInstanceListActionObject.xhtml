@@ -8,6 +8,9 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">      
+    
+    <ui:param name="renderAddToBinderButton"
+              value="#{renderAddToBinderButton != null ? renderAddToBinderButton : true}" /> 
 
     <p:column headerText="Action">
         <p:commandLink id="#{entityTypeName}TravelerInfoButton"
@@ -20,6 +23,19 @@ See LICENSE file.
             <p:tooltip for="#{entityTypeName}TravelerInfoButton" value="Display traveler information."/>
             <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
                                          value="#{travelerObject}" />
+        </p:commandLink>
+        
+        <p:commandLink id="#{entityTypeName}TravelerMoveToBinder"
+                       styleClass="fa-link-icon fa fa-suitcase"
+                       update="@form:travelerInstanceAddToBinderDialog"
+                       onstart="PF('loadingDialog').show()"
+                       oncomplete="PF('loadingDialog').hide();
+                                   PF('travelerInstanceAddToBinderDialogWidget').show()"
+                       action="#{itemTravelerDomainInventoryController.prepareShowAddTravelerToBinderDialog()}"
+                       rendered="#{renderAddToBinderButton and isEntityWriteable and travelerObject.traveler}">
+            <p:tooltip for="#{entityTypeName}TravelerMoveToBinder" value="Add traveler to binder."/>
+            <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
+                                         value="#{travelerObject}" />            
         </p:commandLink>
     </p:column>
 

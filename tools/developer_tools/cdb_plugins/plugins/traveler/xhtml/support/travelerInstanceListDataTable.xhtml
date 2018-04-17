@@ -16,7 +16,9 @@ See LICENSE file.
                  rowExpandMode="single">
         
         <p:ajax event="rowToggle"
-                listener="#{itemTravelerDomainInventoryController.loadTravelerListForBinder(travelerObject)}"/>
+                listener="#{itemTravelerDomainInventoryController.loadTravelerListForBinder(travelerObject)}"
+                onstart="PF('loadingDialog').show()"
+                oncomplete="PF('loadingDialog').hide()"/>
         
         <p:column>
             <p:rowToggler rendered="#{travelerObject.binder}"/>
@@ -28,13 +30,27 @@ See LICENSE file.
         
         <p:rowExpansion styleClass="domainEntityRowExpansion"
                         rendered="#{travelerObject.binder}">
+            <ui:param name="binderObject"
+                      value="#{travelerObject}" /> 
             <ui:param name="binderTravelerList"
-                      value="#{travelerObject.travelerList}" />
+                      value="#{binderObject.travelerList}" />
             
             <p:outputPanel rendered="#{binderTravelerList != null}">
                 <h3>
-                    Binder Contents
+                    Binder Contents 
                 </h3>
+                
+                <p:commandButton value="Add"
+                                 icon="fa fa-plus"
+                                 rendered="#{isEntityWriteable}"
+                                 update="@form:travelerBinderCreateToBinderDialog"
+                                 action="#{itemTravelerDomainInventoryController.prepareShowAddNewTravelerToBinderDialog()}"
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide();
+                                             PF('travelerBinderCreateToBinderDialogWidget').show()">
+                    <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.selectedBinder}"
+                                                 value="#{binderObject}" />                                                  
+                </p:commandButton>
                 <p:dataTable id="travelerInstanceListDataTable"
                      value="#{binderTravelerList}"
                      var="binderTravelerObject">
@@ -46,6 +62,8 @@ See LICENSE file.
                     <ui:include src="travelerInstanceListActionObject.xhtml">
                         <ui:param name="travelerObject"
                                   value="#{binderTravelerObject}" />
+                        <ui:param name="renderAddToBinderButton"
+                                  value="#{false}" />
                     </ui:include>
                 </p:dataTable>
             </p:outputPanel>
