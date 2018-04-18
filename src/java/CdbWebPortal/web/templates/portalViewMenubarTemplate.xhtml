@@ -15,26 +15,39 @@ See LICENSE file.
             <p:submenu label="Browse"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') 
                                      or fn:startsWith(view.viewId, '/views/itemDomainInventory/browse')) ? 'activeSubMenuParentItem' : ''} ">
-                <p:menuitem value="Browse By Function" url="/views/itemDomainCatalog/browseCategoryType"  
+                <p:menuitem value="Browse By Function" 
+                            icon="ui-icon-catalog" 
+                            url="/views/itemDomainCatalog/browseCategoryType"  
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browseCategoryType') ? 'activeMenuItem' : ''} "/>
-                <p:menuitem value="Browse By Ownership" url="/views/itemDomainCatalog/browseOwner"  
+                <p:menuitem value="Browse By Owner"
+                            icon="ui-icon-catalog" 
+                            url="/views/itemDomainCatalog/browseOwner"  
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browseOwner') ? 'activeMenuItem' : ''} "/>
-                <p:menuitem value="Browse By Location" url="/views/itemDomainInventory/browseLocation"  
+                <p:menuitem value="Browse By Location" 
+                            icon="ui-icon-inventory"
+                            url="/views/itemDomainInventory/browseLocation"  
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/browseLocation') ? 'activeMenuItem' : ''} "/>
 
             </p:submenu>
-            <p:menuitem value="Catalog" id="catalogButton" url="/views/itemDomainCatalog/list"
+            <p:menuitem value="Catalog" id="catalogButton"
+                        icon="ui-icon-catalog"
+                        url="/views/itemDomainCatalog/list"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') and 
                                       !fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} "/>
-            <p:menuitem value="Inventory" id="inventoryMenubarButton" url="/views/itemDomainInventory/list"
+            <p:menuitem value="Inventory"
+                        icon="ui-icon-inventory"
+                        id="inventoryMenubarButton" url="/views/itemDomainInventory/list"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') and 
                                       !fn:startsWith(view.viewId, '/views/itemDomainInventory/browse') ? 'activeMenuItem' : ''} "/>
             
             <p:menuitem value="Machine Design" 
+                        icon="ui-icon-machine-design"
                         id="machineDesignMenubarButton" url="/views/itemDomainMachineDesign/list"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/') ? 'activeMenuItem' : ''} "/>
             
-            <p:menuitem value="MAARC" id="maarcMenubarButton" url="/views/itemDomainMAARC/list" 
+            <p:menuitem value="MAARC" 
+                        icon="ui-icon-maarc"
+                        id="maarcMenubarButton" url="/views/itemDomainMAARC/list" 
                         rendered="#{resources.EnabledMAARCDomainFunctionality}"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMAARC/') ? 'activeMenuItem' : ''} "/>
             
