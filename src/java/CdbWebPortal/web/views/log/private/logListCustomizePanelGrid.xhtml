@@ -23,6 +23,12 @@ See LICENSE file.
 
         <p:selectBooleanCheckbox id="logListDisplayEnteredOnDateTime" value="#{logSettingObject.displayEnteredOnDateTime}"/>  
         <h:outputLabel for="logListDisplayEnteredOnDateTime" value="Display Entered On Date/Time" styleClass="dialogDataLabel"/>
+        
+        <p:selectBooleanCheckbox id="logListDisplayEffectiveFromDateTime" value="#{logSettingObject.displayEffectiveFromDateTime}"/>  
+        <h:outputLabel for="logListDisplayEffectiveFromDateTime" value="Display Effective From Date/Time" styleClass="dialogDataLabel"/>
+        
+        <p:selectBooleanCheckbox id="logListDisplayEffectiveToDateTime" value="#{logSettingObject.displayEffectiveToDateTime}"/>  
+        <h:outputLabel for="logListDisplayEffectiveToDateTime" value="Display Effective To Date/Time" styleClass="dialogDataLabel"/>
 
         <p:selectBooleanCheckbox id="logListDisplayId" value="#{logSettingObject.displayId}"/>  
         <h:outputLabel for="logListDisplayId" value="Display Id" styleClass="dialogDataLabel"/>

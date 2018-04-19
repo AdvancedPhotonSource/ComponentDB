@@ -21,6 +21,8 @@ public class LogSettings extends SettingsBase<LogController>{
     private static final String DisplayIdSettingTypeKey = "Log.List.Display.Id";
     private static final String DisplayEnteredByUserSettingTypeKey = "Log.List.Display.EnteredByUser";
     private static final String DisplayEnteredOnDateTimeSettingTypeKey = "Log.List.Display.EnteredOnDateTime";
+    private static final String DisplayEffectiveFromDateTimeSettingTypeKey = "Log.List.Display.EffectiveFromDateTime";
+    private static final String DisplayEffectiveToDateTimeSettingTypeKey = "Log.List.Display.EffectiveToDateTime";
     private static final String DisplayTopicSettingTypeKey = "Log.List.Display.Topic";
     private static final String FilterByEnteredByUserSettingTypeKey = "Log.List.FilterBy.EnteredByUser";
     private static final String FilterByEnteredOnDateTimeSettingTypeKey = "Log.List.FilterBy.EnteredOnDateTime";
@@ -31,6 +33,8 @@ public class LogSettings extends SettingsBase<LogController>{
     private Boolean displayEnteredByUser = null;
     private Boolean displayEnteredOnDateTime = null;
     private Boolean displayTopic = null;
+    private Boolean displayEffectiveFromDateTime = null; 
+    private Boolean displayEffectiveToDateTime = null; 
 
     private String filterByEnteredByUser = null;
     private String filterByEnteredOnDateTime = null;
@@ -48,6 +52,8 @@ public class LogSettings extends SettingsBase<LogController>{
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayEnteredByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredByUserSettingTypeKey).getDefaultValue());
         displayEnteredOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEnteredOnDateTimeSettingTypeKey).getDefaultValue());
+        displayEffectiveFromDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEffectiveFromDateTimeSettingTypeKey).getDefaultValue());
+        displayEffectiveToDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEffectiveToDateTimeSettingTypeKey).getDefaultValue());        
         displayTopic = Boolean.parseBoolean(settingTypeMap.get(DisplayTopicSettingTypeKey).getDefaultValue());
 
         filterByEnteredByUser = settingTypeMap.get(FilterByEnteredByUserSettingTypeKey).getDefaultValue();
@@ -63,7 +69,9 @@ public class LogSettings extends SettingsBase<LogController>{
         displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayEnteredByUser = settingEntity.getSettingValueAsBoolean(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
         displayEnteredOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
-        displayTopic = settingEntity.getSettingValueAsBoolean(DisplayTopicSettingTypeKey, displayTopic);
+        displayEffectiveFromDateTime = settingEntity.getSettingValueAsBoolean(DisplayEffectiveFromDateTimeSettingTypeKey, displayEffectiveFromDateTime);
+        displayEffectiveToDateTime = settingEntity.getSettingValueAsBoolean(DisplayEffectiveToDateTimeSettingTypeKey, displayEffectiveToDateTime);
+        displayTopic = settingEntity.getSettingValueAsBoolean(DisplayTopicSettingTypeKey, displayTopic);    
 
         filterByEnteredByUser = settingEntity.getSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
         filterByEnteredOnDateTime = settingEntity.getSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
@@ -78,6 +86,8 @@ public class LogSettings extends SettingsBase<LogController>{
         settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
         settingEntity.setSettingValue(DisplayEnteredByUserSettingTypeKey, displayEnteredByUser);
         settingEntity.setSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
+        settingEntity.setSettingValue(DisplayEffectiveFromDateTimeSettingTypeKey, displayEffectiveFromDateTime);
+        settingEntity.setSettingValue(DisplayEffectiveToDateTimeSettingTypeKey, displayEffectiveToDateTime);
         settingEntity.setSettingValue(DisplayTopicSettingTypeKey, displayTopic);
 
         settingEntity.setSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
@@ -122,6 +132,22 @@ public class LogSettings extends SettingsBase<LogController>{
 
     public void setDisplayEnteredOnDateTime(Boolean displayEnteredOnDateTime) {
         this.displayEnteredOnDateTime = displayEnteredOnDateTime;
+    }
+
+    public Boolean getDisplayEffectiveFromDateTime() {
+        return displayEffectiveFromDateTime;
+    }
+
+    public void setDisplayEffectiveFromDateTime(Boolean displayEffectiveFromDateTime) {
+        this.displayEffectiveFromDateTime = displayEffectiveFromDateTime;
+    }
+
+    public Boolean getDisplayEffectiveToDateTime() {
+        return displayEffectiveToDateTime;
+    }
+
+    public void setDisplayEffectiveToDateTime(Boolean displayEffectiveToDateTime) {
+        this.displayEffectiveToDateTime = displayEffectiveToDateTime;
     }
 
     public Boolean getDisplayAttachments() {

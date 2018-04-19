@@ -25,6 +25,7 @@ public class LogUtility {
         Log logEntry = new Log();
         logEntry.setEnteredByUser(enteredByUser);
         logEntry.setEnteredOnDateTime(enteredOnDateTime);
+        logEntry.setEffectiveFromDateTime(enteredOnDateTime);
         return logEntry;
     }
 

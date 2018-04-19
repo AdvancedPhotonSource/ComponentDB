@@ -3,6 +3,7 @@
  * See LICENSE file.
  */
 
+/*
 window.onload = function () {
     var thisPageId = document.getElementById('viewCurrentPageIdHiddenText').value;
     var currentPageUrl = window.location.href; 
@@ -14,6 +15,7 @@ window.onload = function () {
         prepareTestExistingViewID(); 
     }
 };
+*/
 
 function setCurrentPageViewId() {
     var viewUUID = document.getElementById('viewOpenPageIdHiddenText').innerHTML;

@@ -84,7 +84,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     @JoinTable(name = "item_element_log", joinColumns = {
         @JoinColumn(name = "item_element_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "log_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @OrderBy("enteredOnDateTime DESC")
     private List<Log> logList;
     @JoinColumn(name = "parent_item_id", referencedColumnName = "id")
