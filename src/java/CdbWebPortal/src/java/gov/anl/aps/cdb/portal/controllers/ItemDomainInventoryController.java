@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainInventorySettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
@@ -30,11 +31,11 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCable;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -75,6 +76,13 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.inventory.getValue();
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";
+    
+    private final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status"; 
+    
+    // Inventory status variables
+    private PropertyType inventoryStatusPropertyType; 
+    private PropertyValue currentStatusPropertyValue; 
+    private boolean loadedCurrentStatusPropertyValue = false;  
 
     private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
 
@@ -107,6 +115,9 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     @EJB
     private RelationshipTypeFacade relationshipTypeFacade;
+    
+    @EJB
+    private PropertyTypeFacade propertyTypeFacade;
 
     @EJB
     private ItemDomainInventoryFacade itemDomainInventoryFacade;
@@ -136,7 +147,60 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public ItemEnforcedPropertiesController getItemEnforcedPropertiesController() {
         return ItemEnforcedPropertiesDomainInventoryController.getInstance();
     }
+    
+    
 
+    // <editor-fold defaultstate="collapsed" desc="Inventory status implementation">
+    
+    public PropertyType getInventoryStatusPropertyType() {
+        if (inventoryStatusPropertyType == null) {
+            inventoryStatusPropertyType = propertyTypeFacade.findByName(ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
+        }
+        return inventoryStatusPropertyType;
+    }        
+
+    public PropertyValue getCurrentStatusPropertyValue() {
+        if (!loadedCurrentStatusPropertyValue) {
+            for (PropertyValue propertyValue : current.getPropertyValueInternalList()) {
+                if (propertyValue.getPropertyType().equals(getInventoryStatusPropertyType())) {
+                    currentStatusPropertyValue = propertyValue;
+                    break; 
+                }                
+            }
+            loadedCurrentStatusPropertyValue = true; 
+        }
+        return currentStatusPropertyValue;
+    }
+    
+    public void prepareEditInventoryStatus() {
+        if (getCurrentStatusPropertyValue() == null) {
+            currentStatusPropertyValue = preparePropertyTypeValueAdd(getInventoryStatusPropertyType()); 
+        }
+    }
+    
+    public String getInventoryStatusValue() {
+        if (getCurrentStatusPropertyValue() != null) {
+            return currentStatusPropertyValue.getValue(); 
+        } 
+        return ""; 
+    }
+    
+    public void setInventoryStatusValue(String status) {
+        if (getCurrentStatusPropertyValue() != null) {
+            currentStatusPropertyValue.setValue(status);
+        }
+    }
+    
+    public void resetInventoryStatusVariables() {
+        loadedCurrentStatusPropertyValue = false; 
+        currentStatusPropertyValue = null; 
+    }
+    
+    public boolean getRenderedHistoryButton() {
+        return getCurrentStatusPropertyValue() != null; 
+    }
+
+    // </editor-fold>
     public TreeNode getLocationRelationshipTree(ItemDomainInventory inventoryItem) {
         if (inventoryItem.getLocationTree() == null) {
             setItemLocationInfo(inventoryItem);
@@ -189,6 +253,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     @Override
     protected void resetVariablesForCurrent() {
         super.resetVariablesForCurrent();
+        resetInventoryStatusVariables(); 
         relatedMAARCRelationshipsForCurrent = null;
     }
 
