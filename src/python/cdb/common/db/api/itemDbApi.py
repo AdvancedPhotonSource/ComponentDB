@@ -36,6 +36,13 @@ class ItemDbApi(CdbDbApi):
         return self.toCdbObjectList(itemList)
 
     @CdbDbApi.executeQuery
+    def getItemsOfDomainWithoutParents(self, domainName, **kwargs):
+        session = kwargs['session']
+        itemList = self.itemHandler.getItemsOfDomainWithoutParents(session, domainName)
+
+        return self.toCdbObjectList(itemList)
+
+    @CdbDbApi.executeQuery
     def getItemsDerivedFromItem(self, derivedItemId, **kwargs):
         session = kwargs['session']
         itemList = self.itemHandler.getItemsDerivedFromItem(session, derivedItemId)

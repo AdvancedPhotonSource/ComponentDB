@@ -126,6 +126,18 @@ class ItemController(CdbController):
 
     @cherrypy.expose
     @CdbController.execute
+    def getLocationItems(self):
+        locationItems = self.itemControllerImpl.getLocationItems()
+        response = self.listToJson(locationItems)
+        return response
+
+    def getTopLevelLocationItems(self):
+        locationItems = self.itemControllerImpl.getLocationItemsWithoutParents()
+        response = self.listToJson(locationItems)
+        return response
+
+    @cherrypy.expose
+    @CdbController.execute
     def getItemsDerivedFromItem(self, derivedFromItemId):
         if not derivedFromItemId:
             raise InvalidRequest("Invalid derived from item id provided")

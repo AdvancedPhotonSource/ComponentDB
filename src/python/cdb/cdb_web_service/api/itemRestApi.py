@@ -217,6 +217,18 @@ class ItemRestApi(CdbRestApi):
         responseData = self.sendRequest(url=url, method='GET')
         return self.toCdbObjectList(responseData, Item)
 
+    def getLocationItems(self):
+        url = '%s/items/domain/location' % self.getContextRoot()
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, Item)
+
+    def getLocationTopLevelItems(self):
+        url = '%s/items/domain/location/topLevel' % self.getContextRoot()
+
+        responseData = self.sendRequest(url=url, method='GET')
+        return self.toCdbObjectList(responseData, Item)
+
     def getDomains(self):
         url = '%s/domains' % self.getContextRoot()
         responseData =self.sendRequest(url=url, method='GET')

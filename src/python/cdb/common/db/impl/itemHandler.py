@@ -6,6 +6,8 @@ See LICENSE file.
 """
 
 from datetime import datetime
+
+from sqlalchemy import exists
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import OperationalError
 
@@ -267,6 +269,19 @@ class ItemHandler(CdbDbEntityHandler):
         try:
             query = session.query(Item).join(Domain)
             query = query.filter(Domain.name==domainName)
+
+            dbItems = query.all()
+            return dbItems
+
+        except NoResultFound, ex:
+            raise ObjectNotFound("No %ss with domain %s found." % (entityDisplayName, domainName))
+
+    def getItemsOfDomainWithoutParents(self, session, domainName):
+        entityDisplayName = self._getEntityDisplayName(Item)
+        try:
+            query = session.query(Item).join(Domain)
+            query = query.filter(Domain.name == domainName)
+            query = query.filter(~ exists().where(ItemElement.contained_item_id == Item.id))
 
             dbItems = query.all()
             return dbItems

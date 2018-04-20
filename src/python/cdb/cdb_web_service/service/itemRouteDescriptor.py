@@ -163,6 +163,24 @@ class ItemRouteDescriptor:
                 'method': ['GET']
             },
 
+            # Get location items
+            {
+                'name': 'getLocationItems',
+                'path': '%s/items/domain/location' % contextRoot,
+                'controller': itemController,
+                'action': 'getLocationItems',
+                'method': ['GET']
+            },
+
+            # Get top level location items
+            {
+                'name': 'getLocationItemsWithoutParents',
+                'path': '%s/items/domain/location/topLevel' % contextRoot,
+                'controller': itemController,
+                'action': 'getTopLevelLocationItems',
+                'method': ['GET']
+            },
+
             # Add Property value to item
             {
                 'name': 'addPropertyValueForItemById',

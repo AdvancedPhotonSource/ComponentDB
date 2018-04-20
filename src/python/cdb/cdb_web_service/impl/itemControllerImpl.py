@@ -129,6 +129,12 @@ class ItemControllerImpl(CdbObjectManager):
     def getCatalogItems(self):
         return self.itemDbApi.getItemsOfDomain(self.CATALOG_ITEM_DOMAIN_NAME)
 
+    def getLocationItems(self):
+        return self.itemDbApi.getItemsOfDomain(self.LOCATION_ITEM_DOMAIN_NAME)
+
+    def getLocationItemsWithoutParents(self):
+        return self.itemDbApi.getItemsOfDomainWithoutParents(self.LOCATION_ITEM_DOMAIN_NAME)
+
     def getItemsDerivedFromItemId(self, derivedFromItemId):
         return self.itemDbApi.getItemsDerivedFromItem(derivedFromItemId)
 
