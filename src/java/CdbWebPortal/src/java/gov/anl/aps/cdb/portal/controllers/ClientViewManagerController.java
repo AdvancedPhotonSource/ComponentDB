@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -37,5 +38,9 @@ public class ClientViewManagerController implements Serializable {
     
     public String redrectToLastShownUrl() {
         return lastUrl; 
+    }
+    
+    public int getCurrentTimeHash() {
+        return LocalDateTime.now().hashCode(); 
     }
 }
