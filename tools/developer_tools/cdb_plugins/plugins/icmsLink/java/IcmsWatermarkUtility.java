@@ -12,10 +12,14 @@ import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.PdfStamper;
 import com.sun.xml.wss.impl.misc.Base64;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import org.apache.log4j.Logger;
 import javax.xml.soap.*;
@@ -45,6 +49,15 @@ public class IcmsWatermarkUtility {
     private static final String SOAP_RESULT_DATE = "idc:dInDate";
     private static final String SOAP_RESULT_STATUS = "idc:dStatus";
     private static final String SOAP_RESULT_FILE_CONTENT = "idc:fileContent";
+    private static final String SOAP_CUSTOM_PROPERTIES = "idc:CustomDocMetaData"; 
+    private static final String SOAP_CUSTOM_PROPERTY = "idc:property";
+    private static final String SOAP_CUSTOM_PROPERTY_KEY = "idc:name";
+    private static final String SOAP_CUSTOM_PROPERTY_VALUE = "idc:value";
+    private static final String SOAP_PROPERTY_CONTROLLED_REV = "xControlledRevisionNumber"; 
+    private static final String SOAP_PROPERTY_DNS_COLLECTION_ID = "xCollection"; 
+    private static final String SOAP_PROPERTY_DNS_DOC_NUM = "xDocumentID";
+    
+    
 
     private static final String ICMS_UNDER_REV_STATUS = "UNDER REVISION";
 
@@ -57,10 +70,15 @@ public class IcmsWatermarkUtility {
     
     String author = null;
     String rev = null;
+    String controllerRev = null; 
     String date = null;
     String status = null;
     String downloadContentBase64Encoded = null;
     String docName = null;
+    // Custom Props
+    String controlledRev = null;
+    String dnsCollectionId = null;
+    String dnsDocNumber = null; 
 
     public IcmsWatermarkUtility(String soapEndpointUrl, String soapGetFileByNameActionUrl, String username, String password) {
         this.soapEndpointUrl = soapEndpointUrl;
@@ -133,7 +151,7 @@ public class IcmsWatermarkUtility {
      *
      * Function Credit: Thomas Fors
      *     
-     * @return byte array of the stamped PDF file
+     * @return byte array ologgerf the stamped PDF file
      * @throws DocumentException - Error loading pdfstamper or creating font
      * @throws IOException - Error performing IO operation 
      * @throws Base64DecodingException - Error converting downloadContent string to byte[]
@@ -141,8 +159,28 @@ public class IcmsWatermarkUtility {
     private byte[] addWatermarkToPDFFile() throws   Base64DecodingException, DocumentException, IOException {
         byte[] pdfBytes = Base64.decode(downloadContentBase64Encoded);
         
-        String watermarkContents = docName + " - " + author + " - Rev " + rev;
-        watermarkContents += " - " + date;
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yy hh:mm:ss a");  
+        LocalDateTime now = LocalDateTime.now();  
+        String downloadTime = dtf.format(now);  
+        
+        UserInfo user = (UserInfo) SessionUtility.getUser(); 
+        String username = null; 
+        if (user != null) {
+            username = user.getUsername();
+        } else {
+            username = "unknown user"; 
+        }
+        String bottomMessage = "Downloaded via APS CDB by: " + username + " at " + downloadTime; 
+        
+        controlledRev = updateOptionalValue(controlledRev); 
+        dnsCollectionId = updateOptionalValue(dnsCollectionId);
+        dnsDocNumber = updateOptionalValue(dnsDocNumber); 
+        
+        String watermarkContents = "Content ID: " + docName;
+        watermarkContents += "      Rev: " + controlledRev;
+        watermarkContents += "      Released: " + date; 
+        watermarkContents += "      DNS Collection ID: " + dnsCollectionId;
+        watermarkContents += "      DNS Document ID: " + dnsDocNumber; 
 
         PdfReader pdfReader = new PdfReader(pdfBytes);
         int n = pdfReader.getNumberOfPages();
@@ -160,18 +198,26 @@ public class IcmsWatermarkUtility {
             over.setTextMatrix(30, 30);
             over.setFontAndSize(bf, 10);
             over.setColorFill(new Color(0x80, 0x80, 0x80));
-            over.showTextAligned(Element.ALIGN_LEFT, watermarkContents + " - ", 25, 25, 90);
-
+            over.showTextAligned(Element.ALIGN_LEFT, watermarkContents, 25, 25, 90);
+            over.showTextAligned(Element.ALIGN_LEFT, bottomMessage, 50, 10, 0);
             if (status.equals(ICMS_UNDER_REV_STATUS)) {
                 over.setColorFill(new Color(0xFF, 0x00, 0x00));
             }
-            over.showTextAligned(Element.ALIGN_LEFT, status, 25, 25 + bf.getWidthPoint(watermarkContents + " - ", 10), 90);
+            //over.showTextAligned(Element.ALIGN_LEFT, status, 25, 25 + bf.getWidthPoint(watermarkContents + " - ", 10), 90);
 
             over.endText();
         }
         stamp.close();
 
         return out.toByteArray();
+    }
+    
+    private String updateOptionalValue(String value) {
+        if (value == null || value.isEmpty()) {
+            return "N/A"; 
+        }
+        
+        return value; 
     }
 
     private boolean loadInformationFromSoapResponse(Iterator nodeItterator) {
@@ -237,10 +283,48 @@ public class IcmsWatermarkUtility {
                     status = nextElement.getValue();
                 } else if (nextElement.getNodeName().equals(SOAP_RESULT_DOC_NAME)) {
                     docName = nextElement.getValue();
+                } else if (nextElement.getNodeName().equals(SOAP_CUSTOM_PROPERTIES)) {
+                    processICMSProperties(nextElement);
                 }
             }
         }
     }
+    
+    private void processICMSProperties(SOAPElement topLevelProperty) {
+        Iterator properties = topLevelProperty.getChildElements();
+        
+        String lastKey; 
+        String lastValue; 
+        
+        while (properties.hasNext()) {
+            SOAPElement propertyNode = getNextElement(properties);
+            if (propertyNode != null) {
+                if (propertyNode.getNodeName().equals(SOAP_CUSTOM_PROPERTY)) {
+                    lastKey = "";
+                    lastValue = ""; 
+                    Iterator propertyContents = propertyNode.getChildElements();
+                    while (propertyContents.hasNext()) {
+                        SOAPElement propContent = getNextElement(propertyContents);
+                        if (propContent != null) {
+                            if (propContent.getNodeName().equals(SOAP_CUSTOM_PROPERTY_KEY)) {
+                                lastKey = propContent.getValue(); 
+                            } else if (propContent.getNodeName().equals(SOAP_CUSTOM_PROPERTY_VALUE)) {
+                                lastValue = propContent.getValue(); 
+                            }
+                        }
+                    }
+                    // Verify if key is of interest 
+                    if (lastKey.equals(SOAP_PROPERTY_CONTROLLED_REV)) {
+                        controlledRev = lastValue; 
+                    } else if (lastKey.equals(SOAP_PROPERTY_DNS_COLLECTION_ID)) {
+                        dnsCollectionId = lastValue;
+                    } else if (lastKey.equals(SOAP_PROPERTY_DNS_DOC_NUM)) {
+                        dnsDocNumber = lastValue; 
+                    }                    
+                }
+            }            
+        }
+    }        
 
     private void loadInFileDownload(SOAPElement fileDownloadElement) {
         Iterator childElements = fileDownloadElement.getChildElements();
