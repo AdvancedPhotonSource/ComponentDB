@@ -85,7 +85,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     @Column(name = "is_active")
     private Boolean isActive;
     @Column(name = "is_metadata_dynamic")
-    private Boolean isMetadataDynamic;   
+    private Boolean isMetadataDynamic;
     @JoinTable(name = "allowed_property_domain", joinColumns = {
         @JoinColumn(name = "property_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "domain_id", referencedColumnName = "id")})
@@ -105,19 +105,19 @@ public class PropertyType extends CdbEntity implements Serializable {
     @ManyToOne
     private PropertyTypeHandler propertyTypeHandler;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
-    private List<PropertyTypeMetadata> propertyTypeMetadataList; 
+    private List<PropertyTypeMetadata> propertyTypeMetadataList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<AllowedPropertyValue> allowedPropertyValueList;
-    
+
     private transient List<AllowedPropertyValue> sortedAllowedPropertyValueList;
 
     private transient DisplayType displayType = null;
-    
-    private transient String allowedDomainString = null; 
-    
+
+    private transient String allowedDomainString = null;
+
     public void resetCachedVales() {
         sortedAllowedPropertyValueList = null;
-        allowedDomainList = null; 
+        allowedDomainList = null;
     }
 
     public PropertyType() {
@@ -226,7 +226,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     }
 
     public void setAllowedDomainList(List<Domain> allowedDomainList) {
-        allowedDomainString = null; 
+        allowedDomainString = null;
         this.allowedDomainList = allowedDomainList;
     }
 
@@ -236,11 +236,11 @@ public class PropertyType extends CdbEntity implements Serializable {
         }
         return allowedDomainString;
     }
-    
+
     @XmlTransient
     public List<EntityType> getEntityTypeList() {
         return entityTypeList;
-    }   
+    }
 
     public void setEntityTypeList(List<EntityType> entityTypeList) {
         this.entityTypeList = entityTypeList;
@@ -283,13 +283,13 @@ public class PropertyType extends CdbEntity implements Serializable {
     @XmlTransient
     public List<AllowedPropertyValue> getAllowedPropertyValueList() {
         return allowedPropertyValueList;
-    }   
+    }
 
     public List<AllowedPropertyValue> getSortedAllowedPropertyValueList() {
         if (sortedAllowedPropertyValueList == null) {
             sortedAllowedPropertyValueList = new ArrayList<>();
-            sortedAllowedPropertyValueList.addAll(allowedPropertyValueList);                    
-            
+            sortedAllowedPropertyValueList.addAll(allowedPropertyValueList);
+
             Collections.sort(sortedAllowedPropertyValueList, new Comparator<AllowedPropertyValue>() {
                 @Override
                 public int compare(AllowedPropertyValue o1, AllowedPropertyValue o2) {
@@ -297,15 +297,15 @@ public class PropertyType extends CdbEntity implements Serializable {
                 }
             });
 
-	    if (defaultValue != null && !defaultValue.equals("")) {
-	    	for (AllowedPropertyValue apv : allowedPropertyValueList) {
+            if (defaultValue != null && !defaultValue.equals("")) {
+                for (AllowedPropertyValue apv : allowedPropertyValueList) {
                     if (apv.getValue().equals(defaultValue)) {
                         sortedAllowedPropertyValueList.remove(apv);
-                        sortedAllowedPropertyValueList.add(0, apv); 
+                        sortedAllowedPropertyValueList.add(0, apv);
                         break;
                     }
-		}
-	    }
+                }
+            }
         }
         return sortedAllowedPropertyValueList;
     }
@@ -357,6 +357,6 @@ public class PropertyType extends CdbEntity implements Serializable {
     @Override
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.PropertyType[ id=" + id + " ]";
-    }        
+    }
 
 }
