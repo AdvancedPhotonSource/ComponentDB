@@ -9,6 +9,7 @@ See LICENSE file.
 #
 # Item route descriptor.
 #
+from cdb.cdb_web_service.service import itemSessionController
 from cdb.cdb_web_service.service.itemSessionController import ItemSessionController
 from cdb.common.utility.configurationManager import ConfigurationManager
 from itemController import ItemController
@@ -233,7 +234,31 @@ class ItemRouteDescriptor:
                 'controller': itemElementSessionController,
                 'action': 'updateItemElement',
                 'method': ['PUT']
-            }
+            },
+
+            {
+                'name': 'getAvailableInventoryItemStatuses',
+                'path': '%s/items/domain/inventory/availableStatuses' % contextRoot,
+                'controller': itemController,
+                'action': 'getAvailableInventoryItemStatuses',
+                'method': ['GET']
+            },
+
+            {
+                'name': 'getInventoryItemStatus',
+                'path': '%s/items/domain/inventory/status/:(itemId)' % contextRoot,
+                'controller': itemController,
+                'action': 'getInventoryItemStatus',
+                'method': ['GET']
+            },
+
+            {
+                'name': 'updateInventoryItemStatus',
+                'path': '%s/items/domain/inventory/status/:(itemId)/:(status)' % contextRoot,
+                'controller': itemSessionController,
+                'action': 'updateInventoryItemStatus',
+                'method': ['POST']
+            },
 
 
         ]

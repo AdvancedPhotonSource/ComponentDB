@@ -161,4 +161,13 @@ class ItemControllerImpl(CdbObjectManager):
                                       isGroupWriteable=isGroupWriteable,
                                       entityTypeNames=entityTypeNames)
 
+    def getAvailableInventoryItemStatuses(self):
+        return self.itemDbApi.getAvailableInventoryItemStatuses()
+
+    def getInventoryItemStatus(self, itemId):
+        return self.itemDbApi.getInventoryItemStatus(itemId)
+
+    def updateInventoryItemStatus(self, itemId, statusName, enteredByUserId):
+        return self.itemDbApi.updateInventoryItemStatus(itemId, statusName, enteredByUserId)
+
 

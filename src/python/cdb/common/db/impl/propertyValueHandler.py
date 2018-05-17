@@ -13,6 +13,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
 from cdb.common.exceptions.objectNotFound import ObjectNotFound
+from cdb.common.exceptions.commandFailed import CommandFailed
 from cdb.common.db.entities.propertyValue import PropertyValue
 from cdb.common.db.entities.propertyValueHistory import PropertyValueHistory
 from cdb.common.db.entities.itemElementProperty import ItemElementProperty
@@ -71,7 +72,7 @@ class PropertyValueHandler(CdbDbEntityHandler):
         dbPropertyValueHistory.entered_on_date_time = enteredOnDateTime
         dbPropertyValueHistory.display_value = displayValue
         dbPropertyValueHistory.target_value = targetValue
-        dbPropertyValueHistory.propertyValue = dbPropertyValue
+        dbPropertyValueHistory.property_value_id = dbPropertyValue.id
 
         session.add(dbPropertyValueHistory)
         session.flush()
@@ -166,17 +167,20 @@ class PropertyValueHandler(CdbDbEntityHandler):
 
         return dbMetadataAdded
 
-    def createPropertyValue(self, session, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable = None, isDynamic = None, displayValue = None, targetValue = None, enteredOnDateTime = None):
+    def createPropertyValue(self, session, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable = None, isDynamic = None, displayValue = None, targetValue = None, enteredOnDateTime = None, allowInternal=False):
         enteredByDbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
         if enteredOnDateTime is None:
             enteredOnDateTime = datetime.datetime.now()
         dbPropertyType = self.propertyTypeHandler.getPropertyTypeByName(session, propertyTypeName)
-        allowedPropertyValueList = self.propertyTypeHandler.getAllowedPropertyTypeValuesById(session, dbPropertyType.id)
-        self.propertyTypeHandler.checkPropertyValueIsAllowed(value, allowedPropertyValueList)
-        dbPropertyValue = PropertyValue(tag=tag, value=value, units=units, description=description, entered_on_date_time=enteredOnDateTime)
-        dbPropertyValue.enteredByUserInfo = enteredByDbUserInfo
-        dbPropertyValue.propertyType = dbPropertyType
-        return dbPropertyValue
+        if (allowInternal == False and dbPropertyType.is_internal):
+            raise CommandFailed("%s is an internal property. Can only be added and updated using specialized functionality." % propertyTypeName)
+        else:
+            allowedPropertyValueList = self.propertyTypeHandler.getAllowedPropertyTypeValuesById(session, dbPropertyType.id)
+            self.propertyTypeHandler.checkPropertyValueIsAllowed(value, allowedPropertyValueList)
+            dbPropertyValue = PropertyValue(tag=tag, value=value, units=units, description=description, entered_on_date_time=enteredOnDateTime)
+            dbPropertyValue.enteredByUserInfo = enteredByDbUserInfo
+            dbPropertyValue.propertyType = dbPropertyType
+            return dbPropertyValue
 
     def createPropertyValueByTypeId(self, session, propertyTypeId, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable):
         enteredByDbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
@@ -186,12 +190,25 @@ class PropertyValueHandler(CdbDbEntityHandler):
         dbPropertyValue = PropertyValue(property_type_id=propertyTypeId, tag=tag, value=value, units=units, description=description, entered_by_user_id=enteredByUserId, entered_on_date_time=enteredOnDateTime, is_dynamic=isDynamic, is_user_writeable=isUserWriteable)
         return dbPropertyValue
 
-    def updatePropertyValueById(self, session, id, tag, value, units, description, enteredByUserId, isDynamic, isUserWriteable):
+    def updatePropertyValueById(self, session, id, tag=None, value=None, units=None, description=None,
+                                enteredByUserId=None, isDynamic=None, isUserWriteable=None):
         dbPropertyValue = self.findPropertyValueById(session, id)
+
+        # Add Property value history
+        self.addPropertyValueHistory(session, id,
+                                     dbPropertyValue.tag,
+                                     dbPropertyValue.value,
+                                     dbPropertyValue.units,
+                                     dbPropertyValue.description,
+                                     dbPropertyValue.entered_by_user_id,
+                                     dbPropertyValue.entered_on_date_time,
+                                     dbPropertyValue.display_value,
+                                     dbPropertyValue.target_value)
+
         enteredByDbUserInfo = self.userInfoHandler.getUserInfoById(session, enteredByUserId)
         enteredOnDateTime = datetime.datetime.now()
-        dbPropertyType = self.propertyTypeHandler.getPropertyTypeById(session, dbPropertyValue.property_type_id)
-        self.propertyTypeHandler.checkPropertyValueIsAllowed(value, dbPropertyType.allowedPropertyValueList)
+        allowedPropertyValueList = self.propertyTypeHandler.getAllowedPropertyTypeValuesById(session, dbPropertyValue.property_type_id)
+        self.propertyTypeHandler.checkPropertyValueIsAllowed(value, allowedPropertyValueList)
 
         dbPropertyValue.entered_by_user_id = enteredByUserId
         dbPropertyValue.entered_on_date_time = enteredOnDateTime

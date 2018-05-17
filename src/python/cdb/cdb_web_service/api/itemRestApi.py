@@ -5,6 +5,7 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
 from cdb.common.exceptions.invalidRequest import InvalidRequest
+from cdb.common.objects.allowedPropertyValue import AllowedPropertyValue
 from cdb.common.utility.encoder import Encoder
 from cdb.common.objects.domain import Domain
 from cdb.common.objects.log import Log
@@ -395,6 +396,37 @@ class ItemRestApi(CdbRestApi):
         responseData = self.sendRequest(url=url, method='GET')
         return self.toCdbObjectList(responseData, ItemElement)
 
+    def getAvailableInventoryItemStatuses(self):
+        url = "%s/items/domain/inventory/availableStatuses" %(self.getContextRoot())
+
+        responseData = self.sendRequest(url, method="GET")
+        return self.toCdbObjectList(responseData, AllowedPropertyValue)
+
+    def getInventoryItemStatus(self, itemId):
+        if itemId is None:
+            raise InvalidRequest("Item id must be provided")
+
+        itemId = str(itemId)
+        url = '%s/items/domain/inventory/status/%s' % (self.getContextRoot(), itemId)
+
+        response = self.sendRequest(url, method="GET")
+        return PropertyValue(response)
+
+    def updateInventoryItemStatus(self, itemId, status):
+        if itemId is None:
+            raise InvalidRequest("Item id must be provided")
+        if status is None:
+            raise InvalidRequest("Status must be provided")
+
+        itemId = str(itemId)
+
+        status = Encoder.encode(status)
+
+        url = "%s/items/domain/inventory/status/%s/%s" % (self.getContextRoot(), itemId, status)
+
+        response = self.sendSessionRequest(url, method="POST")
+
+        return PropertyValue(response)
 
     def __appendOptionalItemElementParametersToUrl(self, url, containedItemId = -1, description=None,
                        ownerUserId=None, ownerGroupId=None, isRequired=-1, isGroupWriteable=None ):

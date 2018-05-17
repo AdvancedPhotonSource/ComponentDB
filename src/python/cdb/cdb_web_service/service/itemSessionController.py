@@ -183,3 +183,22 @@ class ItemSessionController(CdbSessionController):
         self.logger.debug('Returning new item: %s' % (response))
         return response.getFullJsonRep()
 
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
+    def updateInventoryItemStatus(self, itemId, status):
+        if not itemId:
+            raise InvalidRequest("Item id must be provided")
+        if not status:
+            raise InvalidRequest("Status must be provided")
+
+        status = Encoder.decode(status)
+
+        sessionUser = self.getSessionUser()
+        enteredByUserId = sessionUser.get('id')
+
+        response = self.itemControllerImpl.updateInventoryItemStatus(itemId, status, enteredByUserId)
+        self.logger.debug("Returning updated status: %s" %(response))
+
+        return response.getFullJsonRep()
+

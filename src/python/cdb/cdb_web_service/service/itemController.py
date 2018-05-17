@@ -163,3 +163,20 @@ class ItemController(CdbController):
         response = self.listToJson(domains)
         return response
 
+    @cherrypy.expose
+    @CdbController.execute
+    def getInventoryItemStatus(self, itemId):
+        if not itemId:
+            raise InvalidRequest("Item id must be provided")
+
+        response = self.itemControllerImpl.getInventoryItemStatus(itemId)
+        return response.getFullJsonRep()
+
+    @cherrypy.expose
+    @CdbController.execute
+    def getAvailableInventoryItemStatuses(self):
+        response = self.itemControllerImpl.getAvailableInventoryItemStatuses()
+        return self.listToJson(response)
+
+
+
