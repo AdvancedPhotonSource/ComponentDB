@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">   
+
+
+    <p:outputPanel id="machineDesignElementCreateFromTemplatePanel"
+                   rendered="#{itemDomainMachineDesignController.displayCreateMachineDesignFromTemplateContent}" >            
+        <p:panelGrid columns="2">
+            <ui:include src="itemDomainMachineDesignCreateFromTemplateObject.xhtml">
+                <ui:param name="rendered"
+                          value="#{true == true}"/>
+                <ui:param name="machineDesignNameValueChangedCommand"
+                          value="machineDesignTitleCreateMachineDesignReplacementValueChange()" />
+            </ui:include>
+        </p:panelGrid>
+
+        <p:remoteCommand name="machineDesignTitleCreateMachineDesignReplacementValueChange"
+                         update="machineDesignElementCreateFromTemplatePanel"
+                         action="#{itemDomainMachineDesignController.titleGenerationValueChange()}"/>
+    </p:outputPanel>
+
+
+
+</ui:composition>
+
+

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">   
+
+    <p:outputPanel id="machineDesignDualViewContextMenuPermissions">
+        
+        <ui:param name="disabledEditContextMenuItemForSelection"
+                  value="#{!itemDomainMachineDesignController.isSelectedItemInListTreeViewWriteable()}" />
+        <ui:param name="disabledEditContextMenuItemForSelectionParent"
+                  value="#{!itemDomainMachineDesignController.isParentOfSelectedItemInListTreeViewWriteable()}" />
+        
+
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 180px;"
+                       nodeType="MachineDesignTemplate"
+                       id="machineDesignDualViewTemplateContextMenu"
+                       widgetVar="machineDesignDualViewTemplateContextMenuWidget">
+            <ui:include src="machineDesignContextMenu/addMachineDesignTemplateContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/addCatalogItemContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/destroyMachineDesignContextMenuItem.xhtml" /> 
+        </p:contextMenu>
+
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 180px;"
+                       nodeType="MachineDesignTemplateMember"
+                       id="machineDesignDualViewTemplateMemberContextMenu"
+                       widgetVar="machineDesignDualViewTemplateMemberContextMenuWidget">
+            <ui:include src="machineDesignContextMenu/addMachineDesignTemplateContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/addCatalogItemContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />                        
+            <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" /> 
+        </p:contextMenu>
+
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 180px;"
+                       nodeType="MachineDesignTemplatePlaceholder"
+                       id="machineDesignDualViewMachineDesignPlaceholderContextMenu"
+                       widgetVar="machineDesignDualViewMachineDesignPlaceholderContextMenuWidget">
+            <p:menuitem value="Fullfil placeholder" icon="fa fa-plus"
+                        update="machineDesignDualColumnListViewPanelGrid"
+                        disabled="#{disabledEditContextMenuItemForSelectionParent}"
+                        action="#{entityController.prepareCreateMachineDesignForDualViewTemplateElementPlaceholder()}"/>
+        </p:contextMenu>
+
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 180px;"
+                       nodeType="MachineDesign"
+                       id="machineDesignDualViewMachineDesignContextMenu"
+                       widgetVar="machineDesignDualViewMachineDesignContextMenuWidget">
+            <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/addCatalogItemContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/destroyMachineDesignContextMenuItem.xhtml" /> 
+        </p:contextMenu>    
+
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 180px;"
+                       nodeType="MachineDesignMember"
+                       id="machineDesignDualViewMachineDesignMemberContextMenu"
+                       widgetVar="machineDesignDualViewMachineDesignMemberContextMenuWidget">
+            <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/addCatalogItemContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
+        </p:contextMenu>
+
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 180px;"
+                       nodeType="Catalog"
+                       id="machineDesignDualViewCatalogContextMenu"
+                       widgetVar="machineDesignDualViewCatalogContextMenuWidget">
+            <p:menuitem value="Assign Inventory" 
+                        disabled="#{disabledEditContextMenuItemForSelectionParent}"
+                        icon="fa fa-plus"
+                        action="#{entityController.prepareAssignInventoryMachineDesignListConfiguration()}"
+                        update="machineDesignDualColumnListViewPanelGrid"/>
+            <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
+        </p:contextMenu>
+
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 180px;"
+                       nodeType="CatalogTemplateMember"
+                       id="machineDesignDualViewCatalogTemplateMemberContextMenu"
+                       widgetVar="machineDesignDualViewCatalogTemplateMemberContextMenuWidget">
+            <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
+        </p:contextMenu>
+
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 180px;"
+                       nodeType="Inventory"
+                       id="machineDesignDualViewInventoryContextMenu"
+                       widgetVar="machineDesignDualViewInventoryContextMenuWidget">
+            <p:menuitem value="Unassign Inventory" 
+                        disabled="#{disabledEditContextMenuItemForSelectionParent}"
+                        icon="fa fa-minus"
+                        action="#{entityController.unassignInventoryMachineDesignListConfiguration()}"
+                        update="machineDesignDualColumnListViewPanelGrid"/>
+            <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
+        </p:contextMenu>
+    </p:outputPanel>
+
+    <p:confirmDialog message="All the machine design children will become top level machine design items. 
+                     Proceed with removal of selected Machine Design?"
+                     header="Destroy selected machine design" severity="alert"
+                     widgetVar="destroyMachineDesignWidget"
+                     styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+        <p:commandButton value="Yes" 
+                         actionListener="#{entityController.deleteSelectedMachineDesignItemFromDualView}"
+                         update="@form"
+                         oncomplete="PF('destroyMachineDesignWidget').hide()"/>
+        <p:commandButton value="Not" 
+                         onclick="PF('destroyMachineDesignWidget').hide();"/>
+    </p:confirmDialog>
+
+    <script type="text/javascript">
+        // TODO verify if fix is needed after Primefaces 6.2
+        // https://forum.primefaces.org/viewtopic.php?t=26813
+                
+        var lastOpenedWidget; 
+        var currentEvent;
+        
+        function showLastContextMenu() {
+            if (lastOpenedWidget != null) {
+                PF(lastOpenedWidget).show(currentEvent); 
+            }            
+            lastOpenedWidget = null;
+            currentEvent = null; 
+        }
+
+        $(document).ready(function () {
+            PrimeFaces.widget.ContextMenu.prototype.show = function (e) {                
+                //hide other contextmenus if any
+                $(document.body).children('.ui-contextmenu:visible').hide();
+
+                if (e) {
+                    currentEvent = e;
+                }
+
+                var win = $(window),
+                        left = e.pageX,
+                        top = e.pageY,
+                        width = this.jq.outerWidth(),
+                        height = this.jq.outerHeight();
+
+                //collision detection for window boundaries
+                if ((left + width) > (win.width()) + win.scrollLeft()) {
+                    left = left - width;
+                }
+                if ((top + height) > (win.height() + win.scrollTop())) {
+                    top = top - height;
+                }
+
+                if (this.cfg.beforeShow) {
+                    this.cfg.beforeShow.call(this);
+                }
+                                
+                lastOpenedWidget = this.jq[0].id;
+                lastOpenedWidget = lastOpenedWidget.split(":"); 
+                lastOpenedWidget = lastOpenedWidget[lastOpenedWidget.length -1];
+                lastOpenedWidget = lastOpenedWidget + "Widget";                 
+                
+                this.jq.css({
+                    'left': left,
+                    'top': top,
+                    'z-index': ++PrimeFaces.zindex
+                }).show();
+
+                e.preventDefault();
+            };
+        });
+    </script>
+
+</ui:composition>
+
+

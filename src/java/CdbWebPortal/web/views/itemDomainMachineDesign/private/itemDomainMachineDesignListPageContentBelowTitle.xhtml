@@ -12,10 +12,12 @@ See LICENSE file.
 
 
     <h:outputLabel styleClass="entityDataEmphasizedLabel"
-                   value="List display options:" />
+                   value="List display options:" 
+                   rendered="#{false}"/>
     <p:selectManyButton id="itemDomainMachineDesignListDisplayOptionsSelectManyButton"
                         onchange="itemDomainMachineDesignListDisplayOptionsSelectManyButtonChanged()"
-                        value="#{entityController.selectedListDisplayOptions}">
+                        value="#{entityController.selectedListDisplayOptions}"
+                        rendered="#{false}">
         <f:selectItem itemLabel="Machine Design" itemValue="m" />
         <f:selectItem itemLabel="Templates" itemValue="t" />
         <f:selectItem itemLabel="Children" itemValue="c" />

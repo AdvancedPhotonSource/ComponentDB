@@ -8,7 +8,16 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"> 
-
+    
+    <ui:param name="addMachineDesignItemContainerUpdateTarget"
+              value="#{addMachineDesignItemContainerUpdateTarget != null 
+                       ? addMachineDesignItemContainerUpdateTarget 
+                       : 'machineDesignElementAddTypeSelectionMade'}" />
+    
+    <ui:param name="addMachineDesignItemUpdateTarget"
+              value="#{addMachineDesignItemUpdateTarget != null 
+                       ? addMachineDesignItemUpdateTarget 
+                       : 'machineDesignElementAddOutputpanel'}" />
 
     <p:panelGrid columns="2">
         Machine Design Creation Options:
@@ -18,7 +27,7 @@ See LICENSE file.
                           onchange="machineDesignCreateOptionChange()">
             <f:selectItem itemValue="#{true}" itemLabel="Create From Template" />
             <f:selectItem itemValue="#{false}" itemLabel="Create New"/>
-            <f:selectItem itemLabel="Select Existing Top Level Machine Design" />
+            <f:selectItem itemLabel="Existing Top Level Machine Design" />
         </p:selectOneRadio>                                                                                                                
     </p:panelGrid>
 
@@ -27,13 +36,13 @@ See LICENSE file.
     <p:remoteCommand name="machineDesignElementItemCreation"
                      onstart="PF('loadingDialog').show()"
                      oncomplete="PF('loadingDialog').hide()"                     
-                     update="machineDesignElementAddTypeSelectionMade"/>
+                     update="#{addMachineDesignItemContainerUpdateTarget}"/>
 
     <p:panel header="Select Template"
              rendered="#{itemDomainMachineDesignController.machineDesignItemCreateFromTemplate == true}">
         <ui:include src="../../item/private/itemSelectDataTable.xhtml">
             <ui:param name="viewName" value="templateSelection" />
-            <ui:param name="updateTarget" value="machineDesignElementAddOutputpanel" />
+            <ui:param name="updateTarget" value="#{addMachineDesignItemUpdateTarget}" />
             <ui:param name="selectionValue" value="#{itemDomainMachineDesignController.templateForElement}" />
             <ui:param name="selectionTarget" value="#{itemDomainMachineDesignController.templateForElement}" />
             <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
@@ -46,7 +55,7 @@ See LICENSE file.
              rendered="#{itemDomainMachineDesignController.machineDesignItemCreateFromTemplate == null}">
         <ui:include src="../../item/private/itemSelectDataTable.xhtml">
             <ui:param name="viewName" value="machineDesignSelection" />
-            <ui:param name="updateTarget" value="machineDesignElementAddOutputpanel" />
+            <ui:param name="updateTarget" value="#{addMachineDesignItemUpdateTarget}" />
             <ui:param name="selectionValue" value="#{newItemElement.containedItem}" />
             <ui:param name="selectionTarget" value="#{newItemElement.containedItem}" />
             <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />

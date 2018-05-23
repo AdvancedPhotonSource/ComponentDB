@@ -42,8 +42,8 @@ See LICENSE file.
                          action="#{itemDomainMachineDesignController.verifyItemElementContainedItemSelection()}"
                          immediate="true"
                          onstart="PF('machineDesignElementAddTypeSelectionWidget').collapse();
-                                  PF('machineDesignElementAddTypeSelectionMadeWidget').collapse();
-                                  PF('machineDesignElementFinalizeWidget').expand();"
+                         PF('machineDesignElementAddTypeSelectionMadeWidget').collapse();
+                         PF('machineDesignElementFinalizeWidget').expand();"
                          oncomplete="PF('machineDesignElementAddDialogWidget').initPosition();" />
 
         <p:outputPanel id="machineDesignElementAddOutputpanel"
@@ -65,7 +65,7 @@ See LICENSE file.
                             <f:selectItem itemValue="#{false}" itemLabel="Machine Design" />                
                         </p:selectOneRadio>
                     </p:panelGrid>
-                    
+
                     <p:remoteCommand name="machineDesignElementAddTypeSelectionChange"
                                      action="#{itemDomainMachineDesignController.machineDesignElementAddTypeSelectionChange('machineDesignElementAddTypeSelectionMade()', 'machineDesignElementContainedItemSelectionMade()')}"/>
                 </p:panel>
@@ -94,15 +94,8 @@ See LICENSE file.
                     </p:outputPanel>
                 </p:panel>
 
-                <p:panel id="machineDesignElementFinalize"
-                         widgetVar="machineDesignElementFinalizeWidget"
-                         collapsed="true"
-                         toggleable="true"
-                         styleClass="fullyHideablePanel">
+                <ui:include src="itemDomainMachineDesignItemElementAddFinalStep.xhtml" />
 
-                    <ui:include src="itemDomainMachineDesignItemElementAddFinalStep.xhtml" />
-
-                </p:panel>
             </p:outputPanel>
         </p:outputPanel>
 
