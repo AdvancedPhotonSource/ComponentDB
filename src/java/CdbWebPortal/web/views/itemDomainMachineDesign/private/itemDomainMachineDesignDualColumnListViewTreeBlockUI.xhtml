@@ -11,10 +11,10 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">   
 
     <p:blockUI block="itemMachineDesignListDataTable" 
-               blocked="#{entityController.displayListConfigurationView}">
+               blocked="#{itemDomainMachineDesignController.displayListConfigurationView}">
 
-        <p:outputPanel rendered="#{entityController.displayAddMachineDesignListConfigurationPanel 
-                                   or entityController.displayCreateMachineDesignForTemplateElementPlaceholder}">
+        <p:outputPanel rendered="#{itemDomainMachineDesignController.displayAddMachineDesignListConfigurationPanel 
+                                   or itemDomainMachineDesignController.displayCreateMachineDesignForTemplateElementPlaceholder}">
             <div>
                 <span>
                     Follow instructions on the panel to the right.
@@ -26,21 +26,21 @@ See LICENSE file.
         </p:outputPanel>
 
         <p:outputPanel id="catalogBlockUIContent"
-                       rendered="#{entityController.displayAddCatalogItemListConfigurationPanel}">
+                       rendered="#{itemDomainMachineDesignController.displayAddCatalogItemListConfigurationPanel}">
             <div>
                 Drag Catalog items to add to selected machine design.                            
             </div>
 
             <p:outputPanel id="catalogBlockUIDropContent">
-                <p:outputPanel rendered="#{entityController.catalogItemsDraggedAsChildren == null}"
+                <p:outputPanel rendered="#{itemDomainMachineDesignController.catalogItemsDraggedAsChildren == null}"
                                style="width: 100%;
                                margin-top: 15px;
                                font-size: 20px;">
                     Drop Here
                 </p:outputPanel>
 
-                <p:outputPanel rendered="#{entityController.catalogItemsDraggedAsChildren != null}">
-                    <p:treeTable value="#{entityController.newCatalogItemsInMachineDesignModel}"
+                <p:outputPanel rendered="#{itemDomainMachineDesignController.catalogItemsDraggedAsChildren != null}">
+                    <p:treeTable value="#{itemDomainMachineDesignController.newCatalogItemsInMachineDesignModel}"
                                  var="treeNode">
                         <p:column headerText="Name">
                             <span>#{treeNode.name}</span>
@@ -49,7 +49,7 @@ See LICENSE file.
 
                     <p:commandButton value="Complete"
                                      icon="fa fa-save"
-                                     action="#{entityController.completeAddNewCatalogListConfiguration()}"/> 
+                                     action="#{itemDomainMachineDesignController.completeAddNewCatalogListConfiguration()}"/> 
                 </p:outputPanel>
             </p:outputPanel>
         </p:outputPanel>
@@ -58,7 +58,7 @@ See LICENSE file.
                      tolerance="touch"
                      activeStyleClass="ui-state-highlight"
                      datasource="addCatalogToMachineDesignDataTable">
-            <p:ajax listener="#{entityController.onItemDrop}"
+            <p:ajax listener="#{itemDomainMachineDesignController.onItemDrop}"
                     update="catalogBlockUIDropContent addCatalogToMachineDesignDataTable" /> 
         </p:droppable>
 
