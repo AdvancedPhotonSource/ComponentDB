@@ -116,7 +116,9 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     }
     
     public StreamedContent executeFileDownloadActionCommandForPropertyValue(PropertyValue propertyValue) {
-        if (getPropertyValueDisplayType(propertyValue) == DisplayType.FILE_DOWNLOAD) {
+        DisplayType propertyValueDisplayType = getPropertyValueDisplayType(propertyValue);
+        if (propertyValueDisplayType == DisplayType.FILE_DOWNLOAD 
+                || propertyValueDisplayType == DisplayType.GENERATED_HTTP_LINK_FILE_DOWNLOAD) {
             PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
             return propertyTypeHandler.fileDownloadActionCommand(propertyValue); 
         }
@@ -185,6 +187,10 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
 
     public boolean displayInfoActionValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.INFO_ACTION);
+    }
+    
+    public boolean displayGeneratedHTMLDownloadActionValue(PropertyValue propertyValue) {
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.GENERATED_HTTP_LINK_FILE_DOWNLOAD); 
     }
     
     public boolean displayDownloadActionValue(PropertyValue propertyValue) {

@@ -111,9 +111,9 @@ public class PropertyValue extends CdbEntity implements Serializable {
 
     private transient String infoActionCommand;
     private transient boolean handlerInfoSet;
-    
-    private transient List<PropertyValueMetadata> propertyValueMetadataList; 
-    private transient Boolean isHasPropertyMetadata = null; 
+
+    private transient List<PropertyValueMetadata> propertyValueMetadataList;
+    private transient Boolean isHasPropertyMetadata = null;
 
     public PropertyValue() {
     }
@@ -201,7 +201,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
     public void setIsUserWriteable(boolean isUserWriteable) {
         this.isUserWriteable = isUserWriteable;
     }
-    
+
     public String getIsUserWriteableString() {
         return String.valueOf(isUserWriteable);
     }
@@ -213,7 +213,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
     public void setIsDynamic(boolean isDynamic) {
         this.isDynamic = isDynamic;
     }
-    
+
     public String getIsDynamicString() {
         return String.valueOf(isDynamic);
     }
@@ -251,12 +251,12 @@ public class PropertyValue extends CdbEntity implements Serializable {
     public void setConnectorList(List<Connector> connectorList) {
         this.connectorList = connectorList;
     }
-    
+
     public void addItemElementToItemElementList(ItemElement itemElement) {
-        if(itemElementList == null) {
-            itemElementList = new ArrayList<>(); 
+        if (itemElementList == null) {
+            itemElementList = new ArrayList<>();
         }
-        itemElementList.add(itemElement); 
+        itemElementList.add(itemElement);
     }
 
     @XmlTransient
@@ -386,37 +386,37 @@ public class PropertyValue extends CdbEntity implements Serializable {
     public List<PropertyValueMetadata> getPropertyValueMetadataList() {
         if (propertyValueMetadataList == null) {
             if (propertyType != null) {
-                
-                
+
                 List<PropertyTypeMetadata> propertyTypeMetadataList = propertyType.getPropertyTypeMetadataList();
                 propertyValueMetadataList = new ArrayList<>();
-                
-                for(PropertyTypeMetadata ptm : propertyTypeMetadataList) {
+
+                for (PropertyTypeMetadata ptm : propertyTypeMetadataList) {
                     PropertyValueMetadata valueMetadata;
                     valueMetadata = new PropertyValueMetadata(this, ptm);
                     propertyValueMetadataList.add(valueMetadata);
                 }
-                
+
                 // Show depreciated metadata values 
-                if (propertyMetadataList.size() > propertyValueMetadataList.size()) {
-                    for(PropertyMetadata propertyMetadata: propertyMetadataList) {
-                        String metadataKey = propertyMetadata.getMetadataKey();                    
-                        boolean skip = false; 
-                        for(PropertyValueMetadata pvm: propertyValueMetadataList) {
-                            if (pvm.getPropertyMetadata().getMetadataKey().equals(metadataKey)) {
-                                skip = true; 
-                                break; 
+                if (propertyMetadataList != null) {
+                    if (propertyMetadataList.size() > propertyValueMetadataList.size()) {
+                        for (PropertyMetadata propertyMetadata : propertyMetadataList) {
+                            String metadataKey = propertyMetadata.getMetadataKey();
+                            boolean skip = false;
+                            for (PropertyValueMetadata pvm : propertyValueMetadataList) {
+                                if (pvm.getPropertyMetadata().getMetadataKey().equals(metadataKey)) {
+                                    skip = true;
+                                    break;
+                                }
                             }
+                            if (skip) {
+                                continue;
+                            }
+
+                            propertyValueMetadataList.add(new PropertyValueMetadata(this, propertyMetadata));
                         }
-                        if (skip) {
-                            continue;
-                        }
-                        
-                        propertyValueMetadataList.add(new PropertyValueMetadata(this, propertyMetadata)); 
                     }
                 }
-                
-                
+
             }
         }
         return propertyValueMetadataList;
@@ -426,15 +426,15 @@ public class PropertyValue extends CdbEntity implements Serializable {
         if (isHasPropertyMetadata == null) {
             if (propertyType != null) {
                 if (propertyType.getPropertyTypeMetadataList().size() > 0) {
-                    isHasPropertyMetadata = true;                             
+                    isHasPropertyMetadata = true;
                 } else if (propertyMetadataList != null) {
-                    isHasPropertyMetadata = propertyMetadataList.size() > 0; 
+                    isHasPropertyMetadata = propertyMetadataList.size() > 0;
                 } else {
-                    return false; 
+                    return false;
                 }
             } else {
-                return false; 
-            }          
+                return false;
+            }
         }
         return isHasPropertyMetadata;
     }
@@ -473,11 +473,11 @@ public class PropertyValue extends CdbEntity implements Serializable {
             isHasPropertyMetadata = null;
         }
     }
-    
+
     public void removePropertyMetadataKey(PropertyValueMetadata propertyValueMetadata) {
         String key = propertyValueMetadata.propertyMetadata.getMetadataKey();
         propertyValueMetadataList.remove(propertyValueMetadata);
-        removePropertyMetadataKey(key);        
+        removePropertyMetadataKey(key);
     }
 
     public PropertyMetadata getPropertyMetadataForKey(String key) {
@@ -543,32 +543,32 @@ public class PropertyValue extends CdbEntity implements Serializable {
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.PropertyValue[ id=" + id + " ]";
     }
-    
+
     public class PropertyValueMetadata {
-        
-        PropertyTypeMetadata propertyTypeMetadata; 
+
+        PropertyTypeMetadata propertyTypeMetadata;
         PropertyMetadata propertyMetadata;
         PropertyValue propertyValue;
 
         public PropertyValueMetadata(PropertyValue propertyValue, PropertyTypeMetadata propertyTypeMetadata) {
-            this.propertyTypeMetadata = propertyTypeMetadata; 
+            this.propertyTypeMetadata = propertyTypeMetadata;
             this.propertyValue = propertyValue;
-            
-            this.propertyMetadata = propertyValue.getPropertyMetadataForKey(propertyTypeMetadata.getMetadataKey()); 
-            
+
+            this.propertyMetadata = propertyValue.getPropertyMetadataForKey(propertyTypeMetadata.getMetadataKey());
+
             if (this.propertyMetadata == null) {
-                String defaultValue = ""; 
+                String defaultValue = "";
                 if (this.propertyTypeMetadata.getIsHaveAllowedValues()) {
-                    defaultValue = this.propertyTypeMetadata.getAllowedPropertyMetadataValueList().get(0).getMetadataValue(); 
+                    defaultValue = this.propertyTypeMetadata.getAllowedPropertyMetadataValueList().get(0).getMetadataValue();
                 }
                 propertyValue.setPropertyMetadataValue(this.propertyTypeMetadata.getMetadataKey(), defaultValue);
-                this.propertyMetadata = propertyValue.getPropertyMetadataForKey(propertyTypeMetadata.getMetadataKey()); 
+                this.propertyMetadata = propertyValue.getPropertyMetadataForKey(propertyTypeMetadata.getMetadataKey());
             }
-            
+
         }
-        
+
         public PropertyValueMetadata(PropertyValue propertyValue, PropertyMetadata propertyMetadata) {
-            this.propertyMetadata = propertyMetadata; 
+            this.propertyMetadata = propertyMetadata;
             this.propertyValue = propertyValue;
         }
 
@@ -583,12 +583,11 @@ public class PropertyValue extends CdbEntity implements Serializable {
         public PropertyValue getPropertyValue() {
             return propertyValue;
         }
-        
+
         public boolean getIsTrashFunctionalityAvaiable() {
-            return propertyTypeMetadata == null; 
+            return propertyTypeMetadata == null;
         }
-        
-        
+
     }
 
 }

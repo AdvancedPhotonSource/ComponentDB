@@ -33,7 +33,7 @@ public class ItemElementUtility {
         String nodeType; 
         if (useChildItem) {
             newTreeNodeDataObject = parentItem; 
-            nodeType = parentItem.getDomain().getName();
+            nodeType = parentItem.getDomain().getName().replace(" ", "");
         } else {
             newTreeNodeDataObject = parentItem.getSelfElement(); 
             nodeType = ITEM_ELEMENT_NODE_TYPE;
@@ -66,7 +66,7 @@ public class ItemElementUtility {
             
             if (useChildItem) {
                 if (childItem != null) {
-                    String nodeType = childItem.getDomain().getName(); 
+                    String nodeType = childItem.getDomain().getName().replace(" ", "");; 
                     childItemElementNode = new DefaultTreeNode(nodeType, childItem, itemElementNode);
                 } else {
                     // no child item is linked to item element. 

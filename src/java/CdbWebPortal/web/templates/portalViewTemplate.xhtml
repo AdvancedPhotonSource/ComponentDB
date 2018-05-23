@@ -25,7 +25,7 @@ See LICENSE file.
             <link href="#{pathContextRoot}/resources/css/portal.css" rel="stylesheet" type="text/css"/>
         </ui:insert>
         <link rel="icon" type="image/png" href="#{pathContextRoot}/resources/images/anl.ico"/>
-        <title>#{resources.CdbPortalTitle}<ui:insert name="pageTitle"></ui:insert></title>
+        <title>#{resources.CdbPortalTitle}<ui:insert name="pageTitle"></ui:insert></title>                
     </h:head>
 
     <h:body class="#{bodyStyle}">
@@ -107,24 +107,30 @@ See LICENSE file.
                     <h:form prependId="false">
                         <h:outputText style="display: none" id="viewOpenPageIdHiddenText"
                                       value="#{clientViewManagerController.viewUUID}"/>
-                        
+
+                        <h:outputText style="display: none" id="currentTimeHashHiddenText"
+                                      value="#{clientViewManagerController.currentTimeHash}" /> 
+
                         <input style="display: none"
                                id="viewCurrentPageIdHiddenText"/>                                                
-                        
+
                         <p:remoteCommand name="prepareNewViewID"
                                          action="#{clientViewManagerController.generateNewViewUUID()}"
                                          update="viewOpenPageIdHiddenText"
                                          oncomplete="setCurrentPageViewId()" /> 
-                        
+
                         <p:remoteCommand name="prepareTestExistingViewID" 
                                          update="viewOpenPageIdHiddenText"
                                          oncomplete="testExistingPageId()" /> 
-                        
+
                         <p:remoteCommand name="verifyViewOpenPageIdHiddenText"
-                                         update="viewOpenPageIdHiddenText"
+                                         update="viewOpenPageIdHiddenText currentTimeHashHiddenText"
                                          oncomplete="completeVerifyViewOpenPage()"/>
-                        
-                        <p:growl id="messages" showDetail="true" autoUpdate="true"/>
+
+                        <p:growl id="messages" showDetail="true">
+                            <p:autoUpdate /> 
+                        </p:growl>
+
                         <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
                                        onidle="displaySessionTimeout()">
                             <p:remoteCommand name="displaySessionTimeout"
@@ -132,7 +138,7 @@ See LICENSE file.
                             <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" 
                                     immediate="true" async="true"/> 
                         </p:idleMonitor>
-                        
+
                         <p:dialog widgetVar="invalidUseOfBackButtonDialogWidget"
                                   modal="true"
                                   closable="false"
@@ -150,7 +156,7 @@ See LICENSE file.
                                                  action="#{clientViewManagerController.redrectToLastShownUrl()}" />
                             </f:facet>
                         </p:dialog>
-                        
+
                         <p:dialog widgetVar="invalidUseOfMultipleTabsDialogWidget"
                                   modal="true"
                                   closable="false"
@@ -167,7 +173,27 @@ See LICENSE file.
                                                  icon="fa fa-arrow-right"
                                                  action="#{clientViewManagerController.redrectToLastShownUrl()}" />
                             </f:facet>
-                        </p:dialog>                                        
+                        </p:dialog>
+
+                        <p:dialog widgetVar="sessionLostDialogWidget"
+                                  modal="true"
+                                  resizable="false"
+                                  closable="true"
+                                  header="Session Lost"
+                                  draggable="false"
+                                  styleClass="viewTransparentBackgroundDialog">
+                            <p:outputLabel value="It appears that the connection to server has been lost. The server may have been taken offline for updates." />
+                            <f:facet name="footer">
+                                <p:commandButton value="Attempt to Go to last session URL" 
+                                                 icon="fa fa-arrow-right"
+                                                 action="#{clientViewManagerController.redrectToLastShownUrl()}"
+                                                 onstart="PF('loadingDialog').show()"
+                                                 onerror="PF('loadingDialog').hide()"/>                                
+                                <p:commandButton value="Go back to home" 
+                                                 icon="fa fa-home"
+                                                 onclick="handleSessionTimeout('#{pathContextRoot}');" />
+                            </f:facet>
+                        </p:dialog>
 
                         <p:dialog widgetVar="sessionTimeoutDialogWidget"
                                   modal="true"

@@ -9,9 +9,9 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
-    
+
     <ui:param name="logSettingObject" value="#{logController.settingObject}" />
-    
+
     <ui:param name="filterable" value="#{filterable != null ? filterable : false}" />
 
     <p:column sortBy="#{logObject.id}" headerText="Id" 
@@ -78,17 +78,53 @@ See LICENSE file.
         </p:cellEditor>
     </p:column>
 
+    <p:column sortBy="#{logObject.effectiveFromDateTime}"
+              filterBy="#{logObject.effectiveFromDateTime}"
+              filterable="#{filterable}" filterMatchMode="contains"
+              headerText="Effective From"
+              rendered="#{logSettingObject.displayEffectiveFromDateTime}">
+        <p:cellEditor>
+            <f:facet name="output">
+                <h:outputText value="#{logObject.effectiveFromDateTime}">
+                    <f:convertDateTime pattern="MM-dd-yyyy" />
+                </h:outputText>
+            </f:facet>
+            <f:facet name="input">
+                <p:calendar id="effectiveFromDate" 
+                            value="#{logObject.effectiveFromDateTime}" /> 
+            </f:facet>
+        </p:cellEditor>
+    </p:column>
+
+    <p:column sortBy="#{logObject.effectiveToDateTime}"
+              filterBy="#{logObject.effectiveToDateTime}"
+              filterable="#{filterable}" filterMatchMode="contains"
+              headerText="Effective To"
+              rendered="#{logSettingObject.displayEffectiveToDateTime}">
+        <p:cellEditor>
+            <f:facet name="output">
+                <h:outputText value="#{logObject.effectiveToDateTime}">
+                    <f:convertDateTime pattern="MM-dd-yyyy" />
+                </h:outputText>
+            </f:facet>
+            <f:facet name="input">
+                <p:calendar id="effectiveToDate" 
+                            value="#{logObject.effectiveToDateTime}" /> 
+            </f:facet>
+        </p:cellEditor>
+    </p:column>
+
     <p:column style="width:35px"
               headerText="Attachments"
               rendered="#{logSettingObject.displayAttachments}"
               filterable="#{filterable}"
               exportable="false">
-            <f:facet name="header">
-                <h:graphicImage alt="Attachments" library="images" name="attachment.ico"/>
-            </f:facet>
-            <ui:repeat var="attachment" value="#{logObject.attachmentList}">
-                <ui:include src="logAttachmentObject.xhtml"/>
-            </ui:repeat>
+        <f:facet name="header">
+            <h:graphicImage alt="Attachments" library="images" name="attachment.ico"/>
+        </f:facet>
+        <ui:repeat var="attachment" value="#{logObject.attachmentList}">
+            <ui:include src="logAttachmentObject.xhtml"/>
+        </ui:repeat>
     </p:column>
 
 </ui:composition>

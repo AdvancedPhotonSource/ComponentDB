@@ -27,7 +27,10 @@ See LICENSE file.
               modal="true"
               styleClass="viewTransparentBackgroundDialog"
               onShow="PF('#{viewName}TravelerInstanceDataTableWidget').filter()">
-        <ui:include src="travelerInstanceCreateConfiguration.xhtml" />
+        
+        <p:outputPanel rendered="#{itemTravelerDomainInventoryController.renderAddNewTravelerDialog}">
+            <ui:include src="travelerInstanceCreateConfiguration.xhtml" />
+        </p:outputPanel>
 
         <f:facet name="footer">
             <p:outputPanel rendered="#{!travelerInstanceSaveFromMultiEditScreen}">

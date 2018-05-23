@@ -24,6 +24,10 @@ See LICENSE file.
             <h:inputText id="GeneratedHttpLinkValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
                          rendered="#{propertyValueController.displayGeneratedHttpLinkValue(propertyValueObject)}"/>
             <p:tooltip for="GeneratedHttpLinkValue" value="Enter identifier property value."/>
+            
+            <h:inputText id="DownloadActionValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
+                         rendered="#{propertyValueController.displayDownloadActionValue(propertyValueObject)}" />
+            <p:tooltip for="DownloadActionValue" value="Enter identifier property value."/>
 
             <p:selectOneMenu id="selectedTextValue" value="#{propertyValueObject.value}" styleClass="entityDataText"
                              rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}">

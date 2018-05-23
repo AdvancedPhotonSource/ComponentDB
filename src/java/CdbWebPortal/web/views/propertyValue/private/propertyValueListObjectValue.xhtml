@@ -50,7 +50,8 @@ See LICENSE file.
 
             <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
                           rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject) 
-                                      or propertyValueController.displayGeneratedHttpLinkValue(propertyValueObject)}">
+                                      or propertyValueController.displayGeneratedHttpLinkValue(propertyValueObject) 
+                                      or propertyValueController.displayGeneratedHTMLDownloadActionValue(propertyValueObject)}">
                 <h:outputText value="#{propertyValueObject.displayValue}"/>
             </h:outputLink>
 
@@ -85,13 +86,20 @@ See LICENSE file.
                 </p:remoteCommand>
             </p:outputPanel>
 
-            <p:outputPanel rendered="#{propertyValueController.displayDownloadActionValue(propertyValueObject)}">            
-                <p:commandLink ajax="false" 
-                               styleClass="fa fa-link-icon fa-download"
-                               value=" #{propertyValueObject.displayValue}">
-                    <p:fileDownload value="#{propertyValueController.executeFileDownloadActionCommandForPropertyValue(propertyValueObject)}" />                
-                </p:commandLink>            
-            </p:outputPanel>
+            <p:commandLink id="#{entityTypeName}propertyValueDownloadButton"
+                           ajax="false" 
+                           styleClass="fa fa-link-icon fa-download"
+                           rendered="#{propertyValueController.displayDownloadActionValue(propertyValueObject) 
+                                       or propertyValueController.displayGeneratedHTMLDownloadActionValue(propertyValueObject) 
+                                       and propertyValueObject.value != null and propertyValueObject.value != ''}"
+                           value="#{propertyValueController.displayGeneratedHTMLDownloadActionValue(propertyValueObject) 
+                                    ? '' 
+                                    : propertyValueObject.displayValue}">
+                <p:tooltip for="#{entityTypeName}propertyValueDownloadButton"
+                           value="Download file" />
+                <p:fileDownload value="#{propertyValueController.executeFileDownloadActionCommandForPropertyValue(propertyValueObject)}"
+                                contentDisposition="inline"/>                
+            </p:commandLink>
         </p:outputPanel>
         <p:outputPanel rendered="#{!loadPropertyValues}">
             <h:outputText value="#{propertyValueObject.displayValue}*" rendered="#{propertyValueObject.displayValue != null and propertyValueObject.displayValue != ''}"  />

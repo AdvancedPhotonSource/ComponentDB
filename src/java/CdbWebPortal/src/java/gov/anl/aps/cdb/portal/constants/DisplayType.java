@@ -19,7 +19,8 @@ public enum DisplayType {
     TABLE_RECORD_REFERENCE(8),
     FILE_DOWNLOAD(9),
     // To be used in handlers that generate the http link
-    GENERATED_HTTP_LINK(10);
+    GENERATED_HTTP_LINK(10),
+    GENERATED_HTTP_LINK_FILE_DOWNLOAD(11);
     
     private final int type;
     private DisplayType(int type) {

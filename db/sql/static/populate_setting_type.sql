@@ -198,6 +198,8 @@ INSERT INTO `setting_type` VALUES
 (9007,'Log.List.FilterBy.EnteredByUser','Filter for log entry entered by user.',NULL),
 (9008,'Log.List.FilterBy.Text','Filter for log entry text.',NULL),
 (9009,'Log.List.FilterBy.Topic','Filter for log topic.',NULL),
+(9010,'Log.List.Display.EffectiveFromDateTime','Display effective from date/time', 'true'),
+(9011,'Log.List.Display.EffectiveToDateTime','Display effective to date/time', 'true'), 
 (10000,'PropertyType.List.Display.Category','Display property type category.','true'),
 (10001,'PropertyType.List.Display.DefaultUnits','Display property type default units.','false'),
 (10002,'PropertyType.List.Display.DefaultValue','Display property type default value.','false'),

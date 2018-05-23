@@ -90,7 +90,7 @@ public class Log extends CdbEntity implements Serializable {
     public Log() {
     }
 
-    public Log(Integer id) {
+    public Log(Integer id) {        
         this.id = id;
     }
 
@@ -98,6 +98,7 @@ public class Log extends CdbEntity implements Serializable {
         this.id = id;
         this.text = text;
         this.enteredOnDateTime = enteredOnDateTime;
+        this.effectiveFromDateTime = enteredOnDateTime; 
     }
 
     public Integer getId() {

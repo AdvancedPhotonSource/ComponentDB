@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import javax.ejb.EJB;
@@ -20,7 +21,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
-import org.jboss.weld.util.collections.ArraySet;
 
 @Named("itemProjectController")
 @SessionScoped
@@ -74,7 +74,7 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
     
     public void addItemControllerProjectChangeListener(IItemController itemDomainView) {
         if (itemProjectChangeListeners == null) {
-            itemProjectChangeListeners = new ArraySet<>();
+            itemProjectChangeListeners = new HashSet<>();
         }
         itemProjectChangeListeners.add(itemDomainView); 
         

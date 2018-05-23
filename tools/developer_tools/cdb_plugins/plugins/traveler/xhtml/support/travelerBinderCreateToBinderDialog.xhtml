@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"                
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="travelerBinderCreateToBinderDialog" 
+              widgetVar="travelerBinderCreateToBinderDialogWidget" 
+              header="Create Traveler Instance and Add To Binder" 
+              resizable="false"
+              modal="true"
+              styleClass="viewTransparentBackgroundDialog">
+        
+        <p:outputPanel rendered="#{itemTravelerDomainInventoryController.renderAddNewTravelerToBinderDialog}">
+            
+            <ui:include src="travelerInstanceCreateConfiguration.xhtml" >
+                <ui:param name="viewName"
+                          value="createFromBinder"/> 
+            </ui:include>
+            
+        </p:outputPanel>
+       
+        <f:facet name="footer">
+            <p:commandButton value="Create Traveler"
+                             icon="fa fa-floppy-o"                             
+                             action="#{itemTravelerDomainInventoryController.addNewTravelerToBinder('successCreateTravelerForBinder()')}"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"/>
+            
+            <p:remoteCommand name="successCreateTravelerForBinder"
+                             update="@form"
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()" />                             
+            
+            <p:commandButton value="Close"
+                             icon="fa fa-close"
+                             onclick="PF('travelerBinderCreateToBinderDialogWidget').hide()"/>
+        </f:facet>
+    </p:dialog>
+
+
+
+</ui:composition>
+

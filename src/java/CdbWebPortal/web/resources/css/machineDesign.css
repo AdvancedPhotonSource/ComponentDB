@@ -47,3 +47,39 @@ h1 {
     border: 0px; 
     background: transparent; 
 }
+
+.listConfigurationPanel {
+    width: 50%; 
+}
+
+.machineDesignListPanel {
+    vertical-align: top; 
+}
+
+.machineDesignListTreeTable .ui-blockui  {
+    background: black;
+}
+
+.machineDesignListTreeTable .ui-blockui-content  {
+    background: #d5ebf5c7;
+    left: 10%;
+    right: 10%;
+    top: 50px !important;
+}
+
+.machineDesignListTreeTable .ui-blockui-content .ui-outputpanel {
+    display: inline-block; 
+}
+
+.machineDesignListTreeTable .ui-blockui-content .ui-outputpanel .ui-outputpanel {
+    width: 100%; 
+}
+
+.machineDesignListTreeTable .ui-blockui-content .ui-outputpanel div {
+  display: table;   
+}
+
+.machineDesignListTreeTable .ui-blockui-content .ui-outputpanel div span {
+  display: table-cell;   
+  vertical-align: middle; 
+}

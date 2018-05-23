@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -77,7 +78,9 @@ public class Domain extends CdbEntity implements Serializable {
         @JoinColumn(name = "domain_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "entity_type_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<EntityType> allowedEntityTypeList;        
+    private List<EntityType> allowedEntityTypeList;     
+    
+    private transient String domainRepIcon = null; 
 
     public Domain() {
     }
@@ -182,6 +185,29 @@ public class Domain extends CdbEntity implements Serializable {
 
     public void setAllowedEntityTypeList(List<EntityType> allowedEntityTypeList) {
         this.allowedEntityTypeList = allowedEntityTypeList;
+    }
+
+    public String getDomainRepIcon() {
+        if (domainRepIcon == null) {
+            switch(name){
+                case "Catalog":
+                    domainRepIcon = PortalStyles.catalogIcon.getValue();
+                    break;
+                case "Machine Design":
+                    domainRepIcon = PortalStyles.machineDesignIcon.getValue();
+                    break;
+                case "Inventory":
+                    domainRepIcon = PortalStyles.inventoryIcon.getValue();
+                    break;
+                case "Maarc":
+                    domainRepIcon = PortalStyles.maarcIcon.getValue();
+                    break;
+                default:
+                    domainRepIcon = ""; 
+                    break;
+            }
+        }
+        return domainRepIcon;
     }
 
     @Override

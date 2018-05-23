@@ -6,9 +6,13 @@ See LICENSE file.
 """
 
 from datetime import datetime
+
+from sqlalchemy import exists
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import OperationalError
+from sqlalchemy.sql.functions import session_user
 
+from cdb.common.constants import itemDomain
 from cdb.common.db.entities.itemItemProject import ItemItemProject
 from cdb.common.db.entities.itemProject import ItemProject
 from cdb.common.exceptions.objectAlreadyExists import ObjectAlreadyExists
@@ -43,10 +47,13 @@ from cdb.common.db.impl.relationshipTypeHandler import RelationshipTypeHandler
 from cdb.common.db.impl.resourceTypeHandler import ResourceTypeHandler
 from cdb.common.db.impl.userInfoHandler import UserInfoHandler
 from cdb.common.db.impl.propertyValueHandler import PropertyValueHandler
+from cdb.common.db.impl.propertyTypeHandler import PropertyTypeHandler
 from cdb.common.db.impl.permissionHandler import PermissionHandler
 
 
 class ItemHandler(CdbDbEntityHandler):
+
+    ITEM_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status"
 
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
@@ -56,6 +63,7 @@ class ItemHandler(CdbDbEntityHandler):
         self.sourceHandler = SourceHandler()
         self.logHandler = LogHandler()
         self.propertyValueHandler = PropertyValueHandler()
+        self.propertyTypeHandler = PropertyTypeHandler()
         self.relationshipTypeHandler = RelationshipTypeHandler()
         self.resourceTypeHandler = ResourceTypeHandler()
         self.userInfoHandler = UserInfoHandler()
@@ -267,6 +275,19 @@ class ItemHandler(CdbDbEntityHandler):
         try:
             query = session.query(Item).join(Domain)
             query = query.filter(Domain.name==domainName)
+
+            dbItems = query.all()
+            return dbItems
+
+        except NoResultFound, ex:
+            raise ObjectNotFound("No %ss with domain %s found." % (entityDisplayName, domainName))
+
+    def getItemsOfDomainWithoutParents(self, session, domainName):
+        entityDisplayName = self._getEntityDisplayName(Item)
+        try:
+            query = session.query(Item).join(Domain)
+            query = query.filter(Domain.name == domainName)
+            query = query.filter(~ exists().where(ItemElement.contained_item_id == Item.id))
 
             dbItems = query.all()
             return dbItems
@@ -515,10 +536,54 @@ class ItemHandler(CdbDbEntityHandler):
         self.logger.debug('Added log for itemElement id %s' % (itemElementId))
         return dbItemElementLog
 
-    def addItemElementProperty(self, session, itemElementId, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue, targetValue, enteredOnDateTime = None):
+    def getItemStatusHistory(self, session, itemId):
+
+        self.propertyTypeHandler.g
+
+
+    def getItemStatus(self, session, itemId):
+        selfElement = self.getSelfElementByItemId(session, itemId)
+        selfElementId = selfElement.id
+        propertyValueList = self.propertyValueHandler.getPropertyValueListForItemElementId \
+            (session, selfElementId, self.ITEM_STATUS_PROPERTY_TYPE_NAME)
+        if (propertyValueList.__len__() == 0):
+            raise ObjectNotFound("Item does not yet have a status")
+        else:
+            return propertyValueList[0]
+
+    def updateItemStatus(self, session, itemId, itemStatusName, enteredByUserId):
+        dbItem = self.getItemById(session, itemId)
+        if (dbItem.domain.name != itemDomain.INVENTORY_DOMAIN_NAME):
+            # Item is not inventory item
+            raise InvalidArgument("Item id: %s is not inventory item.")
+
+        selfElement = self.getSelfElementByItemId(session, itemId)
+        selfElementId = selfElement.id
+
+        self.permissionHandler.verifyPermissionsForWriteToItemElement(session, enteredByUserId, dbItemElementObject=selfElement)
+
+        propertyValueList = self.propertyValueHandler.getPropertyValueListForItemElementId\
+            (session, selfElementId, self.ITEM_STATUS_PROPERTY_TYPE_NAME)
+
+        if (propertyValueList.__len__() == 0):
+            return self.addItemElementProperty(session, selfElementId, self.ITEM_STATUS_PROPERTY_TYPE_NAME,
+                                        value=itemStatusName, enteredByUserId=enteredByUserId, allowInternal=True)
+        else:
+            propertyValueId = propertyValueList[0].id
+            return self.propertyValueHandler.updatePropertyValueById(session, propertyValueId, value=itemStatusName,
+                                                              enteredByUserId=enteredByUserId)
+
+    def getAvailableItemStatuses(self, session):
+        dbPropertyType = self.propertyTypeHandler.getPropertyTypeByName(session, self.ITEM_STATUS_PROPERTY_TYPE_NAME)
+        return self.propertyTypeHandler.getAllowedPropertyTypeValuesById(session, dbPropertyType.id)
+
+    def addItemElementProperty(self, session, itemElementId, propertyTypeName,
+                               tag=None, value=None, units=None, description=None,
+                               enteredByUserId=None, isUserWriteable=None, isDynamic=None,
+                               displayValue=None, targetValue=None, enteredOnDateTime = None, allowInternal=False):
         dbItemElement = self.getItemElementById(session, itemElementId)
         self.permissionHandler.verifyPermissionsForWriteToItemElement(session, enteredByUserId, dbItemElementObject=dbItemElement)
-        dbPropertyValue = self.propertyValueHandler.createPropertyValue(session, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue,targetValue, enteredOnDateTime)
+        dbPropertyValue = self.propertyValueHandler.createPropertyValue(session, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue,targetValue, enteredOnDateTime, allowInternal)
 
         session.add(dbPropertyValue)
 

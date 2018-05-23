@@ -94,6 +94,9 @@ public class AllowedPropertyValue extends CdbEntity implements Serializable {
     }
 
     public Float getSortOrder() {
+        if (sortOrder == null) {
+            return new Float(0.0); 
+        }
         return sortOrder;
     }
 

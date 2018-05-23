@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="itemDomainInventoryStatusHistoryDialog"
+              widgetVar="itemDomainInventoryStatusHistoryDialogWidget"
+              resizable="false"
+              header="Inventory Item Status History"
+              styleClass="viewTransparentBackgroundDialog"
+              dynamic="true">
+        
+        <p:outputPanel rendered="#{entityController.currentStatusPropertyValue != null}">            
+            <ui:param name="statusPropertyValue"
+                      value="#{entityController.currentStatusPropertyValue}" />
+            <p:dataTable value="#{statusPropertyValue.propertyValueHistoryList}"
+                         var="statusHistory" >
+                <p:column headerText="Status">
+                    <h:outputText value="#{statusHistory.value}" />
+                </p:column>
+                <p:column headerText="Entered On">
+                    <h:outputText value="#{statusHistory.enteredOnDateTime}" />
+                </p:column>
+                <p:column headerText="Entered By">
+                    <h:outputText value="#{statusHistory.enteredByUser.username}" />
+                </p:column>
+            </p:dataTable>
+        </p:outputPanel>        
+
+        <f:facet name="footer">
+            <p:commandButton value="Done"                              
+                             oncomplete="PF('itemDomainInventoryStatusHistoryDialogWidget').hide();"                             
+                             icon="fa fa-close"/>
+        </f:facet>
+
+
+    </p:dialog>
+
+</ui:composition>
+
+

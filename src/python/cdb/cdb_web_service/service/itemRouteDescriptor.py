@@ -9,6 +9,7 @@ See LICENSE file.
 #
 # Item route descriptor.
 #
+from cdb.cdb_web_service.service import itemSessionController
 from cdb.cdb_web_service.service.itemSessionController import ItemSessionController
 from cdb.common.utility.configurationManager import ConfigurationManager
 from itemController import ItemController
@@ -163,6 +164,24 @@ class ItemRouteDescriptor:
                 'method': ['GET']
             },
 
+            # Get location items
+            {
+                'name': 'getLocationItems',
+                'path': '%s/items/domain/location' % contextRoot,
+                'controller': itemController,
+                'action': 'getLocationItems',
+                'method': ['GET']
+            },
+
+            # Get top level location items
+            {
+                'name': 'getLocationItemsWithoutParents',
+                'path': '%s/items/domain/location/topLevel' % contextRoot,
+                'controller': itemController,
+                'action': 'getTopLevelLocationItems',
+                'method': ['GET']
+            },
+
             # Add Property value to item
             {
                 'name': 'addPropertyValueForItemById',
@@ -215,7 +234,31 @@ class ItemRouteDescriptor:
                 'controller': itemElementSessionController,
                 'action': 'updateItemElement',
                 'method': ['PUT']
-            }
+            },
+
+            {
+                'name': 'getAvailableInventoryItemStatuses',
+                'path': '%s/items/domain/inventory/availableStatuses' % contextRoot,
+                'controller': itemController,
+                'action': 'getAvailableInventoryItemStatuses',
+                'method': ['GET']
+            },
+
+            {
+                'name': 'getInventoryItemStatus',
+                'path': '%s/items/domain/inventory/status/:(itemId)' % contextRoot,
+                'controller': itemController,
+                'action': 'getInventoryItemStatus',
+                'method': ['GET']
+            },
+
+            {
+                'name': 'updateInventoryItemStatus',
+                'path': '%s/items/domain/inventory/status/:(itemId)/:(status)' % contextRoot,
+                'controller': itemSessionController,
+                'action': 'updateInventoryItemStatus',
+                'method': ['POST']
+            },
 
 
         ]

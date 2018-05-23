@@ -129,6 +129,12 @@ class ItemControllerImpl(CdbObjectManager):
     def getCatalogItems(self):
         return self.itemDbApi.getItemsOfDomain(self.CATALOG_ITEM_DOMAIN_NAME)
 
+    def getLocationItems(self):
+        return self.itemDbApi.getItemsOfDomain(self.LOCATION_ITEM_DOMAIN_NAME)
+
+    def getLocationItemsWithoutParents(self):
+        return self.itemDbApi.getItemsOfDomainWithoutParents(self.LOCATION_ITEM_DOMAIN_NAME)
+
     def getItemsDerivedFromItemId(self, derivedFromItemId):
         return self.itemDbApi.getItemsDerivedFromItem(derivedFromItemId)
 
@@ -154,5 +160,14 @@ class ItemControllerImpl(CdbObjectManager):
                                       description=description,
                                       isGroupWriteable=isGroupWriteable,
                                       entityTypeNames=entityTypeNames)
+
+    def getAvailableInventoryItemStatuses(self):
+        return self.itemDbApi.getAvailableInventoryItemStatuses()
+
+    def getInventoryItemStatus(self, itemId):
+        return self.itemDbApi.getInventoryItemStatus(itemId)
+
+    def updateInventoryItemStatus(self, itemId, statusName, enteredByUserId):
+        return self.itemDbApi.updateInventoryItemStatus(itemId, statusName, enteredByUserId)
 
 

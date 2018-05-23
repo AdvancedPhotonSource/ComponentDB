@@ -4,22 +4,53 @@
  */
 package gov.anl.aps.cdb.portal.plugins.support.icmsLink;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import org.apache.log4j.Logger;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 /**
  * ICMS link property type handler.
  */
 public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
+    
+    private static final Logger logger = Logger.getLogger(IcmsLinkPropertyTypeHandler.class.getName());
 
     public static final String HANDLER_NAME = "ICMS Link";
+    public static final String MIME_CONENT_TYPE = "application/octet-stream";
 
     private static final String IcmsUrl = IcmsLinkPluginManager.getIcmsUrlString(); 
+    
+    private IcmsWatermarkUtility icmsWatermarkUtility; 
 
     public IcmsLinkPropertyTypeHandler() {
-        super(HANDLER_NAME, DisplayType.GENERATED_HTTP_LINK);
+        super(HANDLER_NAME, DisplayType.FILE_DOWNLOAD);
+        
+        icmsWatermarkUtility = new IcmsWatermarkUtility(
+                IcmsLinkPluginManager.getSoapEndpointUrl(), 
+                IcmsLinkPluginManager.getSoapGetFileActionUrl(), 
+                IcmsLinkPluginManager.getSoapUsername(), 
+                IcmsLinkPluginManager.getSoapPassword()); 
+    }
+    
+    public StreamedContent fileDownloadActionCommand(PropertyValue propertyValue) {
+        try { 
+            byte[] stampedPDFByteArray = icmsWatermarkUtility.generateICMSPDFDocument(propertyValue.getValue());
+            InputStream inputStream = new ByteArrayInputStream(stampedPDFByteArray); 
+            return new DefaultStreamedContent(inputStream, MIME_CONENT_TYPE, propertyValue.getValue() + ".pdf"); 
+        } catch (CdbException ex) {
+            logger.error("ERROR: " + ex.getMessage());
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+        }
+        
+        return null; 
     }
 
     public static String formatIcmsLink(String contentId) {

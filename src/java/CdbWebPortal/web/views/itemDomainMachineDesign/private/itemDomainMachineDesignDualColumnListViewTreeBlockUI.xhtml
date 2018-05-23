@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
+
+    <p:blockUI block="itemMachineDesignListDataTable" 
+               blocked="#{entityController.displayListConfigurationView}">
+
+        <p:outputPanel rendered="#{entityController.displayAddMachineDesignListConfigurationPanel 
+                                   or entityController.displayCreateMachineDesignForTemplateElementPlaceholder}">
+            <div>
+                <span>
+                    Follow instructions on the panel to the right.
+                </span>
+
+                <span class="fa fa-arrow-circle-right"
+                      style="font-size: 100px; padding-left: 25px;"/>
+            </div>
+        </p:outputPanel>
+
+        <p:outputPanel id="catalogBlockUIContent"
+                       rendered="#{entityController.displayAddCatalogItemListConfigurationPanel}">
+            <div>
+                Drag Catalog items to add to selected machine design.                            
+            </div>
+
+            <p:outputPanel id="catalogBlockUIDropContent">
+                <p:outputPanel rendered="#{entityController.catalogItemsDraggedAsChildren == null}"
+                               style="width: 100%;
+                               margin-top: 15px;
+                               font-size: 20px;">
+                    Drop Here
+                </p:outputPanel>
+
+                <p:outputPanel rendered="#{entityController.catalogItemsDraggedAsChildren != null}">
+                    <p:treeTable value="#{entityController.newCatalogItemsInMachineDesignModel}"
+                                 var="treeNode">
+                        <p:column headerText="Name">
+                            <span>#{treeNode.name}</span>
+                        </p:column>        
+                    </p:treeTable>
+
+                    <p:commandButton value="Complete"
+                                     icon="fa fa-save"
+                                     action="#{entityController.completeAddNewCatalogListConfiguration()}"/> 
+                </p:outputPanel>
+            </p:outputPanel>
+        </p:outputPanel>
+
+        <p:droppable for="catalogBlockUIContent"
+                     tolerance="touch"
+                     activeStyleClass="ui-state-highlight"
+                     datasource="addCatalogToMachineDesignDataTable">
+            <p:ajax listener="#{entityController.onItemDrop}"
+                    update="catalogBlockUIDropContent addCatalogToMachineDesignDataTable" /> 
+        </p:droppable>
+
+    </p:blockUI>
+
+</ui:composition>
+
+

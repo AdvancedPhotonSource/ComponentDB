@@ -126,6 +126,18 @@ class ItemController(CdbController):
 
     @cherrypy.expose
     @CdbController.execute
+    def getLocationItems(self):
+        locationItems = self.itemControllerImpl.getLocationItems()
+        response = self.listToJson(locationItems)
+        return response
+
+    def getTopLevelLocationItems(self):
+        locationItems = self.itemControllerImpl.getLocationItemsWithoutParents()
+        response = self.listToJson(locationItems)
+        return response
+
+    @cherrypy.expose
+    @CdbController.execute
     def getItemsDerivedFromItem(self, derivedFromItemId):
         if not derivedFromItemId:
             raise InvalidRequest("Invalid derived from item id provided")
@@ -150,4 +162,21 @@ class ItemController(CdbController):
         domains = self.itemControllerImpl.getDomains()
         response = self.listToJson(domains)
         return response
+
+    @cherrypy.expose
+    @CdbController.execute
+    def getInventoryItemStatus(self, itemId):
+        if not itemId:
+            raise InvalidRequest("Item id must be provided")
+
+        response = self.itemControllerImpl.getInventoryItemStatus(itemId)
+        return response.getFullJsonRep()
+
+    @cherrypy.expose
+    @CdbController.execute
+    def getAvailableInventoryItemStatuses(self):
+        response = self.itemControllerImpl.getAvailableInventoryItemStatuses()
+        return self.listToJson(response)
+
+
 

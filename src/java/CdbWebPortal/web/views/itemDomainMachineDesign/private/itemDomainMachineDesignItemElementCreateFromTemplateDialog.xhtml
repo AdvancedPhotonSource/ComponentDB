@@ -17,21 +17,7 @@ See LICENSE file.
               modal="true"
               header="Create a Machine Design Item from Template">
 
-        <p:outputPanel id="machineDesignElementCreateFromTemplatePanel"
-                       rendered="#{itemDomainMachineDesignController.displayCreateMachineDesignFromTemplateContent}" >            
-            <p:panelGrid columns="2">
-                <ui:include src="itemDomainMachineDesignCreateFromTemplateObject.xhtml">
-                    <ui:param name="rendered"
-                              value="#{true == true}"/>
-                    <ui:param name="machineDesignNameValueChangedCommand"
-                              value="machineDesignTitleCreateMachineDesignReplacementValueChange()" />
-                </ui:include>
-            </p:panelGrid>
-
-            <p:remoteCommand name="machineDesignTitleCreateMachineDesignReplacementValueChange"
-                             update="machineDesignElementCreateFromTemplatePanel"
-                             action="#{itemDomainMachineDesignController.titleGenerationValueChange()}"/>
-        </p:outputPanel>
+        <ui:include src="itemDomainMachineDesignItemElementCreateFromTemplateContents.xhtml" />
 
         <f:facet name="footer">      
             <p:outputPanel id="machineDesignElementCreateFromTemplateFooter">

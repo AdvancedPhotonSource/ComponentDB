@@ -36,6 +36,13 @@ class ItemDbApi(CdbDbApi):
         return self.toCdbObjectList(itemList)
 
     @CdbDbApi.executeQuery
+    def getItemsOfDomainWithoutParents(self, domainName, **kwargs):
+        session = kwargs['session']
+        itemList = self.itemHandler.getItemsOfDomainWithoutParents(session, domainName)
+
+        return self.toCdbObjectList(itemList)
+
+    @CdbDbApi.executeQuery
     def getItemsDerivedFromItem(self, derivedItemId, **kwargs):
         session = kwargs['session']
         itemList = self.itemHandler.getItemsDerivedFromItem(session, derivedItemId)
@@ -589,6 +596,45 @@ class ItemDbApi(CdbDbApi):
         session = kwargs['session']
         dbItemElementProperty = self.itemHandler.addItemElementProperty(session, itemElementId, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue, targetValue, enteredOnDateTime)
         return dbItemElementProperty.getCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getAvailableInventoryItemStatuses(self, **kwargs):
+        """
+        Fetches allowed values for item status property
+
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        allowedValues = self.itemHandler.getAvailableItemStatuses(session)
+        return self.toCdbObjectList(allowedValues)
+
+    @CdbDbApi.executeTransaction
+    def updateInventoryItemStatus(self, itemId, statusName, enteredByUserId, **kwargs):
+        """
+        Updates the internal property of item status
+
+        :param itemId:
+        :param statusName:
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbPropertyValue = self.itemHandler.updateItemStatus(session, itemId, statusName, enteredByUserId)
+        return dbPropertyValue.toCdbObject()
+
+    @CdbDbApi.executeQuery
+    def getInventoryItemStatus(self, itemId, **kwargs):
+        """
+        Get the internal property for item status
+
+        :param itemId:
+        :param kwargs:
+        :return:
+        """
+        session = kwargs['session']
+        dbPropertyValue = self.itemHandler.getItemStatus(session, itemId)
+        return dbPropertyValue.toCdbObject()
 
     @CdbDbApi.executeQuery
     def getSelfElementByItemId(self, itemId, **kwargs):

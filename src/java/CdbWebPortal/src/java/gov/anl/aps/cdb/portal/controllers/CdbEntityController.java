@@ -727,6 +727,15 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public String viewForCurrentEntity() {
         return "view?id=" + current.getId() + "&faces-redirect=true";
     }
+    
+    /**
+     * Return entity list page.
+     *
+     * @return URL to list page in the entity folder
+     */
+    public String list() {
+        return "list?faces-redirect=true";
+    }
 
     /**
      * Return entity create page.

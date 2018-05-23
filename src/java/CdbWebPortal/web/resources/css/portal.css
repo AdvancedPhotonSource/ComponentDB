@@ -724,6 +724,42 @@ h2 {
     background-position: center;
 }
 
+.ui-icon-catalog {
+    /* Credit: https://thenounproject.com/icon/627708/ */
+    background-image: url(../../resources/images/catalog.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain; 
+    padding-right: 5px;
+}
+
+.ui-icon-inventory {
+    /* Credit: https://thenounproject.com/icon/632888/  */
+    background-image: url(../../resources/images/inventory.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain; 
+    padding-right: 5px;
+}
+
+.ui-icon-machine-design {
+    /* Credit: https://thenounproject.com/icon/990509/ */
+    background-image: url(../../resources/images/aps-icon.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain; 
+    padding-right: 5px;
+}
+
+.ui-icon-maarc {
+    /* Credit: https://thenounproject.com/icon/566019/ */
+    background-image: url(../../resources/images/maarc.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain; 
+    padding-right: 5px;
+}
+
 .ui-icon-attachment {
     background-image: url(../../resources/images/attachment.ico) !important;
     background-repeat: no-repeat;

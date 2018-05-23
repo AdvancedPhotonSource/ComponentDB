@@ -3,47 +3,64 @@
  * See LICENSE file.
  */
 
+
+const VERIFY_VIEW_MAX_ATTEMPTS = 10;
+
 window.onload = function () {
     var thisPageId = document.getElementById('viewCurrentPageIdHiddenText').value;
-    var currentPageUrl = window.location.href; 
+    var currentPageUrl = window.location.href;
     if (thisPageId === "") {
         // New page generate a view UUID 
         prepareNewViewID();
     } else {
         // Old page prepare to start verify 
-        prepareTestExistingViewID(); 
+        prepareTestExistingViewID();
     }
 };
 
 function setCurrentPageViewId() {
     var viewUUID = document.getElementById('viewOpenPageIdHiddenText').innerHTML;
-    document.getElementById('viewCurrentPageIdHiddenText').value = viewUUID; 
-    startPageVerify(); 
+    document.getElementById('viewCurrentPageIdHiddenText').value = viewUUID;
+    startPageVerify();
 }
 
 function startPageVerify() {
     // See if already generated
+    var timeHash = document.getElementById('currentTimeHashHiddenText').innerHTML;
+    var failureCount = 0;
 
     function verifyView() {
         setTimeout(function () {
-            verifyViewOpenPageIdHiddenText(); 
-            verifyView();
+            verifyViewOpenPageIdHiddenText();
+            var newTimeHash = document.getElementById('currentTimeHashHiddenText').innerHTML;
+            if (newTimeHash != timeHash) {
+                timeHash = newTimeHash;
+                failureCount = 0;
+                verifyView();
+            } else {
+                failureCount ++; 
+                if (failureCount == VERIFY_VIEW_MAX_ATTEMPTS) {
+                    PF('sessionLostDialogWidget').show();
+                } else {
+                    verifyView();
+                }
+            }
         }, 2500);
     }
 
     verifyView();
-    verifyViewOpenPageIdHiddenText(); 
+    verifyViewOpenPageIdHiddenText();
 }
 
 function testExistingPageId() {
     if (verifyViewOpenPage()) {
-        PF('invalidUseOfBackButtonDialogWidget').show(); 
+        PF('invalidUseOfBackButtonDialogWidget').show();
     } else {
-        startPageVerify(); 
-    }    
+        startPageVerify();
+    }
 }
 
-function completeVerifyViewOpenPage() {  
+function completeVerifyViewOpenPage() {
     if (verifyViewOpenPage()) {
         PF('invalidUseOfMultipleTabsDialogWidget').show();
     }
@@ -52,7 +69,7 @@ function completeVerifyViewOpenPage() {
 function verifyViewOpenPage() {
     var newValue = document.getElementById('viewOpenPageIdHiddenText').innerHTML;
     var thisPageId = document.getElementById('viewCurrentPageIdHiddenText').value;
-    
+
     return thisPageId != newValue;
 }
 
