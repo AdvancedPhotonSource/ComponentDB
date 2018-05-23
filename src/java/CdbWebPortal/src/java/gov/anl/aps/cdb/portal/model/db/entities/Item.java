@@ -987,7 +987,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     public String toString() {
         if (getName() != null && getName().isEmpty() == false) {
             if (derivedFromItem != null) {
-                return derivedFromItem.toString() + " - " + getName();
+                return derivedFromItem.toString() + " - [" + getName() + "]";
             }
             return getName();
         } else if (getDerivedFromItem() != null && getDerivedFromItem().getName() != null) {
