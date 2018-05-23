@@ -9,7 +9,12 @@ public enum PortalStyles {
     favoritesOff("favoriteOff"),
     
     rowStyleErrorInEntity("errorItemInRow"), 
-    rowStyleNewEntity("newItemInRow"); 
+    rowStyleNewEntity("newItemInRow"),
+    
+    machineDesignIcon("ui-icon-machine-design"),
+    catalogIcon("ui-icon-catalog"),
+    inventoryIcon("ui-icon-inventory"),
+    maarcIcon("ui-icon-maarc");
 
     private String value;
 
