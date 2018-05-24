@@ -287,13 +287,13 @@ class PdmLink:
         drawingInfo = self.__getDrawingDetails(latestUfid)
         number = drawingInfo['number']
 
-        # retrieve the revisions from ICMS
-        icmsRevisions = self.getIcmsRevisions(number)
-
         # Create a windchill url for the drawing
         response = self.windchillWebparts.service.GetActionUrl('object.view')
         actionUrl = str(response[0].value)
         actionUrl = actionUrl.replace('INSERTOID', oid)
+
+        # retrieve the revisions from ICMS
+        icmsRevisions = self.getIcmsRevisions(number)
 
         # Add ICMS link to revisions that have an ICMS link
         for pdmRevision in revisionList:
