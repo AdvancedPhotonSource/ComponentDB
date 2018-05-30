@@ -40,6 +40,13 @@ See LICENSE file.
         </div>
     </p:dialog>
     
+    <p:remoteCommand name="#{entityTypeName}ShowSinglePropertySelectDialog"
+                     update="#{entityTypeName}SinglePropertySelectDialog"
+                     oncomplete="PF('#{entityTypeName}SinglePropertySelectDialogWidget').show()">
+        <f:setPropertyActionListener value="#{entityController.defaultDomainName}"
+                                     target="#{propertyTypeController.filterViewDomain}" /> 
+    </p:remoteCommand>
+    
     <ui:include src="domainEntitySelectionFilterViewCustomizeDisplayDialog.xhtml">
         <ui:param name="viewName" value="Single" />
     </ui:include>

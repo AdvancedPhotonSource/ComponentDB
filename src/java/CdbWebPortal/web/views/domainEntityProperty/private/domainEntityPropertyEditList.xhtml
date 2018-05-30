@@ -20,11 +20,11 @@ See LICENSE file.
         <ui:param name="addActionController" value="#{propertyTypeController}"/>
         <ui:param name="addAction" value="prepareSelectPropertyTypesForDomainEntity"/>
         <ui:param name="addActionParameter" value="#{entityController.current}"/>
-        <ui:param name="addActionOnComplete" value="PF('#{entityTypeName}PropertySelectDialogWidget').show()"/>
+        <ui:param name="addActionOnComplete" value="#{entityTypeName}ShowPropertySelectDialog()"/>
         <ui:param name="saveAction" value="savePropertyList"/>
         <ui:param name="displayAddButton" value="#{isEntityWriteable}"/>
-    </ui:include>    
-
+    </ui:include>
+    
     <ui:include src="domainEntityPropertyEditListDataTable.xhtml" rendered="#{isEntityWriteable}"/>
 
     <ui:include src="domainEntityPropertyEditListCustomizeDisplayDialog.xhtml" rendered="#{isEntityWriteable}"/>

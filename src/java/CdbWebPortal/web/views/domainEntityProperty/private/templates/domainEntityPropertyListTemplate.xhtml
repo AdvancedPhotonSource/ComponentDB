@@ -28,7 +28,7 @@ See LICENSE file.
 
     <p:remoteCommand name="show#{entityTypeName}SinglePropertySelectDialogWidget"
                      action="#{entityController.restoreCurrentEditPropertyValueToOriginalState()}"
-                     oncomplete="PF('#{entityTypeName}SinglePropertySelectDialogWidget').show()"
+                     oncomplete="#{entityTypeName}ShowSinglePropertySelectDialog()"
                      update="#{entityTypeName}SinglePropertyEditDialog"
                      />
 
