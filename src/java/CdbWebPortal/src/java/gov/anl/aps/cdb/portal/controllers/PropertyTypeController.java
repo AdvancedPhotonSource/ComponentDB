@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
@@ -38,32 +39,35 @@ import org.apache.log4j.Logger;
 public class PropertyTypeController extends CdbEntityController<PropertyType, PropertyTypeFacade, PropertyTypeSettings> implements Serializable {
 
     private static final Logger logger = Logger.getLogger(PropertyTypeController.class.getName());
-    
+
     private Boolean selectFilterViewDisplayCategory = null;
     private Boolean selectFilterViewDisplayHandler = null;
 
     @EJB
-    private PropertyTypeFacade propertyTypeFacade;    
-    
+    private PropertyTypeFacade propertyTypeFacade;
+
     @EJB
     private PropertyTypeMetadataFacade propertyTypeMetadataFacade;
-    
+
     @EJB
     private AllowedPropertyMetadataValueFacade allowedPropertyMetadataValueFacade;
 
-    private final Boolean FILTER_VIEW_IS_INTERNAL = false; 
+    private final Boolean FILTER_VIEW_IS_INTERNAL = false;
     private List<PropertyTypeCategory> fitlerViewSelectedPropertyTypeCategories = null;
     private List<PropertyTypeHandler> fitlerViewSelectedPropertyTypeHandlers = null;
+    private String currentViewDomain = null;
 
     private DataModel filterViewDataModel;
+    
+    private DataModel currentItemPropertyTypeDataModel; 
 
     public PropertyTypeController() {
-        super(); 
+        super();
         settingObject.setSelectDisplayDescription(true);
     }
-    
-    public static PropertyTypeController getInstance(){ 
-        return (PropertyTypeController) SessionUtility.findBean("propertyTypeController"); 
+
+    public static PropertyTypeController getInstance() {
+        return (PropertyTypeController) SessionUtility.findBean("propertyTypeController");
     }
 
     @Override
@@ -117,9 +121,9 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     public List<PropertyType> getAvailableItems() {
         return super.getAvailableItems();
     }
-    
-    public List<PropertyType> getAvailableExternalItems() { 
-        return propertyTypeFacade.findByPropertyInternalStatus(false); 
+
+    public List<PropertyType> getAvailableExternalItems() {
+        return propertyTypeFacade.findByPropertyInternalStatus(false);
     }
 
     @Override
@@ -170,7 +174,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
         resetSelectDataModel();
         List<PropertyType> selectPropertyTypeList = getEntityDbFacade().findAll();
         createSelectDataModel(selectPropertyTypeList);
-    }   
+    }
 
     public List<PropertyTypeCategory> getFitlerViewSelectedPropertyTypeCategories() {
         return fitlerViewSelectedPropertyTypeCategories;
@@ -194,6 +198,18 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
         }
     }
 
+    public String getFilterViewDomain() {
+        return currentViewDomain;
+    }
+
+    public void setFilterViewDomain(String filterViewDomain) {
+        if (!filterViewDomain.equals(this.currentViewDomain)) {
+            this.currentViewDomain = filterViewDomain;
+            this.fitlerViewSelectedPropertyTypeCategories = null; 
+            resetFilterViewDataModel();
+        }
+    }
+
     public void resetFilterViewDataModel() {
         filterViewDataModel = null;
         selectFilterViewDisplayCategory = null;
@@ -202,11 +218,13 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
 
     public DataModel getFilterViewDataModel() {
         if (filterViewDataModel == null) {
-            List<PropertyType> results;
-            results = propertyTypeFacade.findByFilterViewAttributes(
-                    fitlerViewSelectedPropertyTypeCategories, 
-                    fitlerViewSelectedPropertyTypeHandlers,
-                    FILTER_VIEW_IS_INTERNAL);
+            List<PropertyType> results = null;
+            if (currentViewDomain != null) {
+                results = propertyTypeFacade.findByFilterViewAttributes(fitlerViewSelectedPropertyTypeCategories,
+                        fitlerViewSelectedPropertyTypeHandlers,
+                        currentViewDomain,
+                        FILTER_VIEW_IS_INTERNAL);
+            }
             if (results != null) {
                 filterViewDataModel = new ListDataModel(results);
             }
@@ -215,6 +233,30 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
 
     }
     
+    public String prepareItemPropertyList(String itemDomainName) {
+        if (!itemDomainName.equals(currentViewDomain)) {
+            currentViewDomain = itemDomainName; 
+            currentItemPropertyTypeDataModel = null; 
+        }
+        return "/views/" + getEntityTypeName() + "/listForItem.xhtml?faces-redirect=true";
+    }
+
+    public DataModel getCurrentItemPropertyTypeDataModel() {
+        if (currentItemPropertyTypeDataModel == null) {
+            List<PropertyType> findByFilterViewAttributes = propertyTypeFacade.findByFilterViewAttributes(null, null, currentViewDomain, false);
+            currentItemPropertyTypeDataModel = new ListDataModel(findByFilterViewAttributes); 
+        }
+        return currentItemPropertyTypeDataModel;
+    }
+
+    public void setCurrentItemPropertyTypeDataModel(DataModel currentItemPropertyTypeDataModel) {
+        this.currentItemPropertyTypeDataModel = currentItemPropertyTypeDataModel;
+    }
+
+    public String getCurrentViewDomain() {
+        return currentViewDomain;
+    }
+
     public void addPropertyTypeMetadataForCurrent() {
         if (getCurrent() != null) {
             PropertyTypeMetadata propertyTypeMetadata = new PropertyTypeMetadata();
@@ -222,39 +264,39 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
             getCurrent().getPropertyTypeMetadataList().add(propertyTypeMetadata);
         }
     }
-    
+
     public void removePropertyTypeMetadataForCurrent(PropertyTypeMetadata propertyTypeMetadata) {
         String viewUUID = propertyTypeMetadata.getViewUUID();
         List<PropertyTypeMetadata> propertyTypeMetadataList = getCurrent().getPropertyTypeMetadataList();
         for (int i = 0; i < propertyTypeMetadataList.size(); i++) {
             PropertyTypeMetadata ptm = propertyTypeMetadataList.get(i);
             if (ptm.getViewUUID().equals(viewUUID)) {
-                propertyTypeMetadataList.remove(i);                
-                break; 
-            }           
+                propertyTypeMetadataList.remove(i);
+                break;
+            }
         }
-        
+
         // Save the removed property type metadata 
-        if (propertyTypeMetadata.getId() != null) {            
+        if (propertyTypeMetadata.getId() != null) {
             propertyTypeMetadataFacade.remove(propertyTypeMetadata);
-            update();    
+            update();
         }
     }
-    
+
     public void savePropertyTypeMetadataList() {
-        update(); 
+        update();
     }
-    
+
     public void addAllowedPropertyMetadataValue(PropertyTypeMetadata propertyTypeMetadata) {
         if (propertyTypeMetadata.getAllowedPropertyMetadataValueList() == null) {
             propertyTypeMetadata.setAllowedPropertyMetadataValueList(new ArrayList<>());
         }
-        
-        AllowedPropertyMetadataValue allowedPropertyMetadataValue = new AllowedPropertyMetadataValue(); 
+
+        AllowedPropertyMetadataValue allowedPropertyMetadataValue = new AllowedPropertyMetadataValue();
         allowedPropertyMetadataValue.setPropertyTypeMetadata(propertyTypeMetadata);
         propertyTypeMetadata.getAllowedPropertyMetadataValueList().add(allowedPropertyMetadataValue);
     }
-    
+
     public void removeAllowedPropertyMetadataValue(AllowedPropertyMetadataValue allowedPropertyMetadataValue) {
         String viewUUID = allowedPropertyMetadataValue.getViewUUID();
         PropertyTypeMetadata propertyTypeMetadata = allowedPropertyMetadataValue.getPropertyTypeMetadata();
@@ -263,10 +305,10 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
             AllowedPropertyMetadataValue apmv = allowedPropertyMetadataValueList.get(i);
             if (apmv.getViewUUID() == viewUUID) {
                 allowedPropertyMetadataValueList.remove(i);
-                break; 
+                break;
             }
         }
-        
+
         if (allowedPropertyMetadataValue.getId() != null) {
             allowedPropertyMetadataValueFacade.remove(allowedPropertyMetadataValue);
             update();
@@ -277,7 +319,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     protected PropertyTypeSettings createNewSettingObject() {
         return new PropertyTypeSettings(this);
     }
-    
+
     public Boolean getSelectFilterViewDisplayCategory() {
         if (selectFilterViewDisplayCategory == null) {
             if (fitlerViewSelectedPropertyTypeCategories != null) {
