@@ -5,16 +5,20 @@ See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="propertyTypeSettingObject" value="#{propertyTypeController.settingObject}" />
     
+    <ui:param name="propertyTypeListDataModel"
+              value="#{propertyTypeListDataModel != null 
+                       ? propertyTypeListDataModel 
+                       : propertyTypeController.listDataModel}" />
+    
     <p:dataTable id="propertyTypeListDataTable"
                  widgetVar="propertyTypeListDataTableWidget" 
                  var="propertyTypeObject"
-                 value="#{propertyTypeController.listDataModel}" 
+                 value="#{propertyTypeListDataModel}" 
                  filteredValue="#{propertyTypeController.filteredObjectList}"
                  rows="#{propertyTypeSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 

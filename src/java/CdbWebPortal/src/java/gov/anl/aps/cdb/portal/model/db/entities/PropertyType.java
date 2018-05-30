@@ -117,7 +117,7 @@ public class PropertyType extends CdbEntity implements Serializable {
 
     public void resetCachedVales() {
         sortedAllowedPropertyValueList = null;
-        allowedDomainList = null;
+        allowedDomainString = null;
     }
 
     public PropertyType() {

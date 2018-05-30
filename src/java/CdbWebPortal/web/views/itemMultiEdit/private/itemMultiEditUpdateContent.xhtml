@@ -20,7 +20,7 @@ See LICENSE file.
         </p:tab>
         <p:tab title="Properties">
             <p:commandButton value="Select Property Types"
-                             oncomplete="PF('#{entityTypeName}PropertySelectDialogWidget').show()"/>
+                             oncomplete="#{entityTypeName}ShowPropertySelectDialog()"/>
 
             <p:panelGrid columns="3" >
                 <c:forEach items="#{entityController.selectedPropertyTypesForEditing}"

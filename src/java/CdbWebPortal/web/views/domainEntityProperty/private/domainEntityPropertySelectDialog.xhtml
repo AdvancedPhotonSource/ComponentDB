@@ -10,14 +10,14 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
-    
+
     <ui:param name="propertySelectDataTableSelectionValue" value="#{propertySelectDataTableSelectionValue != null 
                                                                     ? propertySelectDataTableSelectionValue 
                                                                     : propertyTypeController.selectedObjectList}" />
-    
+
     <ui:param name="defaultPropertySelectDialogPropertySelectionMadeCommandName"
               value="#{entityTypeName}PropertySelectionMade()" />
-    
+
     <ui:param name="propertySelectDialogPropertySelectionMadeCommandName" value="#{propertySelectDialogPropertySelectionMadeCommandName != null
                                                                                    ? propertySelectDialogPropertySelectionMadeCommandName 
                                                                                    : defaultPropertySelectDialogPropertySelectionMadeCommandName}" />
@@ -32,15 +32,15 @@ See LICENSE file.
                 <ui:param name="propertySelectDataTableSelectionValue" value="#{propertySelectDataTableSelectionValue}" />
                 <ui:param name="propertySelectionMode" value="multiple" />
             </ui:include>
-            
+
             <f:facet name="footer" class="dialog">
-                
+
                 <p:remoteCommand name="#{entityTypeName}PropertySelectionMade"
                                  action="#{entityController.selectPropertyTypes(propertyTypeController.getSelectedObjectListAndResetSelectDataModel())}"
                                  update="@form"
                                  oncomplete="PF('#{entityTypeName}PropertySelectDialogWidget').hide()" 
                                  />
-                
+
                 <p:commandButton value="Done" alt="Done" 
                                  id="#{entityTypeName}PropertySelectDialogDoneButton"
                                  onclick="#{propertySelectDialogPropertySelectionMadeCommandName}()"
@@ -48,7 +48,14 @@ See LICENSE file.
             </f:facet>
         </div>
     </p:dialog>
-    
+
+    <p:remoteCommand name="#{entityTypeName}ShowPropertySelectDialog"
+                     update="#{entityTypeName}PropertySelectDialog"
+                     oncomplete="PF('#{entityTypeName}PropertySelectDialogWidget').show()">
+        <f:setPropertyActionListener value="#{entityController.defaultDomainName}"
+                                     target="#{propertyTypeController.filterViewDomain}" /> 
+    </p:remoteCommand>
+
     <ui:include src="domainEntitySelectionFilterViewCustomizeDisplayDialog.xhtml"/>
 
 </ui:composition>

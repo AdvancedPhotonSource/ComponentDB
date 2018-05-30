@@ -32,8 +32,10 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "PropertyTypeCategory.findAll", query = "SELECT p FROM PropertyTypeCategory p ORDER BY p.name ASC"),
     @NamedQuery(name = "PropertyTypeCategory.findById", query = "SELECT p FROM PropertyTypeCategory p WHERE p.id = :id"),
+    @NamedQuery(name = "PropertyTypeCategory.findByIds", query = "SELECT p FROM PropertyTypeCategory p WHERE p.id in :ids"),
     @NamedQuery(name = "PropertyTypeCategory.findByName", query = "SELECT p FROM PropertyTypeCategory p WHERE p.name = :name"),
-    @NamedQuery(name = "PropertyTypeCategory.findByDescription", query = "SELECT p FROM PropertyTypeCategory p WHERE p.description = :description")})
+    @NamedQuery(name = "PropertyTypeCategory.findByDescription", query = "SELECT DISTINCT p FROM PropertyTypeCategory p WHERE p.description = :description"),
+    @NamedQuery(name = "PropertyTypeCategory.findCategoryIdsForRelevantDomain", query = "Select DISTINCT p.id FROM PropertyTypeCategory p JOIN p.propertyTypeList AS pt JOIN pt.allowedDomainList AS ad WHERE ad.name = :domainName")})
 public class PropertyTypeCategory extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

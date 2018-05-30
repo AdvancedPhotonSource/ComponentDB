@@ -8,7 +8,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../../common/private/commonListActionButtons.xhtml"
                 xmlns:p="http://primefaces.org/ui">
-    
+
     <ui:define name="additonalListButtons" >
         <ui:param name="itemMultiEditController"
                   value="#{entityController.itemMultiEditController}" />
@@ -23,9 +23,17 @@ See LICENSE file.
                          rendered="#{itemMultiEditController != null and loginController.loggedIn}"/> 
         <ui:insert name="additonalListButtons"/>
     </ui:define>
-    
-    <ui:define name="listTypeCategoryActionButtons">
+
+    <ui:define name="listTypeCategoryActionButtons">        
         <ui:include src="../templateDefaults/common/itemListCategoryTypeActionButtons.xhtml" />
+        
+        <p:commandButton id="#{entityTypeName}#{viewName}ViewItemProperties" 
+                         alt="View #{entityController.entityEntityTypeName}s" 
+                         action="#{propertyTypeController.prepareItemPropertyList(entityController.defaultDomainName)}"
+                         rendered="#{entityController.entityDisplayItemProperties}"
+                         icon="fa fa-product-hunt" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityTypeName}ViewItemProperties" value="View Available Properties."/>        
+        </p:commandButton>
     </ui:define>  
 
 </ui:composition>

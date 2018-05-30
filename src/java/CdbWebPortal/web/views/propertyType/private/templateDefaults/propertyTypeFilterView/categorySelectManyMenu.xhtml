@@ -8,6 +8,13 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:param name="overrideSelectionOptions"
+              value="#{overrideSelectionOptions != null ? overrideSelectionOptions : false}" />
+    <ui:param name="propertyTypeCategorySelectionOptions" 
+              value="#{overrideSelectionOptions 
+                       ? propertyTypeCategorySelectionOptions 
+                       : propertyTypeCategoryController.availableItems}" />
 
     Choose a Category
     <p:selectManyMenu id="filterViewItemCategorySelection"                                              
@@ -15,7 +22,7 @@ See LICENSE file.
                       converter="propertyTypeCategoryConverter"
                       value="#{propertyTypeController.fitlerViewSelectedPropertyTypeCategories}"
                       onchange="#{onChange}">
-        <f:selectItems value="#{propertyTypeCategoryController.availableItems}"
+        <f:selectItems value="#{propertyTypeCategorySelectionOptions}"
                        var="propertyTypeCategory"
                        itemLabel="#{propertyTypeCategory.name}"
                        itemValue="#{propertyTypeCategory}"/>
