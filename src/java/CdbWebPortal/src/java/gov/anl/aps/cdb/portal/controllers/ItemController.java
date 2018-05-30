@@ -23,6 +23,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
@@ -38,6 +39,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
@@ -97,6 +99,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     @EJB
     protected UserInfoFacade userInfoFacade;
+    
+    @EJB
+    protected PropertyTypeCategoryFacade propertyTypeCategoryFacade; 
 
     private List<Item> parentItemList;
     private int currentItemEntityHashCode;
@@ -129,6 +134,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected Boolean cloneCreateItemElementPlaceholders = false;
     protected Boolean cloneSources = false;
     protected Item itemToClone;
+    
+    protected List<PropertyTypeCategory> relevantPropertyTypeCategories = null; 
 
     // Globalized item project functionality. 
     protected ItemProjectController itemProjectController = null;        
@@ -777,6 +784,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
 
         return PortalStyles.favoritesOff.getValue();
+    }
+
+    public List<PropertyTypeCategory> getRelevantPropertyTypeCategories() {
+        if (relevantPropertyTypeCategories == null) {
+            relevantPropertyTypeCategories = propertyTypeCategoryFacade.findRelevantCategoriesByDomainId(getDefaultDomainName());
+        }
+        return relevantPropertyTypeCategories;
     }
 
     private List<ListTbl> getSettingEntityItemElementLists() {

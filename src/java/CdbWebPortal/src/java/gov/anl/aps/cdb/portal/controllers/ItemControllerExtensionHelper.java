@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import javax.faces.model.DataModel;
 import javax.faces.model.SelectItem;
@@ -524,6 +525,10 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     @Override
     public Boolean getDisplayPropertyMetadata(PropertyValue propertyValue) {
         return getItemController().getDisplayPropertyMetadata(propertyValue); 
+    }
+    
+    public List<PropertyTypeCategory> getRelevantPropertyTypeCategories() {
+        return getItemController().getRelevantPropertyTypeCategories(); 
     }
 
 }
