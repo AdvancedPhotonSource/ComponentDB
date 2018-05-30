@@ -29,13 +29,13 @@ public class PropertyTypeCategoryFacade extends CdbEntityFacade<PropertyTypeCate
     public PropertyTypeCategoryFacade() {
         super(PropertyTypeCategory.class);
     }
-    
+
     @Override
     public List<PropertyTypeCategory> findAll() {
         return (List<PropertyTypeCategory>) em.createNamedQuery("PropertyTypeCategory.findAll")
                 .getResultList();
     }
-    
+
     public PropertyTypeCategory findByName(String name) {
         try {
             return (PropertyTypeCategory) em.createNamedQuery("PropertyTypeCategory.findByName")
@@ -55,5 +55,20 @@ public class PropertyTypeCategoryFacade extends CdbEntityFacade<PropertyTypeCate
         }
         return null;
     }
-    
+
+    public List<PropertyTypeCategory> findRelevantCategoriesByDomainId(String domainName) {
+        if (domainName != null) {
+            List<Integer> ids = (List<Integer>) em.createNamedQuery("PropertyTypeCategory.findCategoryIdsForRelevantDomain")
+                    .setParameter("domainName", domainName)
+                    .getResultList();
+
+            if (ids != null) {
+                return (List<PropertyTypeCategory>) em.createNamedQuery("PropertyTypeCategory.findByIds")
+                        .setParameter("ids", ids)
+                        .getResultList();
+            }
+        }
+        return null;
+    }
+
 }
