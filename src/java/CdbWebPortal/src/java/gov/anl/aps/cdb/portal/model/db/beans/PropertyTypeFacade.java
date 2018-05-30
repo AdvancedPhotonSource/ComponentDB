@@ -102,10 +102,15 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
     public List<PropertyType> findByFilterViewAttributes(
             List<PropertyTypeCategory> propertyTypeCategoryList,
             List<PropertyTypeHandler> propertyTypeHandlerList, 
+            String domainName,
             Boolean isInternal) {
         String queryString = QUERY_STRING_START; 
         String propertyTypeCategoryQueryString = null;
         String propertyTypeHandlerQueryString = null;
+        
+        if (domainName != null) {
+            queryString += "JOIN p.allowedDomainList AS ad ";            
+        }
         
         if (propertyTypeCategoryList != null) {
             if (!propertyTypeCategoryList.isEmpty()) {
@@ -140,7 +145,9 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
             }
         }
         
-        if (propertyTypeCategoryQueryString != null || propertyTypeHandlerQueryString != null) {
+        if (propertyTypeCategoryQueryString != null 
+                || propertyTypeHandlerQueryString != null 
+                || domainName != null) {
             queryString += "WHERE "; 
             if (propertyTypeCategoryQueryString != null) {
                 queryString += propertyTypeCategoryQueryString + " ";  
@@ -151,8 +158,15 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
                 }
                 queryString += propertyTypeHandlerQueryString;
             }
+            if (propertyTypeCategoryQueryString != null || propertyTypeHandlerQueryString != null) {
+                queryString += " AND ";
+            }
+            queryString += "p.isInternal = " + isInternal.toString();
             
-            queryString += " AND p.isInternal = " + isInternal.toString();
+            if (domainName != null) {
+                queryString += " AND ad.name = '" + domainName + "'"; 
+            }
+            
             queryString += " ORDER BY p.name ASC"; 
             
             return (List<PropertyType>) em.createQuery(queryString).getResultList();
