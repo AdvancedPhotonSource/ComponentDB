@@ -14,7 +14,7 @@ See LICENSE file.
     
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:event type="preRenderComponent" listener="#{itemFilterViewDomainCatalogController.processPreRenderFilterViewPage()}"/>
+        <f:viewAction action="#{itemFilterViewDomainCatalogController.processPreRenderFilterViewPage()}"/>
     </f:metadata>
     
     <ui:define name="itemOwnerFilterView">

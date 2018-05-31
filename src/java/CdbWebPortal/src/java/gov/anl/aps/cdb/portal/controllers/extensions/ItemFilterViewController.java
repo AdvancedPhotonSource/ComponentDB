@@ -55,7 +55,11 @@ public abstract class ItemFilterViewController extends ItemControllerExtensionHe
     
     public void processPreRenderFilterViewPage() {
         ItemProjectController ipr = ItemProjectController.getInstance();        
-        ipr.addItemControllerProjectChangeListener(this);        
+        ipr.addItemControllerProjectChangeListener(this);     
+        
+        // Reload results 
+        filterViewCategoryTypeListDataModelLoaded = false;
+        filterViewOwnerListDataModelLoaded = false; 
     }
 
     @Override
