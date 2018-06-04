@@ -38,9 +38,7 @@ See LICENSE file.
                                    rendered="#{pdmLinkDrawingBean.drawing != null}">
                         <p/>
                         <p:commandButton value="Add Drawing to Catalog"
-                                         action="#{pdmLinkDrawingBean.createCatalogItemFromDrawingNumber('createdCatalogItemFromPDMLinkDrawing()')}"/>
-                        <p:remoteCommand name="createdCatalogItemFromPDMLinkDrawing"
-                                         action="simpleCreate"/>
+                                         action="#{pdmLinkDrawingBean.createCatalogItemFromDrawingNumber()}"/>
                     </p:outputPanel>
                 </p:outputPanel>
             </p:outputPanel>
