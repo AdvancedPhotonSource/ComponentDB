@@ -37,6 +37,8 @@ See LICENSE file.
                          oncomplete="setSortableEntityList();">
             <p:tooltip for="#{childEntityTypeName}SortOrderButton" value="Sort list or change order of items in the list"/>
         </p:commandButton>
+        
+        <ui:insert name="additionalButtons" />
        
         <ui:include src="reusedParts/childListExportButtons.xhtml" />
        

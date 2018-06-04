@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../common/private/commonChildEditListActionButtons.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="parentEntityController" value="#{userInfoController}"/>
+    <ui:param name="childEntityController" value="#{userSettingController}"/>
+    <ui:param name="childEntityTypeName" value="#{userSettingController.entityTypeName}"/>
+    <ui:param name="saveAction" value="saveSettingList"/>
+    <ui:param name="displayAddButton" value="false"/>   
+
+    <ui:define name="additionalButtons">
+        <p:commandButton value="Reset settings to defaults"
+                         icon="fa fa-eraser"
+                         ajax="false"
+                         update="@form"
+                         process="@form"
+                         action="#{userInfoController.resetAllSettingsForCurrentUser()}"/>
+    </ui:define>
+
+</ui:composition>
+
+
