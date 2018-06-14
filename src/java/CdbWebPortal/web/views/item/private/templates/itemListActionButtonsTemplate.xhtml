@@ -8,6 +8,16 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../../common/private/commonListActionButtons.xhtml"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="displayAvailableTemplatesButton"
+              value="#{displayAvailableTemplatesButton != null 
+                       ? displayAvailableTemplatesButton 
+                       : true}" />
+    
+    <ui:param name="displayMultiEditButtons"
+              value="#{displayMultiEditButtons != null 
+                       ? displayMultiEditButtons 
+                       : true}" />
 
     <ui:define name="additonalListButtons" >
         <ui:param name="itemMultiEditController"
@@ -15,12 +25,16 @@ See LICENSE file.
         <p:commandButton value="Create Multiple Items"
                          icon="fa fa-plus-circle"
                          action="#{itemMultiEditController.prepareCreateMultipleItems()}"
-                         rendered="#{itemMultiEditController != null and loginController.loggedIn}"/> 
+                         rendered="#{itemMultiEditController != null 
+                                     and loginController.loggedIn 
+                                     and displayMultiEditButtons}"/> 
         <ui:insert name="additonalListButtons"/>
         <p:commandButton value="Edit Multiple Items"
                          icon="fa fa-object-group"
                          action="#{itemMultiEditController.prepareEditMultipleItems()}"
-                         rendered="#{itemMultiEditController != null and loginController.loggedIn}"/> 
+                         rendered="#{itemMultiEditController != null 
+                                     and loginController.loggedIn 
+                                     and displayMultiEditButtons}"/> 
         <ui:insert name="additonalListButtons"/>
     </ui:define>
 
@@ -32,7 +46,16 @@ See LICENSE file.
                          action="#{propertyTypeController.prepareItemPropertyList(entityController.defaultDomainName)}"
                          rendered="#{entityController.entityDisplayItemProperties}"
                          icon="fa fa-product-hunt" styleClass="actionButtonRight">
-            <p:tooltip for="#{entityTypeName}ViewItemProperties" value="View Available Properties."/>        
+            <p:tooltip for="#{entityTypeName}ViewItemProperties" value="View Available Properties."/>
+        </p:commandButton>
+        
+        <p:commandButton id="#{entityTypeName}#{viewName}ViewItemTemplates"
+                         icon="ui-icon ui-icon-template"
+                         styleClass="actionButtonRight"
+                         action="#{entityController.prepareTemplateList()}"
+                         rendered="#{displayAvailableTemplatesButton}">
+            <p:tooltip for="#{entityTypeName}#{viewName}ViewItemTemplates" 
+                       value="View Available Templates."/>
         </p:commandButton>
     </ui:define>  
 
