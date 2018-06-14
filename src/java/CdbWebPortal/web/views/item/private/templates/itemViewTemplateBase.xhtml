@@ -23,7 +23,7 @@ See LICENSE file.
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}" />
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
-    
+
     <ui:define name="pageTitle">: View #{entityController.displayEntityTypeName} #{entityController.currentItemDisplayTitle}</ui:define> 
 
     <ui:define name="middleCenter">
@@ -34,7 +34,7 @@ See LICENSE file.
                 <div class="pageTitle">
                     <h1><ui:insert name="pageTitle"/></h1>
                 </div>
-                
+
                 <!-- Included for easy code readability in use such as item element list. enityController is very generic-->
                 <ui:param name="currentItemController" value="#{entityController}" />
                 <ui:param name="domainEntityObject" value="#{itemObject}" />
@@ -65,7 +65,7 @@ See LICENSE file.
                          collapsed="#{!entityController.displayLogList}">
                     <ui:insert name="itemLogs" />
                 </p:panel>
-                
+
                 <p:panel header="Connectors"
                          id="#{entityTypeName}ViewConnectorsPanel"
                          toggleable="true"
@@ -73,7 +73,7 @@ See LICENSE file.
                          collapsed="#{!entityController.displayItemConnectorList}">
                     <ui:insert name="itemConnectors" />                
                 </p:panel>
-                         
+
 
                 <ui:insert name="additionalLeftItemPanels"/>
             </div>
@@ -87,17 +87,17 @@ See LICENSE file.
                     <ui:insert name="itemProperties"/>
                 </p:panel>
                 <ui:insert name="itemPropertiesSupport" />
-                
+
                 <ui:insert name="additonalPluginSections" />
 
                 <p:panel header="#{currentItemController.settingObject.displayItemElementSimpleView ? 'Assembly Listing' : 'Elements'}"
                          id="#{entityTypeName}ViewElementsPanel"
-                         rendered="#{entityController.entityDisplayItemElementsForCurrent}"
+                         rendered="#{entityController.renderItemElementList}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayItemElementList}">
                     <ui:insert name="itemElements" />
                 </p:panel>
-                
+
                 <p:panel header="Sources" 
                          id="#{entityTypeName}ViewSourcesPanel"
                          rendered="#{entityController.entityDisplayItemSources}"
@@ -105,10 +105,10 @@ See LICENSE file.
                          collapsed="#{!entityController.displayItemSourceList}">
                     <ui:insert name="itemSources" />
                 </p:panel>
-                
+
                 <p:panel header="#{entityController.itemsDerivedFromItemTitle}" 
                          id="#{entityTypeName}ViewItemsDerviedFromItemPanel"
-                         rendered="#{entityController.entityDisplayItemsDerivedFromItem}"
+                         rendered="#{entityController.renderDerivedFromItemList}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayDerivedFromItemList}">
                     <ui:insert name="derivedFromItems" />
@@ -120,9 +120,16 @@ See LICENSE file.
                          collapsed="#{!entityController.displayItemMembership}">
                     <ui:insert name="itemMemberships" />
                 </p:panel>
-                
+
+                <p:panel header="Created From Template"
+                         rendered="#{entityController.displayCreatedFromCurrentItemList}"
+                         toggleable="true"
+                         collapsed="#{entityController.displayContentsOfCreatedFromTemplateItem}">
+                    <ui:include src="../itemListCreatedFromTemplateDataTable.xhtml" /> 
+                </p:panel>
+
                 <ui:insert name="additionalRightItemPanels"/>
-                
+
                 <ui:insert name="additionalViewItemContent"/>
             </div>
 
