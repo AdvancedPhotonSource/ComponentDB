@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="itemListTemplate.xhtml">
+
+    <!--
+        Please define the following variables: 
+        - entityController 
+    -->
+    
+    <ui:param name="additionalEntityDisplayName"
+              value=" Template" /> 
+
+    <ui:define name="pageTitle">: #{entityController.itemTemplateListPageTitle}</ui:define>
+
+    <ui:define name="pageHeaderTitle">
+        #{entityController.itemTemplateListPageTitle}
+    </ui:define>
+
+    <ui:define name="listActionButtons">
+        <ui:include src="../itemListActionButtons.xhtml">
+            <ui:param name="displayAvailableTemplatesButton"
+                      value="#{false}" /> 
+            <ui:param name="displayMultiEditButtons"
+                      value="#{false}" /> 
+            
+            <ui:param name="addEntityActionFunctionName"
+                      value="prepareCreateTemplate"  /> 
+        </ui:include>
+    </ui:define>
+
+    <ui:define name="listDataTable">
+        <ui:include src="../itemListDataTable.xhtml">
+            <ui:param name="itemListDataTableValue"
+                      value="#{entityController.templateItemsListDataModel}" /> 
+        </ui:include>
+    </ui:define>      
+
+</ui:composition>
