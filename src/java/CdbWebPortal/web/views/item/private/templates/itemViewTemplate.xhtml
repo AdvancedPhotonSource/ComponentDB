@@ -17,6 +17,13 @@ See LICENSE file.
         #{entityController.displayEntityTypeName} Details
     </ui:define>
     
+    <ui:define name="bodyStyleParam"> 
+        <ui:param name="bodyStyle"
+                  value="#{entityController.isCurrentItemTemplate() 
+                           ? 'templateWatermarkBackground' 
+                           : ''}"/>
+    </ui:define>                 
+    
     <ui:define name="viewPanelGrid">
         <ui:include src="../itemViewPanelGrid.xhtml" />
     </ui:define>
