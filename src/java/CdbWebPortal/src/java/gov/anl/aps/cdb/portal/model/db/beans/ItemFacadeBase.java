@@ -107,6 +107,18 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
             itemsToAdd.add(item);
         }
     }
+    
+    public List<ItemDomainEntity> findByDomainNameAndExcludeEntityType(String domainName, String entityTypeName) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndExcludeEntityType")
+                    .setParameter("domainName", domainName)
+                    .setParameter("entityTypeName", entityTypeName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
 
     public List<ItemDomainEntity> findByDomainAndEntityType(String domainName, String entityTypeName) {
         try {
