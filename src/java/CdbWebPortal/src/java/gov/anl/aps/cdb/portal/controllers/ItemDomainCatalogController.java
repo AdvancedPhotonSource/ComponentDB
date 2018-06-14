@@ -380,6 +380,11 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
     } 
 
     @Override
+    public boolean getEntityDisplayTemplates() {
+        return true;
+    }
+
+    @Override
     public String getStyleName() {
         return "catalog";
     }
