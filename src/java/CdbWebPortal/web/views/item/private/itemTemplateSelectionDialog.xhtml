@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog id="#{entityTypeName}useItemTemplateDialog"
+              widgetVar="#{entityTypeName}useItemTemplateDialogWidget"
+              styleClass="viewTransparentBackgroundDialog"
+              header="Select Template for new Item"
+              modal="true"
+              resizable="true"
+              rendered="#{entityController.displayCreatedFromTemplateForCurrent}">
+
+        <p:outputPanel>
+            <ui:include src="itemSelectDataTable.xhtml">
+                <ui:param name="updateTarget" value="@parent" />
+                <ui:param name="viewName" value="Template" />
+                <ui:param name="selectionValue" value="#{entityController.templateToCreateNewItem}" />
+                <ui:param name="selectionTarget" value="#{entityController.templateToCreateNewItem}" />
+                <ui:param name="selectDataModel" value="#{entityController.templateItemsListDataModel}" />
+                <ui:param name="entityController" value="#{entityController}" />
+                <ui:param name="useFilteredValue" value="#{false}" /> 
+                <ui:param name="additionalSelectionMadeRemoteCommands" value="templateSelectionMade();" />
+            </ui:include>
+        </p:outputPanel>
+
+        <f:facet name="footer">
+            <p:commandButton value="Select"
+                             icon="fa fa-save"
+                             process="@this"
+                             oncomplete="PF('#{entityTypeName}useItemTemplateDialogWidget').hide()"
+                             action="#{entityController.completeSelectionOfTemplate()}"/> 
+
+            <p:remoteCommand name="templateSelectionMade"                                         
+                             update="templateTitleOutputText"
+                             process="templateTitleOutputText"/> 
+
+            <p:commandButton value="Close"
+                             icon="fa fa-times"
+                             action="#{entityController.setTemplateToCreateNewItem(null)}"
+                             oncomplete="PF('#{entityTypeName}useItemTemplateDialogWidget').hide()"
+                             update="templateTitleOutputText"
+                             process="@this templateTitleOutputText"/>
+        </f:facet>
+    </p:dialog>
+</ui:composition>
+
+
