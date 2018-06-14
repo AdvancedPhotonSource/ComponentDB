@@ -15,8 +15,16 @@ html, body {
     background-image: url("../images/ApsStorageRing.png");
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-position: center; 
+    background-position: center;  
     background-size: 20%;
+}
+
+.templateWatermarkBackground {
+    background-image: url("../images/template-watermark.png");
+    background-repeat: repeat;    
+    background-attachment: fixed;
+    background-position: center;  
+    background-size: 10%;
 }
 
 a:link, a:visited {
@@ -754,6 +762,15 @@ h2 {
 .ui-icon-maarc {
     /* Credit: https://thenounproject.com/icon/566019/ */
     background-image: url(../../resources/images/maarc.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain; 
+    padding-right: 5px;
+}
+
+.ui-icon-template {
+    /* Credit: https://thenounproject.com/icon/1710484/ */
+    background-image: url(../../resources/images/template.svg) !important;
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain; 
