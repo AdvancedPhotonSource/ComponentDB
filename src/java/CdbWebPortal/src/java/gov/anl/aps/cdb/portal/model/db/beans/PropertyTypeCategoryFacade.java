@@ -62,7 +62,7 @@ public class PropertyTypeCategoryFacade extends CdbEntityFacade<PropertyTypeCate
                     .setParameter("domainName", domainName)
                     .getResultList();
 
-            if (ids != null) {
+            if (ids != null && ids.size() > 0) {
                 return (List<PropertyTypeCategory>) em.createNamedQuery("PropertyTypeCategory.findByIds")
                         .setParameter("ids", ids)
                         .getResultList();
