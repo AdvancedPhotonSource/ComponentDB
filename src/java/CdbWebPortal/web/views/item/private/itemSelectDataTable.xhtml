@@ -82,6 +82,7 @@ See LICENSE file.
     <p:remoteCommand name="#{entityTypeName}ItemSelectionMade#{viewName}"
                      onstart="PF('loadingDialog').show();"
                      update="#{updateTarget}"
+                     process="#{updateTarget}"
                      immediate="#{immediateUpdate}"
                      oncomplete="PF('loadingDialog').hide();">
         <f:setPropertyActionListener rendered="#{selectionTarget != null}"
@@ -93,6 +94,7 @@ See LICENSE file.
     <p:remoteCommand name="#{entityTypeName}ItemSelectionMadeWithReset#{viewName}"
                      onstart="PF('loadingDialog').show();"
                      update="#{updateTarget}" 
+                     process="#{updateTarget}"
                      immediate="#{immediateUpdate}"
                      oncomplete="PF('loadingDialog').hide();">
         <f:setPropertyActionListener rendered="#{selectionTarget != null}"

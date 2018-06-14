@@ -92,7 +92,7 @@ public class UserInfo extends SettingEntity implements Serializable {
     private List<PropertyValue> propertyValueList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo")
     private List<UserRole> userRoleList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
     private List<UserSetting> userSettingList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
     private List<PropertyValueHistory> propertyValueHistoryList;

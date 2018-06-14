@@ -243,7 +243,7 @@ public class PdmLinkDrawingBean implements Serializable {
      *
      * @param onSuccessExecute command on UI to be executed on success. 
      */
-    public void createCatalogItemFromDrawingNumber(String onSuccessExecute) {
+    public String createCatalogItemFromDrawingNumber() {
         ItemDomainCatalogController itemDomainCatalogController = getItemDomainCatalogController();
         generateComponentInfo(itemDomainCatalogController);
         
@@ -263,7 +263,7 @@ public class PdmLinkDrawingBean implements Serializable {
                         newCatalogItem.setEntityTypeList(entityTypeList);
                     } catch (CdbException ex) {
                         SessionUtility.addErrorMessage("Error", "Could not set entity type to: " + entityType);
-                        return;
+                        return null;
                     }
                     break;
                 }                
@@ -274,7 +274,7 @@ public class PdmLinkDrawingBean implements Serializable {
             } catch (CdbException ex) {
                 SessionUtility.addErrorMessage("PDMLink drawing exists", 
                         "An item with model number of " + pdmLinkComponent.getModelNumber() + " already exists.");
-                return;
+                return null;
             }                                               
 
             getPdmPropertyType();
@@ -314,10 +314,11 @@ public class PdmLinkDrawingBean implements Serializable {
                 }
             }
             itemDomainCatalogController.setCurrent(newCatalogItem);
-            RequestContext.getCurrentInstance().execute(onSuccessExecute);
+            return "simpleCreate?faces-redirect=true";            
         } else {
             showErrorMessage("No pdmLink drawing information was generated");
         }
+        return null; 
     }
 
     public ItemDomainCatalogController getItemDomainCatalogController() {

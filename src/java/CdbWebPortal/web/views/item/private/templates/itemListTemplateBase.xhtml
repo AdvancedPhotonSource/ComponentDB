@@ -25,12 +25,16 @@ See LICENSE file.
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
 
     <ui:define name="pageTitle">: #{entityController.itemListPageTitle}</ui:define>
-    
+
     <ui:define name="middleCenter">
         <h:form id="#{entityTypeName}ListForm" rendered="#{pageRendered}">  
             <p:outputPanel>
                 <div class="pageTitle">
-                    <h1>#{entityController.itemListPageTitle}</h1>
+                    <h1>
+                        <ui:insert name="pageHeaderTitle">
+                            #{entityController.itemListPageTitle}
+                        </ui:insert>
+                    </h1>
                     <ui:insert name="itemListPageEmphasizedContentBelowTitle" />
                 </div>                
 
@@ -40,17 +44,17 @@ See LICENSE file.
                     <p:outputPanel>
                         <ui:insert name="listActionButtons" />
                     </p:outputPanel>
-                    
+
                     <h:panelGroup>
                         <ui:insert name="listDataTable" />
                     </h:panelGroup>
                 </p:outputPanel>
-                
+
                 <p:outputPanel rendered="#{entitySettingObject.displayItemListTreeView}">
                     <p:outputPanel>
                         <ui:insert name="treeListActionButtons" />
                     </p:outputPanel>
-                    
+
                     <h:panelGroup>
                         <ui:insert name="listTreeTable" />
                     </h:panelGroup>
@@ -61,7 +65,7 @@ See LICENSE file.
                 <ui:insert name="customizeDisplayDialog"/>
 
                 <ui:insert name="infoActionDialogs" />
-                
+
                 <ui:insert name="additionalListSupport" />
 
                 <ui:insert name="itemCloneDialog" />

@@ -36,7 +36,7 @@ See LICENSE file.
 
     <ui:define name="itemElements">
         <p:tab title="Elements"
-               rendered="#{entityController.entityDisplayItemElements}">
+               rendered="#{entityController.renderItemElementList}">
             <ui:insert name="itemElementsContent">
                 <ui:include src="../../../itemElement/private/itemElementEditList.xhtml" />
             </ui:insert>            

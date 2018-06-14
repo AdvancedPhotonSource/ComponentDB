@@ -7,9 +7,9 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-    
-    <ui:include src="itemDomainMachineDesignCreatedFromTemplateItemListDataTable.xhtml"/>     
-    
+
+    <p:dataTable value="#{entityController.itemsCreatedFromCurrentTemplateItem}"
+                 var="itemListObject">
+        <ui:include src="itemListObject.xhtml" />
+    </p:dataTable>
 </ui:composition>
-
-

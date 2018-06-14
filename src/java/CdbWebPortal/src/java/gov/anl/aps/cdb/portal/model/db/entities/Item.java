@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -83,6 +84,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl WHERE i.domain.name = :domainName and ipl.name = :projectName ORDER BY i.derivedFromItem DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityType",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName"),
+    @NamedQuery(name = "Item.findByDomainNameAndExcludeEntityType",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name != :entityTypeName"),
     @NamedQuery(name = "Item.findByDomainNameOderByQrId",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainAndDerivedEntityTypeOrderByQrId",
@@ -233,6 +236,8 @@ public class Item extends CdbDomainEntity implements Serializable {
     
     private transient List<ItemType> availableItemTypes = null;
     private transient List<ItemCategory> lastKnownItemCategoryList = null;
+    
+    private transient Boolean isItemTemplate = null;
 
     public Item() {
     }
@@ -981,6 +986,27 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setItemAvaliableConnectorsList(List<Connector> itemAvaliableConnectorsList) {
         this.itemAvaliableConnectorsList = itemAvaliableConnectorsList;
+    }
+    
+    public Boolean getIsItemTemplate() {
+        if (isItemTemplate == null) {
+            isItemTemplate = isItemTemplate(this);
+        }
+        return isItemTemplate;
+    }
+
+    public static boolean isItemTemplate(Item item) {
+        if (item != null) {
+            List<EntityType> entityTypeList = item.getEntityTypeList();
+            if (entityTypeList != null) {
+                for (EntityType entityType : entityTypeList) {
+                    if (entityType.getName().equals(EntityTypeName.template.getValue())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @Override

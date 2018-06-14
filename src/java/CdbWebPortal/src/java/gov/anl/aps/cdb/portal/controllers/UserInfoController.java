@@ -212,6 +212,16 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
             sessionUser.setUserSettingList(selectedUser.getUserSettingList());
         }
     }
+    
+    public void resetAllSettingsForCurrentUser() {
+        getCurrent().getUserSettingList().clear();         
+        
+        //Save new settings 
+        saveSettingListForSessionUser();
+        
+        // Load default settings 
+        SettingController.getInstance().loadSessionUser(current);
+    }
 
     public void saveSettingListForSessionUser() {
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();

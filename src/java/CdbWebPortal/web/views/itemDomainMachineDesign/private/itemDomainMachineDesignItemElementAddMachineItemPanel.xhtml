@@ -43,8 +43,8 @@ See LICENSE file.
         <ui:include src="../../item/private/itemSelectDataTable.xhtml">
             <ui:param name="viewName" value="templateSelection" />
             <ui:param name="updateTarget" value="#{addMachineDesignItemUpdateTarget}" />
-            <ui:param name="selectionValue" value="#{itemDomainMachineDesignController.templateForElement}" />
-            <ui:param name="selectionTarget" value="#{itemDomainMachineDesignController.templateForElement}" />
+            <ui:param name="selectionValue" value="#{itemDomainMachineDesignController.templateToCreateNewItem}" />
+            <ui:param name="selectionTarget" value="#{itemDomainMachineDesignController.templateToCreateNewItem}" />
             <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
             <ui:param name="selectDataModel" value="#{itemDomainMachineDesignController.machineDesignTemplatesSelectionList}" />
             <ui:param name="additionalSelectionMadeRemoteCommands" value="machineDesignElementContainedItemSelectionMade();" />

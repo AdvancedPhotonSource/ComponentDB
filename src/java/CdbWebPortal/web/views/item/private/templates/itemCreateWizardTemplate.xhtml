@@ -14,13 +14,13 @@ See LICENSE file.
     <!--
         Please define entityController
     -->
-    
+
     <ui:define name="enforcedPropertyTypesTab">
         <ui:param name="entityEnforcedPropertyController"
                   value="#{entityController.itemEnforcedPropertiesController}" />
         <p:tab id="enforcedPropertyTypesTab"
-            title="Necesary Properties"
-            rendered="#{resources.EnabledEnforcedPropertiesForInventoryOfCatalogItem and entityEnforcedPropertyController.itemHasEditableEnforcedProperties}">
+               title="Necesary Properties"
+               rendered="#{resources.EnabledEnforcedPropertiesForInventoryOfCatalogItem and entityEnforcedPropertyController.itemHasEditableEnforcedProperties}">
             <ui:include src="#{resources.EnabledEnforcedPropertiesForInventoryOfCatalogItem 
                                ? '../../../itemEnforcedProperties/private/itemEnforcedPropertyConfigurationPanel.xhtml' 
                                : '../../../common/private/commonEmptyPage.xhtml' }" />            
@@ -87,8 +87,29 @@ See LICENSE file.
                         </ui:insert>
                     </p:outputPanel>
 
+                    <h:outputText value="Template"
+                                  rendered="#{entityController.displayCreatedFromTemplateForCurrent}"/>
+                    <p:outputPanel rendered="#{entityController.displayCreatedFromTemplateForCurrent}">
+                        <h:outputText id="templateTitleOutputText"
+                                      value="#{entityController.templateToCreateNewItem} " />
+                        <p:commandButton value="Use Template"
+                                         process="#{entityTypeName}useItemTemplateDialog"
+                                         update="#{entityTypeName}useItemTemplateDialog"
+                                         icon="ui-icon ui-icon-template"
+                                         oncomplete="PF('#{entityTypeName}useItemTemplateDialogWidget').show()"/>
+                    </p:outputPanel>
+                    
+                    <ui:include src="../templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
+                        <ui:param name="helpFragmentText"
+                                  value="Optional. A template to use for the creation of this new item." />
+                        <ui:param name="rendered"
+                                  value="#{entityController.displayCreatedFromTemplateForCurrent}" /> 
+                    </ui:include>
+
                     <ui:insert name="additionalBasicInfo" />
                 </p:panelGrid>
+                
+                <ui:include src="../itemTemplateSelectionDialog.xhtml" /> 
             </p:panel>
         </p:tab>
     </ui:define>
@@ -114,7 +135,7 @@ See LICENSE file.
                             <ui:include src="../templateDefaults/itemFieldHelpFragments/itemItemProject.xhtml" />
                         </ui:insert>
                     </p:outputPanel>
-                    
+
                     <ui:include src="../templateDefaults/itemFieldLabels/itemEntityType.xhtml"/>
                     <ui:include src="../templateDefaults/itemFieldEditValues/itemEntityType.xhtml"/>
                     <p:outputPanel rendered="#{entityController.entityDisplayItemEntityTypes}">

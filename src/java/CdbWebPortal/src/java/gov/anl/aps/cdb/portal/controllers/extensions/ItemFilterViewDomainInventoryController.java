@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
@@ -17,6 +18,7 @@ import gov.anl.aps.cdb.portal.view.objects.FilterViewResultItem;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.ListDataModel;
 import javax.inject.Named;
@@ -33,6 +35,9 @@ public class ItemFilterViewDomainInventoryController extends ItemFilterViewContr
     protected ListDataModel filterViewLocationDataModel = null;
     protected ItemDomainLocation filterViewLocationItemLoaded = null;
     protected boolean filterViewLocationDataModelLoaded = false;
+    
+    @EJB
+    private ItemDomainLocationFacade itemDomainLocationFacade; 
 
     ItemDomainInventoryController itemDomainController = null;
 
@@ -45,6 +50,14 @@ public class ItemFilterViewDomainInventoryController extends ItemFilterViewContr
     }
 
     @Override
+    public void processPreRenderFilterViewPage() {
+        super.processPreRenderFilterViewPage();
+
+        filterViewLocationDataModelLoaded = false;
+        filterViewLocationDataModel = null;
+    }
+
+    @Override
     protected void filterViewItemProjectChanged() {
         super.filterViewItemProjectChanged();
         filterViewLocationDataModelLoaded = false;
@@ -54,7 +67,7 @@ public class ItemFilterViewDomainInventoryController extends ItemFilterViewContr
         if (filterViewLocationDataModel == null) {
             return true;
         }
-        if (filterViewLocationDataModelLoaded) {
+        if (!filterViewLocationDataModelLoaded) {
             return true;
         }
         if (filterViewLocationItemLoaded != null) {
@@ -62,13 +75,15 @@ public class ItemFilterViewDomainInventoryController extends ItemFilterViewContr
                 return true;
             }
         } else // last is null but new is not. 
-         if (newLocationItem != null) {
+        if (newLocationItem != null) {
+            if (!newLocationItem.equals(filterViewLocationItemLoaded)) {
                 return true;
             }
+        }
         return false;
     }
 
-    public void updateFilterViewLocationDataModelReloadStatus(ItemDomainLocation lastLocationLoaded) {
+    public void updateFilterViewLocationDataModelLoadedStatus(ItemDomainLocation lastLocationLoaded) {
         filterViewLocationDataModelLoaded = true;
         filterViewLocationItemLoaded = lastLocationLoaded;
     }
@@ -79,7 +94,12 @@ public class ItemFilterViewDomainInventoryController extends ItemFilterViewContr
         if (isFilterViewLocationDataModelNeedReloading(selection)) {
             List<ItemDomainInventory> itemList = new ArrayList<>();
             ItemProject currentItemProject = ItemProjectController.getSelectedItemProject();
+           
+            // Update the location entity             
             if (selection != null) {
+                selection = itemDomainLocationFacade.find(selection.getId()); 
+            }
+            if (selection != null) {                
                 itemList.addAll(ItemDomainLocationController.getAllItemsLocatedInHierarchy(selection));
                 if (currentItemProject != null) {
                     List<Item> itemsToRemove = new ArrayList<>();
@@ -95,6 +115,7 @@ public class ItemFilterViewDomainInventoryController extends ItemFilterViewContr
                 itemList = getItemDbFacade().findByFilterViewItemProjectAttributes(currentItemProject, getDefaultDomainName());
             }
             filterViewLocationDataModel = createFilterViewListDataModel((List<Item>) (List<?>) itemList);
+            updateFilterViewLocationDataModelLoadedStatus(selection);
         }
 
         return filterViewLocationDataModel;
