@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
@@ -17,8 +16,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
-import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
@@ -49,8 +46,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private Boolean machineDesignItemCreateFromTemplate = null;
     private Item inventoryForElement = null;
     private Item catalogForElement = null;
-    private Item originalForElement = null;
-    private ItemDomainMachineDesign templateForElement = null;
+    private Item originalForElement = null;    
     protected DataModel installedInventorySelectionForCurrentElement;
     protected DataModel machineDesignTemplatesSelectionList;
     private DataModel topLevelMachineDesignSelectionList;
@@ -62,10 +58,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private boolean displayCreateMachineDesignFromTemplateContent = false;
     // </editor-fold>
 
-    private List<String> selectedListDisplayOptions = null;
-    private boolean templateRelationshipInfoLoaded = false;
-    private Item createdFromTemplateForCurrentItem = null;
-    private List<Item> machineDesignItemsCreatedFromCurrent = null;
+    private List<String> selectedListDisplayOptions = null;    
     
     // <editor-fold defaultstate="collapsed" desc="Dual list view configuration variables ">
     private TreeNode selectedItemInListTreeTable = null;
@@ -96,11 +89,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     public boolean getCurrentHasInventoryItem() {
         return !isCurrentItemTemplate();
-    }
-
-    public boolean isCurrentItemTemplate() {
-        return current.getIsItemTemplate();
-    }
+    }  
 
     public boolean isItemMachineDesignAndTemplate(Item item) {
         if (item instanceof ItemDomainMachineDesign) {
@@ -536,50 +525,8 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         return newCatalogItemsInMachineDesignModel;
     }
     
-    // </editor-fold>
-
-    private String getMachineDesignTemplateRelationshipName() {
-        return ItemElementRelationshipTypeNames.machineDesignTemplate.getValue();
-    }
-
-    public List<Item> getMachineDesignItemsCreatedFromCurrent() {
-        if (!templateRelationshipInfoLoaded) {
-            if (isCurrentItemTemplate()) {
-                if (current != null) {
-                    String machineDesignTemplateRelationshipTypeName = getMachineDesignTemplateRelationshipName();
-                    machineDesignItemsCreatedFromCurrent = new ArrayList<>();
-
-                    for (ItemElementRelationship ier : current.getItemElementRelationshipList1()) {
-                        if (ier.getRelationshipType().getName().equals(machineDesignTemplateRelationshipTypeName)) {
-                            Item parentItem = ier.getFirstItemElement().getParentItem();
-                            machineDesignItemsCreatedFromCurrent.add(parentItem);
-                        }
-                    }
-                }
-                templateRelationshipInfoLoaded = true;
-            }
-        }
-        return machineDesignItemsCreatedFromCurrent;
-    }
-
-    public Item getCreatedFromTemplateForCurrentItem() {
-        if (!templateRelationshipInfoLoaded) {
-            if (!isCurrentItemTemplate()) {
-                if (current != null) {
-                    String machineDesignTemplateRelationshipTypeName = getMachineDesignTemplateRelationshipName();
-                    for (ItemElementRelationship ier : current.getItemElementRelationshipList()) {
-                        if (ier.getRelationshipType().getName().equals(machineDesignTemplateRelationshipTypeName)) {
-                            createdFromTemplateForCurrentItem = ier.getSecondItemElement().getParentItem();
-                        }
-                    }
-
-                }
-                templateRelationshipInfoLoaded = true;
-            }
-        }
-        return createdFromTemplateForCurrentItem;
-    }
-
+    // </editor-fold>    
+    
     public boolean verifyValidTemplateName(String templateName, boolean printMessage) {
         boolean validTitle = false;
         if (templateName.contains("{")) {
@@ -728,7 +675,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     public void prepareCreateMachineDesignFromTemplate() {
         resetItemElementEditVariables();
         displayCreateMachineDesignFromTemplateContent = true;
-        templateForElement = currentEditItemElement.getMachineDesignItem();
+        templateToCreateNewItem = currentEditItemElement.getMachineDesignItem();
         generateTemplateForElementMachineDesignNameVars();
     }
 
@@ -859,7 +806,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         inventoryForElement = null;
         catalogForElement = null;
         inventoryForElement = null;
-        templateForElement = null;
+        templateToCreateNewItem = null;
         machineDesignTemplatesSelectionList = null;
         topLevelMachineDesignSelectionList = null;
         machineDesignNameList = null;
@@ -887,7 +834,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                         currentEditItemElementSaveButtonEnabled = true;
                     }
                 } else if (machineDesignItemCreateFromTemplate) {
-                    if (templateForElement != null) {
+                    if (templateToCreateNewItem != null) {
                         generateTemplateForElementMachineDesignNameVars();
                     }
                 }
@@ -896,7 +843,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     }
 
     private void generateTemplateForElementMachineDesignNameVars() {
-        String name = templateForElement.getName();
+        String name = templateToCreateNewItem.getName();
         int firstVar = name.indexOf('{');
         int secondVar;
 
@@ -980,21 +927,14 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         cloneProperties = true;
         cloneCreateItemElementPlaceholders = false;
 
-        ItemDomainMachineDesign clone = (ItemDomainMachineDesign) templateForElement.clone();
-        cloneCreateItemElements(clone, templateForElement, true);
+        ItemDomainMachineDesign clone = (ItemDomainMachineDesign) templateToCreateNewItem.clone();
+        cloneCreateItemElements(clone, templateToCreateNewItem, true);
         clone.setName(machineDesignName);
 
-        RelationshipType templateRelationship
-                = relationshipTypeFacade.findByName(getMachineDesignTemplateRelationshipName());
-
-        // Create item element relationship between the template and the clone 
-        ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
-        itemElementRelationship.setRelationshipType(templateRelationship);
-        itemElementRelationship.setFirstItemElement(clone.getSelfElement());
-        itemElementRelationship.setSecondItemElement(templateForElement.getSelfElement());
-
-        clone.setItemElementRelationshipList(new ArrayList<>());
-        clone.getItemElementRelationshipList().add(itemElementRelationship);
+        addCreatedFromTemplateRelationshipToItem(clone);
+        
+        // All template relationships actions completed, no need to redo them. 
+        templateToCreateNewItem = null; 
 
         clone.setEntityTypeList(new ArrayList<>());
         currentEditItemElement.setContainedItem(clone);
@@ -1050,14 +990,6 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     public void setCatalogForElement(Item catalogForElement) {
         this.catalogForElement = catalogForElement;
-    }
-
-    public ItemDomainMachineDesign getTemplateForElement() {
-        return templateForElement;
-    }
-
-    public void setTemplateForElement(ItemDomainMachineDesign templateForElement) {
-        this.templateForElement = templateForElement;
     }
 
     public boolean isDisplayCreateMachineDesignFromTemplateContent() {
@@ -1134,11 +1066,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     @Override
     protected void resetVariablesForCurrent() {
-        super.resetVariablesForCurrent();
-
-        createdFromTemplateForCurrentItem = null;
-        templateRelationshipInfoLoaded = false;
-        machineDesignItemsCreatedFromCurrent = null;
+        super.resetVariablesForCurrent();       
 
         resetItemElementEditVariables();
     }
@@ -1235,6 +1163,11 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     @Override
     public boolean getEntityDisplayItemEntityTypes() {
+        return true;
+    }
+    
+    @Override
+    public boolean getEntityDisplayTemplates() {
         return true;
     }
 
