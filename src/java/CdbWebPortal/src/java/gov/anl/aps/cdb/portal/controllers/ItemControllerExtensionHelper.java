@@ -530,5 +530,37 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     public List<PropertyTypeCategory> getRelevantPropertyTypeCategories() {
         return getItemController().getRelevantPropertyTypeCategories(); 
     }
+    
+    public DataModel getTemplateItemsListDataModel() {
+        return getItemController().getTemplateItemsListDataModel(); 
+    }
+    
+     public Item getTemplateToCreateNewItem() {
+        return getItemController().getTemplateToCreateNewItem();
+    }
+
+    public void setTemplateToCreateNewItem(Item templateToCreateNewItem) {
+        getItemController().setTemplateToCreateNewItem(templateToCreateNewItem);
+    }
+    
+    public void completeSelectionOfTemplate() {
+        getItemController().completeSelectionOfTemplate();
+    }
+    
+    public boolean getDisplayCreatedFromTemplateForCurrent() {
+        return getItemController().getDisplayCreatedFromTemplateForCurrent();
+    }
+    
+    public boolean getDisplayCreatedFromCurrentItemList() {
+        return getItemController().getDisplayCreatedFromCurrentItemList(); 
+    }
+    
+    public Item getCreatedFromTemplateForCurrentItem() {
+        return getItemController().getCreatedFromTemplateForCurrentItem();
+    }
+    
+    public List<Item> getItemsCreatedFromCurrentTemplateItem() {
+        return getItemController().getItemsCreatedFromCurrentTemplateItem(); 
+    }
 
 }
