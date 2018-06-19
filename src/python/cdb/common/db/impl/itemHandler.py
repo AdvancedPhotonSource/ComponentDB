@@ -214,7 +214,7 @@ class ItemHandler(CdbDbEntityHandler):
             raise ObjectNotFound('No %s with name: %s, item identifier 1: %s, item identifier 2: %s in domain id %s exists.'
                                  % (entityDisplayName, name, itemIdentifier1, itemIdentifier1, domainId))
 
-    def addItem(self, session, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
+    def addItem(self, session, domainName, name, createdByUserId, ownerUserId, ownerGroupId, itemProjectName,
                 itemIdentifier1 = None, itemIdentifier2 = None, qrId = None, description = None,
                 isGroupWriteable=True, createdOnDataTime=None, lastModifiedOnDateTime=None,
                 derivedFromItemId=None, entityTypeNames=None):
@@ -223,6 +223,10 @@ class ItemHandler(CdbDbEntityHandler):
         entityInfoArgs = (createdByUserId, ownerUserId, ownerGroupId, isGroupWriteable, createdOnDataTime, lastModifiedOnDateTime)
 
         domain = self.domainHandler.findDomainByName(session, domainName)
+        # Verify valid project
+        if itemProjectName is None:
+            raise InvalidArgument("Please specify an item project for the new item")
+        self.getItemProjectByName(session, itemProjectName)
         try:
             if self.getItemByUniqueAttributes(session, domain.id, name, itemIdentifier1, itemIdentifier2, derivedFromItemId):
                 raise ObjectAlreadyExists("Item with attributes already exists: "
@@ -230,6 +234,14 @@ class ItemHandler(CdbDbEntityHandler):
                                           % (domain.name, name, itemIdentifier1, itemIdentifier2, derivedFromItemId))
         except ObjectNotFound:
             pass
+
+        if (itemDomain.INVENTORY_DOMAIN_NAME == domainName):
+            if derivedFromItemId is None:
+                raise InvalidArgument("To create an inventory item, the derived from item id must be provided.")
+            else:
+                derivedItem = self.getItemById(session, derivedFromItemId)
+                if not derivedItem.domain.name == itemDomain.CATALOG_DOMAIN_NAME:
+                    raise InvalidArgument("To create an inventory item, the derived from item id must be of a catalog item.")
 
         # Create item
         dbItem = Item(name=name)
@@ -256,6 +268,7 @@ class ItemHandler(CdbDbEntityHandler):
             elif type(entityTypeNames) is str:
                 self.addItemEntityType(session, None, entityTypeNames, dbItem)
 
+        self.addItemItemProject(session, itemProjectName, dbItem=dbItem)
 
         return dbItem
 
@@ -483,8 +496,12 @@ class ItemHandler(CdbDbEntityHandler):
 
         return dbItemItemCategory
 
-    def addItemItemProject(self, session, itemId, itemProjectName):
-        dbItem = self.getItemById(session, itemId)
+    def addItemItemProject(self, session, itemProjectName, dbItem=None, itemId=None):
+        if itemId is None and dbItem is None:
+            raise InvalidArgument("item id must be provided.")
+
+        if dbItem is None:
+            dbItem = self.getItemById(session, itemId)
 
         dbProject = self.getItemProjectByName(session, itemProjectName)
 

@@ -129,8 +129,8 @@ class ItemSessionController(CdbSessionController):
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
     @CdbSessionController.execute
-    def addItem(self, domainName, name, ownerUserId=None, ownerGroupId=None,
-                itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=None, entityTypeNames = None):
+    def addItem(self, domainName, name, itemProjectName=None, ownerUserId=None, ownerGroupId=None, itemIdentifier1=None, itemIdentifier2=None,
+                qrId=None, description=None, isGroupWriteable=None, entityTypeNames = None, derivedFromItemId=None):
         if not domainName:
             raise InvalidRequest("Invalid domain name provided")
         if not name:
@@ -178,6 +178,13 @@ class ItemSessionController(CdbSessionController):
             if entityTypeNames[0] == '[':
                 entityTypeNames = eval(entityTypeNames)
             optionalParameters.update({'entityTypeNames': entityTypeNames})
+
+        if derivedFromItemId is not None:
+            optionalParameters.update({'derivedFromItemId': derivedFromItemId})
+
+        if itemProjectName is not None:
+            itemProjectName = Encoder.decode(itemProjectName)
+            optionalParameters.update({'itemProjectName': itemProjectName})
 
         response = self.itemControllerImpl.addItem(domainName, name, createdByUserId, ownerUserId, ownerGroupId, **optionalParameters)
         self.logger.debug('Returning new item: %s' % (response))

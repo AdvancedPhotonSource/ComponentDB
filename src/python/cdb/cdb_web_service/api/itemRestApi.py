@@ -235,8 +235,8 @@ class ItemRestApi(CdbRestApi):
         responseData =self.sendRequest(url=url, method='GET')
         return self.toCdbObjectList(responseData, Domain)
 
-    def addItem(self, domainName, name, itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None,
-                ownerUserId=None, ownerGroupId=None, isGroupWriteable=None, entityTypeNames=None):
+    def addItem(self, domainName, name, itemProjectName=None, itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None,
+                ownerUserId=None, ownerGroupId=None, isGroupWriteable=None, entityTypeNames=None, derivedFromItemId=None):
         if domainName is None or not len(domainName):
             raise InvalidRequest("domainName must be provided")
         
@@ -275,6 +275,13 @@ class ItemRestApi(CdbRestApi):
         if entityTypeNames is not None:
             entityTypeNames = Encoder.encode(str(entityTypeNames))
             url = self._appendUrlParameter(url, "entityTypeNames", entityTypeNames)
+
+        if derivedFromItemId is not None:
+            url = self._appendUrlParameter(url, "derivedFromItemId", derivedFromItemId)
+
+        if itemProjectName is not None:
+            itemProjectName = Encoder.encode(itemProjectName)
+            url = self._appendUrlParameter(url, 'itemProjectName', itemProjectName)
             
         responseData = self.sendSessionRequest(url, method='POST')
 

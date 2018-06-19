@@ -215,7 +215,7 @@ class ItemDbApi(CdbDbApi):
         return dbRelationshipType.getCdbObject()
 
     @CdbDbApi.executeTransaction
-    def addItem(self, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
+    def addItem(self, domainName, name, createdByUserId, ownerUserId, ownerGroupId, itemProjectName,
                 itemIdentifier1 = None, itemIdentifier2 = None, qrId = None, description = None,
                 isGroupWriteable=True, createdOnDataTime=None, lastModifiedOnDateTime=None,
                 derivedFromItemId=None, entityTypeNames=None, **kwargs):
@@ -239,7 +239,7 @@ class ItemDbApi(CdbDbApi):
         :return: (CdbObject) newly added record.
         """
         session = kwargs['session']
-        dbItem = self.itemHandler.addItem(session, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
+        dbItem = self.itemHandler.addItem(session, domainName, name, createdByUserId, ownerUserId, ownerGroupId, itemProjectName,
                                           itemIdentifier1, itemIdentifier2, qrId, description, isGroupWriteable,
                                           createdOnDataTime, lastModifiedOnDateTime, derivedFromItemId, entityTypeNames)
         return dbItem.getCdbObject()
@@ -472,7 +472,7 @@ class ItemDbApi(CdbDbApi):
         """
 
         session = kwargs['session']
-        dbItemCategory = self.itemHandler.addItemItemProject(session, itemId, itemProjectName)
+        dbItemCategory = self.itemHandler.addItemItemProject(session, itemProjectName, itemId=itemId)
         return dbItemCategory.getCdbObject()
 
     @CdbDbApi.executeTransaction
