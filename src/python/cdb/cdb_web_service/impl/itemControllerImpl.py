@@ -147,19 +147,21 @@ class ItemControllerImpl(CdbObjectManager):
     def getDomains(self):
         return self.itemDbApi.getDomains()
 
-    def addItem(self, domainName, name, createdByUserId, ownerUserId, ownerGroupId,
-                itemIdentifier1=None, itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=True, entityTypeNames=None):
+    def addItem(self, domainName, name, createdByUserId, ownerUserId, ownerGroupId, itemProjectName=None, itemIdentifier1=None,
+                itemIdentifier2=None, qrId=None, description=None, isGroupWriteable=True, entityTypeNames=None, derivedFromItemId=None):
         return self.itemDbApi.addItem(domainName=domainName,
                                       name=name,
                                       createdByUserId=createdByUserId,
                                       ownerUserId=ownerUserId,
                                       ownerGroupId=ownerGroupId,
+                                      itemProjectName=itemProjectName,
                                       itemIdentifier1=itemIdentifier1,
                                       itemIdentifier2=itemIdentifier2,
                                       qrId=qrId,
                                       description=description,
                                       isGroupWriteable=isGroupWriteable,
-                                      entityTypeNames=entityTypeNames)
+                                      entityTypeNames=entityTypeNames,
+                                      derivedFromItemId=derivedFromItemId)
 
     def getAvailableInventoryItemStatuses(self):
         return self.itemDbApi.getAvailableInventoryItemStatuses()
