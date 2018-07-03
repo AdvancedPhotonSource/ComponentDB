@@ -266,7 +266,7 @@ public class CdbRestApi {
      * @return HTTP response as a string
      * @throws CdbException in case of any errors
      */
-    private static String readHttpResponse(HttpURLConnection connection) throws CdbException {
+    protected static String readHttpResponse(HttpURLConnection connection) throws CdbException {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(
                     (connection.getInputStream())));
