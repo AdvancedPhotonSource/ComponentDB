@@ -5,12 +5,11 @@
 package gov.anl.aps.cdb.portal.plugins.support.docManagament;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.api.DocumentManagamentApi;
-import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.Container;
+import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.Document;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import org.apache.log4j.Logger;
 
@@ -18,22 +17,28 @@ import org.apache.log4j.Logger;
  *
  * @author djarosz
  */
-public class DocManagamentContainerPropertyTypeHandler extends AbstractPropertyTypeHandler {
+public class DocManagamentDocumentPropertyTypeHandler extends AbstractPropertyTypeHandler {
+
+    public static final String HANDLER_NAME = "DMS Document";
+
+    private static final String PROPERTY_EDIT_PAGE = "dmsDocumentPropertyValueEditPanel";
     
-    public static final String HANDLER_NAME = "DMS Container";
-    public static final String INFO_ACTION_COMMAND = "updateDocManagamentInfoDialog();";
-    
-    private static final String PROPERTY_EDIT_PAGE = "dmsContainerPropertyValueEditPanel";
-    
-    private static final Logger logger = Logger.getLogger(DocManagamentContainerPropertyTypeHandler.class.getName());
-    
+    public static final String INFO_ACTION_COMMAND = "updateDmsDocumentInfoDialog();";
+
+    private static final Logger logger = Logger.getLogger(DocManagamentDocumentPropertyTypeHandler.class.getName());
+
     protected DocumentManagamentApi api = null;
-    
-    public DocManagamentContainerPropertyTypeHandler() {                
-        super(HANDLER_NAME, DisplayType.HTTP_LINK);  
+
+    public DocManagamentDocumentPropertyTypeHandler() {
+        super(HANDLER_NAME);
         api = DocManagerPlugin.createNewDocumentManagamentApi();
     }
-    /*
+
+    @Override
+    public String getPropertyEditPage() {
+        return PROPERTY_EDIT_PAGE;
+    } 
+    
     @Override
     public void setInfoActionCommand(PropertyValue propertyValue) {
         propertyValue.setInfoActionCommand(INFO_ACTION_COMMAND);
@@ -43,7 +48,6 @@ public class DocManagamentContainerPropertyTypeHandler extends AbstractPropertyT
     public void setInfoActionCommand(PropertyValueHistory propertyValueHistory) {
         propertyValueHistory.setInfoActionCommand(INFO_ACTION_COMMAND);
     } 
-    */
 
     @Override
     public void setDisplayValue(PropertyValueHistory propertyValueHistory) {
@@ -53,38 +57,29 @@ public class DocManagamentContainerPropertyTypeHandler extends AbstractPropertyT
     @Override
     public void setDisplayValue(PropertyValue propertyValue) {
         propertyValue.setDisplayValue(getDisplayValue(propertyValue.getValue(), true));
-    } 
-
-    @Override
-    public void setTargetValue(PropertyValue propertyValue) {
-        propertyValue.setTargetValue(DocManagerPlugin.generateContainerUrl(propertyValue.getValue()));
-    } 
-
-    @Override
-    public void setTargetValue(PropertyValueHistory propertyValueHistory) {
-        propertyValueHistory.setTargetValue(DocManagerPlugin.generateContainerUrl(propertyValueHistory.getValue()));
     }
-    
+
     private String getDisplayValue(String value, Boolean showError) {
-         if (value.equals("")) {
+        if (value.equals("")) {
             return value;
         }
+        
         try {
-            Container container = api.getContainerById(Integer.valueOf(value));
-            return container.getDossierName(); 
+            Document document = api.getDocumentById(Integer.parseInt(value)); 
+            return document.getDocNumCode();
         } catch (CdbException ex) {
             logger.error(ex);
             if (showError) {
                 SessionUtility.addErrorMessage("Error", ex.getMessage());
             }
+        } catch (NumberFormatException ex) {
+           logger.error(ex);
+           if (showError) {
+               SessionUtility.addErrorMessage("Corrupted property value: " + value, "Try updating the property value and see if the issue persists.");
+           }
         }
+
         return value;
     }
-    
-    @Override
-    public String getPropertyEditPage() {
-        return PROPERTY_EDIT_PAGE;
-    }
 
-    
 }

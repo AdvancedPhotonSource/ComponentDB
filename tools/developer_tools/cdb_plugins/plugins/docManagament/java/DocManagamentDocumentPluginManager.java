@@ -12,19 +12,21 @@ import gov.anl.aps.cdb.portal.plugins.PluginManagerBase;
  *
  * @author djarosz
  */
-public class DocManagamentContainerPluginManager extends PluginManagerBase {                     
+public class DocManagamentDocumentPluginManager extends PluginManagerBase{        
 
     @Override
     public PropertyTypeHandlerInterface getPluginPropertyTypeHandler() {
         if (propertyTypeHandler == null) {
-            propertyTypeHandler = new DocManagamentContainerPropertyTypeHandler();
+            propertyTypeHandler = new DocManagamentDocumentPropertyTypeHandler();
         }
-        return propertyTypeHandler; 
+        return propertyTypeHandler;
     }
-    
+
     @Override
     public void performInfoActionLoad(PropertyValue propertyValue) {
-        super.performInfoActionLoad(propertyValue); 
-    }
-        
+        if (DocManagamentBean.getInstance().loadSelectedDocumentObjectByPropertyValue(propertyValue)) {
+            super.performInfoActionLoad(propertyValue); 
+        }
+    }    
+    
 }
