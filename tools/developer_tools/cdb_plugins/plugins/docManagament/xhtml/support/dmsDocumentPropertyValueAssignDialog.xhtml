@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+
+    <p:dialog widgetVar="dmsDocumentPropertyValueAssignDialogWidget"
+              id="dmsDocumentPropertyValueAssignDialog"
+              styleClass="viewTransparentBackgroundDialog"
+              header="DMS Document Selection"
+              resizable="false"
+              modal="true">
+
+        <p:outputPanel id="dmsDocumentPropertyValueAssignOutputPanel">
+
+            <h:inputText value="#{docManagamentBean.dmsDocumentSearchString}"/>
+            <p:commandButton id="dmsDocumentPropertySearchCommandButton"
+                             widgetVar="dmsDocumentPropertySearchCommandButtonWidget"
+                             icon="fa fa-search"
+                             update="dmsDocumentPropertyValueAssignOutputPanel"
+                             action="#{docManagamentBean.performQuickSearch()}"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide(); 
+                             PF('dmsDocumentPropertyValueAssignDialogWidget').initPosition()" />         
+
+            <br/>
+            <br/>
+
+            <p:outputPanel rendered="#{docManagamentBean.quickSearchDocumentResults != null}">
+                <p:dataTable id="dmsDocumentForPropertySelectionDataTable"
+                             value="#{docManagamentBean.quickSearchDocumentResults}"
+                             var="documentObject"
+                             selectionMode="single"
+                             rowKey="#{documentObject.documentId}"
+                             rows="10"
+                             selection="#{docManagamentBean.selectedDocument}"
+                             paginator="true">
+                    <ui:include src="dmsDocumentListDataObject.xhtml" />
+                </p:dataTable>                    
+            </p:outputPanel>
+        </p:outputPanel>
+
+        <f:facet name="footer">
+            <p:commandButton value="Select"
+                             icon="fa fa-check"
+                             onclick="dmsDocumentForPropertySelectionMade()"/>
+            <p:commandButton value="Close"
+                             icon="fa fa-close"
+                             oncomplete="PF('dmsDocumentPropertyValueAssignDialogWidget').hide()" />
+
+            <p:remoteCommand name="dmsDocumentForPropertySelectionMade"
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             action="#{docManagamentBean.performDocumentSelection('dmsDocumentForPropertySelectionMadeSuccess()')}"
+                             update="dmsDocumentForPropertySelectionDataTable"/>
+
+            <ui:param name="propertyValueObject"
+                      value="#{entityController.currentEditPropertyValue}" /> 
+
+            <p:remoteCommand name="dmsDocumentForPropertySelectionMadeSuccess"
+                             oncomplete="PF('dmsDocumentPropertyValueAssignDialogWidget').hide()"
+                             update="documentPropertyValueEditValuePanel#{propertyValueObject.viewUUID}"
+                             process="documentPropertyValueEditValuePanel#{propertyValueObject.viewUUID}"/> 
+
+        </f:facet>
+    </p:dialog>
+
+    <p:remoteCommand name="loadDmsDocumentPropertyValueAssignDialog"
+                     oncomplete="PF('dmsDocumentPropertyValueAssignDialogWidget').show()" />
+    
+</ui:composition>

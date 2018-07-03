@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="dmsDocumentInfoDialog" 
+              widgetVar="dmsDocumentInfoDialogWidget" 
+              header="DMS Document Information" 
+              modal="true"
+              resizable="false"
+              styleClass="viewTransparentBackgroundDialog">
+        
+        <p:outputPanel rendered="#{docManagamentBean.selectedDocumentObject != null}">
+            <ui:param name="documentObject"
+                      value="#{docManagamentBean.selectedDocumentObject}" /> 
+            <p:panelGrid columns="2">
+                
+                <h:outputLabel value="Full Number"
+                               styleClass="entityDataEmphasizedLabel"/>
+                <h:outputText value="#{documentObject.docNumCode}"
+                              styleClass="entityDataText"/>
+                
+                <h:outputLabel value="Document Title"
+                               styleClass="entityDataEmphasizedLabel"/>
+                <h:outputText value="#{documentObject.documentTitle}"
+                              styleClass="entityDataText"/>
+                
+                <h:outputLabel value="Document Owner"
+                               styleClass="entityDataEmphasizedLabel"/>
+                <h:outputText value="#{documentObject.owner.fullName}"
+                              styleClass="entityDataText"/>
+                
+                <h:outputLabel value="Project Id"
+                               styleClass="entityDataLabel"/>               
+                <h:outputText value="#{documentObject.projectId}"
+                              styleClass="entityDataText"/>
+                
+                <h:outputLabel value="Document Type"
+                               styleClass="entityDataLabel"/>
+                <h:outputText value="#{documentObject.docTypeId}"
+                              styleClass="entityDataText"/>
+                
+                <h:outputLabel value="System"
+                               styleClass="entityDataLabel"/>
+                <h:outputText value="#{documentObject.systemId}"
+                              styleClass="entityDataText"/>
+                
+                <h:outputLabel value="Location"
+                               styleClass="entityDataLabel"/>
+                <h:outputText value="#{documentObject.locationId}"
+                              styleClass="entityDataText"/>
+                
+                <h:outputLabel value="Collection"
+                               styleClass="entityDataLabel"/>
+                <h:outputText value="#{documentObject.collectionId}"
+                              styleClass="entityDataText"/>
+                
+                <h:outputLabel value="Document Identifier"
+                               styleClass="entityDataLabel"/>
+                <h:outputText value="#{documentObject.documentId}"
+                              styleClass="entityDataText"/>
+                
+            </p:panelGrid>
+        </p:outputPanel>
+        
+        <f:facet name="footer">
+            <p:commandButton icon="fa fa-close"
+                             value="Close"
+                             onclick="PF('dmsDocumentInfoDialogWidget').hide()" />
+        </f:facet>
+        
+    </p:dialog>
+    
+    <p:remoteCommand name="updateDmsDocumentInfoDialog" 
+                     update="dmsDocumentInfoDialog" 
+                     oncomplete="PF('dmsDocumentInfoDialogWidget').initPosition();
+                     PF('dmsDocumentInfoDialogWidget').show();"/>
+</ui:composition>
+
