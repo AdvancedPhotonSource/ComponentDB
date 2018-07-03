@@ -38,6 +38,8 @@ import org.primefaces.event.RowEditEvent;
 public abstract class CdbDomainEntityController<EntityType extends CdbDomainEntity, FacadeType extends CdbEntityFacade<EntityType>, DomainEntitySettingsObject extends CdbDomainEntitySettings> extends CdbEntityController<EntityType, FacadeType, DomainEntitySettingsObject> implements Serializable, ICdbDomainEntityController<EntityType> {
 
     private PropertyValue currentEditPropertyValue;
+    
+    private PropertyValueController propertyValueController; 
 
     @EJB
     private PropertyValueFacade propertyValueDbFacade;
@@ -152,6 +154,11 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     public void setCurrentEditPropertyValue(PropertyValue currentEditPropertyValue) {
         this.currentEditPropertyValue = currentEditPropertyValue;
+        // Update current or property value controller 
+        if (propertyValueController == null) {
+            propertyValueController = PropertyValueController.getInstance();
+        }
+        propertyValueController.setCurrent(currentEditPropertyValue);
     }
 
     public void restoreCurrentEditPropertyValueToOriginalState() {
