@@ -7,6 +7,8 @@ package gov.anl.aps.cdb.portal.plugins.support.docManagament;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.PropertyValueController;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.api.DocumentManagamentApi;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.BasicContainer;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.Collection;
@@ -28,10 +30,7 @@ import javax.inject.Named;
 @Named("docManagamentBean")
 public class DocManagamentBean implements Serializable {
 
-    private DocumentManagamentApi documentManagamentApi;
-
-    private String currentIFrameSrc = null;
-    private PropertyValue currentPropertyValue;
+    private DocumentManagamentApi documentManagamentApi;   
 
     private List<BasicContainer> containerList = null;
     private BasicContainer selectedContainer = null;
@@ -54,27 +53,15 @@ public class DocManagamentBean implements Serializable {
     public void init() {
         documentManagamentApi = DocManagerPlugin.createNewDocumentManagamentApi();
     }
+    
+    public String getDocManagamentSystemUrl() {
+        return DocManagerPlugin.getContextRootUrlProperty(); 
+    }
 
     public static DocManagamentBean getInstance() {
         return (DocManagamentBean) SessionUtility.findBean("docManagamentBean");
     }
-
-    public String getDialogHeaderText() {
-        String result = "";
-        if (currentPropertyValue != null) {
-            switch (currentPropertyValue.getPropertyType().getPropertyTypeHandler().getName()) {
-                case (DocManagamentCollectionPropertyTypeHandler.HANDLER_NAME):
-                    result += "DMS Collection: ";
-                    break;
-                case (DocManagamentContainerPropertyTypeHandler.HANDLER_NAME):
-                    result += "DMS Container: ";
-                    break;
-            }
-            result += currentPropertyValue.getDisplayValue();
-        }
-        return result;
-    }
-
+   
     public void performQuickSearch() {
         if (dmsDocumentSearchString != null && !dmsDocumentSearchString.equals("")) {
             try {
@@ -191,7 +178,10 @@ public class DocManagamentBean implements Serializable {
         PropertyValueController instance = PropertyValueController.getInstance();
         PropertyValue current = instance.getCurrent();
         current.setValue(value);
-        current.setDisplayValue(null);
+        current.setDisplayValue(null);       
+        PropertyTypeHandlerInterface handler = PropertyTypeHandlerFactory.getHandler(current);        
+        handler.setDisplayValue(current);
+        
         SessionUtility.executeRemoteCommand(onSuccessRemotecommand);
     }
 
@@ -206,11 +196,7 @@ public class DocManagamentBean implements Serializable {
         }
         return containerList;
     }
-
-    public String getCurrentIFrameSrc() {
-        return currentIFrameSrc;
-    }
-
+    
     public BasicContainer getSelectedContainer() {
         return selectedContainer;
     }
