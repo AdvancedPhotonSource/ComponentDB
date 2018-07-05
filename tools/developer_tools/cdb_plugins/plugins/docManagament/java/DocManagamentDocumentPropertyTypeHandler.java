@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.plugins.support.docManagament;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
@@ -30,7 +31,7 @@ public class DocManagamentDocumentPropertyTypeHandler extends AbstractPropertyTy
     protected DocumentManagamentApi api = null;
 
     public DocManagamentDocumentPropertyTypeHandler() {
-        super(HANDLER_NAME);
+        super(HANDLER_NAME, DisplayType.INFO_ACTION);
         api = DocManagerPlugin.createNewDocumentManagamentApi();
     }
 
