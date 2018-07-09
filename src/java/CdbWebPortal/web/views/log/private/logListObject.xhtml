@@ -20,7 +20,7 @@ See LICENSE file.
         <h:outputText value="#{logObject.id}"/>
     </p:column>
 
-    <p:column sortBy="#{logObject.enteredOnDateTime}" headerText="Time"
+    <p:column sortBy="#{logObject.enteredOnDateTime}" headerText="Entered Time"
               filterBy="#{logObject.enteredOnDateTime}" filterMatchMode="contains"
               filterValue="#{logSettingObject.filterByEnteredOnDateTime}"
               filterStyle="width:60px"
@@ -28,6 +28,42 @@ See LICENSE file.
               style="width:85px"
               rendered="#{logSettingObject.displayEnteredOnDateTime}">
         <h:outputText value="#{logObject.shortDisplayEnteredOnDateTime}"/>
+    </p:column>
+
+    <p:column sortBy="#{logObject.effectiveFromDateTime}"
+              filterBy="#{logObject.effectiveFromDateTime}"
+              filterable="#{filterable}" filterMatchMode="contains"
+              headerText="Date"
+              rendered="#{logSettingObject.displayEffectiveFromDateTime}">
+        <p:cellEditor>
+            <f:facet name="output">
+                <h:outputText value="#{logObject.effectiveFromDateTime}">
+                    <f:convertDateTime pattern="MM-dd-yyyy" />
+                </h:outputText>
+            </f:facet>
+            <f:facet name="input">
+                <p:calendar id="effectiveFromDate" 
+                            value="#{logObject.effectiveFromDateTime}" /> 
+            </f:facet>
+        </p:cellEditor>
+    </p:column>
+
+    <p:column sortBy="#{logObject.effectiveToDateTime}"
+              filterBy="#{logObject.effectiveToDateTime}"
+              filterable="#{filterable}" filterMatchMode="contains"
+              headerText="End Date"
+              rendered="#{logSettingObject.displayEffectiveToDateTime}">
+        <p:cellEditor>
+            <f:facet name="output">
+                <h:outputText value="#{logObject.effectiveToDateTime}">
+                    <f:convertDateTime pattern="MM-dd-yyyy" />
+                </h:outputText>
+            </f:facet>
+            <f:facet name="input">
+                <p:calendar id="effectiveToDate" 
+                            value="#{logObject.effectiveToDateTime}" /> 
+            </f:facet>
+        </p:cellEditor>
     </p:column>
 
     <p:column sortBy="#{logObject.enteredByUser.username}" headerText="User"
@@ -76,43 +112,7 @@ See LICENSE file.
                 <p:tooltip for="logEntry" value="Enter log entry text."/>
             </f:facet>
         </p:cellEditor>
-    </p:column>
-
-    <p:column sortBy="#{logObject.effectiveFromDateTime}"
-              filterBy="#{logObject.effectiveFromDateTime}"
-              filterable="#{filterable}" filterMatchMode="contains"
-              headerText="Effective From"
-              rendered="#{logSettingObject.displayEffectiveFromDateTime}">
-        <p:cellEditor>
-            <f:facet name="output">
-                <h:outputText value="#{logObject.effectiveFromDateTime}">
-                    <f:convertDateTime pattern="MM-dd-yyyy" />
-                </h:outputText>
-            </f:facet>
-            <f:facet name="input">
-                <p:calendar id="effectiveFromDate" 
-                            value="#{logObject.effectiveFromDateTime}" /> 
-            </f:facet>
-        </p:cellEditor>
-    </p:column>
-
-    <p:column sortBy="#{logObject.effectiveToDateTime}"
-              filterBy="#{logObject.effectiveToDateTime}"
-              filterable="#{filterable}" filterMatchMode="contains"
-              headerText="Effective To"
-              rendered="#{logSettingObject.displayEffectiveToDateTime}">
-        <p:cellEditor>
-            <f:facet name="output">
-                <h:outputText value="#{logObject.effectiveToDateTime}">
-                    <f:convertDateTime pattern="MM-dd-yyyy" />
-                </h:outputText>
-            </f:facet>
-            <f:facet name="input">
-                <p:calendar id="effectiveToDate" 
-                            value="#{logObject.effectiveToDateTime}" /> 
-            </f:facet>
-        </p:cellEditor>
-    </p:column>
+    </p:column>   
 
     <p:column style="width:35px"
               headerText="Attachments"

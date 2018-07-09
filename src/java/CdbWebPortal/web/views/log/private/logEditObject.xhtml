@@ -22,6 +22,18 @@ See LICENSE file.
         <h:outputText id="timestamp" value="#{logObject.shortDisplayEnteredOnDateTime}"/>
         <p:tooltip for="timestamp" value="Original timestamp cannot be modified."/>
     </p:column>
+    
+    <p:column headerText="Date"
+              sortBy="#{logObject.effectiveFromDateTime}">
+        <p:calendar id="effectiveFromDate"
+                        value="#{logObject.effectiveFromDateTime}" /> 
+    </p:column>
+    
+    <p:column headerText="End Date"
+              sortBy="#{logObject.effectiveToDateTime}">
+        <p:calendar id="effectiveToDate"
+                        value="#{logObject.effectiveToDateTime}" /> 
+    </p:column>
 
 
     <p:column sortBy="#{logObject.enteredByUser.username}" headerText="User">

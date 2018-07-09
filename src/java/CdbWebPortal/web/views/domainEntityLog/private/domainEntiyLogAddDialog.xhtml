@@ -24,11 +24,11 @@ See LICENSE file.
             <h:outputLabel for="logEntryValue" value="Log Entry" styleClass="entityDataEmphasizedLabel"/>
             <h:inputTextarea id="logEntryValue" value="#{logObject.text}"/>
             
-            <h:outputLabel for="effectiveFromDate" value="Log Effective from date" styleClass="entityDataEmphasizedLabel"/>
+            <h:outputLabel for="effectiveFromDate" value="Date" styleClass="entityDataEmphasizedLabel"/>
             <p:calendar id="effectiveFromDate"
                         value="#{logObject.effectiveFromDateTime}" /> 
             
-            <h:outputLabel for="effectiveToDate" value="Log Effective to date" styleClass="entityDataEmphasizedLabel"/>
+            <h:outputLabel for="effectiveToDate" value="End Date" styleClass="entityDataEmphasizedLabel"/>
             <p:calendar id="effectiveToDate" 
                         value="#{logObject.effectiveToDateTime}" /> 
 
