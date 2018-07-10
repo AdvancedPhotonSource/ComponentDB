@@ -81,6 +81,13 @@ public class FacesUtility {
         return false; 
     }
     
+    public boolean islistSizeOverMin(List<Object> someList, Integer min) {
+       if(someList != null) {
+           return someList.size() > min;
+       }
+       return false; 
+    }
+    
     public void setResetDataTable(DataTable dataTable) {
         dataTable.reset();
     }
