@@ -7,19 +7,27 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets">
     
+     <ui:param name="defaultPropertyValueUpdateTarget"
+              value="#{entityTypeName}PropertyEditListDataTable" />
+     
+     <ui:param name="propertyValueUpdateTarget"
+               value="#{propertyValueUpdateTarget != null 
+                        ? propertyValueUpdateTarget 
+                        : defaultPropertyValueUpdateTarget}"/>
+    
     <ui:include src="../support/dmsCollectionListPropertyValueAssignDialog.xhtml" >
         <ui:param name="updateTarget"
-                  value="#{entityTypeName}PropertyEditListDataTable" />
+                  value="#{propertyValueUpdateTarget}" />
     </ui:include>
     
     <ui:include src="../support/dmsContainerPropertyValueAssignDialog.xhtml">
         <ui:param name="updateTarget"
-                  value="#{entityTypeName}PropertyEditListDataTable" />
+                  value="#{propertyValueUpdateTarget}" />
     </ui:include>
     
     <ui:include src="../support/dmsDocumentPropertyValueAssignDialog.xhtml">
         <ui:param name="updateTarget"
-                  value="#{entityTypeName}PropertyEditListDataTable" />
+                  value="#{propertyValueUpdateTarget}" />
     </ui:include>
    
 
