@@ -54,6 +54,7 @@ from cdb.common.db.impl.permissionHandler import PermissionHandler
 class ItemHandler(CdbDbEntityHandler):
 
     ITEM_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status"
+    IMAGE_PROPERTY_TYPE_NAME = "Image"
 
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
@@ -593,6 +594,10 @@ class ItemHandler(CdbDbEntityHandler):
     def getAvailableItemStatuses(self, session):
         dbPropertyType = self.propertyTypeHandler.getPropertyTypeByName(session, self.ITEM_STATUS_PROPERTY_TYPE_NAME)
         return self.propertyTypeHandler.getAllowedPropertyTypeValuesById(session, dbPropertyType.id)
+
+    def addItemElementImageProperty(self, session, itemElementId, enteredByUserId, generatedName, fileName):
+        return self.addItemElementProperty(session, itemElementId, self.IMAGE_PROPERTY_TYPE_NAME, tag=fileName,
+                                    value=generatedName, enteredByUserId=enteredByUserId, allowInternal=True)
 
     def addItemElementProperty(self, session, itemElementId, propertyTypeName,
                                tag=None, value=None, units=None, description=None,

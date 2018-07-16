@@ -76,6 +76,15 @@ class ItemRouteDescriptor:
                 'method': ['POST']
             },
 
+            # Add a image property for an item
+            {
+                'name': 'addLogEntryForItemByQrId',
+                'path': '%s/items/:(itemId)/addImageProperty' % contextRoot,
+                'controller': itemSessionController,
+                'action': 'addPropertyImageToItem',
+                'method': ['POST']
+            },
+
             # Get log entries for a particular item
             {
                 'name': 'getLogEntriesForItemByQrId',
