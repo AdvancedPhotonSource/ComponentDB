@@ -7,6 +7,7 @@ sslCaCertFile=CDB_INSTALL_DIR/etc/ssl/cacert.pem
 
 [Storage]
 storageDirectory=CDB_DATA_DIR
+cdbInstallationDirectory=CDB_ROOT_DIR
 
 [WebPortal]
 portalWebAddress=CDB_PORTAL_URL
