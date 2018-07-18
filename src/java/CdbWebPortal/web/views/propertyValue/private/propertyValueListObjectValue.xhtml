@@ -48,12 +48,21 @@ See LICENSE file.
                 </h:outputLink>            
             </p:outputPanel>
 
-            <h:outputLink value="#{propertyValueObject.targetValue}" target="_page_#{propertyValueObject.targetValue}" title="#{propertyValueObject.targetValue}"
-                          rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject) 
-                                      or propertyValueController.displayGeneratedHttpLinkValue(propertyValueObject) 
-                                      or propertyValueController.displayGeneratedHTMLDownloadActionValue(propertyValueObject)}">
-                <h:outputText value="#{propertyValueObject.displayValue}"/>
-            </h:outputLink>
+            <p:outputPanel rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject) 
+                                       or propertyValueController.displayGeneratedHttpLinkValue(propertyValueObject) 
+                                       or propertyValueController.displayGeneratedHTMLDownloadActionValue(propertyValueObject)}">
+                <ui:param name="emptyTargetValue"
+                          value="#{propertyValueObject.targetValue == ''}" /> 
+                <h:outputLink value="#{propertyValueObject.targetValue}" 
+                              target="_page_#{propertyValueObject.targetValue}" 
+                              title="#{propertyValueObject.targetValue}"
+                              rendered="#{!emptyTargetValue}">
+                    <h:outputText value="#{propertyValueObject.displayValue}"/>
+                </h:outputLink>
+                
+                <h:outputText value="#{propertyValueObject.displayValue}"
+                              rendered="#{emptyTargetValue}"/>
+            </p:outputPanel>
 
             <h:outputText value="#{propertyValueObject.displayValue}"
                           rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
