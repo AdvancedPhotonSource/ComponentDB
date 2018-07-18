@@ -13,14 +13,16 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
+import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import javax.ejb.EJB;
@@ -133,6 +135,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
             throw new ObjectAlreadyExists("Property type " + propertyType.getName() + " already exists.");
         }
         logger.debug("Inserting new property type " + propertyType.getName());
+        verifyAndApplyPropertyTypeHandlerRequirements(propertyType);
     }
 
     @Override
@@ -143,6 +146,44 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
             throw new ObjectAlreadyExists("Property type " + propertyType.getName() + " already exists.");
         }
         logger.debug("Updating property type " + propertyType.getName());
+        verifyAndApplyPropertyTypeHandlerRequirements(propertyType);
+    }
+    
+    private void verifyAndApplyPropertyTypeHandlerRequirements(PropertyType propertyType) {
+        PropertyTypeHandler propertyTypeHandler = propertyType.getPropertyTypeHandler();
+        if (propertyTypeHandler != null) {
+            PropertyTypeHandlerInterface handlerClass = PropertyTypeHandlerFactory.getHandler(propertyTypeHandler.getName());
+            List<String> requiredMetadataKeys = handlerClass.getRequiredMetadataKeys();
+            if (requiredMetadataKeys != null && requiredMetadataKeys.size() > 0) {
+                if (propertyType.getPropertyTypeMetadataList() == null) {
+                    propertyType.setPropertyTypeMetadataList(new ArrayList<>());
+                }
+                
+                List<PropertyTypeMetadata> propertyTypeMetadataList = propertyType.getPropertyTypeMetadataList();
+                
+                
+                List<String> keysToCreate = new LinkedList<>();
+                for (String requiredKey : requiredMetadataKeys) {
+                    boolean found = false; 
+                    for (PropertyTypeMetadata ptm : propertyTypeMetadataList) {
+                        if(ptm.getMetadataKey().equals(requiredKey)) {
+                            found = true; 
+                            break; 
+                        }
+                    }
+                    if (!found) {
+                        keysToCreate.add(requiredKey); 
+                    }
+                }
+                
+                for (String key : keysToCreate) {
+                    PropertyTypeMetadata ptm = new PropertyTypeMetadata();
+                    ptm.setPropertyType(propertyType);
+                    ptm.setMetadataKey(key);
+                    propertyTypeMetadataList.add(ptm);                     
+                }
+            } 
+        }
     }
 
     @Override
