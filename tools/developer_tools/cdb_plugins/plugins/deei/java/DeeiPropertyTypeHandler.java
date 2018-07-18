@@ -7,10 +7,10 @@ package gov.anl.aps.cdb.portal.plugins.support.deei;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.jboss.weld.util.collections.ImmutableList;
 
 /**
  * AMOS property type handler.
@@ -28,7 +28,7 @@ public class DeeiPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
     private static final Pattern DEEI_NUM_STRIP_PATTERN = Pattern.compile(DEEI_NUM_STRIP_REG_EX);
 
-    public static final List<String> REQUIRED_METADATA_KEYS = ImmutableList.of(DEEI_INSPECTION_NUMBER_KEY);
+    public static final List<String> REQUIRED_METADATA_KEYS = Arrays.asList(DEEI_INSPECTION_NUMBER_KEY);
     
     private static final String DEEI_URL = DeeiPluginManager.getUrlStringProperty(); 
 
