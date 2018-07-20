@@ -21,6 +21,7 @@ import gov.anl.aps.cdb.common.exceptions.CommunicationError;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.BasicContainer;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.CollectionSearch;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.CollectionSearchResult;
+import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.DocDetail;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.Document;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -43,6 +44,10 @@ public class DocumentManagamentApi extends CdbRestApi {
     protected static final String REST_GET_PUBLIC_COLLECTIONS_PATH = "/data/getDossiers/0";
     protected static final String REST_GET_DOCUMENT_DETAILS = "/data/getDocument/";
     protected static final String REST_POST_SEARCH_COLLECTIONS = "/data/dns/documentSearch/0/999999";
+    
+    protected static final String REST_GET_ICMS_DOCINFO = "/data/icms/docDetail/";
+    protected static final String REST_GET_PDMLINK_DOCINFO = "/data/pdmlink/docDetail/";
+            
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DocumentManagamentApi.class.getName());
 
@@ -80,12 +85,29 @@ public class DocumentManagamentApi extends CdbRestApi {
         Container container = (Container) CdbObjectFactory.createCdbObject(jsonString, Container.class);
         return container;
     }
+    
+    public DocDetail[] getIcmsDocDetails(String documentNum, String username) throws InvalidArgument, CdbException {
+        return getDocDetail(REST_GET_ICMS_DOCINFO, documentNum, username); 
+    }
+    
+    public DocDetail[] getPdmlinkDocDetails(String documentNum, String username) throws InvalidArgument, CdbException {
+        return getDocDetail(REST_GET_PDMLINK_DOCINFO, documentNum, username); 
+    }
+    
+    private DocDetail[] getDocDetail(String path, String documentNum, String username) throws InvalidArgument, CdbException {
+        ArgumentUtility.verifyNonEmptyString("documentNum", documentNum);
+        ArgumentUtility.verifyNonEmptyString("username", username);
+        
+        String requestPath = path + "/" + documentNum + "/" + username; 
+        
+        String jsonString = invokeGetRequest(requestPath);
+        return gson.fromJson(jsonString, DocDetail[].class); 
+    }
 
     public BasicContainer[] getAllPublicContainers() throws InvalidArgument, CdbException {
         String requestPath = REST_GET_PUBLIC_COLLECTIONS_PATH;
         String jsonString = invokeGetRequest(requestPath);
         return gson.fromJson(jsonString, BasicContainer[].class);
-
     }
 
     public Collection[] quickSearchCollection(String search, boolean hasDns, int userId) throws InvalidArgument, CdbException {
@@ -168,7 +190,7 @@ public class DocumentManagamentApi extends CdbRestApi {
     public static void main(String[] args) {
 
         try {
-            DocumentManagamentApi api = new DocumentManagamentApi("Somehost");
+            DocumentManagamentApi api = new DocumentManagamentApi("https://....");
 
             CollectionSearchResult searchCollections = api.searchCollections("A0", "test");
             List<Collection> groupCollectionsAndDocuments = groupCollectionsAndDocuments(searchCollections);

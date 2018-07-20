@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.plugins.support.docManagament.objects;
 
 import gov.anl.aps.cdb.common.objects.CdbObject;
+import java.util.List;
 
 /**
  *
@@ -35,6 +36,10 @@ public class Document extends CdbObject{
     private String systemId;
     private Long updateDate;
     private String updatedBy; 
+    
+    // additional loadable information
+    private List<DocDetail> pdmLinkDocDetail;
+    private List<DocDetail> icmsDocDetail;
 
     public String getCollectionId() {
         return collectionId;
@@ -127,6 +132,21 @@ public class Document extends CdbObject{
     public String getUpdatedBy() {
         return updatedBy;
     }
-    
+
+    public List<DocDetail> getPdmLinkDocDetail() {
+        return pdmLinkDocDetail;
+    }
+
+    public void setPdmLinkDocDetail(List<DocDetail> pdmLinkdocDetail) {
+        this.pdmLinkDocDetail = pdmLinkdocDetail;
+    }
+
+    public List<DocDetail> getIcmsDocDetail() {
+        return icmsDocDetail;
+    }
+
+    public void setIcmsDocDetail(List<DocDetail> icmsDocDetail) {
+        this.icmsDocDetail = icmsDocDetail;
+    }    
     
 }
