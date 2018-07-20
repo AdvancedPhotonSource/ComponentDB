@@ -130,7 +130,9 @@ See LICENSE file.
     </p:dialog>
 
     <p:remoteCommand name="loadDmsCollectionPropertyValueAssignDialog"
-                     onstart="PF('dmsCollectionPropertyValueAssignDialogWidget').show()" />
+                     update="dmsCollectionPropertyValueAssignDialog"
+                     action="#{docManagamentBean.resetCollectionSearchVariables()}"
+                     oncomplete="PF('dmsCollectionPropertyValueAssignDialogWidget').show()" />
 
     <p:dialog id="dmsCollectionPropertyValueAssignHelpDialog"
               widgetVar="dmsCollectionPropertyValueAssignHelpDialogWidget"

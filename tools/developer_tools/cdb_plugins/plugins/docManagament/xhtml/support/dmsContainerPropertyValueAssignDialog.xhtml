@@ -76,6 +76,7 @@ See LICENSE file.
 
     <p:remoteCommand name="loadDmsContainerPropertyValueAssignDialog"
                      update="dmsContainerPropertyValueAssignDialog"
+                     action="#{docManagamentBean.resetContainerSearchVariables()}"
                      oncomplete="PF('dmsContainerPropertyValueAssignDialogWidget').show()" />
 
 </ui:composition>

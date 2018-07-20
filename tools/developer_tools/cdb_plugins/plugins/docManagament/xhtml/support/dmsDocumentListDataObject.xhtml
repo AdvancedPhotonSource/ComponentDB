@@ -14,8 +14,11 @@ See LICENSE file.
 
     <p:column headerText="Doc number"
               sortBy="#{documentObject.docNum}"
-              filterBy="#{documentObject.docNum}">                            
-        <h:outputText value="#{documentObject.docNum}"/> 
+              filterBy="#{documentObject.docNum}">             
+        <p:commandLink value="#{documentObject.docNum}"
+                       onclick="PF('loadingDialog').show()"
+                       oncomplete="PF('loadingDialog').hide()"
+                       action="#{docManagamentBean.loadDocumentInformation(documentObject.docNumId)}"/>
     </p:column>
     <p:column headerText="Collection Label"
               sortBy="#{documentObject.collectionLabel}"

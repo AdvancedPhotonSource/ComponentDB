@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.plugins.support.docManagament;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.controllers.LoginController;
 import gov.anl.aps.cdb.portal.controllers.PropertyValueController;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
@@ -13,9 +14,11 @@ import gov.anl.aps.cdb.portal.plugins.support.docManagament.api.DocumentManagame
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.BasicContainer;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.Collection;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.CollectionSearchResult;
+import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.DocDetail;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.Document;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -30,7 +33,7 @@ import javax.inject.Named;
 @Named("docManagamentBean")
 public class DocManagamentBean implements Serializable {
 
-    private DocumentManagamentApi documentManagamentApi;   
+    private DocumentManagamentApi documentManagamentApi;
 
     private List<BasicContainer> containerList = null;
     private BasicContainer selectedContainer = null;
@@ -47,21 +50,23 @@ public class DocManagamentBean implements Serializable {
     private List<Collection> dmsCollectionSearchResults = null;
     private Collection selectedCollection = null;
 
+    private LoginController loginController;
+
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DocManagamentBean.class.getName());
 
     @PostConstruct
     public void init() {
         documentManagamentApi = DocManagerPlugin.createNewDocumentManagamentApi();
     }
-    
+
     public String getDocManagamentSystemUrl() {
-        return DocManagerPlugin.getContextRootUrlProperty(); 
+        return DocManagerPlugin.getContextRootUrlProperty();
     }
 
     public static DocManagamentBean getInstance() {
         return (DocManagamentBean) SessionUtility.findBean("docManagamentBean");
     }
-   
+
     public void performQuickSearch() {
         if (dmsDocumentSearchString != null && !dmsDocumentSearchString.equals("")) {
             try {
@@ -125,49 +130,91 @@ public class DocManagamentBean implements Serializable {
             SessionUtility.addWarningMessage("No Selection", "Please select a container item.");
         }
     }
-    
+
+    public void resetCollectionSearchVariables() {
+        dmsCollectionSearchString = null;
+        dmsCollectionSearchResults = null;
+        selectedCollection = null;
+    }
+
+    public void resetContainerSearchVariables() {
+        selectedContainer = null;
+    }
+
+    public void resetDocumentSearchVariables() {
+        dmsDocumentSearchString = null;
+        quickSearchDocumentResults = null;
+        selectedDocument = null;
+    }
+
     protected boolean loadSelectedCollectionByPropertyValue(PropertyValue propertyValue) {
         selectedCollection = null;
         if (propertyValue.getValue() != null && !propertyValue.getValue().equals("")) {
             try {
-                String collectionId = propertyValue.getValue(); 
-                CollectionSearchResult searchCollections = documentManagamentApi.searchCollections(collectionId, null); 
+                String collectionId = propertyValue.getValue();
+                CollectionSearchResult searchCollections = documentManagamentApi.searchCollections(collectionId, null);
                 List<Collection> groupCollectionsAndDocuments = DocumentManagamentApi.groupCollectionsAndDocuments(searchCollections);
                 if (groupCollectionsAndDocuments.size() == 1) {
-                    selectedCollection = groupCollectionsAndDocuments.get(0);                     
+                    selectedCollection = groupCollectionsAndDocuments.get(0);
                     return true;
                 } else {
                     SessionUtility.addErrorMessage("Error Fetching Collection", "Got unexpected results from DMS server");
                     return false;
-                }                                
+                }
             } catch (CdbException ex) {
                 logger.error(ex);
                 SessionUtility.addErrorMessage("Error Fetching Collection", ex.getMessage());
                 return false;
-            } 
+            }
         } else {
             SessionUtility.addWarningMessage("No Value", "Specify a value and try again.");
             return false;
         }
-        
+
+    }
+
+    public void loadDocumentInformation(Integer documentId) {
+        if (loadSelectedDocumentByDocumentId(documentId)) {
+            String showInfo = DocManagamentDocumentPropertyTypeHandler.INFO_ACTION_COMMAND;
+            SessionUtility.executeRemoteCommand(showInfo);
+        }
+    }
+
+    private boolean loadSelectedDocumentByDocumentId(int documentId) {
+        try {
+
+            selectedDocumentObject = documentManagamentApi.getDocumentById(documentId);
+
+            // Ensure login controller loaded
+            getLoginController();
+
+            if (loginController.isLoggedIn()) {
+                String username = loginController.getUsername();
+                String docNumCode = selectedDocumentObject.getDocNumCode();
+                DocDetail[] pdmlinkDocDetails = documentManagamentApi.getPdmlinkDocDetails(docNumCode, username);
+                DocDetail[] icmsDocDetails = documentManagamentApi.getIcmsDocDetails(docNumCode, username);
+
+                selectedDocumentObject.setPdmLinkDocDetail(Arrays.asList(pdmlinkDocDetails));
+                selectedDocumentObject.setIcmsDocDetail(Arrays.asList(icmsDocDetails));
+            }
+
+            return true;
+        } catch (CdbException ex) {
+            logger.error(ex);
+            SessionUtility.addErrorMessage("Error Fetching Doc", ex.getMessage());
+            return false;
+        } catch (Exception ex) {
+            logger.error(ex);
+            SessionUtility.addErrorMessage("Error Fetching Doc", ex.getMessage());
+            return false;
+        }
     }
 
     protected boolean loadSelectedDocumentObjectByPropertyValue(PropertyValue propertyValue) {
         selectedDocumentObject = null;
         if (propertyValue.getValue() != null && !propertyValue.getValue().equals("")) {
-            try {
-                int documentId = Integer.parseInt(propertyValue.getValue());
-                selectedDocumentObject = documentManagamentApi.getDocumentById(documentId);
-                return true;
-            } catch (CdbException ex) {
-                logger.error(ex);
-                SessionUtility.addErrorMessage("Error Fetching Doc", ex.getMessage());
-                return false;
-            } catch (Exception ex) {
-                logger.error(ex);
-                SessionUtility.addErrorMessage("Error Fetching Doc", ex.getMessage());
-                return false;
-            }
+            int documentId = Integer.parseInt(propertyValue.getValue());
+            return loadSelectedDocumentByDocumentId(documentId);
         } else {
             SessionUtility.addWarningMessage("No Value", "Specify a value and try again.");
             return false;
@@ -178,10 +225,10 @@ public class DocManagamentBean implements Serializable {
         PropertyValueController instance = PropertyValueController.getInstance();
         PropertyValue current = instance.getCurrent();
         current.setValue(value);
-        current.setDisplayValue(null);       
-        PropertyTypeHandlerInterface handler = PropertyTypeHandlerFactory.getHandler(current);        
+        current.setDisplayValue(null);
+        PropertyTypeHandlerInterface handler = PropertyTypeHandlerFactory.getHandler(current);
         handler.setDisplayValue(current);
-        
+
         SessionUtility.executeRemoteCommand(onSuccessRemotecommand);
     }
 
@@ -196,7 +243,14 @@ public class DocManagamentBean implements Serializable {
         }
         return containerList;
     }
-    
+
+    private LoginController getLoginController() {
+        if (loginController == null) {
+            loginController = LoginController.getInstance();
+        }
+        return loginController;
+    }
+
     public BasicContainer getSelectedContainer() {
         return selectedContainer;
     }

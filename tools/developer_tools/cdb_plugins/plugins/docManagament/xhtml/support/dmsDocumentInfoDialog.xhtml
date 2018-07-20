@@ -16,68 +16,176 @@ See LICENSE file.
               modal="true"
               resizable="false"
               styleClass="viewTransparentBackgroundDialog">
-        
+
         <p:outputPanel rendered="#{docManagamentBean.selectedDocumentObject != null}">
             <ui:param name="documentObject"
                       value="#{docManagamentBean.selectedDocumentObject}" /> 
-            <p:panelGrid columns="2">
-                
-                <h:outputLabel value="Full Number"
-                               styleClass="entityDataEmphasizedLabel"/>
-                <h:outputText value="#{documentObject.docNumCode}"
-                              styleClass="entityDataText"/>
-                
-                <h:outputLabel value="Document Title"
-                               styleClass="entityDataEmphasizedLabel"/>
-                <h:outputText value="#{documentObject.documentTitle}"
-                              styleClass="entityDataText"/>
-                
-                <h:outputLabel value="Document Owner"
-                               styleClass="entityDataEmphasizedLabel"/>
-                <h:outputText value="#{documentObject.owner.fullName}"
-                              styleClass="entityDataText"/>
-                
-                <h:outputLabel value="Project Id"
-                               styleClass="entityDataLabel"/>               
-                <h:outputText value="#{documentObject.projectId}"
-                              styleClass="entityDataText"/>
-                
-                <h:outputLabel value="Document Type"
-                               styleClass="entityDataLabel"/>
-                <h:outputText value="#{documentObject.docTypeId}"
-                              styleClass="entityDataText"/>
-                
-                <h:outputLabel value="System"
-                               styleClass="entityDataLabel"/>
-                <h:outputText value="#{documentObject.systemId}"
-                              styleClass="entityDataText"/>
-                
-                <h:outputLabel value="Location"
-                               styleClass="entityDataLabel"/>
-                <h:outputText value="#{documentObject.locationId}"
-                              styleClass="entityDataText"/>
-                
-                <h:outputLabel value="Collection"
-                               styleClass="entityDataLabel"/>
-                <h:outputText value="#{documentObject.collectionId}"
-                              styleClass="entityDataText"/>
-                
-                <h:outputLabel value="Document Identifier"
-                               styleClass="entityDataLabel"/>
-                <h:outputText value="#{documentObject.documentId}"
-                              styleClass="entityDataText"/>
-                
+            <p:panelGrid>
+
+                <p:row>
+                    <p:column colspan="2">                
+                        <h:outputLabel value="Full Number"
+                                       styleClass="entityDataEmphasizedLabel"/>
+                    </p:column>
+                    <p:column colspan="2">
+                        <h:outputText value="#{documentObject.docNumCode}"
+                                      styleClass="entityDataText"/>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column colspan="2">
+                        <h:outputLabel value="Document Title"
+                                       styleClass="entityDataEmphasizedLabel"/>
+                    </p:column>
+                    <p:column colspan="2">   
+                        <h:outputText value="#{documentObject.documentTitle}"
+                                      styleClass="entityDataText"/>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column colspan="2">   
+                        <h:outputLabel value="Document Owner"
+                                       styleClass="entityDataEmphasizedLabel"/>
+                    </p:column>
+                    <p:column colspan="2">   
+                        <h:outputText value="#{documentObject.owner.fullName}"
+                                      styleClass="entityDataText"/>
+                    </p:column>
+                </p:row>
+
+                <p:row>
+                    <p:column>
+                        <h:outputLabel value="Project Id"
+                                       styleClass="entityDataLabel"/>               
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{documentObject.projectId}"
+                                      styleClass="entityDataText"/>
+                    </p:column>
+
+                    <p:column>
+                        <h:outputLabel value="Location"
+                                       styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{documentObject.locationId}"
+                                      styleClass="entityDataText"/>
+                    </p:column>
+
+
+                </p:row>
+
+                <p:row>
+
+                    <p:column>
+                        <h:outputLabel value="Document Type"
+                                       styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{documentObject.docTypeId}"
+                                      styleClass="entityDataText"/>
+                    </p:column>       
+
+                    <p:column>
+                        <h:outputLabel value="Collection"
+                                       styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{documentObject.collectionId}"
+                                      styleClass="entityDataText"/>
+                    </p:column>
+
+                </p:row>
+
+                <p:row>
+
+                    <p:column>
+                        <h:outputLabel value="System"
+                                       styleClass="entityDataLabel"/>     
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{documentObject.systemId}"
+                                      styleClass="entityDataText"/>
+                    </p:column>
+
+
+
+                    <p:column>
+                        <h:outputLabel value="Document Identifier"
+                                       styleClass="entityDataLabel"/>
+                    </p:column>
+                    <p:column>
+                        <h:outputText value="#{documentObject.documentId}"
+                                      styleClass="entityDataText"/>
+                    </p:column>
+                </p:row>
+
             </p:panelGrid>
+
+            <p:outputPanel rendered="#{loginController.loggedIn}">
+
+                <p:accordionPanel activeIndex="0,1"
+                                  multiple="true">
+                    <p:tab title="ICMS">
+                        <p:dataTable value="#{documentObject.icmsDocDetail}"
+                                     var="docDetail"
+                                     rows="5"
+                                     paginator="true"
+                                     paginatorPosition="bottom">
+                            <p:column headerText="Document">
+                                <h:outputLink value="#{docDetail.link}"
+                                              target="_blank">
+                                    <h:outputText value="#{docDetail.fileName}" /> 
+                                </h:outputLink>                                
+                            </p:column>
+                            <p:column headerText="Actions">
+                                <h:outputLink value="#{docDetail.infoLink}"
+                                              target="_blank"
+                                              styleClass="fa fa-link-icon fa-info-circle">
+                                </h:outputLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+
+                    <p:tab title="PDMLink">
+                        <p:dataTable value="#{documentObject.pdmLinkDocDetail}"
+                                     var="docDetail"
+                                     rows="5"
+                                     paginator="true"
+                                     paginatorPosition="bottom">
+                            <p:column headerText="Document">
+                                <h:outputLink value="#{docDetail.link}"
+                                              target="_blank">
+                                    <h:outputText value="#{docDetail.fileName}" /> 
+                                </h:outputLink>
+                            </p:column>
+                            <p:column headerText="State">
+                                <h:outputText value="#{docDetail.state}" /> 
+                            </p:column>
+                            <p:column headerText="Version">
+                                <h:outputText value="#{docDetail.version}" /> 
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:accordionPanel>                
+            </p:outputPanel>
+
+            <p:outputPanel rendered="#{!loginController.loggedIn}">
+                Please log in for additional details in this dialog.
+            </p:outputPanel>
+
         </p:outputPanel>
-        
+
         <f:facet name="footer">
             <p:commandButton icon="fa fa-close"
                              value="Close"
                              onclick="PF('dmsDocumentInfoDialogWidget').hide()" />
         </f:facet>
-        
+
     </p:dialog>
-    
+
     <p:remoteCommand name="updateDmsDocumentInfoDialog" 
                      update="dmsDocumentInfoDialog" 
                      oncomplete="PF('dmsDocumentInfoDialogWidget').initPosition();

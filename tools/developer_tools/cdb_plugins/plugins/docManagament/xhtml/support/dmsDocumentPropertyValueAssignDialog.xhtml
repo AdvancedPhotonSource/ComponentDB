@@ -84,6 +84,8 @@ See LICENSE file.
     </p:dialog>
 
     <p:remoteCommand name="loadDmsDocumentPropertyValueAssignDialog"
+                     update="dmsDocumentPropertyValueAssignDialog"
+                     action="#{docManagamentBean.resetDocumentSearchVariables()}"
                      oncomplete="PF('dmsDocumentPropertyValueAssignDialogWidget').show()" />
     
 </ui:composition>
