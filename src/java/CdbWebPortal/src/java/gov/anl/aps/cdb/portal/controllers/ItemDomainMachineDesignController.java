@@ -162,13 +162,15 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                     = getItemsWithoutParents();
 
             for (Item item : itemsWithoutParents) {
-                ItemElement element = new ItemElement();
-                element.setContainedItem(item);
-                TreeNode parent = new DefaultTreeNode(element);
-                machineDesignTreeRootTreeNode.getChildren().add(parent);
-                parent.setParent(machineDesignTreeRootTreeNode);
-                setTreeNodeTypeMachineDesignTreeList(parent);
-                expandTreeChildren(parent);
+                if (!item.getIsItemTemplate()) {
+                    ItemElement element = new ItemElement();
+                    element.setContainedItem(item);
+                    TreeNode parent = new DefaultTreeNode(element);
+                    machineDesignTreeRootTreeNode.getChildren().add(parent);
+                    parent.setParent(machineDesignTreeRootTreeNode);
+                    setTreeNodeTypeMachineDesignTreeList(parent);
+                    expandTreeChildren(parent);
+                }
             }
         }
         return machineDesignTreeRootTreeNode;
@@ -1163,7 +1165,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     @Override
     public boolean getEntityDisplayItemEntityTypes() {
-        return true;
+        return false;
     }
     
     @Override
