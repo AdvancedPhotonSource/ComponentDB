@@ -99,7 +99,10 @@ class StorageUtility:
 
     def __storeFile(self, destination, data):
         with open(destination, 'wb') as destf:
-            shutil.copyfileobj(data, destf)
+            if type(data) == str:
+                destf.write(data)
+            else:
+                shutil.copyfileobj(data, destf)
 
     def __getUniqueFileName(self, fileName):
         return '%s%s' % (str(uuid.uuid4()), self.__getFileExtension(fileName))

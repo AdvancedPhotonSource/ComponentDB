@@ -44,7 +44,7 @@ class ItemSessionController(CdbSessionController):
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
     @CdbSessionController.execute
-    def addPropertyImageToItem(self, itemId, imageFileName):
+    def addPropertyImageToItem(self, itemId, imageFileName, dataEncodedBase64=False):
         if not itemId:
             raise InvalidRequest("Invalid item id provided")
         if not imageFileName:
@@ -54,6 +54,9 @@ class ItemSessionController(CdbSessionController):
         enteredByUserId = sessionUser.get('id')
         imageFileName = Encoder.decode(imageFileName)
         cherrypyData = cherrypy.request.body
+
+        if dataEncodedBase64:
+            cherrypyData = Encoder.decode(cherrypyData.read())
 
         imagePropertyAdded = self.itemControllerImpl.addPropertyImageToItem(itemId, imageFileName, enteredByUserId, cherrypyData)
 
