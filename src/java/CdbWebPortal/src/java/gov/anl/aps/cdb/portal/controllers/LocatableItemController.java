@@ -82,6 +82,10 @@ public class LocatableItemController implements Serializable {
 
     // Just to process non-locatable items from gui
     public String getLocationStringForItem(Item item) {
+        if (item instanceof LocatableItem) {
+            LocatableItem locatableItem = (LocatableItem) item;
+            return getLocationStringForItem(locatableItem); 
+        }
         //non-locatable item 
         return "";
     }
