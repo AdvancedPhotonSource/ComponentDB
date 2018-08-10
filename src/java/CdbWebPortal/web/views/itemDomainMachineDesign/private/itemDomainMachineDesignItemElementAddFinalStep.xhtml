@@ -48,27 +48,7 @@ See LICENSE file.
                           value="machineDesignTitleAddElementReplacementValueChange()" />
             </ui:include>
 
-            <h:outputText value="Machine Design Item Name"
-                          rendered="#{newMachineDesignCreation}"/>
-            <h:inputText id="newMachineDesignName"
-                         value="#{containedItem.name}"
-                         rendered="#{newMachineDesignCreation}">
-                <p:ajax event="blur" 
-                        update="newMachineDesignName"         
-                        process="@this"
-                        oncomplete="newMachineDesignElementContainedItemValueChanged()"/> 
-            </h:inputText>
-
-            <h:outputText value="Project"
-                          rendered="#{newMachineDesignCreation}"/>
-            <p:outputPanel rendered="#{newMachineDesignCreation}">
-                <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemProject.xhtml">
-                    <ui:param name="itemObject"
-                              value="#{containedItem}"/> 
-                    <ui:param name="viewName"
-                              value="NewMachineDesign"/>
-                </ui:include>
-            </p:outputPanel>
+            <ui:include src="itemDomainMachineDesignItemDetailsEditObject.xhtml" /> 
 
         </p:panelGrid>
 
