@@ -16,13 +16,6 @@ See LICENSE file.
         <f:viewAction action="#{itemDomainMachineDesignController.processPreRenderList()}" />
     </f:metadata>
 
-    <ui:define name="listActionButtons">       
-        <ui:include src="private/itemDomainMachineDesignListActionButtons.xhtml" >
-            <ui:param name="displayAddButton" value="#{loginController.loggedIn}" />
-        </ui:include>                
-    </ui:define>
-
-
     <ui:define name="itemListPageEmphasizedContentBelowTitle">
         <ui:include src="private/itemDomainMachineDesignListPageContentBelowTitle.xhtml" />
     </ui:define>
