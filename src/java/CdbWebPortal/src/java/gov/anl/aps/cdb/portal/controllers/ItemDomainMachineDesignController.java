@@ -563,7 +563,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
         return createRedirect;
 
-    }
+    }        
 
     // <editor-fold defaultstate="collapsed" desc="Element creation implementation ">   
     // <editor-fold defaultstate="collapsed" desc="Functionality">
@@ -1101,6 +1101,14 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     @Override
     public String getDefaultDomainName() {
         return ItemDomainName.machineDesign.getValue();
+    }
+    
+    public boolean getRenderItemElementList() {
+        if (getEntityDisplayItemElements()) {
+            return true; 
+        }
+        
+        return false;
     }
 
     @Override
