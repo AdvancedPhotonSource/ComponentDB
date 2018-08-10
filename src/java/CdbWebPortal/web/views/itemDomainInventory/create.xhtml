@@ -38,7 +38,7 @@ See LICENSE file.
     </ui:define>
     
     <ui:define name="additonalCreateItemContent">
-        <ui:include src="private/componentInventoryItemLocationSelectDialog.xhtml">
+        <ui:include src="../locatableItem/private/locatableItemLocationSelectDialog.xhtml">
             <ui:param name="itemObject" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data.inventoryItem}" />
             <ui:param name="viewName" value="BOMEdit"/>
         </ui:include>

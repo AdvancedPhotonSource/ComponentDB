@@ -32,7 +32,7 @@ See LICENSE file.
         </f:facet>
     </p:dialog>
 
-    <ui:include src="componentInventoryItemLocationSelectDialog.xhtml">
+    <ui:include src="../../locatableItem/private/locatableItemLocationSelectDialog.xhtml">
         <ui:param name="itemObject" value="#{itemDomainInventoryController.selectedItemBOMTreeNode.data.inventoryItem}" />
         <ui:param name="viewName" value="BOMEdit"/>
         <ui:param name="updateTarget" value="@form:inventoryItemEditBOMViewPanelGrid" />

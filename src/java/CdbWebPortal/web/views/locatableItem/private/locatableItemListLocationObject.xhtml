@@ -9,22 +9,22 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
      
-    <ui:param name="itemDomainInventorySettingObject" value="#{itemDomainInventoryController.settingObject}"/> 
+    <ui:param name="settingObject" value="#{entityController.settingObject}"/> 
 
     <p:column headerText="Location"
-              rendered="#{itemDomainInventorySettingObject.displayLocation}"
+              rendered="#{settingObject.displayLocation}"
               filterBy="#{itemListObject.locationString}"
               sortBy="#{itemListObject.locationString}"
               filterMatchMode="contains"
               filterable="#{filterable}"
               >
-        <h:outputText value="#{itemDomainInventoryController.getLocationStringForItem(itemListObject)}" />        
+        <h:outputText value="#{locatableItemController.getLocationStringForItem(itemListObject)}" />        
     </p:column>
 
-    <ui:param name="locationDetails" value="#{itemDomainInventoryController.getLocationRelationshipDetails(itemListObject)}" />
+    <ui:param name="locationDetails" value="#{locatableItemController.getLocationRelationshipDetails(itemListObject)}" />
 
     <p:column headerText="Location Details" sortBy="#{locationDetails}" 
-              rendered="#{itemDomainInventorySettingObject.displayLocationDetails}"
+              rendered="#{settingObject.displayLocationDetails}"
               filterBy="#{locationDetails}"
               filterable="#{filterable}"
               sortable="#{sortable}"

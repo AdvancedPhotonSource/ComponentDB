@@ -17,7 +17,7 @@ See LICENSE file.
               header="Inventory Item Location History"
               styleClass="viewTransparentBackgroundDialog"
               dynamic="true">
-        <p:dataTable value="#{itemDomainInventoryController.getItemLocationRelationshipHistory(itemObject)}"
+        <p:dataTable value="#{locatableItemController.getItemLocationRelationshipHistory(itemObject)}"
                      var="itemElementLocationRelationshipHistoryObject"
                      draggableColumns="true"
                      rows="15">

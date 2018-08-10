@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:inplace widgetVar="locationViewOutputEditableWidget"
+               editor="true"
+               toggleable="false">
+        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <f:facet name="output">
+            <p:outputPanel styleClass="inlineFlexOutputPanel">
+                <p:commandLink id="locationViewOutputEditShowButton"
+                               styleClass="fa-link-icon fa-icon fa fa-pencil"
+                               onclick="PF('locationViewOutputEditableWidget').show()"
+                               rendered="#{isEntityWriteable}">
+                    <p:tooltip for="locationViewOutputEditShowButton"
+                               value="Edit Location" />
+                </p:commandLink>
+                <ui:include src="locatableItemLocationRelationshipTree.xhtml">
+                    <ui:param name="cdbDomainEntityObject" value="#{domainEntityObject}" />
+                </ui:include>
+            </p:outputPanel>
+        </f:facet>
+        <f:facet name="input">                       
+            <p:tieredMenu model="#{locatableItemController.getItemLocataionDefaultMenuModel(itemObject, 'locationSelectTieredMenuInplaceEdit')}"
+                          id="locationSelectTieredMenuInplaceEdit"
+                          toggleEvent="hover"
+                          autoDisplay="false"/>                                    
+        </f:facet>            
+    </p:inplace>        
+
+
+
+    <h:outputLabel for="locationDetails" value="Location Details" styleClass="entityDataLabel"/>
+    <h:outputText id="locationDetails"
+                  value="#{locatableItemController.getLocationRelationshipDetails(domainEntityObject)}"
+                  styleClass="entityDataText"/>        
+
+</ui:composition>
+
+

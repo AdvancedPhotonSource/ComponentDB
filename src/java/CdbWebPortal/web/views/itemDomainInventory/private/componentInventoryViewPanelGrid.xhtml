@@ -25,40 +25,9 @@ See LICENSE file.
                            update="@form">
                 <p:tooltip for="itemDomainInventoryLocationHistoryListViewButton" value="View location value history."/>
             </p:commandLink>
-        </p:column>
-
-        <p:inplace widgetVar="locationViewOutputEditableWidget"
-                   editor="true"
-                   toggleable="false">
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <f:facet name="output">
-                <p:outputPanel styleClass="inlineFlexOutputPanel">
-                    <p:commandLink id="locationViewOutputEditShowButton"
-                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
-                                   onclick="PF('locationViewOutputEditableWidget').show()"
-                                   rendered="#{isEntityWriteable}">
-                        <p:tooltip for="locationViewOutputEditShowButton"
-                                   value="Edit Location" />
-                    </p:commandLink>
-                    <ui:include src="componentInventoryLocationRelationshipTree.xhtml">
-                        <ui:param name="cdbDomainEntityObject" value="#{domainEntityObject}" />
-                    </ui:include>
-                </p:outputPanel>
-            </f:facet>
-            <f:facet name="input">                       
-                <p:tieredMenu model="#{itemDomainInventoryController.getItemLocataionDefaultMenuModel(itemObject, 'locationSelectTieredMenuInplaceEdit')}"
-                              id="locationSelectTieredMenuInplaceEdit"
-                              toggleEvent="hover"
-                              autoDisplay="false"/>                                    
-            </f:facet>            
-        </p:inplace>        
-
-
-
-        <h:outputLabel for="locationDetails" value="Location Details" styleClass="entityDataLabel"/>
-        <h:outputText id="locationDetails"
-                      value="#{itemDomainInventoryController.getLocationRelationshipDetails(domainEntityObject)}"
-                      styleClass="entityDataText"/>                      
+        </p:column>      
+        
+        <ui:include src="../../locatableItem/private/locatableItemViewPanelGridObject.xhtml" />
 
         <p:column id="componentInstanceStatusLabel">
             <h:outputLabel for="componentInstanceStatus"
