@@ -21,5 +21,15 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     public Boolean getDisplayItemElementSimpleView() {
         return displayItemElementsSimpleView; 
     }
+
+    @Override
+    public Boolean getDisplayLocation() {
+        return true; 
+    }
+
+    @Override
+    public Boolean getDisplayLocationDetails() {
+        return true; 
+    }
     
 }
