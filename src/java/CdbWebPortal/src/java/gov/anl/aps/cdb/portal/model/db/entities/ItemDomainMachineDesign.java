@@ -14,7 +14,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.MACHINE_DESIGN_ID + "")
-public class ItemDomainMachineDesign extends Item {   
+public class ItemDomainMachineDesign extends LocatableItem {   
 
     @Override
     public Item createInstance() {
