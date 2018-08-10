@@ -18,6 +18,9 @@ See LICENSE file.
                           value="templateItemName#{viewName}" />
             </ui:include>          
         </p:outputPanel>
+        <p:outputPanel rendered="#{entityController.createdFromTemplateForCurrentItem == null}">
+            N/A
+        </p:outputPanel>
     </p:outputPanel>
 
 </ui:composition>
