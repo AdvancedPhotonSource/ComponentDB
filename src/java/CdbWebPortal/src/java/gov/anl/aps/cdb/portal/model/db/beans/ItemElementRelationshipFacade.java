@@ -4,11 +4,13 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 
 /**
@@ -30,7 +32,7 @@ public class ItemElementRelationshipFacade extends CdbEntityFacade<ItemElementRe
         super(ItemElementRelationship.class);
     }
     
-    public ItemElementRelationship findItemElementRelationshipByNameAndItemElementId(String relationshipTypeName, int itemElementId) {
+    public ItemElementRelationship findItemElementRelationshipByNameAndItemElementId(String relationshipTypeName, int itemElementId) throws CdbException {
         try{
             return (ItemElementRelationship) em
                     .createNamedQuery("ItemElementRelationship.findByRelationshipTypeNameAndFirstElementId")
@@ -39,6 +41,8 @@ public class ItemElementRelationshipFacade extends CdbEntityFacade<ItemElementRe
                     .getSingleResult();
         } catch (NoResultException ex) {
             
+        } catch (NonUniqueResultException ex) {
+            throw new CdbException(ex); 
         }
         return null;
     }
