@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -109,6 +108,22 @@ public class LocatableItemController implements Serializable {
         }
         return null;
     }
+    
+    // Just to process non-locatable items from gui
+    public String getLocationRelationshipDetails(Item item) {
+        return "";
+    }
+
+    public String getLocationRelationshipDetails(LocatableItem locatableItem) {
+        if (locatableItem == null) {
+            return null; 
+        }
+        if (locatableItem.getLocationDetails() == null) {
+            setItemLocationInfo(locatableItem);
+        }
+
+        return locatableItem.getLocationDetails();
+    }
 
     /**
      * Load current item location information & set location string.
@@ -187,20 +202,7 @@ public class LocatableItemController implements Serializable {
             ItemDomainLocation location = item.getLocation();
             item.setLocationTree(ItemDomainLocationController.generateLocationNodeTreeBranch(location));
         }
-    }
-
-    // Just to process non-locatable items from guiZ
-    public String getLocationRelationshipDetails(Item item) {
-        return "";
-    }
-
-    public String getLocationRelationshipDetails(LocatableItem locatableItem) {
-        if (locatableItem.getLocationDetails() == null) {
-            setItemLocationInfo(locatableItem);
-        }
-
-        return locatableItem.getLocationDetails();
-    }
+    }    
 
     public ItemDomainLocation getLocation(LocatableItem inventoryItem) {
         if (inventoryItem.getLocation() == null) {
