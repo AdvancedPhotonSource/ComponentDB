@@ -9,16 +9,19 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
      
-    <ui:param name="settingObject" value="#{entityController.settingObject}"/> 
+    <ui:param name="settingObject" value="#{entityController.settingObject}"/>     
+    <!-- specify ui:param alternateLocationString to add string when no location string exists. --> 
 
     <p:column headerText="Location"
               rendered="#{settingObject.displayLocation}"
               filterBy="#{itemListObject.locationString}"
               sortBy="#{itemListObject.locationString}"
               filterMatchMode="contains"
-              filterable="#{filterable}"
-              >
-        <h:outputText value="#{locatableItemController.getLocationStringForItem(itemListObject)}" />        
+              filterable="#{filterable}">
+        <ui:param name="locationString"
+                  value="#{locatableItemController.getLocationStringForItem(itemListObject)}" />
+        <h:outputText rendered="#{locationString != ''}" value="#{locationString}" />        
+        <h:outputText rendered="#{locationString == ''}" value="#{alternateLocationString}" />
     </p:column>
 
     <ui:param name="locationDetails" value="#{locatableItemController.getLocationRelationshipDetails(itemListObject)}" />
