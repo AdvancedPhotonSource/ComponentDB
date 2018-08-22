@@ -29,7 +29,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
 
     @Override
     public Boolean getDisplayLocationDetails() {
-        return true; 
+        return false; 
     }
     
 }
