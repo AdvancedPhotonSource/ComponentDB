@@ -7,11 +7,12 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
-    
-    <p:menuitem value="Add Catalog Items" icon="fa fa-plus"
-                update="machineDesignDualColumnListViewPanelGrid"
-                disabled="#{disabledEditContextMenuItemForSelection}"
-                action="#{entityController.prepareAddNewCatalogListConfiguration()}" />    
+
+    <p:menuitem value="Unlink assigned item"
+                icon="fa fa-unlink"
+                action="#{entityController.unlinkContainedItem2FromSelectedItem()}"
+                disabled="#{disabledEditContextMenuItemForSelectionParent}"
+                update="@form"/>
 
 </ui:composition>
 

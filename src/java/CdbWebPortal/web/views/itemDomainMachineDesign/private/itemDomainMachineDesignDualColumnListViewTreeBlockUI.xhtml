@@ -42,13 +42,30 @@ See LICENSE file.
                 <p:outputPanel rendered="#{itemDomainMachineDesignController.catalogItemsDraggedAsChildren != null}">
                     <p:treeTable value="#{itemDomainMachineDesignController.newCatalogItemsInMachineDesignModel}"
                                  var="treeNode">
-                        <p:column headerText="Name">
-                            <span>#{treeNode.name}</span>
+                        <ui:param name="itemMachineDesign"
+                                  value="#{itemDomainMachineDesignController.isItemMachineDesign(treeNode)}"/>
+
+                        <p:column headerText="Machine Design Name">
+                            <ui:fragment rendered="#{itemMachineDesign}">
+                                <span>#{treeNode.name}</span>
+                            </ui:fragment>            
+                            <span>
+                                <p:inputText value="#{treeNode.machineDesignPlaceholderName}"
+                                             rendered="#{!itemMachineDesign}"
+                                             style="padding: 0px; width: 100%"/>
+                            </span>
                         </p:column>        
+
+                        <p:column headerText="Catalog Item Name">
+                            <ui:fragment rendered="#{!itemMachineDesign}">
+                                <span>#{treeNode.name}</span>
+                            </ui:fragment>
+                        </p:column>
                     </p:treeTable>
 
                     <p:commandButton value="Complete"
                                      icon="fa fa-save"
+                                     update="catalogBlockUIDropContent"
                                      action="#{itemDomainMachineDesignController.completeAddNewCatalogListConfiguration()}"/> 
                 </p:outputPanel>
             </p:outputPanel>
