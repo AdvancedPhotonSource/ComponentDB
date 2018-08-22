@@ -344,7 +344,8 @@ CREATE TABLE `item_element` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NULL,
   `parent_item_id` int(11) unsigned NOT NULL,
-  `contained_item_id` int(11) unsigned DEFAULT NULL,
+  `contained_item_id1` int(11) unsigned DEFAULT NULL,
+  `contained_item_id2` int(11) unsigned DEFAULT NULL,
   `derived_from_item_element_id` int(11) unsigned DEFAULT NULL,
   `is_required` bool NULL DEFAULT 0,
   `description` varchar(256) DEFAULT NULL,
@@ -354,13 +355,15 @@ CREATE TABLE `item_element` (
   UNIQUE KEY `item_element_u1` (`parent_item_id`, `name`, `derived_from_item_element_id`),
   UNIQUE KEY `item_element_u2` (`entity_info_id`),
   KEY `item_element_k1` (`parent_item_id`),
-  KEY `item_element_k2` (`contained_item_id`),
-  KEY `item_element_k3` (`entity_info_id`),
-  KEY `item_element_k4` (`derived_from_item_element_id`),
+  KEY `item_element_k2` (`contained_item_id1`),
+  KEY `item_element_k3` (`contained_item_id2`),
+  KEY `item_element_k4` (`entity_info_id`),
+  KEY `item_element_k5` (`derived_from_item_element_id`),
   CONSTRAINT `item_element_fk1` FOREIGN KEY (`parent_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `item_element_fk2` FOREIGN KEY (`contained_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `item_element_fk3` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE,
-  CONSTRAINT `item_element_fk4` FOREIGN KEY (`derived_from_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
+  CONSTRAINT `item_element_fk2` FOREIGN KEY (`contained_item_id1`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_fk3` FOREIGN KEY (`contained_item_id2`) REFERENCES `item` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_fk4` FOREIGN KEY (`entity_info_id`) REFERENCES `entity_info` (`id`) ON UPDATE CASCADE,
+  CONSTRAINT `item_element_fk5` FOREIGN KEY (`derived_from_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
