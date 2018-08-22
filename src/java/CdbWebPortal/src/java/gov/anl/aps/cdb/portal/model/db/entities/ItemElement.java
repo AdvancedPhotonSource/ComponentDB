@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -95,9 +94,12 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     @JoinColumn(name = "derived_from_item_element_id", referencedColumnName = "id")
     @ManyToOne
     private ItemElement derivedFromItemElement;
-    @JoinColumn(name = "contained_item_id", referencedColumnName = "id")
+    @JoinColumn(name = "contained_item_id1", referencedColumnName = "id")
     @ManyToOne(cascade = CascadeType.MERGE)
-    private Item containedItem;
+    private Item containedItem1;
+    @JoinColumn(name = "contained_item_id2", referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    private Item containedItem2;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     private EntityInfo entityInfo;
@@ -297,12 +299,21 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     @XmlTransient
     public Item getContainedItem() {
-        return containedItem;
+        return containedItem1;
     }
 
     public void setContainedItem(Item containedItem) {
         resetCatalogInventoryMachineDesingItems(); 
-        this.containedItem = containedItem;
+        this.containedItem1 = containedItem;
+    }
+    
+    @XmlTransient
+    public Item getContainedItem2() {
+        return containedItem2;
+    }
+
+    public void setContainedItem2(Item containedItem2) {
+        this.containedItem2 = containedItem2;
     }
 
     @Override
@@ -398,25 +409,25 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     private void loadCatalogInventoryMachineDesignItems() {
         if (!loadedCatalogInventoryMachineDesignItem) {
-            if (containedItem != null) {
-                Domain domain = containedItem.getDomain();
+            if (containedItem2 != null) {
+                Domain domain = containedItem2.getDomain();
                 switch (domain.getId()) {
                     case ItemDomainName.CATALOG_ID:
-                        catalogItem = containedItem;
+                        catalogItem = containedItem2;
                         machineDesignDisplayString = "N/A";
                         catalogDisplayString = catalogItem.toString();
                         itemCanHaveInventoryItem = true;
                         break;
                     case ItemDomainName.INVENTORY_ID:
-                        inventoryItem = containedItem;
-                        catalogItem = containedItem.getDerivedFromItem();
+                        inventoryItem = containedItem2;
+                        catalogItem = containedItem2.getDerivedFromItem();
                         machineDesignDisplayString = "N/A";
                         catalogDisplayString = catalogItem.toString();
                         inventoryDisplayString = inventoryItem.getName(); 
                         itemCanHaveInventoryItem = true;
                         break;
                     case ItemDomainName.MACHINE_DESIGN_ID:
-                        machineDesignItem = (ItemDomainMachineDesign) containedItem;
+                        machineDesignItem = (ItemDomainMachineDesign) containedItem1;
                         machineDesignDisplayString = machineDesignItem.toString(); 
                         catalogDisplayString = "N/A";
                         inventoryDisplayString = "N/A";
