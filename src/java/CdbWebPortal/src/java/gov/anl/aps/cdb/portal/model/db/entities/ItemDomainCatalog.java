@@ -17,6 +17,8 @@ import javax.persistence.Entity;
 @DiscriminatorValue(value = ItemDomainName.CATALOG_ID + "")  
 public class ItemDomainCatalog extends Item {
     
+    private transient String machineDesignPlaceholderName = null; 
+    
     public List<ItemDomainInventory> getInventoryItemList() {
         return (List<ItemDomainInventory>)(List<?>) super.getDerivedFromItemList(); 
     }        
@@ -25,5 +27,13 @@ public class ItemDomainCatalog extends Item {
     public Item createInstance() {
         return new ItemDomainCatalog(); 
     }        
+
+    public String getMachineDesignPlaceholderName() {
+        return machineDesignPlaceholderName;
+    }
+
+    public void setMachineDesignPlaceholderName(String machineDesignPlaceholderName) {
+        this.machineDesignPlaceholderName = machineDesignPlaceholderName;
+    }
    
 }
