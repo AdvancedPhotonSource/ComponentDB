@@ -301,7 +301,7 @@ class ItemHandler(CdbDbEntityHandler):
         try:
             query = session.query(Item).join(Domain)
             query = query.filter(Domain.name == domainName)
-            query = query.filter(~ exists().where(ItemElement.contained_item_id == Item.id))
+            query = query.filter(~ exists().where(ItemElement.contained_item_id1 == Item.id))
 
             dbItems = query.all()
             return dbItems
@@ -777,7 +777,7 @@ class ItemHandler(CdbDbEntityHandler):
     def getParentItems(self, session, itemId):
         query = session.query(Item)\
             .join(ItemElement.parentItem)\
-            .filter(ItemElement.contained_item_id == itemId)
+            .filter(ItemElement.contained_item_id1 == itemId)
 
         dbItems = query.all()
         return dbItems
