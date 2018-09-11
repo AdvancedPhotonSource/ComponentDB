@@ -20,7 +20,8 @@ See LICENSE file.
         <p:contextMenu for="itemMachineDesignListDataTable" style="width: 200px;"
                        nodeType="MachineDesignTemplate"
                        id="machineDesignDualViewTemplateContextMenu"
-                       widgetVar="machineDesignDualViewTemplateContextMenuWidget">
+                       widgetVar="machineDesignDualViewTemplateContextMenuWidget"
+                       event="select contextmenu">
             <ui:include src="machineDesignContextMenu/addMachineDesignTemplateContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
@@ -30,7 +31,8 @@ See LICENSE file.
         <p:contextMenu for="itemMachineDesignListDataTable" style="width: 200px;"
                        nodeType="MachineDesignTemplateMember"
                        id="machineDesignDualViewTemplateMemberContextMenu"
-                       widgetVar="machineDesignDualViewTemplateMemberContextMenuWidget">
+                       widgetVar="machineDesignDualViewTemplateMemberContextMenuWidget"
+                       event="select contextmenu">
             <ui:include src="machineDesignContextMenu/addMachineDesignTemplateContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />                        
@@ -40,9 +42,10 @@ See LICENSE file.
         <p:contextMenu for="itemMachineDesignListDataTable" style="width: 200px;"
                        nodeType="MachineDesignTemplatePlaceholder"
                        id="machineDesignDualViewMachineDesignPlaceholderContextMenu"
-                       widgetVar="machineDesignDualViewMachineDesignPlaceholderContextMenuWidget">
+                       widgetVar="machineDesignDualViewMachineDesignPlaceholderContextMenuWidget"
+                       event="select contextmenu">
             <p:menuitem value="Fullfil placeholder" icon="fa fa-plus"
-                        update="machineDesignDualColumnListViewPanelGrid"
+                        update="machineDesignDualListViewOutputPanel"
                         disabled="#{disabledEditContextMenuItemForSelectionParent}"
                         action="#{entityController.prepareCreateMachineDesignForDualViewTemplateElementPlaceholder()}"/>
         </p:contextMenu>
@@ -50,9 +53,9 @@ See LICENSE file.
         <p:contextMenu for="itemMachineDesignListDataTable" style="width: 200px;"
                        nodeType="MachineDesign"
                        id="machineDesignDualViewMachineDesignContextMenu"
-                       widgetVar="machineDesignDualViewMachineDesignContextMenuWidget">
-            <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />            
-            <ui:include src="machineDesignContextMenu/addCatalogItemContextMenuItem.xhtml" />
+                       widgetVar="machineDesignDualViewMachineDesignContextMenuWidget"
+                       event="select contextmenu">
+            <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />                        
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/destroyMachineDesignContextMenuItem.xhtml" /> 
         </p:contextMenu>    
@@ -60,10 +63,10 @@ See LICENSE file.
         <p:contextMenu for="itemMachineDesignListDataTable" style="width: 200px;"
                        nodeType="MachineDesignMember"
                        id="machineDesignDualViewMachineDesignMemberContextMenu"
-                       widgetVar="machineDesignDualViewMachineDesignMemberContextMenuWidget">
+                       widgetVar="machineDesignDualViewMachineDesignMemberContextMenuWidget"
+                       event="select contextmenu">
             <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />
-            <ui:include src="machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml" />
-            <ui:include src="machineDesignContextMenu/addCatalogItemContextMenuItem.xhtml" /> 
+            <ui:include src="machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml" />            
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
         </p:contextMenu>
@@ -71,25 +74,22 @@ See LICENSE file.
         <p:contextMenu for="itemMachineDesignListDataTable" style="width: 200px;"
                        nodeType="MachineDesignMemberCatalog"
                        id="machineDesignDualViewMachineDesignMemberCatalogContextMenu"
-                       widgetVar="machineDesignDualViewMachineDesignMemberCatalogContextMenuWidget">
+                       widgetVar="machineDesignDualViewMachineDesignMemberCatalogContextMenuWidget"
+                       event="select contextmenu">
             <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />
-            <ui:include src="machineDesignContextMenu/assignInventoryItemContextMenuItem.xhtml" /> 
-            <ui:include src="machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml">
-                <ui:param name="assignCatalogMenuItemText"
-                          value="Change catalog"/> 
-            </ui:include>
-            <ui:include src="machineDesignContextMenu/addCatalogItemContextMenuItem.xhtml" /> 
+            <ui:include src="machineDesignContextMenu/assignInventoryItemContextMenuItem.xhtml" />                    
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />     
-            <ui:include src="machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" />           
         </p:contextMenu>
         
         <p:contextMenu for="itemMachineDesignListDataTable" style="width: 200px;"
                        nodeType="MachineDesignMemberInventory"
                        id="machineDesignDualViewMachineDesignMemberInventoryContextMenu"
                        widgetVar="machineDesignDualViewMachineDesignMemberInventoryContextMenuWidget">
-            <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />
-            <ui:include src="machineDesignContextMenu/addCatalogItemContextMenuItem.xhtml" /> 
-            <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />            
+            <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />    
+            <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/unlinkContainedItem2ToDerivedItemContextMenuItem.xhtml" />
         </p:contextMenu>
     </p:outputPanel>
