@@ -1224,6 +1224,16 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     @Override
     public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
         return new InventoryItemElementConstraintInformation(itemElement);
+    } 
+
+    @Override
+    public String getPrimaryImageValueForItem(Item item) {
+        String result = super.getPrimaryImageValueForItem(item); 
+        if (result.equals("")) {
+            Item catalogItem = item.getDerivedFromItem();
+            return super.getPrimaryImageValueForItem(catalogItem);
+        }
+        return result; 
     }
 
     /**
