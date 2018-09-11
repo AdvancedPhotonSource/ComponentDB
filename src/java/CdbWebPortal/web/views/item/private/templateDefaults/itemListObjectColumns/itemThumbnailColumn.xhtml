@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:param name="rendered"
+              value="#{rendered != null ? rendered : true}" /> 
+
+    <ui:param name="thumbnailColumnName"
+              value="#{thumbnailColumnName != null ? thumbnailColumnName : 'Primary Image'}" /> 
+        
+    <ui:param name="imageCentered" value="#{imageCentered != null ? imageCentered : true}" /> 
+    
+    <ui:param name="primaryImageContentsStyle"
+              value="#{imageCentered ? 'centeredContent' : ''}" />
+    
+    <ui:param name="primaryImageColumnStyle"
+              value="#{primaryImageColumnStyle != null ? primaryImageColumnStyle : 'narrowColumn'}" /> 
+    
+    <ui:param name="itemHasPrimaryImage" value="#{itemHasPrimaryImage != null 
+                                                  ? itemHasPrimaryImage 
+                                                  : entityController.itemHasPrimaryImage(itemListObject)}"/>
+    
+    <ui:param name="primaryImageThumbnailForItem"
+              value="#{primaryImageThumbnailForItem != null 
+                       ? primaryImageThumbnailForItem 
+                       : entityController.getPrimaryImageThumbnailForItem(itemListObject)}" />
+    
+    <ui:param name="primaryImageValueForItem"
+              value="#{primaryImageValueForItem != null 
+                       ? primaryImageValueForItem 
+                       : entityController.getPrimaryImageValueForItem(itemListObject)}"/>
+    
+    
+    <p:column styleClass="#{primaryImageColumnStyle}" 
+              headerText="#{thumbnailColumnName}" 
+              exportable="false"
+              rendered="#{rendered}">
+        
+        <ui:fragment rendered="#{itemHasPrimaryImage}">
+            <span class="#{primaryImageContentsStyle}">
+                <p:graphicImage styleClass="domainEntityPropertyValueThumbnail" value="#{primaryImageThumbnailForItem}"
+                                onclick="PF('imagePreviewScaled#{itemListObject.viewUUID}DialogWidget').hide();
+                                        PF('imagePreviewScaled#{itemListObject.viewUUID}DialogWidget').show()"/>
+            </span>
+            <p:dialog dynamic="true"
+                      header="#{entityController.getItemDisplayString(itemListObject)}"
+                      widgetVar="imagePreviewScaled#{itemListObject.viewUUID}DialogWidget"
+                      styleClass="viewTransparentBackgroundDialog"
+                      resizable="false">                
+                <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPathByValue(primaryImageValueForItem)}" target="_page_#{primaryImageValueForItem}">
+                    <p:graphicImage styleClass="domainEntityPropertyValueThumbnail" value="#{propertyValueController.getScaledImagePathByValue(primaryImageValueForItem)}" />
+                </h:outputLink>
+            </p:dialog>
+        </ui:fragment>
+        <ui:fragment rendered="#{!itemHasPrimaryImage}">
+            <span class="#{primaryImageContentsStyle}">
+                <span class="fa fa-image" /> 
+            </span>
+        </ui:fragment>
+    </p:column>
+
+</ui:composition>
