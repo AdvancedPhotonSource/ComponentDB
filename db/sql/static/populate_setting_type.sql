@@ -300,6 +300,17 @@ description.','true'),
 (18003,'UserGroup.List.FilterBy.Description','Filter for user group description.',NULL),
 (18004,'UserGroup.List.FilterBy.Name','Filter for user group name.',NULL),
 (19000,'UserSetting.List.Display.NumberOfItemsPerPage','Display specified number of items per page.','25'),
-(20000,'ItemProject.System.ItemProjectId','Default item project to be used in the system',NULL);
+(20000,'ItemProject.System.ItemProjectId','Default item project to be used in the system',NULL),
+(21000,'itemDomainMachineDesign.List.Display.CreatedByUser','Display created by username.','false'),
+(21001,'itemDomainMachineDesign.List.Display.CreatedOnDateTime','Display created on date/time.','false'),
+(21002,'ItemDomainMachineDesign.List.Display.OwnerUser','Display owner username.','false'),
+(21003,'ItemDomainMachineDesign.List.Display.OwnerGroup','Display owner group name.','false'),
+(21004,'itemDomainMachineDesign.List.Display.Description','Display component description.','true'),
+(21005,'itemDomainMachineDesign.List.Display.Id','Display component id.','false'),
+(21006,'itemDomainMachineDesign.List.Display.LastModifiedByUser','Display last modified by username.','false'),
+(21007,'itemDomainMachineDesign.List.Display.LastModifiedOnDateTime','Display last modified on date/time.','false'),
+(21008,'ItemDomainMachineDesign.List.Display.Location','Display column for location in machine design list.','true'),
+(21009,'ItemDomainMachineDesign.List.Display.LocationDetails','Display column for location details in machine design list.','false'),
+(21010,'ItemDomainMachineDesign.List.Display.ItemProject','Display column for project in machine design list.','false');
 /*!40000 ALTER TABLE `setting_type` ENABLE KEYS */;
 UNLOCK TABLES;
