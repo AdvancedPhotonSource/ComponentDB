@@ -40,13 +40,7 @@ See LICENSE file.
                     <ui:param name="updateTarget" value="machineDesignElementFinalize" />
                 </ui:include>
             </p:outputPanel>                                                
-
-            <ui:include src="itemDomainMachineDesignCreateFromTemplateObject.xhtml">
-                <ui:param name="rendered"
-                          value="#{itemDomainMachineDesignController.machineDesignItemCreateFromTemplate}" />
-                <ui:param name="machineDesignNameValueChangedCommand"
-                          value="machineDesignTitleAddElementReplacementValueChange()" />
-            </ui:include>
+            
 
             <ui:include src="itemDomainMachineDesignItemDetailsEditObject.xhtml" /> 
 
@@ -56,10 +50,7 @@ See LICENSE file.
                          update="machineDesignElementFinalize #{finalStepUpdateTarget}"
                          action="#{itemDomainMachineDesignController.titleGenerationValueChange()}"/>
 
-        <p:remoteCommand name="newMachineDesignElementContainedItemValueChanged"
-                         action="#{itemDomainMachineDesignController.newMachineDesignElementContainedItemValueChanged()}"
-                         process="@this"
-                         update="#{finalStepUpdateTarget}"/>
+        
     </p:panel>
 
 </ui:composition>
