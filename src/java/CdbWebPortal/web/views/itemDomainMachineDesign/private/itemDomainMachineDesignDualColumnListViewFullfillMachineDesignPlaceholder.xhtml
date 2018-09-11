@@ -12,8 +12,13 @@ See LICENSE file.
     <p:panel header="Fullfil placeholder template"
              id="fullfilPlaceholderTemplateToListConfigurationPanel"
              rendered="#{entityController.displayCreateMachineDesignForTemplateElementPlaceholder}">
-        <ui:include src="itemDomainMachineDesignItemElementCreateFromTemplateContents.xhtml" />
-
+        <ui:include src="itemDomainMachineDesignCreateFromTemplateEditPanelGrid.xhtml" >
+            <ui:param name="viewName"
+                      value="fullfillPlaceholder" />
+            <ui:param name="rendered"
+                      value="#{true}" /> 
+        </ui:include>
+        
         <br/>
         <p:commandButton icon="fa fa-save"
                          value="Save" 
