@@ -10,7 +10,10 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">   
 
+    <ui:param name="dualConfigurationViewEnabled"
+              value="#{entityController.displayListConfigurationView}"/>
 
+    <ui:param name="settingObject" value="#{itemDomainMachineDesignController.settingObject}" /> 
 
     <p:treeTable id='itemMachineDesignListDataTable'
                  styleClass="machineDesignListTreeTable"
@@ -33,11 +36,11 @@ See LICENSE file.
 
         <ui:param name="itemListObject"
                   value="#{itemTreeListObject}" /> 
-        
+
         <ui:param name="topLevelItem"
                   value="#{itemElementTreeListObject.name == null}" />
 
-        <p:column headerText="Item Name">
+        <p:column headerText="Machine Design Item Name">
             <ui:param name="domainIcon" 
                       value="#{itemTreeListObject != null 
                                ? itemTreeListObject.domain.domainRepIcon
@@ -54,45 +57,89 @@ See LICENSE file.
 
         </p:column>
 
-        <p:column headerText="Assigned Catalog &#38; Inventory Item" >
-            <ui:param name="assignedItem"
+        <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemThumbnailColumn.xhtml" >             
+            <ui:param name="thumbnailColumnName"
+                      value=" " /> 
+            
+            <ui:param name="itemHasPrimaryImage"
+                      value="#{itemDomainMachineDesignController.isMachineDesignItemHasPrimaryImage(itemElementTreeListObject)}"/>             
+            <ui:param name="primaryImageThumbnailForItem"
+                      value="#{itemDomainMachineDesignController.getPrimaryImageThumbnailForMachineDesignItem(itemElementTreeListObject)}" /> 
+            <ui:param name="primaryImageValueForItem"
+                      value="#{itemDomainMachineDesignController.getPrimaryImageValueForMachineDesignItem(itemElementTreeListObject)}" /> 
+        </ui:include>
+
+        <p:column headerText="Description"
+                  rendered="#{!dualConfigurationViewEnabled 
+                              and settingObject.displayDescription}">
+            <h:outputText value="#{itemListObject.description}" /> 
+        </p:column>
+        
+        <ui:param name="assignedItem"
                       value="#{itemElementTreeListObject.containedItem2}"/> 
-            <ui:fragment rendered="#{itemDomainMachineDesignController.isItemInventory(assignedItem)}">
+        
+        <ui:param name="isAssignedItemInventory"
+                  value="#{itemDomainMachineDesignController.isItemInventory(assignedItem)}" />
+        
+        <ui:param name="isAssignedItemCatalog"
+                  value="#{itemDomainMachineDesignController.isItemCatalog(assignedItem)}" /> 
+
+        <p:column headerText="Assigned Catalog &#38; Inventory Item" >
+            <ui:fragment rendered="#{isAssignedItemInventory}">
                 <div class="actionLink">
                     <p:commandLink id="#{entityTypeName}CatalogLink" 
                                    onclick="PF('loadingDialog').show()"
                                    action="#{entityController.prepareView(assignedItem.derivedFromItem)}" 
-                                   styleClass="ui-icon ui-icon-catalog" 
+                                   styleClass="ui-icon ui-icon-catalog custom-icon-blue" 
                                    title="View Catalog Item"/>
                     <p:commandLink id="#{entityTypeName}InventoryLink" 
                                    onclick="PF('loadingDialog').show()"
                                    action="#{entityController.prepareView(assignedItem)}" 
-                                   styleClass="ui-icon ui-icon-inventory" 
+                                   styleClass="ui-icon ui-icon-inventory custom-icon-blue" 
                                    title="View Inventory Item"/>
                 </div>
-            </ui:fragment>
-            
-            <ui:fragment rendered="#{itemDomainMachineDesignController.isItemCatalog(assignedItem)}">
+            </ui:fragment>            
+
+            <ui:fragment rendered="#{isAssignedItemCatalog}">
                 <div class="actionLink">
                     <p:commandLink id="#{entityTypeName}CatalogLink2" 
                                    onclick="PF('loadingDialog').show()"
                                    action="#{entityController.prepareView(assignedItem)}" 
-                                   styleClass="ui-icon ui-icon-catalog" 
+                                   styleClass="ui-icon ui-icon-catalog custom-icon-blue" 
                                    title="View Catalog Item"/>
                 </div>
             </ui:fragment>
 
             <h:outputLabel value="#{topLevelItem
                                     ? 'N/A Top Level'
-                                    : assignedItem}"/>
-            <h:outputLabel rendered="#{!itemDomainMachineDesignController.isItemMachineDesign(itemListObject)}"
-                           value="N/A child of parent assigned item"/>
+                                    : assignedItem}"/>            
         </p:column>
-
+      
         <ui:include src="../../locatableItem/private/locatableItemListLocationObject.xhtml" >
             <ui:param name="alternateLocationString"
                       value="#{topLevelItem ? '' : '&#60; parent &#62;'}" />
+            <ui:param name="renderedLocation"
+                      value="#{!dualConfigurationViewEnabled}" />
         </ui:include>
+
+        <p:column headerText="Project"
+                  rendered="#{!dualConfigurationViewEnabled 
+                              and settingObject.displayItemProject}">
+            <h:outputText value="#{itemListObject.itemProjectString}" />            
+        </p:column>
+
+        <p:column headerText="Id"
+                  rendered="#{!dualConfigurationViewEnabled 
+                              and settingObject.displayId}">
+            <h:outputText value="#{itemListObject.id}" />
+        </p:column>
+
+        <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
+            <ui:param name="entityInfoObject" value="#{itemListObject.entityInfo}"/>
+            <ui:param name="entityInfoObjectFilterable" value="true" />
+            <ui:param name="rendered" value="#{!dualConfigurationViewEnabled}" /> 
+        </ui:include>
+
 
     </p:treeTable>
 
