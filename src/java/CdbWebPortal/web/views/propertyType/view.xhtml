@@ -13,8 +13,8 @@ See LICENSE file.
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:event type="preRenderComponent" listener="#{propertyTypeController.processViewRequestParams}"/>
-        <f:event type="preRenderComponent" listener="#{allowedPropertyValueController.processPreRender()}"/>
+        <f:viewAction action="#{propertyTypeController.processViewRequestParams}"/>
+        <f:viewAction action="#{allowedPropertyValueController.processPreRender()}"/>
     </f:metadata>
 
     <ui:define name="pageTitle">: View Property Type #{propertyTypeController.selected.name}</ui:define>

@@ -12,7 +12,7 @@ See LICENSE file.
                 template="../../templates/contentViewTemplate.xhtml">
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:event type="preRenderComponent" listener="#{userInfoController.processViewRequestParams}"/>
+        <f:viewAction action="#{userInfoController.processViewRequestParams}"/>
     </f:metadata>
 
     <ui:define name="pageTitle">: View User #{userInfoController.selected.username}</ui:define>

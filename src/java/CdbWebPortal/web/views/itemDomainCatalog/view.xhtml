@@ -15,13 +15,13 @@ See LICENSE file.
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:event type="preRenderComponent" listener="#{itemDomainCatalogController.processViewRequestParams()}"/>
-        <f:event type="preRenderComponent" listener="#{itemElementController.processPreRender()}"/>
-        <f:event type="preRenderComponent" listener="#{propertyValueController.processPreRender()}"/>
-        <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>
-        <f:event type="preRenderComponent" listener="#{itemSourceController.processPreRender()}"/>
-        <f:event type="preRenderComponent" listener="#{itemDomainInventoryController.processPreRender()}"/>
-        <f:event type="preRenderComponent" listener="#{itemMemberViewController.processPreRender()}" />
+        <f:viewAction action="#{itemDomainCatalogController.processViewRequestParams()}"/>
+        <f:viewAction action="#{itemElementController.processPreRender()}"/>
+        <f:viewAction action="#{propertyValueController.processPreRender()}"/>
+        <f:viewAction action="#{logController.processPreRender()}"/>
+        <f:viewAction action="#{itemSourceController.processPreRender()}"/>
+        <f:viewAction action="#{itemDomainInventoryController.processPreRender()}"/>
+        <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
     
     <ui:define name="derivedFromItems">
