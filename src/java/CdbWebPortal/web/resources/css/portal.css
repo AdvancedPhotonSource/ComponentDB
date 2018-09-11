@@ -739,6 +739,8 @@ h2 {
     background-position: center;
     background-size: contain; 
     padding-right: 5px;
+    fill: currentColor; 
+    filter: grayscale(100%) brightness(500%) brightness(10%);
 }
 
 .ui-icon-inventory {
@@ -748,6 +750,7 @@ h2 {
     background-position: center;
     background-size: contain; 
     padding-right: 5px;
+    filter: grayscale(100%) brightness(500%) brightness(10%);
 }
 
 .ui-icon-machine-design {
@@ -776,6 +779,10 @@ h2 {
     background-size: contain; 
     padding-right: 5px;
 }
+
+.custom-icon-blue {
+    filter: hue-rotate(210deg) saturate(5);
+} 
 
 .ui-icon-attachment {
     background-image: url(../../resources/images/attachment.ico) !important;
