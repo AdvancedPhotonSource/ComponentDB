@@ -982,7 +982,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         if (currentItem != null) {
             prepareAddItemElement(getCurrent(), currentEditItemElement);
         }
-        
+
         ItemDomainEntity containedItem = (ItemDomainEntity) currentEditItemElement.getContainedItem();
         if (containedItem != null && containedItem.getId() == null) {
             try {
@@ -1012,7 +1012,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             checkItemElementsForItem(item);
 
             currentEditItemElementSaveButtonEnabled = true;
-            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+            SessionUtility.executeRemoteCommand(onSuccessCommand);
         } catch (CdbException ex) {
             failedValidateItemElement();
             SessionUtility.addErrorMessage(errorSummary, ex.getErrorMessage());
@@ -1696,21 +1696,27 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public List<Item> getParentItemList() {
         if (currentHasChanged()) {
             Item itemEntity = getCurrent();
+            parentItemList = getParentItemList(itemEntity);
+        }
 
-            parentItemList = new ArrayList<>();
+        return parentItemList;
+    }
 
-            List<ItemElement> itemElementList = itemEntity.getItemElementMemberList();
-            // Remove currently being viewed item. 
-            if (itemElementList != null) {
-                for (ItemElement itemElement : itemElementList) {
-                    if (parentItemList.contains(itemElement.getParentItem()) == false) {
-                        parentItemList.add(itemElement.getParentItem());
-                    }
+    public List<Item> getParentItemList(Item itemEntity) {
+
+        List<Item> itemList = new ArrayList<>();
+
+        List<ItemElement> itemElementList = itemEntity.getItemElementMemberList();
+        // Remove currently being viewed item. 
+        if (itemElementList != null) {
+            for (ItemElement itemElement : itemElementList) {
+                if (itemList.contains(itemElement.getParentItem()) == false) {
+                    itemList.add(itemElement.getParentItem());
                 }
             }
         }
 
-        return parentItemList;
+        return itemList;
     }
 
     @Override
@@ -1888,7 +1894,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     private PropertyValue getPrimaryImagePropertyValueForItem(Item item) {
         List<PropertyValue> imagePropertyValueList = getPropertyValueListWithHandlerForImages(item);
-        if (!imagePropertyValueList.isEmpty()) {
+        if (imagePropertyValueList != null && !imagePropertyValueList.isEmpty()) {
             for (PropertyValue propertyValue : imagePropertyValueList) {
                 String value = propertyValue.getPropertyMetadataValueForKey(PRIMARY_IMAGE_PROPERTY_METADATA_KEY);
 
@@ -1907,22 +1913,25 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     private List<PropertyValue> getPropertyValueListWithHandlerForImages(Item item) {
         String imageHandlerName = ImagePropertyTypeHandler.HANDLER_NAME;
-        return getPropertyValueListWithHandler(item.getPropertyValueDisplayList(), imageHandlerName);
+        return getPropertyValueListWithHandler(item.getPropertyValueList(), imageHandlerName);
     }
 
     private List<PropertyValue> getPropertyValueListWithHandler(List<PropertyValue> propertyValueList, String handlerName) {
-        List<PropertyValue> resultingList = new ArrayList<>();
-        for (PropertyValue propertyValue : propertyValueList) {
-            PropertyType propertyType = propertyValue.getPropertyType();
-            if (propertyType != null) {
-                PropertyTypeHandler propertyTypeHandler = propertyType.getPropertyTypeHandler();
-                if (propertyTypeHandler != null && propertyTypeHandler.getName().equals(handlerName)) {
-                    resultingList.add(propertyValue);
+        if (propertyValueList != null) {
+            List<PropertyValue> resultingList = new ArrayList<>();
+            for (PropertyValue propertyValue : propertyValueList) {
+                PropertyType propertyType = propertyValue.getPropertyType();
+                if (propertyType != null) {
+                    PropertyTypeHandler propertyTypeHandler = propertyType.getPropertyTypeHandler();
+                    if (propertyTypeHandler != null && propertyTypeHandler.getName().equals(handlerName)) {
+                        resultingList.add(propertyValue);
+                    }
                 }
             }
-        }
 
-        return resultingList;
+            return resultingList;
+        }
+        return null; 
     }
 
     @Override
@@ -2075,7 +2084,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public void setTemplateToCreateNewItem(ItemDomainEntity templateToCreateNewItem) {
         this.templateToCreateNewItem = templateToCreateNewItem;
-        this.createdFromTemplateForCurrentItem = templateToCreateNewItem;
+        this.createdFromTemplateForCurrentItem = templateToCreateNewItem;                
     }
 
     public void completeSelectionOfTemplate() {
@@ -2149,7 +2158,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public boolean getDisplayCreatedFromTemplateForCurrent() {
-        if (getEntityDisplayTemplates()) {
+        if (getEntityDisplayTemplates() && current != null) {
             return !current.getIsItemTemplate();
         }
         return false;
