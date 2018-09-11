@@ -13,14 +13,20 @@ See LICENSE file.
 
     <h:outputText value="Machine Design Item Name"
                   rendered="#{newMachineDesignCreation}"/>
-    <h:inputText id="newMachineDesignName"
-                 value="#{containedItem.name}"
-                 rendered="#{newMachineDesignCreation}">
-        <p:ajax event="blur" 
-                update="newMachineDesignName"         
-                process="@this"
-                oncomplete="newMachineDesignElementContainedItemValueChanged()"/> 
-    </h:inputText>
+    <p:outputPanel>
+        <h:inputText id="newMachineDesignName#{viewName}"
+                     value="#{containedItem.name}"
+                     rendered="#{newMachineDesignCreation}">
+            <p:ajax event="blur" 
+                    update="newMachineDesignName#{viewName}"         
+                    process="@this"
+                    oncomplete="newMachineDesignElementContainedItemValueChanged()"/> 
+        </h:inputText>
+        <p:remoteCommand name="newMachineDesignElementContainedItemValueChanged"
+                         action="#{itemDomainMachineDesignController.newMachineDesignElementContainedItemValueChanged()}"
+                         process="@this"
+                         oncomplete="updateMachineDesignAddButton()"/>
+    </p:outputPanel>
 
     <h:outputText value="Location"
                   rendered="#{newMachineDesignCreation}"/>
@@ -40,7 +46,7 @@ See LICENSE file.
             <ui:param name="itemObject"
                       value="#{containedItem}"/> 
             <ui:param name="viewName"
-                      value="NewMachineDesign"/>
+                      value="#{viewName}"/>
         </ui:include>
     </p:outputPanel>
 

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui">   
+
+
+    <p:panel header="Add Machine Design Using a Template Item"
+             id="addMachineDesignUsingTemplate"
+             rendered="#{entityController.displayAddMDFromTemplateConfigurationPanel}">
+
+        <ui:param name="templateToCreateNewItem"
+                  value="#{itemDomainMachineDesignController.templateToCreateNewItem}" />
+
+        <p:outputPanel rendered="#{templateToCreateNewItem == null}">
+            <ui:include src="../../item/private/itemSelectDataTable.xhtml">
+                <ui:param name="viewName" value="templateSelection" />
+                <ui:param name="updateTarget" 
+                          value="@parent" />
+                <ui:param name="selectionValue" 
+                          value="#{itemDomainMachineDesignController.templateToCreateNewItem}" />
+                <ui:param name="selectionTarget" 
+                          value="#{itemDomainMachineDesignController.templateToCreateNewItem}" />
+                <ui:param name="entityController" 
+                          value="#{itemDomainMachineDesignController}" />
+                <ui:param name="selectDataModel" 
+                          value="#{itemDomainMachineDesignController.machineDesignTemplatesSelectionList}" />
+                <ui:param name="additionalSelectionMadeRemoteCommands" 
+                          value="generateTemplateForElementMachineDesignNameVars()" /> 
+            </ui:include>
+        </p:outputPanel>
+        
+        <p:remoteCommand name="generateTemplateForElementMachineDesignNameVars"
+                         action="#{itemDomainMachineDesignController.generateTemplateForElementMachineDesignNameVars()}"
+                         update="machineDesignDualListViewOutputPanel"/> 
+
+
+        <ui:include src="itemDomainMachineDesignCreateFromTemplateEditPanelGrid.xhtml">
+            <ui:param name="templateTitleChangeUpdateTarget"
+                      value="addMachineDesignUsingTemplate" />
+            <ui:param name="rendered"
+                      value="#{templateToCreateNewItem != null}" /> 
+        </ui:include>
+                
+        <ui:include src="itemDomainMachineDesignDualColumnListViewAddButton.xhtml" /> 
+        <ui:include src="itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
+    </p:panel>    
+
+
+</ui:composition>
+
+
