@@ -24,6 +24,12 @@ See LICENSE file.
                  styleClass="detailsPanelViewDetailsPanel">
 
             <ui:include src="itemDomainMachineDesignPanelGrid.xhtml" /> 
+            
+            <ui:include src="../../common/private/commonViewInfoActionButton.xhtml"> 
+                <ui:param name="renderMoreInfo"
+                          value="#{true}" /> 
+            </ui:include>
+            <ui:include src="../../common/private/commonViewPermalinkActionButton.xhtml"/> 
 
         </p:panel>
 

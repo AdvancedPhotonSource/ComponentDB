@@ -10,6 +10,7 @@ See LICENSE file.
                 template="list.xhtml">
 
     <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+    <ui:param name="itemObject" value="#{entityController.current}" />    
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
@@ -19,7 +20,12 @@ See LICENSE file.
         <f:viewAction action="#{itemElementController.processPreRender()}"/>
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
-    
+
+    <ui:define name="additionalSupport" >
+        <ui:include src="../locatableItem/private/locatableItemLocationHistoryDialog.xhtml" />
+        <ui:include src="../entityInfo/private/domainEntityInfoViewDialog.xhtml" />
+    </ui:define>
+
 </ui:composition>
 
 
