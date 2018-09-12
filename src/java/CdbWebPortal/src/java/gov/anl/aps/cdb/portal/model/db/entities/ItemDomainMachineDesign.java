@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
@@ -20,6 +21,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
     
     private transient List<ItemElement> combinedItemElementList; 
     private transient ItemElement combinedItemElementListParentElement; 
+    private transient ItemElement currentItemElement; 
 
     @Override
     public Item createInstance() {
@@ -47,6 +49,33 @@ public class ItemDomainMachineDesign extends LocatableItem {
         } 
         
         return combinedItemElementList;
+    }
+    
+    /**
+     * Machine Design Heirarchy ensures each item is a child of only one item. 
+     * Method returns item element at which the current item is referenced. 
+     * 
+     * @param item
+     * @return 
+     */
+    public ItemElement getCurrentItemElement() {
+        if (currentItemElement == null) {
+            List<ItemElement> itemElementMemberList = getItemElementMemberList();
+            if (itemElementMemberList.size() > 0) {
+                for (ItemElement itemElement : itemElementMemberList) {
+                    Item parentItem = itemElement.getParentItem(); 
+                    if (ItemDomainMachineDesignController.isItemMachineDesign(parentItem)) {
+                        currentItemElement = itemElement; 
+                        break; 
+                    }
+                }
+            } else {
+                currentItemElement = new ItemElement();
+                currentItemElement.setContainedItem(this);
+            }
+        }
+        
+        return currentItemElement; 
     }
 
 }
