@@ -12,45 +12,70 @@ See LICENSE file.
 
     <h:outputLabel for="ownerUser" value="Owner User" styleClass="entityDataLabel"/>
     <p:inplace id="ownerUser" 
+               widgetVar="ownerUserWidget"
                editor="#{isEntityWriteable}" 
-               toggleable="#{isEntityWriteable}"
-               label="#{entityInfoObject.ownerUserDisplayName}"
-               styleClass="entityDataText">
+               toggleable="false">
         <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
         <p:ajax event="cancel" oncomplete="reloadEntityInfoOwnerUser()"/>
-        <p:remoteCommand name="reloadEntityInfoOwnerUser"
-                         action="#{entityController.reloadCurrent()}"
-                         update="ownerUser"
-                         />
-        <p:selectOneMenu rendered="#{entityInfoObject != null}" 
-                         value="#{entityInfoObject.ownerUser}" 
-                         converter="userInfoConverter"
-                         styleClass="entityDataText">
-            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-            <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
-        </p:selectOneMenu>
-        <p:message for="ownerUser"/>
-        <p:tooltip for="ownerUser" value="Owner user has the ability to modify this entity."/>
+
+        <f:facet name="output">
+            <p:outputPanel>
+                <p:commandLink id="ownerUserEditShowButton"
+                               styleClass="fa-link-icon fa-icon fa fa-pencil"
+                               onclick="PF('ownerUserWidget').show();"
+                               rendered="#{isEntityWriteable}"/>
+                <h:outputText value="#{entityInfoObject.ownerUserDisplayName}" title="Owner User" styleClass="entityDataText" />
+            </p:outputPanel>
+        </f:facet>
+
+        <f:facet name="input">
+            <p:remoteCommand name="reloadEntityInfoOwnerUser"
+                             action="#{entityController.reloadCurrent()}"
+                             update="ownerUser"
+                             />
+            <p:selectOneMenu rendered="#{entityInfoObject != null}" 
+                             value="#{entityInfoObject.ownerUser}" 
+                             converter="userInfoConverter"
+                             styleClass="entityDataText">
+                <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+                <f:selectItems var="ownerUser" value="#{userInfoController.availableItems}" itemLabel="#{ownerUser.fullNameForSelection}" itemValue="#{ownerUser}"/>
+            </p:selectOneMenu>
+            <p:message for="ownerUser"/>
+            <p:tooltip for="ownerUser" value="Owner user has the ability to modify this entity."/>
+        </f:facet>
     </p:inplace>
 
     <h:outputLabel for="ownerGroup" value="Owner Group" styleClass="entityDataLabel"/>
     <p:inplace id="ownerGroup" 
+               widgetVar="ownerGroupWidget"
                editor="#{isEntityWriteable}" 
-               toggleable="#{isEntityWriteable}"
-               label="#{entityInfoObject.ownerGroupDisplayName}"
+               toggleable="false"
                styleClass="entityDataText">
         <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
         <p:ajax event="cancel" oncomplete="reloadEntityInfoOwnerGroup()"/>
-        <p:remoteCommand name="reloadEntityInfoOwnerGroup"
-                         action="#{entityController.reloadCurrent()}"
-                         update="ownerGroup"
-                         />
-        <p:selectOneMenu  value="#{entityInfoObject.ownerUserGroup}" converter="userGroupConverter" styleClass="entityDataText">
-            <f:selectItem itemLabel="Select" itemValue="#{null}"/>
-            <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
-        </p:selectOneMenu>
-        <p:message for="ownerGroup"/> 
-        <p:tooltip for="ownerGroup" value="Any user who is a member of the owner group has the ability to modify this entity if the group-writeable flag is set."/>
+
+        <f:facet name="output">
+            <p:outputPanel>
+                <p:commandLink id="ownerGroupEditShowButton"
+                               styleClass="fa-link-icon fa-icon fa fa-pencil"
+                               onclick="PF('ownerGroupWidget').show();"
+                               rendered="#{isEntityWriteable}"/>
+                <h:outputText value="#{entityInfoObject.ownerGroupDisplayName}" title="Owner Group" styleClass="entityDataText" />
+            </p:outputPanel>
+        </f:facet>
+
+        <f:facet name="input">
+            <p:remoteCommand name="reloadEntityInfoOwnerGroup"
+                             action="#{entityController.reloadCurrent()}"
+                             update="ownerGroup"
+                             />
+            <p:selectOneMenu  value="#{entityInfoObject.ownerUserGroup}" converter="userGroupConverter" styleClass="entityDataText">
+                <f:selectItem itemLabel="Select" itemValue="#{null}"/>
+                <f:selectItems var="ownerGroup" value="#{userGroupController.availableItems}" itemLabel="#{ownerUserGroup.name}" itemValue="#{ownerGroup}"/>
+            </p:selectOneMenu>
+            <p:message for="ownerGroup"/> 
+            <p:tooltip for="ownerGroup" value="Any user who is a member of the owner group has the ability to modify this entity if the group-writeable flag is set."/>
+        </f:facet>
     </p:inplace>
 
     <h:outputLabel for="createdBy" value="Created By" styleClass="entityDataLabel"/>
@@ -73,13 +98,27 @@ See LICENSE file.
 
     <h:outputLabel for="groupWriteable" value="Group Writeable" styleClass="entityDataLabel"/>
     <p:inplace id="groupWriteable" 
+               widgetVar="groupWriteableWidget"
                editor="#{isEntityWriteable}" 
-               toggleable="#{isEntityWriteable}"
+               toggleable="false"
                styleClass="entityDataText">
         <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-        <p:selectBooleanCheckbox value="#{entityInfoObject.isGroupWriteable}" styleClass="entityDataText"/>
-        <p:message for="groupWriteable"/> 
-        <p:tooltip for="groupWriteable" value="This flag determines whether owner group members can modify this entity."/>
+
+        <f:facet name="output">
+            <p:outputPanel>
+                <p:commandLink id="groupWriteableEditShowButton"
+                               styleClass="fa-link-icon fa-icon fa fa-pencil"
+                               onclick="PF('groupWriteableWidget').show();"
+                               rendered="#{isEntityWriteable}"/>
+                <h:outputText value="#{entityInfoObject.isGroupWriteable}" title="Group Writeable" styleClass="entityDataText" />
+            </p:outputPanel>
+        </f:facet>
+
+        <f:facet name="input">
+            <p:selectBooleanCheckbox value="#{entityInfoObject.isGroupWriteable}" styleClass="entityDataText"/>
+            <p:message for="groupWriteable"/> 
+            <p:tooltip for="groupWriteable" value="This flag determines whether owner group members can modify this entity."/>
+        </f:facet>
 
     </p:inplace>
 

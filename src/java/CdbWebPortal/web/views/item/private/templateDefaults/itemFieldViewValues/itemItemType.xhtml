@@ -10,18 +10,36 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-        <p:inplace id="itemType#{viewName}"
-                   rendered="#{entityController.entityDisplayItemType}"
-                   editor="#{isEntityWriteable}" 
-                   toggleable="#{isEntityWriteable}" 
-                   styleClass="entityDataText" 
-                   label="#{itemObject.itemTypeString}"> 
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
-            <p:ajax event="cancel" oncomplete="reloadItemType()"/>
+    <p:inplace id="itemType#{viewName}"
+               widgetVar="itemType#{viewName}Widget"
+               rendered="#{entityController.entityDisplayItemType}"
+               editor="#{isEntityWriteable}" 
+               toggleable="false" 
+               styleClass="entityDataText" 
+               label="#{itemObject.itemTypeString}"> 
+        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="cancel" oncomplete="reloadItemType()"/>
+
+        <f:facet name="output">
+            <p:outputPanel styleClass="inlineFlexOutputPanel">
+                <p:commandLink id="itemTypeEditShowButton"
+                               styleClass="fa-link-icon fa-icon fa fa-pencil"
+                               onclick="PF('itemType#{viewName}Widget').show();"
+                               rendered="#{isEntityWriteable}">
+                    <p:tooltip for="itemTypeEditShowButton"
+                               value="Edit #{entityController.itemItemTypeTitle}" />
+                </p:commandLink>
+                <h:outputText value="#{itemObject.itemTypeString}" title="#{entityController.itemItemTypeTitle}" styleClass="entityDataText" />
+            </p:outputPanel>
+        </f:facet>
+
+        <f:facet name="input">
+
             <p:remoteCommand name="reloadItemType"
                              action="#{entityController.reloadCurrent()}"
                              update="itemType#{viewName}"
                              />
             <ui:include src="../itemFieldEditValues/editWidgets/itemItemTypeSelectCheckboxMenu.xhtml"/>            
-        </p:inplace>
+        </f:facet>
+    </p:inplace>
 </ui:composition>
