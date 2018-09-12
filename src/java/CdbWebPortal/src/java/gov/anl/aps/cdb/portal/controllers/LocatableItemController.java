@@ -144,7 +144,7 @@ public class LocatableItemController implements Serializable {
 
             if (itemLocationItem == null) {
                 ItemElementRelationship itemElementRelationship;
-                itemElementRelationship = findItemLocationRelationship(locatableItem);
+                itemElementRelationship = getItemLocationRelationship(locatableItem); 
 
                 if (itemElementRelationship != null) {
                     ItemElement locationSelfItemElement = itemElementRelationship.getSecondItemElement();
@@ -163,6 +163,13 @@ public class LocatableItemController implements Serializable {
             }
             locatableItem.setOriginalLocationLoaded(true);
         }
+    }
+    
+    private ItemElementRelationship getItemLocationRelationship(LocatableItem item) {
+        if (item.getLocationRelationship() == null) {
+            item.setLocationRelationship(findItemLocationRelationship(item));
+        }
+        return item.getLocationRelationship(); 
     }
 
     private ItemElementRelationship findItemLocationRelationship(LocatableItem item) {
@@ -330,16 +337,12 @@ public class LocatableItemController implements Serializable {
     }
 
     public List<ItemElementRelationshipHistory> getItemLocationRelationshipHistory(LocatableItem item) {
-        String locationRelationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue();
-
-        List<ItemElementRelationship> locationRelationshipList = ItemUtility.getItemRelationshipList(item, locationRelationshipTypeName, true);
-
-        if (locationRelationshipList.size() > 1) {
-            SessionUtility.addErrorMessage("Error", "Item is part of two or more locations.");
-        } else if (locationRelationshipList.size() == 1) {
-            return locationRelationshipList.get(0).getItemElementRelationshipHistoryList();
+        ItemElementRelationship itemLocationRelationship = getItemLocationRelationship(item);
+        
+        if (itemLocationRelationship != null) {
+            return itemLocationRelationship.getItemElementRelationshipHistoryList();
         }
-
+        
         return null;
     }
 

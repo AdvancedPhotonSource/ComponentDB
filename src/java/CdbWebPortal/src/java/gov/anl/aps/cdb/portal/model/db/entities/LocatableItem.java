@@ -16,6 +16,7 @@ public abstract class LocatableItem extends Item {
     private transient TreeNode locationTree = null;
     private transient String locationDetails = null;
     private transient ItemDomainLocation location;
+    private transient ItemElementRelationship locationRelationship; 
     private transient String locationString;
     private transient DefaultMenuModel locationMenuModel;
 
@@ -29,6 +30,7 @@ public abstract class LocatableItem extends Item {
         locationString = null; 
         locationMenuModel = null; 
         originalLocationLoaded = false; 
+        locationRelationship = null; 
     }
 
     public TreeNode getLocationTree() {
@@ -69,6 +71,14 @@ public abstract class LocatableItem extends Item {
 
     public void setLocation(ItemDomainLocation location) {
         this.location = location;
+    }
+
+    public ItemElementRelationship getLocationRelationship() {
+        return locationRelationship;
+    }
+
+    public void setLocationRelationship(ItemElementRelationship locationRelationship) {
+        this.locationRelationship = locationRelationship;
     }
 
     public String getLocationString() {
