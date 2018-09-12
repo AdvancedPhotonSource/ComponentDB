@@ -23,16 +23,10 @@ See LICENSE file.
             <f:setPropertyActionListener value="#{entityObject}" target="#{entityController.current}"/>
             <p:tooltip for="#{entityTypeName}ViewDeleteButton" value="Delete #{entityController.displayEntityTypeName}."/>
         </p:commandButton>  
-        <p:commandButton id="#{entityTypeName}ViewInfoButton" update="#{entityTypeName}EntityInfoViewDialog"
-                         oncomplete="PF('#{entityTypeName}EntityInfoViewDialogWidget').show()" 
-                         value="More Info" alt="Info" icon="fa fa-info-circle" rendered="#{renderMoreInfo != null or renderMoreInfo}">
-            <p:tooltip for="#{entityTypeName}ViewInfoButton" value="View Entity Information."/>
-        </p:commandButton>
-        <p:commandButton id="#{entityTypeName}ViewPermanentLinkButton" 
-                         action="#{facesUtility.displayGrowlInfoMessage('Copied', 'Permalink copied to clipboard.')}" 
-                         value="Permalink" alt="Return" icon="fa fa-clipboard">
-            <p:tooltip for="#{entityTypeName}ViewPermanentLinkButton" value="Copy permanent link to clipboard."/>
-        </p:commandButton>
+        
+        <ui:include src="commonViewInfoActionButton.xhtml"/> 
+        
+        <ui:include src="commonViewPermalinkActionButton.xhtml" /> 
         
         <pe:clipboard id="viewPermanentLinkCopy" 
                       trigger="#{entityTypeName}ViewPermanentLinkButton" 
