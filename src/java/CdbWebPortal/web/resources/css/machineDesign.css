@@ -92,15 +92,15 @@ h1 {
     vertical-align: middle; 
 }
 
-@media (min-width:1550px){
+@media (min-width:1875px){
     .detailsPanelViewDetailsPanel {
-        width: 30%;
+        width: 44%;
         display: inline-block;
         vertical-align: top;
     }
 
     .detailsPanelViewGalleryPanel { 
-        width: 68%;
+        width: 54%;
         display: inline-block;
         min-width: 478.75px; 
         vertical-align: top;
