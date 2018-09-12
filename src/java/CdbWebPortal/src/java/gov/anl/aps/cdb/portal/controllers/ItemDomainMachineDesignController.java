@@ -105,7 +105,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         return item instanceof ItemDomainCatalog;
     }
 
-    public boolean isItemMachineDesign(Item item) {
+    public static boolean isItemMachineDesign(Item item) {
         return item instanceof ItemDomainMachineDesign;
     }
 
@@ -242,7 +242,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
             }
         }
     }
-
+    
     public TreeNode getSelectedItemInListTreeTable() {
         return selectedItemInListTreeTable;
     }
@@ -279,7 +279,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
         if (item != null) {
             setCurrent(item);
-            return view();
+            return viewForCurrentEntity(); 
         }
 
         SessionUtility.addErrorMessage("Error", "Cannot load details for a non machine design.");
