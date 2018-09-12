@@ -14,19 +14,6 @@ See LICENSE file.
     <ui:param name="domainEntityObject" value="#{itemDomainInventoryController.selected}" />
 
     <ui:define name="additionalItemInformation">
-        <p:column>
-            <h:outputLabel value="Location" styleClass="entityDataEmphasizedLabel"/>
-            <p:commandLink id="itemDomainInventoryLocationHistoryListViewButton" 
-                           onstart="PF('loadingDialog').show();"
-                           oncomplete="PF('loadingDialog').hide();
-                           PF('itemDomainInventoryLocationHistoryDialogWidget').show()" 
-                           styleClass="fa fa-link-icon fa-history" 
-                           title="View history."
-                           update="@form">
-                <p:tooltip for="itemDomainInventoryLocationHistoryListViewButton" value="View location value history."/>
-            </p:commandLink>
-        </p:column>      
-        
         <ui:include src="../../locatableItem/private/locatableItemViewPanelGridObject.xhtml" />
 
         <p:column id="componentInstanceStatusLabel">

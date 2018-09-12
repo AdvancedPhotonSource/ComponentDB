@@ -10,38 +10,89 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:inplace widgetVar="locationViewOutputEditableWidget"
-               editor="true"
+    <p:column>
+        <h:outputLabel value="Location" styleClass="entityDataEmphasizedLabel"/>
+        <p:commandLink id="itemDomainInventoryLocationHistoryListViewButton" 
+                       onstart="PF('loadingDialog').show();"
+                       oncomplete="PF('loadingDialog').hide();
+                       PF('itemDomainInventoryLocationHistoryDialogWidget').show()" 
+                       styleClass="fa fa-link-icon fa-history" 
+                       title="View history."
+                       update="@form">
+            <p:tooltip for="itemDomainInventoryLocationHistoryListViewButton" value="View location value history."/>
+        </p:commandLink>
+    </p:column>
+
+    <p:column>
+        <ui:param name="locataionMenuModelActionName"
+                  value="#{locataionMenuModelActionName != null 
+                           ? locataionMenuModelActionName
+                           : 'getItemLocataionDefaultMenuModel'}" /> 
+
+        <ui:param name="locataionMenuModelObjectParam"
+                  value="#{locataionMenuModelObjectParam != null 
+                           ? locataionMenuModelObjectParam 
+                           : itemObject}" />
+
+        <p:inplace widgetVar="locationViewOutputEditableWidget"
+                   toggleable="false">            
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="locationViewOutputEditShowButton"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('locationViewOutputEditableWidget').show();
+                                           PF('locationDetailsViewOutputEditableWidget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="locationViewOutputEditShowButton"
+                                   value="Edit Location" />
+                    </p:commandLink>
+                    <ui:include src="locatableItemLocationRelationshipTree.xhtml">
+                        <ui:param name="cdbDomainEntityObject" value="#{itemObject}" />
+                    </ui:include>
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:tieredMenu model="#{locatableItemController[locataionMenuModelActionName](locataionMenuModelObjectParam, 'locationSelectTieredMenuInplaceEdit')}"
+                              id="locationSelectTieredMenuInplaceEdit"
+                              toggleEvent="hover"
+                              autoDisplay="false"/>                                    
+            </f:facet>
+        </p:inplace>
+    </p:column>
+
+    <h:outputLabel for="locationDetails" value="Location Details" styleClass="entityDataLabel"/>
+
+    <p:inplace widgetVar="locationDetailsViewOutputEditableWidget"
                toggleable="false">
         <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
         <f:facet name="output">
             <p:outputPanel styleClass="inlineFlexOutputPanel">
-                <p:commandLink id="locationViewOutputEditShowButton"
+                <p:commandLink id="locationDetailsViewOutputEditShowButton"
                                styleClass="fa-link-icon fa-icon fa fa-pencil"
-                               onclick="PF('locationViewOutputEditableWidget').show()"
+                               onclick="PF('locationDetailsViewOutputEditableWidget').show();"
                                rendered="#{isEntityWriteable}">
-                    <p:tooltip for="locationViewOutputEditShowButton"
-                               value="Edit Location" />
+                    <p:tooltip for="locationDetailsViewOutputEditShowButton"
+                               value="Edit Location Details" />
                 </p:commandLink>
-                <ui:include src="locatableItemLocationRelationshipTree.xhtml">
-                    <ui:param name="cdbDomainEntityObject" value="#{domainEntityObject}" />
-                </ui:include>
+                <h:outputText id="locationDetails"
+                              value="#{locatableItemController.getLocationRelationshipDetails(itemObject)}"
+                              styleClass="entityDataText"/>
             </p:outputPanel>
         </f:facet>
-        <f:facet name="input">                       
-            <p:tieredMenu model="#{locatableItemController.getItemLocataionDefaultMenuModel(itemObject, 'locationSelectTieredMenuInplaceEdit')}"
-                          id="locationSelectTieredMenuInplaceEdit"
-                          toggleEvent="hover"
-                          autoDisplay="false"/>                                    
-        </f:facet>            
-    </p:inplace>        
 
+        <f:facet name="input">
+            <ui:include src="locatableItemLocationDetailsEditObjectInput.xhtml">
+                <ui:param name="viewName"
+                          value="inplace" /> 
+            </ui:include>
 
-
-    <h:outputLabel for="locationDetails" value="Location Details" styleClass="entityDataLabel"/>
-    <h:outputText id="locationDetails"
-                  value="#{locatableItemController.getLocationRelationshipDetails(domainEntityObject)}"
-                  styleClass="entityDataText"/>        
+            <p:commandButton icon="fa fa-check"
+                             onclick="PF('locationDetailsViewOutputEditableWidget').save()" />
+            <p:commandButton icon="fa fa-times"
+                             action="#{entityController.viewForCurrentEntity()}"
+                             onclick="PF('loadingDialog').show()"/>
+        </f:facet>
+    </p:inplace>
 
 </ui:composition>
 
