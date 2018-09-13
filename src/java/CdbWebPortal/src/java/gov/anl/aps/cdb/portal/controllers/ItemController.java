@@ -1931,7 +1931,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
             return resultingList;
         }
-        return null; 
+        return null;
     }
 
     @Override
@@ -2084,7 +2084,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public void setTemplateToCreateNewItem(ItemDomainEntity templateToCreateNewItem) {
         this.templateToCreateNewItem = templateToCreateNewItem;
-        this.createdFromTemplateForCurrentItem = templateToCreateNewItem;                
+        this.createdFromTemplateForCurrentItem = templateToCreateNewItem;
     }
 
     public void completeSelectionOfTemplate() {
@@ -2375,10 +2375,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     @Override
     public void checkItemUniqueness(Item item) throws CdbException {
         String name = item.getName();
-        String itemIdentifier1 = item.getItemIdentifier1();
-        String itemIdentifier2 = item.getItemIdentifier2();
-        Item derivedFromItem = item.getDerivedFromItem();
-        Domain itemDomain = item.getDomain();
         Integer qrId = item.getQrId();
 
         if (getEntityDisplayItemName()) {
@@ -2398,30 +2394,43 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             }
         }
 
+        if (verifyItemNameCombinationUniqueness(item) == false) {
+            String additionalInfo = "Please update some of the following:  ";
+
+            if (getEntityDisplayItemName()) {
+                additionalInfo += "Name, ";
+            }
+            if (getEntityDisplayItemIdentifier1()) {
+                additionalInfo += getItemIdentifier1Title() + ", ";
+            }
+            if (getEntityDisplayItemIdentifier2()) {
+                additionalInfo += getItemIdentifier2Title() + ", ";
+            }
+
+            //Remove last comma. 
+            additionalInfo = additionalInfo.substring(0, additionalInfo.length() - 2);
+            
+            throw new ObjectAlreadyExists("Item " + itemDomainToString(item) + " has nonunique attributes. " + additionalInfo);
+        }
+
+    }
+
+    protected boolean verifyItemNameCombinationUniqueness(Item item) {
+        String name = item.getName();
+        String itemIdentifier1 = item.getItemIdentifier1();
+        String itemIdentifier2 = item.getItemIdentifier2();
+        Item derivedFromItem = item.getDerivedFromItem();
+        Domain itemDomain = item.getDomain();
+
         Item existingItem = getEntityDbFacade().findByUniqueAttributes(derivedFromItem, itemDomain, name, itemIdentifier1, itemIdentifier2);
 
         // The same item will have all the same attributes if it wasn't changed.  
         if (existingItem != null) {
             if (Objects.equals(item.getId(), existingItem.getId()) == false) {
-                String additionalInfo = "Please update some of the following:  ";
-
-                if (getEntityDisplayItemName()) {
-                    additionalInfo += "Name, ";
-                }
-                if (getEntityDisplayItemIdentifier1()) {
-                    additionalInfo += getItemIdentifier1Title() + ", ";
-                }
-                if (getEntityDisplayItemIdentifier2()) {
-                    additionalInfo += getItemIdentifier2Title() + ", ";
-                }
-
-                //Remove last comma. 
-                additionalInfo = additionalInfo.substring(0, additionalInfo.length() - 2);
-
-                throw new ObjectAlreadyExists("Item " + itemDomainToString(item) + " has nonunique attributes. " + additionalInfo);
-
+                return false;
             }
         }
+        return true;
     }
 
     protected SettingController getSettingController() {

@@ -242,7 +242,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
             }
         }
     }
-    
+
     public TreeNode getSelectedItemInListTreeTable() {
         return selectedItemInListTreeTable;
     }
@@ -279,7 +279,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
         if (item != null) {
             setCurrent(item);
-            return viewForCurrentEntity(); 
+            return viewForCurrentEntity();
         }
 
         SessionUtility.addErrorMessage("Error", "Cannot load details for a non machine design.");
@@ -864,12 +864,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                     return;
                 }
             }
-            if (itemDomainMachineDesignFacade.findByName(name).size() != 0) {
-                SessionUtility.addWarningMessage("Non-unique name", "Please change the name and try again");
-                currentEditItemElementSaveButtonEnabled = false;
-            } else {
-                currentEditItemElementSaveButtonEnabled = true;
-            }
+            currentEditItemElementSaveButtonEnabled = true;
         } else {
             currentEditItemElementSaveButtonEnabled = false;
         }
@@ -1275,6 +1270,20 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 throw new CdbException("Place parements within {} in template name. Example: 'templateName {paramName}'");
             }
         }
+    }
+
+    @Override
+    protected boolean verifyItemNameCombinationUniqueness(Item item) {
+        boolean unique = super.verifyItemNameCombinationUniqueness(item);
+        
+        // Ensure all machine designs are unique
+        if (!unique) {
+            String viewUUID = item.getViewUUID();
+            item.setItemIdentifier2(viewUUID);
+            unique = true; 
+        }
+        
+        return unique; 
     }
 
     @Override
