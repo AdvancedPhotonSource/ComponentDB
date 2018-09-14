@@ -21,6 +21,14 @@ See LICENSE file.
         <f:viewAction action="#{itemElementController.processPreRender()}"/>
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
+    
+    <ui:define name="pageTitle">
+        : View #{entityController.displayEntityTypeName} #{entityController.currentItemDisplayTitle}
+    </ui:define>
+    
+    <ui:define name="pageHeaderTitle">
+        #{entityController.detailsPageHeader}
+    </ui:define>
 
     <ui:define name="additionalSupport" >
         <ui:include src="../locatableItem/private/locatableItemLocationHistoryDialog.xhtml" />
