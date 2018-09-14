@@ -27,7 +27,10 @@ See LICENSE file.
     
     <ui:define name="listActionButtons">
         <p:outputPanel rendered="#{!itemDomainMachineDesignController.displayListConfigurationView}">
-            <ui:include src="../item/private/itemListActionButtons.xhtml" /> 
+            <ui:include src="../item/private/itemListActionButtons.xhtml" >
+                <ui:param name="listExportable"
+                          value="#{false}" /> 
+            </ui:include>
         </p:outputPanel>
     </ui:define>
     

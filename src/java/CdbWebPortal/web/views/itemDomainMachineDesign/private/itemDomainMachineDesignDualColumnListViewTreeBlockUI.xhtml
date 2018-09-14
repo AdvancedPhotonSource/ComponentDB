@@ -18,6 +18,11 @@ See LICENSE file.
             <div>
                 <span>
                     Follow instructions on the panel to the right.
+                    <br/>
+                    <p:commandButton value="Return"
+                                     onclick="PF('loadingDialog').show()"
+                                     action="#{itemDomainMachineDesignController.currentDualViewList()}"
+                                     icon="fa fa-arrow-circle-o-left"/>
                 </span>
 
                 <span class="fa fa-arrow-circle-right"
@@ -70,10 +75,11 @@ See LICENSE file.
                 </p:outputPanel>
             </p:outputPanel>
         </p:outputPanel>
-        
+
         <ui:fragment rendered="#{entityController.displayListViewItemDetailsView}" >
             <p:commandButton value="Return"
-                             action="#{entityController.list()}"
+                             onclick="PF('loadingDialog').show()"
+                             action="#{itemDomainMachineDesignController.currentDualViewList()}"
                              icon="fa fa-arrow-circle-o-left"/> 
         </ui:fragment>
 

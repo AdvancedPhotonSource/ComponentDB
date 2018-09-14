@@ -7,14 +7,35 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                template="../item/private/templates/itemTemplateListTemplate.xhtml">
-    
+                template="../item/private/templates/itemTemplateListTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+
     <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
-    
+
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:viewAction action="#{itemDomainMachineDesignController.processPreRenderList()}" />
+        <f:viewAction action="#{itemDomainMachineDesignController.processPreRenderTemplateList()}" />
     </f:metadata>
+
+    <ui:define name="listDataTable">
+        <ui:include src="private/itemDomainMachineDesignDualColumnListViewPanelGrid.xhtml" /> 
+    </ui:define>
+
+    <ui:define name="listActionButtons">
+        <p:outputPanel rendered="#{!itemDomainMachineDesignController.displayListConfigurationView}">
+            <ui:include src="../item/private/itemListActionButtons.xhtml">
+                <ui:param name="displayAvailableTemplatesButton"
+                          value="#{false}" /> 
+                <ui:param name="displayMultiEditButtons"
+                          value="#{false}" /> 
+                <ui:param name="listExportable"
+                          value="#{false}" /> 
+
+                <ui:param name="addEntityActionFunctionName"
+                          value="prepareCreateTemplate"  /> 
+            </ui:include>
+        </p:outputPanel>
+    </ui:define>
 
 </ui:composition>
 

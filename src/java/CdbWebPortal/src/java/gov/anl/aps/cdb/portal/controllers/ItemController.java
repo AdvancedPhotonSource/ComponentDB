@@ -336,6 +336,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             itemProjectController.addItemControllerProjectChangeListener(this);
         }
     }
+    
+    public void processPreRenderTemplateList() {
+        processPreRenderList(); 
+    }
 
     @Override
     public List<ItemDomainEntity> getItemList() {
@@ -1476,6 +1480,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
                 if (addContained) {
                     newItemElement.setContainedItem(itemElement.getContainedItem());
+                    newItemElement.setContainedItem2(itemElement.getContainedItem2());
                 }
 
                 newItemElement.setName(itemElement.getName());
@@ -2041,9 +2046,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public String prepareTemplateList() {
-        return "templateList.xhtml?faces-redirect=true";
+        return templateList(); 
     }
 
+    public String templateList() {
+        return "templateList.xhtml?faces-redirect=true";
+    }
+    
     public DataModel getTemplateItemsListDataModel() {
         if (templateItemsListDataModel == null) {
             List<ItemDomainEntity> templates = getEntityDbFacade().findByDomainAndEntityType(getDefaultDomainName(), EntityTypeName.template.getValue());

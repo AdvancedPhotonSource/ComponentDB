@@ -14,10 +14,10 @@ See LICENSE file.
               value="#{entityController.displayListConfigurationView}"/>
 
     <ui:param name="settingObject" value="#{itemDomainMachineDesignController.settingObject}" /> 
-
+              
     <p:treeTable id='itemMachineDesignListDataTable'
                  styleClass="machineDesignListTreeTable"
-                 value="#{entityController.machineDesignTreeRootTreeNode}"
+                 value="#{entityController.currentMachineDesignListRootTreeNode}"
                  selectionMode="single"
                  selection="#{entityController.selectedItemInListTreeTable}"
                  var="itemElementTreeListObject">

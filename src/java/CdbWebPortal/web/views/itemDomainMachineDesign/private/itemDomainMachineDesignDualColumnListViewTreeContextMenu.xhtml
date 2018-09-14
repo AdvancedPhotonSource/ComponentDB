@@ -38,6 +38,17 @@ See LICENSE file.
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />                        
             <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" /> 
         </p:contextMenu>
+        
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 200px;"
+                       nodeType="MachineDesignTemplateMemberCatalog"
+                       id="machineDesignDualViewTemplateMemberCatalogContextMenu"
+                       widgetVar="machineDesignDualViewTemplateMemberCatalogContextMenuWidget"
+                       event="select contextmenu">
+            <ui:include src="machineDesignContextMenu/addMachineDesignTemplateContextMenuItem.xhtml" />            
+            <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />                        
+            <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" /> 
+            <ui:include src="machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" /> 
+        </p:contextMenu>
 
         <p:contextMenu for="itemMachineDesignListDataTable" style="width: 200px;"
                        nodeType="MachineDesignTemplatePlaceholder"

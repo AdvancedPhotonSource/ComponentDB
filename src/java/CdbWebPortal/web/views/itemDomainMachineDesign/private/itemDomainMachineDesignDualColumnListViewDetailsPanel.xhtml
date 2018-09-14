@@ -24,7 +24,7 @@ See LICENSE file.
                  styleClass="detailsPanelViewDetailsPanel">
 
             <ui:include src="itemDomainMachineDesignPanelGrid.xhtml" /> 
-            
+
             <ui:include src="../../common/private/commonViewInfoActionButton.xhtml"> 
                 <ui:param name="renderMoreInfo"
                           value="#{true}" /> 
@@ -47,6 +47,13 @@ See LICENSE file.
             <ui:include src="../../item/private/itemPropertyList.xhtml">
                 <ui:param name="loadPropertyListDialogs" value="#{false}" />
             </ui:include>
+        </p:panel>
+
+        <p:panel header="Created From Template"
+                 rendered="#{entityController.displayCreatedFromCurrentItemList}"
+                 toggleable="true"
+                 collapsed="#{entityController.displayContentsOfCreatedFromTemplateItem}">
+            <ui:include src="../../item/private/itemListCreatedFromTemplateDataTable.xhtml" /> 
         </p:panel>
 
 
