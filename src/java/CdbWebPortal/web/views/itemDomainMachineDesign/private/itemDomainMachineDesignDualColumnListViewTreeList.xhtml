@@ -114,8 +114,13 @@ See LICENSE file.
                                     ? 'N/A Top Level'
                                     : assignedItem}"/>            
         </p:column>
+        
+        <ui:param name="locationObjectSrc"
+                  value="#{itemDomainMachineDesignController.currentViewIsTemplate 
+                           ? '../../common/private/commonEmptyPage.xhtml' 
+                           : '../../locatableItem/private/locatableItemListLocationObject.xhtml'}" />
       
-        <ui:include src="../../locatableItem/private/locatableItemListLocationObject.xhtml" >
+        <ui:include src="#{locationObjectSrc}" > 
             <ui:param name="alternateLocationString"
                       value="#{topLevelItem ? '' : '&#60; parent &#62;'}" />
             <ui:param name="renderedLocation"

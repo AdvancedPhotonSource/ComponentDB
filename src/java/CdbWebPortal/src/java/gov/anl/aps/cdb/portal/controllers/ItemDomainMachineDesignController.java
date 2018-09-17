@@ -69,7 +69,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private TreeNode currentMachineDesignListRootTreeNode = null;
     private TreeNode machineDesignTreeRootTreeNode = null;
     private TreeNode machineDesignTemplateRootTreeNode = null;
-    private boolean currentMachineDesignRootTreeNodeTemplate = false;
+    private boolean currentViewIsTemplate = false;
 
     private boolean displayListConfigurationView = false;
     private boolean displayListViewItemDetailsView = false;
@@ -192,7 +192,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     public TreeNode getCurrentMachineDesignListRootTreeNode() {
         if (currentMachineDesignListRootTreeNode == null) {
-            if (currentMachineDesignRootTreeNodeTemplate) {
+            if (currentViewIsTemplate) {
                 currentMachineDesignListRootTreeNode = getMachineDesignTemplateRootTreeNode();
             } else {
                 currentMachineDesignListRootTreeNode = getMachineDesignTreeRootTreeNode();
@@ -337,7 +337,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     }
 
     public ItemDomainMachineDesignCreateOptions[] getItemDomainMachineDesignCreateOptions() {
-        if (currentMachineDesignRootTreeNodeTemplate) {
+        if (currentViewIsTemplate) {
             ItemDomainMachineDesignCreateOptions[] opts = new ItemDomainMachineDesignCreateOptions[2];
 
             opts[0] = (ItemDomainMachineDesignCreateOptions.newMachineDesign);
@@ -355,7 +355,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         Item selectedItem = getItemFromSelectedItemInTreeTable();
         newInstance.setItemProjectList(selectedItem.getItemProjectList());
 
-        if (currentMachineDesignRootTreeNodeTemplate) {
+        if (currentViewIsTemplate) {
             try {
                 List<EntityType> entityTypeList = new ArrayList<>();
                 EntityType templateEntity = entityTypeFacade.findByName(EntityTypeName.template.getValue());
@@ -1266,14 +1266,14 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
         resetListConfigurationVariables();
 
-        currentMachineDesignRootTreeNodeTemplate = false;
+        currentViewIsTemplate = false;
     }
 
     @Override
     public void processPreRenderTemplateList() {
         super.processPreRenderTemplateList();
 
-        currentMachineDesignRootTreeNodeTemplate = true;
+        currentViewIsTemplate = true;
     }
 
     @Override
@@ -1285,7 +1285,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         displayListConfigurationView = true;
         displayListViewItemDetailsView = true;
 
-        currentMachineDesignRootTreeNodeTemplate = isItemMachineDesignAndTemplate(entity);
+        currentViewIsTemplate = isItemMachineDesignAndTemplate(entity);
 
         expandToSpecificMachineDesignItem(getCurrent());
     }
@@ -1368,8 +1368,12 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         return value;
     }
 
+    public boolean isCurrentViewIsTemplate() {
+        return currentViewIsTemplate;
+    }
+
     public String currentDualViewList() {
-        if (currentMachineDesignRootTreeNodeTemplate) {
+        if (currentViewIsTemplate) {
             return templateList();
         }
 

@@ -7,16 +7,21 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                
                 template="../../item/private/templates/itemViewPanelGridTemplate.xhtml">   
-    
+
+    <ui:param name="locationObjectSrc"
+              value="#{itemDomainMachineDesignController.currentViewIsTemplate 
+                       ? '../../common/private/commonEmptyPage.xhtml' 
+                       : '../../locatableItem/private/locatableItemViewPanelGridObject.xhtml'}" />
+
     <ui:define name="itemEntityTypeValue">
         <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemEntityType.xhtml">
             <!--Prevent future possible inplace edit for entity type.-->
             <ui:param name="isEntityWriteable" value="#{false}" />
         </ui:include>
     </ui:define>
-    
+
     <ui:define name="additionalItemInformation">
-        <ui:include src="../../locatableItem/private/locatableItemViewPanelGridObject.xhtml" >
+        <ui:include src="#{locationObjectSrc}" >
             <ui:param name="locataionMenuModelActionName" 
                       value="getMachineDesignLocationMenuModel" /> 
             <ui:param name="locataionMenuModelObjectParam"
