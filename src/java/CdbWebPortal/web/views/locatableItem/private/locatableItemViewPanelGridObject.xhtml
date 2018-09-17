@@ -34,7 +34,8 @@ See LICENSE file.
                            ? locataionMenuModelObjectParam 
                            : itemObject}" />
 
-        <p:inplace widgetVar="locationViewOutputEditableWidget"
+        <p:inplace id="locationViewOutputEditable"
+                   widgetVar="locationViewOutputEditableWidget"
                    toggleable="false">            
             <f:facet name="output">
                 <p:outputPanel styleClass="inlineFlexOutputPanel">
@@ -87,7 +88,8 @@ See LICENSE file.
             </ui:include>
 
             <p:commandButton icon="fa fa-check"
-                             onclick="PF('locationDetailsViewOutputEditableWidget').save()" />
+                             update="locationViewOutputEditable"
+                             oncomplete="PF('locationDetailsViewOutputEditableWidget').save();" />
             <p:commandButton icon="fa fa-times"
                              action="#{entityController.viewForCurrentEntity()}"
                              onclick="PF('loadingDialog').show()"/>
