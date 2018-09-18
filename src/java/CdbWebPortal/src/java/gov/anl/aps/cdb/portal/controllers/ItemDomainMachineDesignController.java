@@ -1121,6 +1121,11 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
                 firstVar = name.indexOf('{');
             }
+
+            if (name.length() > 0) {
+                nameParts.add(name);
+            }
+
             generateMachineDesignName();
         }
     }
@@ -1144,12 +1149,14 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         machineDesignName = "";
         for (int i = 0; i < nameParts.size(); i++) {
             machineDesignName += nameParts.get(i);
-            KeyValueObject keyValue = machineDesignNameList.get(i);
+            if (machineDesignNameList.size() > i) {
+                KeyValueObject keyValue = machineDesignNameList.get(i);
 
-            if (keyValue.getValue() != null && !keyValue.getValue().equals("")) {
-                machineDesignName += keyValue.getValue();
-            } else {
-                machineDesignName += "{" + keyValue.getKey() + "}";
+                if (keyValue.getValue() != null && !keyValue.getValue().equals("")) {
+                    machineDesignName += keyValue.getValue();
+                } else {
+                    machineDesignName += "{" + keyValue.getKey() + "}";
+                }
             }
         }
     }
