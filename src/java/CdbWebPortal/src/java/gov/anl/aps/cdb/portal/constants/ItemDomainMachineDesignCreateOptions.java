@@ -5,9 +5,9 @@
 package gov.anl.aps.cdb.portal.constants;
 
 public enum ItemDomainMachineDesignCreateOptions {
-        newMachineDesign("Create Placeholder"),
-        template("Create From Template"),
-        catalog("Create With Catalog Item"),
+        newMachineDesign("Placeholder"),
+        template("From Template"),
+        catalog("From Catalog"),
         assignExisting("Move Existing Machine Design");
 
         private String value;
