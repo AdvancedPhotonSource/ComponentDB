@@ -29,9 +29,9 @@ See LICENSE file.
     </p:outputPanel>
 
     <h:outputText value="Location"
-                  rendered="#{newMachineDesignCreation}"/>
+                  rendered="#{newMachineDesignCreation and !currentViewIsTemplate}"/>
     <p:outputPanel styleClass="locationTieredMenuPickerContainer" 
-                   rendered="#{newMachineDesignCreation}">
+                   rendered="#{newMachineDesignCreation and !currentViewIsTemplate}">
         <ui:param name="locationTieredMenuUpdateTarget"
                   value="locationSelectTieredMenu#{viewName}" />
         <p:tieredMenu model="#{locatableItemController.getMachineDesignLocationMenuModel(newItemElement, locationTieredMenuUpdateTarget)}"
