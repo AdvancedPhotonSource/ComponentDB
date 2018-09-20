@@ -336,9 +336,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             itemProjectController.addItemControllerProjectChangeListener(this);
         }
     }
-    
+
     public void processPreRenderTemplateList() {
-        processPreRenderList(); 
+        processPreRenderList();
     }
 
     @Override
@@ -1087,12 +1087,20 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     protected ItemElement createItemElement(ItemDomainEntity item) {
-        List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         ItemElement itemElement = new ItemElement();
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         itemElement.setEntityInfo(entityInfo);
         itemElement.setParentItem(item);
+        
+        String elementName = generateUniqueElementNameForItem(item); 
 
+        itemElement.setName(elementName);
+
+        return itemElement;
+    }
+
+    protected String generateUniqueElementNameForItem(ItemDomainEntity item) {
+        List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         int elementNumber = itemElementsDisplayList.size() + 1;
         String elementNameSuffix = "E";
         String elementName = null;
@@ -1117,10 +1125,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 elementName = test;
             }
         }
-
-        itemElement.setName(elementName);
-
-        return itemElement;
+        
+        return elementName; 
     }
 
     protected void prepareAddItemElement(ItemDomainEntity item, ItemElement itemElement) {
@@ -1466,30 +1472,44 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained) {
+        return cloneCreateItemElements(clonedItem, cloningFrom, addContained, false);
+    }
+
+    protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained, boolean assignDerivedFromItemElement) {
         List<ItemElement> cloningFromItemElementList = cloningFrom.getItemElementDisplayList();
 
         if (cloningFromItemElementList != null) {
             for (ItemElement itemElement : cloningFromItemElementList) {
-                ItemElement newItemElement = new ItemElement();
-
-                if (itemElement.getDerivedFromItemElement() != null) {
-                    newItemElement.init(clonedItem, itemElement.getDerivedFromItemElement());
-                } else {
-                    newItemElement.init(clonedItem);
-                }
-
-                if (addContained) {
-                    newItemElement.setContainedItem(itemElement.getContainedItem());
-                    newItemElement.setContainedItem2(itemElement.getContainedItem2());
-                }
-
-                newItemElement.setName(itemElement.getName());
-
-                clonedItem.getFullItemElementList().add(newItemElement);
+                cloneCreateItemElement(itemElement, clonedItem, addContained, assignDerivedFromItemElement);
             }
         }
 
         return clonedItem;
+    }
+
+    protected ItemElement cloneCreateItemElement(ItemElement itemElement, Item clonedItem, boolean addContained, boolean assignDerivedFromItemElement) {
+        ItemElement newItemElement = new ItemElement();
+
+        if (itemElement.getDerivedFromItemElement() != null) {
+            newItemElement.init(clonedItem, itemElement.getDerivedFromItemElement());
+        } else {
+            newItemElement.init(clonedItem);
+        }
+
+        if (addContained) {
+            newItemElement.setContainedItem(itemElement.getContainedItem());
+            newItemElement.setContainedItem2(itemElement.getContainedItem2());
+        }
+
+        if (assignDerivedFromItemElement) {
+            newItemElement.setDerivedFromItemElement(itemElement);
+        }
+
+        newItemElement.setName(itemElement.getName());
+
+        clonedItem.getFullItemElementList().add(newItemElement);
+        
+        return newItemElement; 
     }
 
     public ItemDomainEntity completeClone(ItemDomainEntity clonedItem, Integer cloningFromItemId) {
@@ -2046,13 +2066,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public String prepareTemplateList() {
-        return templateList(); 
+        return templateList();
     }
 
     public String templateList() {
         return "templateList.xhtml?faces-redirect=true";
     }
-    
+
     public DataModel getTemplateItemsListDataModel() {
         if (templateItemsListDataModel == null) {
             List<ItemDomainEntity> templates = getEntityDbFacade().findByDomainAndEntityType(getDefaultDomainName(), EntityTypeName.template.getValue());
@@ -2142,13 +2162,17 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public List<Item> getItemsCreatedFromCurrentTemplateItem() {
+        return getItemsCreatedFromTemplateItem(current);
+    }
+
+    public List<Item> getItemsCreatedFromTemplateItem(Item templateItem) {
         if (!templateInformationLoadedForCurrent) {
             if (isCurrentItemTemplate()) {
-                if (current != null) {
+                if (templateItem != null) {
                     String machineDesignTemplateRelationshipTypeName = getItemCreatedFromTemplateRelationshipName();
                     itemsCreatedFromCurrentTemplateItem = new ArrayList<>();
-                    if (current.getItemElementRelationshipList1() != null) {
-                        for (ItemElementRelationship ier : current.getItemElementRelationshipList1()) {
+                    if (templateItem.getItemElementRelationshipList1() != null) {
+                        for (ItemElementRelationship ier : templateItem.getItemElementRelationshipList1()) {
                             if (ier.getRelationshipType().getName().equals(machineDesignTemplateRelationshipTypeName)) {
                                 Item parentItem = ier.getFirstItemElement().getParentItem();
                                 itemsCreatedFromCurrentTemplateItem.add(parentItem);
@@ -2418,7 +2442,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
             //Remove last comma. 
             additionalInfo = additionalInfo.substring(0, additionalInfo.length() - 2);
-            
+
             throw new ObjectAlreadyExists("Item " + itemDomainToString(item) + " has nonunique attributes. " + additionalInfo);
         }
 

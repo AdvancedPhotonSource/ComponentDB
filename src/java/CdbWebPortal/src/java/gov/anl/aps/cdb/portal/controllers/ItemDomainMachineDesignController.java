@@ -22,6 +22,7 @@ import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.ValueChangeEvent;
@@ -473,20 +474,45 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     public void unlinkContainedItem2FromSelectedItem() {
         ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
 
+        Item originalContainedItem = element.getContainedItem2();
         element.setContainedItem2(null);
-
         updateItemElement(element);
+
+        updateTemplateReferenceElementContainedItem2(element, originalContainedItem, null);
+
         resetListDataModel();
         expandToSpecificTreeNode(selectedItemInListTreeTable);
     }
 
     public void detachSelectedItemFromHierarchyInDualView() {
         ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
-
+        
         Item containedItem = element.getContainedItem();
         Integer detachedDomainId = containedItem.getDomain().getId();
 
         ItemElementController instance = ItemElementController.getInstance();
+
+        if (currentViewIsTemplate) {
+            List<ItemElement> derivedFromItemElementList = element.getDerivedFromItemElementList();
+            boolean needsUpdate = false;
+            for (ItemElement itemElement : derivedFromItemElementList) {
+                if (!containedItem.equals(itemElement.getContainedItem())) {
+                    // fullfilled Element
+                    itemElement.setDerivedFromItemElement(null);
+                    needsUpdate = true; 
+
+                    try {
+                        instance.performUpdateOperations(itemElement);
+                    } catch (Exception ex) {
+                        LOGGER.error(ex);
+                        SessionUtility.addErrorMessage("Error", ex.getMessage());
+                    }
+                }
+            }
+            if (needsUpdate) {
+                element = instance.findById(element.getId()); 
+            }
+        }
 
         instance.destroy(element);
 
@@ -600,9 +626,64 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
             }
         }
 
+        cloneNewTemplateElementForItemsDerivedFromItem(ref);
+
+        /*
+        if (currentViewIsTemplate) {
+            Item parentItem = ref.getParentItem();
+            List<Item> items = getItemsCreatedFromTemplateItem(parentItem);
+
+            for (Item item : items) {
+                String uniqueName = generateUniqueElementNameForItem((ItemDomainMachineDesign) item);
+                ItemElement newItemElement = cloneCreateItemElement(ref, item, true, true);
+                newItemElement.setName(uniqueName);
+                try {
+                    performUpdateOperations((ItemDomainMachineDesign) item);
+                } catch (CdbException ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+                    LOGGER.error(ex);
+                } catch (RuntimeException ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getMessage());
+                    LOGGER.error(ex);
+                }
+            }
+        }
+         */
         expandToSelectedTreeNodeAndSelectChildItemElement(ref);
 
         return currentDualViewList();
+    }
+
+    private void cloneNewTemplateElementForItemsDerivedFromItem(ItemElement newTemplateElement) {
+        if (currentViewIsTemplate) {
+            Item parentItem = newTemplateElement.getParentItem();
+            List<Item> items = getItemsCreatedFromTemplateItem(parentItem);
+            cloneNewTemplateElementForItemsDerivedFromItem(newTemplateElement, items);
+        }
+    }
+
+    private void cloneNewTemplateElementForItemsDerivedFromItem(ItemElement newTemplateElement, List<Item> derivedItems) {
+        if (currentViewIsTemplate) {
+            for (int i = 0; i < derivedItems.size(); i++) {
+                Item item = derivedItems.get(i);
+                String uniqueName = generateUniqueElementNameForItem((ItemDomainMachineDesign) item);
+                ItemElement newItemElement = cloneCreateItemElement(newTemplateElement, item, true, true);
+                newItemElement.setName(uniqueName);
+                try {
+                    ItemDomainMachineDesign origCurrent = current;
+                    performUpdateOperations((ItemDomainMachineDesign) item);
+                    // Update pointer to latest version of the item. 
+                    derivedItems.set(i, current);
+                    current = origCurrent;
+                } catch (CdbException ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+                    LOGGER.error(ex);
+                } catch (Exception ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getMessage());
+                    LOGGER.error(ex);
+                }
+            }
+        }
     }
 
     private void expandToSpecificMachineDesignItem(ItemDomainMachineDesign item) {
@@ -734,9 +815,13 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     public String completeAssignCatalogListConfiguration() {
         if (currentEditItemElement != null
                 && catalogForElement != null) {
+
+            Item originalItem = currentEditItemElement.getContainedItem2();
             currentEditItemElement.setContainedItem2(catalogForElement);
 
             updateItemElement(currentEditItemElement);
+
+            updateTemplateReferenceElementContainedItem2(currentEditItemElement, originalItem, catalogForElement);
 
             resetListConfigurationVariables();
             resetListDataModel();
@@ -746,6 +831,35 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
             SessionUtility.addErrorMessage("Error", "Please select catalog item and try again.");
         }
         return null;
+    }
+
+    /**
+     * Updates contained item on elements created from template if update is
+     * valid.
+     *
+     * @param templateElement
+     * @param newContainedItem
+     */
+    private void updateTemplateReferenceElementContainedItem2(ItemElement templateElement,
+            Item originalContainedItem,
+            Item newContainedItem) {
+        if (currentViewIsTemplate) {
+            for (ItemElement ie : templateElement.getDerivedFromItemElementList()) {
+                boolean updateContainedItem2 = false;
+                if (originalContainedItem == null) {
+                    if (ie.getContainedItem2() == null) {
+                        updateContainedItem2 = true;
+                    }
+                } else if (originalContainedItem.equals(ie.getContainedItem2())) {
+                    updateContainedItem2 = true;
+                }
+
+                if (updateContainedItem2) {
+                    ie.setContainedItem2(newContainedItem);
+                    updateItemElement(ie);
+                }
+            }
+        }
     }
 
     public String completeAddNewCatalogListConfiguration() {
@@ -790,6 +904,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         }
 
         // Add new items
+        List<ItemElement> newlyAddedItemElementList = new ArrayList<>();
         for (int i = 0; i < catalogItemsDraggedAsChildren.size(); i++) {
             Item mdItem = idmList.get(i);
             Item catalogItem = catalogItemsDraggedAsChildren.get(i);
@@ -800,9 +915,33 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
             newItemElement.setContainedItem2(catalogItem);
 
             prepareAddItemElement(current, newItemElement);
+
+            newlyAddedItemElementList.add(newItemElement);
         }
 
         update();
+
+        // Add item elements to items created from the current template 
+        if (currentViewIsTemplate) {
+            // Remap to the added elements 
+            List<ItemElement> dbMappedElements = new ArrayList<>();
+            for (ItemElement ie : current.getItemElementDisplayList()) {
+                for (int i = 0; i < newlyAddedItemElementList.size(); i++) {
+                    ItemElement unmappedIE = newlyAddedItemElementList.get(i);
+                    if (ie.getName().equals(unmappedIE.getName())) {
+                        dbMappedElements.add(ie);
+                        newlyAddedItemElementList.remove(i);
+                        break;
+                    }
+                }
+            }
+
+            List<Item> items = getItemsCreatedFromTemplateItem(getCurrent());
+
+            for (ItemElement ie : dbMappedElements) {
+                cloneNewTemplateElementForItemsDerivedFromItem(ie, items);
+            }
+        }
 
         expandToSelectedTreeNodeAndSelect();
 
@@ -950,6 +1089,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     }
 
     public boolean createMachineDesignFromTemplate(String onSucess) {
+        // TODO : this may need to be removed. Verify. 
         try {
             if (!allValuesForTitleGenerationsFilledIn()) {
                 SessionUtility.addWarningMessage("Missing data", "Please fill in all name parameters");
@@ -1191,16 +1331,23 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
         // TODO: once update template selection to tree table use the selected item element. 
         ItemElement currentItemElement = templateToCreateNewItem.getCurrentItemElement();
+        if (currentItemElement.getId() != null) {
+            currentEditItemElement.setDerivedFromItemElement(currentItemElement);
+        }
+
         currentEditItemElement.setContainedItem2(currentItemElement.getContainedItem2());
 
         ItemDomainMachineDesign clone = (ItemDomainMachineDesign) templateToCreateNewItem.clone();
-        cloneCreateItemElements(clone, templateToCreateNewItem, true);
+        cloneCreateItemElements(clone, templateToCreateNewItem, true, true);
         clone.setName(machineDesignName);
 
         addCreatedFromTemplateRelationshipToItem(clone);
 
         clone.setEntityTypeList(new ArrayList<>());
         currentEditItemElement.setContainedItem(clone);
+
+        // No longer needed. Skip the standard template relationship process. 
+        templateToCreateNewItem = null;
     }
 
     @Override
