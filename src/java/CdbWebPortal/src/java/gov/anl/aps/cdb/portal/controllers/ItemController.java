@@ -2064,6 +2064,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         prepareItemElementListTreeTable(item);
         return "/views/item/view.xhtml?faces-redirect=true&id=" + item.getId();
     }
+    
+    /**
+     * Reset list variables and associated filter values and data model.
+     *
+     * @return URL to entity template list view
+     */
+    public String resetTemplateList() {
+        super.resetList(); 
+        return prepareTemplateList(); 
+    }
 
     public String prepareTemplateList() {
         return templateList();
