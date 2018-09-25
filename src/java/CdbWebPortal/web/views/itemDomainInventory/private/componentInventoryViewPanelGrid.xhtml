@@ -53,13 +53,13 @@ See LICENSE file.
                                        value="Edit Status" />
                         </p:commandLink>
                         
-                        <h:outputText value="#{entityController.inventoryStatusValue}"
+                        <h:outputText value="#{currentObject.inventoryStatusValue}"
                                       styleClass="entityDataText"/> 
                     </p:outputPanel>
                 </f:facet>
                 <f:facet name="input">                       
                     <p:selectOneMenu id="inventoryStatusInputSelectOneMenu"
-                                     value="#{entityController.inventoryStatusValue}">
+                                     value="#{currentObject.inventoryStatusValue}">
                         <f:selectItem itemLabel="Select Status" itemValue=""/>
                         <f:selectItems value="#{entityController.inventoryStatusPropertyType.allowedPropertyValueList}"
                                        var='allowedValue'

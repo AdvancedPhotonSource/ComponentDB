@@ -46,6 +46,8 @@ import org.primefaces.model.TreeNode;
     ),
 })
 public class ItemDomainInventory extends LocatableItem {
+    
+    public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status"; 
 
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
    
@@ -55,6 +57,10 @@ public class ItemDomainInventory extends LocatableItem {
 
     private transient Boolean sparePartIndicator = null;
     private transient SparePartsBean sparePartsBean = null;
+       
+    // Inventory status variables
+    private transient PropertyValue inventoryStatusPropertyValue; 
+    private transient boolean loadedCurrentStatusPropertyValue = false;  
 
     @Override
     public Item createInstance() {
@@ -112,4 +118,35 @@ public class ItemDomainInventory extends LocatableItem {
         return sparePartsBean;
     }
 
+    public PropertyValue getInventoryStatusPropertyValue() {
+        if (!loadedCurrentStatusPropertyValue) {
+            for (PropertyValue propertyValue : this.getPropertyValueInternalList()) {
+                String propertyTypeName = propertyValue.getPropertyType().getName();
+                if (propertyTypeName.equals(ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME)) {
+                    inventoryStatusPropertyValue = propertyValue;
+                    break; 
+                }                
+            }
+            loadedCurrentStatusPropertyValue = true; 
+        }
+        return inventoryStatusPropertyValue;
+    }
+
+    public void setInventoryStatusPropertyValue(PropertyValue inventoryStatusPropertyValue) {
+        this.inventoryStatusPropertyValue = inventoryStatusPropertyValue;
+    }
+    
+    public String getInventoryStatusValue() {
+        if (getInventoryStatusPropertyValue()!= null) {
+            return getInventoryStatusPropertyValue().getValue(); 
+        } 
+        return ""; 
+    }
+    
+    public void setInventoryStatusValue(String status) {
+        if (getInventoryStatusPropertyValue() != null) {
+            getInventoryStatusPropertyValue().setValue(status);
+        }
+    }
+    
 }

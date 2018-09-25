@@ -66,14 +66,10 @@ import org.primefaces.model.DefaultTreeNode;
 public class ItemDomainInventoryController extends ItemController<ItemDomainInventory, ItemDomainInventoryFacade, ItemDomainInventorySettings> {
 
     private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.inventory.getValue();
-    private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";
-    
-    private final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status"; 
+    private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";                        
     
     // Inventory status variables
     private PropertyType inventoryStatusPropertyType; 
-    private PropertyValue currentStatusPropertyValue; 
-    private boolean loadedCurrentStatusPropertyValue = false;  
 
     private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
 
@@ -138,50 +134,24 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
        
     // <editor-fold defaultstate="collapsed" desc="Inventory status implementation">
-    
+        
     public PropertyType getInventoryStatusPropertyType() {
         if (inventoryStatusPropertyType == null) {
-            inventoryStatusPropertyType = propertyTypeFacade.findByName(ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
+            inventoryStatusPropertyType = propertyTypeFacade.findByName(ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
         }
         return inventoryStatusPropertyType;
     }        
 
     public PropertyValue getCurrentStatusPropertyValue() {
-        if (!loadedCurrentStatusPropertyValue) {
-            for (PropertyValue propertyValue : current.getPropertyValueInternalList()) {
-                if (propertyValue.getPropertyType().equals(getInventoryStatusPropertyType())) {
-                    currentStatusPropertyValue = propertyValue;
-                    break; 
-                }                
-            }
-            loadedCurrentStatusPropertyValue = true; 
-        }
-        return currentStatusPropertyValue;
+        return getCurrent().getInventoryStatusPropertyValue();
     }
     
     public void prepareEditInventoryStatus() {
         if (getCurrentStatusPropertyValue() == null) {
-            currentStatusPropertyValue = preparePropertyTypeValueAdd(getInventoryStatusPropertyType()); 
+            PropertyValue preparePropertyTypeValueAdd = preparePropertyTypeValueAdd(getInventoryStatusPropertyType()); 
+            getCurrent().setInventoryStatusPropertyValue(preparePropertyTypeValueAdd);
         }
-    }
-    
-    public String getInventoryStatusValue() {
-        if (getCurrentStatusPropertyValue() != null) {
-            return currentStatusPropertyValue.getValue(); 
-        } 
-        return ""; 
-    }
-    
-    public void setInventoryStatusValue(String status) {
-        if (getCurrentStatusPropertyValue() != null) {
-            currentStatusPropertyValue.setValue(status);
-        }
-    }
-    
-    public void resetInventoryStatusVariables() {
-        loadedCurrentStatusPropertyValue = false; 
-        currentStatusPropertyValue = null; 
-    }
+    }        
     
     public boolean getRenderedHistoryButton() {
         return getCurrentStatusPropertyValue() != null; 
@@ -223,7 +193,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     @Override
     protected void resetVariablesForCurrent() {
         super.resetVariablesForCurrent();
-        resetInventoryStatusVariables(); 
         relatedMAARCRelationshipsForCurrent = null;
     }
 
