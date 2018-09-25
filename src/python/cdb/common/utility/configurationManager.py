@@ -48,6 +48,7 @@ DEFAULT_CDB_EMAIL_ADMIN_NOTIFICATION_EMAIL = None
 DEFAULT_CDB_EMAIL_SUBJECT_START = '[CDB]'
 
 DEFAULT_CDB_LOG_ATTACHMENT_PATH = 'log/attachments'
+DEFAULT_CDB_PROPERTY_IMAGE_PATH = 'propertyValue/images'
 
 DEFAULT_CDB_SERVICE_PORT = 10232           # 10CDB
 DEFAULT_CDB_SERVICE_HOST = '127.0.0.1'
@@ -140,6 +141,7 @@ class ConfigurationManager(UserDict.UserDict):
         self['defaultEmailSubjectStart'] = DEFAULT_CDB_EMAIL_SUBJECT_START
 
         self['defaultLogAttachmentPath'] = DEFAULT_CDB_LOG_ATTACHMENT_PATH
+        self['defaultPropertyImagePath'] = DEFAULT_CDB_PROPERTY_IMAGE_PATH
 
         self['defaultPortalWebAddress'] = DEFAULT_CDB_PORTAL_WEB_ADDRESS
 
@@ -536,6 +538,18 @@ class ConfigurationManager(UserDict.UserDict):
     def hasLogAttachmentPath(self):
         return self.has_key('logAttachmentPath')
 
+    def setPropertyImagePath(self, emailSubject):
+        self['propertyImagePath'] = emailSubject
+
+    def getPropertyImagePath(self, default='__cdb_default__'):
+        return self.__getKeyValue('propertyImagePath', default)
+
+    def getDefaultPropertyImagePath(self):
+        return self['defaultPropertyImagePath']
+
+    def hasPropertyImagePath(self):
+        return self.has_key('propertyImagePath')
+
     def setStorageDirectory(self, emailSubject):
         self['storageDirectory'] = emailSubject
 
@@ -544,6 +558,15 @@ class ConfigurationManager(UserDict.UserDict):
 
     def hasStorageDirectory(self):
         return self.has_key('storageDirectory')
+    
+    def setCdbInstallationDirectory(self, cdbInstallationDirectory):
+        self['cdbInstallationDirectory'] = cdbInstallationDirectory
+
+    def getCdbInstallationDirectory(self, default='__cdb_default__'):
+        return self.__getKeyValue('cdbInstallationDirectory', default)
+
+    def hasCdbInstallationDirectory(self):
+        return self.has_key('cdbInstallationDirectory')
 
     def isDbAvailable(self):
         if os.access(self.getDbPasswordFile(), os.R_OK):

@@ -16,6 +16,13 @@ See LICENSE file.
         <f:viewAction action="#{itemDomainLocationController.processPreRenderList()}"/>
     </f:metadata>
     
+    <ui:define name="listObjectAdditionalParameters">
+        <ui:param name="imageCentered"
+                  value="#{false}" /> 
+        <ui:param name="primaryImageColumnStyle"
+                  value="" /> 
+    </ui:define>
+    
 </ui:composition>
 
 

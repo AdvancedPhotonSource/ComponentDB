@@ -42,6 +42,19 @@ class ItemRestApi(CdbRestApi):
 
         return Log(responseDict)
 
+    def addImagePropertyToItemWithId(self, itemId, imageFile):
+
+        url = '%s/items/%s/addImageProperty' % (self.getContextRoot(), itemId)
+
+        fileName, data = self._generateFileData(imageFile)
+        fileName = Encoder.encode(fileName)
+        url = self._appendUrlParameter(url, 'imageFileName', fileName)
+
+        response = self.sendSessionRequest(url=url, method='POST', data=data)
+
+        return PropertyValue(response)
+
+
     def __createAddPropertyRequest(self, url, id, propertyTypeName, tag=None, value=None, units=None, description=None,
                                       isUserWriteable=None, isDynamic=None):
         if propertyTypeName is None or not len(propertyTypeName):

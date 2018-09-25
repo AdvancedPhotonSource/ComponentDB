@@ -33,7 +33,7 @@ See LICENSE file.
             <p:commandButton value="Done" 
                              id="#{entityTypeName}LocationItemSelectionDialog#{viewName}DoneButton"
                              update="#{entityTypeName}LocationSelectionTree"
-                             action="#{itemDomainInventoryController.updateLocationForItem(itemObject, 
+                             action="#{locatableItemController.updateLocationForItem(itemObject, 
                                        itemDomainLocationController.itemFromSelectedLocationTreeNode, 
                                        'locationItemSelectionDialogSelectionSuccess()')}"/>          
             <p:remoteCommand name="locationItemSelectionDialogSelectionSuccess"

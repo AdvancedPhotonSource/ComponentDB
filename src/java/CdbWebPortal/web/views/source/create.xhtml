@@ -13,7 +13,7 @@ See LICENSE file.
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
-        <f:event type="preRenderComponent" listener="#{sourceController.processCreateRequestParams}"/>
+        <f:viewAction action="#{sourceController.processCreateRequestParams}"/>
     </f:metadata>
 
     <ui:define name="pageTitle">: Create Source</ui:define>     

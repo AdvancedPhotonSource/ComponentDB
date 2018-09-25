@@ -16,12 +16,12 @@ See LICENSE file.
         <p:panelGrid columns="2" styleClass="noCellPaddingPanelGrid">      
             <p:column>
                 <p:outputPanel styleClass="locationTieredMenuPickerContainer" rendered="#{displayLocationSelectionTieredMenu}">
-                    <p:tieredMenu model="#{itemDomainInventoryController.getItemLocataionDefaultMenuModel(itemObject)}"
+                    <p:tieredMenu model="#{locatableItemController.getItemLocataionDefaultMenuModel(itemObject)}"
                                   id="locationSelectTieredMenu#{viewName}"
                                   toggleEvent="hover"/>
                 </p:outputPanel>
                 <p:outputPanel styleClass="locationTreeEditPageContainer" rendered="#{!displayLocationSelectionTieredMenu}" >
-                    <ui:include src="componentInventoryLocationRelationshipTree.xhtml" />
+                    <ui:include src="locatableItemLocationRelationshipTree.xhtml" />
                 </p:outputPanel>
             </p:column>
 

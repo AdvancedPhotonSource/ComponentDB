@@ -12,9 +12,7 @@ import gov.anl.aps.cdb.portal.plugins.PluginManagerBase;
  *
  * @author djarosz
  */
-public class DocManagamentContainerPluginManager extends PluginManagerBase {              
-    
-    protected static final String CONTAINER_IFRAME_PATH = "/iframe.jsp#/container/";
+public class DocManagamentContainerPluginManager extends PluginManagerBase {                     
 
     @Override
     public PropertyTypeHandlerInterface getPluginPropertyTypeHandler() {
@@ -24,15 +22,9 @@ public class DocManagamentContainerPluginManager extends PluginManagerBase {
         return propertyTypeHandler; 
     }
     
-    public String getDocumentManagamentIFrameContainerURL(Integer containerId) {
-        return DocManagerPlugin.getContextRootUrlProperty() + CONTAINER_IFRAME_PATH + containerId; 
-    }
-    
     @Override
     public void performInfoActionLoad(PropertyValue propertyValue) {
-        DocManagamentBean.getInstance().updateCurrentIFrameDialog(CONTAINER_IFRAME_PATH, propertyValue);
-        
         super.performInfoActionLoad(propertyValue); 
-    }   
+    }
         
 }

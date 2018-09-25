@@ -25,9 +25,6 @@ import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
-import org.primefaces.model.menu.DefaultMenuItem;
-import org.primefaces.model.menu.DefaultMenuModel;
-import org.primefaces.model.menu.DefaultSubMenu;
 
 @Named("itemDomainLocationController")
 @SessionScoped
@@ -35,8 +32,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
     private final String ENTITY_TYPE_NAME = "Location";
     private final String DOMAIN_TYPE_NAME = ItemDomainName.location.getValue();
-    private static final String DOMAIN_NAME = "Location";
-    private final String ACTIVE_LOCATION_MENU_ITEM_STYLE = "activeLocationMenuItem";
+    private static final String DOMAIN_NAME = "Location";    
 
     private static final Logger logger = Logger.getLogger(ItemDomainLocationController.class.getName());
 
@@ -52,7 +48,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     DomainFacade domainFacade;
     
     @EJB
-    ItemDomainLocationFacade itemDomainLocationFacade; 
+    ItemDomainLocationFacade itemDomainLocationFacade;             
 
     public ItemDomainLocationController() {
         super();        
@@ -65,6 +61,8 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     @Override
     public void resetListDataModel() {
         super.resetListDataModel();
+        getLocatableItemController().resetCachedLocationValues(); 
+        
         locationsWithInventoryItemsRootNode = null;
         locationsWithInventoryItemAssemblyRootNode = null;
     }
@@ -127,117 +125,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         }
 
         return itemList;
-    }
-    
-    /**
-     * Generates a tree of location nodes in the form of MenuModel meant to be
-     * used as a model in a tiered menu. Could be used in other menus.
-     *
-     * @param baseNodeName - String that will be displayed on the initial
-     * submenu.
-     * @param setLocationController - [Null accepted] Controller to update item
-     * location.
-     * @param setLocationMethod - [Null accepted] Method in the location
-     * controller to be called for menuitem command.
-     * @param lowestLocation - [Null accepted] If provided a location selected
-     * style will be applied to the location that lead to the lowest location.
-     * @return
-     */
-    public DefaultMenuModel generateLocationMenuModel(String baseNodeName, String setLocationController, String setLocationMethod, ItemDomainLocation lowestLocation, String updateTarget) {
-        DefaultMenuModel generatedMenuModel = new DefaultMenuModel();
-        List<ItemDomainLocation> locationHierarchyList = null;
-        if (lowestLocation != null) {
-            locationHierarchyList = generateLocationHierarchyList(lowestLocation);
-        }
-        DefaultSubMenu defaultSubMenu;
-        defaultSubMenu = new DefaultSubMenu(baseNodeName);
-        generatedMenuModel.addElement(defaultSubMenu);
-        generateLocationMenuModel(defaultSubMenu, getItemsWithNoParentsRootNode(), setLocationController, setLocationMethod, locationHierarchyList, updateTarget);
-
-        return generatedMenuModel;
-    }
-
-    /**
-     * Recursive method generates a menu model for locations based on given
-     * location root tree node.
-     *
-     * @param locationSubmenu - SubMenu to which child tree nodes will be
-     * converted to.
-     * @param locationTreeNode - Location TreeNode branch
-     * @param setLocationController - [Null accepted] Controller to update item
-     * location.
-     * @param setLocationMethod - [Null accepted] Method in the location
-     * controller to be called for menuitem command.
-     * @param locationHierarchy - Apply location selected style to menu items in
-     * the list.
-     */
-    private void generateLocationMenuModel(DefaultSubMenu locationSubmenu, TreeNode locationTreeNode, String setLocationController, String setLocationMethod, List<ItemDomainLocation> locationHierarchy, String updateTarget) {
-        if (locationTreeNode.getData() != null) {
-            ItemDomainLocation locationItem = (ItemDomainLocation) locationTreeNode.getData();
-            boolean applyLocationActiveStyle = false; 
-            if (locationHierarchy != null) {
-                if (locationHierarchy.contains(locationItem)) {
-                    applyLocationActiveStyle = true; 
-                }
-            }
-            if (locationTreeNode.getChildCount() > 0) {
-                DefaultSubMenu childLocationSubMenu;
-                childLocationSubMenu = new DefaultSubMenu(locationItem.getName());
-                if (applyLocationActiveStyle) {
-                    childLocationSubMenu.setStyleClass(ACTIVE_LOCATION_MENU_ITEM_STYLE); 
-                    if (locationHierarchy.indexOf(locationItem) != locationHierarchy.size() -1) {
-                        // Still more items in hierarchy no need to highlight two reps of same item. 
-                        applyLocationActiveStyle = false; 
-                    }
-                }
-                locationSubmenu.addElement(childLocationSubMenu);
-                addLocationMenuItemToSubmenu(childLocationSubMenu, locationItem, setLocationController, setLocationMethod, applyLocationActiveStyle, updateTarget);
-                for (TreeNode childLocationTreeNode : locationTreeNode.getChildren()) {
-                    generateLocationMenuModel(childLocationSubMenu, childLocationTreeNode, setLocationController, setLocationMethod, locationHierarchy, updateTarget);
-                }
-            } else {
-                addLocationMenuItemToSubmenu(locationSubmenu, locationItem, setLocationController, setLocationMethod, applyLocationActiveStyle, updateTarget);
-            }
-        } else // root node 
-        if (locationTreeNode.getChildCount() > 0) {
-            for (TreeNode childLocationTreeNode : locationTreeNode.getChildren()) {
-                generateLocationMenuModel(locationSubmenu, childLocationTreeNode, setLocationController, setLocationMethod, locationHierarchy, updateTarget);
-            }
-        }
-    }
-
-    /**
-     * Create a MenuItem for the location provided and insert into the SubMenu
-     * provided. Apply additional necessary attributes based on the input
-     * parameters.
-     *
-     * @param submenu
-     * @param locationItem
-     * @param setLocationController - [Null accepted] Controller to update item
-     * location.
-     * @param setLocationMethod - [Null accepted] Method in the location
-     * controller to be called for menuitem command.
-     * @param applayActiveLocationStyle - Apply location selected style to menu items in
-     * the list.
-     */
-    private void addLocationMenuItemToSubmenu(DefaultSubMenu submenu, ItemDomainLocation locationItem, String setLocationController, String setLocationMethod, boolean applayActiveLocationStyle, String updateTarget) {
-        DefaultMenuItem locationMenuItem = new DefaultMenuItem();
-        locationMenuItem.setValue(locationItem.getName());
-
-        if (applayActiveLocationStyle) {
-            locationMenuItem.setStyleClass(ACTIVE_LOCATION_MENU_ITEM_STYLE);
-        }
-
-        if (setLocationController != null) {
-            String onClick = "#{" + setLocationController + ".";
-            onClick += setLocationMethod + "(";
-            String findLocationMethod = "itemDomainLocationController.findById(" + locationItem.getId() + ")";
-            onClick += findLocationMethod + ")}";
-            locationMenuItem.setCommand(onClick);
-            locationMenuItem.setUpdate(updateTarget);
-        }
-        submenu.addElement(locationMenuItem);
-    }
+    }  
 
     public TreeNode getLocationsWithInventoryItemsRootNode() {
         if (locationsWithInventoryItemsRootNode == null) {
@@ -490,7 +378,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
         return null;
     }
-
+        
     private void expandTreeBranch(TreeNode childNode) {
         TreeNode parentNode = childNode.getParent();
         if (parentNode != null) {

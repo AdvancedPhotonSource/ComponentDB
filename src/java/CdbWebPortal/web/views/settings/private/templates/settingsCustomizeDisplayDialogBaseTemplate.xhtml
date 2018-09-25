@@ -74,14 +74,14 @@ See LICENSE file.
                              action="#{entityController.customizeListDisplay()}"
                              update="#{customizeDisplayUpdateTarget}"
                              oncomplete="PF('#{customizeDisplayDialogId}Widget').hide(); #{customizeDisplayOnComplete}" 
-                             icon="ui-icon-arrowreturnthick-1-w"/>
+                             icon="fa fa-check"/>
             <p:commandButton value="Done" alt="Done" 
                              id="#{customizeDisplayDialogId}Done2Button"
                              rendered="#{settingController.displayCurrentSettingOptions 
                                          and !customizeDisplayRunCustomizeListDisplayAction}"
                              update="#{customizeDisplayUpdateTarget}"
                              oncomplete="PF('#{customizeDisplayDialogId}Widget').hide(); #{customizeDisplayOnComplete}" 
-                             icon="ui-icon-arrowreturnthick-1-w"/>
+                             icon="fa fa-check"/>
             <p:commandButton value="Save" alt="Save"
                              id="#{customizeDisplayDialogId}SaveButton"
                              action="#{settingController.saveSettingListForSettingEntity()}"
@@ -92,7 +92,7 @@ See LICENSE file.
                              rendered="#{settingController.displayCurrentSettingOptions 
                                          and savable 
                                          and settingController.sessionUserHaveSettingsWritePermissions}"
-                             icon="ui-icon-disk"/>
+                             icon="fa fa-save"/>
             
             <ui:insert name="customizeDisplayDialogAdditionalFooterContent" />
         </f:facet>

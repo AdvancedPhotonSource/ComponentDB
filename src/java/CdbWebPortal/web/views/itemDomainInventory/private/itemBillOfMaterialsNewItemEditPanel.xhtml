@@ -28,7 +28,7 @@ See LICENSE file.
         <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemProject.xhtml"/>
         <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemProject.xhtml"/>
         
-        <ui:include src="componentInventoryItemLocationSelection.xhtml" >
+        <ui:include src="../../locatableItem/private/locatableItemLocationSelection.xhtml" >
             <ui:param name="dialogViewName" value="BOMEdit"/>
         </ui:include>
         
@@ -52,7 +52,7 @@ See LICENSE file.
             <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemDescription.xhtml" />
             <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemDescription.xhtml" />
 
-            <ui:include src="componentInventoryItemLocationDetails.xhtml"/>
+            <ui:include src="../../locatableItem/private/locatableItemLocationDetailsEditObject.xhtml"/>
             <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemHelpFragment.xhtml">
                 <ui:param name="helpFragmentText"
                           value="Add additonal details to the current location of the item." />

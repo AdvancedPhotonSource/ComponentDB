@@ -221,7 +221,29 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
             return displayListDataModelScope.equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue());
         }
         return false;
-    }     
+    }
+    
+    /**
+     * Override for locatable item types as needed. 
+     * 
+     * Setting for displaying locatable item location in data table
+     * 
+     * @return 
+     */
+    public Boolean getDisplayLocation() {
+        return false;
+    }
+    
+    /**
+     * Override for locatable item types as needed. 
+     * 
+     * Setting for displaying locatable item location in data table
+     * 
+     * @return 
+     */
+    public Boolean getDisplayLocationDetails() {
+        return false; 
+    }
     
     public String getDisplayItemElementListItemIdentifier1Key() {
         return null;

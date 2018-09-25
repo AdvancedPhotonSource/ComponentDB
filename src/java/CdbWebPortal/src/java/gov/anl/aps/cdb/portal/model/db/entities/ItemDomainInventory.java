@@ -1,4 +1,4 @@
-/*
+ /*
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
@@ -18,7 +18,6 @@ import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import org.primefaces.model.TreeNode;
-import org.primefaces.model.menu.DefaultMenuModel;
 
 /**
  *
@@ -46,18 +45,10 @@ import org.primefaces.model.menu.DefaultMenuModel;
             }
     ),
 })
-public class ItemDomainInventory extends Item {
+public class ItemDomainInventory extends LocatableItem {
 
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
-
-    private transient TreeNode locationTree = null;
-    private transient String locationDetails = null;
-    private transient ItemDomainLocation location;
-    private transient String locationString;
-    private transient DefaultMenuModel locationMenuModel;
-    // Needed to determine whenever location was removed in edit process. 
-    private transient Boolean originalLocationLoaded = false;
-
+   
     private transient TreeNode itemElementAssemblyRootTreeNode = null;
 
     private transient InventoryBillOfMaterialItem containedInBOM;
@@ -72,64 +63,6 @@ public class ItemDomainInventory extends Item {
 
     public ItemDomainCatalog getCatalogItem() {
         return (ItemDomainCatalog) getDerivedFromItem();
-    }
-
-    @Override
-    public Item clone() throws CloneNotSupportedException {
-        ItemDomainInventory clonedItem = (ItemDomainInventory) super.clone();
-
-        clonedItem.setLocationDetails(null);
-        clonedItem.setLocation(null);
-
-        return clonedItem;
-    }
-
-    public TreeNode getLocationTree() {
-        return locationTree;
-    }
-
-    public void setLocationTree(TreeNode locationTree) {
-        this.locationTree = locationTree;
-    }
-
-    public DefaultMenuModel getLocationMenuModel() {
-        return locationMenuModel;
-    }
-
-    public void setLocationMenuModel(DefaultMenuModel locationMenuModel) {
-        this.locationMenuModel = locationMenuModel;
-    }
-
-    public Boolean getOriginalLocationLoaded() {
-        return originalLocationLoaded;
-    }
-
-    public void setOriginalLocationLoaded(Boolean originalLocationLoaded) {
-        this.originalLocationLoaded = originalLocationLoaded;
-    }
-
-    public String getLocationDetails() {
-        return locationDetails;
-    }
-
-    public void setLocationDetails(String locationDetails) {
-        this.locationDetails = locationDetails;
-    }
-
-    public ItemDomainLocation getLocation() {
-        return location;
-    }
-
-    public void setLocation(ItemDomainLocation location) {
-        this.location = location;
-    }
-
-    public String getLocationString() {
-        return locationString;
-    }
-
-    public void setLocationString(String locationString) {
-        this.locationString = locationString;
     }
 
     public List<InventoryBillOfMaterialItem> getInventoryDomainBillOfMaterialList() {

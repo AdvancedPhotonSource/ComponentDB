@@ -6,60 +6,33 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
-                xmlns:p="http://primefaces.org/ui">   
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
 
 
-    <p:panel header="Add Machine Design Item"
+    <p:panel header="Select option for adding Machine Design Item"
              id="addMachineDesignListConfigurationPanel"
-             rendered="#{entityController.displayAddMachineDesignListConfigurationPanel}">
+             rendered="#{entityController.displayAddMachineDesignListConfigurationPanel}">        
 
-        <ui:param name="newItemElement"
-                  value="#{itemDomainMachineDesignController.currentEditItemElement}" />
-        <p:panel id="addMachineDesignListConfigurationOptionsPanel"
-                 toggleable="true"
-                 widgetVar="addMachineDesignListConfigurationOptionsPanelWidget">
-            <ui:include src="itemDomainMachineDesignItemElementAddMachineItemPanel.xhtml">
-                <ui:param name="addMachineDesignItemUpdateTarget"
-                          value="addMachineDesignListConfigurationPanel"/>
-                <ui:param name="addMachineDesignItemContainerUpdateTarget"
-                          value="addMachineDesignListConfigurationOptionsPanel" />
-            </ui:include>
-
-        </p:panel>
-
-        <p:remoteCommand name="machineDesignElementContainedItemSelectionMade"
-                         onstart="PF('loadingDialog').show()"                        
-                         oncomplete="PF('loadingDialog').hide();
-                                     PF('addMachineDesignListConfigurationOptionsPanelWidget').collapse();
-                                     PF('machineDesignElementFinalizeWidget').expand();"
-                         update="addMachineDesignListConfigurationPanel"
-                         action="#{itemDomainMachineDesignController.verifyItemElementContainedItemSelection()}"
-                         immediate="true"/>
-
-
-        <ui:include src="itemDomainMachineDesignItemElementAddFinalStep.xhtml" >
-            <ui:param name="finalStepUpdateTarget"
-                      value="addMachineDesignListConfigurationButtons" />
-        </ui:include>
-
-        <p:outputPanel id="addMachineDesignListConfigurationButtons">
-
-            <p:commandButton value="Add" alt="Add" 
-                             update="machineDesignDualColumnListViewPanelGrid"
-                             onstart="PF('loadingDialog').show()"
-                             oncomplete="PF('loadingDialog').hide()"
-                             disabled="#{!entityController.currentEditItemElementSaveButtonEnabled}" 
-                             action="#{entityController.validateCreateSingleItemElementSimpleDialog('onSuccessDialogAddItemElementValidation()', 'Error Adding Design Element')}"                                 
-                             icon="fa fa-plus"/>
-
-            <p:remoteCommand name="onSuccessDialogAddItemElementValidation"
-                             action="#{entityController.saveTreeListMachineDesignItem()}"
-                             update="@form"                                         
-                             onstart="PF('loadingDialog').show()"
-                             oncomplete="PF('loadingDialog').hide();"/>
-            
-            <ui:include src="itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
-        </p:outputPanel>
+        <p:selectOneButton valueChangeListener="#{itemDomainMachineDesignController.valueChanged}" 
+                           value="#{itemDomainMachineDesignController.createMachineDesignViewOption}"
+                           onchange="updateDualViewConfigurationView()"
+                           id="machineDesignAddOptions">
+                           <f:selectItems value="#{itemDomainMachineDesignController.itemDomainMachineDesignCreateOptions}"
+                       var="createOption"
+                       itemLabel="#{createOption.value}"
+                       itemValue="#{createOption.value}" /> 
+        </p:selectOneButton>
+        
+        <p:remoteCommand name="updateMachineDesignAddOptions"
+                         update="machineDesignAddOptions" /> 
+        
+        
+        <p:remoteCommand name="updateDualViewConfigurationView"
+                         onstart="PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide()"
+                         update="@parent machineDesignDualListViewOutputPanel listActionButtonsOutputPanel" />                       
+        
     </p:panel>
 
 

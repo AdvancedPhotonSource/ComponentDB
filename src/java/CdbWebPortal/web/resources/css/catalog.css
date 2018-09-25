@@ -98,3 +98,8 @@ html, body {
 .viewColors h1 {
     color: #8a8142; 
 }
+
+.inventoryScrollBox {
+    width: 100px; 
+    height: 81px;
+}

@@ -38,7 +38,7 @@ public class GalleryUtility {
 
     public static Boolean viewableFileName(String fileName) {
         if (fileName == null) {
-            return false; 
+            return false;
         }
         String imageFormat = getImageFormat(fileName);
         return viewableFormat(imageFormat);
@@ -101,11 +101,11 @@ public class GalleryUtility {
                     originalData = imageBaos.toByteArray();
                     imageFormat = "png";
                 }
-                
+
                 // It is not possible to catch certain errors during gerneration of a page preview. 
                 // Avoid creating blank white previews. 
-                if (originalData.length < 5000) { 
-                    return;    
+                if (originalData.length < 5000) {
+                    return;
                 }
             } else {
                 originalData = Files.readAllBytes(originalFile.toPath());
@@ -138,19 +138,52 @@ public class GalleryUtility {
         }
     }
 
-    public static void main(String[] args) {
+    /**
+     * Provide: args[0] type (directory/document) args[1] path (path to document
+     * or directory)
+     *
+     * or: no args (process defaults)
+     *
+     * @param args
+     */
+    public static void main(String[] args) throws Exception {
         Path imageUploadDirPath;
         Path documentUploadDirPath;
 
+        String DIRECTORY_TYPE = "directory";
+        String DOCUMENT_TYPE = "document";
+
+        String dataDirectory = null;
+        String filePath = null;
+
         if (args.length > 0) {
-            String dataDirectory = args[0];
+            if (args.length == 2) {
+                String type = args[0];
+                if (type.equalsIgnoreCase(DIRECTORY_TYPE)) {
+                    dataDirectory = args[1];
+                } else if (type.equalsIgnoreCase(DOCUMENT_TYPE)) {
+                    filePath = args[1];
+                } else {
+                    throw new Exception("Invalid arguments provided 1 ");
+                }
+            } else {
+                throw new Exception("Invalid arguments provided 2 ");
+            }
+        }
+
+        if (dataDirectory != null) {
             imageUploadDirPath = Paths.get(dataDirectory + StorageUtility.getPropertyValueImagesDirectory());
             documentUploadDirPath = Paths.get(dataDirectory + StorageUtility.getPropertyValueDocumentsDirectory());
+        } else if (filePath != null) {
+            File file = new File(filePath); 
+            logger.debug("Generating Preview for image: " + filePath);
+            storeImagePreviews(file);
+            return;
         } else {
             imageUploadDirPath = Paths.get(StorageUtility.getFileSystemPropertyValueImagesDirectory());
             documentUploadDirPath = Paths.get(StorageUtility.getFileSystemPropertyValueDocumentsDirectory());
         }
-        
+
         FilenameFilter originalFilter = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
@@ -163,7 +196,7 @@ public class GalleryUtility {
 
         File imageUploadDir = imageUploadDirPath.toFile();
         File[] originalImageFiles = imageUploadDir.listFiles(originalFilter);
-        
+
         if (originalImageFiles == null) {
             logger.debug("Could not find or open image directory: " + imageUploadDirPath.toString());
         } else {

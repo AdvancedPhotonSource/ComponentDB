@@ -8,7 +8,7 @@ See LICENSE file.
 import shutil
 import uuid
 
-from cdb.common.exceptions.commandFailed import CommandFailed
+from cdb.common.utility.cdbSubprocess import CdbSubprocess
 from cdb.common.utility.configurationManager import ConfigurationManager
 from cdb.common.utility.loggingManager import LoggingManager
 
@@ -20,7 +20,10 @@ class StorageUtility:
 
     CONFIG_SECTION_NAME = 'Storage'
     CONFIG_OPTION_NAME_LIST = ['storageDirectory'
-                               , 'logAttachmentPath']
+                               , 'logAttachmentPath'
+                               , 'cdbInstallationDirectory']
+
+    GALLERY_UPDATE_SCRIPT_PATH = 'sbin/cdb_attachment_gallery_update.sh'
 
     # Singleton
     __instance = None
@@ -44,7 +47,10 @@ class StorageUtility:
         cm.setOptionsFromConfigFile(self.CONFIG_SECTION_NAME, self.CONFIG_OPTION_NAME_LIST)
 
         self.logAttachmentStoragePath = cm.getLogAttachmentPath()
+        self.propertyImageStoragePath = cm.getPropertyImagePath()
         self.storageDirectory = cm.getStorageDirectory()
+        self.installDirectory = cm.getCdbInstallationDirectory()
+        self.galleryUpdateScript = '%s/%s' % (self.installDirectory, self.GALLERY_UPDATE_SCRIPT_PATH)
 
     def storeLogAttachment(self, data, fileName):
         """
@@ -56,15 +62,50 @@ class StorageUtility:
         """
         logAttachmentsDirectory = "%s/%s" % (self.storageDirectory, self.logAttachmentStoragePath)
 
-        uniqueFileName = '%s%s' % (str(uuid.uuid4()), self.__getFileExtension(fileName))
+        uniqueFileName = self.__getUniqueFileName(fileName)
         logAttachmentDestination = '%s/%s' % (logAttachmentsDirectory, uniqueFileName)
 
         self.logger.debug("Saving log attachment (%s) to: %s" % (fileName, logAttachmentDestination))
 
-        with open(logAttachmentDestination, 'wb') as destf:
-            shutil.copyfileobj(data, destf)
+        self.__storeFile(logAttachmentDestination, data)
 
         return uniqueFileName
+
+    def storePropertyImage(self, data, fileName):
+        """
+        Stores data stream with image into the CDB
+        :param data:
+        :param fileName
+        :return:
+        """
+
+        propertyImageDirectory = "%s/%s" % (self.storageDirectory, self.propertyImageStoragePath)
+
+        uniqueName = self.__getUniqueFileName(fileName)
+        propertyFileName = "%s.%s" % ('image', uniqueName)
+        uniqueName = "%s.%s" % (propertyFileName, 'original')
+        propertyImageDestination = '%s/%s' % (propertyImageDirectory, uniqueName)
+
+
+        self.logger.debug("Saving property image to (%s) to: %s" % (fileName, propertyImageDestination))
+        self.__storeFile(propertyImageDestination, data)
+
+        # Generate previews
+        galleryUpdateCommand = '%s %s' % (self.galleryUpdateScript, propertyImageDestination)
+        galleryUpdateProcess = CdbSubprocess(galleryUpdateCommand)
+        galleryUpdateProcess.run()
+
+        return propertyFileName
+
+    def __storeFile(self, destination, data):
+        with open(destination, 'wb') as destf:
+            if type(data) == str:
+                destf.write(data)
+            else:
+                shutil.copyfileobj(data, destf)
+
+    def __getUniqueFileName(self, fileName):
+        return '%s%s' % (str(uuid.uuid4()), self.__getFileExtension(fileName))
 
     def __getFileExtension(self, filename):
         filenameSplit = filename.split('.')

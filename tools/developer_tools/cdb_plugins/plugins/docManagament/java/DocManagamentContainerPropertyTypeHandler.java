@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.plugins.support.docManagament;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
@@ -24,22 +23,17 @@ public class DocManagamentContainerPropertyTypeHandler extends AbstractPropertyT
     public static final String HANDLER_NAME = "DMS Container";
     public static final String INFO_ACTION_COMMAND = "updateDocManagamentInfoDialog();";
     
+    private static final String PROPERTY_EDIT_PAGE = "dmsContainerPropertyValueEditPanel";
+    
     private static final Logger logger = Logger.getLogger(DocManagamentContainerPropertyTypeHandler.class.getName());
     
     protected DocumentManagamentApi api = null;
     
     public DocManagamentContainerPropertyTypeHandler() {                
-        super(HANDLER_NAME, DisplayType.INFO_ACTION);
-        
-        String dmsUrl = DocManagerPlugin.getContextRootUrlProperty();
-        try {        
-            api = new DocumentManagamentApi(dmsUrl);
-        } catch (ConfigurationError ex) {
-            String error = "DMS Service is not accessible:  " + ex.getErrorMessage();
-            logger.error(error);
-        }
+        super(HANDLER_NAME, DisplayType.HTTP_LINK);  
+        api = DocManagerPlugin.createNewDocumentManagamentApi();
     }
-    
+    /*
     @Override
     public void setInfoActionCommand(PropertyValue propertyValue) {
         propertyValue.setInfoActionCommand(INFO_ACTION_COMMAND);
@@ -49,6 +43,7 @@ public class DocManagamentContainerPropertyTypeHandler extends AbstractPropertyT
     public void setInfoActionCommand(PropertyValueHistory propertyValueHistory) {
         propertyValueHistory.setInfoActionCommand(INFO_ACTION_COMMAND);
     } 
+    */
 
     @Override
     public void setDisplayValue(PropertyValueHistory propertyValueHistory) {
@@ -58,6 +53,16 @@ public class DocManagamentContainerPropertyTypeHandler extends AbstractPropertyT
     @Override
     public void setDisplayValue(PropertyValue propertyValue) {
         propertyValue.setDisplayValue(getDisplayValue(propertyValue.getValue(), true));
+    } 
+
+    @Override
+    public void setTargetValue(PropertyValue propertyValue) {
+        propertyValue.setTargetValue(DocManagerPlugin.generateContainerUrl(propertyValue.getValue()));
+    } 
+
+    @Override
+    public void setTargetValue(PropertyValueHistory propertyValueHistory) {
+        propertyValueHistory.setTargetValue(DocManagerPlugin.generateContainerUrl(propertyValueHistory.getValue()));
     }
     
     private String getDisplayValue(String value, Boolean showError) {
@@ -74,6 +79,11 @@ public class DocManagamentContainerPropertyTypeHandler extends AbstractPropertyT
             }
         }
         return value;
+    }
+    
+    @Override
+    public String getPropertyEditPage() {
+        return PROPERTY_EDIT_PAGE;
     }
 
     

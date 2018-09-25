@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+
+    <ui:param name="defaultUpdateTarget"
+              value="collectionPropertyValueEditValuePanel#{propertyValueObject.viewUUID}" />
+
+    <ui:param name="updateTarget"
+              value="#{updateTarget != null 
+                       ? updateTarget 
+                       : defaultUpdateTarget}" />
+
+
+    <p:dialog widgetVar="dmsCollectionPropertyValueAssignDialogWidget"
+              id="dmsCollectionPropertyValueAssignDialog"
+              styleClass="viewTransparentBackgroundDialog"
+              header="DMS Collection Selection"
+              resizable="false"
+              modal="true">
+
+        <p:outputPanel id="dmsCollectionPropertyValueAssignOutputPanel">
+
+            <h:inputText value="#{docManagamentBean.dmsCollectionSearchString}"/>
+            <p:commandButton id="dmsCollectionPropertySearchCommandButton"
+                             widgetVar="dmsCollectionPropertySearchCommandButtonWidget"
+                             icon="fa fa-search"
+                             update="dmsCollectionPropertyValueAssignOutputPanel"
+                             action="#{docManagamentBean.performCollectionSearch()}"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide(); 
+                             PF('dmsCollectionPropertyValueAssignDialogWidget').initPosition()" />     
+            <p:commandButton icon="fa fa-question"
+                             onclick="PF('dmsCollectionPropertyValueAssignHelpDialogWidget').show()"/> 
+
+            <br/>
+            <br/>
+
+            <p:outputPanel rendered="#{docManagamentBean.dmsCollectionSearchResults != null}">
+                <p:dataTable id="dmsCollectionForPropertySelectionDataTable"
+                             value="#{docManagamentBean.dmsCollectionSearchResults}"
+                             var="collectionsObject"
+                             selectionMode="single"
+                             selection="#{docManagamentBean.selectedCollection}"
+                             rowKey="#{collectionsObject.collectionId}"
+                             rows="10"
+                             paginator="true">
+
+                    <p:ajax event="rowDblselect"                                
+                            oncomplete="dmsCollectionForPropertySelectionMade()" />
+
+                    <p:column>
+                        <p:rowToggler /> 
+                    </p:column>
+
+                    <p:column headerText="Collection Id"
+                              filterBy="#{collectionsObject.collectionId}"
+                              sortBy="#{collectionsObject.collectionId}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{collectionsObject.collectionId}" />                             
+                    </p:column>
+
+                    <p:column headerText="Collection Label"
+                              filterBy="#{collectionsObject.collectionLabel}"
+                              sortBy="#{collectionsObject.collectionLabel}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{collectionsObject.collectionLabel}" />
+                    </p:column>
+
+                    <p:column headerText="Owner"
+                              filterBy="#{collectionsObject.collectionOwner}"
+                              sortBy="#{collectionsObject.collectionOwner}"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{collectionsObject.collectionOwner}" />
+                    </p:column>
+
+                    <p:column headerText="Document Count"
+                              filterBy="#{collectionsObject.numberOfDocuments}"
+                              sortBy="#{collectionsObject.numberOfDocuments}">
+                        <h:outputText value="#{collectionsObject.numberOfDocuments}" />
+                    </p:column>
+
+                    <p:rowExpansion>
+                        <p:dataTable value="#{collectionsObject.documents}"
+                                     var="documentObject"
+                                     rows="5"
+                                     paginator="true"
+                                     paginatorPosition="bottom">
+                            <ui:include src="dmsDocumentListDataObject.xhtml" />
+                        </p:dataTable>
+                    </p:rowExpansion>
+
+                </p:dataTable>
+            </p:outputPanel>
+
+        </p:outputPanel>
+
+        <f:facet name="footer">
+            <p:commandButton value="Select"
+                             icon="fa fa-check"
+                             onclick="dmsCollectionForPropertySelectionMade()"/>
+            <p:commandButton value="Close"
+                             icon="fa fa-close"
+                             oncomplete="PF('dmsCollectionPropertyValueAssignDialogWidget').hide()" />
+
+            <p:remoteCommand name="dmsCollectionForPropertySelectionMade"
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             action="#{docManagamentBean.performCollectionSelection('dmsCollectionForPropertySelectionMadeSuccess()')}"
+                             update="dmsCollectionForPropertySelectionDataTable"/>
+
+            <ui:param name="propertyValueObject"
+                      value="#{entityController.currentEditPropertyValue}" /> 
+
+            <p:remoteCommand name="dmsCollectionForPropertySelectionMadeSuccess"
+                             oncomplete="PF('dmsCollectionPropertyValueAssignDialogWidget').hide()"
+                             update="#{updateTarget}"
+                             process="#{updateTarget}"/> 
+
+        </f:facet>
+
+
+    </p:dialog>
+
+    <p:remoteCommand name="loadDmsCollectionPropertyValueAssignDialog"
+                     update="dmsCollectionPropertyValueAssignDialog"
+                     action="#{docManagamentBean.resetCollectionSearchVariables()}"
+                     oncomplete="PF('dmsCollectionPropertyValueAssignDialogWidget').show()" />
+
+    <p:dialog id="dmsCollectionPropertyValueAssignHelpDialog"
+              widgetVar="dmsCollectionPropertyValueAssignHelpDialogWidget"
+              styleClass="viewTransparentBackgroundDialog"
+              header="DMS Collection Search Help"
+              resizable="false"
+              modal="true">
+        <p:outputPanel styleClass="leftAlignedText">
+            <h3>Simple CDB Search</h3>
+            The collection search will search for collection number and collection label.
+            <br/>
+            Ex: 'A01 Something' will search for:
+            <br/>  -  Collection Id: A01*
+            <br/> -  Collection Label: Something
+
+            <br/>
+            <h3>Advanced Search</h3>
+            Please navigate to the <h:outputLink value="#{docManagamentBean.docManagamentSystemUrl}" target="DMS">
+                <h:outputText value="DMS System"/>
+            </h:outputLink>  for advanced search.
+            <br/>After finding the collection use the collection number to find it in Simple CDB Search. 
+        </p:outputPanel>
+
+        <f:facet name="footer">
+            <p:commandButton value="Close"
+                             icon="fa fa-close"
+                             onclick="PF('dmsCollectionPropertyValueAssignHelpDialogWidget').hide()" />
+        </f:facet>
+    </p:dialog>
+
+
+</ui:composition>

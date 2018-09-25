@@ -8,26 +8,42 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
-                template="../../item/private/templates/itemListFilterViewObjectTemplate.xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
-    
+                template="../../item/private/templates/itemListFilterViewObjectTemplate.xhtml">
+
     <ui:define name="additonalItemColumns">
         <p:column headerText="Inventory">
-            <ui:repeat value="#{itemListObject.derivedFromItemList}"
-                       var="inventoryItem">
-                <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
-                    <ui:param name="itemObject" value="#{inventoryItem}" />
-                    <ui:param name="displayString" value="#{inventoryItem.name}"/>
-                </ui:include>
-                <br/>
-            </ui:repeat>
+            
+            <ui:param name="inventoryList"
+                      value="#{itemListObject.derivedFromItemList}" />
+            <ui:param name="largeList" 
+                      value="#{facesUtility.islistSizeOverMin(inventoryList, resources.InventoryNoScrollboxMaximum)}" />
+
+            <p:scrollPanel styleClass="inventoryScrollBox"
+                           rendered="#{largeList}"> 
+                <ui:repeat value="#{inventoryList}"
+                           var="inventoryItem">
+                    <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                        <ui:param name="itemObject" value="#{inventoryItem}" />
+                        <ui:param name="displayString" value="#{inventoryItem.name}"/>
+                    </ui:include>                    
+                </ui:repeat>
+            </p:scrollPanel>
+
+            <p:outputPanel rendered="#{!largeList}">
+                <ui:repeat value="#{inventoryList}"
+                           var="inventoryItem">
+                    <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                        <ui:param name="itemObject" value="#{inventoryItem}" />
+                        <ui:param name="displayString" value="#{inventoryItem.name}"/>
+                    </ui:include>                    
+                </ui:repeat>
+            </p:outputPanel>
         </p:column>
     </ui:define>
-    
-    
-   
-    
+
+
+
+
 </ui:composition>
 
 

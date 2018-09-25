@@ -9,7 +9,7 @@
 #
 # Usage:
 #
-# $0 [CDB_DB_NAME | CDB_DATA_DIR]
+# $0 [CDB_DB_NAME | CDB_DATA_DIR | ATTACHMENT_FILE_PATH]
 #
 
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
@@ -31,16 +31,18 @@ unset CDB_DATA_DIR
 if [ ! -z "$1" ]; then
     if [ -d "$1" ]; then
 	CDB_DATA_DIR=$1
+    elif [ -f "$1" ]; then
+	ATTACHMENT_FILE=$1
     else
     	CDB_DB_NAME=$1
     fi
 else
     >&2 echo "No databse or data directory provided, please provide the database or data directory and try again"
-    echo "USAGE: $0 [CDB_DB_NAME | CDB_DATA_DIR]"
+    echo "USAGE: $0 [CDB_DB_NAME | CDB_DATA_DIR | ATTACHMENT_FILE]"
     exit 1
 fi
 
-if [ -z $CDB_DATA_DIR ]; then
+if [ -z $CDB_DATA_DIR ] && [ -z $ATTACHMENT_FILE ]; then
     echo "Using DB name: $CDB_DB_NAME"
 
     # Look for deployment file in etc directory, and use it to override
@@ -68,11 +70,17 @@ if [ ! -d "$CDB_BUILD_WEB_INF_DIR" ]; then
     exit 1
 fi
 
-echo "Using data directory: $CDB_DATA_DIR"
-echo
-read -p "Would you like to backup the data directory before continuing? [Y/n] " backupDataDir
-if [ -z $backupDataDir ]; then
-    backupDataDir="y"
+if [ ! -z $CDB_DATA_DIR ]; then
+    echo "Using data directory: $CDB_DATA_DIR"
+    echo
+    read -p "Would you like to backup the data directory before continuing? [Y/n] " backupDataDir
+    if [ -z $backupDataDir ]; then
+        backupDataDir="y"
+    fi
+else
+    echo "Using attachment file: $ATTACHMENT_FILE"
+    echo
+    backupDataDir="n"
 fi
 
 if [ $backupDataDir == "y" -o $backupDataDir == "Y" ]; then
@@ -110,7 +118,15 @@ if [ $backupDataDir == "y" -o $backupDataDir == "Y" ]; then
     fi
 fi
 
-javaCmd="java -cp $CDB_BUILD_WEB_INF_DIR/classes:$CDB_BUILD_WEB_INF_DIR/lib/* gov.anl.aps.cdb.portal.utilities.GalleryUtility $CDB_DATA_DIR"
+if [ -z $CDB_DATA_DIR ]; then
+    TYPE="document"
+    DATA=$ATTACHMENT_FILE
+else
+    TYPE="directory"
+    DATA="$CDB_DATA_DIR"
+fi
+
+javaCmd="java -cp $CDB_BUILD_WEB_INF_DIR/classes:$CDB_BUILD_WEB_INF_DIR/lib/* gov.anl.aps.cdb.portal.utilities.GalleryUtility $TYPE $DATA"
 
 echo "Executing: $javaCmd"
 eval $javaCmd

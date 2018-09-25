@@ -7,7 +7,8 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../item/private/templates/itemListTemplate.xhtml"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />        
 
@@ -15,20 +16,26 @@ See LICENSE file.
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainMachineDesignController.processPreRenderList()}" />
     </f:metadata>
-
-    <ui:define name="listActionButtons">       
-        <ui:include src="private/itemDomainMachineDesignListActionButtons.xhtml" >
-            <ui:param name="displayAddButton" value="#{loginController.loggedIn}" />
-        </ui:include>                
-    </ui:define>
-
-
-    <ui:define name="itemListPageEmphasizedContentBelowTitle">
-        <ui:include src="private/itemDomainMachineDesignListPageContentBelowTitle.xhtml" />
+    
+    <ui:define name="customizeDisplayDialog">
+        <ui:include src="private/itemDomainMachineDesignListCustomizeDisplayDialog.xhtml"/>
     </ui:define>
 
     <ui:define name="listDataTable">
         <ui:include src="private/itemDomainMachineDesignDualColumnListViewPanelGrid.xhtml" /> 
+    </ui:define>
+    
+    <ui:define name="listActionButtons">
+        <p:outputPanel rendered="#{!itemDomainMachineDesignController.displayListConfigurationView}">
+            <ui:include src="../item/private/itemListActionButtons.xhtml" >
+                <ui:param name="listExportable"
+                          value="#{false}" /> 
+            </ui:include>
+        </p:outputPanel>
+    </ui:define>
+    
+    <ui:define name="additionalListSupport" >
+        <ui:insert name="additionalSupport" />
     </ui:define>
 
 

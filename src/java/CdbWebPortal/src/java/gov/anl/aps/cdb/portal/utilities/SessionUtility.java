@@ -12,7 +12,7 @@ import javax.faces.application.NavigationHandler;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpSession;
-import org.primefaces.context.RequestContext;
+import org.primefaces.PrimeFaces;
 
 /**
  * Session utility class.
@@ -32,21 +32,22 @@ public class SessionUtility {
     }
 
     public static void addErrorMessage(String summary, String detail) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        context.getExternalContext().getFlash().setKeepMessages(true);
-        context.addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail));
+        addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_ERROR, summary, detail));
     }
 
     public static void addWarningMessage(String summary, String detail) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        context.getExternalContext().getFlash().setKeepMessages(true);
-        context.addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_WARN, summary, detail));
+        addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_WARN, summary, detail));
     }
 
     public static void addInfoMessage(String summary, String detail) {
+        addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail));
+    }
+    
+    private static void addMessage(String clientId, FacesMessage message) {        
         FacesContext context = FacesContext.getCurrentInstance();
-        context.getExternalContext().getFlash().setKeepMessages(true);
-        context.addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail));
+        context.getExternalContext().getFlash().setKeepMessages(true);        
+        context.addMessage(clientId, message);
+        PrimeFaces.current().ajax().update(clientId);
     }
 
     public static String getRequestParameterValue(String parameterName) {
@@ -170,7 +171,7 @@ public class SessionUtility {
     }
     
     public static void executeRemoteCommand(String commandName) {
-        RequestContext.getCurrentInstance().execute(commandName);
+        PrimeFaces.current().executeScript(commandName);        
     }
     
     /**

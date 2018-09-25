@@ -1014,13 +1014,13 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             setCurrent(entity);
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityUpdate(entity);
-            EntityType updatedEntity = getEntityDbFacade().edit(entity);
-            completeEntityUpdate(entity);
+            EntityType updatedEntity = getEntityDbFacade().edit(entity);            
             addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Updated: " + entity.toString());
             resetListDataModel();
             resetSelectDataModel();
             resetLogText();
             setCurrent(updatedEntity);
+            completeEntityUpdate(entity);
             entity.setPersitanceErrorMessage(null);
         } catch (CdbException ex) {
             entity.setPersitanceErrorMessage(ex.getMessage());

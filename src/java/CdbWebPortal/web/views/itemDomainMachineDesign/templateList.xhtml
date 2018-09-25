@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="../item/private/templates/itemTemplateListTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+
+    <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+        <f:viewAction action="#{itemDomainMachineDesignController.processPreRenderTemplateList()}" />
+    </f:metadata>
+
+    <ui:define name="listDataTable">
+        <ui:include src="private/itemDomainMachineDesignDualColumnListViewPanelGrid.xhtml" /> 
+    </ui:define>
+
+    <ui:define name="listActionButtons">
+        <p:outputPanel rendered="#{!itemDomainMachineDesignController.displayListConfigurationView}">
+            <ui:include src="../item/private/itemListActionButtons.xhtml">
+                <ui:param name="displayAvailableTemplatesButton"
+                          value="#{false}" /> 
+                <ui:param name="displayMultiEditButtons"
+                          value="#{false}" /> 
+                <ui:param name="listExportable"
+                          value="#{false}" /> 
+
+                <ui:param name="addEntityActionFunctionName"
+                          value="prepareCreateTemplate"  /> 
+                
+                <ui:param name="resetListActionFunctionName"
+                      value="resetTemplateList" /> 
+            </ui:include>
+        </p:outputPanel>
+    </ui:define>
+
+</ui:composition>
+
+

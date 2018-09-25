@@ -187,8 +187,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     private List<ItemProject> itemProjectList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem")
     private List<ItemElement> fullItemElementList;
-    @OneToMany(mappedBy = "containedItem")
+    @OneToMany(mappedBy = "containedItem1")
     private List<ItemElement> itemElementMemberList;
+    @OneToMany(mappedBy = "containedItem2")
+    private List<ItemElement> itemElementMemberList2;
     @JoinColumn(name = "domain_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private Domain domain;
@@ -237,7 +239,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient List<ItemType> availableItemTypes = null;
     private transient List<ItemCategory> lastKnownItemCategoryList = null;
     
-    private transient Boolean isItemTemplate = null;
+    private transient Boolean isItemTemplate = null;        
 
     public Item() {
     }

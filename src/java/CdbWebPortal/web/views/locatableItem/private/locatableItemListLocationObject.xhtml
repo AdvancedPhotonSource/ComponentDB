@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+     
+    <ui:param name="settingObject" value="#{entityController.settingObject}"/>     
+    <ui:param name="renderedLocation"
+              value="#{renderedLocation != null 
+                       ? renderedLocation 
+                       : true}"/>
+    <!-- specify ui:param alternateLocationString to add string when no location string exists. --> 
+
+    <p:column headerText="Location"
+              rendered="#{settingObject.displayLocation and renderedLocation}"
+              filterBy="#{itemListObject.locationString}"
+              sortBy="#{itemListObject.locationString}"
+              filterMatchMode="contains"
+              filterable="#{filterable}">
+        <ui:param name="locationString"
+                  value="#{locatableItemController.getLocationStringForItem(itemListObject)}" />
+        <h:outputText rendered="#{locationString != ''}" value="#{locationString}" />        
+        <h:outputText rendered="#{locationString == ''}" value="#{alternateLocationString}" />
+    </p:column>
+
+    <ui:param name="locationDetails" value="#{locatableItemController.getLocationRelationshipDetails(itemListObject)}" />
+
+    <p:column headerText="Location Details" sortBy="#{locationDetails}" 
+              rendered="#{settingObject.displayLocationDetails and renderedLocation}"
+              filterBy="#{locationDetails}"
+              filterable="#{filterable}"
+              sortable="#{sortable}"
+              filterMatchMode="contains">
+        <h:outputText value="#{locationDetails}" />
+    </p:column>
+
+</ui:composition>

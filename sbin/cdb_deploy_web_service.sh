@@ -142,6 +142,7 @@ if [ ! -f $CDB_WEB_SERVICE_CONFIG_FILE ]; then
         | sed 's?CDB_LDAP_AUTH_SERVER_URL?$CDB_LDAP_AUTH_SERVER_URL?g' \
         | sed 's?CDB_LDAP_AUTH_DN_FORMAT=?$CDB_LDAP_AUTH_DN_FORMAT?g' \
         | sed 's?CDB_DATA_DIR?$CDB_DATA_DIR?g'\
+        | sed 's?CDB_ROOT_DIR?$CDB_ROOT_DIR?g'\
         > $CDB_WEB_SERVICE_CONFIG_FILE"
     eval $cmd || exit 1
 else

@@ -117,20 +117,23 @@ See LICENSE file.
                         <p:remoteCommand name="prepareNewViewID"
                                          action="#{clientViewManagerController.generateNewViewUUID()}"
                                          update="viewOpenPageIdHiddenText"
+                                         process="@this"
                                          oncomplete="setCurrentPageViewId()" /> 
 
                         <p:remoteCommand name="prepareTestExistingViewID" 
                                          update="viewOpenPageIdHiddenText"
+                                         process="@this"                                       
                                          oncomplete="testExistingPageId()" /> 
 
                         <p:remoteCommand name="verifyViewOpenPageIdHiddenText"
                                          update="viewOpenPageIdHiddenText currentTimeHashHiddenText"
-                                         oncomplete="completeVerifyViewOpenPage()"/>
-
-                        <p:growl id="messages" showDetail="true">
-                            <p:autoUpdate /> 
-                        </p:growl>
-
+                                         process="@this"
+                                         oncomplete="completeVerifyViewOpenPage()"/>                 
+                        
+                        <p:growl id="messages"
+                                 showDetail="true"
+                                 life="7000"/>
+                        
                         <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
                                        onidle="displaySessionTimeout()">
                             <p:remoteCommand name="displaySessionTimeout"
@@ -210,6 +213,7 @@ See LICENSE file.
                             </f:facet>
                         </p:dialog>                       
                         <h:outputScript library="javascript" name="sessionTimeout.js"/>
+                        <h:outputScript library="javascript" name="portal.js"/>
                     </h:form>
                     <footer>
                         <h:outputText value="Copyright &#169; #{resources.CdbCopyrightNotice}"/>   

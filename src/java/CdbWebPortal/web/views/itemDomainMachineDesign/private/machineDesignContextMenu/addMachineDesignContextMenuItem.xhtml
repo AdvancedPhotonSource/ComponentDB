@@ -7,14 +7,13 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
-    
-    <p:menuitem value="Add Machine Design" icon="fa fa-plus"
-                    update="machineDesignDualColumnListViewPanelGrid"
-                    disabled="#{disabledEditContextMenuItemForSelection}"
-                    immediate="true"
-                    oncomplete="PF('addMachineDesignListConfigurationOptionsPanelWidget').expand();
-                    PF('machineDesignElementFinalizeWidget').collapse();"
-                    action='#{entityController.prepareAddNewMachineDesignListConfiguration()}'/>
+
+    <p:menuitem value="Add Item" icon="ui-icon-machine-design"
+                update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel"
+                disabled="#{disabledEditContextMenuItemForSelection}"
+                immediate="true"
+                oncomplete="updateMachineDesignAddOptions()"
+                action='#{entityController.prepareAddNewMachineDesignListConfiguration()}'/>
 
 </ui:composition>
 

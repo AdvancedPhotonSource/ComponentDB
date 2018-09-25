@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <p:dialog id="dmsCollectionInfoDialog" 
+              widgetVar="dmsCollectionInfoDialogWidget" 
+              header="DMS Collection Information" 
+              modal="true"
+              resizable="false"
+              styleClass="viewTransparentBackgroundDialog">
+
+        <p:outputPanel rendered="#{docManagamentBean.selectedCollection != null}">
+            <ui:param name="collectionObject"
+                      value="#{docManagamentBean.selectedCollection}" /> 
+            <p:panel header="Details">
+                <p:panelGrid columns="4">
+
+                    <h:outputLabel value="Collection Id"
+                                   styleClass="entityDataEmphasizedLabel"/>
+                    <h:outputText value="#{collectionObject.collectionId}"
+                                  styleClass="entityDataText"/>
+
+                    <h:outputLabel value="Collection label"
+                                   styleClass="entityDataEmphasizedLabel"/>
+                    <h:outputText value="#{collectionObject.collectionLabel}"
+                                  styleClass="entityDataText"/>
+
+                    <h:outputLabel value="Owner"
+                                   styleClass="entityDataEmphasizedLabel"/>
+                    <h:outputText value="#{collectionObject.collectionOwner}"
+                                  styleClass="entityDataText"/>
+                    
+                    <h:outputLabel value="Number of Documents"
+                                   styleClass="entityDataEmphasizedLabel"/>
+                    <h:outputText value="#{collectionObject.numberOfDocuments}"
+                                  styleClass="entityDataText"/>
+                    
+                </p:panelGrid>
+            </p:panel>
+
+            <p:panel header="Documents">
+                <p:dataTable rows="5"
+                             value="#{collectionObject.documents}"
+                             var="documentObject"
+                             paginator="true"
+                             paginatorPosition="bottom">
+
+                    <ui:include src="./dmsDocumentListDataObject.xhtml" >
+                        <ui:param name="renderCollectionLabel"
+                                  value="#{false}" /> 
+                    </ui:include>
+
+                </p:dataTable>
+            </p:panel>
+
+        </p:outputPanel>
+
+        <f:facet name="footer">
+            <p:commandButton icon="fa fa-close"
+                             value="Close"
+                             onclick="PF('dmsCollectionInfoDialogWidget').hide()" />
+        </f:facet>
+
+    </p:dialog>
+
+    <p:remoteCommand name="updateDmsCollectionInfoDialog" 
+                     update="dmsCollectionInfoDialog" 
+                     oncomplete="PF('dmsCollectionInfoDialogWidget').initPosition();
+                     PF('dmsCollectionInfoDialogWidget').show();"/>
+</ui:composition>
+

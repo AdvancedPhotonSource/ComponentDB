@@ -143,7 +143,8 @@ CDB_DB_ENTITY_MAP = {
     }),
     'item_element' : ( ItemElement, {
         'parentItem' : { 'parentEntity' : Item, 'lazy' : False, 'foreignKeyColumns' : ['parent_item_id'] },
-        'containedItem' : { 'parentEntity' : Item, 'lazy' : False, 'foreignKeyColumns' : ['contained_item_id'] },
+        'containedItem' : { 'parentEntity' : Item, 'lazy' : False, 'foreignKeyColumns' : ['contained_item_id1'] },
+        'containedItem2' : { 'parentEntity' : Item, 'lazy' : False, 'foreignKeyColumns' : ['contained_item_id2'] },
         'entityInfo' : { 'parentEntity' : EntityInfo, 'lazy' : False },
     }),
     'item_element_log' : ( ItemElementLog, {

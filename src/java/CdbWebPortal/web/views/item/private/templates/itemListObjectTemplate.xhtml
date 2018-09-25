@@ -80,30 +80,7 @@ See LICENSE file.
                                                             ? entityController.entityDisplayItemEntityTypes 
                                                             : entitySettingObject.displayItemEntityTypes}" />
     <ui:define name="thumbnail">
-        <p:column styleClass="narrowColumn" 
-                  headerText="Primary Image" 
-                  exportable="false"
-                  rendered="#{rendered}">
-            <ui:param name="itemHasPrimaryImage" value="#{entityController.itemHasPrimaryImage(itemListObject)}"/>
-            <p:outputPanel rendered="#{itemHasPrimaryImage}" styleClass="centeredContent">
-                <p:graphicImage styleClass="domainEntityPropertyValueThumbnail" value="#{entityController.getPrimaryImageThumbnailForItem(itemListObject)}"
-                                onclick="PF('imagePreviewScaled#{itemListObject.viewUUID}DialogWidget').hide();
-                                        PF('imagePreviewScaled#{itemListObject.viewUUID}DialogWidget').show()"/>
-                <p:dialog dynamic="true"
-                          header="#{entityController.getItemDisplayString(itemListObject)}"
-                          widgetVar="imagePreviewScaled#{itemListObject.viewUUID}DialogWidget"
-                          styleClass="viewTransparentBackgroundDialog"
-                          resizable="false">
-                    <ui:param name="imageName" value="#{entityController.getPrimaryImageValueForItem(itemListObject)}" />
-                    <h:outputLink value="#{propertyValueController.getOriginalImageApplicationPathByValue(imageName)}" target="_page_#{imageName}">
-                        <p:graphicImage styleClass="domainEntityPropertyValueThumbnail" value="#{propertyValueController.getScaledImagePathByValue(imageName)}" />
-                    </h:outputLink>
-                </p:dialog>
-            </p:outputPanel>
-            <p:outputPanel rendered="#{!itemHasPrimaryImage}">
-                &#9786; 
-            </p:outputPanel>
-        </p:column>
+        <ui:include src="../templateDefaults/itemListObjectColumns/itemThumbnailColumn.xhtml" /> 
     </ui:define>
 
     <ui:define name="idColumn">

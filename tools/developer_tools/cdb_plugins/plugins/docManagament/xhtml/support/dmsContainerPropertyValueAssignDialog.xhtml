@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+    
+    <ui:param name="defaultUpdateTarget"
+              value="containerPropertyValueEditValuePanel#{propertyValueObject.viewUUID}" />
+    
+    <ui:param name="updateTarget"
+              value="#{updateTarget != null 
+                       ? updateTarget 
+                       : defaultUpdateTarget}" />
+
+    <p:dialog widgetVar="dmsContainerPropertyValueAssignDialogWidget"
+              id="dmsContainerPropertyValueAssignDialog"
+              styleClass="viewTransparentBackgroundDialog"
+              header="DMS Container Selection"
+              resizable="false"
+              modal="true">
+
+        <p:dataTable id="dmsContainerForPropertySelectionDataTable"
+                     value="#{docManagamentBean.containerList}"
+                     var="containerObject"
+                     rows="10"
+                     paginator="true"
+                     selectionMode="single"
+                     rowKey="#{containerObject.dossierId}"
+                     selection="#{docManagamentBean.selectedContainer}">
+
+            <p:ajax event="rowDblselect"                                
+                    oncomplete="dmsContainerForPropertySelectionMade()" />
+
+            <p:column headerText="Name"
+                      filterBy="#{containerObject.dossierName}">
+                <h:outputText value="#{containerObject.dossierName}" />
+            </p:column>
+
+            <p:column headerText="Owner"
+                      filterBy="#{containerObject.owner}">
+                <h:outputText value="#{containerObject.owner}" />
+            </p:column>
+        </p:dataTable>
+
+        <f:facet name="footer">
+            <p:commandButton value="Select"
+                             icon="fa fa-check"
+                             onclick="dmsContainerForPropertySelectionMade()"/>
+            <p:commandButton value="Close"
+                             icon="fa fa-close"
+                             oncomplete="PF('dmsContainerPropertyValueAssignDialogWidget').hide()" />
+
+            <p:remoteCommand name="dmsContainerForPropertySelectionMade"
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             action="#{docManagamentBean.performContainerSelection('dmsContainerForPropertySelectionMadeSuccess()')}"
+                             update="dmsContainerForPropertySelectionDataTable"/>
+
+            <ui:param name="propertyValueObject"
+                      value="#{entityController.currentEditPropertyValue}" /> 
+
+            <p:remoteCommand name="dmsContainerForPropertySelectionMadeSuccess"
+                             oncomplete="PF('dmsContainerPropertyValueAssignDialogWidget').hide()"
+                             update="#{updateTarget}"
+                             process="#{updateTarget}"/> 
+
+        </f:facet>
+
+    </p:dialog>
+
+    <p:remoteCommand name="loadDmsContainerPropertyValueAssignDialog"
+                     update="dmsContainerPropertyValueAssignDialog"
+                     action="#{docManagamentBean.resetContainerSearchVariables()}"
+                     oncomplete="PF('dmsContainerPropertyValueAssignDialogWidget').show()" />
+
+</ui:composition>

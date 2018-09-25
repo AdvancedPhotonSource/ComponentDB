@@ -17,7 +17,9 @@ import org.apache.log4j.Logger;
 public class DocManagamentCollectionPropertyTypeHandler extends AbstractPropertyTypeHandler {
     
     public static final String HANDLER_NAME = "DMS Collection";
-    public static final String INFO_ACTION_COMMAND = "updateDocManagamentInfoDialog();";
+    public static final String INFO_ACTION_COMMAND = "updateDmsCollectionInfoDialog();";
+    
+    private static final String PROPERTY_EDIT_PAGE = "dmsCollectionPropertyValueEditPanel";
     
     private static final Logger logger = Logger.getLogger(DocManagamentCollectionPropertyTypeHandler.class.getName());    
     
@@ -33,6 +35,11 @@ public class DocManagamentCollectionPropertyTypeHandler extends AbstractProperty
     @Override
     public void setInfoActionCommand(PropertyValueHistory propertyValueHistory) {
         propertyValueHistory.setInfoActionCommand(INFO_ACTION_COMMAND);
-    } 
+    }
+    
+    @Override
+    public String getPropertyEditPage() {
+        return PROPERTY_EDIT_PAGE;
+    }
     
 }

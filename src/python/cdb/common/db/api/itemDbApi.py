@@ -597,6 +597,23 @@ class ItemDbApi(CdbDbApi):
         dbItemElementProperty = self.itemHandler.addItemElementProperty(session, itemElementId, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue, targetValue, enteredOnDateTime)
         return dbItemElementProperty.getCdbObject()
 
+    @CdbDbApi.executeTransaction
+    def addItemElementImageProperty(self, itemElementId, enteredByUserId, generatedName, fileName, **kwargs):
+	    """
+	    Stores a property value reference to a file an image file stored in the CDB storage directory.
+	    
+	    :param itemElementId: 
+	    :param enteredByUserId: 
+	    :param generatedName: 
+	    :param fileName: 
+	    :param kwargs: 
+	    :return: (CdbObject) newly added record.:return: (CdbObject) newly added record.
+	    """
+	    session = kwargs['session']
+	    dbItemElementProperty = self.itemHandler.addItemElementImageProperty(session, itemElementId, enteredByUserId, generatedName, fileName)
+
+	    return dbItemElementProperty.getCdbObject()
+
     @CdbDbApi.executeQuery
     def getAvailableInventoryItemStatuses(self, **kwargs):
         """

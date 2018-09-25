@@ -15,6 +15,7 @@ from cdb.cdb_web_service.impl.logControllerImpl import LogControllerImpl
 from cdb.common.db.api.propertyDbApi import PropertyDbApi
 from cdb.common.objects.cdbObjectManager import CdbObjectManager
 from cdb.common.db.api.itemDbApi import ItemDbApi
+from cdb.common.utility.storageUtility import StorageUtility
 
 
 class ItemControllerImpl(CdbObjectManager):
@@ -28,6 +29,7 @@ class ItemControllerImpl(CdbObjectManager):
         self.itemDbApi = ItemDbApi()
         self.logControllerImpl = LogControllerImpl()
         self.propertyDbApi = PropertyDbApi()
+        self.storageUtility = StorageUtility.getInstance()
 
     def getItemById(self, itemId):
         return self.itemDbApi.getItemById(itemId)
@@ -94,6 +96,20 @@ class ItemControllerImpl(CdbObjectManager):
             logEntry.data['logAttachmentAdded'] = logAttachmentJsonRep
 
         return logEntry
+
+    def addPropertyImageToItem(self, itemId, imageFileName, enteredByUserId, cherryPyData):
+        selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
+        selfElementId = selfElement.data['id']
+
+        if self.itemDbApi.verifyPermissionsForWriteToItemElement(enteredByUserId, selfElementId):
+            storedAttachmentName = self.storageUtility.storePropertyImage(cherryPyData, imageFileName)
+
+            propertyValue = self.itemDbApi.addItemElementImageProperty(selfElementId, enteredByUserId, storedAttachmentName, imageFileName)
+
+            return propertyValue
+
+        return None
+
 
     def addPropertyValueForItemWithId(self, itemId, propertyTypeName, enteredByUserId,
                                       tag=None, value=None, units=None, description=None,

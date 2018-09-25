@@ -54,6 +54,7 @@ from cdb.common.db.impl.permissionHandler import PermissionHandler
 class ItemHandler(CdbDbEntityHandler):
 
     ITEM_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status"
+    IMAGE_PROPERTY_TYPE_NAME = "Image"
 
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
@@ -300,7 +301,7 @@ class ItemHandler(CdbDbEntityHandler):
         try:
             query = session.query(Item).join(Domain)
             query = query.filter(Domain.name == domainName)
-            query = query.filter(~ exists().where(ItemElement.contained_item_id == Item.id))
+            query = query.filter(~ exists().where(ItemElement.contained_item_id1 == Item.id))
 
             dbItems = query.all()
             return dbItems
@@ -594,6 +595,10 @@ class ItemHandler(CdbDbEntityHandler):
         dbPropertyType = self.propertyTypeHandler.getPropertyTypeByName(session, self.ITEM_STATUS_PROPERTY_TYPE_NAME)
         return self.propertyTypeHandler.getAllowedPropertyTypeValuesById(session, dbPropertyType.id)
 
+    def addItemElementImageProperty(self, session, itemElementId, enteredByUserId, generatedName, fileName):
+        return self.addItemElementProperty(session, itemElementId, self.IMAGE_PROPERTY_TYPE_NAME, tag=fileName,
+                                    value=generatedName, enteredByUserId=enteredByUserId, allowInternal=True)
+
     def addItemElementProperty(self, session, itemElementId, propertyTypeName,
                                tag=None, value=None, units=None, description=None,
                                enteredByUserId=None, isUserWriteable=None, isDynamic=None,
@@ -772,7 +777,7 @@ class ItemHandler(CdbDbEntityHandler):
     def getParentItems(self, session, itemId):
         query = session.query(Item)\
             .join(ItemElement.parentItem)\
-            .filter(ItemElement.contained_item_id == itemId)
+            .filter(ItemElement.contained_item_id1 == itemId)
 
         dbItems = query.all()
         return dbItems

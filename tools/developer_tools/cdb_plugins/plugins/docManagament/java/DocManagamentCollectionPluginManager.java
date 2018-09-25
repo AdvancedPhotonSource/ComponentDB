@@ -26,9 +26,10 @@ public class DocManagamentCollectionPluginManager extends PluginManagerBase{
 
     @Override
     public void performInfoActionLoad(PropertyValue propertyValue) {
-        DocManagamentBean.getInstance().updateCurrentIFrameDialog(COLLECTION_IFRAME_PATH, propertyValue);
-        
-        super.performInfoActionLoad(propertyValue); 
+        DocManagamentBean instance = DocManagamentBean.getInstance();
+        if (instance.loadSelectedCollectionByPropertyValue(propertyValue)) {
+            super.performInfoActionLoad(propertyValue); 
+        }
     }    
     
 }

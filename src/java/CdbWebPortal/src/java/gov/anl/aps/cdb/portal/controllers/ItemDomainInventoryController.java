@@ -20,7 +20,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -28,27 +27,20 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCable;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementRelationshipUtility;
-import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -59,7 +51,6 @@ import org.primefaces.component.selectonelistbox.SelectOneListbox;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
-import org.primefaces.model.menu.DefaultMenuModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -106,9 +97,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     private List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
 
-    private boolean connectionEditRendered = false;
-
-    private ItemDomainInventory lastInventoryItemRequestedLocationMenuModel = null;
+    private boolean connectionEditRendered = false;           
 
     @EJB
     private ItemElementRelationshipFacade itemElementRelationshipFacade;
@@ -128,7 +117,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public ItemDomainInventoryController() {
         super();
     }
-
+    
     public static ItemDomainInventoryController getInstance() {
         return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);
     }
@@ -147,9 +136,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public ItemEnforcedPropertiesController getItemEnforcedPropertiesController() {
         return ItemEnforcedPropertiesDomainInventoryController.getInstance();
     }
-    
-    
-
+       
     // <editor-fold defaultstate="collapsed" desc="Inventory status implementation">
     
     public PropertyType getInventoryStatusPropertyType() {
@@ -200,24 +187,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return getCurrentStatusPropertyValue() != null; 
     }
 
-    // </editor-fold>
-    public TreeNode getLocationRelationshipTree(ItemDomainInventory inventoryItem) {
-        if (inventoryItem.getLocationTree() == null) {
-            setItemLocationInfo(inventoryItem);
-        }
-        return inventoryItem.getLocationTree();
-    }
-
-    private ItemElementRelationship findItemLocationRelationship(ItemDomainInventory item) {
-        // Support items that have not yet been saved to db.
-        if (item.getSelfElement().getId() != null) {
-            return itemElementRelationshipFacade
-                    .findItemElementRelationshipByNameAndItemElementId(ItemElementRelationshipTypeNames.itemLocation.getValue(),
-                            item.getSelfElement().getId());
-        } else {
-            return null;
-        }
-    }
+    // </editor-fold>        
 
     private List<ItemElementRelationship> findItemCableConnectionRelationship(Item item) {
         // Support items that have not yet been saved to db.
@@ -271,22 +241,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     @Override
     public List<EntityType> getFilterableEntityTypes() {
         return getDefaultDomainDerivedFromDomain().getAllowedEntityTypeList();
-    }
-
-    public String getLocationRelationshipDetails(ItemDomainInventory inventoryItem) {
-        if (inventoryItem.getLocationDetails() == null) {
-            setItemLocationInfo(inventoryItem);
-        }
-
-        return inventoryItem.getLocationDetails();
-    }
-
-    public ItemDomainLocation getLocation(ItemDomainInventory inventoryItem) {
-        if (inventoryItem.getLocation() == null) {
-            setItemLocationInfo(inventoryItem);
-        }
-        return inventoryItem.getLocation();
-    }
+    }   
 
     public List<ItemElementRelationship> getItemCableRelationshipList(Item inventoryItem) {
         if (inventoryItem.getItemCableConnectionsRelationshipList() == null) {
@@ -559,90 +514,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         this.selectedSecondItemWithRequiredConnection = selectedInventoryItemWithRequiredConnection;
     }
 
-    public DefaultMenuModel getItemLocataionDefaultMenuModel(ItemDomainInventory item) {
-        return getItemLocataionDefaultMenuModel(item, "@form");
-    }
-
-    public DefaultMenuModel getItemLocataionDefaultMenuModel(ItemDomainInventory item, String updateTarget) {
-        lastInventoryItemRequestedLocationMenuModel = item;
-        if (item != null) {
-            if (item.getLocationMenuModel() == null) {
-                setItemLocationInfo(item, false, true);
-                String locationString = item.getLocationString();
-                DefaultMenuModel itemLocationMenuModel;
-                ItemDomainLocationController itemDomainLocationController;
-                itemDomainLocationController = ItemDomainLocationController.getInstance();
-                String inventoryControllerName = getDomainControllerName(DEFAULT_DOMAIN_NAME);
-                if (locationString == null || locationString.isEmpty()) {
-                    locationString = "Select Location";
-                }
-                ItemDomainLocation lowestLocation = item.getLocation();
-
-                itemLocationMenuModel = itemDomainLocationController.generateLocationMenuModel(locationString, inventoryControllerName, "updateLocationForLastRequestedMenuModel", lowestLocation, updateTarget);
-                item.setLocationMenuModel(itemLocationMenuModel);
-            }
-            return item.getLocationMenuModel();
-        }
-        return null;
-    }
-
-    public void updateLocationForLastRequestedMenuModel(ItemDomainLocation locationItem) {
-        if (lastInventoryItemRequestedLocationMenuModel != null) {
-            updateLocationForItem(lastInventoryItemRequestedLocationMenuModel, locationItem, null);
-        } else {
-            SessionUtility.addErrorMessage("Error", "No current item.");
-        }
-    }
-
-    public void updateLocationForItem(ItemDomainInventory item, ItemDomainLocation locationItem, String onSuccess) {
-        if (item.equals(locationItem)) {
-            SessionUtility.addErrorMessage("Error", "Cannot use the same location as this item.");
-            return;
-        }
-
-        if (locationItem != null) {
-            if (isInventoryDomainItem(locationItem)) {
-                ItemDomainInventory itemToCheck = item;
-                if (item.getId() == null) {
-                    // new item is part of currents assembly. 
-                    itemToCheck = getCurrent();
-                    if (itemToCheck.equals(locationItem)) {
-                        SessionUtility.addErrorMessage("Error", "Cannot use parent of assembly as a location.");
-                        return;
-                    }
-                } else {
-                    // Existent item.
-                    // Check that current item is not placed in its own herarchy. 
-                    List<ItemDomainLocation> locationHierarchyList = ItemDomainLocationController.generateLocationHierarchyList(locationItem);
-                    if (locationHierarchyList != null) {
-                        if (locationHierarchyList.contains(item)) {
-                            SessionUtility.addErrorMessage("Error", "Item is part of the the desired location heriarchy.");
-                            return;
-                        }
-                    }
-                }
-
-                // Check if item is part of assembly. 
-                if (isItemInAssemblyTree(itemToCheck, locationItem)) {
-                    SessionUtility.addErrorMessage("Error", "Item is already part of this assembly, cannot use selected location.");
-                    return;
-                }
-
-            }
-        }
-
-        item.setLocation(locationItem);
-        updateLocationTreeForItem(item);
-        updateLocationStringForItem(item);
-        // To be updated. 
-        item.setLocationMenuModel(null);
-
-        if (onSuccess != null) {
-            RequestContext.getCurrentInstance().execute(onSuccess);
-        }
-
-    }
-
     private boolean isItemInAssemblyTree(Item currentItem, Item itemToLookFor) {
         return isItemInAssemblyTree(currentItem, itemToLookFor, true, true);
     }
@@ -684,21 +555,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         }
 
         return false;
-    }
-
-    public List<ItemElementRelationshipHistory> getItemLocationRelationshipHistory(Item item) {
-        String locationRelationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue();
-
-        List<ItemElementRelationship> locationRelationshipList = ItemUtility.getItemRelationshipList(item, locationRelationshipTypeName, true);
-
-        if (locationRelationshipList.size() > 1) {
-            SessionUtility.addErrorMessage("Error", "Item is part of two or more locations.");
-        } else if (locationRelationshipList.size() == 1) {
-            return locationRelationshipList.get(0).getItemElementRelationshipHistoryList();
-        }
-
-        return null;
-    }
+    }    
 
     @Override
     public void resetListDataModel() {
@@ -707,96 +564,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     public boolean isInventoryDomainItem(Item item) {
         return item.getDomain().getName().equals(getDefaultDomainName());
-    }
-
-    /**
-     * Using the current location set in item, generate a location tree.
-     *
-     * @param item
-     */
-    public void updateLocationTreeForItem(ItemDomainInventory item) {
-        if (item != null) {
-            ItemDomainLocation location = item.getLocation();
-            item.setLocationTree(ItemDomainLocationController.generateLocationNodeTreeBranch(location));
-        }
-    }
-
-    /**
-     * Using the current location set in item, generate a location string.
-     *
-     * @param item
-     */
-    public void updateLocationStringForItem(ItemDomainInventory item) {
-        if (item != null) {
-            ItemDomainLocation locationItem = item.getLocation();
-            item.setLocationString(ItemDomainLocationController.generateLocatonHierarchyString(locationItem));
-        }
-    }
-
-    /**
-     * Gets a location string for an item and loads it if necessary.
-     *
-     * @param item
-     * @return
-     */
-    public String getLocationStringForItem(ItemDomainInventory item) {
-        if (item != null) {
-            if (item.getLocationString() == null) {
-                loadLocationStringForItem(item);
-                if (item.getLocationString() == null) {
-                    // Avoid unecessary checks.
-                    item.setLocationString("");
-                }
-            }
-            return item.getLocationString();
-        }
-        return null;
-    }
-
-    /**
-     * Load current item location information & set location string.
-     *
-     * @param inventoryItem
-     */
-    public void loadLocationStringForItem(ItemDomainInventory inventoryItem) {
-        setItemLocationInfo(inventoryItem, false, true);
-    }
-
-    public void setItemLocationInfo(ItemDomainInventory inventoryItem) {
-        setItemLocationInfo(inventoryItem, true, true);
-    }
-
-    public void setItemLocationInfo(ItemDomainInventory inventoryItem, boolean loadLocationTreeForItem, boolean loadLocationHierarchyString) {
-        if (inventoryItem.getOriginalLocationLoaded() == false) {
-            ItemDomainLocation itemLocationItem = inventoryItem.getLocation();
-
-            if (itemLocationItem == null) {
-                ItemElementRelationship itemElementRelationship;
-                itemElementRelationship = findItemLocationRelationship(inventoryItem);
-
-                if (itemElementRelationship != null) {
-                    ItemElement locationSelfItemElement = itemElementRelationship.getSecondItemElement();
-                    if (locationSelfItemElement != null) {
-                        ItemDomainLocation locationItem = (ItemDomainLocation) locationSelfItemElement.getParentItem();
-                        inventoryItem.setLocation(locationItem);
-                        if (loadLocationTreeForItem) {
-                            updateLocationTreeForItem(inventoryItem);
-                        }
-                        if (loadLocationHierarchyString) {
-                            updateLocationStringForItem(inventoryItem);
-                        }
-                    }
-                    inventoryItem.setLocationDetails(itemElementRelationship.getRelationshipDetails());
-                }
-            }
-            inventoryItem.setOriginalLocationLoaded(true);
-        }
-
-    }
-
-    private RelationshipType getLocationRelationshipType() {
-        return relationshipTypeFacade.findByName(ItemElementRelationshipTypeNames.itemLocation.getValue());
-    }
+    }           
 
     private RelationshipType getCableConnectionRelationshipType() {
         RelationshipType relationshipType = relationshipTypeFacade.findByName(ItemElementRelationshipTypeNames.itemCableConnection.getValue());
@@ -806,28 +574,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             relationshipType = controller.createRelationshipTypeWithName(name);
         }
         return relationshipType;
-    }
-
-    @Override
-    protected boolean isPreProcessListDataModelIterateNeeded() {
-        boolean result = super.isPreProcessListDataModelIterateNeeded();
-
-        if (!result) {
-            return settingObject.getDisplayLocation();
-        }
-
-        return result;
-    }
-
-    @Override
-    protected void processPreProcessIteratedDomainEntity(CdbDomainEntity entity) {
-        super.processPreProcessIteratedDomainEntity(entity);
-
-        if (settingObject.getDisplayLocation()) {
-            ItemDomainInventory item = (ItemDomainInventory) entity;
-            loadLocationStringForItem(item);
-        }
-    }
+    }    
 
     @Override
     public String prepareCreate() {
@@ -1371,14 +1118,11 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 if (item != newItem) {
                     checkItem(newItem);
                 }
-                updateItemLocation(newItem);
+                performPrepareEntityInsertUpdate(newItem);
             }
             // Cross check the nonadded items. 
             checkUniquenessBetweenNewItemsToAdd();
-        } else {
-            checkItem(item);
         }
-        updateItemLocation(item);
     }
 
     public String getInventoryItemElementDisplayString(ItemElement itemElement) {
@@ -1480,6 +1224,16 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     @Override
     public ItemElementConstraintInformation loadItemElementConstraintInformation(ItemElement itemElement) {
         return new InventoryItemElementConstraintInformation(itemElement);
+    } 
+
+    @Override
+    public String getPrimaryImageValueForItem(Item item) {
+        String result = super.getPrimaryImageValueForItem(item); 
+        if (result.equals("")) {
+            Item catalogItem = item.getDerivedFromItem();
+            return super.getPrimaryImageValueForItem(catalogItem);
+        }
+        return result; 
     }
 
     /**
@@ -1507,98 +1261,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         checkNewItemsToAdd();
 
         addItemElementsFromBillOfMaterials(item);
-    }
-
-    private void updateItemLocation(ItemDomainInventory item) {
-        // Determie updating of location relationship. 
-        ItemDomainInventory existingItem = null;
-        ItemElementRelationship itemElementRelationship = null;
-
-        if (item.getId() != null) {
-            existingItem = itemDomainInventoryFacade.findById(item.getId());
-            // Item is not new
-            if (existingItem != null) {
-                setItemLocationInfo(existingItem);
-                itemElementRelationship = findItemLocationRelationship(item);
-            }
-        }
-
-        Boolean newItemWithNewLocation = (existingItem == null
-                && (item.getLocation() != null || (item.getLocationDetails() != null && !item.getLocationDetails().isEmpty())));
-
-        Boolean locationDifferentOnCurrentItem = false;
-
-        if (existingItem != null) {
-            // Empty String should be the same as null for comparison puposes. 
-            String existingLocationDetails = existingItem.getLocationDetails();
-            String newLocationDetails = item.getLocationDetails();
-
-            if (existingLocationDetails != null && existingLocationDetails.isEmpty()) {
-                existingLocationDetails = null;
-            }
-            if (newLocationDetails != null && newLocationDetails.isEmpty()) {
-                newLocationDetails = null;
-            }
-
-            locationDifferentOnCurrentItem = ((!Objects.equals(existingItem.getLocation(), item.getLocation())
-                    || !Objects.equals(existingLocationDetails, newLocationDetails)));
-        }
-
-        if (newItemWithNewLocation || locationDifferentOnCurrentItem) {
-
-            if (item.getLocation() != null) {
-                logger.debug("Updating location for Item " + item.toString()
-                        + " to: " + item.getLocation().getName());
-            } else if (item.getLocationDetails() != null) {
-                logger.debug("Updating location details for Item " + item.toString()
-                        + " to: " + item.getLocationDetails());
-            }
-
-            if (itemElementRelationship == null) {
-                itemElementRelationship = new ItemElementRelationship();
-                itemElementRelationship.setRelationshipType(getLocationRelationshipType());
-                itemElementRelationship.setFirstItemElement(item.getSelfElement());
-                List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
-                if (itemElementRelationshipList == null) {
-                    itemElementRelationshipList = new ArrayList<>();
-                    item.getSelfElement().setItemElementRelationshipList(itemElementRelationshipList);
-                }
-                itemElementRelationshipList.add(itemElementRelationship);
-            }
-
-            List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
-
-            Integer locationIndex = itemElementRelationshipList.indexOf(itemElementRelationship);
-
-            if (item.getLocation() != null && item.getLocation().getSelfElement() != null) {
-                itemElementRelationshipList.get(locationIndex).setSecondItemElement(item.getLocation().getSelfElement());
-            } else {
-                // No location is set. 
-                itemElementRelationshipList.get(locationIndex).setSecondItemElement(null);
-            }
-            itemElementRelationshipList.get(locationIndex).setRelationshipDetails(item.getLocationDetails());
-
-            // Add Item Element relationship history record. 
-            ItemElementRelationship ier = itemElementRelationshipList.get(locationIndex);
-            ItemElementRelationshipHistory ierh;
-            ierh = ItemElementRelationshipUtility.createItemElementHistoryRecord(
-                    ier, (UserInfo) SessionUtility.getUser(), new Date());
-            List<ItemElementRelationshipHistory> ierhList;
-            ierhList = item.getSelfElement().getItemElementRelationshipHistoryList();
-            if (ierhList == null) {
-                ierhList = new ArrayList<>();
-                item.getSelfElement().setItemElementRelationshipHistoryList(ierhList);
-            }
-
-            ierhList.add(ierh);
-        }
-    }
-
-    @Override
-    public void processEditRequestParams() {
-        super.processEditRequestParams();
-        setItemLocationInfo(getCurrent());
-    }
+    }        
 
     @Override
     public String getCurrentEntityInstanceName() {
