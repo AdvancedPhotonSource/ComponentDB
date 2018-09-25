@@ -13,6 +13,8 @@ class addItemPropertyValueCli(CdbWebServiceCli):
         CdbWebServiceCli.__init__(self)
         self.addOption('', '--item-id', dest='itemId', help='item id of item to add property value for')
         self.addOption('', '--property-type-name', dest='propertyTypeName', help='Property type name of the property to add to item')
+        self.addOption('', '--value', dest='value', help='value of the newly added property')
+        self.addOption('', '--display-value', dest='displayValue', help='display value of the newly added property')
 
     def checkArgs(self):
         if self.options.itemId is None:
@@ -26,6 +28,12 @@ class addItemPropertyValueCli(CdbWebServiceCli):
     def getPropertyTypeName(self):
         return self.options.propertyTypeName
 
+    def getValue(self):
+        return self.options.value
+
+    def getDisplayValue(self):
+        return self.options.displayValue
+
     def runCommand(self):
         self.parseArgs(usage="""
     cdb-add-item-property --item-id=ITEMID
@@ -37,7 +45,7 @@ Description:
         self.checkArgs()
         api = ItemRestApi(self.getUsername(), self.getPassword(), self.getServiceHost(), self.getServicePort(), self.getServiceProtocol())
 
-        propertyValue = api.addPropertyValueToItemWithId(self.getItemId(), self.getPropertyTypeName())
+        propertyValue = api.addPropertyValueToItemWithId(self.getItemId(), self.getPropertyTypeName(), value=self.getValue(), displayValue=self.getDisplayValue())
 
         print propertyValue.getDisplayString(self.getDisplayKeys(), self.getDisplayFormat())
 

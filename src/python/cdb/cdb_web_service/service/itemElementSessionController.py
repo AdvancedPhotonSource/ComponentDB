@@ -96,9 +96,8 @@ class ItemElementSessionController(CdbSessionController):
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
     @CdbSessionController.execute
-    def addPropertyValueToItemElementById(self, itemElementId, propertyTypeName, tag=None, value=None, units=None,
-                                       description=None,
-                                       isUserWriteable=None, isDynamic=None):
+    def addPropertyValueToItemElementById(self, itemElementId, propertyTypeName, tag=None, value=None, displayValue=None, units=None,
+                                       description=None, isUserWriteable=None, isDynamic=None):
         if not itemElementId:
             raise InvalidRequest("Invalid itemElementId provided")
         if not propertyTypeName:
@@ -112,7 +111,7 @@ class ItemElementSessionController(CdbSessionController):
         optionalParameters = self.propertyControllerImpl.packageOptionalPropertyValueVariables(tag, value,
                                                                                                units, description,
                                                                                                isUserWriteable,
-                                                                                               isDynamic)
+                                                                                               isDynamic, displayValue)
 
         itemElementPropertyValueAdded = self.itemElementImplController.addPropertyValueForItemElementWithId(itemElementId, propertyTypeName,
                                                                                               enteredByUserId,
