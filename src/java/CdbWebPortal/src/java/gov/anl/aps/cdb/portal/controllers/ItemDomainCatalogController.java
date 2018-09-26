@@ -225,20 +225,6 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
         displayInventorySpares = null;
     }
 
-    public void resetInventorySpares() {
-        ItemDomainCatalog currentItem = getCurrent();
-        if (currentItem != null) {
-            List<ItemDomainInventory> inventoryItems = currentItem.getInventoryItemList();
-            if (inventoryItems != null) {
-                for (ItemDomainInventory inventoryItem : inventoryItems) {
-                    inventoryItem.setSparePartIndicator(null);
-                }
-            }
-        }
-        inventoryNonSparesList = null;
-        inventorySparesList = null;
-    }
-
     public List<ItemDomainInventory> getInventorySparesList() {
         if (inventorySparesList == null) {
             ItemDomainCatalog currentItem = getCurrent();

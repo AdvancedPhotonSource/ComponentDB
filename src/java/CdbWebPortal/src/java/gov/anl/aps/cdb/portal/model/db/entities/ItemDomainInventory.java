@@ -48,6 +48,7 @@ import org.primefaces.model.TreeNode;
 public class ItemDomainInventory extends LocatableItem {
     
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status"; 
+    public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare"; 
 
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
    
@@ -98,17 +99,10 @@ public class ItemDomainInventory extends LocatableItem {
 
     public Boolean getSparePartIndicator() {
         if (sparePartIndicator == null) {
-            sparePartIndicator = getSparePartsBean().getSparePartsIndication(this);
+            boolean spare = getInventoryStatusValue().equals(ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE); 
+            sparePartIndicator = spare;
         }
         return sparePartIndicator;
-    }
-
-    public void setSparePartIndicator(Boolean sparePartIndicator) {
-        this.sparePartIndicator = sparePartIndicator;
-    }
-
-    public void updateSparePartsIndication() {
-        getSparePartsBean().setSparePartsIndication(this);
     }
 
     public SparePartsBean getSparePartsBean() {
@@ -138,7 +132,10 @@ public class ItemDomainInventory extends LocatableItem {
     
     public String getInventoryStatusValue() {
         if (getInventoryStatusPropertyValue()!= null) {
-            return getInventoryStatusPropertyValue().getValue(); 
+            String value = getInventoryStatusPropertyValue().getValue(); 
+            if (value != null) {
+                return value; 
+            }
         } 
         return ""; 
     }
@@ -146,6 +143,7 @@ public class ItemDomainInventory extends LocatableItem {
     public void setInventoryStatusValue(String status) {
         if (getInventoryStatusPropertyValue() != null) {
             getInventoryStatusPropertyValue().setValue(status);
+            sparePartIndicator = null; 
         }
     }
     

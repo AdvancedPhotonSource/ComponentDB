@@ -24,7 +24,7 @@ See LICENSE file.
         <p:tab title="All Items">
             <ui:include src="itemDomainCatalogInventoryListBasicView.xhtml"/>
         </p:tab>
-        <p:tab title="In Use: #{itemDomainCatalogController.inventoryNonSparesCount}">
+        <p:tab title="Non-Spares: #{itemDomainCatalogController.inventoryNonSparesCount}">
             <ui:include src="itemDomainCatalogInventoryListDataTable.xhtml">
                 <ui:param name="viewName" value="NonSpares" />
                 <ui:param name="itemListDataTableValue" value="#{itemDomainCatalogController.inventoryNonSparesList}" />

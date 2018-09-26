@@ -27,32 +27,6 @@ See LICENSE file.
         <p:column headerText="Status">
             <h:outputText value="#{itemListObject.inventoryStatusValue}" /> 
         </p:column>        
-        
-        <p:column headerText="Spare"
-                  rendered="#{displaySpareColumn}">
-            
-            <ui:param name="inventoryItemWriteable" 
-                      value="#{loginController.isEntityWriteable(itemListObject.entityInfo)}"/>
-            
-            <p:selectBooleanButton id="inventorySpareBooleanButton" offLabel="No" onLabel="Yes"                                                                       
-                                   value="#{itemListObject.sparePartIndicator}"
-                                   disabled="#{!inventoryItemWriteable}">
-                <p:ajax onstart="PF('loadingDialog').show();"
-                        update="@this"
-                        listener="#{itemListObject.updateSparePartsIndication()}"
-                        oncomplete="sparesViewupdateForm()" />
-                <p:tooltip for="inventorySpareBooleanButton"
-                           value="You must have edit permissions for inventory item to change spare status"                           
-                           rendered="#{!inventoryItemWriteable}"/>
-            </p:selectBooleanButton>                                 
-            <p:remoteCommand name="sparesViewupdateForm"
-                             update="#{updateTarget}"
-                             action="#{itemDomainCatalogController.resetInventorySpares()}"
-                             oncomplete="PF('loadingDialog').hide(); notifyUserIfSparesAreTooLow();"/>
-            
-            <p:remoteCommand name="notifyUserIfSparesAreTooLow"
-                             action="#{itemDomainCatalogController.notifyUserIfMinimumSparesReachedForCurrent()}" />
-        </p:column>
     </ui:define>
 
 
