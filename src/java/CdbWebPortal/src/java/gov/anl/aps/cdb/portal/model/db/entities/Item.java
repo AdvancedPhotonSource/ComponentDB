@@ -36,6 +36,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
@@ -186,6 +187,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @ManyToMany
     private List<ItemProject> itemProjectList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem")
+    @OrderBy("sortOrder ASC")
     private List<ItemElement> fullItemElementList;
     @OneToMany(mappedBy = "containedItem1")
     private List<ItemElement> itemElementMemberList;
