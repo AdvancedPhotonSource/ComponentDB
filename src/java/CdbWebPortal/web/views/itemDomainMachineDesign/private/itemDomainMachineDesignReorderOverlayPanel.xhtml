@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">  
+
+
+    <p:overlayPanel id="itemDomainMachineDesignReorderOverlayPanel"
+                    widgetVar="itemDomainMachineDesignReorderOverlayPanelWidget"
+                    modal="true"
+                    styleClass="centeredOverlayPanel viewTransparentBackgroundDialog">
+
+        <p:outputPanel id="itemDomainMachineDesignReorderOutputPanel"
+                       rendered="#{itemDomainMachineDesignController.displayMachineDesignReorderOverlayPanel}">
+            <ui:param name="currentObject"
+                      value="#{entityController.current}"/> 
+            <p:panel header="Sort elements for machine design: #{currentObject.name}">
+                <p:dataTable id="itemDomainMachineDesignReorderDataTable"
+                             value="#{currentObject.itemElementDisplayList}"
+                             var="itemElementListObject"
+                             styleClass="leftAlignedText"                             
+                             draggableRows="#{entityController.entityHasSortableElements}">
+
+                    <p:ajax event="rowReorder" listener="#{itemElementController.onListDataTableRowReorder}"
+                            update="@form:itemDomainMachineDesignReorderOutputPanel"/>
+
+                    <ui:include src="itemDomainMachineDesignListObject.xhtml" />  
+                </p:dataTable>
+            </p:panel>
+
+            <p:commandButton value="Save"
+                             icon="fa fa-save"
+                             onclick="PF('loadingDialog').show()"
+                             disabled="#{!entityController.hasElementReorderChangesForCurrent}" 
+                             action="#{itemDomainMachineDesignController.saveReorderMachineDesignElement()}" /> 
+
+            <p:commandButton value="Close"
+                             icon="fa fa-close"
+                             onclick="PF('loadingDialog').show()"
+                             action="#{itemDomainMachineDesignController.revertReorderMachineDesignElement()}" />
+        </p:outputPanel>
+
+    </p:overlayPanel>
+
+
+</ui:composition>
+
+
