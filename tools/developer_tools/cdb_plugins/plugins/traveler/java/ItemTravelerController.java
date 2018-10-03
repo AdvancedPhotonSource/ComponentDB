@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.controllers.ICdbDomainEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
+import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -38,7 +39,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
 import org.primefaces.context.RequestContext;
@@ -72,6 +72,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     private String travelerInstanceTitle;
 
     private List<Form> availableTemplates;
+    private List<Form> defaultTemplates; 
 
     private final String TRAVELER_WEB_APP_URL = TravelerPluginManager.getTravelerWebApplicationUrl();
     private final String TRAVELER_WEB_APP_TEMPLATE_PATH = TravelerPluginManager.getTravelerWebApplicationTemplatePath();
@@ -926,6 +927,24 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     /**
+     * Loads default templates. Stored as allowed value in the template property type. 
+     * 
+     * @return 
+     */
+    private List<Form> getDefaultTemplates() {
+        if (defaultTemplates == null) {
+            defaultTemplates = new ArrayList<>(); 
+            PropertyType templatePropertyType = getTravelerTemplatePropertyType();
+            List<AllowedPropertyValue> allowedPropertyValueList = templatePropertyType.getAllowedPropertyValueList(); 
+            for (AllowedPropertyValue allowedValue : allowedPropertyValueList) {
+                String templateId = allowedValue.getValue();
+                addFormFromPropertyValue(templateId, defaultTemplates); 
+            }
+        }
+        return defaultTemplates;
+    }
+
+    /**
      * Determines all entities that need to have (traveler templates)/forms
      * loaded
      *
@@ -933,6 +952,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * by the user.
      */
     public void loadEntityAvailableTemplateList(CdbDomainEntity domainEntity, List<Form> templateList) {
+        
+        templateList.addAll(getDefaultTemplates());
 
         if (domainEntity instanceof Item) {
             Item item = (Item) domainEntity;
