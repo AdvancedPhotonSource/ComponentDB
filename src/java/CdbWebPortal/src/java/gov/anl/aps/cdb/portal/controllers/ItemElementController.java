@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
@@ -55,22 +56,22 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     private List<PropertyValue> filteredPropertyValueList = null;
 
     private List<ItemElement> pendingChangesItemElementList = null;
-    private List<ItemElement> sortableItemElementList = null;   
+    private List<ItemElement> sortableItemElementList = null;
 
     private ItemController currentSettingsItemController = null;
-    
-    private ItemController currentItemReorderController = null; 
-    
+
+    private ItemController currentItemReorderController = null;
+
     public ItemElementController() {
     }
 
     public static ItemElementController getInstance() {
         return (ItemElementController) SessionUtility.findBean("itemElementController");
     }
-    
+
     public void resetCurrentItemVariables() {
         currentSettingsItemController = null;
-        currentItemReorderController = null; 
+        currentItemReorderController = null;
     }
 
     public ItemController getCurrentSettingsItemController() {
@@ -125,44 +126,47 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     @Override
     protected void prepareEntityDestroy(ItemElement itemElement) throws CdbException {
         super.prepareEntityDestroy(itemElement);
-        // Verify that item domain allows destroy of item element. 
-        ItemElementConstraintInformation ieci = getFreshItemElementConstraintInformation(itemElement);
-        if (ieci.isSafeToRemove() == false) {
-            String constraintMessage = generateSingleDeleteConstraintMessage(itemElement); 
-            throw new CdbException("Cannot remove item element. Constrains not met. " + constraintMessage);
+        // Verify that item domain allows destroy of item element.   
+
+        Item parentItem = itemElement.getParentItem();
+        if (!(parentItem instanceof ItemDomainCatalog)) {
+            ItemElementConstraintInformation ieci = getFreshItemElementConstraintInformation(itemElement);
+            if (ieci.isSafeToRemove() == false) {
+                String constraintMessage = generateSingleDeleteConstraintMessage(itemElement);
+                throw new CdbException("Cannot remove item element. Constrains not met. " + constraintMessage);
+            }
         }
     }
 
     private String generateSingleDeleteConstraintMessage(ItemElement itemElement) {
         ItemElementConstraintInformation constraint = getItemElementConstraintInformation(itemElement);
-        String message = null; 
-        
+        String message = null;
+
         if (constraint instanceof CatalogItemElementConstraintInformation) {
             CatalogItemElementConstraintInformation catalogConstraint = (CatalogItemElementConstraintInformation) constraint;
-            message = generateCatalogSpecificPreventDeleteUpdateContainedMessage(catalogConstraint); 
+            message = generateCatalogSpecificPreventDeleteUpdateContainedMessage(catalogConstraint);
         }
         if (message == null) {
             // Check set log and properties 
             if (constraint.isHasLogs()) {
                 return "Item element has logs.";
             } else if (constraint.isHasProperties()) {
-                return "Item element has properties"; 
+                return "Item element has properties";
             }
-            
+
             List<ItemElementConstraintInformation> relatedConstraintInfo = constraint.getRelatedConstraintInfo();
             for (ItemElementConstraintInformation ittrConstraint : relatedConstraintInfo) {
-                String itemElementIdentifyingString = "Related item element of: " + ittrConstraint.getItemElement().getParentItem().getName(); 
+                String itemElementIdentifyingString = "Related item element of: " + ittrConstraint.getItemElement().getParentItem().getName();
                 if (ittrConstraint.isHasLogs()) {
                     return itemElementIdentifyingString + " has logs.";
                 } else if (constraint.isHasProperties()) {
                     return itemElementIdentifyingString + " has properties.";
                 }
             }
-            
+
         } else {
-            return message; 
+            return message;
         }
-        
 
         return "";
     }
@@ -312,21 +316,21 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         }
         return null;
     }
-    
+
     public boolean isDisplayRowExpansionForItemElement(ItemElement itemElement) {
         if (settingObject.getDisplayFlatTableView() && settingObject.getDisplayRowExpansion()) {
-            return isDisplayRowExpansionElementsList(itemElement) 
+            return isDisplayRowExpansionElementsList(itemElement)
                     || isDisplayRowExpansionLogs(itemElement)
                     || isDisplayRowExpansionProperties(itemElement);
         }
-        return false; 
+        return false;
     }
-    
+
     public boolean isDisplayRowExpansionElementsList(ItemElement itemElement) {
         if (itemElement.getContainedItem() != null) {
-            return !itemElement.getContainedItem().getItemElementDisplayList().isEmpty(); 
+            return !itemElement.getContainedItem().getItemElementDisplayList().isEmpty();
         }
-        return false; 
+        return false;
     }
 
     public TreeNode getItemElementListTreeTableRootNode(ItemElement parent) {
@@ -489,19 +493,19 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     public Item getSelectedParentItem() {
         return selectedParentItem;
     }
-    
+
     public void onListDataTableRowReorder(ReorderEvent event) {
         DataTable dataTable = (DataTable) event.getSource();
         List<ItemElement> itemElementList = (List<ItemElement>) dataTable.getValue();
-        
-        ItemElement ie = itemElementList.get(0); 
+
+        ItemElement ie = itemElementList.get(0);
         Item parentItem = ie.getParentItem();
         currentItemReorderController = ItemController.findDomainControllerForItem(parentItem);
         if (!currentItemReorderController.getCurrent().equals(parentItem)) {
             // controller is not displaying parent item. 
             return;
         }
-        
+
         // Verify list belongs to same item
         int origSize = parentItem.getItemElementDisplayList().size();
         if (itemElementList.size() == origSize) {
@@ -512,28 +516,28 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
                 }
             }
         }
-        
+
         // Update the sort order of the list items
         for (int i = 0; i < itemElementList.size(); i++) {
-            ItemElement itemElement = itemElementList.get(i); 
+            ItemElement itemElement = itemElementList.get(i);
             float orderedNumber = i;
-            itemElement.setSortOrder(orderedNumber);            
-        }  
-        
+            itemElement.setSortOrder(orderedNumber);
+        }
+
         currentItemReorderController.setHasElementReorderChangesForCurrent(true);
-    } 
-    
-    public void performReorderSaveOperations() {        
-        if (currentItemReorderController != null) {
-            currentItemReorderController.update();                
-        }        
     }
-    
+
+    public void performReorderSaveOperations() {
+        if (currentItemReorderController != null) {
+            currentItemReorderController.update();
+        }
+    }
+
     public boolean getHasReorderChanges() {
         if (currentItemReorderController != null) {
-            return currentItemReorderController.getHasElementReorderChangesForCurrent(); 
+            return currentItemReorderController.getHasElementReorderChangesForCurrent();
         }
-        return false; 
+        return false;
     }
 
     /**
