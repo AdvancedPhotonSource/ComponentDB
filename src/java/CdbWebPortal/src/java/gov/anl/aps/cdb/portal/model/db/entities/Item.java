@@ -683,6 +683,15 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    public List<ItemElement> getItemElementMemberList2() {
+        return itemElementMemberList2;
+    }
+
+    public void setItemElementMemberList2(List<ItemElement> itemElementMemberList2) {
+        this.itemElementMemberList2 = itemElementMemberList2;
+    }
+
+    @XmlTransient
     public List<Item> getDerivedFromItemList() {
         return derivedFromItemList;
     }

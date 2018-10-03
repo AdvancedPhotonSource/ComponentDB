@@ -1076,7 +1076,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     }
 
     private boolean verifyValidUnusedInventoryItem(Item inventoryItem) {
-        for (ItemElement itemElement : inventoryItem.getItemElementMemberList()) {
+        for (ItemElement itemElement : inventoryItem.getItemElementMemberList2()) {
             Item item = itemElement.getParentItem();
             if (item instanceof ItemDomainMachineDesign) {
                 SessionUtility.addWarningMessage("Inventory item used",
