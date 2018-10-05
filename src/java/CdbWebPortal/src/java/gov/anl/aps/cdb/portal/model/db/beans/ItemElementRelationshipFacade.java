@@ -32,6 +32,14 @@ public class ItemElementRelationshipFacade extends CdbEntityFacade<ItemElementRe
         super(ItemElementRelationship.class);
     }
     
+    public List<ItemElementRelationship> findItemElementRelationshipsByTypeAndItemDomain(String domainName, String relationshipTypeName) {
+        return (List<ItemElementRelationship>) em
+                .createNamedQuery("ItemElementRelationship.findRelationshipsByTypeAndItemDomain")
+                .setParameter("domainName", domainName)
+                .setParameter("relationshipTypeName", relationshipTypeName)
+                .getResultList(); 
+    }
+    
     public ItemElementRelationship findItemElementRelationshipByNameAndItemElementId(String relationshipTypeName, int itemElementId) throws CdbException {
         try{
             return (ItemElementRelationship) em

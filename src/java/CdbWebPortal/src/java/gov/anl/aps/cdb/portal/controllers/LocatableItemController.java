@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
@@ -19,7 +20,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementRelationshipUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
-import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.ItemHierarchyCache;
 import java.io.Serializable;
@@ -83,7 +83,7 @@ public class LocatableItemController implements Serializable {
     public String getLocationStringForItem(Item item) {
         if (item instanceof LocatableItem) {
             LocatableItem locatableItem = (LocatableItem) item;
-            return getLocationStringForItem(locatableItem); 
+            return getLocationStringForItem(locatableItem);
         }
         //non-locatable item 
         return "";
@@ -108,7 +108,7 @@ public class LocatableItemController implements Serializable {
         }
         return null;
     }
-    
+
     // Just to process non-locatable items from gui
     public String getLocationRelationshipDetails(Item item) {
         return "";
@@ -116,13 +116,39 @@ public class LocatableItemController implements Serializable {
 
     public String getLocationRelationshipDetails(LocatableItem locatableItem) {
         if (locatableItem == null) {
-            return null; 
+            return null;
         }
         if (locatableItem.getLocationDetails() == null) {
             setItemLocationInfo(locatableItem);
         }
 
         return locatableItem.getLocationDetails();
+    }
+
+    /**
+     * Uses a cache to quickly load location information for an item
+     *
+     * @param cache Attainable by running
+     * itemElementRelationshipFacade.findItemElementRelationshipsByTypeAndItemDomain
+     * @param locatableItem
+     */
+    public void loadCachedLocationStringForItem(List<ItemElementRelationship> cache, LocatableItem locatableItem) {
+        Integer itemId = locatableItem.getId();
+        
+        for (int i = 0; i < cache.size(); i++) {
+            ItemElementRelationship ier = cache.get(i);    
+            
+            ItemElement firstItemElement = ier.getFirstItemElement();
+            Item parentItem = firstItemElement.getParentItem();
+            Integer relationshipItemId = parentItem.getId();
+            
+            if (relationshipItemId.equals(itemId)) {
+                loadItemLocationInfoFromRelationship(ier, locatableItem, false, true);
+                cache.remove(i); 
+                return;
+            }
+        }
+
     }
 
     /**
@@ -144,32 +170,41 @@ public class LocatableItemController implements Serializable {
 
             if (itemLocationItem == null) {
                 ItemElementRelationship itemElementRelationship;
-                itemElementRelationship = getItemLocationRelationship(locatableItem); 
+                itemElementRelationship = getItemLocationRelationship(locatableItem);
 
                 if (itemElementRelationship != null) {
-                    ItemElement locationSelfItemElement = itemElementRelationship.getSecondItemElement();
-                    if (locationSelfItemElement != null) {
-                        ItemDomainLocation locationItem = (ItemDomainLocation) locationSelfItemElement.getParentItem();
-                        locatableItem.setLocation(locationItem);
-                        if (loadLocationTreeForItem) {
-                            updateLocationTreeForItem(locatableItem);
-                        }
-                        if (loadLocationHierarchyString) {
-                            updateLocationStringForItem(locatableItem);
-                        }
-                    }
-                    locatableItem.setLocationDetails(itemElementRelationship.getRelationshipDetails());
+                    loadItemLocationInfoFromRelationship(itemElementRelationship, locatableItem, loadLocationTreeForItem, loadLocationHierarchyString);
                 }
             }
             locatableItem.setOriginalLocationLoaded(true);
         }
     }
-    
+
+    private void loadItemLocationInfoFromRelationship(
+            ItemElementRelationship locationRelationship, 
+            LocatableItem locatableItem,  
+            boolean loadLocationTreeForItem, 
+            boolean loadLocationHierarchyString) {      
+        
+        ItemElement locationSelfItemElement = locationRelationship.getSecondItemElement();
+        if (locationSelfItemElement != null) {
+            ItemDomainLocation locationItem = (ItemDomainLocation) locationSelfItemElement.getParentItem();
+            locatableItem.setLocation(locationItem);
+            if (loadLocationTreeForItem) {
+                updateLocationTreeForItem(locatableItem);
+            }
+            if (loadLocationHierarchyString) {
+                updateLocationStringForItem(locatableItem);
+            }
+        }
+        locatableItem.setLocationDetails(locationRelationship.getRelationshipDetails());
+    }
+
     private ItemElementRelationship getItemLocationRelationship(LocatableItem item) {
         if (item.getLocationRelationship() == null) {
             item.setLocationRelationship(findItemLocationRelationship(item));
         }
-        return item.getLocationRelationship(); 
+        return item.getLocationRelationship();
     }
 
     private ItemElementRelationship findItemLocationRelationship(LocatableItem item) {
@@ -209,7 +244,7 @@ public class LocatableItemController implements Serializable {
             ItemDomainLocation location = item.getLocation();
             item.setLocationTree(ItemDomainLocationController.generateLocationNodeTreeBranch(location));
         }
-    }    
+    }
 
     public ItemDomainLocation getLocation(LocatableItem inventoryItem) {
         if (inventoryItem.getLocation() == null) {
@@ -338,11 +373,11 @@ public class LocatableItemController implements Serializable {
 
     public List<ItemElementRelationshipHistory> getItemLocationRelationshipHistory(LocatableItem item) {
         ItemElementRelationship itemLocationRelationship = getItemLocationRelationship(item);
-        
+
         if (itemLocationRelationship != null) {
             return itemLocationRelationship.getItemElementRelationshipHistoryList();
         }
-        
+
         return null;
     }
 

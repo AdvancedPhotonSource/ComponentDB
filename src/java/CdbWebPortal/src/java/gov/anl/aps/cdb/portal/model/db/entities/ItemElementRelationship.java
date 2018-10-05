@@ -46,6 +46,14 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ItemElementRelationship.findByRelationshipTypeNameAndFirstElementId", 
             query = "SELECT i FROM ItemElementRelationship i "
                     + "WHERE (i.firstItemElement.id = :itemElementId) "
+                    + "AND i.relationshipType.name = :relationshipTypeName"),
+    @NamedQuery(name = "ItemElementRelationship.findRelationshipsByTypeAndItemDomain",
+            query = "SELECT i FROM ItemElementRelationship i "
+                    + "JOIN i.firstItemElement ie "
+                    + "JOIN ie.parentItem it "
+                    + "JOIN it.domain d "
+                    + "WHERE ie.derivedFromItemElement IS NULL "
+                    + "AND ie.name IS NULL AND d.name = :domainName "
                     + "AND i.relationshipType.name = :relationshipTypeName")
 })
 public class ItemElementRelationship implements Serializable {

@@ -21,6 +21,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
@@ -110,6 +111,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     @EJB
     protected RelationshipTypeFacade relationshipTypeFacade;
+    
+    @EJB
+    private ItemElementRelationshipFacade itemElementRelationshipFacade;
+    
+    private List<ItemElementRelationship> locationRelationshipCache; 
 
     private List<Item> parentItemList;
     private int currentItemEntityHashCode;
@@ -691,6 +697,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         templateItemsListDataModel = null;
         itemsWithNoParentsRootNode = null;
         displayListDataModelScopeSelectionList = null;
+        locationRelationshipCache = null; 
     }
 
     public final DataModel getScopedListDataModel() {
@@ -918,9 +925,17 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         if (entity instanceof LocatableItem) {
             if (settingObject.getDisplayLocation()) {
                 LocatableItem item = (LocatableItem) entity;
-                getLocatableItemController().loadLocationStringForItem(item);
+                getLocatableItemController().loadCachedLocationStringForItem(getLocationRelationshipCache(), item);
             }
         }
+    }
+
+    private List<ItemElementRelationship> getLocationRelationshipCache() {
+        if (locationRelationshipCache == null) {
+            String locationRelationshipName = ItemElementRelationshipTypeNames.itemLocation.getValue();
+            locationRelationshipCache = itemElementRelationshipFacade.findItemElementRelationshipsByTypeAndItemDomain(getDefaultDomainName(), locationRelationshipName); 
+        }
+        return locationRelationshipCache;
     }
 
     @Override
