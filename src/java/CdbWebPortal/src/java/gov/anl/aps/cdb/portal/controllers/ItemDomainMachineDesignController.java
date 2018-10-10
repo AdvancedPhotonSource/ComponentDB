@@ -813,7 +813,15 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         return currentDualViewList();
     }
 
-    public String saveReorderMachineDesignElement() {
+    public String saveReorderMachineDesignElement() {        
+        if (isItemMachineDesignAndTemplate(getCurrent())) {
+            ItemDomainMachineDesign template = getCurrent();
+            for (ItemElement ie : template.getItemElementDisplayList()) {
+                for (ItemElement derivedIe : ie.getDerivedFromItemElementList()) {
+                    derivedIe.setSortOrder(ie.getSortOrder());
+                }
+            }
+        }
         update();
         expandToSelectedTreeNodeAndSelect();
         return currentDualViewList();
