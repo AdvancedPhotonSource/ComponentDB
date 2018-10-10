@@ -719,17 +719,18 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
             for (TreeNode treeNode : children) {
                 ItemElement data = (ItemElement) treeNode.getData();
                 Item containedItem = data.getContainedItem();
-
-                if (containedItem.equals(pop)) {
-                    if (machineDesingItemStack.size() == 0) {
-                        selectedItemInListTreeTable = treeNode;
-                        treeNode.setSelected(true);
-                        children = null;
-                        break;
-                    } else {
-                        treeNode.setExpanded(true);
-                        children = treeNode.getChildren();
-                        break;
+                if (isItemMachineDesign(containedItem)) {
+                    if (containedItem.equals(pop)) {
+                        if (machineDesingItemStack.size() == 0) {
+                            selectedItemInListTreeTable = treeNode;
+                            treeNode.setSelected(true);
+                            children = null;
+                            break;
+                        } else {
+                            treeNode.setExpanded(true);
+                            children = treeNode.getChildren();
+                            break;
+                        }
                     }
                 }
             }
