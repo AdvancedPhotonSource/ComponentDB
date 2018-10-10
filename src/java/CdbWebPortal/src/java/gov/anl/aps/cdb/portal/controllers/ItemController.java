@@ -1522,6 +1522,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
         clonedItem.getFullItemElementList().add(newItemElement);
         
+        newItemElement.setSortOrder(itemElement.getSortOrder());
+        
         return newItemElement; 
     }
 
