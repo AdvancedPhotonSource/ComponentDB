@@ -31,7 +31,8 @@ public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     private IcmsWatermarkUtility icmsWatermarkUtility; 
 
     public IcmsLinkPropertyTypeHandler() {
-        super(HANDLER_NAME, DisplayType.FILE_DOWNLOAD);
+        // Switch to File Download to utilize the icms watermark utility.
+        super(HANDLER_NAME, DisplayType.GENERATED_HTTP_LINK);
         
         icmsWatermarkUtility = new IcmsWatermarkUtility(
                 IcmsLinkPluginManager.getSoapEndpointUrl(), 
