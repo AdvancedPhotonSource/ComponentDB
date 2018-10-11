@@ -45,8 +45,8 @@ public class DocumentManagamentApi extends CdbRestApi {
     protected static final String REST_GET_DOCUMENT_DETAILS = "/data/getDocument/";
     protected static final String REST_POST_SEARCH_COLLECTIONS = "/data/dns/documentSearch/0/999999";
     
-    protected static final String REST_GET_ICMS_DOCINFO = "/data/icms/docDetail/";
-    protected static final String REST_GET_PDMLINK_DOCINFO = "/data/pdmlink/docDetail/";
+    protected static final String REST_GET_ICMS_DOCINFO = "/data/icms/docDetail";
+    protected static final String REST_GET_PDMLINK_DOCINFO = "/data/pdmlink/docDetail";
             
 
     private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DocumentManagamentApi.class.getName());
