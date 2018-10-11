@@ -110,6 +110,8 @@ public class DocManagamentBean implements Serializable {
     public void performCollectionSelection(String onSuccessRemoteCommand) {
         if (this.selectedCollection != null) {
             updateCurrentPropertyValue(this.selectedCollection.getCollectionId(), onSuccessRemoteCommand);
+            // No need to render results anymore. Causes issues with overriding variables. 
+            dmsCollectionSearchResults = null; 
         } else {
             SessionUtility.addWarningMessage("No Selection", "Please select a container item.");
         }
