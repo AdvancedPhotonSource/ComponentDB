@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -41,8 +42,8 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     @Override
     protected EntityManager getEntityManager() {
         return em;
-    } 
-    
+    }
+
     public Item findItem(Object id) {
         // Find any item type item not only of derived domain 
         return getEntityManager().find(Item.class, id);
@@ -78,7 +79,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
 
         return super.edit(item);
-    }        
+    }
 
     private void populateItemsToAdd(ItemDomainEntity item) {
         if (item != null) {
@@ -107,7 +108,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
             itemsToAdd.add(item);
         }
     }
-    
+
     public List<ItemDomainEntity> findByDomainNameAndExcludeEntityType(String domainName, String entityTypeName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndExcludeEntityType")
@@ -142,12 +143,25 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
     public List<ItemDomainEntity> findByDomainAndProject(String domainName, String projectName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndProject")
                     .setParameter("domainName", domainName)
                     .setParameter("projectName", projectName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
+
+    public List<ItemDomainEntity> findByDomainAndProjectExcludeEntityType(String domainName, String projectName, String entityTypeName) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndProjectExcludeEntityType")
+                    .setParameter("domainName", domainName)
+                    .setParameter("projectName", projectName)
+                    .setParameter("entityTypeName", entityTypeName)
                     .getResultList();
         } catch (NoResultException ex) {
 
@@ -165,7 +179,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
     private List<ItemDomainEntity> findByDomain(String domainName, String queryName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery(queryName)
@@ -178,13 +192,13 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     public List<ItemDomainEntity> findByDomainOrderByQrId(String domainName) {
-        return findByDomain(domainName, "Item.findByDomainNameOrderByQrId"); 
+        return findByDomain(domainName, "Item.findByDomainNameOrderByQrId");
     }
-    
+
     public List<ItemDomainEntity> findByDomainOrderByDerivedFromItem(String domainName) {
-        return findByDomain(domainName, "Item.findByDomainNameOrderByDerivedFromItem"); 
+        return findByDomain(domainName, "Item.findByDomainNameOrderByDerivedFromItem");
     }
-    
+
     private List<ItemDomainEntity> findByDomainAndProject(String domainName, String projectName, String queryName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndProjectOrderByQrId")
@@ -196,17 +210,17 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
     public List<ItemDomainEntity> findByDomainAndProjectOrderByQrId(String domainName, String projectName) {
-        return findByDomainAndProject(domainName, projectName, "Item.findByDomainNameAndProjectOrderByQrId"); 
+        return findByDomainAndProject(domainName, projectName, "Item.findByDomainNameAndProjectOrderByQrId");
     }
-    
+
     public List<ItemDomainEntity> findByDomainAndProjectOrderByDerivedFromItem(String domainName, String projectName) {
-        return findByDomainAndProject(domainName, projectName, "Item.findByDomainNameAndProjectOrderByDerivedFromItem"); 
+        return findByDomainAndProject(domainName, projectName, "Item.findByDomainNameAndProjectOrderByDerivedFromItem");
     }
-    
+
     public List<ItemDomainEntity> findItemsWithPermissionsOfDomain(Integer userId, Integer domainId) {
-          try {
+        try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.itemWithWritePermissionsForUser");
             query.setParameter("user_id", userId);
             query.setParameter("domain_id", domainId);
@@ -275,7 +289,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
             List<UserGroup> ownerUserGroupList, UserInfo ownerUserName, String itemDomainName) {
         return findByFilterViewAttributes(itemProject, null, null, itemDomainName, ownerUserGroupList, ownerUserName);
     }
-    
+
     public List<ItemDomainEntity> findByFilterViewItemProjectAttributes(ItemProject itemProject, String itemDomainName) {
         return findByFilterViewAttributes(itemProject, null, null, itemDomainName, null, null);
     }
@@ -397,7 +411,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
     public List<ItemDomainEntity> findAllWithName() {
         return (List<ItemDomainEntity>) em.createNamedQuery("Item.findAllWithName").getResultList();
-    }   
+    }
 
     public ItemDomainEntity findByQrId(Integer qrId) {
         try {
@@ -429,13 +443,38 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
+    public List<ItemDomainEntity> getItemListWithPropertyTypeExcludeEntityType(String domainName, Integer propertyTypeId, String entityTypeName) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsWithPropertyTypeExcludeEntityType")
+                    .setParameter("domainName", domainName)
+                    .setParameter("propertyTypeId", propertyTypeId)
+                    .setParameter("entityTypeName", entityTypeName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
     public List<ItemDomainEntity> getItemsWithPropertyTypeAndProject(String domainName, Integer propertyTypeId, String projectName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsWithPropertyTypeAndProject")
                     .setParameter("domainName", domainName)
                     .setParameter("propertyTypeId", propertyTypeId)
                     .setParameter("projectName", projectName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
+    public List<ItemDomainEntity> getItemsWithPropertyTypeAndProjectExcludeEntityType(String domainName, Integer propertyTypeId, String projectName, String entityTypeName) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsWithPropertyTypeAndProjectExcludeEntityType")
+                    .setParameter("domainName", domainName)
+                    .setParameter("propertyTypeId", propertyTypeId)
+                    .setParameter("projectName", projectName)
+                    .setParameter("entityTypeName", entityTypeName)
                     .getResultList();
         } catch (NoResultException ex) {
         }
@@ -453,6 +492,12 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
     }
 
+    public List<ItemDomainEntity> getItemListOwnedByUserExcludeEntityType(String domainName, UserInfo ownerUserInfo, String entityTypeName) {
+        List<ItemDomainEntity> itemListOwnedByUser = getItemListOwnedByUser(domainName, ownerUserInfo);
+        trimEntityTypeName(itemListOwnedByUser, entityTypeName);
+        return itemListOwnedByUser;
+    }
+
     public List<ItemDomainEntity> getItemListOwnedByUserGroup(String domainName, UserGroup ownerUserGroup) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsOwnedByUserGroupId")
@@ -464,12 +509,32 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
     }
 
+    public List<ItemDomainEntity> getItemListOwnedByUserGroupExcludeEntityType(String domainName, UserGroup ownerUserGroup, String entityTypeName) {
+        List<ItemDomainEntity> itemListOwnedByUserGroup = getItemListOwnedByUserGroup(domainName, ownerUserGroup);
+        trimEntityTypeName(itemListOwnedByUserGroup, entityTypeName);
+        return itemListOwnedByUserGroup; 
+    }
+
     public List<ItemDomainEntity> getItemListContainedInList(String domainName, ListTbl list) {
         if (list != null) {
             try {
                 return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsInList")
                         .setParameter("domainName", domainName)
                         .setParameter("list", list)
+                        .getResultList();
+            } catch (NoResultException ex) {
+            }
+        }
+        return null;
+    }
+
+    public List<ItemDomainEntity> getItemListContainedInListExcludeEntityType(String domainName, ListTbl list, String entityTypeName) {
+        if (list != null) {
+            try {
+                return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsInListExcludeEntityType")
+                        .setParameter("domainName", domainName)
+                        .setParameter("list", list)
+                        .setParameter("entityTypeName", entityTypeName)
                         .getResultList();
             } catch (NoResultException ex) {
             }
@@ -491,6 +556,12 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
     }
 
+    public List<ItemDomainEntity> getItemListContainedInListOrOwnedByUserExcludeEntityType(String domainName, ListTbl list, UserInfo ownerUserInfo, String entityTypeName) {
+        List<ItemDomainEntity> itemListContainedInListOrOwnedByUser = getItemListContainedInListOrOwnedByUser(domainName, list, ownerUserInfo); 
+        trimEntityTypeName(itemListContainedInListOrOwnedByUser, entityTypeName);
+        return itemListContainedInListOrOwnedByUser; 
+    }
+
     public List<ItemDomainEntity> getItemListContainedInListOrOwnedByGroup(String domainName, ListTbl list, UserGroup ownerUserGroup) {
         if (list != null) {
             try {
@@ -504,6 +575,36 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
             }
         }
         return null;
+    }
+
+    public List<ItemDomainEntity> getItemListContainedInListOrOwnedByGroupExcludeEntityType(String domainName, ListTbl list, UserGroup ownerUserGroup, String entityTypeName) {
+        List<ItemDomainEntity> itemListContainedInListOrOwnedByGroup = getItemListContainedInListOrOwnedByGroup(domainName, list, ownerUserGroup); 
+        trimEntityTypeName(itemListContainedInListOrOwnedByGroup, entityTypeName);
+        return itemListContainedInListOrOwnedByGroup;
+    }
+    
+     private void trimEntityTypeName(List<ItemDomainEntity> entityList, String entityTypeName) {
+        if (entityList != null) {
+            int i = 0;
+            while (i < entityList.size()) {
+                ItemDomainEntity item = entityList.get(i);
+
+                boolean found = false;
+
+                for (EntityType entityType : item.getEntityTypeList()) {
+                    if (entityType.getName().equals(entityTypeName)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (found) {
+                    entityList.remove(i);
+                } else {
+                    i++;
+                }
+            }
+        }
     }
 
 }

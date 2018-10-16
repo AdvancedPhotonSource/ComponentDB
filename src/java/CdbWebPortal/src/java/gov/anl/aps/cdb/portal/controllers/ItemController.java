@@ -111,11 +111,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     @EJB
     protected RelationshipTypeFacade relationshipTypeFacade;
-    
+
     @EJB
     private ItemElementRelationshipFacade itemElementRelationshipFacade;
-    
-    private List<ItemElementRelationship> locationRelationshipCache; 
+
+    private List<ItemElementRelationship> locationRelationshipCache;
 
     private List<Item> parentItemList;
     private int currentItemEntityHashCode;
@@ -305,6 +305,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return getEntityDbFacade().findByDomainAndProject(getDefaultDomainName(), projectName);
     }
 
+    public List<ItemDomainEntity> getItemListWithProjectExcludeTemplates(ItemProject itemProject) {
+        String projectName = itemProject.getName();
+        String templateEntityTypeName = EntityTypeName.template.getValue();
+        return getEntityDbFacade().findByDomainAndProjectExcludeEntityType(getDefaultDomainName(), projectName, templateEntityTypeName);
+    }
+
     /**
      * Called from item project controller whenever item project changes.
      *
@@ -348,6 +354,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     @Override
     public List<ItemDomainEntity> getItemList() {
         return getEntityDbFacade().findByDomain(getDefaultDomainName());
+    }
+
+    public List<ItemDomainEntity> getItemListExcludeTemplates() {
+        String templateEntityTypeName = EntityTypeName.template.getValue();
+        return getEntityDbFacade().findByDomainNameAndExcludeEntityType(getDefaultDomainName(), templateEntityTypeName);
     }
 
     @Override
@@ -495,10 +506,18 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         ItemProject currentItemProject = getCurrentItemProject();
 
         List<ItemDomainEntity> itemList;
-        if (currentItemProject != null) {
-            itemList = getItemListWithProject(currentItemProject);
+        if (getEntityDisplayTemplates()) {
+            if (currentItemProject != null) {
+                itemList = getItemListWithProjectExcludeTemplates(currentItemProject);
+            } else {
+                itemList = getItemListExcludeTemplates();
+            }
         } else {
-            itemList = getItemList();
+            if (currentItemProject != null) {
+                itemList = getItemListWithProject(currentItemProject);
+            } else {
+                itemList = getItemList();
+            }
         }
 
         return new ListDataModel(itemList);
@@ -697,7 +716,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         templateItemsListDataModel = null;
         itemsWithNoParentsRootNode = null;
         displayListDataModelScopeSelectionList = null;
-        locationRelationshipCache = null; 
+        locationRelationshipCache = null;
     }
 
     public final DataModel getScopedListDataModel() {
@@ -705,23 +724,47 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showAll.getValue())) {
             return getListDataModel();
         } else if (scopedListDataModel == null) {
+            String templateEntityTypeName = EntityTypeName.template.getValue();
+            ItemDomainEntityFacade itemFacade = getEntityDbFacade();
+            String domainName = getDefaultDomainName();
+            
             if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
                 if (settingObject.getDisplayListDataModelScopePropertyTypeId() == null) {
                     return null;
                 } else {
-                    List<ItemDomainEntity> itemList;
+                    /**
+                     * GET ITEMS WITH PROEPRTY TYPE *
+                     */
+                    List<ItemDomainEntity> itemList = null;
                     ItemProject currentProject = getCurrentItemProject();
-                    if (currentProject != null) {
-                        itemList = getEntityDbFacade().getItemsWithPropertyTypeAndProject(
-                                getDefaultDomainName(),
-                                settingObject.getDisplayListDataModelScopePropertyTypeId(),
-                                currentProject.getName());
+                    Integer propertyTypeId = settingObject.getDisplayListDataModelScopePropertyTypeId();
+                    if (getEntityDisplayTemplates()) {
+                        if (currentProject != null) {
+                            itemList = itemFacade.getItemsWithPropertyTypeAndProjectExcludeEntityType(
+                                    domainName, 
+                                    propertyTypeId, 
+                                    currentProject.getName(), 
+                                    templateEntityTypeName);
+                        } else {
+                            itemList = itemFacade.getItemListWithPropertyTypeExcludeEntityType(
+                                    domainName, 
+                                    propertyTypeId, 
+                                    templateEntityTypeName); 
+                        }
                     } else {
-                        itemList = getEntityDbFacade().getItemListWithPropertyType(
-                                getDefaultDomainName(),
-                                settingObject.getDisplayListDataModelScopePropertyTypeId());
+                        if (currentProject != null) {
+                            itemList = itemFacade.getItemsWithPropertyTypeAndProject(
+                                    domainName,
+                                    propertyTypeId,
+                                    currentProject.getName());
+                        } else {
+                            itemList = itemFacade.getItemListWithPropertyType(
+                                    domainName,
+                                    propertyTypeId);
+                        }
+                        
                     }
-                    scopedListDataModel = new ListDataModel(itemList);
+                    scopedListDataModel = new ListDataModel(itemList);                    
                 }
             } else {
                 // Determine if currently viewed as group or user. 
@@ -733,7 +776,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
                 // Show only favorites
                 if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
-                    List<ItemDomainEntity> itemList = getEntityDbFacade().getItemListContainedInList(getDefaultDomainName(), getFavoritesList());
+                    List<ItemDomainEntity> itemList = null; 
+                    if (getEntityDisplayTemplates()) {
+                        itemList = itemFacade.getItemListContainedInListExcludeEntityType(domainName, getFavoritesList(), templateEntityTypeName); 
+                    } else {
+                        itemList = itemFacade.getItemListContainedInList(domainName, getFavoritesList());
+                    }
                     scopedListDataModel = new ListDataModel(itemList);
                 } else {
                     // Show owned or owned & favorites. 
@@ -745,11 +793,21 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                     if (showOwnedAndFavorites) {
                         if (getFavoritesList() != null) {
                             if (settingEntity instanceof UserInfo) {
-                                itemList = getEntityDbFacade()
-                                        .getItemListContainedInListOrOwnedByUser(getDefaultDomainName(), getFavoritesList(), (UserInfo) settingEntity);
+                                if (getEntityDisplayTemplates()) {
+                                    itemList = itemFacade
+                                            .getItemListContainedInListOrOwnedByUserExcludeEntityType(domainName, getFavoritesList(), (UserInfo) settingEntity, templateEntityTypeName); 
+                                } else {
+                                    itemList = itemFacade
+                                            .getItemListContainedInListOrOwnedByUser(domainName, getFavoritesList(), (UserInfo) settingEntity);
+                                }
                             } else if (settingEntity instanceof UserGroup) {
-                                itemList = getEntityDbFacade()
-                                        .getItemListContainedInListOrOwnedByGroup(getDefaultDomainName(), getFavoritesList(), (UserGroup) settingEntity);
+                                if (getEntityDisplayTemplates()) {
+                                    itemList = itemFacade
+                                            .getItemListContainedInListOrOwnedByGroupExcludeEntityType(domainName, getFavoritesList(), (UserGroup) settingEntity, templateEntityTypeName); 
+                                } else {
+                                    itemList = itemFacade
+                                            .getItemListContainedInListOrOwnedByGroup(domainName, getFavoritesList(), (UserGroup) settingEntity);
+                                }
                             }
                         } else {
                             // No favorites list will not show any results from query. 
@@ -759,9 +817,21 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
                     if (showOwned) {
                         if (settingEntity instanceof UserInfo) {
-                            itemList = getEntityDbFacade().getItemListOwnedByUser(getDefaultDomainName(), (UserInfo) settingEntity);
+                            if (getEntityDisplayTemplates()) {
+                                itemList = itemFacade
+                                        .getItemListOwnedByUserExcludeEntityType(domainName, (UserInfo) settingEntity, templateEntityTypeName); 
+                            } else {
+                                itemList = itemFacade
+                                        .getItemListOwnedByUser(domainName, (UserInfo) settingEntity);
+                            }                            
                         } else if (settingEntity instanceof UserGroup) {
-                            itemList = getEntityDbFacade().getItemListOwnedByUserGroup(getDefaultDomainName(), (UserGroup) settingEntity);
+                            if (getEntityDisplayTemplates()) {
+                                itemList = itemFacade
+                                        .getItemListOwnedByUserGroupExcludeEntityType(domainName, (UserGroup) settingEntity, templateEntityTypeName);
+                            } else { 
+                                itemList = itemFacade
+                                        .getItemListOwnedByUserGroup(domainName, (UserGroup) settingEntity);
+                            }
                         }
                     }
 
@@ -933,7 +1003,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     private List<ItemElementRelationship> getLocationRelationshipCache() {
         if (locationRelationshipCache == null) {
             String locationRelationshipName = ItemElementRelationshipTypeNames.itemLocation.getValue();
-            locationRelationshipCache = itemElementRelationshipFacade.findItemElementRelationshipsByTypeAndItemDomain(getDefaultDomainName(), locationRelationshipName); 
+            locationRelationshipCache = itemElementRelationshipFacade.findItemElementRelationshipsByTypeAndItemDomain(getDefaultDomainName(), locationRelationshipName);
         }
         return locationRelationshipCache;
     }
@@ -1104,8 +1174,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         itemElement.setEntityInfo(entityInfo);
         itemElement.setParentItem(item);
-        
-        String elementName = generateUniqueElementNameForItem(item); 
+
+        String elementName = generateUniqueElementNameForItem(item);
 
         itemElement.setName(elementName);
 
@@ -1138,8 +1208,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 elementName = test;
             }
         }
-        
-        return elementName; 
+
+        return elementName;
     }
 
     protected void prepareAddItemElement(ItemDomainEntity item, ItemElement itemElement) {
@@ -1521,10 +1591,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         newItemElement.setName(itemElement.getName());
 
         clonedItem.getFullItemElementList().add(newItemElement);
-        
+
         newItemElement.setSortOrder(itemElement.getSortOrder());
-        
-        return newItemElement; 
+
+        return newItemElement;
     }
 
     public ItemDomainEntity completeClone(ItemDomainEntity clonedItem, Integer cloningFromItemId) {
@@ -2079,15 +2149,15 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         prepareItemElementListTreeTable(item);
         return "/views/item/view.xhtml?faces-redirect=true&id=" + item.getId();
     }
-    
+
     /**
      * Reset list variables and associated filter values and data model.
      *
      * @return URL to entity template list view
      */
     public String resetTemplateList() {
-        super.resetList(); 
-        return prepareTemplateList(); 
+        super.resetList();
+        return prepareTemplateList();
     }
 
     public String prepareTemplateList() {
