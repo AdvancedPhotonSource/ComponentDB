@@ -19,6 +19,7 @@ public class DocManagerPlugin {
     private static final Logger logger = Logger.getLogger(DocManagerPlugin.class.getName());
     
     private static final String DOC_MANAGAMENT_CONTAINER_URL_PATH = "/#/browsecontainers/";
+    private static final String DOC_MANAGAMENT_COLLECTION_URL_PATH = "/#/reposearch/";
     
     private static final Properties DOC_MANAGAMENT_PROPERTIES = PluginManagerBase.getDefaultPropertiesForPlugin("docManagament");   
     
@@ -40,6 +41,10 @@ public class DocManagerPlugin {
     
     protected static String generateContainerUrl(String containerId) {
         return getContextRootUrlProperty() + DOC_MANAGAMENT_CONTAINER_URL_PATH + containerId; 
+    }
+    
+    protected static String generateCollectionUrl(String collectionId) {
+        return getContextRootUrlProperty() + DOC_MANAGAMENT_COLLECTION_URL_PATH + collectionId; 
     }
      
 }
