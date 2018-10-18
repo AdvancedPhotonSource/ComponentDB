@@ -18,7 +18,6 @@ import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.DocDetail;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.Document;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -61,6 +60,10 @@ public class DocManagamentBean implements Serializable {
 
     public String getDocManagamentSystemUrl() {
         return DocManagerPlugin.getContextRootUrlProperty();
+    }
+    
+    public String getDMSCollectionUrl(String collectionId) {
+        return DocManagerPlugin.generateCollectionUrl(collectionId); 
     }
 
     public static DocManagamentBean getInstance() {
@@ -110,6 +113,8 @@ public class DocManagamentBean implements Serializable {
     public void performCollectionSelection(String onSuccessRemoteCommand) {
         if (this.selectedCollection != null) {
             updateCurrentPropertyValue(this.selectedCollection.getCollectionId(), onSuccessRemoteCommand);
+            // No need to render results anymore. Causes issues with overriding variables. 
+            dmsCollectionSearchResults = null; 
         } else {
             SessionUtility.addWarningMessage("No Selection", "Please select a container item.");
         }

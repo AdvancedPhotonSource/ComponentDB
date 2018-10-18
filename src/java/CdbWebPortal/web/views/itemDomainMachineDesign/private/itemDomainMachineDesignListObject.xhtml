@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
+
+    <ui:param name="hideOptionalColumns"
+              value="#{hideOptionalColumns != null 
+                       ? hideOptionalColumns 
+                       : false}" />
+
+    <ui:param name="itemTreeListObject"
+              value="#{itemElementListObject.containedItem}" />
+
+    <ui:param name="itemElementParentItem"
+              value="#{itemElementListObject.parentItem}" />
+
+    <ui:param name="itemListObject"
+              value="#{itemTreeListObject}" /> 
+
+    <ui:param name="topLevelItem"
+              value="#{itemElementListObject.name == null}" />
+
+    <p:column headerText="Machine Design Item Name">
+        <ui:param name="domainIcon" 
+                  value="#{itemTreeListObject != null 
+                           ? itemTreeListObject.domain.domainRepIcon
+                           : itemElementParentItem.domain.domainRepIcon}" />
+        <span class="ui-treenode-icon ui-icon #{domainIcon}"/>
+        <ui:fragment rendered="#{itemTreeListObject != null}">
+            <span>#{itemTreeListObject}</span>
+        </ui:fragment>
+
+        <ui:fragment rendered="#{itemTreeListObject == null 
+                                 and itemDomainMachineDesignController.isItemInventory(itemElementParentItem)}">                
+            <span>#{itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementListObject)}</span>
+        </ui:fragment>
+
+    </p:column>
+
+    <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemThumbnailColumn.xhtml" >             
+        <ui:param name="thumbnailColumnName"
+                  value=" " /> 
+
+        <ui:param name="itemHasPrimaryImage"
+                  value="#{itemDomainMachineDesignController.isMachineDesignItemHasPrimaryImage(itemElementListObject)}"/>             
+        <ui:param name="primaryImageThumbnailForItem"
+                  value="#{itemDomainMachineDesignController.getPrimaryImageThumbnailForMachineDesignItem(itemElementListObject)}" /> 
+        <ui:param name="primaryImageValueForItem"
+                  value="#{itemDomainMachineDesignController.getPrimaryImageValueForMachineDesignItem(itemElementListObject)}" /> 
+    </ui:include>
+
+    <p:column headerText="Description"
+              rendered="#{hideOptionalColumns 
+                          and settingObject.displayDescription}">
+        <h:outputText value="#{itemListObject.description}" /> 
+    </p:column>
+
+    <ui:param name="assignedItem"
+              value="#{itemElementListObject.containedItem2}"/> 
+
+    <ui:param name="isAssignedItemInventory"
+              value="#{itemDomainMachineDesignController.isItemInventory(assignedItem)}" />
+
+    <ui:param name="isAssignedItemCatalog"
+              value="#{itemDomainMachineDesignController.isItemCatalog(assignedItem)}" /> 
+
+    <p:column headerText="Assigned Catalog &#38; Inventory Item" >
+        <ui:fragment rendered="#{isAssignedItemInventory}">
+            <div class="actionLink">
+                <p:commandLink id="#{entityTypeName}CatalogLink" 
+                               onclick="PF('loadingDialog').show()"
+                               action="#{entityController.prepareView(assignedItem.derivedFromItem)}" 
+                               styleClass="ui-icon ui-icon-catalog custom-icon-blue" 
+                               title="View Catalog Item"/>
+                <p:commandLink id="#{entityTypeName}InventoryLink" 
+                               onclick="PF('loadingDialog').show()"
+                               action="#{entityController.prepareView(assignedItem)}" 
+                               styleClass="ui-icon ui-icon-inventory custom-icon-blue" 
+                               title="View Inventory Item"/>
+            </div>
+        </ui:fragment>            
+
+        <ui:fragment rendered="#{isAssignedItemCatalog}">
+            <div class="actionLink">
+                <p:commandLink id="#{entityTypeName}CatalogLink2" 
+                               onclick="PF('loadingDialog').show()"
+                               action="#{entityController.prepareView(assignedItem)}" 
+                               styleClass="ui-icon ui-icon-catalog custom-icon-blue" 
+                               title="View Catalog Item"/>
+            </div>
+        </ui:fragment>
+
+        <h:outputLabel value="#{topLevelItem
+                                ? 'N/A Top Level'
+                                : assignedItem}"/>            
+    </p:column>
+
+    <ui:param name="locationObjectSrc"
+              value="#{itemDomainMachineDesignController.currentViewIsTemplate 
+                       ? '../../common/private/commonEmptyPage.xhtml' 
+                       : '../../locatableItem/private/locatableItemListLocationObject.xhtml'}" />
+
+    <ui:include src="#{locationObjectSrc}" > 
+        <ui:param name="alternateLocationString"
+                  value="#{topLevelItem ? '' : '&#60; parent &#62;'}" />
+        <ui:param name="renderedLocation"
+                  value="#{hideOptionalColumns}" />
+    </ui:include>
+
+    <p:column headerText="Project"
+              rendered="#{hideOptionalColumns 
+                          and settingObject.displayItemProject}">
+        <h:outputText value="#{itemListObject.itemProjectString}" />            
+    </p:column>
+
+    <p:column headerText="Id"
+              rendered="#{hideOptionalColumns 
+                          and settingObject.displayId}">
+        <h:outputText value="#{itemListObject.id}" />
+    </p:column>
+
+    <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
+        <ui:param name="entityInfoObject" value="#{itemListObject.entityInfo}"/>
+        <ui:param name="entityInfoObjectFilterable" value="true" />
+        <ui:param name="rendered" value="#{hideOptionalColumns}" /> 
+    </ui:include>
+
+</ui:composition>
+
+

@@ -27,6 +27,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -107,6 +108,7 @@ public class PropertyType extends CdbEntity implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
     private List<PropertyTypeMetadata> propertyTypeMetadataList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
+    @OrderBy("sortOrder ASC")
     private List<AllowedPropertyValue> allowedPropertyValueList;
 
     private transient List<AllowedPropertyValue> sortedAllowedPropertyValueList;

@@ -50,7 +50,9 @@ See LICENSE file.
                          oncomplete="PF('loadingDialog').hide(); PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="fa fa-wrench">
             <p:tooltip for="#{entityTypeName}CustomizeDisplayButton" value="Customize list view."/>
         </p:commandButton>
-        <p:commandButton id="#{entityTypeName}ResetFiltersButton" action="#{entityController[resetListActionFunctionName]}" alt="Clear Filters" icon="fa fa-refresh" styleClass="actionButtonRight">
+        <p:commandButton id="#{entityTypeName}ResetFiltersButton" 
+                         onclick="PF('loadingDialog').show()"
+                         action="#{entityController[resetListActionFunctionName]}" alt="Clear Filters" icon="fa fa-refresh" styleClass="actionButtonRight">
             <p:tooltip for="#{entityTypeName}ResetFiltersButton" value="Reset list filters."/>
         </p:commandButton>
 

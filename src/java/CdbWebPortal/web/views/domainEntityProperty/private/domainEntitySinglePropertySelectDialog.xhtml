@@ -33,8 +33,9 @@ See LICENSE file.
                                  />
                 
                 <p:commandButton value="Done" alt="Done" 
+                                 onclick="PF('loadingDialog').show()"
                                  id="#{entityTypeName}SinglePropertySelectDialogDoneButton"
-                                 oncomplete='#{entityTypeName}propertySelectionMade()'
+                                 oncomplete="PF('loadingDialog').hide(); #{entityTypeName}propertySelectionMade()"
                                  icon="ui-icon-arrowreturnthick-1-w"/>
             </f:facet>
         </div>

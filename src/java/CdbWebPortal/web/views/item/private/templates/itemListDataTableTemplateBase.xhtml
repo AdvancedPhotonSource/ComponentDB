@@ -23,11 +23,8 @@ See LICENSE file.
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
     
-    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />        
     
-    <p:remoteCommand autoRun="#{entitySettingObject.autoLoadListFilterValues}"
-                     oncomplete="PF('#{entityTypeName}ListDataTable#{viewName}Widget').filter();" />
-
     <p:dataTable id="#{entityTypeName}ListDataTable#{viewName}" 
                  widgetVar="#{entityTypeName}ListDataTable#{viewName}Widget"
                  var="itemListObject" 
@@ -58,5 +55,8 @@ See LICENSE file.
         <ui:insert name="actionsColumn" />
 
     </p:dataTable>
+    
+    <p:remoteCommand autoRun="#{entitySettingObject.autoLoadListFilterValues}"
+                     oncomplete="PF('#{entityTypeName}ListDataTable#{viewName}Widget').filter();" />
 
 </ui:composition>

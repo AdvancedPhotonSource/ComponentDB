@@ -25,8 +25,10 @@ See LICENSE file.
 
                     <h:outputLabel value="Collection Id"
                                    styleClass="entityDataEmphasizedLabel"/>
-                    <h:outputText value="#{collectionObject.collectionId}"
-                                  styleClass="entityDataText"/>
+                    <h:outputLink value="#{docManagamentBean.getDMSCollectionUrl(collectionObject.collectionId)}"
+                                  styleClass="entityDataText">
+                        #{collectionObject.collectionId}
+                    </h:outputLink>
 
                     <h:outputLabel value="Collection label"
                                    styleClass="entityDataEmphasizedLabel"/>

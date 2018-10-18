@@ -36,6 +36,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
@@ -69,9 +70,11 @@ import org.primefaces.model.TreeNode;
     @NamedQuery(name = "Item.findByQrId",
             query = "SELECT i FROM Item i WHERE i.qrId = :qrId"),
     @NamedQuery(name = "Item.findByDomainName",
-            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName"),
+            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameAndProject",
-            query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl WHERE i.domain.name = :domainName and ipl.name = :projectName"),
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl WHERE i.domain.name = :domainName and ipl.name = :projectName ORDER BY i.name ASC"),
+    @NamedQuery(name = "Item.findByDomainNameAndProjectExcludeEntityType",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and ipl.name = :projectName AND etl.name != :entityTypeName ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameWithNoParents",
             query = "SELECT i FROM Item i WHERE i.itemElementMemberList IS EMPTY and i.domain.name = :domainName"),
     @NamedQuery(name = "Item.findByDomainNameOrderByQrId",
@@ -85,30 +88,41 @@ import org.primefaces.model.TreeNode;
     @NamedQuery(name = "Item.findByDomainNameAndEntityType",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName"),
     @NamedQuery(name = "Item.findByDomainNameAndExcludeEntityType",
-            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name != :entityTypeName"),
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name != :entityTypeName ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameOderByQrId",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainAndDerivedEntityTypeOrderByQrId",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.derivedFromItem.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findItemsWithPropertyType",
-            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel JOIN fiel.propertyValueList pvl WHERE i.domain.name = :domainName AND fiel.name is NULL and fiel.derivedFromItemElement is NULL AND pvl.propertyType.id = :propertyTypeId "),
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel JOIN fiel.propertyValueList pvl WHERE i.domain.name = :domainName AND fiel.name is NULL and fiel.derivedFromItemElement is NULL AND pvl.propertyType.id = :propertyTypeId ORDER BY i.name ASC"),
+    @NamedQuery(name = "Item.findItemsWithPropertyTypeExcludeEntityType",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.entityTypeList etl JOIN i.fullItemElementList fiel JOIN fiel.propertyValueList pvl WHERE i.domain.name = :domainName AND fiel.name is NULL and fiel.derivedFromItemElement is NULL AND pvl.propertyType.id = :propertyTypeId AND etl.name != :entityTypeName ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findItemsWithPropertyTypeAndProject",
-            query = "Select DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl JOIN i.fullItemElementList fiel JOIN fiel.propertyValueList pvl WHERE i.domain.name = :domainName AND fiel.name is NULL and fiel.derivedFromItemElement is NULL AND pvl.propertyType.id = :propertyTypeId AND ipl.name = :projectName"),
+            query = "Select DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl JOIN i.fullItemElementList fiel JOIN fiel.propertyValueList pvl WHERE i.domain.name = :domainName AND fiel.name is NULL and fiel.derivedFromItemElement is NULL AND pvl.propertyType.id = :propertyTypeId AND ipl.name = :projectName ORDER BY i.name ASC"),
+    @NamedQuery(name = "Item.findItemsWithPropertyTypeAndProjectExcludeEntityType",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl JOIN i.entityTypeList etl JOIN i.fullItemElementList fiel JOIN fiel.propertyValueList pvl WHERE i.domain.name = :domainName AND fiel.name is NULL and fiel.derivedFromItemElement is NULL AND pvl.propertyType.id = :propertyTypeId AND ipl.name = :projectName and etl.name != :entityTypeName ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findItemsOwnedByUserId",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
             + "WHERE i.domain.name = :domainName "
             + "AND fiel.name is NULL "
             + "AND fiel.derivedFromItemElement is NULL "
-            + "AND fiel.entityInfo.ownerUser.id = :ownerUserId"),
+            + "AND fiel.entityInfo.ownerUser.id = :ownerUserId"),    
     @NamedQuery(name = "Item.findItemsOwnedByUserGroupId",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
             + "WHERE i.domain.name = :domainName "
             + "AND fiel.name is NULL "
             + "AND fiel.derivedFromItemElement is NULL "
-            + "AND fiel.entityInfo.ownerUserGroup.id = :ownerUserGroupId"),
+            + "AND fiel.entityInfo.ownerUserGroup.id = :ownerUserGroupId"),    
     @NamedQuery(name = "Item.findItemsInList",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
             + "WHERE i.domain.name = :domainName "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND fiel.name is NULL "
+            + "AND fiel.listList = :list "),
+    @NamedQuery(name = "Item.findItemsInListExcludeEntityType",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel JOIN i.entityTypeList etl "
+            + "WHERE i.domain.name = :domainName "
+            + "AND etl.name != :entityTypeName "
             + "AND fiel.derivedFromItemElement is NULL "
             + "AND fiel.name is NULL "
             + "AND fiel.listList = :list "),
@@ -118,7 +132,7 @@ import org.primefaces.model.TreeNode;
             + "AND fiel.derivedFromItemElement is NULL "
             + "AND (fiel.entityInfo.ownerUserGroup.id = :ownerUserGroupId "
             + "OR ieList = :list)"
-            + "AND i.domain.name = :domainName"),
+            + "AND i.domain.name = :domainName"),    
     @NamedQuery(name = "Item.findItemsOwnedByUserIdOrInList",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel LEFT JOIN fiel.listList ieList "
             + "WHERE  fiel.name is NULL "
@@ -186,6 +200,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @ManyToMany
     private List<ItemProject> itemProjectList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem")
+    @OrderBy("sortOrder ASC")
     private List<ItemElement> fullItemElementList;
     @OneToMany(mappedBy = "containedItem1")
     private List<ItemElement> itemElementMemberList;
@@ -678,6 +693,15 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setItemElementMemberList(List<ItemElement> itemElementMemberList) {
         this.itemElementMemberList = itemElementMemberList;
+    }
+
+    @XmlTransient
+    public List<ItemElement> getItemElementMemberList2() {
+        return itemElementMemberList2;
+    }
+
+    public void setItemElementMemberList2(List<ItemElement> itemElementMemberList2) {
+        this.itemElementMemberList2 = itemElementMemberList2;
     }
 
     @XmlTransient

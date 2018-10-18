@@ -177,7 +177,9 @@ class PropertyValueHandler(CdbDbEntityHandler):
         else:
             allowedPropertyValueList = self.propertyTypeHandler.getAllowedPropertyTypeValuesById(session, dbPropertyType.id)
             self.propertyTypeHandler.checkPropertyValueIsAllowed(value, allowedPropertyValueList)
-            dbPropertyValue = PropertyValue(tag=tag, value=value, units=units, description=description, entered_on_date_time=enteredOnDateTime)
+            dbPropertyValue = PropertyValue(tag=tag, value=value, display_value=displayValue,
+                                            units=units, description=description,
+                                            entered_on_date_time=enteredOnDateTime)
             dbPropertyValue.enteredByUserInfo = enteredByDbUserInfo
             dbPropertyValue.propertyType = dbPropertyType
             return dbPropertyValue

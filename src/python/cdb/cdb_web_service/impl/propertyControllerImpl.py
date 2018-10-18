@@ -42,7 +42,7 @@ class PropertyControllerImpl(CdbObjectManager):
         propertyValueMetadataKeyValueDict = json.loads(propertyValueMetadataKeyValueDictStringRep)
         return self.propertyDbApi.addPropertyValueMetadataFromDict(propertyValueId, propertyValueMetadataKeyValueDict, userId)
 
-    def packageOptionalPropertyValueVariables(self, tag=None, value=None, units=None, description=None, isUserWriteable=None, isDynamic=None):
+    def packageOptionalPropertyValueVariables(self, tag=None, value=None, units=None, description=None, isUserWriteable=None, isDynamic=None, displayValue=None):
         optionalParameters = {}
 
         if tag is not None:
@@ -52,6 +52,10 @@ class PropertyControllerImpl(CdbObjectManager):
         if value is not None:
             value = Encoder.decode(value)
             optionalParameters.update({'value': value})
+
+        if displayValue is not None:
+            displayValue = Encoder.decode(displayValue)
+            optionalParameters.update({'displayValue': displayValue})
 
         if units is not None:
             units = Encoder.decode(units)

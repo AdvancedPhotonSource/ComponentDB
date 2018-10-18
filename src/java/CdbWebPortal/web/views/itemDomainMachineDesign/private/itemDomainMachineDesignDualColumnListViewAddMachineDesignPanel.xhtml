@@ -18,21 +18,21 @@ See LICENSE file.
                            value="#{itemDomainMachineDesignController.createMachineDesignViewOption}"
                            onchange="updateDualViewConfigurationView()"
                            id="machineDesignAddOptions">
-                           <f:selectItems value="#{itemDomainMachineDesignController.itemDomainMachineDesignCreateOptions}"
-                       var="createOption"
-                       itemLabel="#{createOption.value}"
-                       itemValue="#{createOption.value}" /> 
+            <f:selectItems value="#{itemDomainMachineDesignController.itemDomainMachineDesignCreateOptions}"
+                           var="createOption"
+                           itemLabel="#{createOption.value}"
+                           itemValue="#{createOption.value}" /> 
         </p:selectOneButton>
-        
+
         <p:remoteCommand name="updateMachineDesignAddOptions"
                          update="machineDesignAddOptions" /> 
-        
-        
+
+
         <p:remoteCommand name="updateDualViewConfigurationView"
                          onstart="PF('loadingDialog').show()"
                          oncomplete="PF('loadingDialog').hide()"
                          update="@parent machineDesignDualListViewOutputPanel listActionButtonsOutputPanel" />                       
-        
+
     </p:panel>
 
 

@@ -7,7 +7,18 @@
 # CDB setup script for Bourne-type shells
 # This file is typically sourced in user's .bashrc file
 
-myDir=`dirname $BASH_SOURCE`
+if [ -n "$BASH_SOURCE" ]; then
+  input_param=$BASH_SOURCE
+elif [ -n "$ZSH_VERSION" ]; then
+  setopt function_argzero
+  input_param=$0
+else
+  echo 1>&2 "Unsupported shell. Please use bash or zsh."
+  exit 2
+fi
+
+myDir=`dirname $input_param`
+
 currentDir=`pwd` && cd $myDir
 if [ ! -z "$CDB_ROOT_DIR" -a "$CDB_ROOT_DIR" != `pwd` ]; then
     echo "WARNING: Resetting CDB_ROOT_DIR environment variable (old value: $CDB_ROOT_DIR)" 
@@ -44,7 +55,7 @@ if [ -z $CDB_VAR_DIR ]; then
 fi
 
 # Establish machine architecture and host name
-CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m` 
+CDB_HOST_ARCH="`uname | tr '[:upper:]' '[:lower:]'`-`uname -m`"
 CDB_SHORT_HOSTNAME=`hostname -s`
 
 # Check support setup

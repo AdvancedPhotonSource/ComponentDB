@@ -16,7 +16,7 @@ See LICENSE file.
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainMachineDesignController.processPreRenderList()}" />
     </f:metadata>
-    
+
     <ui:define name="customizeDisplayDialog">
         <ui:include src="private/itemDomainMachineDesignListCustomizeDisplayDialog.xhtml"/>
     </ui:define>
@@ -24,7 +24,7 @@ See LICENSE file.
     <ui:define name="listDataTable">
         <ui:include src="private/itemDomainMachineDesignDualColumnListViewPanelGrid.xhtml" /> 
     </ui:define>
-    
+
     <ui:define name="listActionButtons">
         <p:outputPanel rendered="#{!itemDomainMachineDesignController.displayListConfigurationView}">
             <ui:include src="../item/private/itemListActionButtons.xhtml" >
@@ -33,9 +33,10 @@ See LICENSE file.
             </ui:include>
         </p:outputPanel>
     </ui:define>
-    
+
     <ui:define name="additionalListSupport" >
         <ui:insert name="additionalSupport" />
+        <ui:include src="private/itemDomainMachineDesignReorderOverlayPanel.xhtml" /> 
     </ui:define>
 
 

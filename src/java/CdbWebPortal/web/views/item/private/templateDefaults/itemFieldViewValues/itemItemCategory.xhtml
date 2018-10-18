@@ -39,7 +39,7 @@ See LICENSE file.
                              />
             <p:selectCheckboxMenu label="Select Categories" value="#{itemObject.itemCategoryList}" converter="itemCategoryConverter"
                                   filter="true" filterMatchMode="contains" >
-                <f:selectItems value="#{itemCategoryController.availableItems}" /> 
+                <f:selectItems value="#{entityController.domainItemCategoryList}" /> 
 
             </p:selectCheckboxMenu>
         </f:facet>

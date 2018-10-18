@@ -38,9 +38,9 @@ class ItemElementControllerImpl(CdbObjectManager):
 
     def addPropertyValueForItemElementWithId(self, itemElementId, propertyTypeName, enteredByUserId,
                                       tag=None, value=None, units=None, description=None,
-                                      isUserWriteable=None, isDynamic=False):
+                                      isUserWriteable=None, isDynamic=False, displayValue=None):
         propertyValueAdded = self.itemDbApi.addItemElementProperty(itemElementId, propertyTypeName,
                                                                    tag, value, units, description,
-                                                                   enteredByUserId, isUserWriteable, isDynamic)
+                                                                   enteredByUserId, isUserWriteable, isDynamic, displayValue=displayValue)
 
         return propertyValueAdded

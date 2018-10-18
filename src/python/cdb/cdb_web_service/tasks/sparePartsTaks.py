@@ -19,7 +19,9 @@ from cdb.common.exceptions.cdbException import CdbException
 
 class SparePartsTask:
 
-    SPARE_PARTS_INDICATOR_PROPERTY_TYPE_NAME = 'Spare Part Indication'
+    ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status"
+    ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare"
+
     SPARE_PARTS_CONFIGURATION_PROPERTY_TYPE_NAME = 'Spare Parts Configuration'
     SPARE_PARTS_CONFIGURATION_MIN_KEY = 'minQuantity'
     SPARE_PARTS_CONFIGURATION_EMAIL_KEY = 'email'
@@ -110,9 +112,9 @@ class SparePartsTask:
                 # Use owner user email.
                 email = self.getOwnerUserEmail(catalogItemId)
 
-            sparePartsList = self.itemDbApi.getItemsWithPropertyType(self.SPARE_PARTS_INDICATOR_PROPERTY_TYPE_NAME,
+            sparePartsList = self.itemDbApi.getItemsWithPropertyType(self.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME,
                                                                      itemDerivedFromItemId=catalogItemId,
-                                                                     propertyValueMatch='true')
+                                                                     propertyValueMatch=self.ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE)
             spares = sparePartsList.__len__()
 
             if minSpares > spares:

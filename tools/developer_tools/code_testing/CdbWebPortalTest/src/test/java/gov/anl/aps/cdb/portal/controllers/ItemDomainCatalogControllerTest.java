@@ -120,7 +120,7 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
         assertFalse(items == null || items.isEmpty());
         ItemElement newItemElement; 
         
-        ItemDomainCatalog assembyItem = items.get(1);
+        ItemDomainCatalog assembyItem = items.get(0);
         List<ItemElement> displayElementList = assembyItem.getItemElementDisplayList(); 
         assertFalse(displayElementList == null || displayElementList.isEmpty());
         
