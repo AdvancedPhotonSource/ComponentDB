@@ -75,7 +75,12 @@ public class DocumentManagamentApi extends CdbRestApi {
         ArgumentUtility.verifyPositiveInteger("document id", documentId);
         String requestPath = REST_GET_DOCUMENT_DETAILS + documentId;
         String jsonString = invokeGetRequest(requestPath);
-        return (Document) CdbObjectFactory.createCdbObject(jsonString, Document.class);
+        Document document = (Document) CdbObjectFactory.createCdbObject(jsonString, Document.class);
+        if (document.getDocumentId() == null) {
+            throw new CdbException("Cannot find DMS document with id: " + documentId); 
+        }
+        
+        return document;              
     }
 
     public Container getContainerById(Integer containerId) throws InvalidArgument, CdbException {
@@ -83,6 +88,9 @@ public class DocumentManagamentApi extends CdbRestApi {
         String requestPath = REST_GET_CONTAINER_BY_ID_PATH + containerId;
         String jsonString = invokeGetRequest(requestPath);
         Container container = (Container) CdbObjectFactory.createCdbObject(jsonString, Container.class);
+        if (container.getDossierId() == null) {
+            throw new CdbException("Cannot find DMS container with id: " + containerId); 
+        }
         return container;
     }
     
