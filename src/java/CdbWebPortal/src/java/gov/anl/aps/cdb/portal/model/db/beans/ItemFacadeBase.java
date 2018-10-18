@@ -257,19 +257,19 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         if (name == null || name.isEmpty()) {
             queryString += "AND (i.name is null OR i.name = '') ";
         } else {
-            queryString += "AND i.name = '" + name + "' ";
+            queryString += "AND i.name = \"" + name + "\" ";
         }
 
         if (itemIdentifier1 == null || itemIdentifier1.isEmpty()) {
-            queryString += "AND (i.itemIdentifier1 is null OR i.itemIdentifier1 = '')";
+            queryString += "AND (i.itemIdentifier1 is null OR i.itemIdentifier1 = '') ";
         } else {
-            queryString += "AND i.itemIdentifier1 = '" + itemIdentifier1 + "' ";
+            queryString += "AND i.itemIdentifier1 = \"" + itemIdentifier1 + "\" ";
         }
 
         if (itemIdentifier2 == null || itemIdentifier2.isEmpty()) {
             queryString += "AND (i.itemIdentifier2 is null OR i.itemIdentifier2 = '') ";
         } else {
-            queryString += "AND i.itemIdentifier2 = '" + itemIdentifier2 + "' ";
+            queryString += "AND i.itemIdentifier2 = \"" + itemIdentifier2 + "\" ";
         }
 
         try {
