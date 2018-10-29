@@ -502,6 +502,18 @@ public class PropertyValue extends CdbEntity implements Serializable {
         cloned.itemConnectorList = null;
         cloned.connectorList = null;
         cloned.propertyValueHistoryList = null;
+        
+        if (cloned.propertyMetadataList != null) {
+            List<PropertyMetadata> pmd = cloned.propertyMetadataList;
+            cloned.propertyMetadataList = new ArrayList<>();
+            for (PropertyMetadata propertyMetadata : pmd) {
+                PropertyMetadata pmetadata = new PropertyMetadata();
+                pmetadata.setPropertyValue(cloned);
+                pmetadata.setMetadataKey(propertyMetadata.getMetadataKey());
+                pmetadata.setMetadataValue(propertyMetadata.getMetadataValue());
+                cloned.propertyMetadataList.add(pmetadata); 
+            }
+        }
         cloned.tag = tag;
         cloned.description = description;
         return cloned;
