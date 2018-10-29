@@ -40,7 +40,7 @@ See LICENSE file.
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') and 
                                       !fn:startsWith(view.viewId, '/views/itemDomainInventory/browse') ? 'activeMenuItem' : ''} "/>
             
-            <p:menuitem value="Machine Design" 
+            <p:menuitem value="Machine Design - Housing" 
                         icon="ui-icon-machine-design"
                         id="machineDesignMenubarButton" url="/views/itemDomainMachineDesign/list"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/') ? 'activeMenuItem' : ''} "/>
@@ -70,6 +70,7 @@ See LICENSE file.
                     
                     <p:menubar styleClass="menuBarSupportingItems">                        
                         <p:submenu label="Administrative"
+                                   id="administrativeButton"
                                    icon="fa fa-superpowers"
                                    rendered="#{loginController.loggedInAsAdmin}"
                                    styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainLocation') 
@@ -91,6 +92,7 @@ See LICENSE file.
                                     url="/views/adminLog/browseSystemLogs" />
                             
                             <p:menuitem value="Property Types" 
+                                        id="adminPropertyTypesButton"
                                     icon="fa fa-th"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/propertyType/') ? 'activeMenuItem' : ''} "

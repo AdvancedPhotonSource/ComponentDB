@@ -1439,7 +1439,13 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     // </editor-fold>    // </editor-fold>
     // </editor-fold>
-    // <editor-fold defaultstate="collapsed" desc="Base class overrides">           
+    // <editor-fold defaultstate="collapsed" desc="Base class overrides">                   
+
+    @Override
+    public String getItemListPageTitle() {
+        return "Machine Design - Housing";
+    }
+    
     @Override
     public boolean getEntityHasSortableElements() {
         return true;
