@@ -1506,8 +1506,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 newPropertyValue.setTag(propertyValue.getTag());
                 newPropertyValue.setUnits(propertyValue.getUnits());
                 newPropertyValue.setDescription(propertyValue.getDescription());
+                newPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
                 newPropertyValue.setEnteredOnDateTime(enteredOnDateTime);
-                newPropertyValue.setEnteredByUser(enteredByUser);
+                newPropertyValue.setEnteredByUser(enteredByUser);                
 
                 newItemPropertyValueList.add(newPropertyValue);
             }
