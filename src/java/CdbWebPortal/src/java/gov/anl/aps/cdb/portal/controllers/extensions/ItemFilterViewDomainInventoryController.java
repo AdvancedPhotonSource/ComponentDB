@@ -35,9 +35,9 @@ public class ItemFilterViewDomainInventoryController extends ItemFilterViewContr
     protected ListDataModel filterViewLocationDataModel = null;
     protected ItemDomainLocation filterViewLocationItemLoaded = null;
     protected boolean filterViewLocationDataModelLoaded = false;
-    
+
     @EJB
-    private ItemDomainLocationFacade itemDomainLocationFacade; 
+    private ItemDomainLocationFacade itemDomainLocationFacade;
 
     ItemDomainInventoryController itemDomainController = null;
 
@@ -94,23 +94,29 @@ public class ItemFilterViewDomainInventoryController extends ItemFilterViewContr
         if (isFilterViewLocationDataModelNeedReloading(selection)) {
             List<ItemDomainInventory> itemList = new ArrayList<>();
             ItemProject currentItemProject = ItemProjectController.getSelectedItemProject();
-           
+
             // Update the location entity             
             if (selection != null) {
-                selection = itemDomainLocationFacade.find(selection.getId()); 
+                selection = itemDomainLocationFacade.find(selection.getId());
             }
-            if (selection != null) {                
+            if (selection != null) {
                 itemList.addAll(ItemDomainLocationController.getAllItemsLocatedInHierarchy(selection));
-                if (currentItemProject != null) {
-                    List<Item> itemsToRemove = new ArrayList<>();
-                    for (Item item : itemList) {
+                List<Item> itemsToRemove = new ArrayList<>();
+                for (Item item : itemList) {
+                    if (item instanceof ItemDomainInventory == false) {
+                        itemsToRemove.add(item);
+                        continue;
+                    }
+                    
+                    if (currentItemProject != null) {
                         if (item.getItemProjectList().contains(currentItemProject)) {
                             continue;
                         }
                         itemsToRemove.add(item);
                     }
-                    itemList.removeAll(itemsToRemove);
                 }
+                itemList.removeAll(itemsToRemove);
+
             } else if (currentItemProject != null) {
                 itemList = getItemDbFacade().findByFilterViewItemProjectAttributes(currentItemProject, getDefaultDomainName());
             }
