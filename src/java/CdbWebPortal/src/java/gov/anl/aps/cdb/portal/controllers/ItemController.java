@@ -727,7 +727,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             String templateEntityTypeName = EntityTypeName.template.getValue();
             ItemDomainEntityFacade itemFacade = getEntityDbFacade();
             String domainName = getDefaultDomainName();
-            
+
             if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showItemsWithPropertyType.getValue())) {
                 if (settingObject.getDisplayListDataModelScopePropertyTypeId() == null) {
                     return null;
@@ -741,15 +741,15 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                     if (getEntityDisplayTemplates()) {
                         if (currentProject != null) {
                             itemList = itemFacade.getItemsWithPropertyTypeAndProjectExcludeEntityType(
-                                    domainName, 
-                                    propertyTypeId, 
-                                    currentProject.getName(), 
+                                    domainName,
+                                    propertyTypeId,
+                                    currentProject.getName(),
                                     templateEntityTypeName);
                         } else {
                             itemList = itemFacade.getItemListWithPropertyTypeExcludeEntityType(
-                                    domainName, 
-                                    propertyTypeId, 
-                                    templateEntityTypeName); 
+                                    domainName,
+                                    propertyTypeId,
+                                    templateEntityTypeName);
                         }
                     } else {
                         if (currentProject != null) {
@@ -762,9 +762,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                                     domainName,
                                     propertyTypeId);
                         }
-                        
+
                     }
-                    scopedListDataModel = new ListDataModel(itemList);                    
+                    scopedListDataModel = new ListDataModel(itemList);
                 }
             } else {
                 // Determine if currently viewed as group or user. 
@@ -776,9 +776,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
                 // Show only favorites
                 if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
-                    List<ItemDomainEntity> itemList = null; 
+                    List<ItemDomainEntity> itemList = null;
                     if (getEntityDisplayTemplates()) {
-                        itemList = itemFacade.getItemListContainedInListExcludeEntityType(domainName, getFavoritesList(), templateEntityTypeName); 
+                        itemList = itemFacade.getItemListContainedInListExcludeEntityType(domainName, getFavoritesList(), templateEntityTypeName);
                     } else {
                         itemList = itemFacade.getItemListContainedInList(domainName, getFavoritesList());
                     }
@@ -795,7 +795,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                             if (settingEntity instanceof UserInfo) {
                                 if (getEntityDisplayTemplates()) {
                                     itemList = itemFacade
-                                            .getItemListContainedInListOrOwnedByUserExcludeEntityType(domainName, getFavoritesList(), (UserInfo) settingEntity, templateEntityTypeName); 
+                                            .getItemListContainedInListOrOwnedByUserExcludeEntityType(domainName, getFavoritesList(), (UserInfo) settingEntity, templateEntityTypeName);
                                 } else {
                                     itemList = itemFacade
                                             .getItemListContainedInListOrOwnedByUser(domainName, getFavoritesList(), (UserInfo) settingEntity);
@@ -803,7 +803,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                             } else if (settingEntity instanceof UserGroup) {
                                 if (getEntityDisplayTemplates()) {
                                     itemList = itemFacade
-                                            .getItemListContainedInListOrOwnedByGroupExcludeEntityType(domainName, getFavoritesList(), (UserGroup) settingEntity, templateEntityTypeName); 
+                                            .getItemListContainedInListOrOwnedByGroupExcludeEntityType(domainName, getFavoritesList(), (UserGroup) settingEntity, templateEntityTypeName);
                                 } else {
                                     itemList = itemFacade
                                             .getItemListContainedInListOrOwnedByGroup(domainName, getFavoritesList(), (UserGroup) settingEntity);
@@ -819,16 +819,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                         if (settingEntity instanceof UserInfo) {
                             if (getEntityDisplayTemplates()) {
                                 itemList = itemFacade
-                                        .getItemListOwnedByUserExcludeEntityType(domainName, (UserInfo) settingEntity, templateEntityTypeName); 
+                                        .getItemListOwnedByUserExcludeEntityType(domainName, (UserInfo) settingEntity, templateEntityTypeName);
                             } else {
                                 itemList = itemFacade
                                         .getItemListOwnedByUser(domainName, (UserInfo) settingEntity);
-                            }                            
+                            }
                         } else if (settingEntity instanceof UserGroup) {
                             if (getEntityDisplayTemplates()) {
                                 itemList = itemFacade
                                         .getItemListOwnedByUserGroupExcludeEntityType(domainName, (UserGroup) settingEntity, templateEntityTypeName);
-                            } else { 
+                            } else {
                                 itemList = itemFacade
                                         .getItemListOwnedByUserGroup(domainName, (UserGroup) settingEntity);
                             }
@@ -1461,20 +1461,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         setCurrentDerivedFromItem(derivedFromItem);
     }
 
-    public void saveItemDerivedFromItemList() {
-        Item item = getCurrent();
-        List<Item> itemDerivedFromItemList = item.getDerivedFromItemList();
-        if (itemDerivedFromItemList != null) {
+    public void addDynamicPropertiesToItem(Item item) {
+        Item itemDerivedFromItem = item.getDerivedFromItem();
+        if (itemDerivedFromItem != null) {
             UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
             Date createdOnDateTime = new Date();
-
-            for (Item itemDerivedFromItem : itemDerivedFromItemList) {
-                // If id is null, this is a new component instance; check its properties
-                if (itemDerivedFromItem.getId() == null) {
-                    itemDerivedFromItem.updateDynamicProperties(createdByUser, createdOnDateTime);
-                }
-            }
+            item.updateDynamicProperties(createdByUser, createdOnDateTime);
         }
+    }
+
+    public void saveItemDerivedFromItemList() {
         update();
     }
 
@@ -2417,6 +2413,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             LocatableItem locatableItem = (LocatableItem) item;
             getLocatableItemController().updateItemLocation(locatableItem);
         }
+        addDynamicPropertiesToItem(item);
     }
 
     @Override
