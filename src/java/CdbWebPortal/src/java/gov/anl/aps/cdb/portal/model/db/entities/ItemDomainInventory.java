@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
@@ -36,32 +36,32 @@ import org.primefaces.model.TreeNode;
                         name = "connector_type_id",
                         mode = ParameterMode.IN,
                         type = Integer.class
-                ),
+                )
+                ,
                 @StoredProcedureParameter(
                         name = "is_male",
                         mode = ParameterMode.IN,
                         type = Boolean.class
                 )
             }
-    ),
-})
+    ),})
 public class ItemDomainInventory extends LocatableItem {
-    
-    public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status"; 
-    public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare"; 
+
+    public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";
+    public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare";
 
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
-   
+
     private transient TreeNode itemElementAssemblyRootTreeNode = null;
 
     private transient InventoryBillOfMaterialItem containedInBOM;
 
     private transient Boolean sparePartIndicator = null;
     private transient SparePartsBean sparePartsBean = null;
-       
+
     // Inventory status variables
-    private transient PropertyValue inventoryStatusPropertyValue; 
-    private transient boolean loadedCurrentStatusPropertyValue = false;  
+    private transient PropertyValue inventoryStatusPropertyValue;
+    private transient boolean loadedCurrentStatusPropertyValue = false;
 
     @Override
     public Item createInstance() {
@@ -99,7 +99,7 @@ public class ItemDomainInventory extends LocatableItem {
 
     public Boolean getSparePartIndicator() {
         if (sparePartIndicator == null) {
-            boolean spare = getInventoryStatusValue().equals(ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE); 
+            boolean spare = getInventoryStatusValue().equals(ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE);
             sparePartIndicator = spare;
         }
         return sparePartIndicator;
@@ -114,14 +114,16 @@ public class ItemDomainInventory extends LocatableItem {
 
     public PropertyValue getInventoryStatusPropertyValue() {
         if (!loadedCurrentStatusPropertyValue) {
-            for (PropertyValue propertyValue : this.getPropertyValueInternalList()) {
-                String propertyTypeName = propertyValue.getPropertyType().getName();
-                if (propertyTypeName.equals(ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME)) {
-                    inventoryStatusPropertyValue = propertyValue;
-                    break; 
-                }                
+            if (this.getPropertyValueInternalList() != null) {
+                for (PropertyValue propertyValue : this.getPropertyValueInternalList()) {
+                    String propertyTypeName = propertyValue.getPropertyType().getName();
+                    if (propertyTypeName.equals(ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME)) {
+                        inventoryStatusPropertyValue = propertyValue;
+                        break;
+                    }
+                }
             }
-            loadedCurrentStatusPropertyValue = true; 
+            loadedCurrentStatusPropertyValue = true;
         }
         return inventoryStatusPropertyValue;
     }
@@ -129,22 +131,22 @@ public class ItemDomainInventory extends LocatableItem {
     public void setInventoryStatusPropertyValue(PropertyValue inventoryStatusPropertyValue) {
         this.inventoryStatusPropertyValue = inventoryStatusPropertyValue;
     }
-    
+
     public String getInventoryStatusValue() {
-        if (getInventoryStatusPropertyValue()!= null) {
-            String value = getInventoryStatusPropertyValue().getValue(); 
+        if (getInventoryStatusPropertyValue() != null) {
+            String value = getInventoryStatusPropertyValue().getValue();
             if (value != null) {
-                return value; 
+                return value;
             }
-        } 
-        return ""; 
+        }
+        return "";
     }
-    
+
     public void setInventoryStatusValue(String status) {
         if (getInventoryStatusPropertyValue() != null) {
             getInventoryStatusPropertyValue().setValue(status);
-            sparePartIndicator = null; 
+            sparePartIndicator = null;
         }
     }
-    
+
 }

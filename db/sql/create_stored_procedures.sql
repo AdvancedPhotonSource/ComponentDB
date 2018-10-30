@@ -72,7 +72,7 @@ END//
 
 drop procedure if exists is_item_attributes_unique//
 create procedure `is_item_attributes_unique` 
-(IN domain_id INT, 
+(IN item_domain_id INT, 
 IN item_name VARCHAR(64), 
 IN new_item_identifier1 VARCHAR(32), 
 IN new_item_identifier2 VARCHAR(32), 
@@ -102,7 +102,7 @@ BEGIN
 			IFNULL(item_identifier1, '') AS item_identifier1, 
 			IFNULL(item_identifier2, '') AS item_identifier2 
 		FROM item
-		WHERE domain_id=domain_id
+		WHERE domain_id=item_domain_id
 			AND name = item_name) AS item2
 	WHERE derived_from_item_id = new_derived_from_item_id
 		AND item_identifier1 = new_item_identifier1

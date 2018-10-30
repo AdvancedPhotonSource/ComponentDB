@@ -18,8 +18,29 @@ See LICENSE file.
               filterBy="#{propertyValueObject.id}"
               filterable="#{filterable}">
         <h:outputText value="#{propertyValueObject.id}"/>
+    </p:column>    
+    
+    <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
+              filterBy="#{propertyValueObject.tag}" 
+              filterable="#{filterable}"
+              rendered="#{propertyValueSettingObject.displayTag}">
+        <h:outputText value="#{propertyValueObject.tag}"/>
     </p:column>
 
+    <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
+              filterBy="#{propertyValueObject.value}"
+              filterable="#{filterable}"
+              exportFunction="#{propertyValueObject.getValue()}">
+        <ui:include src="propertyValueListObjectValue.xhtml"/>
+    </p:column>
+    
+     <p:column sortBy="#{propertyValueObject.description}" headerText="Description"
+              filterBy="#{propertyValueObject.description}"
+              filterable="#{filterable}"
+              rendered="#{propertyValueSettingObject.displayDescription}">
+        <h:outputText value="#{propertyValueObject.description}"/>
+    </p:column>   
+    
     <p:column sortBy="#{propertyValueObject.propertyType.name}" headerText="Type"
               filterBy="#{propertyValueObject.propertyType.name}"
               filterable="#{filterable}"
@@ -32,28 +53,7 @@ See LICENSE file.
               filterable="#{filterable}"
               rendered="#{propertyValueSettingObject.displayTypeCategory}">
         <h:outputText value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
-    </p:column>
-
-    <p:column sortBy="#{propertyValueObject.value}" headerText="Value"
-              filterBy="#{propertyValueObject.value}"
-              filterable="#{filterable}"
-              exportFunction="#{propertyValueObject.getValue()}">
-        <ui:include src="propertyValueListObjectValue.xhtml"/>
-    </p:column>
-
-    <p:column sortBy="#{propertyValueObject.description}" headerText="Description"
-              filterBy="#{propertyValueObject.description}"
-              filterable="#{filterable}"
-              rendered="#{propertyValueSettingObject.displayDescription}">
-        <h:outputText value="#{propertyValueObject.description}"/>
-    </p:column>
-
-    <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
-              filterBy="#{propertyValueObject.tag}" 
-              filterable="#{filterable}"
-              rendered="#{propertyValueSettingObject.displayTag}">
-        <h:outputText value="#{propertyValueObject.tag}"/>
-    </p:column>
+    </p:column>   
 
     <p:column sortBy="#{propertyValueObject.units}" headerText="Units"
               filterBy="#{propertyValueObject.units}"
