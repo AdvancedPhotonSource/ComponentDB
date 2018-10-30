@@ -1462,11 +1462,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public void addDynamicPropertiesToItem(Item item) {
-        Item itemDerivedFromItem = item.getDerivedFromItem();
-        if (itemDerivedFromItem != null) {
-            UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
-            Date createdOnDateTime = new Date();
-            item.updateDynamicProperties(createdByUser, createdOnDateTime);
+        if (item.getId() == null) {
+            Item itemDerivedFromItem = item.getDerivedFromItem();
+            if (itemDerivedFromItem != null) {
+                UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
+                Date createdOnDateTime = new Date();
+                item.updateDynamicProperties(createdByUser, createdOnDateTime);
+            }
         }
     }
 
@@ -2407,7 +2409,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         LOGGER.debug("Updating item " + item.getId()
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
 
-    }
+    }        
 
     protected void performPrepareEntityInsertUpdate(Item item) {
         if (item instanceof LocatableItem) {
