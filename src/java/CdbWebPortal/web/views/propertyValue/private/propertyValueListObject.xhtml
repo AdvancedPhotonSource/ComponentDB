@@ -20,6 +20,12 @@ See LICENSE file.
         <h:outputText value="#{propertyValueObject.id}"/>
     </p:column>    
     
+    <p:column sortBy="#{propertyValueObject.propertyType.name}" headerText="Type"
+              filterBy="#{propertyValueObject.propertyType.name}"
+              filterable="#{filterable}">
+        <h:outputText value="#{propertyValueObject.propertyType.name}"/>
+    </p:column>
+    
     <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
               filterBy="#{propertyValueObject.tag}" 
               filterable="#{filterable}"
@@ -39,14 +45,7 @@ See LICENSE file.
               filterable="#{filterable}"
               rendered="#{propertyValueSettingObject.displayDescription}">
         <h:outputText value="#{propertyValueObject.description}"/>
-    </p:column>   
-    
-    <p:column sortBy="#{propertyValueObject.propertyType.name}" headerText="Type"
-              filterBy="#{propertyValueObject.propertyType.name}"
-              filterable="#{filterable}"
-              >
-        <h:outputText value="#{propertyValueObject.propertyType.name}"/>
-    </p:column>
+    </p:column>           
 
     <p:column sortBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}" headerText="Category" 
               filterBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}"
