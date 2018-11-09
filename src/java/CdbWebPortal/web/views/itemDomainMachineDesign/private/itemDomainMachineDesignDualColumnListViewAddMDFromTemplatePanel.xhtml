@@ -46,7 +46,10 @@ See LICENSE file.
                       value="#{templateToCreateNewItem != null}" /> 
         </ui:include>
                 
-        <ui:include src="itemDomainMachineDesignDualColumnListViewAddButton.xhtml" /> 
+        <ui:include src="itemDomainMachineDesignDualColumnListViewAddButton.xhtml">
+            <ui:param name="viewName"
+                      value="UsingTemplate" /> 
+        </ui:include>
         <ui:include src="itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
     </p:panel>    
 

@@ -14,7 +14,9 @@ See LICENSE file.
                      header="Delete Property Type" 
                      severity="alert" 
                      styleClass="dialog">
-        <p:commandButton value="Yes" oncomplete="PF('propertyTypeDestroyDialogWidget').hide()" action="#{propertyTypeController.destroy()}" update="@form"/>
+        <p:commandButton value="Yes" 
+                         id="confirmDestroyPropertyType"
+                         oncomplete="PF('propertyTypeDestroyDialogWidget').hide()" action="#{propertyTypeController.destroy()}" update="@form"/>
         <p:commandButton value="No" onclick="PF('propertyTypeDestroyDialogWidget').hide()" type="button"/>
     </p:confirmDialog>  
 

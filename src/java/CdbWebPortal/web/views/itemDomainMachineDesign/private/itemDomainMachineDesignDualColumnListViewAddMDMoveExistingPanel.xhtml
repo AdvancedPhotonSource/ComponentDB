@@ -31,7 +31,10 @@ See LICENSE file.
                          action="#{itemDomainMachineDesignController.verifyMoveExistingMachineDesignSelected()}"/> 
         
         
-        <ui:include src="itemDomainMachineDesignDualColumnListViewAddButton.xhtml" /> 
+        <ui:include src="itemDomainMachineDesignDualColumnListViewAddButton.xhtml" >
+            <ui:param name="viewName"
+                      value="MoveExisting"/>
+        </ui:include>
         <ui:include src="itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
     </p:panel>    
 
