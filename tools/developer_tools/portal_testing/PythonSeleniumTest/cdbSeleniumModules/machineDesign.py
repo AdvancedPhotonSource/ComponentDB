@@ -8,6 +8,7 @@ See LICENSE file.
 import time
 import csv
 
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -210,6 +211,15 @@ class MachineDesign(CdbSeleniumModuleBase):
 								if lastParent != currentParent:
 									lastParent = currentParent
 									lastParentXpath = self._findXPathForMachineDesignItem(lastParent)
+								else:
+									expactedInnerHTML = lastParent[-1]
+									try:
+										innerHTML = self._getAttributeInXpathWithStaleProtection('innerHTML', lastParentXpath)
+										if expactedInnerHTML != innerHTML:
+											lastParentXpath = self._findXPathForMachineDesignItem(lastParent)
+									except NoSuchElementException:
+										lastParentXpath = self._findXPathForMachineDesignItem(lastParent)
+
 
 								self.addChildToMachineDesign(lastParentXpath, currentHierarchy[-1], description)
 							break
