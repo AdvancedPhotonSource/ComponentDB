@@ -28,8 +28,10 @@ See LICENSE file.
             </ui:include>
         </p:panelGrid>
         
-        <ui:include src="itemDomainMachineDesignDualColumnListViewAddButton.xhtml"/>  
-
+        <ui:include src="itemDomainMachineDesignDualColumnListViewAddButton.xhtml">
+            <ui:param name="viewName"
+                      value="Placeholder" /> 
+        </ui:include>
         <ui:include src="itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
     </p:panel>    
 

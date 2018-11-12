@@ -56,7 +56,7 @@ See LICENSE file.
                   value="#{itemDomainMachineDesignController.getPrimaryImageValueForMachineDesignItem(itemElementListObject)}" /> 
     </ui:include>
 
-    <p:column headerText="Description"
+    <p:column headerText="Machine Design Item Description"
               rendered="#{hideOptionalColumns 
                           and settingObject.displayDescription}">
         <h:outputText value="#{itemListObject.description}" /> 

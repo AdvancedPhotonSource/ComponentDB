@@ -34,6 +34,7 @@ See LICENSE file.
 
     <ui:define name="nameColumn">
         <p:column sortBy="#{propertyTypeObject.name}" headerText="Name" 
+                  id="propertyTypeNameFilter"
                   filterBy="#{propertyTypeObject.name}" filterMatchMode="contains"
                   filterValue="#{propertyTypeSettingObject.filterByName}"
                   rendered="true"

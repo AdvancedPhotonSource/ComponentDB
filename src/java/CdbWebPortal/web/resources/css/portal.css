@@ -9,6 +9,7 @@ html, body {
     color: #000000;
     margin: 0px;
     height: 100%;
+    background-attachment: fixed;
 }
 
 .apsStorageRingBackground {

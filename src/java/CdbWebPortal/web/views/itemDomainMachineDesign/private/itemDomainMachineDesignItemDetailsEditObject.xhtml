@@ -27,6 +27,12 @@ See LICENSE file.
                          process="@this"
                          oncomplete="updateMachineDesignAddButton()"/>
     </p:outputPanel>
+    
+    <h:outputText value="Machine Design Description"/>
+    <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemDescription.xhtml">
+        <ui:param name="itemObject"
+                  value="#{containedItem}" /> 
+    </ui:include>
 
     <h:outputText value="Location"
                   rendered="#{newMachineDesignCreation and !currentViewIsTemplate}"/>

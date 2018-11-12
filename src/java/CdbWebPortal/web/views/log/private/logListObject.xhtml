@@ -98,12 +98,13 @@ See LICENSE file.
     </p:column>
 
     <p:column sortBy="#{logObject.text}" headerText="Log Entry"
+              id="logEntryColumn"
               filterBy="#{logObject.text}" filterMatchMode="contains"
               filterValue="#{logSettingObject.filterByText}"
               filterStyle="width:80px"
               filterable="#{filterable}"
               style="width:200px">
-        <p:cellEditor>
+        <p:cellEditor id="logEntryColumnCellEditor">
             <f:facet name="output">
                 <h:outputText value="#{logObject.text}"/>
             </f:facet>

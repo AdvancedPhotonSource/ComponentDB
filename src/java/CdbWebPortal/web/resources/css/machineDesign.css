@@ -16,6 +16,7 @@ html, body {
         /**https://flic.kr/p/a3YwWu**/
         url(../images/aps-rendering.jpg);
     background-size: cover;
+    background-attachment: fixed;
 }
 
 

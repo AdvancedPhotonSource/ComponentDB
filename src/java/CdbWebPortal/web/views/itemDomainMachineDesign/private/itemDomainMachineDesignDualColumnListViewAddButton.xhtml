@@ -9,7 +9,8 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <p:commandButton value="Add" alt="Add" 
-                     update="machineDesignDualListViewOutputPanel"                     
+                     id="machineDesignDualListViewAddButton#{viewName}"
+                     update="machineDesignDualListViewOutputPanel"
                      onstart="PF('loadingDialog').show()"
                      oncomplete="PF('loadingDialog').hide()"
                      disabled="#{!entityController.currentEditItemElementSaveButtonEnabled}" 

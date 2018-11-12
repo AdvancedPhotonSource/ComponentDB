@@ -20,6 +20,7 @@ See LICENSE file.
                     Follow instructions on the panel to the right.
                     <br/>
                     <p:commandButton value="Return"
+                                     id="backToListFromDualView"
                                      onclick="PF('loadingDialog').show()"
                                      action="#{itemDomainMachineDesignController.currentDualViewList()}"
                                      icon="fa fa-arrow-circle-o-left"/>
@@ -78,6 +79,7 @@ See LICENSE file.
 
         <ui:fragment rendered="#{entityController.displayListViewItemDetailsView}" >
             <p:commandButton value="Return"
+                             id="backToListFromDetails"
                              onclick="PF('loadingDialog').show()"
                              action="#{itemDomainMachineDesignController.currentDualViewList()}"
                              icon="fa fa-arrow-circle-o-left"/> 

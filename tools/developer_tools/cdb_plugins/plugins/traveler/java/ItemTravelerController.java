@@ -464,7 +464,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     public void prepareAddTravelerInstanceOnMultiEdit(Item currentItem) {
         setCurrent(currentItem);
-        loadEntityAvailableTemplateList(getCurrent());
+        addTravelerInstanceToCurrent(null);
     }
 
     public void addTravelerTemplateToCurrent(String onSuccess) {

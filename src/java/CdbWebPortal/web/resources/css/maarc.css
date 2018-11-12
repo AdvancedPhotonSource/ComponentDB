@@ -16,6 +16,7 @@ html, body {
     /** Provided By: https://flic.kr/p/acCF3G **/
     url(../images/server-rack.jpg); 
     background-size: cover;
+    background-attachment: fixed;
 }
 
 
