@@ -9,7 +9,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import org.apache.log4j.Logger;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
@@ -185,8 +184,8 @@ public abstract class ItemCreateWizardController extends ItemControllerExtension
         currentWizardStep = nextStep;
 
         if (prevStep.equals(currentWizardStep) == false) {
-            updateCurrentWizardStepIndex(nextStep);
-            RequestContext.getCurrentInstance().execute("updateWizardButtons()");
+            updateCurrentWizardStepIndex(nextStep);            
+            SessionUtility.executeRemoteCommand("updateWizardButtons()");
         }
         return nextStep;
     }

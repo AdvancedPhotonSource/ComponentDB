@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.apache.log4j.Logger;
-import org.primefaces.context.RequestContext;
 
 public abstract class ItemTravelerController extends ItemControllerExtensionHelper {
 
@@ -193,8 +192,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             propertyValue = getItemController().preparePropertyTypeValueAdd(travelerBinderPropertyType);
             newBinder = new Binder();
             newBinderTemplateSelection = new ArrayList<>();
-            loadEntityAvailableTemplateList(getCurrent());
-            RequestContext.getCurrentInstance().execute(onSuccess);
+            loadEntityAvailableTemplateList(getCurrent());            
+            SessionUtility.executeRemoteCommand(onSuccess);
         } else {
             SessionUtility.addErrorMessage("Traveler binder property type not found ",
                     " Please contact your admin to add a property type with traveler binder handler");
@@ -371,8 +370,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             propertyValue = getItemController().preparePropertyTypeValueAdd(travelerInstancePropertyType);
             loadEntityAvailableTemplateList(getCurrent());
             prepareShowAddNewTravelerDialog();
-            if (onSuccess != null) {
-                RequestContext.getCurrentInstance().execute(onSuccess);
+            if (onSuccess != null) {                
+                SessionUtility.executeRemoteCommand(onSuccess);
             }
         } else {
             SessionUtility.addErrorMessage("Traveler instance property type not found ",
@@ -434,8 +433,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             SessionUtility.addWarningMessage("Template not selected", "Please select a template before proceeding.");
             return;
         }
-
-        RequestContext.getCurrentInstance().execute(onSuccess);
+        
+        SessionUtility.executeRemoteCommand(onSuccess);
     }
 
     public void saveMultiEditTravelerInstance(String onSuccessCommand) {
@@ -473,7 +472,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         if (travelerTemplatePropertyType != null) {
             propertyValue = getItemController().preparePropertyTypeValueAdd(travelerTemplatePropertyType);
             if (onSuccess != null) {
-                RequestContext.getCurrentInstance().execute(onSuccess);
+                SessionUtility.executeRemoteCommand(onSuccess);
             }
         } else {
             SessionUtility.addErrorMessage("Traveler template property type not found ",
@@ -721,7 +720,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     public void createTravelerTemplateAndSelectNewTemplate(String onSuccess) {
         try {
             multiEditSelectedTemplate = createTravelerTemplate();
-            RequestContext.getCurrentInstance().execute(onSuccess);
+            SessionUtility.executeRemoteCommand(onSuccess);
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", ex.getMessage());
             logger.error(ex);
@@ -755,7 +754,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
                     if (getCurrent().getId() != null) {
                         entityController.savePropertyList();
                     }
-                    RequestContext.getCurrentInstance().execute(onSuccessCommand);
+                    SessionUtility.executeRemoteCommand(onSuccessCommand);
                 } catch (CdbException ex) {
                     SessionUtility.addErrorMessage("Error", ex.getMessage());
                     logger.error(ex);
@@ -783,7 +782,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
                 if (getCurrent().getId() != null) {
                     savePropertyList();
                 }
-                RequestContext.getCurrentInstance().execute(onSuccessCommand);
+                SessionUtility.executeRemoteCommand(onSuccessCommand);
             }
         }
     }
@@ -798,7 +797,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         if (checkPropertyValue()) {
             travelerTemplateTitle = "";
             propertyValue.setValue("");
-            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+            SessionUtility.executeRemoteCommand(onSuccessCommand);
         }
     }
 
@@ -1134,7 +1133,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
                         propertyValue.setValue(travelerInstance.getId());
                         entityController.savePropertyList();
                         if (onSuccessCommand != null) {
-                            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+                            SessionUtility.executeRemoteCommand(onSuccessCommand);
                         }
                     } catch (CdbException ex) {
                         logger.error(ex);
@@ -1194,7 +1193,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             Traveler travelerInstance = travelerApi.getTraveler(currentTravelerInstance.getId());
             setCurrentTravelerInstance(travelerInstance);
             //Show the GUI since all execution was successful. 
-            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+            SessionUtility.executeRemoteCommand(onSuccessCommand);
         } catch (CdbException ex) {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
@@ -1211,7 +1210,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         try {
             travelerTemplates = travelerApi.getForms();
             if (onSuccessCommand != null) {
-                RequestContext.getCurrentInstance().execute(onSuccessCommand);
+                SessionUtility.executeRemoteCommand(onSuccessCommand);
             }
         } catch (CdbException ex) {
             logger.error(ex);
@@ -1261,7 +1260,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         try {
             Traveler travelerInstance = travelerApi.updateTraveler(travelerId, userName, travelerTitle, travelerDescription, currentTravelerDeadline, status);
             setCurrentTravelerInstance(travelerInstance);
-            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+            SessionUtility.executeRemoteCommand(onSuccessCommand);
         } catch (CdbException ex) {
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage());

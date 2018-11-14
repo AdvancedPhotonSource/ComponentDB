@@ -11,7 +11,7 @@ import java.util.Random;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import org.apache.log4j.Logger;
-import org.primefaces.util.Base64;
+import java.util.Base64;
 
 /**
  * Utility class for encrypting and verifying passwords.
@@ -77,7 +77,7 @@ public class CryptUtility {
         try {
             key = SecretKeyFactory.getInstance(SecretKeyFactoryType);
             byte[] hashedPassword = key.generateSecret(spec).getEncoded();
-            String encodedPassword = Base64.encodeToString(hashedPassword, true);
+            String encodedPassword = Base64.getEncoder().encodeToString(hashedPassword);
             return salt + SaltDelimiter + encodedPassword;
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             // Should not happen
