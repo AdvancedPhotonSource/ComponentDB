@@ -13,7 +13,10 @@ See LICENSE file.
         <ui:composition template="../templates/loginViewTemplate.xhtml">
             <ui:define name="bottom">
                 <h:form id="loginForm">
-                    <p:growl id="messages" showDetail="true" autoUpdate="true"/>
+                    <p:growl id="messages" showDetail="true">
+                        <p:autoUpdate/>
+                    </p:growl>
+                    
                     <div class="login">
                         <div>
                             <p:inputText id="username" value="#{loginController.username}" title="Username"/>

@@ -93,7 +93,9 @@ See LICENSE file.
             <div id="bottom" class="bottomContent">
                 <ui:insert name="bottom">
                     <h:form prependId="false">
-                        <p:growl id="messages" showDetail="true" autoUpdate="true"/>
+                        <p:growl id="messages" showDetail="true">
+                            <p:autoUpdate /> 
+                        </p:growl>
                         <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
                                        onidle="handleSessionTimeout();">
                             <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" 
