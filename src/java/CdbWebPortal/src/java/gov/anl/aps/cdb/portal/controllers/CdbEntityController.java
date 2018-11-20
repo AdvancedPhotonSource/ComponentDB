@@ -120,6 +120,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void initialize() {
         settingObject.updateSettings();
     }
+        
+    public void registerSearchable() {
+        SearchController searchController = SearchController.getInstance();
+        searchController.registerSearchableController(this);
+    }
 
     protected abstract SettingObject createNewSettingObject();
 
@@ -1480,8 +1485,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         // Start new search
         this.searchString = searchString;
         this.caseInsensitive = caseInsensitive;
-        searchResultList = new LinkedList<>();
-
+        searchResultList = new LinkedList<>(); 
+        
         Pattern searchPattern;
         if (caseInsensitive) {
             searchPattern = Pattern.compile(Pattern.quote(searchString), Pattern.CASE_INSENSITIVE);
