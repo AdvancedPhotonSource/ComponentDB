@@ -154,6 +154,10 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
         Collections.reverse(selectedPropertyValueHistoryList);
         selectedPropertyValueTypeName = selectedPropertyValue.getPropertyType().getName();
         displayType = selectedPropertyValue.getPropertyType().getDisplayType();
+        if (displayType == null) {
+            PropertyValueController pvc = PropertyValueController.getInstance();
+            displayType = pvc.getPropertyValueDisplayType(selectedPropertyValue);
+        }
         PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(selectedPropertyValue);
         for (PropertyValueHistory propertyValueHistory : selectedPropertyValueHistoryList) {
             propertyTypeHandler.setDisplayValue(propertyValueHistory);
