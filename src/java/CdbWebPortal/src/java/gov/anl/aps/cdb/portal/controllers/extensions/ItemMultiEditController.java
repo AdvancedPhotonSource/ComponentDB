@@ -387,6 +387,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     public void editAllItemsDerivedFromItem(Item item) {
         resetMultiEditVariables();
         setActiveIndex(MultipleEditMenu.updateItems.ordinal());
+        multiEditMode = MultiEditMode.update; 
                
         LoginController loginController = LoginController.getInstance();
         List<Item> derivedFromItemList = item.getDerivedFromItemList();
