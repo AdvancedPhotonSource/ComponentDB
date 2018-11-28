@@ -29,6 +29,10 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
     public final static String controllerNamed = "itemMultiEditDomainInventoryController";
     Integer unitCount = null; 
     
+    protected boolean updateLocation = false;
+    protected boolean updateLocationDetails = false; 
+    protected String toggledLocationEditViewUUID = null; 
+    
     private ItemDomainInventoryController itemDomainInventoryController = null; 
     
     private List<PropertyType> propertyTypesRequiredForMultiCreate = null; 
@@ -141,5 +145,29 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
         this.selectedPropertyTypesForEditing = selectedPropertyTypesForEditing;
     }
 
+    public boolean isUpdateLocation() {
+        return updateLocation;
+    }
+
+    public void setUpdateLocation(boolean updateLocation) {
+        this.toggledLocationEditViewUUID = null; 
+        this.updateLocation = updateLocation;
+    }
+
+    public boolean isUpdateLocationDetails() {
+        return updateLocationDetails;
+    }
+
+    public void setUpdateLocationDetails(boolean updateLocationDetails) {
+        this.updateLocationDetails = updateLocationDetails;
+    }
+
+    public String getToggledLocationEditViewUUID() {
+        return toggledLocationEditViewUUID;
+    }
+
+    public void setToggledLocationEditViewUUID(String toggledLocationEditViewUUID) {
+        this.toggledLocationEditViewUUID = toggledLocationEditViewUUID;
+    }
     
 }
