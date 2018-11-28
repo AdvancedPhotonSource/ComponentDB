@@ -1250,3 +1250,7 @@ h2 {
     color: #6d0000 !important;
 }
 
+.visibleDatatableOverflow > div:first-child, .visibleDatatableOverflow .ui-sortable-handle {
+    overflow: visible; 
+}
+
