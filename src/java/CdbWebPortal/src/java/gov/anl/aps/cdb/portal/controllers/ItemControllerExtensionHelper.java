@@ -400,7 +400,11 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     @Override
     public String update() {
         return getItemController().update();
-    }        
+    } 
+        
+    public void updateWithoutRedirect() {
+        getItemController().updateWithoutRedirect();
+    }
     
     @Override
     public Boolean getFilterablePropertyValue1() {
