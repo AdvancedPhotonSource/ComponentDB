@@ -35,10 +35,6 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${file.reference.fontbox-2.0.0.jar}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library dirs="200">
                     <file>${file.reference.gson-2.8.5.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
@@ -68,6 +64,10 @@
                 </library>
                 <library dirs="200">
                     <file>${file.reference.dm-base-1.5.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library dirs="200">
+                    <file>${file.reference.fontbox-2.0.13.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>
