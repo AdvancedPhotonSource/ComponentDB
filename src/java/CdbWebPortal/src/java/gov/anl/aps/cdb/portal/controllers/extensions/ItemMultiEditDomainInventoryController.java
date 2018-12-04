@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
@@ -32,6 +33,8 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
     protected boolean updateLocation = false;
     protected boolean updateLocationDetails = false; 
     protected String toggledLocationEditViewUUID = null; 
+    
+    protected boolean updateInventoryStatus = false; 
     
     private ItemDomainInventoryController itemDomainInventoryController = null; 
     
@@ -168,6 +171,20 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
 
     public void setToggledLocationEditViewUUID(String toggledLocationEditViewUUID) {
         this.toggledLocationEditViewUUID = toggledLocationEditViewUUID;
+    }
+
+    public boolean isUpdateInventoryStatus() {
+        return updateInventoryStatus;
+    }
+
+    public void setUpdateInventoryStatus(boolean updateInventoryStatus) {
+        ItemDomainInventoryController itemController = (ItemDomainInventoryController) getItemController();
+        for (Item item : selectedItemsToEdit) {
+            itemController.setCurrent((ItemDomainInventory) item);
+            itemController.prepareEditInventoryStatus();
+        }
+                
+        this.updateInventoryStatus = updateInventoryStatus;
     }
     
 }
