@@ -14,6 +14,7 @@ See LICENSE file.
         <br/>
         <p:accordionPanel id="editOptionsAccordionPanel">            
             <ui:insert name="editOptionsAccordionPanelTabs" />
+            <ui:insert name="itemDomainSpecificAccordionPanelTabs" /> 
             <ui:insert name="pluginOptionsAccordionPanelTabs" />
         </p:accordionPanel>
         
@@ -23,6 +24,8 @@ See LICENSE file.
         <ui:include src="../itemMultiEditEditableDataTable.xhtml" />
 
         <ui:include src="../itemMultiEditEditableListSupport.xhtml" />
+        
+        <ui:insert name="itemDomainSpecificEditableListSupport" /> 
         
         <ui:insert name="pluginEditableListSupport" />
 

@@ -35,7 +35,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
 import org.apache.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.DragDropEvent;
 import org.primefaces.event.ReorderEvent;
 import org.primefaces.model.TreeNode;
@@ -197,8 +196,8 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     public void openEditContainedItemForCurrent(String onSuccessCommand) {
         ItemElementConstraintInformation constraint = getItemElementConstraintInformation(getCurrent());
 
-        if (constraint.isSafeToUpdateContainedItem()) {
-            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+        if (constraint.isSafeToUpdateContainedItem()) {            
+            SessionUtility.executeRemoteCommand(onSuccessCommand);
         } else {
             String errorMessage = "";
 
@@ -638,8 +637,8 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
                     return 1;
                 }
             });
-
-            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+            
+            SessionUtility.executeRemoteCommand(onSuccessCommand);
         } else {
             SessionUtility.addInfoMessage("Info", "No design elements to sort.");
         }

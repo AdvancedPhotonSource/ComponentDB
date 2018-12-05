@@ -48,7 +48,6 @@ import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
 import org.primefaces.component.selectonelistbox.SelectOneListbox;
-import org.primefaces.context.RequestContext;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
 
@@ -357,8 +356,8 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
         // Prevent re-render of non-needed dialog content.
         resetConnectorVairables();
-
-        RequestContext.getCurrentInstance().execute(onSuccessCommand);
+        
+        SessionUtility.executeRemoteCommand(onSuccessCommand);
 
     }
 
@@ -561,8 +560,8 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     public void createSaveFromDialog(String onSuccessCommand) {
         String result = create();
-        if (result != null) {
-            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+        if (result != null) {            
+            SessionUtility.executeRemoteCommand(onSuccessCommand);
         }
     }
 

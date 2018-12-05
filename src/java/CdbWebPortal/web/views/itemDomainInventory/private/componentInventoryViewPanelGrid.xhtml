@@ -28,6 +28,8 @@ See LICENSE file.
                            update="itemDomainInventoryStatusHistoryDialog"
                            title="View history"
                            rendered="#{entityController.renderedHistoryButton}">
+                <f:setPropertyActionListener target="#{propertyValueHistoryController.selectedPropertyValue}" 
+                                             value="#{entityController.currentStatusPropertyValue}"/>
                 <p:tooltip for="componentInstanceStatusHistoryListViewButton" value="View instance status history" />
             </p:commandLink>
         </p:column>

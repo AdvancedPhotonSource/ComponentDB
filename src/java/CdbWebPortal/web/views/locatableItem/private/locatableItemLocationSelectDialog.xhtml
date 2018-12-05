@@ -18,16 +18,8 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               header="Select Location for inventory item."
               modal="true">
-        <p:scrollPanel style="width: 650px; height: 500px" mode="native" >
-            <p:tree id="#{entityTypeName}LocationSelectionTree"
-                    value="#{itemDomainLocationController.itemsWithNoParentsRootNode}"
-                    var="node"
-                    selectionMode="single"
-                    style="width: 635px; background: none; border: none;"
-                    selection="#{itemDomainLocationController.selectedLocationTreeNode}">
-                <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
-            </p:tree>
-        </p:scrollPanel>
+        
+        <ui:include src="locatableItemLocationSelectTreeSelection.xhtml" /> 
 
         <f:facet name="footer">
             <p:commandButton value="Done" 

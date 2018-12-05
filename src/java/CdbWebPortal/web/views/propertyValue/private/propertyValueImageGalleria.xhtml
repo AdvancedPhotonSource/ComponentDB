@@ -37,7 +37,7 @@ See LICENSE file.
     <p:galleria id="#{entityTypeName}PropertyImageGalleria"
                 value="#{entityController.imageList}" var="propertyValueObject" 
                 showCaption="false"
-                panelHeight="300" panelWidth="450"
+                panelHeight="450" panelWidth="450"
                 effect="slide"
                 transitionInterval="7000"
                 rendered="#{entityController.displayImages}"
@@ -46,7 +46,6 @@ See LICENSE file.
         <p:graphicImage value="#{propertyValueController.getScaledImagePath(propertyValueObject)}" 
                         alt="#{propertyValueObject.description}" 
                         title="#{propertyValueObject.value}"
-                        height="300"
                         onclick="window.open('#{propertyValueController.getOriginalImageApplicationPath(propertyValueObject)}')"/>
         
     </p:galleria>

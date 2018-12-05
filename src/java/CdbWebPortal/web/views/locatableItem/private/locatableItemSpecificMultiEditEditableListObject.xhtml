@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:column rendered="#{entityController.updateLocation}"
+              id="multiEditEditLocationColumn"
+              headerText="Location">
+
+        <ui:param name="rowItemViewUUID"
+                  value="#{itemListObject.viewUUID}" />         
+
+        <ui:param name="activeLocationEditViewUUID"
+                  value="#{entityController.toggledLocationEditViewUUID}" /> 
+
+        <p:outputPanel rendered="#{rowItemViewUUID != activeLocationEditViewUUID}" >
+            <p:commandLink id="LocationMultiEdieActivateEditLocaton"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide()"
+                           update="@form:#{entityTypeName}MultiEditItemDataTable"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil">
+                <f:setPropertyActionListener value="#{rowItemViewUUID}"
+                                             target="#{entityController.toggledLocationEditViewUUID}" /> 
+            </p:commandLink>
+
+
+            <ui:include src="templateDefaults/locatableItemLocationListColumnObject.xhtml"/>
+        </p:outputPanel>
+
+        <p:outputPanel rendered="#{rowItemViewUUID == activeLocationEditViewUUID}" >
+            <p:panelGrid columns="3">            
+                <p:tieredMenu model="#{locatableItemController.getItemLocataionDefaultMenuModel(itemListObject, 'locationSelectMultiEditInplaceEdit')}"
+                              id="locationSelectMultiEditInplaceEdit"
+                              toggleEvent="hover"
+                              autoDisplay="false"/>
+
+                <p:commandLink id="LocationMultiEdieDeactivateEditLocaton"
+                               styleClass="fa-link-icon fa-icon fa fa-close"
+                               update="@form:#{entityTypeName}MultiEditItemDataTable">
+                    <f:setPropertyActionListener value="#{null}"
+                                                 target="#{entityController.toggledLocationEditViewUUID}" /> 
+                </p:commandLink>
+
+
+                <p:commandLink id="LocationMultiEditEditButton"
+                               styleClass="fa-link-icon fa-icon fa fa-search"
+                               oncomplete="showUpdateMultiEditLocationDialog()">
+                    <f:setPropertyActionListener value="#{itemListObject}"
+                                                 target="#{entityController.current}" /> 
+                </p:commandLink>
+            </p:panelGrid>
+        </p:outputPanel>
+    </p:column>
+
+    <p:column rendered="#{entityController.updateLocationDetails}"
+              headerText="Location Details">
+        <ui:include src="locatableItemLocationDetailsEditObjectInput.xhtml">
+            <ui:param name="viewName"
+                      value="multiEditInline" /> 
+            <ui:param name="itemObject"
+                      value="#{itemListObject}" /> 
+        </ui:include>        
+    </p:column>               
+
+
+</ui:composition>
+
+

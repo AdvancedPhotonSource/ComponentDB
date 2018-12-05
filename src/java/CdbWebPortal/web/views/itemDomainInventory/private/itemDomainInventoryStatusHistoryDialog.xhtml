@@ -18,10 +18,8 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               dynamic="true">
         
-        <p:outputPanel rendered="#{entityController.currentStatusPropertyValue != null}">            
-            <ui:param name="statusPropertyValue"
-                      value="#{entityController.currentStatusPropertyValue}" />
-            <p:dataTable value="#{statusPropertyValue.propertyValueHistoryList}"
+        <p:outputPanel rendered="#{entityController.currentStatusPropertyValue != null}">
+            <p:dataTable value="#{propertyValueHistoryController.selectedPropertyValueHistoryList}"
                          var="statusHistory" >
                 <p:column headerText="Status">
                     <h:outputText value="#{statusHistory.value}" />

@@ -9,7 +9,6 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.Properties;
-import org.primefaces.context.RequestContext;
 
 /**
  *

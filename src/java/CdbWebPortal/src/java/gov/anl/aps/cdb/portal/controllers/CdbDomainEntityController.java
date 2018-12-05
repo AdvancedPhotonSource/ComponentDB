@@ -26,7 +26,6 @@ import java.util.Objects;
 import javax.ejb.EJB;
 import javax.faces.model.DataModel;
 import org.apache.log4j.Logger;
-import org.primefaces.context.RequestContext;
 import org.primefaces.event.RowEditEvent;
 
 /**
@@ -67,7 +66,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         if (propertyType != null) {
             PropertyValue propertyValue = preparePropertyTypeValueAdd(propertyType);
             setCurrentEditPropertyValue(propertyValue);
-            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+            SessionUtility.executeRemoteCommand(onSuccessCommand);            
         } else {
             SessionUtility.addWarningMessage("No property type selected", "Please select a property type.");
             currentEditPropertyValue = null;

@@ -26,7 +26,6 @@ import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
-import org.primefaces.context.RequestContext;
 
 @Named("sparePartsBean")
 @SessionScoped
@@ -88,7 +87,7 @@ public class SparePartsBean implements Serializable {
         try {
             ItemDomainCatalog item = getCurrentCatalogItemForController(entityController);
             sparePartsConfigurationPropertyValue = prepareSparePartsConfigurationPropertyValue(item);
-            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+            SessionUtility.executeRemoteCommand(onSuccessCommand);            
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
         }

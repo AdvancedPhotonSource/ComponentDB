@@ -46,7 +46,7 @@ public class ImageUtility {
         int origWidth = inImage.getWidth(null);
         int origHeight = inImage.getHeight(null);
             
-        return ( (origWidth > maxDim) && (origHeight > maxDim)); 
+        return ( (origWidth > maxDim) || (origHeight > maxDim)); 
     }
 
     /**

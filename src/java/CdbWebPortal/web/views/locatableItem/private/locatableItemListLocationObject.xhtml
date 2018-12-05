@@ -22,10 +22,7 @@ See LICENSE file.
               sortBy="#{itemListObject.locationString}"
               filterMatchMode="contains"
               filterable="#{filterable}">
-        <ui:param name="locationString"
-                  value="#{locatableItemController.getLocationStringForItem(itemListObject)}" />
-        <h:outputText rendered="#{locationString != ''}" value="#{locationString}" />        
-        <h:outputText rendered="#{locationString == ''}" value="#{alternateLocationString}" />
+        <ui:include src="templateDefaults/locatableItemLocationListColumnObject.xhtml" /> 
     </p:column>
 
     <ui:param name="locationDetails" value="#{locatableItemController.getLocationRelationshipDetails(itemListObject)}" />
@@ -36,7 +33,7 @@ See LICENSE file.
               filterable="#{filterable}"
               sortable="#{sortable}"
               filterMatchMode="contains">
-        <h:outputText value="#{locationDetails}" />
+        <ui:include src="templateDefaults/locatableItemLocationDetailsListColumnObject.xhtml"/>
     </p:column>
 
 </ui:composition>

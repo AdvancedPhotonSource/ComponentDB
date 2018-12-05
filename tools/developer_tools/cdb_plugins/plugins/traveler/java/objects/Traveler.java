@@ -24,7 +24,7 @@ public class Traveler extends BinderTraveler {
     private boolean archived; 
     private LinkedList<String> notes; 
     private LinkedList<String> data; 
-    private String activeForm; 
+    private int activeForm; 
     
     private LinkedList<FormRef> forms; 
     private String html; 
@@ -90,7 +90,7 @@ public class Traveler extends BinderTraveler {
         return data;
     }
 
-    public String getActiveForm() {
+    public int getActiveForm() {
         return activeForm;
     }
 

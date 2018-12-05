@@ -9,7 +9,7 @@ import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.controllers.settings.PropertyValueSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue.PropertyValueMetadata; 
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue.PropertyValueMetadata;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -33,31 +33,31 @@ import org.primefaces.model.StreamedContent;
 
 @Named("propertyValueController")
 @SessionScoped
-public class PropertyValueController extends CdbEntityController<PropertyValue, PropertyValueFacade, PropertyValueSettings> implements Serializable {   
-    
+public class PropertyValueController extends CdbEntityController<PropertyValue, PropertyValueFacade, PropertyValueSettings> implements Serializable {
+
     @EJB
     private PropertyValueFacade propertyValueFacade;
-    
+
     @EJB
-    private PropertyMetadataFacade propertyMetadataFacade; 
-    
-    private PropertyValueMetadata currentPropertyMetadata; 
+    private PropertyMetadataFacade propertyMetadataFacade;
+
+    private PropertyValueMetadata currentPropertyMetadata;
 
     private static final Logger logger = Logger.getLogger(PropertyValueController.class.getName());
 
     public PropertyValueController() {
         super();
     }
-    
+
     public static PropertyValueController getInstance() {
         return (PropertyValueController) SessionUtility.findBean("propertyValueController");
     }
-    
+
     public boolean isItemElementAssignedToProperty(PropertyValue propertyValue) {
         if (propertyValue.getItemElementList() != null) {
-            return propertyValue.getItemElementList().size() > 0; 
+            return propertyValue.getItemElementList().size() > 0;
         }
-        return false; 
+        return false;
     }
 
     @Override
@@ -92,7 +92,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     public List<PropertyValue> getAvailableItems() {
         return super.getAvailableItems();
     }
-    
+
     public PropertyTypeHandlerInterface getPropertyTypeHandler(PropertyValue propertyValue) {
         return PropertyTypeHandlerFactory.getHandler(propertyValue);
     }
@@ -114,15 +114,15 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         propertyValue.setHandlerInfoSet(true);
         return displayType;
     }
-    
+
     public StreamedContent executeFileDownloadActionCommandForPropertyValue(PropertyValue propertyValue) {
         DisplayType propertyValueDisplayType = getPropertyValueDisplayType(propertyValue);
-        if (propertyValueDisplayType == DisplayType.FILE_DOWNLOAD 
+        if (propertyValueDisplayType == DisplayType.FILE_DOWNLOAD
                 || propertyValueDisplayType == DisplayType.GENERATED_HTTP_LINK_FILE_DOWNLOAD) {
             PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
-            return propertyTypeHandler.fileDownloadActionCommand(propertyValue); 
+            return propertyTypeHandler.fileDownloadActionCommand(propertyValue);
         }
-        return null; 
+        return null;
     }
 
     public String getPropertyEditPage(PropertyValue propertyValue) {
@@ -141,12 +141,23 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         }
         return result;
     }
-    
+
     public boolean displayShowMetadataForPropertyValue(PropertyValue propertyValue) {
         if (propertyValue.getPropertyMetadataList() != null) {
-            return propertyValue.getPropertyMetadataList().size() > 0;  
+            return propertyValue.getPropertyMetadataList().size() > 0;
         }
-        return false; 
+        return false;
+    }
+
+    public boolean displayAllowedValueSelection(PropertyValue propertyValue) {
+        if (propertyValue != null) {
+            PropertyType propertyType = propertyValue.getPropertyType();
+            if (propertyType != null) {
+                return propertyType.hasAllowedPropertyValues();
+            }
+        }
+
+        return false;
     }
 
     public boolean displayFreeFormTextValue(PropertyValue propertyValue) {
@@ -160,7 +171,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     public boolean displayImageValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.IMAGE);
     }
-    
+
     public boolean displayGeneratedHttpLinkValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.GENERATED_HTTP_LINK);
     }
@@ -188,13 +199,13 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     public boolean displayInfoActionValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.INFO_ACTION);
     }
-    
+
     public boolean displayGeneratedHTMLDownloadActionValue(PropertyValue propertyValue) {
-        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.GENERATED_HTTP_LINK_FILE_DOWNLOAD); 
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.GENERATED_HTTP_LINK_FILE_DOWNLOAD);
     }
-    
+
     public boolean displayDownloadActionValue(PropertyValue propertyValue) {
-        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.FILE_DOWNLOAD); 
+        return getPropertyValueDisplayType(propertyValue).equals(DisplayType.FILE_DOWNLOAD);
     }
 
     public static String getOriginalImageApplicationPath(PropertyValue propertyValue) {
@@ -246,14 +257,14 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     public void setCurrentPropertyMetadata(PropertyValueMetadata currentPropertyMetadata) {
         this.currentPropertyMetadata = currentPropertyMetadata;
     }
-    
+
     public void removeCurrentPropertyMetadata() {
         PropertyMetadata propertyMetadata = currentPropertyMetadata.getPropertyMetadata();
         if (propertyMetadata.getId() != null) {
             propertyMetadataFacade.remove(currentPropertyMetadata.getPropertyMetadata());
             SessionUtility.addInfoMessage("Removed", "Property metadata has been removed.");
         }
-        
+
         PropertyValue propertyValue = currentPropertyMetadata.getPropertyValue();
         propertyValue.removePropertyMetadataKey(currentPropertyMetadata);
     }
