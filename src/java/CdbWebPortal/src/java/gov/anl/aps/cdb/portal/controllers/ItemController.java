@@ -1785,7 +1785,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         Item item = getCurrent();
         if (item != null) {
             List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
-            return itemElementMemberList != null && !itemElementMemberList.isEmpty();
+            if (itemElementMemberList != null && !itemElementMemberList.isEmpty()) {
+                return true;
+            } else {
+                itemElementMemberList = item.getItemElementMemberList2();
+                return itemElementMemberList != null && !itemElementMemberList.isEmpty();
+            }
         }
         return false;
     }
@@ -1816,11 +1821,18 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         List<Item> itemList = new ArrayList<>();
 
         List<ItemElement> itemElementList = itemEntity.getItemElementMemberList();
+        itemElementList.addAll(itemEntity.getItemElementMemberList2()); 
         // Remove currently being viewed item. 
         if (itemElementList != null) {
             for (ItemElement itemElement : itemElementList) {
-                if (itemList.contains(itemElement.getParentItem()) == false) {
-                    itemList.add(itemElement.getParentItem());
+                Item memberItem = itemElement.getParentItem();
+                
+                if (ItemDomainMachineDesignController.isItemMachineDesign(memberItem)) {
+                    memberItem = itemElement.getContainedItem();
+                }
+                
+                if (itemList.contains(memberItem) == false) {
+                    itemList.add(memberItem);
                 }
             }
         }
