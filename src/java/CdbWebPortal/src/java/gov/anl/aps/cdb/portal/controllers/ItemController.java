@@ -76,8 +76,10 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.apache.log4j.Logger;
+import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
+import org.primefaces.model.Visibility;
 
 public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity, ItemSettingsObject> {
 
@@ -170,6 +172,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected Domain defaultControllerDomain = null;
 
     protected Boolean hasElementReorderChangesForCurrent = false;
+    
+    protected List<String> expandedRowUUIDs = null; 
 
     public ItemController() {
     }
@@ -339,6 +343,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public void processPreRenderList() {
         super.processPreRenderList();
         filteredObjectList = null;
+        
+        expandedRowUUIDs = new ArrayList<>(); 
 
         // Check if itemProject registered. 
         if (itemProjectController == null) {
@@ -2592,6 +2598,21 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             itemElementController = ItemElementController.getInstance();
         }
         return itemElementController;
+    }
+    
+    public void dataTableRowToggleListener(ToggleEvent event) {
+        Item data = (Item) event.getData();
+        
+        if (event.getVisibility() == Visibility.VISIBLE) {
+            expandedRowUUIDs.add(data.getViewUUID()); 
+        } else {
+            expandedRowUUIDs.remove(data.getViewUUID()); 
+        }
+    }
+    
+    public boolean renderRowExpansionContents(Item item) {
+        String viewUUID = item.getViewUUID();        
+        return expandedRowUUIDs.contains(viewUUID); 
     }
 
     @FacesConverter(value = "itemConverter", forClass = Item.class)
