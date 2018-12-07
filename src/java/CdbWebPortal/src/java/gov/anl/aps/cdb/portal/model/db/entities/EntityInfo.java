@@ -10,6 +10,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -60,7 +61,7 @@ public class EntityInfo implements Serializable {
     @Column(name = "obsoleted_on_date_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date obsoletedOnDateTime;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "entityInfo")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "entityInfo", fetch = FetchType.LAZY)
     private ItemElement itemElement;
     @JoinColumn(name = "owner_user_id", referencedColumnName = "id")
     @ManyToOne
@@ -77,7 +78,7 @@ public class EntityInfo implements Serializable {
     @JoinColumn(name = "obsoleted_by_user_id", referencedColumnName = "id")
     @ManyToOne
     private UserInfo obsoletedByUser;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "entityInfo")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "entityInfo", fetch = FetchType.LAZY)
     private ListTbl list;
 
     public EntityInfo() {
