@@ -13,6 +13,7 @@ See LICENSE file.
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
+    <ui:param name="allPropertyTypes" value="#{propertyTypeController.availableItems}" />
 
     <p:selectBooleanCheckbox rendered="#{filterable}" id="#{entityTypeName}AutoLoadProperty" value="#{entitySettingObject.filterByPropertiesAutoLoad}"/>  
     <h:outputLabel rendered="#{filterable}" for="#{entityTypeName}AutoLoadProperty" value="Automatically Load Property Filter Values*" styleClass="dialogDataLabel"/>
@@ -20,7 +21,7 @@ See LICENSE file.
     <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType1" value="#{entitySettingObject.displayPropertyTypeId1}" 
                      styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="None" noSelectionOption="true"/>
-        <f:selectItems var="propertyType1" value="#{propertyTypeController.availableItems}" 
+        <f:selectItems var="propertyType1" value="#{allPropertyTypes}" 
                        itemLabel="#{propertyType1.name}" itemValue="#{propertyType1.id}"/>
     </p:selectOneMenu>
     <h:outputLabel for="#{entityTypeName}DisplayPropertyType1" value="Display Property Type #1" styleClass="dialogDataLabel"/>
@@ -28,7 +29,7 @@ See LICENSE file.
     <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType2" value="#{entitySettingObject.displayPropertyTypeId2}" 
                      styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="None" noSelectionOption="true"/>
-        <f:selectItems var="propertyType2" value="#{propertyTypeController.availableItems}" 
+        <f:selectItems var="propertyType2" value="#{allPropertyTypes}" 
                        itemLabel="#{propertyType2.name}" itemValue="#{propertyType2.id}"/>
     </p:selectOneMenu>
     <h:outputLabel for="#{entityTypeName}DisplayPropertyType2" value="Display Property Type #2" styleClass="dialogDataLabel"/>                
@@ -36,7 +37,7 @@ See LICENSE file.
     <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType3" value="#{entitySettingObject.displayPropertyTypeId3}" 
                      styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="None" noSelectionOption="true"/>
-        <f:selectItems var="propertyType3" value="#{propertyTypeController.availableItems}" 
+        <f:selectItems var="propertyType3" value="#{allPropertyTypes}" 
                        itemLabel="#{propertyType3.name}" itemValue="#{propertyType3.id}"/>
     </p:selectOneMenu>
     <h:outputLabel for="#{entityTypeName}DisplayPropertyType3" value="Display Property Type #3" styleClass="dialogDataLabel"/>   
@@ -44,7 +45,7 @@ See LICENSE file.
     <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType4" value="#{entitySettingObject.displayPropertyTypeId4}" 
                      styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="None" noSelectionOption="true"/>
-        <f:selectItems var="propertyType4" value="#{propertyTypeController.availableItems}" 
+        <f:selectItems var="propertyType4" value="#{allPropertyTypes}" 
                        itemLabel="#{propertyType4.name}" itemValue="#{propertyType4.id}"/>
     </p:selectOneMenu>
     <p:outputLabel for="#{entityTypeName}DisplayPropertyType4" value="Display Property Type #4" styleClass="dialogDataLabel"/>   
@@ -52,7 +53,7 @@ See LICENSE file.
     <p:selectOneMenu id="#{entityTypeName}DisplayPropertyType5" value="#{entitySettingObject.displayPropertyTypeId5}" 
                      styleClass="entityDataSelectOne">
         <f:selectItem itemLabel="None" noSelectionOption="true"/>
-        <f:selectItems var="propertyType5" value="#{propertyTypeController.availableItems}" 
+        <f:selectItems var="propertyType5" value="#{allPropertyTypes}" 
                        itemLabel="#{propertyType5.name}" itemValue="#{propertyType5.id}"/>
     </p:selectOneMenu>
     <h:outputLabel for="#{entityTypeName}DisplayPropertyType5" value="Display Property Type #5" styleClass="dialogDataLabel"/>   
