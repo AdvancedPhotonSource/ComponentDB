@@ -35,26 +35,32 @@ See LICENSE file.
             <ui:param name="loadPropertyListDialogs" value="#{false}" />
         </ui:include>
     </ui:define>
-    
+
     <ui:define name="additonalPluginSections" >
         <ui:include src="../plugins/private/inventoryDetailsViewSections.xhtml"/>
     </ui:define>
 
-    <ui:define name="additionalRightItemPanels">
+    <ui:define name="additionalRightItemPanels">        
         <p:panel header="Catalog Item Properties" 
                  toggleable="true" 
                  styleClass="catalogItemPropertiesPanel"
                  collapsed="#{!entityController.displayDerivedFromPropertyList}">
-            <ui:include src="../domainEntityProperty/private/domainEntityAdditionalPropertyList.xhtml">
-                <ui:param name="additionalEntityController" value="#{itemDomainCatalogController}"/>
-                <ui:param name="entityObject" value="#{domainEntityObject.derivedFromItem}" />
-            </ui:include>
+            <p:outputPanel deferred="true"
+                           deferredMode="load">
+                <ui:include src="../domainEntityProperty/private/domainEntityAdditionalPropertyList.xhtml">
+                    <ui:param name="additionalEntityController" value="#{itemDomainCatalogController}"/>
+                    <ui:param name="entityObject" value="#{domainEntityObject.derivedFromItem}" />
+                </ui:include>
+            </p:outputPanel>
         </p:panel>
-        
+
         <p:panel header="Related MAARC Items"
                  toggleable="true"
                  collapsed="#{entityController.collapsedRelatedMAARCItemsForCurrent}">
-            <ui:include src="private/itemDomainInventoryRelatedMAARCItemList.xhtml"/>                        
+            <p:outputPanel deferred="true"
+                           deferredMode="load">
+                <ui:include src="private/itemDomainInventoryRelatedMAARCItemList.xhtml"/>
+            </p:outputPanel>
         </p:panel>
     </ui:define>
 
