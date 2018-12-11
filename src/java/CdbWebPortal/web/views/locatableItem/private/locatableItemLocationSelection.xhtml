@@ -27,11 +27,8 @@ See LICENSE file.
 
             <p:commandButton id="locationSelectButton#{viewName}" 
                              action="#{itemDomainLocationController.resetListDataModelAndSetSelectionLocatinTreeNodeByItem(itemObject.location)}"
-                             onstart="PF('loadingDialog').show();"
-                             update="#{entityTypeName}LocationItemSelectionDialog#{dialogViewName}"
-                             oncomplete="PF('loadingDialog').hide();
-                             PF('#{entityTypeName}LocationItemSelectionDialog#{dialogViewName}Widget').show()"
                              alt="Select Location"
+                             oncomplete="showLocationItemSelectionDialog()"
                              immediate="true"
                              icon="ui-icon-search">
                 <p:tooltip for="locationSelectButton#{viewName}" value="Search for location."/>

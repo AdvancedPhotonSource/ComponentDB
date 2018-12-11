@@ -43,6 +43,9 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     private TreeNode selectedLocationTreeNode;
 
     private FilterViewItemHierarchySelection filterViewLocationSelection = null;
+    
+    private boolean renderLocationSelectionDialog = false; 
+    private boolean renderLocationInplaceEditTieredMenu = false; 
 
     @EJB
     DomainFacade domainFacade;
@@ -534,6 +537,22 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     @Override
     protected ItemDomainLocationSettings createNewSettingObject() {
         return new ItemDomainLocationSettings(this);
+    }
+
+    public boolean isRenderLocationSelectionDialog() {
+        return renderLocationSelectionDialog;
+    }
+
+    public void setRenderLocationSelectionDialog(boolean renderLocationSelectionDialog) {
+        this.renderLocationSelectionDialog = renderLocationSelectionDialog;
+    }
+
+    public boolean isRenderLocationInplaceEditTieredMenu() {
+        return renderLocationInplaceEditTieredMenu;
+    }
+
+    public void setRenderLocationInplaceEditTieredMenu(boolean renderLocationInplaceEditTieredMenu) {
+        this.renderLocationInplaceEditTieredMenu = renderLocationInplaceEditTieredMenu;
     }
 
 }
