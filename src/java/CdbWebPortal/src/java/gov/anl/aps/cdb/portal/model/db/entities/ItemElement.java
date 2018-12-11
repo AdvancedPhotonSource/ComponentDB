@@ -16,6 +16,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -101,7 +102,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     @ManyToOne(cascade = CascadeType.MERGE)
     private Item containedItem2;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
-    @OneToOne(cascade = CascadeType.ALL, optional = false)
+    @OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
     private EntityInfo entityInfo;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstItemElement")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
