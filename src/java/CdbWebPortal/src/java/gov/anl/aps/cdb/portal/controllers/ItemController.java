@@ -1904,7 +1904,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             PropertyValue propertyValue = getPrimaryImagePropertyValueForItem(getCurrent());
 
             if (propertyValue != null) {
-                imageList.remove(propertyValue);
+                if (imageList.size() > 0) {
+                    imageList.remove(propertyValue);
+                } 
                 imageList.add(0, propertyValue);
             }
         }
@@ -2603,6 +2605,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public void dataTableRowToggleListener(ToggleEvent event) {
         Item data = (Item) event.getData();
         
+        if (expandedRowUUIDs == null) {
+            expandedRowUUIDs = new ArrayList<>(); 
+        }
+        
         if (event.getVisibility() == Visibility.VISIBLE) {
             expandedRowUUIDs.add(data.getViewUUID()); 
         } else {
@@ -2611,8 +2617,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
     
     public boolean renderRowExpansionContents(Item item) {
-        String viewUUID = item.getViewUUID();        
-        return expandedRowUUIDs.contains(viewUUID); 
+        if (expandedRowUUIDs != null) {
+            String viewUUID = item.getViewUUID();        
+            return expandedRowUUIDs.contains(viewUUID); 
+        }
+        return false; 
     }
 
     @FacesConverter(value = "itemConverter", forClass = Item.class)
