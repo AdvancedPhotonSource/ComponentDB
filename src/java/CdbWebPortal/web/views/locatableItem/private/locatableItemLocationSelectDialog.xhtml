@@ -19,7 +19,9 @@ See LICENSE file.
               header="Select Location for inventory item."
               modal="true">
         
-        <ui:include src="locatableItemLocationSelectTreeSelection.xhtml" /> 
+        <p:outputPanel rendered="#{itemDomainLocationController.renderLocationSelectionDialog}">
+            <ui:include src="locatableItemLocationSelectTreeSelection.xhtml" /> 
+        </p:outputPanel>
 
         <f:facet name="footer">
             <p:commandButton value="Done" 
@@ -34,6 +36,17 @@ See LICENSE file.
         </f:facet>
 
     </p:dialog>
+    
+    <p:remoteCommand name="showLocationItemSelectionDialog"
+                     onstart="PF('loadingDialog').show();"
+                     update="#{entityTypeName}LocationItemSelectionDialog#{viewName}"
+                     oncomplete="PF('loadingDialog').hide();
+                     PF('#{entityTypeName}LocationItemSelectionDialog#{viewName}Widget').show()">
+        <f:setPropertyActionListener value="#{true}"
+                                     target="#{itemDomainLocationController.renderLocationSelectionDialog}" /> 
+    </p:remoteCommand>                                 
+                                
+                     
 
 </ui:composition>
 

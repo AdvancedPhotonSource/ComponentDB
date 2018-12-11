@@ -7,8 +7,7 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                template="itemListObjectTemplateBase.xhtml"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                template="itemListObjectTemplateBase.xhtml">
 
     <ui:param name="rendered" value="#{rendered != null ? rendered : true}" />    
     <!-- Specify true whenever columns are fixed for a view; override unneeded columns. -->
@@ -82,7 +81,7 @@ See LICENSE file.
     <ui:define name="thumbnail">
         <ui:include src="../templateDefaults/itemListObjectColumns/itemThumbnailColumn.xhtml" /> 
     </ui:define>
-
+   
     <ui:define name="idColumn">
         <p:column sortBy="#{itemListObject.id}" headerText="Id"
                   filterBy="#{itemListObject.id}" filterMatchMode="contains"

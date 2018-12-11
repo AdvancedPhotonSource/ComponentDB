@@ -36,16 +36,19 @@ See LICENSE file.
 
         <p:inplace id="locationViewOutputEditable"
                    widgetVar="locationViewOutputEditableWidget"
-                   toggleable="false">            
+                   toggleable="false">                               
             <f:facet name="output">
                 <p:outputPanel styleClass="inlineFlexOutputPanel">
                     <p:commandLink id="locationViewOutputEditShowButton"
                                    styleClass="fa-link-icon fa-icon fa fa-pencil"
-                                   onclick="PF('locationViewOutputEditableWidget').show();
-                                           PF('locationDetailsViewOutputEditableWidget').show();"
+                                   oncomplete="PF('locationViewOutputEditableWidget').show();
+                                               PF('locationDetailsViewOutputEditableWidget').show();"
+                                   update="locationViewOutputEditable"
                                    rendered="#{isEntityWriteable}">
                         <p:tooltip for="locationViewOutputEditShowButton"
                                    value="Edit Location" />
+                        <f:setPropertyActionListener value="#{true}"
+                                                     target="#{itemDomainLocationController.renderLocationInplaceEditTieredMenu}"/> 
                     </p:commandLink>
                     <ui:include src="locatableItemLocationRelationshipTree.xhtml">
                         <ui:param name="cdbDomainEntityObject" value="#{itemObject}" />
@@ -53,10 +56,12 @@ See LICENSE file.
                 </p:outputPanel>
             </f:facet>
             <f:facet name="input">
-                <p:tieredMenu model="#{locatableItemController[locataionMenuModelActionName](locataionMenuModelObjectParam, 'locationSelectTieredMenuInplaceEdit')}"
-                              id="locationSelectTieredMenuInplaceEdit"
-                              toggleEvent="hover"
-                              autoDisplay="false"/>
+                <p:outputPanel rendered="#{itemDomainLocationController.renderLocationInplaceEditTieredMenu}">
+                    <p:tieredMenu model="#{locatableItemController[locataionMenuModelActionName](locataionMenuModelObjectParam, 'locationSelectTieredMenuInplaceEdit')}"
+                                  id="locationSelectTieredMenuInplaceEdit"
+                                  toggleEvent="hover"
+                                  autoDisplay="false"/>
+                </p:outputPanel>
             </f:facet>
         </p:inplace>
     </p:column>

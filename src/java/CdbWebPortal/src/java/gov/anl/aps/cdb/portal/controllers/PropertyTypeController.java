@@ -62,6 +62,8 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     private DataModel filterViewDataModel;
     
     private DataModel currentItemPropertyTypeDataModel; 
+    
+    private List<PropertyType> cachedPropertyTypes = null; 
 
     public PropertyTypeController() {
         super();
@@ -85,6 +87,13 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
         propertyType.setIsUserWriteable(false);
         propertyType.setIsDynamic(false);
         return propertyType;
+    } 
+
+    @Override
+    public void resetListDataModel() {
+        super.resetListDataModel(); 
+        
+        cachedPropertyTypes = null; 
     }
 
     @Override
@@ -121,7 +130,10 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
 
     @Override
     public List<PropertyType> getAvailableItems() {
-        return super.getAvailableItems();
+        if (cachedPropertyTypes == null) {
+            cachedPropertyTypes = super.getAvailableItems();
+        }
+        return cachedPropertyTypes; 
     }
 
     public List<PropertyType> getAvailableExternalItems() {
