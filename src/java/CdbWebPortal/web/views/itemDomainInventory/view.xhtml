@@ -45,22 +45,16 @@ See LICENSE file.
                  toggleable="true" 
                  styleClass="catalogItemPropertiesPanel"
                  collapsed="#{!entityController.displayDerivedFromPropertyList}">
-            <p:outputPanel deferred="true"
-                           deferredMode="load">
-                <ui:include src="../domainEntityProperty/private/domainEntityAdditionalPropertyList.xhtml">
-                    <ui:param name="additionalEntityController" value="#{itemDomainCatalogController}"/>
-                    <ui:param name="entityObject" value="#{domainEntityObject.derivedFromItem}" />
-                </ui:include>
-            </p:outputPanel>
+            <ui:include src="../domainEntityProperty/private/domainEntityAdditionalPropertyList.xhtml">
+                <ui:param name="additionalEntityController" value="#{itemDomainCatalogController}"/>
+                <ui:param name="entityObject" value="#{domainEntityObject.derivedFromItem}" />
+            </ui:include>            
         </p:panel>
 
         <p:panel header="Related MAARC Items"
                  toggleable="true"
                  collapsed="#{entityController.collapsedRelatedMAARCItemsForCurrent}">
-            <p:outputPanel deferred="true"
-                           deferredMode="load">
-                <ui:include src="private/itemDomainInventoryRelatedMAARCItemList.xhtml"/>
-            </p:outputPanel>
+            <ui:include src="private/itemDomainInventoryRelatedMAARCItemList.xhtml"/>
         </p:panel>
     </ui:define>
 

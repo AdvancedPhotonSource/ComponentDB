@@ -55,10 +55,7 @@ See LICENSE file.
                          rendered="#{entityController.entityDisplayItemGallery}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayImages}">
-                    <p:outputPanel deferred="true"
-                                   deferredMode="load">
-                        <ui:insert name="itemGallery" />
-                    </p:outputPanel>
+                    <ui:insert name="itemGallery" />
                 </p:panel>
 
                 <p:panel header="Log Entries" 
@@ -66,10 +63,7 @@ See LICENSE file.
                          rendered="#{entityController.entityDisplayItemLogs}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayLogList}">
-                    <p:outputPanel deferred="true"
-                                   deferredMode="load">
-                        <ui:insert name="itemLogs" />
-                    </p:outputPanel>
+                    <ui:insert name="itemLogs" />
                 </p:panel>
 
                 <p:panel header="Connectors"
@@ -77,10 +71,7 @@ See LICENSE file.
                          toggleable="true"
                          rendered="#{entityController.entityDisplayItemConnectors and resources.EnabledConnectorAndConnectionsFunctionality}"
                          collapsed="#{!entityController.displayItemConnectorList}">
-                    <p:outputPanel deferred="true"
-                                   deferredMode="load">
-                        <ui:insert name="itemConnectors" />
-                    </p:outputPanel>
+                    <ui:insert name="itemConnectors" />
                 </p:panel>
 
 
@@ -93,10 +84,7 @@ See LICENSE file.
                          rendered="#{entityController.entityDisplayItemProperties}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayPropertyList}">
-                    <p:outputPanel deferred="true"
-                                   deferredMode="load">
-                        <ui:insert name="itemProperties"/>
-                    </p:outputPanel>
+                    <ui:insert name="itemProperties"/>
                 </p:panel>
                 <ui:insert name="itemPropertiesSupport" />
 
@@ -107,10 +95,7 @@ See LICENSE file.
                          rendered="#{entityController.renderItemElementList}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayItemElementList}">
-                    <p:outputPanel deferred="true"
-                                   deferredMode="load">
-                        <ui:insert name="itemElements" />
-                    </p:outputPanel>
+                    <ui:insert name="itemElements" />                    
                 </p:panel>
 
                 <p:panel header="Sources" 
@@ -118,10 +103,7 @@ See LICENSE file.
                          rendered="#{entityController.entityDisplayItemSources}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayItemSourceList}">
-                    <p:outputPanel deferred="true"
-                                   deferredMode="load">
-                        <ui:insert name="itemSources" />
-                    </p:outputPanel>
+                    <ui:insert name="itemSources" />
                 </p:panel>
 
                 <p:panel header="#{entityController.itemsDerivedFromItemTitle}" 
@@ -129,30 +111,21 @@ See LICENSE file.
                          rendered="#{entityController.renderDerivedFromItemList}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayDerivedFromItemList}">
-                    <p:outputPanel deferred="true"
-                                   deferredMode="load">
-                        <ui:insert name="derivedFromItems" />
-                    </p:outputPanel>
+                    <ui:insert name="derivedFromItems" />
                 </p:panel>           
 
                 <p:panel header="Item Membership" 
                          rendered="#{entityController.entityDisplayItemMemberships}"
                          toggleable="true" 
                          collapsed="#{!entityController.displayItemMembership}">
-                    <p:outputPanel deferred="true"
-                                   deferredMode="load">
-                        <ui:insert name="itemMemberships" />
-                    </p:outputPanel>
+                    <ui:insert name="itemMemberships" />
                 </p:panel>
 
                 <p:panel header="Created From Template"
                          rendered="#{entityController.displayCreatedFromCurrentItemList}"
                          toggleable="true"
                          collapsed="#{entityController.displayContentsOfCreatedFromTemplateItem}">
-                    <p:outputPanel deferred="true"
-                                   deferredMode="load">
-                        <ui:include src="../itemListCreatedFromTemplateDataTable.xhtml" /> 
-                    </p:outputPanel>
+                    <ui:include src="../itemListCreatedFromTemplateDataTable.xhtml" /> 
                 </p:panel>
 
                 <ui:insert name="additionalRightItemPanels"/>
