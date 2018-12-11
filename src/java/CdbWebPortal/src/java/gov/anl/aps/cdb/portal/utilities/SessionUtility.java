@@ -24,6 +24,7 @@ public class SessionUtility {
      */
     public static final String MESSAGES_KEY = "messages";
     public static final String USER_KEY = "user";
+    public static final String LAST_USERNAME_KEY = "lastUsername";
     public static final String VIEW_STACK_KEY = "viewStack";
     public static final String LAST_SESSION_ERROR_KEY = "lastSessionError";
     public static final String ROLE_KEY = "role";
@@ -42,10 +43,10 @@ public class SessionUtility {
     public static void addInfoMessage(String summary, String detail) {
         addMessage(MESSAGES_KEY, new FacesMessage(FacesMessage.SEVERITY_INFO, summary, detail));
     }
-    
-    private static void addMessage(String clientId, FacesMessage message) {        
+
+    private static void addMessage(String clientId, FacesMessage message) {
         FacesContext context = FacesContext.getCurrentInstance();
-        context.getExternalContext().getFlash().setKeepMessages(true);        
+        context.getExternalContext().getFlash().setKeepMessages(true);
         context.addMessage(clientId, message);
         PrimeFaces.current().ajax().update(clientId);
     }
@@ -57,7 +58,7 @@ public class SessionUtility {
 
     public static void setUser(Object user) {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-        sessionMap.remove(USER_KEY); 
+        sessionMap.remove(USER_KEY);
         sessionMap.put(USER_KEY, user);
     }
 
@@ -84,17 +85,17 @@ public class SessionUtility {
         }
         return null;
     }
-    
+
     public static String getRedirectToCurrentView() {
-        String currentView = getCurrentViewId(); 
+        String currentView = getCurrentViewId();
         if (currentView.contains("?")) {
             currentView += "&";
         } else {
             currentView += "?";
         }
         currentView += "faces-redirect=true";
-        
-        return currentView; 
+
+        return currentView;
     }
 
     public static String getCurrentViewId() {
@@ -169,16 +170,26 @@ public class SessionUtility {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         return sessionMap.get(ROLE_KEY);
     }
-    
-    public static void executeRemoteCommand(String commandName) {
-        PrimeFaces.current().executeScript(commandName);        
+
+    public static void setLastUsername(String lastUsername) {
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        sessionMap.put(LAST_USERNAME_KEY, (Object) lastUsername);
     }
-    
+
+    public static String getLastUsername() {
+        Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
+        return (String) sessionMap.get(LAST_USERNAME_KEY);
+    }
+
+    public static void executeRemoteCommand(String commandName) {
+        PrimeFaces.current().executeScript(commandName);
+    }
+
     /**
      * Finds a named bean for local use within the current bean.
-     * 
-     * @param beanName Name of the named bean needed for further execution. 
-     * @return Named bean that has been requested. 
+     *
+     * @param beanName Name of the named bean needed for further execution.
+     * @return Named bean that has been requested.
      */
     @SuppressWarnings("unchecked")
     public static Object findBean(String beanName) {

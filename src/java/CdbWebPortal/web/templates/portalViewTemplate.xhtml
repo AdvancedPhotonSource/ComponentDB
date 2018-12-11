@@ -47,6 +47,18 @@ See LICENSE file.
                             <p:outputLabel value="Role: #{loginController.displayRole()}"/>
                             <br/>
 
+                            <h:form>
+                                <p:outputLabel id="portalResetSession"
+                                               styleClass="clckableLabel"
+                                               value="Reset Session"
+                                               onclick="resetPortalSession()">
+                                    <p:tooltip for="portalResetSession" 
+                                               value="Reset current session while maitaining current login" />
+                                </p:outputLabel>        
+                                <p:remoteCommand name="resetPortalSession"
+                                                 action="#{loginController.resetSession()}"/> 
+                            </h:form>
+
                             <ui:include src="../views/settings/private/settingsViewAsLabelDialog.xhtml" />
                             <ui:include src="../views/itemProject/private/itemProjectSelectedLabelDialog.xhtml" />
 
@@ -129,11 +141,11 @@ See LICENSE file.
                                          update="viewOpenPageIdHiddenText currentTimeHashHiddenText"
                                          process="@this"
                                          oncomplete="completeVerifyViewOpenPage()"/>                 
-                        
+
                         <p:growl id="messages"
                                  showDetail="true"
                                  life="7000"/>
-                        
+
                         <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
                                        onidle="displaySessionTimeout()">
                             <p:remoteCommand name="displaySessionTimeout"
