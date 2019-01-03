@@ -56,8 +56,8 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
 		#print self.machineDesign._findXPathForMachineDesignItem(['S1', 'Some new placeholder', '6435'])
 
 		#print self.machineDesign._findXPathForMachineDesignItem(['APS: Typical SR Mezzanine Double-Sector', 'S03'])
-		self.machineDesign.inputHierarchyFromSampleFile()
-		self.machineDesign.inputHierarchyFromSampleFile(csvFile='data/Rack-2018-11-06 - apsu.csv', project='APS-U')
+		#self.machineDesign.inputHierarchyFromSampleFile()
+		self.machineDesign.inputHierarchyFromSampleFile(csvFile='SR_Mezz_Racks (1).csv', project='APS-U')
 
 		#self.machineDesign.addMachineDesign()
 		#self.machineDesign.addChildToMachineDesign()
@@ -68,3 +68,6 @@ class CdbPortalFunctionalTestSuite(unittest.TestCase):
 
 		self.portal.logout()
 
+
+if __name__ == '__main__':
+	unittest.main()
