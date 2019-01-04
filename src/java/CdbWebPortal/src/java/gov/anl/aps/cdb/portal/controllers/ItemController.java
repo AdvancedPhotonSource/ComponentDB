@@ -1833,10 +1833,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             for (ItemElement itemElement : itemElementList) {
                 Item memberItem = itemElement.getParentItem();
                 
-                if (ItemDomainMachineDesignController.isItemMachineDesign(memberItem)) {
-                    memberItem = itemElement.getContainedItem();
+                if (!ItemDomainMachineDesignController.isItemMachineDesign(itemEntity)) {
+                    if (ItemDomainMachineDesignController.isItemMachineDesign(memberItem)) {
+                        memberItem = itemElement.getContainedItem();
+                    }
                 }
-                
+               
                 if (itemList.contains(memberItem) == false) {
                     itemList.add(memberItem);
                 }
