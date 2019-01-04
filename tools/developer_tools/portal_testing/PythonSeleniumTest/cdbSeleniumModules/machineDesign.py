@@ -82,7 +82,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 			raise Exception
 
 
-	def _findXPathForMachineDesignItem(self, hierarchy):
+	def _findXPathForMachineDesignItem(self, hierarchy, reset=False):
 		"""
 		Expands the hierarchy and returns the desired item at the end
 
@@ -97,9 +97,35 @@ class MachineDesign(CdbSeleniumModuleBase):
 		nameSpanIdxOffset = 3
 		togglerSpanIdxOffset = 1
 
-		self._clickOnIdWithStaleProtection('itemMachineDesignListForm:itemMachineDesignResetFiltersButton')
-		#TODO figure out a way to see when page is loaded
-		time.sleep(2)
+		if not reset:
+			# collapse the tree nodes
+			redoCollapseCheck = True
+			while redoCollapseCheck:
+				redoCollapseCheck = False
+				previous = None
+
+				tbody = self._findById(MachineDesign.TBODY_ID)
+				rows = tbody.find_elements_by_xpath('./tr')
+				for row in reversed(rows):
+					dataCells = row.find_elements_by_xpath('./td')
+					nameCell = dataCells[MachineDesign.MACHINE_DESIGN_ROW_XPATH_NAME_IDX - 1]
+					spans = nameCell.find_elements_by_xpath('./span')
+					rowExpander = spans[-3]
+
+					rowExpanderClass = rowExpander.get_attribute("class")
+					rowExpanderStyle = rowExpander.get_attribute("style")
+
+					if rowExpanderClass.__contains__('ui-icon-triangle-1-s') and previous is not None and rowExpanderStyle == '':
+						redoCollapseCheck = True
+						rowExpander.click()
+						redoCollapseCheck = True
+						break
+
+					previous = row
+		else:
+			self._clickOnIdWithStaleProtection('itemMachineDesignListForm:itemMachineDesignResetFiltersButton')
+			#TODO figure out a way to see when page is loaded
+			time.sleep(2)
 
 		rowStart = 0
 		rowEnd = None
@@ -187,11 +213,16 @@ class MachineDesign(CdbSeleniumModuleBase):
 		self._contextClickXPath(parentListItemXpath, '//*[@id="itemMachineDesignListForm:machineDesignDualViewMachineDesignMemberContextMenu"]/ul/li[2]/a')
 
 		catalogNamefilter = self._waitForVisibleXpath('//*[@id="itemMachineDesignListForm:itemMachineDesignItemSelectDataTable:itemMachineDesignListObjectNameColumn:filter"]')
-		catalogNamefilter.clear()
-		catalogNamefilter.send_keys('@!!!#$#%^#@$%^@#$%%@#$&^#$%R%^#@$%@#$%#$%@#$%@@#$@#$!@%$#@$#@$!@#$%')
-		catalogNamefilter.clear()
-		time.sleep(0.5)
-		catalogNamefilter.send_keys(catalogName)
+
+		currentFilterText = catalogNamefilter.get_attribute('value')
+
+		if currentFilterText != catalogName:
+			catalogNamefilter.clear()
+			catalogNamefilter.send_keys('@!!!#$#%^#@$%^@#$%%@#$&^#$%R%^#@$%@#$%#$%@#$%@@#$@#$!@%$#@$#@$!@#$%')
+			catalogNamefilter.clear()
+			time.sleep(0.5)
+			catalogNamefilter.send_keys(catalogName)
+			time.sleep(0.5)
 
 		tBody = self._waitForId('itemMachineDesignListForm:itemMachineDesignItemSelectDataTable_data')
 		attempts = 0
@@ -203,6 +234,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 				break;
 
 			time.sleep(0.5)
+			attempts += 1
 
 		if found:
 			self._clickOnXpath('//*[@id="itemMachineDesignListForm:itemMachineDesignItemSelectDataTable_data"]/tr')
@@ -212,7 +244,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 		time.sleep(1)
 
 		saveButtonId = 'itemMachineDesignListForm:assignCatalogToMachineDesignSave'
-		self._clickOnId(saveButtonId)
+		self._waitForIdAndClick(saveButtonId)
 		self._waitForInvisibleById(saveButtonId)
 
 	@addStaleProtection
