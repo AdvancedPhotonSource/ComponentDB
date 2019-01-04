@@ -1260,6 +1260,10 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         super.prepareCreateSingleItemElementSimpleDialog();
         resetItemElementEditVariables();
         displayCreateItemElementContent = true;
+        
+        int elementSize = current.getItemElementDisplayList().size();
+        float sortOrder = elementSize;
+        currentEditItemElement.setSortOrder(sortOrder);
     }
 
     public void verifyMoveExistingMachineDesignSelected() {
