@@ -6,6 +6,9 @@ cdb.portal.adminGroupList=CDB_ADMIN
 # '%s' string will be replaced by the actual username
 cdb.portal.ldapUrl=CDB_LDAP_AUTH_SERVER_URL
 cdb.portal.ldapDnString=CDB_LDAP_AUTH_DN_FORMAT
+cdb.portal.ldapLookupDn=CDB_LDAP_SERVICE_DN
+cdb.portal.ldapLookupBindDnPassword=CDB_LDAP_SERVICE_PASS
+cdb.portal.ldapLookupDnUsernameFilter=CDB_LDAP_LOOKUP_FILTER
 
 # Storage areas
 cdb.portal.storageDirectory=CDB_DATA_DIR
