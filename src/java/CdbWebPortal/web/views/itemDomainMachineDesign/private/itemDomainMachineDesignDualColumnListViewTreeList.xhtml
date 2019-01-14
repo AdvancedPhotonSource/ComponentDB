@@ -25,6 +25,9 @@ See LICENSE file.
                 oncomplete="PF('loadingDialog').hide();
                 showLastContextMenu()"
                 update="@form:machineDesignDualViewContextMenuPermissions" />
+        
+        <!--Saves the collapse status for tree nodes. Seems its a bug in primefaces that this is needed.-->
+        <p:ajax event="collapse" /> 
 
         <ui:include src="itemDomainMachineDesignListObject.xhtml">
             <ui:param name="hideOptionalColumns"

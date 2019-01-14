@@ -18,9 +18,13 @@ from cdbSeleniumModules.cdbSeleniumModuleDecorators import addStaleProtection
 class MachineDesign(CdbSeleniumModuleBase):
 
 	TBODY_ID = 'itemMachineDesignListForm:itemMachineDesignListDataTable_data'
+	MACHINE_DESIGN_ROW_XPATH_FORMULA = '//*[@id="itemMachineDesignListForm:itemMachineDesignListDataTable_node%s"]/td[%s]/span[%s]'
+	MACHINE_DESIGN_ROW_XPATH_NAME_IDX = 1
 
 	CSV_NAME_COLUMN_HEADER = 'Machine Design Item Name'
 	CSV_DESCRIPTION_COLUMN_HEADER = 'Machine Design Item Description'
+	CSV_ASSIGNED_CATALOG = 'Assigned Catalog'
+	CSV_ASSIGNED_CATALOG_BLANK = 'placeholder'
 
 	def navigateToMachineDesign(self):
 		self._clickOnId('machineDesignMenubarButton')
@@ -53,7 +57,32 @@ class MachineDesign(CdbSeleniumModuleBase):
 		self._clickOnId('itemMachineDesignListForm:backToListFromDetails')
 		self._waitForUrlContains('/list')
 
-	def _findXPathForMachineDesignItem(self, hierarchy):
+	def _findXpathOfSelectedItem(self, expectedName = None):
+		tbody = self._findById(MachineDesign.TBODY_ID)
+		resultingId = None
+
+		for row in tbody.find_elements_by_xpath('./tr'):
+			if row.get_attribute('aria-selected') == 'true':
+				if expectedName is not None:
+					dataCells = row.find_elements_by_xpath('./td')
+					nameCell = dataCells[MachineDesign.MACHINE_DESIGN_ROW_XPATH_NAME_IDX - 1]
+					spans = nameCell.find_elements_by_xpath('./span')
+					name = spans[-1].text
+					if name == expectedName:
+						resultingId = row.get_attribute('id')
+						break;
+				else:
+					resultingId = row.get_attribute('id')
+					break;
+
+		if resultingId is not None:
+			resultingXpath = '//*[@id="%s"]' % resultingId
+			return resultingXpath
+		else:
+			raise Exception
+
+
+	def _findXPathForMachineDesignItem(self, hierarchy, reset=False):
 		"""
 		Expands the hierarchy and returns the desired item at the end
 
@@ -62,15 +91,41 @@ class MachineDesign(CdbSeleniumModuleBase):
 		"""
 
 
-		rowXPathFormula = '//*[@id="itemMachineDesignListForm:itemMachineDesignListDataTable_node%s"]/td[%s]/span[%s]'
+		rowXPathFormula = MachineDesign.MACHINE_DESIGN_ROW_XPATH_FORMULA
 
-		nameTdIdx = 1
+		nameTdIdx = MachineDesign.MACHINE_DESIGN_ROW_XPATH_NAME_IDX
 		nameSpanIdxOffset = 3
 		togglerSpanIdxOffset = 1
 
-		self._clickOnIdWithStaleProtection('itemMachineDesignListForm:itemMachineDesignResetFiltersButton')
-		#TODO figure out a way to see when page is loaded
-		time.sleep(2)
+		if not reset:
+			# collapse the tree nodes
+			redoCollapseCheck = True
+			while redoCollapseCheck:
+				redoCollapseCheck = False
+				previous = None
+
+				tbody = self._findById(MachineDesign.TBODY_ID)
+				rows = tbody.find_elements_by_xpath('./tr')
+				for row in reversed(rows):
+					dataCells = row.find_elements_by_xpath('./td')
+					nameCell = dataCells[MachineDesign.MACHINE_DESIGN_ROW_XPATH_NAME_IDX - 1]
+					spans = nameCell.find_elements_by_xpath('./span')
+					rowExpander = spans[-3]
+
+					rowExpanderClass = rowExpander.get_attribute("class")
+					rowExpanderStyle = rowExpander.get_attribute("style")
+
+					if rowExpanderClass.__contains__('ui-icon-triangle-1-s') and previous is not None and rowExpanderStyle == '':
+						redoCollapseCheck = True
+						rowExpander.click()
+						redoCollapseCheck = True
+						break
+
+					previous = row
+		else:
+			self._clickOnIdWithStaleProtection('itemMachineDesignListForm:itemMachineDesignResetFiltersButton')
+			#TODO figure out a way to see when page is loaded
+			time.sleep(2)
 
 		rowStart = 0
 		rowEnd = None
@@ -86,7 +141,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 			if rowEnd is None:
 				rowEnd = self._getRowCountOfTbody()
 
- 			for j in range(rowStart, rowEnd):
+			for j in range(rowStart, rowEnd):
 				hierarchyPart = hierarchyPartFormula % (j - rowStart)
 				xpath = rowXPathFormula % (hierarchyPart, nameTdIdx, spanIdx)
 
@@ -118,10 +173,10 @@ class MachineDesign(CdbSeleniumModuleBase):
 		tBody = self._waitForId(MachineDesign.TBODY_ID)
 		return len(tBody.find_elements_by_xpath('./tr'))
 
-	def addChildToMachineDesign(self, parentListItemXpath, name, description):
+	def _contextClickXPath(self, xpath, menuItemXpath):
 		action = ActionChains(self.driver)
 
-		mdItem = self._findByXpath(parentListItemXpath)
+		mdItem = self._findByXpath(xpath)
 
 		action.move_to_element(mdItem)
 
@@ -129,10 +184,15 @@ class MachineDesign(CdbSeleniumModuleBase):
 		action.perform()
 
 		time.sleep(0.5)
-		addButtonXpath = '//*[@id="itemMachineDesignListForm:machineDesignDualViewMachineDesignContextMenu"]/ul/li[1]/a'
+
+		addButtonXpath = menuItemXpath
 
 		addItemButton = self._waitUntilEnabledByXpath(addButtonXpath)
 		self._clickUsingJavascript(addItemButton)
+
+
+	def addChildToMachineDesign(self, parentListItemXpath, name, description):
+		self._contextClickXPath(parentListItemXpath, '//*[@id="itemMachineDesignListForm:machineDesignDualViewMachineDesignContextMenu"]/ul/li[1]/a')
 
 		self.__clickOnPlaceholderNewMDOption()
 
@@ -148,6 +208,44 @@ class MachineDesign(CdbSeleniumModuleBase):
 		addButton.click()
 
 		self._waitForInvisibleByXpath(addBtnXpath)
+
+	def assignCatalogToMachineDesign(self, parentListItemXpath, catalogName):
+		self._contextClickXPath(parentListItemXpath, '//*[@id="itemMachineDesignListForm:machineDesignDualViewMachineDesignMemberContextMenu"]/ul/li[2]/a')
+
+		catalogNamefilter = self._waitForVisibleXpath('//*[@id="itemMachineDesignListForm:itemMachineDesignItemSelectDataTable:itemMachineDesignListObjectNameColumn:filter"]')
+
+		currentFilterText = catalogNamefilter.get_attribute('value')
+
+		if currentFilterText != catalogName:
+			catalogNamefilter.clear()
+			catalogNamefilter.send_keys('@!!!#$#%^#@$%^@#$%%@#$&^#$%R%^#@$%@#$%#$%@#$%@@#$@#$!@%$#@$#@$!@#$%')
+			catalogNamefilter.clear()
+			time.sleep(0.5)
+			catalogNamefilter.send_keys(catalogName)
+			time.sleep(0.5)
+
+		tBody = self._waitForId('itemMachineDesignListForm:itemMachineDesignItemSelectDataTable_data')
+		attempts = 0
+		found = False
+		while attempts < 6:
+			resultCount = len(tBody.find_elements_by_xpath('./tr'))
+			if resultCount == 1:
+				found = True;
+				break;
+
+			time.sleep(0.5)
+			attempts += 1
+
+		if found:
+			self._clickOnXpath('//*[@id="itemMachineDesignListForm:itemMachineDesignItemSelectDataTable_data"]/tr')
+		else:
+			raise Exception('Couldn\'t find catalog item %s' % catalogName)
+
+		time.sleep(1)
+
+		saveButtonId = 'itemMachineDesignListForm:assignCatalogToMachineDesignSave'
+		self._waitForIdAndClick(saveButtonId)
+		self._waitForInvisibleById(saveButtonId)
 
 	@addStaleProtection
 	def __clickOnPlaceholderNewMDOption(self):
@@ -167,6 +265,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 			lineCount = 0
 
 			descriptionIdx = None
+			assignedCatalogIdx = None
 
 			currentHierarchy = []
 
@@ -188,6 +287,8 @@ class MachineDesign(CdbSeleniumModuleBase):
 							ctr -= 1
 						elif header == MachineDesign.CSV_DESCRIPTION_COLUMN_HEADER:
 							descriptionIdx = ctr
+						elif header == MachineDesign.CSV_ASSIGNED_CATALOG:
+							assignedCatalogIdx = ctr
 						ctr += 1
 
 				elif lineCount > 1:
@@ -222,6 +323,15 @@ class MachineDesign(CdbSeleniumModuleBase):
 
 
 								self.addChildToMachineDesign(lastParentXpath, currentHierarchy[-1], description)
+								if assignedCatalogIdx:
+									assignedCatalogName = row[assignedCatalogIdx]
+									if assignedCatalogName != MachineDesign.CSV_ASSIGNED_CATALOG_BLANK:
+										try:
+											itemXpath = self._findXpathOfSelectedItem(currentHierarchy[-1])
+										except:
+											itemXpath = self._findXPathForMachineDesignItem(currentHierarchy)
+
+										self.assignCatalogToMachineDesign(itemXpath, assignedCatalogName)
 							break
 				lineCount += 1
 

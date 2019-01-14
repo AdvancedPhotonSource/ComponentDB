@@ -43,6 +43,7 @@ public class LoginController implements Serializable {
     private String password = null;
     private boolean loggedInAsAdmin = false;
     private boolean loggedInAsUser = false;
+    private boolean checkedSession = false; 
     private UserInfo user = null;
     private Integer sessionTimeoutInMiliseconds = null;
 
@@ -77,6 +78,16 @@ public class LoginController implements Serializable {
     }
 
     public boolean isLoggedIn() {
+        if (!checkedSession) {
+            checkedSession = true; 
+            String lastUsername = SessionUtility.getLastUsername();
+            if (lastUsername != null) {
+                username = lastUsername; 
+                user = userFacade.findByUsername(username);
+                loadAuthenticatedUser();
+            }
+            
+        }
         return (loggedInAsAdmin || loggedInAsUser);
     }
 
@@ -140,12 +151,24 @@ public class LoginController implements Serializable {
         }
                 
         if (validCredentials) {
-            if (settingController == null) {
+            loadAuthenticatedUser();
+            return getLandingPage();
+        } else {
+            SessionUtility.addErrorMessage("Invalid Credentials", "Username/password combination could not be verified.");                        
+            LogUtility.addSystemLog(LOGIN_WARNING_LOG_LEVEL, "Authentication Failed: " + username);            
+            return (username = password = null);
+        }
+
+    }
+    
+    private void loadAuthenticatedUser() {
+         if (settingController == null) {
                 settingController = (SettingController) SessionUtility.findBean(SETTING_CONTROLLER_NAME);
             }
             settingController.loadSessionUser(user);
 
             SessionUtility.setUser(user);
+            boolean isAdminUser = isAdmin(username);
             if (isAdminUser) {
                 loggedInAsAdmin = true;
                 SessionUtility.setRole(CdbRole.ADMIN);
@@ -157,13 +180,6 @@ public class LoginController implements Serializable {
                 SessionUtility.addInfoMessage("Successful Login", "User " + username + " is logged in.");
             }            
             LogUtility.addSystemLog(LOGIN_INFO_LOG_LEVEL, "Authentication Succeeded: " + username);
-            return getLandingPage();
-        } else {
-            SessionUtility.addErrorMessage("Invalid Credentials", "Username/password combination could not be verified.");                        
-            LogUtility.addSystemLog(LOGIN_WARNING_LOG_LEVEL, "Authentication Failed: " + username);            
-            return (username = password = null);
-        }
-
     }
 
     public String getLandingPage() {
@@ -257,6 +273,21 @@ public class LoginController implements Serializable {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.invalidateSession();
         resetLoginInfo();
+        return "/index?faces-redirect=true";
+    }
+    
+    public String resetSession() {
+        String currentUsername = null; 
+        if (isLoggedIn()) {
+             currentUsername = user.getUsername(); 
+        }
+        
+        SessionUtility.clearSession();        
+        
+        if (currentUsername != null) {
+            SessionUtility.setLastUsername(currentUsername);
+        }
+        
         return "/index?faces-redirect=true";
     }
 
