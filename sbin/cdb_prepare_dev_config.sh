@@ -31,7 +31,12 @@ CDB_WEB_SERVICE_CONFIG_FILE=${CDB_ETC_DIR}/${CDB_DB_NAME}.conf
 CDB_WEB_SERVICE_LOG_FILE=${CDB_LOG_DIR}/${CDB_DB_NAME}.log
 CDB_DB_PASSWORD_FILE=$CDB_INSTALL_DIR/etc/${CDB_DB_NAME}.db.passwd
 read -p "Please enter a url for the LDAP server: " CDB_LDAP_AUTH_SERVER_URL
-read -p "Please enter the dn string for the LDAP server (%s is replaced with username): " CDB_LDAP_AUTH_DN_FORMAT
+read -p "Please enter the dn string for the LDAP server (%s is replaced with username when lookup not needed): " CDB_LDAP_AUTH_DN_FORMAT
+read -p "Please enter the lookup service dn: " CDB_LDAP_SERVICE_DN
+read -p "Please enter the lookup service password: " CDB_LDAP_SERVICE_PASS
+read -p "Please enter the user lookup filter. (%s is replaced with username): " CDB_LDAP_LOOKUP_FILTER
+
+CDB_LDAP_LOOKUP_FILTER=`echo ${CDB_LDAP_LOOKUP_FILTER/&/\\\&}`
 
 echo "Preparing development configuration"
 mkdir -p $CDB_ETC_DIR
@@ -49,6 +54,9 @@ configFile=$portalSrcDir/src/java/cdb.portal.properties
 cmd="cat $configFile.template \
     | sed 's?CDB_LDAP_AUTH_SERVER_URL?$CDB_LDAP_AUTH_SERVER_URL?g' \
     | sed 's?CDB_LDAP_AUTH_DN_FORMAT?$CDB_LDAP_AUTH_DN_FORMAT?g' \
+    | sed 's?CDB_LDAP_SERVICE_DN?$CDB_LDAP_SERVICE_DN?g' \
+    | sed 's?CDB_LDAP_SERVICE_PASS?$CDB_LDAP_SERVICE_PASS?g' \
+    | sed 's?CDB_LDAP_LOOKUP_FILTER?$CDB_LDAP_LOOKUP_FILTER?g' \
     | sed 's?CDB_DATA_DIR?$CDB_DATA_DIR?g' \
     > $configFile"
 eval $cmd || exit 1
