@@ -108,9 +108,16 @@ cmd="cat $configFile | sed 's?cdb.webService.url=.*?cdb.webService.url=https://$
 eval $cmd
 cmd="cat $configFile | sed 's?cdb.permanentContextRoot.url=.*?cdb.permanentContextRoot.url=${CDB_PERM_CONTEXT_ROOT_URL}?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
+
+CDB_LDAP_LOOKUP_FILTER=`echo ${CDB_LDAP_LOOKUP_FILTER/&/\\\&}`
+
 cmd="cat $configFile \
      | sed 's?CDB_LDAP_AUTH_SERVER_URL?$CDB_LDAP_AUTH_SERVER_URL?g' \
-     | sed 's?CDB_LDAP_AUTH_DN_FORMAT?$CDB_LDAP_AUTH_DN_FORMAT?g' > $configFile.2 && mv $configFile.2 $configFile"
+     | sed 's?CDB_LDAP_AUTH_DN_FORMAT?$CDB_LDAP_AUTH_DN_FORMAT?g' \
+     | sed 's?CDB_LDAP_SERVICE_DN?$CDB_LDAP_SERVICE_DN?g' \
+     | sed 's?CDB_LDAP_SERVICE_PASS?$CDB_LDAP_SERVICE_PASS?g' \
+     | sed 's?CDB_LDAP_LOOKUP_FILTER?$CDB_LDAP_LOOKUP_FILTER?g' \
+     > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 
 configFile=WEB-INF/classes/resources.properties

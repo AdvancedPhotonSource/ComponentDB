@@ -42,8 +42,6 @@ else
     mkdir -p $CDB_ETC_DIR
 fi
 
-
-
 # Get a DB name based on configuration file.
 CDB_DB_NAME=${CDB_DB_NAME:=$1}
 CDB_DB_NAME=${CDB_DB_NAME:=cdb}
@@ -76,8 +74,21 @@ read -p "Portal Title [$CDB_PORTAL_TITLE]: " userPortalTitle
 read -p "Portal Title Color [$CDB_CSS_PORTAL_TITLE_COLOR]: " userPortalTitleColor
 read -p "Portal Permanent URL Context Root [$CDB_PERM_CONTEXT_ROOT_URL]: " permanentContextRootUrl
 read -p "Service Port [$CDB_WEB_SERVICE_PORT]: " userServicePort
+
+read -p "LDAP with user lookup? [y/N]: " ldapLookup
+
+ldapLookup=`echo $ldapLookup | tr '[:upper:]' '[:lower:]'`
+
 read -p "Auth LDAP server [$CDB_LDAP_AUTH_SERVER_URL]: " userLdapServerUrl
-read -p "Auth LDAP dn format (use %s for username placeholder) [$CDB_LDAP_AUTH_DN_FORMAT]: " userLdapServerDnFormat
+
+if [ -z $ldapLookup ] || [ $ldapLookup != 'y' ]; then
+	read -p "Auth LDAP dn format (use %s for username placeholder) [$CDB_LDAP_AUTH_DN_FORMAT]: " userLdapServerDnFormat
+else
+	read -p "LDAP dn root for lookup [$CDB_LDAP_AUTH_DN_FORMAT]: " userLdapServerDnFormat
+	read -p "LDAP user lookup filter (use %s for username placeholder) [$CDB_LDAP_LOOKUP_FILTER]: " userLdapLookupFilter
+	read -p "Auth LDAP service account dn [$CDB_LDAP_SERVICE_DN]: " ldapServiceDn
+	echo "Auth LDAP service account password: " && read -s ldapServicePass
+fi
 
 if [ ! -z $userDbName ]; then
 	CDB_DB_NAME=$userDbName
@@ -127,7 +138,19 @@ fi
 if [ ! -z $userLdapServerDnFormat ]; then
 	CDB_LDAP_AUTH_DN_FORMAT=$userLdapServerDnFormat
 fi
-
+if [ $ldapLookup == 'y' ]; then
+	if [ ! -z $userLdapLookupFilter ]; then
+		CDB_LDAP_LOOKUP_FILTER="'$userLdapLookupFilter'"
+	elif [ ! -z $CDB_LDAP_LOOKUP_FILTER ]; then
+		CDB_LDAP_LOOKUP_FILTER="'$CDB_LDAP_LOOKUP_FILTER'"
+	fi
+	if [ ! -z $ldapServiceDn ]; then
+		CDB_LDAP_SERVICE_DN=$ldapServiceDn
+	fi
+else
+	CDB_LDAP_LOOKUP_FILTER=''
+	CDB_LDAP_SERVICE_DN=''
+fi 
 configContents="CDB_DB_NAME=$CDB_DB_NAME"
 configContents="$configContents\nCDB_DB_USER=$CDB_DB_USER"
 configContents="$configContents\nCDB_DB_HOST=$CDB_DB_HOST"
@@ -144,6 +167,9 @@ configContents="$configContents\nCDB_PERM_CONTEXT_ROOT_URL=$CDB_PERM_CONTEXT_ROO
 configContents="$configContents\nCDB_WEB_SERVICE_PORT=$CDB_WEB_SERVICE_PORT"
 configContents="$configContents\nCDB_LDAP_AUTH_SERVER_URL=$CDB_LDAP_AUTH_SERVER_URL"
 configContents="$configContents\nCDB_LDAP_AUTH_DN_FORMAT=$CDB_LDAP_AUTH_DN_FORMAT"
+configContents="$configContents\nCDB_LDAP_LOOKUP_FILTER=$CDB_LDAP_LOOKUP_FILTER"
+configContents="$configContents\nCDB_LDAP_SERVICE_DN=$CDB_LDAP_SERVICE_DN"
+configContents="$configContents\nCDB_LDAP_SERVICE_PASS=$ldapServicePass"
 
 
 echo '**************** RESULTING CONFIGURATION ****************'
