@@ -32,9 +32,9 @@ CDB_WEB_SERVICE_LOG_FILE=${CDB_LOG_DIR}/${CDB_DB_NAME}.log
 CDB_DB_PASSWORD_FILE=$CDB_INSTALL_DIR/etc/${CDB_DB_NAME}.db.passwd
 read -p "Please enter a url for the LDAP server: " CDB_LDAP_AUTH_SERVER_URL
 read -p "Please enter the dn string for the LDAP server (%s is replaced with username when lookup not needed): " CDB_LDAP_AUTH_DN_FORMAT
-read -p "Please enter the lookup service dn: " CDB_LDAP_SERVICE_DN
-read -p "Please enter the lookup service password: " CDB_LDAP_SERVICE_PASS
-read -p "Please enter the user lookup filter. (%s is replaced with username): " CDB_LDAP_LOOKUP_FILTER
+read -p "Please enter the lookup service dn (don't specify if no user lookup required): " CDB_LDAP_SERVICE_DN
+read -p "Please enter the lookup service password (don't specify if no user lookup required): " CDB_LDAP_SERVICE_PASS
+read -p "Please enter the user lookup filter. (%s is replaced with username; don't specify if no user lookup required): " CDB_LDAP_LOOKUP_FILTER
 
 CDB_LDAP_LOOKUP_FILTER=`echo ${CDB_LDAP_LOOKUP_FILTER/&/\\\&}`
 
@@ -83,12 +83,21 @@ else
     ADMIN_EMAIL_ADDRESS='None'
 fi
 
+# uncomment principal authenticator
+if [ ! -z $CDB_LDAP_SERVICE_DN ]; then
+    uncommentAuthenticator="sed 's?#principalAuthenticator3?principalAuthenticator3?g'"
+else
+    uncommentAuthenticator="sed 's?#principalAuthenticator2?principalAuthenticator2?g'"
+fi
+
 CDB_SENDER_EMAIL_ADDRESS='cdb@cdb'
 EMAIL_SUBJECT_START="[CDB_DEV] - `hostname` : "
 
+CDB_LDAP_LOOKUP_FILTER=`echo ${CDB_LDAP_LOOKUP_FILTER/&/\\\&}`
 
 echo "Generating web service config file"
 cmd="cat $CDB_ROOT_DIR/etc/cdb-web-service.conf.template \
+    | $uncommentAuthenticator \
     | sed 's?sslCaCertFile=.*??g' \
     | sed 's?sslCertFile=.*??g' \
     | sed 's?sslKeyFile=.*??g' \
@@ -100,8 +109,11 @@ cmd="cat $CDB_ROOT_DIR/etc/cdb-web-service.conf.template \
     | sed 's?CDB_SENDER_EMAIL_ADDRESS?$CDB_SENDER_EMAIL_ADDRESS?g' \
     | sed 's?ADMIN_EMAIL_ADDRESS?$ADMIN_EMAIL_ADDRESS?g' \
     | sed 's?EMAIL_SUBJECT_START?$EMAIL_SUBJECT_START?g' \
-    | sed 's?CDB_LDAP_AUTH_DN_FORMAT?$CDB_LDAP_AUTH_DN_FORMAT?g'\
-    | sed 's?CDB_LDAP_AUTH_SERVER_URL?$CDB_LDAP_AUTH_SERVER_URL?g'\
+    | sed 's?CDB_LDAP_AUTH_DN_FORMAT?$CDB_LDAP_AUTH_DN_FORMAT?g' \
+    | sed 's?CDB_LDAP_AUTH_SERVER_URL?$CDB_LDAP_AUTH_SERVER_URL?g' \
+    | sed 's?CDB_LDAP_SERVICE_DN?$CDB_LDAP_SERVICE_DN?g' \
+    | sed 's?CDB_LDAP_SERVICE_PASS?$CDB_LDAP_SERVICE_PASS?g' \
+    | sed 's?CDB_LDAP_LOOKUP_FILTER?$CDB_LDAP_LOOKUP_FILTER?g' \
     | sed 's?CDB_DATA_DIR?$CDB_DATA_DIR?g'\
     > $CDB_WEB_SERVICE_CONFIG_FILE"
 eval $cmd || exit 1
