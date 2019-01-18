@@ -126,7 +126,17 @@ if [ ! -f $CDB_WEB_SERVICE_CONFIG_FILE ]; then
         ADMIN_EMAIL_ADDRESS="$generatedAdminEmail"
     fi
 
+    CDB_LDAP_LOOKUP_FILTER=`echo ${CDB_LDAP_LOOKUP_FILTER/&/\\\&}`
+
+    # uncomment principal authenticator
+    if [ ! -z $CDB_LDAP_SERVICE_DN ]; then
+        uncommentAuthenticator="sed 's?#principalAuthenticator3?principalAuthenticator3?g'"
+    else
+        uncommentAuthenticator="sed 's?#principalAuthenticator2?principalAuthenticator2?g'"
+    fi
+
     cmd="cat $CDB_ROOT_DIR/etc/cdb-web-service.conf.template \
+        | $uncommentAuthenticator \
         | sed 's?servicePort=.*?servicePort=$CDB_WEB_SERVICE_PORT?g' \
         | sed 's?sslCaCertFile=.*?sslCaCertFile=$CDB_CA_CERT_FILE?g' \
         | sed 's?sslCertFile=.*?sslCertFile=$CDB_WEB_SERVICE_CERT_FILE?g' \
@@ -140,7 +150,10 @@ if [ ! -f $CDB_WEB_SERVICE_CONFIG_FILE ]; then
         | sed 's?ADMIN_EMAIL_ADDRESS?$ADMIN_EMAIL_ADDRESS?g' \
         | sed 's?EMAIL_SUBJECT_START?$EMAIL_SUBJECT_START?g' \
         | sed 's?CDB_LDAP_AUTH_SERVER_URL?$CDB_LDAP_AUTH_SERVER_URL?g' \
-        | sed 's?CDB_LDAP_AUTH_DN_FORMAT=?$CDB_LDAP_AUTH_DN_FORMAT?g' \
+        | sed 's?CDB_LDAP_AUTH_DN_FORMAT?$CDB_LDAP_AUTH_DN_FORMAT?g' \
+        | sed 's?CDB_LDAP_SERVICE_DN?$CDB_LDAP_SERVICE_DN?g' \
+        | sed 's?CDB_LDAP_SERVICE_PASS?$CDB_LDAP_SERVICE_PASS?g' \
+        | sed 's?CDB_LDAP_LOOKUP_FILTER?$CDB_LDAP_LOOKUP_FILTER?g' \
         | sed 's?CDB_DATA_DIR?$CDB_DATA_DIR?g'\
         | sed 's?CDB_ROOT_DIR?$CDB_ROOT_DIR?g'\
         > $CDB_WEB_SERVICE_CONFIG_FILE"

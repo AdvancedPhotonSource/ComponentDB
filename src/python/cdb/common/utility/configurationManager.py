@@ -319,7 +319,8 @@ class ConfigurationManager(UserDict.UserDict):
     @classmethod
     def getModuleClassConstructorTuple(cls, value):
         """ Extract (module,class,constructor) tuple from the given value. """
-        itemList = value.split('(')
+        paramStartIdx = value.index('(')
+        itemList = [value[0:paramStartIdx], value[paramStartIdx:]]
         if not itemList:
             return ()
         itemList2 = itemList[0].split('.')
@@ -328,7 +329,7 @@ class ConfigurationManager(UserDict.UserDict):
         moduleName = className[0].lower() + className[1:]
         if len(moduleNameList): 
             moduleName = '.'.join(moduleNameList)
-        constructor = '%s(%s' % (className, ''.join(itemList[1:]))
+        constructor = '%s%s' % (className, ''.join(itemList[1:]))
         return (moduleName,className,constructor)
 
     def getHost(self):
