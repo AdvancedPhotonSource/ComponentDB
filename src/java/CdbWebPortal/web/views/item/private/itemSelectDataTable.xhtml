@@ -14,9 +14,12 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">        
     
     <ui:param name="selectionController" value="#{selectionController != null ? selectionController : entityController.selectionController}" />
-    <ui:param name="selectDataModel" value="#{selectDataModel != null ? selectDataModel : selectionController.selectDataModel}" />
-    <ui:param name="selectionValue" value="#{selectionValue != null ? selectionValue : selectionController.selectedObject}" />
-
+    
+    <!-- Specify overrideSelectionDataModel=True and selectDataModel ui:param name="selectionValue" -->
+    <ui:param name="overrideSelectionDataModel" value="#{overrideSelectionDataModel != null ? overrideSelectionDataModel : false}" /> 
+    <ui:param name="_selectDataModel" value="#{overrideSelectionDataModel ? selectDataModel : selectionController.selectDataModel}" />
+            
+    <ui:param name="selectionValue" value="#{selectionValue != null ? selectionValue : selectionController.selectedObject}" />    
     <ui:param name="updateTarget" value="#{updateTarget != null ? updateTarget : '@form'}" />
 
     <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
@@ -28,11 +31,9 @@ See LICENSE file.
     
     <ui:param name="selectionWithResetEnabled" value="#{selectionWithResetEnabled != null ? selectionWithResetEnabled : false}" />
     <!-- selectionValueWithReset ui:param pointing to a method must be defined when above parameter is true -->         
-    
-    <!-- filtered value for data table --> 
-    <ui:param name="useFilteredValue" value="#{useFilteredValue != null ? useFilteredValue : true }" />
-    <ui:param name="filteredValue" value="#{filteredValue != null ? filteredValue : selectionController.filteredObjectList}" />    
-    <ui:param name="fiteredValueToUse" value="#{useFilteredValue ? filteredValue : null}" />
+            
+    <!-- filteredValue must be specified if a custom selection data model is specified. --> 
+    <ui:param name="_filteredValue" value="#{overrideSelectionDataModel ? filteredValue : selectionController.filteredObjectList}" />    
     
     <ui:param name="itemSelectionMadeWithResetRemoteCommand" value="#{entityTypeName}ItemSelectionMadeWithReset#{viewName}" />
     <ui:param name="itemSelectionMadeRemoteCommand" value="#{entityTypeName}ItemSelectionMade#{viewName}" />
@@ -44,12 +45,12 @@ See LICENSE file.
 
     <p:dataTable id="#{entityTypeName}ItemSelectDataTable#{viewName}" 
                  var="itemListObject" 
-                 value="#{selectDataModel}" 
+                 value="#{_selectDataModel}" 
                  rowKey="#{itemListObject.id}"
                  selection="#{selectionValue}"
                  resizableColumns="true"              
                  liveResize="true"                 
-                 filteredValue="#{fiteredValueToUse}"
+                 filteredValue="#{_filteredValue}"
                  selectionMode="single"
                  paginator="true"
                  paginatorAlwaysVisible="true"

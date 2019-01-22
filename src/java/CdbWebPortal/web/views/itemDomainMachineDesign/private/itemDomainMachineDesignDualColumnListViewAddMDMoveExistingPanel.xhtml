@@ -22,6 +22,7 @@ See LICENSE file.
             <ui:param name="selectionValue" value="#{newItemElement.containedItem}" />
             <ui:param name="selectionTarget" value="#{newItemElement.containedItem}" />
             <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+            <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
             <ui:param name="selectDataModel" value="#{itemDomainMachineDesignController.topLevelMachineDesignSelectionList}" />
             <ui:param name="additionalSelectionMadeRemoteCommands" value="moveExistingMachineDesignIntoCurrentSelectionMade();" />
         </ui:include>
