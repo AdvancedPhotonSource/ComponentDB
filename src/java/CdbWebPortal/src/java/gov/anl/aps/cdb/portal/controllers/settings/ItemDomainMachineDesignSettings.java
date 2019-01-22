@@ -15,6 +15,7 @@ import java.util.Map;
  */
 public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMachineDesignController> {
 
+    private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainMachineDesign.List.Display.AlternateName";
     private static final String DisplayDesignDescriptionSettingTypeKey = "ItemDomainMachineDesign.List.Display.Description";
     private static final String DisplayLocationSettingTypeKey = "ItemDomainMachineDesign.List.Display.Location";
     private static final String DisplayLocationDetailsSettingTypeKey = "ItemDomainMachineDesign.List.Display.LocationDetails";
@@ -27,6 +28,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     private static final String DisplayLastModifiedByUserSettingTypeKey = "ItemDomainMachineDesign.List.Display.LastModifiedByUser";
     private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ItemDomainMachineDesign.List.Display.LastModifiedOnDateTime";
 
+    protected Boolean displayAlternateName = null; 
     protected Boolean displayItemElementsSimpleView = false;
 
     protected Boolean displayLocation = null;
@@ -43,6 +45,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     @Override
     protected void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
+        displayAlternateName = Boolean.parseBoolean(settingTypeMap.get(DisplayAlternateNameSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDesignDescriptionSettingTypeKey).getDefaultValue());
         displayItemProject = Boolean.parseBoolean(settingTypeMap.get(DisplayProjectSettingTypeKey).getDefaultValue());
         displayLocation = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue());
@@ -61,6 +64,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     @Override
     protected void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
         super.updateSettingsFromSessionSettingEntity(settingEntity);
+        displayAlternateName = settingEntity.getSettingValueAsBoolean(DisplayAlternateNameSettingTypeKey, displayAlternateName); 
         displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDesignDescriptionSettingTypeKey, displayDescription);
         displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayProjectSettingTypeKey, displayItemProject);
         displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
@@ -78,6 +82,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     @Override
     protected void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
         super.saveSettingsForSessionSettingEntity(settingEntity);
+        settingEntity.setSettingValue(DisplayAlternateNameSettingTypeKey, displayAlternateName);
         settingEntity.setSettingValue(DisplayDesignDescriptionSettingTypeKey, displayDescription);
         settingEntity.setSettingValue(DisplayProjectSettingTypeKey, displayItemProject);
         settingEntity.setSettingValue(DisplayLocationSettingTypeKey, displayLocation);
@@ -100,8 +105,17 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     @Override
     public Boolean getDisplayLocationDetails() {
         return displayLocationDetails;
+    } 
+
+    @Override
+    public Boolean getDisplayItemIdentifier1() {
+        return displayAlternateName;
+    } 
+
+    @Override
+    public void setDisplayItemIdentifier1(Boolean displayItemIdentifier1) {
+        this.displayAlternateName = displayItemIdentifier1; 
     }
-    
 
     public void setDisplayLocation(Boolean displayLocation) {
         this.displayLocation = displayLocation;

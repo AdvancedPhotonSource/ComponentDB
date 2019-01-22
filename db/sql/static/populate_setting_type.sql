@@ -311,6 +311,7 @@ description.','true'),
 (21007,'ItemDomainMachineDesign.List.Display.LastModifiedOnDateTime','Display last modified on date/time.','false'),
 (21008,'ItemDomainMachineDesign.List.Display.Location','Display column for location in machine design list.','true'),
 (21009,'ItemDomainMachineDesign.List.Display.LocationDetails','Display column for location details in machine design list.','false'),
-(21010,'ItemDomainMachineDesign.List.Display.ItemProject','Display column for project in machine design list.','false');
+(21010,'ItemDomainMachineDesign.List.Display.ItemProject','Display column for project in machine design list.','false'),
+(21011,'ItemDomainMachineDesign.List.Display.AlternateName','Display column for alternate name in machine design list.','false');
 /*!40000 ALTER TABLE `setting_type` ENABLE KEYS */;
 UNLOCK TABLES;
