@@ -22,9 +22,9 @@ See LICENSE file.
                 <ui:param name="viewName" value="Template" />
                 <ui:param name="selectionValue" value="#{entityController.templateToCreateNewItem}" />
                 <ui:param name="selectionTarget" value="#{entityController.templateToCreateNewItem}" />
+                <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
                 <ui:param name="selectDataModel" value="#{entityController.templateItemsListDataModel}" />
-                <ui:param name="entityController" value="#{entityController}" />
-                <ui:param name="useFilteredValue" value="#{false}" /> 
+                <ui:param name="entityController" value="#{entityController}" />                
                 <ui:param name="additionalSelectionMadeRemoteCommands" value="templateSelectionMade();" />
             </ui:include>
         </p:outputPanel>

@@ -103,7 +103,8 @@ See LICENSE file.
 
     <ui:include src="../../../item/private/itemSelectDialog.xhtml">
         <ui:param name="entityTypeName" value="#{itemElementController.entityTypeName}" />
-        <ui:param name="selectionTarget" value="#{itemElementController.validContainedItemForCurrent}" />        
+        <ui:param name="selectionTarget" value="#{itemElementController.validContainedItemForCurrent}" />   
+        <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
         <ui:param name="selectDataModel" value="#{currentItemController.allowedChildItemSelectDataModel}" />
         <ui:param name="selectionController" value="#{currentItemController}" />     
         <ui:param name="selectionWithResetEnabled" value="#{true}" />

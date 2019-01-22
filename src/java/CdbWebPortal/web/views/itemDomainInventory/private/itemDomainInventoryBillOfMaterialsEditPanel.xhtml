@@ -38,12 +38,12 @@ See LICENSE file.
                                        and billOfMaterialItem.partItem}">
                 <p:panel>
                     <ui:include src="../../item/private/itemSelectDataTable.xhtml">
+                        <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
                         <ui:param name="selectDataModel" value="#{billOfMaterialItem.existingInventoryItemSelectDataModel}" />
                         <ui:param name="selectionValue" value="#{billOfMaterialItem.inventoryItem}" />
                         <ui:param name="selectionTarget" value="#{billOfMaterialItem.inventoryItem}" />
                         <ui:param name="selectionController" value="#{itemDomainInventoryController}" />
                         <ui:param name="updateTarget" value="#{fullUpateTarget}" />
-                        <ui:param name="useFilteredValue" value="#{false}" />
                     </ui:include>
                 </p:panel>
             </p:outputPanel>

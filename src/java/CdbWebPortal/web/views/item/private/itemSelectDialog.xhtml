@@ -24,6 +24,7 @@ See LICENSE file.
 
     <ui:param name="renderDomainSelection" value="#{selectionController == null or selectDataModel == null}" />
     <ui:param name="selectionController" value="#{selectionController != null ? selectionController : entityController.selectionController}" />
+    <!-- Specify overrideSelectionDataModel=True and selectDataModel ui:param name="selectionValue" -->
     <ui:param name="selectDataModel" value="#{selectDataModel != null ? selectDataModel : selectionController.selectDataModel}" />
     <ui:param name="selectOneItemSelectionDomainList" 
               value="#{selectOneItemSelectionDomainList != null ? selectOneItemSelectionDomainValue : entityController.itemElementItemSelectionDomainList}" />
