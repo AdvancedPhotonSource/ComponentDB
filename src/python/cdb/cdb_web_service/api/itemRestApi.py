@@ -28,6 +28,19 @@ class ItemRestApi(CdbRestApi):
 
         url = '%s/items/%s/addLogEntry' % (self.getContextRoot(), qrId)
 
+        return self.__finalizeAddLogEntryToItem(url, logEntry, attachment)
+
+    def addLogEntryToItemWithItemId(self, itemId, logEntry, attachment=None):
+        if itemId is not None:
+            itemId = str(itemId)
+        if itemId is None or not len(itemId):
+            raise InvalidRequest("Item Id must be provided")
+
+        url = '%s/items/%s/addLogEntryByItemId' % (self.getContextRoot(), itemId)
+
+        return self.__finalizeAddLogEntryToItem(url, logEntry, attachment)
+
+    def __finalizeAddLogEntryToItem(self, url, logEntry, attachment=None):
         if logEntry is None or not len(logEntry):
             raise InvalidRequest('Log entry must be provided.')
 
@@ -41,6 +54,7 @@ class ItemRestApi(CdbRestApi):
             responseDict = self.sendSessionRequest(url=url, method='POST')
 
         return Log(responseDict)
+
 
     def addImagePropertyToItemWithId(self, itemId, imageFile):
 

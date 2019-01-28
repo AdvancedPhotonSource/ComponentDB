@@ -80,6 +80,9 @@ class ItemControllerImpl(CdbObjectManager):
         item = self.itemDbApi.getItemByQrId(qrId)
 
         itemId = item.data['id']
+        return self.addLogEntryForItemWithItemId(itemId, logEntryText, enteredByUserId, attachmentName, cherryPyData)
+
+    def addLogEntryForItemWithItemId(self, itemId, logEntryText, enteredByUserId, attachmentName, cherryPyData):
         selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
         selfElementId = selfElement.data['id']
 
@@ -90,12 +93,14 @@ class ItemControllerImpl(CdbObjectManager):
         # Check if log has an attachment that needs to be stored
         if attachmentName is not None and len(attachmentName) > 0:
             logId = logEntry.data['id']
-            logAttachment = self.logControllerImpl.addLogAttachment(logId, attachmentName, None, enteredByUserId, cherryPyData)
-            del(logAttachment.data['log'])
+            logAttachment = self.logControllerImpl.addLogAttachment(logId, attachmentName, None, enteredByUserId,
+                                                                    cherryPyData)
+            del (logAttachment.data['log'])
             logAttachmentJsonRep = logAttachment.getFullJsonRep()
             logEntry.data['logAttachmentAdded'] = logAttachmentJsonRep
 
         return logEntry
+
 
     def addPropertyImageToItem(self, itemId, imageFileName, enteredByUserId, cherryPyData):
         selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
