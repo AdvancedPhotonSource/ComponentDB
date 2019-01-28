@@ -25,6 +25,7 @@ public class ItemElementUtility {
     private final static String ITEM_ELEMENT_NODE_TYPE = "itemElement";
 
     private final static String SELECTION_MENU_MODEL_ONCLICK_TEMPLATE = "#{%s.%s(itemGenericViewController.findById(%s))}";
+    private final static String CLEAR_ITEM_ONCLICK_TEMPLATE = "#{%s.%s(%s)}"; 
     private final static String ACTIVE_LOCATION_MENU_ITEM_STYLE = "activeLocationMenuItem";
 
     public static TreeNode createItemElementRoot(Item parentItem) throws CdbException {
@@ -124,6 +125,7 @@ public class ItemElementUtility {
             String selectionController,
             String selectionMethod,
             List<Item> activeItemList,
+            String nullOption,
             String updateTarget,
             String processTarget) {
         DefaultMenuModel generatedMenuModel = new DefaultMenuModel();
@@ -131,6 +133,16 @@ public class ItemElementUtility {
         if (firstLevelItemList != null) {
             DefaultSubMenu defaultSubMenu = new DefaultSubMenu(baseNodeName);
             generatedMenuModel.addElement(defaultSubMenu);
+            
+            // Add null item 
+            DefaultMenuItem nullMenuItem = new DefaultMenuItem();
+            nullMenuItem.setValue(nullOption);
+            String onClick = String.format(CLEAR_ITEM_ONCLICK_TEMPLATE, selectionController, selectionMethod, "null");
+            nullMenuItem.setCommand(onClick); 
+            nullMenuItem.setUpdate(updateTarget);
+            nullMenuItem.setProcess(processTarget);            
+            defaultSubMenu.addElement(nullMenuItem);
+            
             generateItemSelectionMenuModel(defaultSubMenu, firstLevelItemList, selectionController, selectionMethod, activeItemList, updateTarget, processTarget);
         } else {
             DefaultMenuItem menuItem = new DefaultMenuItem(baseNodeName);
