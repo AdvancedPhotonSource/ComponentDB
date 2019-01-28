@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
@@ -334,6 +333,7 @@ public class LocatableItemController implements Serializable {
                         controllerNamed,
                         "updateLocationForLastRequestedMenuModel",
                         activeItemList,
+                        "Clear Location",
                         updateTarget,
                         updateTarget);
                 item.setLocationMenuModel(itemLocationMenuModel);
@@ -343,15 +343,17 @@ public class LocatableItemController implements Serializable {
         return null;
     }
 
-    public void updateLocationForLastRequestedMenuModel(Item item) {
-        if (item instanceof ItemDomainLocation) {
-            ItemDomainLocation locationItem = (ItemDomainLocation) item;
+    public void updateLocationForLastRequestedMenuModel(Item item) {                    
             if (lastInventoryItemRequestedLocationMenuModel != null) {
-                updateLocationForItem(lastInventoryItemRequestedLocationMenuModel, locationItem, null);
+                if (item instanceof ItemDomainLocation) {
+                    ItemDomainLocation locationItem = (ItemDomainLocation) item;
+                    updateLocationForItem(lastInventoryItemRequestedLocationMenuModel, locationItem, null);                    
+                } else if (item == null) {
+                    updateLocationForItem(lastInventoryItemRequestedLocationMenuModel, null, null);
+                }                
             } else {
                 SessionUtility.addErrorMessage("Error", "No current item.");
-            }
-        }
+            }        
     }
 
     public void updateLocationForItem(LocatableItem item, ItemDomainLocation locationItem, String onSuccess) {
