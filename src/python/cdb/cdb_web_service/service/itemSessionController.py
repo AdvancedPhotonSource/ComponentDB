@@ -44,6 +44,28 @@ class ItemSessionController(CdbSessionController):
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
     @CdbSessionController.execute
+    def addLogToItemByItemId(self, itemId, logEntry, attachmentName=None, **kwargs):
+        if not itemId:
+            raise InvalidRequest("Invalid itemId provided")
+        if not logEntry:
+            raise InvalidRequest("Log entry must be provided")
+
+        sessionUser = self.getSessionUser()
+        enteredByUserId = sessionUser.get('id')
+        attachmentName = Encoder.decode(attachmentName)
+        cherrypyData = cherrypy.request.body
+        logEntry = Encoder.decode(logEntry)
+
+        logAdded = self.itemControllerImpl.addLogEntryForItemWithItemId(itemId, logEntry, enteredByUserId, attachmentName,
+                                                                      cherrypyData)
+
+        response = logAdded.getFullJsonRep()
+        self.logger.debug('Returning log info for item with item id %s: %s' % (itemId, response))
+        return response
+
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
     def addPropertyImageToItem(self, itemId, imageFileName, dataEncodedBase64=False):
         if not itemId:
             raise InvalidRequest("Invalid item id provided")
