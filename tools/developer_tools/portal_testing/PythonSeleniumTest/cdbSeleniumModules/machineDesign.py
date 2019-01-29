@@ -8,7 +8,7 @@ See LICENSE file.
 import time
 import csv
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 
@@ -103,25 +103,31 @@ class MachineDesign(CdbSeleniumModuleBase):
 			while redoCollapseCheck:
 				redoCollapseCheck = False
 				previous = None
+				try:
+					tbody = self._findById(MachineDesign.TBODY_ID)
+					rows = tbody.find_elements_by_xpath('./tr')
+					for row in reversed(rows):
+						dataCells = row.find_elements_by_xpath('./td')
+						nameCell = dataCells[MachineDesign.MACHINE_DESIGN_ROW_XPATH_NAME_IDX - 1]
+						spans = nameCell.find_elements_by_xpath('./span')
+						rowExpander = spans[-3]
 
-				tbody = self._findById(MachineDesign.TBODY_ID)
-				rows = tbody.find_elements_by_xpath('./tr')
-				for row in reversed(rows):
-					dataCells = row.find_elements_by_xpath('./td')
-					nameCell = dataCells[MachineDesign.MACHINE_DESIGN_ROW_XPATH_NAME_IDX - 1]
-					spans = nameCell.find_elements_by_xpath('./span')
-					rowExpander = spans[-3]
+						rowExpanderClass = rowExpander.get_attribute("class")
+						rowExpanderStyle = rowExpander.get_attribute("style")
 
-					rowExpanderClass = rowExpander.get_attribute("class")
-					rowExpanderStyle = rowExpander.get_attribute("style")
 
-					if rowExpanderClass.__contains__('ui-icon-triangle-1-s') and previous is not None and rowExpanderStyle == '':
-						redoCollapseCheck = True
-						rowExpander.click()
-						redoCollapseCheck = True
-						break
+						if rowExpanderClass.__contains__('ui-icon-triangle-1-s') and previous is not None and rowExpanderStyle == '':
+							redoCollapseCheck = True
+							self._waitForInvisibleById('loadingDialog_modal')
+							rowExpander.click()
+							redoCollapseCheck = True
+							break
 
-					previous = row
+						previous = row
+				except StaleElementReferenceException:
+					print 'Stale Protection - Retrying'
+					redoCollapseCheck = True
+					break
 		else:
 			self._clickOnIdWithStaleProtection('itemMachineDesignListForm:itemMachineDesignResetFiltersButton')
 			#TODO figure out a way to see when page is loaded
@@ -329,6 +335,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 										try:
 											itemXpath = self._findXpathOfSelectedItem(currentHierarchy[-1])
 										except:
+											time.sleep(4)
 											itemXpath = self._findXPathForMachineDesignItem(currentHierarchy)
 
 										self.assignCatalogToMachineDesign(itemXpath, assignedCatalogName)
