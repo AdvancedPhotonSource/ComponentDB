@@ -27,14 +27,17 @@ See LICENSE file.
         </c:forEach>
 
         <h:outputText value="Machine Design Item Name"/>
-        <h:outputText value="#{itemDomainMachineDesignController.machineDesignName}"/>    
+        <h:outputText value="#{itemDomainMachineDesignController.machineDesignName}"/> 
+
+        <h:outputText value="Machine Design Alternate Name" />        
+        <h:inputText value="#{entityController.machineDesignAlternateName}" /> 
     </p:panelGrid>
-    
+
     <p:remoteCommand name="templateTitlePlaceholderNameChanged"
                      update="itemDomainMachineDesignCreateFromTEmplatePanelGrid#{viewName}
-                             #{templateTitleChangeUpdateTarget}" 
+                     #{templateTitleChangeUpdateTarget}" 
                      action="#{itemDomainMachineDesignController.titleGenerationValueChange()}"/> 
-    
+
 
 </ui:composition>
 

@@ -23,17 +23,22 @@ class MachineDesign(CdbSeleniumModuleBase):
 
 	CSV_NAME_COLUMN_HEADER = 'Machine Design Item Name'
 	CSV_DESCRIPTION_COLUMN_HEADER = 'Machine Design Item Description'
+	CSV_ALTERNATE_NAME_COLUMN_HEADER = 'Alternate Name'
 	CSV_ASSIGNED_CATALOG = 'Assigned Catalog'
 	CSV_ASSIGNED_CATALOG_BLANK = 'placeholder'
 
 	def navigateToMachineDesign(self):
 		self._clickOnId('machineDesignMenubarButton')
 
-	def addMachineDesign(self, name, description, project='APS-OPS'):
+	def addMachineDesign(self, name, description, project='APS-OPS', alternateName=None):
 		self._waitForIdAndClick('itemMachineDesignListForm:itemMachineDesignAddButton')
 
 		nameInput = self._waitForId('addComponentForm:nameInputText')
 		nameInput.send_keys(name)
+
+		if alternateName is not None:
+			alternateNameInput = self._waitForId("addComponentForm:itemIdentifier1IT")
+			alternateNameInput.send_keys(alternateName)
 
 		self._typeInId('addComponentForm:descriptionITA', description)
 
@@ -197,7 +202,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 		self._clickUsingJavascript(addItemButton)
 
 
-	def addChildToMachineDesign(self, parentListItemXpath, name, description):
+	def addChildToMachineDesign(self, parentListItemXpath, name, description, alternateName=None):
 		self._contextClickXPath(parentListItemXpath, '//*[@id="itemMachineDesignListForm:machineDesignDualViewMachineDesignContextMenu"]/ul/li[1]/a')
 
 		self.__clickOnPlaceholderNewMDOption()
@@ -206,11 +211,16 @@ class MachineDesign(CdbSeleniumModuleBase):
 		placeholderName.send_keys(name)
 		placeholderName.send_keys(Keys.TAB)
 
+		addBtnXpath = '//*[@id="itemMachineDesignListForm:machineDesignDualListViewAddButtonPlaceholder"]'
+		addButton = self._waitUntilEnabledByXpath(addBtnXpath)
+
+		if alternateName is not None:
+			alternateNameInput = self._waitForVisibleId('itemMachineDesignListForm:itemIdentifier1ITplaceholder')
+			alternateNameInput.send_keys(alternateName)
+
 		descriptionField = self._findById('itemMachineDesignListForm:descriptionITAplaceholder')
 		descriptionField.send_keys(description)
 
-		addBtnXpath = '//*[@id="itemMachineDesignListForm:machineDesignDualListViewAddButtonPlaceholder"]'
-		addButton = self._waitUntilEnabledByXpath(addBtnXpath)
 		addButton.click()
 
 		self._waitForInvisibleByXpath(addBtnXpath)
@@ -245,7 +255,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 		if found:
 			self._clickOnXpath('//*[@id="itemMachineDesignListForm:itemMachineDesignItemSelectDataTable_data"]/tr')
 		else:
-			raise Exception('Couldn\'t find catalog item %s' % catalogName)
+			raise Exception('Couldn\'t find catalog item ' + catalogName)
 
 		time.sleep(1)
 
@@ -271,6 +281,7 @@ class MachineDesign(CdbSeleniumModuleBase):
 			lineCount = 0
 
 			descriptionIdx = None
+			alternateNameIdx = None
 			assignedCatalogIdx = None
 
 			currentHierarchy = []
@@ -293,6 +304,8 @@ class MachineDesign(CdbSeleniumModuleBase):
 							ctr -= 1
 						elif header == MachineDesign.CSV_DESCRIPTION_COLUMN_HEADER:
 							descriptionIdx = ctr
+						elif header == MachineDesign.CSV_ALTERNATE_NAME_COLUMN_HEADER:
+							alternateNameIdx = ctr
 						elif header == MachineDesign.CSV_ASSIGNED_CATALOG:
 							assignedCatalogIdx = ctr
 						ctr += 1
@@ -310,9 +323,14 @@ class MachineDesign(CdbSeleniumModuleBase):
 							currentHierarchy.append(currentItem)
 							description = row[descriptionIdx]
 
+							alternateName = None
+							if alternateNameIdx is not None:
+								alternateName = row[alternateNameIdx]
+
+
 							currentHierarchySize = len(currentHierarchy)
 							if (currentHierarchySize == 1):
-								self.addMachineDesign(currentHierarchy[0], description, project)
+								self.addMachineDesign(currentHierarchy[0], description, project, alternateName=alternateName)
 							else:
 								currentParent = currentHierarchy[0:currentHierarchySize-1]
 								if lastParent != currentParent:
@@ -328,10 +346,10 @@ class MachineDesign(CdbSeleniumModuleBase):
 										lastParentXpath = self._findXPathForMachineDesignItem(lastParent)
 
 
-								self.addChildToMachineDesign(lastParentXpath, currentHierarchy[-1], description)
+								self.addChildToMachineDesign(lastParentXpath, currentHierarchy[-1], description, alternateName=alternateName)
 								if assignedCatalogIdx:
 									assignedCatalogName = row[assignedCatalogIdx]
-									if assignedCatalogName != MachineDesign.CSV_ASSIGNED_CATALOG_BLANK:
+									if assignedCatalogName != MachineDesign.CSV_ASSIGNED_CATALOG_BLANK and assignedCatalogName != '':
 										try:
 											itemXpath = self._findXpathOfSelectedItem(currentHierarchy[-1])
 										except:

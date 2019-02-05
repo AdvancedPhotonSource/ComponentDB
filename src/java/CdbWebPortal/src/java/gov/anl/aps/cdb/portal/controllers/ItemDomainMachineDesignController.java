@@ -57,6 +57,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private List<KeyValueObject> machineDesignNameList = null;
     private List<String> nameParts = null;
     private String machineDesignName = null;
+    private String machineDesignAlternateName = null; 
     private boolean displayAssignToDataTable = false;
     private boolean displayCreateItemElementContent = false;
     private boolean displayCreateMachineDesignFromTemplateContent = false;
@@ -1252,6 +1253,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         topLevelMachineDesignSelectionList = null;
         machineDesignNameList = null;
         machineDesignName = null;
+        machineDesignAlternateName = null; 
         nameParts = null;
     }
 
@@ -1375,6 +1377,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         ItemDomainMachineDesign clone = (ItemDomainMachineDesign) templateToCreateNewItem.clone();
         cloneCreateItemElements(clone, templateToCreateNewItem, true, true);
         clone.setName(machineDesignName);
+        clone.setItemIdentifier1(machineDesignAlternateName);
 
         addCreatedFromTemplateRelationshipToItem(clone);
 
@@ -1415,6 +1418,14 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     public String getMachineDesignName() {
         return machineDesignName;
+    }
+
+    public String getMachineDesignAlternateName() {
+        return machineDesignAlternateName;
+    }
+
+    public void setMachineDesignAlternateName(String machineDesignAlternateName) {
+        this.machineDesignAlternateName = machineDesignAlternateName;
     }
 
     public List<KeyValueObject> getMachineDesignNameList() {
