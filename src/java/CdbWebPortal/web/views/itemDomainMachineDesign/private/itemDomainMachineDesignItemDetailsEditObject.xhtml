@@ -28,6 +28,15 @@ See LICENSE file.
                          oncomplete="updateMachineDesignAddButton()"/>
     </p:outputPanel>
     
+    <h:outputText value="Machine Design Alternate Name" 
+                  rendered="#{newMachineDesignCreation}"/>
+    <p:outputPanel rendered="#{newMachineDesignCreation}">
+        <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml" >
+            <ui:param name="itemObject"
+                      value="#{containedItem}" />           
+        </ui:include>
+    </p:outputPanel>
+    
     <h:outputText value="Machine Design Description"/>
     <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemDescription.xhtml">
         <ui:param name="itemObject"
