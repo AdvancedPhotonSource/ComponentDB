@@ -6,6 +6,8 @@
 
 const VERIFY_VIEW_MAX_ATTEMPTS = 10;
 
+var sessionTimeout = false; 
+
 window.onload = function () {
     var thisPageId = document.getElementById('viewCurrentPageIdHiddenText').value;
     var currentPageUrl = window.location.href;
@@ -31,6 +33,10 @@ function startPageVerify() {
 
     function verifyView() {
         setTimeout(function () {
+            if (sessionTimeout) {
+                invalidateCurrentSession(); 
+                return; 
+            }
             verifyViewOpenPageIdHiddenText();
             var newTimeHash = document.getElementById('currentTimeHashHiddenText').innerHTML;
             if (newTimeHash != timeHash) {
@@ -50,6 +56,11 @@ function startPageVerify() {
 
     verifyView();
     verifyViewOpenPageIdHiddenText();
+}
+
+function sessionTimedOutEvent() {    
+    PF('sessionTimeoutDialogWidget').show();
+    sessionTimeout = true; 
 }
 
 function testExistingPageId() {

@@ -75,6 +75,7 @@ See LICENSE file.
                                    rendered="#{loginController.loggedInAsAdmin}"
                                    styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainLocation') 
                                                   or fn:startsWith(view.viewId, '/views/adminLog')
+                                                  or fn:startsWith(view.viewId, '/views/system')
                                                   or fn:startsWith(view.viewId, '/views/propertyType')
                                                   or fn:startsWith(view.viewId, '/views/source')
                                                   or fn:startsWith(view.viewId, '/views/userInfo')
@@ -90,6 +91,12 @@ See LICENSE file.
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/adminLog/') ? 'activeMenuItem' : ''} "
                                     url="/views/adminLog/browseSystemLogs" />
+                            
+                            <p:menuitem value="Sessions"
+                                        icon="fa fa-connectdevelop"
+                                        rendered="#{loginController.loggedInAsAdmin}"
+                                        styleClass="#{fn:startsWith(view.viewId, '/views/system/') ? 'activeMenuItem' : ''} "
+                                        url="/views/system/browseSystemSessions" /> 
                             
                             <p:menuitem value="Property Types" 
                                         id="adminPropertyTypesButton"

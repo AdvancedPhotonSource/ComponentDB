@@ -46,7 +46,7 @@ See LICENSE file.
 
                             <p:outputLabel value="Role: #{loginController.displayRole()}"/>
                             <br/>
-
+                                                        
                             <h:form>
                                 <p:outputLabel id="portalResetSession"
                                                styleClass="clckableLabel"
@@ -124,8 +124,8 @@ See LICENSE file.
                                       value="#{clientViewManagerController.currentTimeHash}" /> 
 
                         <input style="display: none"
-                               id="viewCurrentPageIdHiddenText"/>                                                
-
+                               id="viewCurrentPageIdHiddenText"/>     
+                        
                         <p:remoteCommand name="prepareNewViewID"
                                          action="#{clientViewManagerController.generateNewViewUUID()}"
                                          update="viewOpenPageIdHiddenText"
@@ -147,12 +147,13 @@ See LICENSE file.
                                  life="7000"/>
 
                         <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
-                                       onidle="displaySessionTimeout()">
-                            <p:remoteCommand name="displaySessionTimeout"
-                                             oncomplete="PF('sessionTimeoutDialogWidget').show()"/>
-                            <p:ajax event="idle" listener="#{loginController.sessionIdleListener}" 
-                                    immediate="true" async="true"/> 
-                        </p:idleMonitor>
+                                       onidle="sessionTimedOutEvent()"/>                                             
+                        
+                        <p:remoteCommand name="invalidateCurrentSession"
+                                         action="#{loginController.sessionIdleListener}" /> 
+                        
+                        <p:remoteCommand autoRun="#{!loginController.registeredSession}"
+                                         action="#{loginController.registerSession()}"/>                                                 
 
                         <p:dialog widgetVar="invalidUseOfBackButtonDialogWidget"
                                   modal="true"

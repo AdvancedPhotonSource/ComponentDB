@@ -18,9 +18,8 @@ import java.io.Serializable;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 /**
@@ -44,6 +43,7 @@ public class LoginController implements Serializable {
     private boolean loggedInAsAdmin = false;
     private boolean loggedInAsUser = false;
     private boolean checkedSession = false; 
+    private boolean registeredSession = false; 
     private UserInfo user = null;
     private Integer sessionTimeoutInMiliseconds = null;
 
@@ -270,8 +270,7 @@ public class LoginController implements Serializable {
     public String logout() {
         logger.debug("Logging out user: " + user);
         SessionUtility.clearSession();
-        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
-        context.invalidateSession();
+        SessionUtility.invalidateSession(); 
         resetLoginInfo();
         return "/index?faces-redirect=true";
     }
@@ -298,11 +297,9 @@ public class LoginController implements Serializable {
         } else {
             msg += "for anonymous user";
         }
+        SessionUtility.invalidateSession(); 
         SessionUtility.addWarningMessage("Warning", msg);
-        logger.debug(msg);
-        if (isLoggedIn()) {
-            resetLoginInfo();
-        }
+        logger.debug(msg);        
     }
 
     public int getSessionTimeoutInMiliseconds() {
@@ -314,5 +311,19 @@ public class LoginController implements Serializable {
         }
         // logger.debug("Idle timeout in miliseconds: " + sessionTimeoutInMiliseconds);
         return sessionTimeoutInMiliseconds;
+    }
+    
+    public void registerSession() {
+        if (!registeredSession) {
+            registeredSession = true; 
+            SessionController instance = SessionController.getInstance();
+            HttpSession currentSession = SessionUtility.getCurrentSession();
+            instance.registerSession(currentSession);
+        }
+        
+    }
+    
+    public boolean isRegisteredSession() {
+        return registeredSession;
     }
 }
