@@ -118,6 +118,11 @@ public class SessionUtility {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         sessionMap.clear();
     }
+    
+    public static void invalidateSession() {
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        context.invalidateSession();
+    }
 
     public static void navigateTo(String url) {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -134,10 +139,20 @@ public class SessionUtility {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         externalContext.redirect(externalContext.getRequestContextPath() + url);
     }
+    
+    public static HttpSession getCurrentSession() { 
+        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+        return session;
+    }
 
     public static int getSessionTimeoutInSeconds() {
-        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+        HttpSession session = getCurrentSession(); 
         return session.getMaxInactiveInterval();
+    }
+    
+    public static long getLastAccessedTime() { 
+        HttpSession session = getCurrentSession(); 
+        return session.getLastAccessedTime(); 
     }
 
     public static void setLastSessionError(String error) {
