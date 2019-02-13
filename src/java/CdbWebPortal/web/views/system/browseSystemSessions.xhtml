@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../templates/portalViewTemplate.xhtml">      
+
+    <ui:define name="pageTitle">: System Sessions</ui:define> 
+
+    <ui:define name="middleCenter">
+        <h:form rendered="#{loginController.loggedInAsAdmin}"> 
+            <div class="pageTitle">
+                <h1>System Sessions</h1>
+            </div>
+            
+            <p:poll interval="5"
+                    update="@form" /> 
+            
+            <p:remoteCommand autoRun="true"
+                             action="#{sessionController.updateStats()}"
+                             update="sessionStats" /> 
+            
+            <p:panelGrid columns="2"
+                         id="sessionStats">
+                <h:outputLabel value="Total Active Sessions:"/>
+                <h:outputText value="#{sessionController.countActiveSessions}"/>
+                <h:outputLabel value="Total Sessions:"/>
+                <h:outputText value="#{sessionController.sessionCount}" />
+                <h:outputLabel value="Oldest Active Session:"/>
+                <h:outputText value="#{sessionController.oldestActiveSession}"/>
+                <h:outputLabel value="Newest Active Session:"/>
+                <h:outputText value="#{sessionController.newestActiveSession}"/>
+            </p:panelGrid>
+                                  
+            <br/>
+            <p:commandButton value="Clear Invalidated"
+                             action="#{sessionController.clearInvalidated()}"
+                             update="@form"/>  
+            <br/>
+            <br/>
+
+            <p:dataTable value="#{sessionController.allSessions}"
+                         var="sessionObject">                
+                
+                <p:column headerText="Created Time">
+                    <h:outputText value="#{sessionController.getSessionTime(sessionObject)}"/> 
+                </p:column>
+
+                <p:column headerText="User">
+                    <h:outputText value="#{sessionController.getUsername(sessionObject)}"/> 
+                </p:column>
+                
+                <p:column headerText="Browser Last Connected">
+                    <h:outputText value="#{sessionController.browserLastConnected(sessionObject)}" />                    
+                </p:column>
+                
+                <p:column headerText="Actions">
+                    <p:commandLink action="#{sessionController.invalidateSession(sessionObject)}"
+                                   styleClass="fa fa-link-icon fa-user-times"
+                                   title="Invalidate Session"
+                                   rendered="#{sessionController.renderInvalidateSession(sessionObject)}"
+                                   update="@form" /> 
+                </p:column>
+
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
+
+
