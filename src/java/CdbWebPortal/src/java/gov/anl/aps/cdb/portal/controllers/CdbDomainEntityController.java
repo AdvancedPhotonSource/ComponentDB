@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.controllers.settings.CdbDomainEntitySettings;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
@@ -17,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -109,6 +111,16 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         cdbDomainEntity.resetPropertyValueLists();
 
         return propertyValue;
+    }
+    
+    /**
+     * Override this value for controller that manages a property with download-able viewable files. 
+     * 
+     * @param propertyValue
+     * @return 
+     */
+    public String getThumbnailImageForDownloadablePropertyValue(PropertyValue propertyValue) {
+        return StorageUtility.getMissingImageDefaultPreview(propertyValue.getValue(), null, CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION); 
     }
     
     public List<PropertyValue> prepareImageListForCurrent() {

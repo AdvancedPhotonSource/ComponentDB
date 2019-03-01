@@ -28,6 +28,8 @@ See LICENSE file.
 
     <ui:define name="middleCenter">
         <h:form id="#{entityTypeName}ViewForm" rendered="#{pageRendered}">
+            <ui:param name="formName" 
+                      value="#{entityTypeName}ViewForm" /> 
             <div class="domainEntityLeftContent middleCenterLeftContent">
                 <ui:param name="itemObject" value="#{entityController.current}"/>
                 <ui:param name="currentObject" value="#{itemObject}" />
