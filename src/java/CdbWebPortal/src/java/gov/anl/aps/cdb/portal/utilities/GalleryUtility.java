@@ -88,45 +88,55 @@ public class GalleryUtility {
 
             // Generate Preview to scale for pdf images.
             if (imageFormat.equalsIgnoreCase("pdf")) {
-                BufferedImage image = null;
-                try (PDDocument pdfDocument = PDDocument.load(originalFile)) {
-                    PDFRenderer renderer = new PDFRenderer(pdfDocument);
-                    image = renderer.renderImage(0);
-                    pdfDocument.close();
-                }
-
-                try (ByteArrayOutputStream imageBaos = new ByteArrayOutputStream()) {
-                    ImageIO.write(image, "PNG", imageBaos);
-                    imageBaos.flush();
-                    originalData = imageBaos.toByteArray();
-                    imageFormat = "png";
-                }
-
-                // It is not possible to catch certain errors during gerneration of a page preview. 
-                // Avoid creating blank white previews. 
-                if (originalData.length < 5000) {
-                    return;
+                byte[] pdfBytes = Files.readAllBytes(originalFile.toPath());               
+                imageFormat = "png";
+                originalData = createPNGFromPDF(pdfBytes); 
+                
+                if (originalData == null) { 
+                    return; 
                 }
             } else {
                 originalData = Files.readAllBytes(originalFile.toPath());
             }
-            byte[] thumbData = ImageUtility.resizeImage(originalData, StorageUtility.THUMBNAIL_IMAGE_SIZE, imageFormat);
-            String thumbFileName = originalFile.getAbsolutePath().replace(originalName, originalName + CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION);
-            thumbFileName = thumbFileName.replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, "");
-            Path thumbPath = Paths.get(thumbFileName);
-            Files.write(thumbPath, thumbData);
-            logger.debug("Saved File: " + thumbFileName);
-            byte[] scaledData;
-            if (ImageUtility.verifyImageSizeBigger(originalData, StorageUtility.SCALED_IMAGE_SIZE)) {
-                scaledData = ImageUtility.resizeImage(originalData, StorageUtility.SCALED_IMAGE_SIZE, imageFormat);
-            } else {
-                scaledData = originalData;
+        
+            String basePath = originalFile.getParentFile().getAbsolutePath();                
+            storePreviewsFromViewableData(originalData, imageFormat, basePath, originalName);                                                                               
+        } catch (IOException ex) {
+            logger.error(ex);
+            // Check allows this class to run as a utility without server running. 
+            FacesContext context = FacesContext.getCurrentInstance();
+            if (context != null) {
+                SessionUtility.addErrorMessage("Error", ex.toString());
             }
-            String scaledFileName = originalFile.getAbsolutePath().replace(originalName, originalName + CdbPropertyValue.SCALED_IMAGE_EXTENSION);
-            scaledFileName = scaledFileName.replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, "");
-            Path scaledPath = Paths.get(scaledFileName);
+        }
+    }
+    
+    
+    public static void storePreviewsFromViewableData(byte[] data, String imageFormat, String basePath, String fileName) {
+        try {
+            byte[] thumbData = ImageUtility.resizeImage(data, StorageUtility.THUMBNAIL_IMAGE_SIZE, imageFormat);
+            
+            String thumbnailName = fileName + CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION; 
+            String thumbFilePath = basePath + "/" + thumbnailName; 
+            //String thumbFileName = originalFile.getAbsolutePath().replace(originalName, originalName + CdbPropertyValue.THUMBNAIL_IMAGE_EXTENSION);
+            thumbFilePath = thumbFilePath.replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, "");
+            Path thumbPath = Paths.get(thumbFilePath);
+            Files.write(thumbPath, thumbData);
+            logger.debug("Saved File: " + thumbFilePath);
+            
+            byte[] scaledData;
+            if (ImageUtility.verifyImageSizeBigger(data, StorageUtility.SCALED_IMAGE_SIZE)) {
+                scaledData = ImageUtility.resizeImage(data, StorageUtility.SCALED_IMAGE_SIZE, imageFormat);
+            } else {
+                scaledData = data;
+            }
+            
+            String scaledFileName = fileName + CdbPropertyValue.SCALED_IMAGE_EXTENSION; 
+            String scaledFilePath = basePath + "/" + scaledFileName; 
+            scaledFilePath = scaledFilePath.replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, "");
+            Path scaledPath = Paths.get(scaledFilePath);
             Files.write(scaledPath, scaledData);
-            logger.debug("Saved File: " + scaledFileName);
+            logger.debug("Saved File: " + scaledFilePath);
 
         } catch (IOException | ImageProcessingFailed ex) {
             logger.error(ex);
@@ -136,6 +146,35 @@ public class GalleryUtility {
                 SessionUtility.addErrorMessage("Error", ex.toString());
             }
         }
+    }
+
+    public static byte[] createPNGFromPDF(byte[] pdfBytes) {
+        byte[] originalData;
+        try {
+            BufferedImage image = null;
+            try (PDDocument pdfDocument = PDDocument.load(pdfBytes)) {
+                PDFRenderer renderer = new PDFRenderer(pdfDocument);
+                image = renderer.renderImage(0);
+                pdfDocument.close();
+            }
+
+            try (ByteArrayOutputStream imageBaos = new ByteArrayOutputStream()) {
+                ImageIO.write(image, "PNG", imageBaos);
+                imageBaos.flush();
+                originalData = imageBaos.toByteArray();               
+            }
+
+            // It is not possible to catch certain errors during gerneration of a page preview. 
+            // Avoid creating blank white previews. 
+            if (originalData.length < 5000) {
+                return null;
+            }
+        } catch (IOException ex) {
+            logger.error(ex);
+            return null; 
+        }
+        
+        return originalData; 
     }
 
     /**
@@ -175,7 +214,7 @@ public class GalleryUtility {
             imageUploadDirPath = Paths.get(dataDirectory + StorageUtility.getPropertyValueImagesDirectory());
             documentUploadDirPath = Paths.get(dataDirectory + StorageUtility.getPropertyValueDocumentsDirectory());
         } else if (filePath != null) {
-            File file = new File(filePath); 
+            File file = new File(filePath);
             logger.debug("Generating Preview for image: " + filePath);
             storeImagePreviews(file);
             return;
