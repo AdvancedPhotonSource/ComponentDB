@@ -20,6 +20,7 @@ public class StorageUtility {
     private static final String PropertyValueImagesDirectory = "/propertyValue/images";
     private static final String PropertyValueDocumentsDirectory = "/propertyValue/documents";
     private static final String LogAttachmentsDirectory = "/log/attachments";
+    private static final String MAARCPreviewsDirectory = "/propertyValue/maarc";
 
     public static String getFullFilePath(String rootPath, String fileName) {
         if (fileName != null) {
@@ -80,9 +81,30 @@ public class StorageUtility {
     public static String getPropertyValueImagesDirectory() {
         return PropertyValueImagesDirectory;
     }
-    
+
     public static String getPropertyValueImagePath(String imageName, String type) {
         return getPropertyValueImagePath(imageName, type, true);
+    }
+
+    public static String getMAARCPreviewsDirectory() {
+        return MAARCPreviewsDirectory;
+    }
+
+    public static String getMAARCPreviewsPath(String fileName) {
+        return getFullFilePath(getMAARCPreviewsDirectory(), fileName);
+    }
+
+    public static String getApplicationMAARCPreviewsPath(String fileName) {
+        return SessionUtility.getContextRoot() + getMAARCPreviewsPath(fileName);
+    }
+
+    public static String getFileSystemMAARCPreviewsDirectory() {
+        return STORAGE_DIRECTORY + getMAARCPreviewsDirectory();
+    }
+
+    public static boolean isFileExist(String fileAppPath) {
+        String fsPath = STORAGE_DIRECTORY + fileAppPath;
+        return (new File(fsPath)).isFile();
     }
 
     public static String getPropertyValueImagePath(String imageName, String type, Boolean verifyFileExists) {
@@ -94,35 +116,38 @@ public class StorageUtility {
             imagePath = getFullFilePath(getPropertyValueDocumentsDirectory(), imageName + type);
         }
 
-        if (verifyFileExists) {
-            String fsPath = STORAGE_DIRECTORY + imagePath;
-            Boolean fileExists = (new File(fsPath)).isFile();
+        if (verifyFileExists) {            
+            Boolean fileExists = isFileExist(imagePath);
             if (fileExists) {
                 return imagePath;
             } else {
-                String format = GalleryUtility.getImageFormat(imageName);
-                String dataType;
-
-                if (format.equalsIgnoreCase("pdf")) {
-                    dataType = "pdf";
-                } else {
-                    if (GalleryUtility.viewableFormat(format)) {
-                        dataType = "image";
-                    } else {
-                        return imagePath; 
-                    }
-                }
-
-                return "/resources/images/" + dataType + "-gallery.png" + type;
+                return getMissingImageDefaultPreview(imageName, imagePath, type);
             }
         } else {
             return imagePath;
         }
     }
 
+    public static String getMissingImageDefaultPreview(String imageName, String alternatePath, String type) {
+        String format = GalleryUtility.getImageFormat(imageName);
+        String dataType;
+
+        if (format.equalsIgnoreCase("pdf")) {
+            dataType = "pdf";
+        } else {
+            if (GalleryUtility.viewableFormat(format)) {
+                dataType = "image";
+            } else {
+                return alternatePath;
+            }
+        }
+
+        return "/resources/images/" + dataType + "-gallery.png" + type;
+    }
+
     public static String getApplicationPropertyValueImagePath(String imageName) {
         if (imageName == null) {
-            return ""; 
+            return "";
         }
         if (imageName.startsWith(CdbPropertyValue.IMAGE_PREFIX)) {
             return SessionUtility.getContextRoot() + getPropertyValueImagePath(imageName, CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, false);
