@@ -59,7 +59,7 @@ See LICENSE file.
                               rendered="#{!emptyTargetValue}">
                     <h:outputText value="#{propertyValueObject.displayValue}"/>
                 </h:outputLink>
-                
+
                 <h:outputText value="#{propertyValueObject.displayValue}"
                               rendered="#{emptyTargetValue}"/>
             </p:outputPanel>
@@ -95,20 +95,37 @@ See LICENSE file.
                 </p:remoteCommand>
             </p:outputPanel>
 
-            <p:commandLink id="#{entityTypeName}propertyValueDownloadButton"
-                           ajax="false" 
-                           styleClass="fa fa-link-icon fa-download"
+            <p:outputPanel styleClass="inlineFlexOutputPanel" 
                            rendered="#{propertyValueController.displayDownloadActionValue(propertyValueObject) 
                                        or propertyValueController.displayGeneratedHTMLDownloadActionValue(propertyValueObject) 
-                                       and propertyValueObject.value != null and propertyValueObject.value != ''}"
-                           value="#{propertyValueController.displayGeneratedHTMLDownloadActionValue(propertyValueObject) 
-                                    ? '' 
-                                    : propertyValueObject.displayValue}">
-                <p:tooltip for="#{entityTypeName}propertyValueDownloadButton"
-                           value="Download file" />
-                <p:fileDownload value="#{propertyValueController.executeFileDownloadActionCommandForPropertyValue(propertyValueObject)}"
-                                contentDisposition="inline"/>                
-            </p:commandLink>
+                                       and propertyValueObject.value != null and propertyValueObject.value != ''}">
+
+                <ui:param name="viewableValue" value="#{propertyValueController.isPropertyValueViewable(propertyValueObject)}" />
+                <ui:param name="downloadLinkStyle" value="#{viewableValue ? '' : 'fa fa-link-icon fa-download'}" /> 
+                <ui:param name="displayValue"
+                          value="#{propertyValueController.displayGeneratedHTMLDownloadActionValue(propertyValueObject) 
+                                   ? '' 
+                                   : propertyValueObject.displayValue}" /> 
+
+                <p:commandLink id="#{entityTypeName}propertyValueDownloadButton"
+                               target="_blank"
+                               ajax="false" 
+                               styleClass="#{downloadLinkStyle}">
+                    <p:graphicImage rendered="#{viewableValue}" 
+                                    styleClass="domainEntityPropertyValueThumbnail" 
+                                    value="#{entityController.getThumbnailImageForDownloadablePropertyValue(propertyValueObject)}"
+                                    alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}" />
+
+                    <p:outputPanel rendered="#{viewableValue}">
+                    </p:outputPanel>
+                    <p:tooltip for="#{entityTypeName}propertyValueDownloadButton"
+                               value="Download file" />
+                    <p:fileDownload value="#{propertyValueController.executeFileDownloadActionCommandForPropertyValue(propertyValueObject)}"
+                                    contentDisposition="inline"/>                
+                </p:commandLink>
+
+                <h:outputText value="#{displayValue}"/> 
+            </p:outputPanel>
         </p:outputPanel>
         <p:outputPanel rendered="#{!loadPropertyValues}">
             <h:outputText value="#{propertyValueObject.displayValue}*" rendered="#{propertyValueObject.displayValue != null and propertyValueObject.displayValue != ''}"  />
