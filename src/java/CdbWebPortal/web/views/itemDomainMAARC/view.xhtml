@@ -7,8 +7,8 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../item/private/templates/itemViewTemplate.xhtml"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                template="../item/private/templates/itemViewTemplate.xhtml">
 
     <ui:param name="entityController" value="#{itemDomainMAARCController}"/>
     <ui:param name="pageRendered" value="#{resources.EnabledMAARCDomainFunctionality}" />
@@ -20,9 +20,13 @@ See LICENSE file.
         <f:viewAction action="#{logController.processPreRender()}"/>
         <f:viewAction action="#{itemDomainInventoryController.processPreRender()}"/>
     </f:metadata>
-    
+
     <ui:define name="itemElements">
         <ui:include src="private/itemDomainMAARCItemElementList.xhtml"/>
+    </ui:define>
+
+    <ui:define name="additionalLeftItemPanels">  
+        <ui:include src="private/itemDomainMAARCViewable.xhtml" /> 
     </ui:define>
 
     <ui:define name="additionalRightItemPanels">

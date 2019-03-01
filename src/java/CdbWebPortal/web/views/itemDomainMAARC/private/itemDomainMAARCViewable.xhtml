@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"                
+                xmlns:ui="http://java.sun.com/jsf/facelets"                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:panel header="Preview" 
+             rendered="#{itemDomainMAARCController.currentEntityTypeFile}"
+             toggleable="true"
+             collapsed="#{itemDomainMAARCController.collapsedFilePreview}">
+        <ui:param name="previewImageUUID"
+                  value="#{itemDomainMAARCController.previewPath}" /> 
+        <p:graphicImage stream="false" 
+                        value="#{itemDomainMAARCController.getScaledPreviewPath(previewImageUUID)}"
+                        onclick="downloadPreview([{name: 'imageUUID', value: '#{previewImageUUID}'}])"
+                        rendered="#{!itemDomainMAARCController.loadGallery}" />
+    </p:panel>
+
+    <p:panel header="Viewable File Gallery" 
+             rendered="#{!itemDomainMAARCController.currentEntityTypeFile}"
+             toggleable="true"
+             collapsed="#{itemDomainMAARCController.collapsedStudyGallery}">
+
+
+        <ui:param name="renderedStudyViewableFileGallery"
+                  value="#{false}" />                                                           
+
+        <p:outputPanel id="studyViewableFileGallery">
+            <p:galleria value="#{itemDomainMAARCController.previewsForAllElements}"
+                        var="imageUUID"
+                        rendered="#{!itemDomainMAARCController.loadGallery}"
+                        panelHeight="450"
+                        panelWidth="450">
+                <p:graphicImage value="#{itemDomainMAARCController.getScaledPreviewPath(imageUUID)}"
+                                onclick="downloadPreview([{name: 'imageUUID', value: '#{imageUUID}'}])"/>
+            </p:galleria>
+        </p:outputPanel>        
+    </p:panel>
+
+    <p:dialog modal="true" 
+              id="loadingPreviews"
+              widgetVar="loadingPreviewsWidget" 
+              showHeader="false" 
+              styleClass="viewTransparentBackgroundDialog"
+              resizable="false">
+        <h:outputText value="Generating Previews... Please Wait..." />
+        <p/>
+        <p:graphicImage library="images" name="ajax-loader.gif" />
+    </p:dialog>
+
+    <p:remoteCommand autoRun="#{itemDomainMAARCController.loadGallery}"
+                     onstart="PF('loadingPreviewsWidget').show()"
+                     update="@form"
+                     oncomplete="PF('loadingPreviewsWidget').hide()">
+        <f:setPropertyActionListener target="#{itemDomainMAARCController.loadGallery}"
+                                     value="#{false}" /> 
+    </p:remoteCommand>
+
+    <p:remoteCommand name="downloadPreview"
+                     onstart="PF('loadingDialog').show()"
+                     action="#{itemDomainMAARCController.updateCurrentViewableUUIDToDownload()}"
+                     oncomplete="PF('loadingDialog').hide(); document.getElementById('#{formName}:fileDownloadCommandLink').click()"/>
+
+    <p:commandLink id="fileDownloadCommandLink"
+                   target="_blank"
+                   ajax="false" >
+        <p:fileDownload value="#{itemDomainMAARCController.downloadCurrentViewableUUIDToDownload()}"
+                        contentDisposition="inline"/>
+    </p:commandLink>
+
+</ui:composition>
+
+
