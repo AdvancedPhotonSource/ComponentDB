@@ -219,6 +219,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public String getNameTitle() {
         return "Name";
     }
+    
+    public String getItemElementsListTitle() {
+        if (settingObject.getDisplayItemElementSimpleView()) {
+            return "Assembly Listing";
+        }
+        return "Elements"; 
+    }
 
     public String getItemEntityTypeTitle() {
         return "Entity Type";
