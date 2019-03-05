@@ -12,18 +12,33 @@ See LICENSE file.
     <ui:param name="elementsEntityTypeName" value="#{itemElementController.entityTypeName}"/>
     <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
         <ui:param name="childEntityTypeName" value="#{elementsEntityTypeName}"/>
-        <ui:param name="customizableListDataTable" value="#{false}"/> 
+       
     </ui:include>
+    
+    <ui:param name="filterableFiles"
+              value="#{facesUtility.displayFiltersForList(itemObject.itemElementDisplayList, 10)}" /> 
+        
     <p:dataTable id="#{elementsEntityTypeName}ListDataTable"
                  value="#{itemObject.itemElementDisplayList}"
-                 var="itemElementObject">
+                 var="itemElementObject"                 
+                 rows="#{entityController.settingObject.displayFileNumberOfItemsPerPage}"
+                 paginator="true">
         <ui:param name="containedItemListObject"
                   value="#{itemElementObject.containedItem}"/>
-        <p:column headerText="Assigned Identifier">
+        <p:column headerText="Assigned Identifier"
+                  sortBy="#{itemElementObject.name}"
+                  filterBy="#{itemElementObject.name}"
+                  filterMatchMode="contains"
+                  filterable="#{filterableFiles}" 
+                  sortable="true">
             <h:outputText value="#{itemElementObject.name}" />
         </p:column>
         <p:column headerText="Item"
-                  exportFunction="#{containedItemListObject.getName()}">
+                  exportFunction="#{containedItemListObject.getName()}"
+                  sortBy="#{containedItemListObject.name}"
+                  filterBy="#{containedItemListObject.name}"
+                  filterMatchMode="contains"
+                  filterable="#{filterableFiles}">
             <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
                 <ui:param name="itemObject"
                           value="#{containedItemListObject}"/>
@@ -41,6 +56,8 @@ See LICENSE file.
             </ui:include>                                
         </p:column>
     </p:dataTable>
+    
+    <ui:include src="itemDomainMAARCItemElementListCustomizeDisplayDialog.xhtml" /> 
 </ui:composition>
 
 
