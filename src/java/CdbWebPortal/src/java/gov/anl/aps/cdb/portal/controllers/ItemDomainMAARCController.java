@@ -506,6 +506,16 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     }
 
     @Override
+    public String getItemElementsListTitle() {
+        return "Files"; 
+    } 
+
+    @Override
+    public boolean getRenderItemElementList() {
+        return !isCurrentEntityTypeFile(); 
+    }
+
+    @Override
     public String getItemsDerivedFromItemTitle() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"                
+                xmlns:ui="http://java.sun.com/jsf/facelets"                
+                xmlns:p="http://primefaces.org/ui"                
+                template="../../settings/private/templates/settingsCustomizeDisplayDialogBaseTemplate.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="defineCustomizeDisplayDialogVariables">
+        <ui:param name="customizeDisplayEntityTypeName"
+                  value="#{elementsEntityTypeName}" />
+
+        <ui:param name="entityTypeDisplayName"
+                  value="File" />
+    </ui:define>
+
+    <ui:define name="customizeDisplayDialogConent">
+        <p:panelGrid columns="2">
+            <p:inputText id="maarcFileNumberOfItemsPerPage" value="#{entityController.settingObject.displayFileNumberOfItemsPerPage}" style="width:20px"/>
+            <h:outputLabel for="maarcFileNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
+        </p:panelGrid>
+
+    </ui:define>
+
+</ui:composition>
+
+
