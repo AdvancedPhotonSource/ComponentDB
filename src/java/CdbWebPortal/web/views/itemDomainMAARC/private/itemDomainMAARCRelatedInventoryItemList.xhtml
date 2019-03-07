@@ -17,15 +17,40 @@ See LICENSE file.
 
     <p:dataTable id="#{entityTypeName}InventoryRelationshipListDataTable"
                  value="#{entityController.relatedInventoryRelationshipsForCurrent}"
-                 var="itemElementRelationship">                
-        <ui:include src="../../itemDomainInventory/private/itemDomainInventoryListObject.xhtml">
-            <ui:param name="itemListObject"
-                      value="#{itemElementRelationship.firstItemElement.parentItem}"/> 
+                 var="itemElementRelationship">    
+        <ui:param name="itemListObject"
+                      value="#{itemElementRelationship.firstItemElement.parentItem}"/>
+        <ui:include src="../../itemDomainInventory/private/itemDomainInventoryListObject.xhtml">            
             <ui:param name="entityController"
                       value="#{itemDomainInventoryController}" />
         </ui:include>
+        <p:column headerText="Actions">
+            <p:commandLink id="#{entityTypeName}ItemElementRelationshipListDeleteLink" 
+                           oncomplete="PF('ItemElementRelationshipDestroyConfirmDialogWidget#{itemElementRelationship.viewUUID}').show()" 
+                           rendered="#{isEntityWriteable}" 
+                           styleClass="fa fa-link-icon fa-trash" 
+                           title="Delete">
+                <p:tooltip for="#{entityTypeName}ItemElementRelationshipListDeleteLink" value="Delete Item Element Relationship."/>
+            </p:commandLink>
+
+            <p:confirmDialog widgetVar="ItemElementRelationshipDestroyConfirmDialogWidget#{itemElementRelationship.viewUUID}"
+                             message="Are you sure you want to delete the realtionship to #{itemListObject}?"
+                             header="Delete Relationship?"
+                             severity="alert" 
+                             styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+                <p:commandButton value="Yes" 
+                                 update="#{entityTypeName}InventoryRelationshipListDataTable"
+                                 id="#{containedItemListObject.viewUUID}relationshipDestroyDialogYesConfirmButton"
+                                 onstart="PF('ItemElementRelationshipDestroyConfirmDialogWidget#{itemElementRelationship.viewUUID}').hide();
+                                          PF('loadingDialog').show()" 
+                                 oncomplete="PF('loadingDialog').hide()"
+                                 action="#{itemDomainMAARCController.destroyRelationship(itemElementRelationship)}"/>
+                <p:commandButton value="No" onclick="PF('#{entityTypeName}DestroyDialogWidget').hide()" type="button" />
+            </p:confirmDialog>
+        </p:column>
+
     </p:dataTable>
-    
+
     <ui:include src="../../item/private/itemBasicListCustomDisplayDialog.xhtml" >
         <ui:param name="viewName" value="MaarcRelationship"/>
         <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
