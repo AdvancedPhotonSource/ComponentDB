@@ -64,7 +64,7 @@ See LICENSE file.
                            title="Delete">
                 <p:tooltip for="#{entityTypeName}FileListDeleteLink" value="Delete File."/>
             </p:commandLink>
-
+       
             <p:confirmDialog widgetVar="fileDestroyConfirmDialogWidget#{containedItemListObject.viewUUID}"
                              message="Are you sure you want to delete the file #{containedItemListObject}?"
                              header="Delete File?"
@@ -73,12 +73,14 @@ See LICENSE file.
                 <p:commandButton value="Yes" 
                                  update="#{elementsEntityTypeName}ListDataTable"
                                  id="#{containedItemListObject.viewUUID}fileDestroyDialogYesConfirmButton"
-                                 oncomplete="PF('fileDestroyConfirmDialogWidget#{containedItemListObject.viewUUID}').hide()" 
+                                 onstart="PF('fileDestroyConfirmDialogWidget#{containedItemListObject.viewUUID}').hide();
+                                          PF('loadingDialog').show()" 
+                                 oncomplete="PF('loadingDialog').hide()"
                                  action="#{itemDomainMAARCController.destroyFile(itemElementObject)}"/>
                 <p:commandButton value="No" onclick="PF('#{entityTypeName}DestroyDialogWidget').hide()" type="button" />
             </p:confirmDialog>
         </p:column>
-    </p:dataTable>        
+    </p:dataTable>       
 
     <ui:include src="itemDomainMAARCItemElementListCustomizeDisplayDialog.xhtml" /> 
 </ui:composition>
