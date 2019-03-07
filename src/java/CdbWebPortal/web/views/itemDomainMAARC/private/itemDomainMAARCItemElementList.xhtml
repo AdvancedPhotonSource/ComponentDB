@@ -12,12 +12,12 @@ See LICENSE file.
     <ui:param name="elementsEntityTypeName" value="#{itemElementController.entityTypeName}"/>
     <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
         <ui:param name="childEntityTypeName" value="#{elementsEntityTypeName}"/>
-       
+
     </ui:include>
-    
+
     <ui:param name="filterableFiles"
               value="#{facesUtility.displayFiltersForList(itemObject.itemElementDisplayList, 10)}" /> 
-        
+
     <p:dataTable id="#{elementsEntityTypeName}ListDataTable"
                  value="#{itemObject.itemElementDisplayList}"
                  var="itemElementObject"                 
@@ -55,8 +55,31 @@ See LICENSE file.
                           value="#{containedItemListObject.getPropertyValueInformation(filePropertyTypeId)}"/>
             </ui:include>                                
         </p:column>
-    </p:dataTable>
-    
+
+        <p:column headerText="Actions">
+            <p:commandLink id="#{entityTypeName}FileListDeleteLink" 
+                           oncomplete="PF('fileDestroyConfirmDialogWidget#{containedItemListObject.viewUUID}').show()" 
+                           rendered="#{isEntityWriteable}" 
+                           styleClass="fa fa-link-icon fa-trash" 
+                           title="Delete">
+                <p:tooltip for="#{entityTypeName}FileListDeleteLink" value="Delete File."/>
+            </p:commandLink>
+
+            <p:confirmDialog widgetVar="fileDestroyConfirmDialogWidget#{containedItemListObject.viewUUID}"
+                             message="Are you sure you want to delete the file #{containedItemListObject}?"
+                             header="Delete File?"
+                             severity="alert" 
+                             styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+                <p:commandButton value="Yes" 
+                                 update="#{elementsEntityTypeName}ListDataTable"
+                                 id="#{containedItemListObject.viewUUID}fileDestroyDialogYesConfirmButton"
+                                 oncomplete="PF('fileDestroyConfirmDialogWidget#{containedItemListObject.viewUUID}').hide()" 
+                                 action="#{itemDomainMAARCController.destroyFile(itemElementObject)}"/>
+                <p:commandButton value="No" onclick="PF('#{entityTypeName}DestroyDialogWidget').hide()" type="button" />
+            </p:confirmDialog>
+        </p:column>
+    </p:dataTable>        
+
     <ui:include src="itemDomainMAARCItemElementListCustomizeDisplayDialog.xhtml" /> 
 </ui:composition>
 
