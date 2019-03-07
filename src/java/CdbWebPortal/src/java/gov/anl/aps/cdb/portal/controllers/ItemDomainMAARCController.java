@@ -174,6 +174,13 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
         return getRelatedInventoryRelationshipsForCurrent().size() < 1;
     }
     
+    public void destroyRelationship(ItemElementRelationship ier) {
+        ItemElementRelationshipController ierc = ItemElementRelationshipController.getInstance();
+        ierc.destroy(ier);
+                
+        relatedInventoryRelationshipsForCurrent.remove(ier);
+    }
+    
     /**
      * Destroys a full file reference from a study 
      * 
