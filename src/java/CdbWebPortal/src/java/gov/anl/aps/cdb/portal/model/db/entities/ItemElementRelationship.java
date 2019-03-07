@@ -56,7 +56,7 @@ import javax.xml.bind.annotation.XmlTransient;
                     + "AND ie.name IS NULL AND d.name = :domainName "
                     + "AND i.relationshipType.name = :relationshipTypeName")
 })
-public class ItemElementRelationship implements Serializable {
+public class ItemElementRelationship extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id

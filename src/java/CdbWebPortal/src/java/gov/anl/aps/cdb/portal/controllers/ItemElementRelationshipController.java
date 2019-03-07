@@ -4,13 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.settings.ItemElementRelationshipSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
-import gov.anl.aps.cdb.portal.controllers.util.JsfUtil;
-import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
-import java.util.ResourceBundle;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -18,183 +17,53 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import javax.faces.model.DataModel;
-import javax.faces.model.ListDataModel;
-import javax.faces.model.SelectItem;
 
-@Named("itemElementRelationshipController")
+@Named(ItemElementRelationshipController.controllerNamed)
 @SessionScoped
-public class ItemElementRelationshipController implements Serializable {
-
-    private ItemElementRelationship current;
-    private DataModel items = null;
+public class ItemElementRelationshipController extends CdbEntityController<ItemElementRelationship, ItemElementRelationshipFacade, ItemElementRelationshipSettings> implements Serializable {
+    
+    public final static String controllerNamed = "itemElementRelationshipController";
+    
     @EJB
-    private gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade ejbFacade;
-    private PaginationHelper pagination;
-    private int selectedItemIndex;
+    ItemElementRelationshipFacade itemElementRelationshipFacade; 
 
+  
     public ItemElementRelationshipController() {
     }
+    
+    public static ItemElementRelationshipController getInstance() {
+        return (ItemElementRelationshipController) SessionUtility.findBean(controllerNamed);
+    }
 
-    public ItemElementRelationship getSelected() {
-        if (current == null) {
-            current = new ItemElementRelationship();
-            selectedItemIndex = -1;
+    @Override
+    protected ItemElementRelationshipSettings createNewSettingObject() {
+        return new ItemElementRelationshipSettings(this); 
+    }
+
+    @Override
+    protected ItemElementRelationshipFacade getEntityDbFacade() {
+        return itemElementRelationshipFacade; 
+    }
+
+    @Override
+    protected ItemElementRelationship createEntityInstance() {
+        return new ItemElementRelationship(); 
+    }
+
+    @Override
+    public String getEntityTypeName() {
+        return "itemElementRelationship";
+    }
+
+    @Override
+    public String getCurrentEntityInstanceName() {
+        if (getCurrent() != null) {
+            return getCurrent().toString(); 
         }
-        return current;
+        return ""; 
     }
 
-    private ItemElementRelationshipFacade getFacade() {
-        return ejbFacade;
-    }
-
-    public PaginationHelper getPagination() {
-        if (pagination == null) {
-            pagination = new PaginationHelper(10) {
-
-                @Override
-                public int getItemsCount() {
-                    return getFacade().count();
-                }
-
-                @Override
-                public DataModel createPageDataModel() {
-                    return new ListDataModel(getFacade().findRange(new int[]{getPageFirstItem(), getPageFirstItem() + getPageSize()}));
-                }
-            };
-        }
-        return pagination;
-    }
-
-    public String prepareList() {
-        recreateModel();
-        return "List";
-    }
-
-    public String prepareView() {
-        current = (ItemElementRelationship) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "View";
-    }
-
-    public String prepareCreate() {
-        current = new ItemElementRelationship();
-        selectedItemIndex = -1;
-        return "Create";
-    }
-
-    public String create() {
-        try {
-            getFacade().create(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ItemElementRelationshipCreated"));
-            return prepareCreate();
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String prepareEdit() {
-        current = (ItemElementRelationship) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        return "Edit";
-    }
-
-    public String update() {
-        try {
-            getFacade().edit(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ItemElementRelationshipUpdated"));
-            return "View";
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-            return null;
-        }
-    }
-
-    public String destroy() {
-        current = (ItemElementRelationship) getItems().getRowData();
-        selectedItemIndex = pagination.getPageFirstItem() + getItems().getRowIndex();
-        performDestroy();
-        recreatePagination();
-        recreateModel();
-        return "List";
-    }
-
-    public String destroyAndView() {
-        performDestroy();
-        recreateModel();
-        updateCurrentItem();
-        if (selectedItemIndex >= 0) {
-            return "View";
-        } else {
-            // all items were removed - go back to list
-            recreateModel();
-            return "List";
-        }
-    }
-
-    private void performDestroy() {
-        try {
-            getFacade().remove(current);
-            JsfUtil.addSuccessMessage(ResourceBundle.getBundle("/resources").getString("ItemElementRelationshipDeleted"));
-        } catch (Exception e) {
-            JsfUtil.addErrorMessage(e, ResourceBundle.getBundle("/resources").getString("PersistenceErrorOccured"));
-        }
-    }
-
-    private void updateCurrentItem() {
-        int count = getFacade().count();
-        if (selectedItemIndex >= count) {
-            // selected index cannot be bigger than number of items:
-            selectedItemIndex = count - 1;
-            // go to previous page if last page disappeared:
-            if (pagination.getPageFirstItem() >= count) {
-                pagination.previousPage();
-            }
-        }
-        if (selectedItemIndex >= 0) {
-            current = getFacade().findRange(new int[]{selectedItemIndex, selectedItemIndex + 1}).get(0);
-        }
-    }
-
-    public DataModel getItems() {
-        if (items == null) {
-            items = getPagination().createPageDataModel();
-        }
-        return items;
-    }
-
-    private void recreateModel() {
-        items = null;
-    }
-
-    private void recreatePagination() {
-        pagination = null;
-    }
-
-    public String next() {
-        getPagination().nextPage();
-        recreateModel();
-        return "List";
-    }
-
-    public String previous() {
-        getPagination().previousPage();
-        recreateModel();
-        return "List";
-    }
-
-    public SelectItem[] getItemsAvailableSelectMany() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), false);
-    }
-
-    public SelectItem[] getItemsAvailableSelectOne() {
-        return JsfUtil.getSelectItems(ejbFacade.findAll(), true);
-    }
-
-    public ItemElementRelationship getItemElementRelationship(java.lang.Integer id) {
-        return ejbFacade.find(id);
-    }
+    
 
     @FacesConverter(forClass = ItemElementRelationship.class)
     public static class ItemElementRelationshipControllerConverter implements Converter {
@@ -206,7 +75,7 @@ public class ItemElementRelationshipController implements Serializable {
             }
             ItemElementRelationshipController controller = (ItemElementRelationshipController) facesContext.getApplication().getELResolver().
                     getValue(facesContext.getELContext(), null, "itemElementRelationshipController");
-            return controller.getItemElementRelationship(getKey(value));
+            return controller.getEntity(getKey(value));
         }
 
         java.lang.Integer getKey(String value) {

@@ -20,6 +20,7 @@ See LICENSE file.
                      styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
         <p:commandButton value="Yes" 
                          id="#{entityTypeName}DestroyDialogYesConfirmButton"
+                         onstart="PF('loadingDialog').show()"
                          oncomplete="PF('#{entityTypeName}DestroyDialogWidget').hide()" 
                          action="#{entityController.destroy()}"/>
         <p:commandButton value="No" onclick="PF('#{entityTypeName}DestroyDialogWidget').hide()" type="button" />

@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMAARCSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
@@ -171,6 +172,66 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
     public boolean isCollapsedRelatedInventoryItemsForCurrent() {
         return getRelatedInventoryRelationshipsForCurrent().size() < 1;
+    }
+    
+    /**
+     * Destroys a full file reference from a study 
+     * 
+     * @param itemElement 
+     */
+    public void destroyFile(ItemElement itemElement) {
+        ItemDomainMAARC containedItem = (ItemDomainMAARC) itemElement.getContainedItem(); 
+        
+        ItemElementController instance = ItemElementController.getInstance();
+        instance.destroy(itemElement);
+        
+        ItemDomainMAARC currentItem = getCurrent(); 
+        destroy(containedItem); 
+        current = currentItem;         
+    }
+
+    @Override
+    protected void prepareEntityDestroy(ItemDomainMAARC item) throws CdbException {
+        if (isEntityTypeFile(item)) {
+            List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
+                        
+            // A file should be a member of 1 Study 
+            if (itemElementMemberList.size() == 1) {                
+                // Destroy the element before proceeding to destroy the file. 
+                ItemElement itemElement = itemElementMemberList.get(0);
+                ItemElementController instance = ItemElementController.getInstance();
+                instance.destroy(itemElement);                
+                itemElementMemberList.clear(); 
+            } else if (itemElementMemberList.size() == 0) {
+                // Do Nothing. 
+            }else {
+                throw new CdbException("File should be a member of one study. Something went wrong! please notify Admin of this error."); 
+            }
+        } else {
+            // Study
+            List<ItemElement> itemElementDisplayList = item.getItemElementDisplayList(); 
+            while (itemElementDisplayList.size() > 0) {
+                ItemElement ie = itemElementDisplayList.get(0); 
+                itemElementDisplayList.remove(0);
+                
+                destroyFile(ie);
+            }            
+            
+            // Clear Relationships
+            List<ItemElementRelationship> ierList = item.getItemElementRelationshipList1();
+            if (ierList.size() > 0) {
+                ItemElementRelationshipController ierc = ItemElementRelationshipController.getInstance();
+                
+                while (ierList.size() > 0) {
+                    ItemElementRelationship ier = ierList.get(0);
+                    ierList.remove(0);
+                    
+                    ierc.destroy(ier); 
+                }
+                
+            }
+        }
+        super.prepareEntityDestroy(item); 
     }
 
     public List<ItemElementRelationship> getRelatedInventoryRelationshipsForCurrent() {
