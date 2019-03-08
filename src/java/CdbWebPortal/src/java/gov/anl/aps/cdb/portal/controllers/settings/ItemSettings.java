@@ -48,6 +48,7 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
 
     protected String filterByItemSources = null;
     protected String filterByQrId = null;
+    protected String filterByItemEntityType = null; 
     
     protected ItemElementSettings itemElementSettings = null;
 
@@ -491,6 +492,14 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
     public void setFilterByQrId(String filterByQrId) {
         this.filterByQrId = filterByQrId;
     }  
+
+    public String getFilterByItemEntityType() {
+        return filterByItemEntityType;
+    }
+
+    public void setFilterByItemEntityType(String filterByItemEntityType) {
+        this.filterByItemEntityType = filterByItemEntityType;
+    }
     
     public String getDisplayListDataModelScope() {
         return displayListDataModelScope;
