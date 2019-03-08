@@ -50,10 +50,12 @@ public class ItemDomainMAARCSettings extends ItemSettings<ItemDomainMAARCControl
     private static final String FilterByPropertyValue2SettingTypeKey = "ItemDomainMAARC.List.FilterBy.PropertyValue2";
     private static final String FilterByPropertyValue3SettingTypeKey = "ItemDomainMAARC.List.FilterBy.PropertyValue3";
     private static final String FilterByPropertyValue4SettingTypeKey = "ItemDomainMAARC.List.FilterBy.PropertyValue4";
-    private static final String FilterByPropertyValue5SettingTypeKey = "ItemDomainMAARC.List.FilterBy.PropertyValue5";        
+    private static final String FilterByPropertyValue5SettingTypeKey = "ItemDomainMAARC.List.FilterBy.PropertyValue5";
+    
+    private static final String FilterByItemEntityTypeSettingTypeKey = "ItemDomainMAARC.List.FilterBy.ItemEntityType"; 
     
     public ItemDomainMAARCSettings(ItemDomainMAARCController parentController) {
-        super(parentController);
+        super(parentController);        
     }        
 
     @Override
@@ -91,6 +93,7 @@ public class ItemDomainMAARCSettings extends ItemSettings<ItemDomainMAARCControl
         filterByPropertyValue5 = settingTypeMap.get(FilterByPropertyValue5SettingTypeKey).getDefaultValue();
         filterByPropertiesAutoLoad = Boolean.parseBoolean(settingTypeMap.get(FilterByPropertiesAutoLoadTypeKey).getDefaultValue());        
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
+        filterByItemEntityType = settingTypeMap.get(FilterByItemEntityTypeSettingTypeKey).getDefaultValue(); 
         
         displayFileNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayFilesNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
     }
@@ -130,6 +133,7 @@ public class ItemDomainMAARCSettings extends ItemSettings<ItemDomainMAARCControl
         filterByPropertyValue5 = settingEntity.getSettingValueAsString(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
         filterByPropertiesAutoLoad = settingEntity.getSettingValueAsBoolean(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);        
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);     
+        filterByItemEntityType = settingEntity.getSettingValueAsString(FilterByItemEntityTypeSettingTypeKey, filterByItemEntityType); 
         
         displayFileNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayFilesNumberOfItemsPerPageSettingTypeKey, displayFileNumberOfItemsPerPage); 
     } 
@@ -169,6 +173,7 @@ public class ItemDomainMAARCSettings extends ItemSettings<ItemDomainMAARCControl
         settingEntity.setSettingValue(FilterByPropertyValue5SettingTypeKey, filterByPropertyValue5);
         settingEntity.setSettingValue(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);               
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
+        settingEntity.setSettingValue(FilterByItemEntityTypeSettingTypeKey, filterByItemEntityType); 
         
         settingEntity.setSettingValue(DisplayFilesNumberOfItemsPerPageSettingTypeKey, displayFileNumberOfItemsPerPage); 
     }    

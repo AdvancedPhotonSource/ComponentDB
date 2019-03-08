@@ -121,6 +121,7 @@ See LICENSE file.
         <p:column sortBy="#{itemListObject.entityTypeString}" 
                   headerText="#{entityController.itemEntityTypeTitle}"
                   filterBy="#{itemListObject.entityTypeString}" filterMatchMode="contains"
+                  filterValue="#{entitySettingObject.filterByItemEntityType}"
                   filterable="#{filterable}"
                   filterOptions="#{entityController.entityTypesForDataTableFilterSelectOne}"
                   rendered="#{rendered and itemListRenderItemEntityTypes}"
