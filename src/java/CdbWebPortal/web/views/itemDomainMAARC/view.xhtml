@@ -30,10 +30,10 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="additionalRightItemPanels">
-        <p:panel header="Related Inventory Items"
+        <p:panel header="Related Items"
                  toggleable="true"
-                 collapsed="#{entityController.collapsedRelatedInventoryItemsForCurrent}">            
-            <ui:include src="private/itemDomainMAARCRelatedInventoryItemList.xhtml"/>            
+                 collapsed="#{entityController.collapsedRelatedItemsForCurrent}">            
+            <ui:include src="private/itemDomainMAARCRelatedItemList.xhtml"/>            
         </p:panel>
     </ui:define>
 
