@@ -52,8 +52,8 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     protected final String FILE_PROPERTY_TYPE_NAME = "File";
 
     protected final String FILE_PROPERTY_VIEWABLE_UUID_METADATA_KEY = "cdbViewableUUID";
-    
-    private final String VIEWABLE_UUID_REMOTE_COMMAND_KEY = "imageUUID"; 
+
+    private final String VIEWABLE_UUID_REMOTE_COMMAND_KEY = "imageUUID";
 
     private static final Logger logger = Logger.getLogger(ItemDomainMAARCController.class.getName());
 
@@ -62,9 +62,8 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
     private Boolean loadGallery = null;
     private String currentViewableUUIDToDownload = null;
-    
 
-    private List<ItemElementRelationship> relatedInventoryRelationshipsForCurrent = null;
+    private List<ItemElementRelationship> relatedRelationshipsForCurrent = null;
 
     @EJB
     ItemDomainMAARCFacade itemDomainMAARCFacade;
@@ -170,96 +169,117 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
         return true;
     }
 
-    public boolean isCollapsedRelatedInventoryItemsForCurrent() {
-        return getRelatedInventoryRelationshipsForCurrent().size() < 1;
+    /**
+     * Used to fetch a list of relationships for items that are related to maarc
+     * item.
+     *
+     * @param item
+     * @return
+     */
+    public static List<ItemElementRelationship> getRelatedMAARCRelationshipsForItem(Item item) {
+        List<ItemElementRelationship> relatedMAARCRelationshipsForItem = new ArrayList<>();
+
+        List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();       
+
+        for (ItemElementRelationship ier : itemElementRelationshipList) {
+            if (ier.getRelationshipType().getName().equals(MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME)) {
+                relatedMAARCRelationshipsForItem.add(ier);
+            }
+        }
+
+        return relatedMAARCRelationshipsForItem;
     }
-    
+
+    public boolean isCollapsedRelatedItemsForCurrent() {
+        return getRelatedRelationshipsForCurrent().size() < 1;
+    }
+
     public void destroyRelationship(ItemElementRelationship ier) {
         ItemElementRelationshipController ierc = ItemElementRelationshipController.getInstance();
         ierc.destroy(ier);
-                
-        relatedInventoryRelationshipsForCurrent.remove(ier);
+
+        relatedRelationshipsForCurrent.remove(ier);
     }
-    
+
     /**
-     * Destroys a full file reference from a study 
-     * 
-     * @param itemElement 
+     * Destroys a full file reference from a study
+     *
+     * @param itemElement
      */
     public void destroyFile(ItemElement itemElement) {
-        ItemDomainMAARC containedItem = (ItemDomainMAARC) itemElement.getContainedItem(); 
-        
+        ItemDomainMAARC containedItem = (ItemDomainMAARC) itemElement.getContainedItem();
+
         ItemElementController instance = ItemElementController.getInstance();
         instance.destroy(itemElement);
-        
-        ItemDomainMAARC currentItem = getCurrent(); 
-        destroy(containedItem); 
-        current = currentItem;         
+
+        ItemDomainMAARC currentItem = getCurrent();
+        destroy(containedItem);
+        current = currentItem;
     }
 
     @Override
     protected void prepareEntityDestroy(ItemDomainMAARC item) throws CdbException {
         if (isEntityTypeFile(item)) {
             List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
-                        
+
             // A file should be a member of 1 Study 
-            if (itemElementMemberList.size() == 1) {                
+            if (itemElementMemberList.size() == 1) {
                 // Destroy the element before proceeding to destroy the file. 
                 ItemElement itemElement = itemElementMemberList.get(0);
                 ItemElementController instance = ItemElementController.getInstance();
-                instance.destroy(itemElement);                
-                itemElementMemberList.clear(); 
+                instance.destroy(itemElement);
+                itemElementMemberList.clear();
             } else if (itemElementMemberList.size() == 0) {
                 // Do Nothing. 
-            }else {
-                throw new CdbException("File should be a member of one study. Something went wrong! please notify Admin of this error."); 
+            } else {
+                throw new CdbException("File should be a member of one study. Something went wrong! please notify Admin of this error.");
             }
         } else {
             // Study
-            List<ItemElement> itemElementDisplayList = item.getItemElementDisplayList(); 
+            List<ItemElement> itemElementDisplayList = item.getItemElementDisplayList();
             while (itemElementDisplayList.size() > 0) {
-                ItemElement ie = itemElementDisplayList.get(0); 
+                ItemElement ie = itemElementDisplayList.get(0);
                 itemElementDisplayList.remove(0);
-                
+
                 destroyFile(ie);
-            }            
-            
+            }
+
             // Clear Relationships
             List<ItemElementRelationship> ierList = item.getItemElementRelationshipList1();
             if (ierList.size() > 0) {
                 ItemElementRelationshipController ierc = ItemElementRelationshipController.getInstance();
-                
+
                 while (ierList.size() > 0) {
                     ItemElementRelationship ier = ierList.get(0);
                     ierList.remove(0);
-                    
-                    ierc.destroy(ier); 
+
+                    ierc.destroy(ier);
                 }
-                
+
             }
         }
-        super.prepareEntityDestroy(item); 
+        super.prepareEntityDestroy(item);
     }
 
-    public List<ItemElementRelationship> getRelatedInventoryRelationshipsForCurrent() {
-        if (relatedInventoryRelationshipsForCurrent == null) {
+    public List<ItemElementRelationship> getRelatedRelationshipsForCurrent() {
+        if (relatedRelationshipsForCurrent == null) {
             List<ItemElementRelationship> itemElementRelationshipList1 = getCurrent().getSelfElement().getItemElementRelationshipList1();
-            relatedInventoryRelationshipsForCurrent = new ArrayList<>();
+            relatedRelationshipsForCurrent = new ArrayList<>();
 
             for (ItemElementRelationship ier : itemElementRelationshipList1) {
                 if (ier.getRelationshipType().getName().equals(MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME)) {
-                    relatedInventoryRelationshipsForCurrent.add(ier);
+                    relatedRelationshipsForCurrent.add(ier);
                 }
             }
         }
 
-        return relatedInventoryRelationshipsForCurrent;
+        return relatedRelationshipsForCurrent;
     }
 
     @Override
     protected void resetVariablesForCurrent() {
         super.resetVariablesForCurrent();
-        relatedInventoryRelationshipsForCurrent = null;
+        relatedRelationshipsForCurrent = null;
         loadGallery = null;
     }
 
@@ -348,7 +368,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
         }
     }
     //*/
-
     public List<String> getPreviewsForAllElements() {
         if (isCurrentEntityTypeFile()) {
             return null;
@@ -390,7 +409,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
         if (!GalleryUtility.viewableFileName(pv.getValue())) {
             return null;
         }
-        
+
         PropertyMetadata metadata = pv.getPropertyMetadataForKey(FILE_PROPERTY_VIEWABLE_UUID_METADATA_KEY);
 
         if (metadata != null) {
@@ -409,13 +428,13 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
             if (Files.notExists(uploadPath)) {
                 logger.debug("Creating inidial maarc previews directory: " + basePath);
                 Files.createDirectory(uploadPath);
-            }            
-            
+            }
+
             PropertyTypeHandlerInterface handler = PropertyTypeHandlerFactory.getHandler(pv);
-            
-            StreamedContent contentStream = handler.fileDownloadActionCommand(pv); 
+
+            StreamedContent contentStream = handler.fileDownloadActionCommand(pv);
             InputStream stream = contentStream.getStream();
-            
+
             byte[] originalData = IOUtils.toByteArray(stream);
 
             String fileName = pv.getValue();
@@ -429,7 +448,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
                     return null;
                 }
             }
-
 
             UUID randomUUID = UUID.randomUUID();
             String uniqueFileName = randomUUID.toString();
@@ -481,9 +499,9 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
                 PropertyType propertyType = propertyValue.getPropertyType();
                 if (propertyType != null) {
                     if (propertyType.getName().equals(FILE_PROPERTY_TYPE_NAME)) {
-                        return propertyValue; 
+                        return propertyValue;
                     }
-                }                
+                }
             }
         }
 
@@ -535,7 +553,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     }
 
     public void updateCurrentViewableUUIDToDownload() {
-        currentViewableUUIDToDownload = SessionUtility.getRequestParameterValue(VIEWABLE_UUID_REMOTE_COMMAND_KEY);       
+        currentViewableUUIDToDownload = SessionUtility.getRequestParameterValue(VIEWABLE_UUID_REMOTE_COMMAND_KEY);
     }
 
     public StreamedContent downloadCurrentViewableUUIDToDownload() {
@@ -575,12 +593,12 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
     @Override
     public String getItemElementsListTitle() {
-        return "Files"; 
-    } 
+        return "Files";
+    }
 
     @Override
     public boolean getRenderItemElementList() {
-        return !isCurrentEntityTypeFile(); 
+        return !isCurrentEntityTypeFile();
     }
 
     @Override
