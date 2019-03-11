@@ -17,6 +17,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
@@ -44,6 +45,8 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private static final Logger LOGGER = Logger.getLogger(ItemDomainMachineDesignController.class.getName());
 
     public final static String controllerNamed = "itemDomainMachineDesignController";
+    
+    private List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
 
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private Boolean createCatalogElement = null;
@@ -121,6 +124,18 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
         return false;
     }
+    
+    public boolean isCollapsedRelatedMAARCItemsForCurrent() {
+        return getRelatedMAARCRelationshipsForCurrent().size() < 1;
+    }
+
+    public List<ItemElementRelationship> getRelatedMAARCRelationshipsForCurrent() {
+        if (relatedMAARCRelationshipsForCurrent == null) {
+            relatedMAARCRelationshipsForCurrent = ItemDomainMAARCController.getRelatedMAARCRelationshipsForItem(getCurrent()); 
+        }
+
+        return relatedMAARCRelationshipsForCurrent;
+    }
 
     @Override
     public void resetListDataModel() {
@@ -128,6 +143,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         currentMachineDesignListRootTreeNode = null;
         machineDesignTemplateRootTreeNode = null;
         machineDesignTreeRootTreeNode = null;
+        relatedMAARCRelationshipsForCurrent = null;
     }
 
     // <editor-fold defaultstate="collapsed" desc="Dual list view configuration implementation ">

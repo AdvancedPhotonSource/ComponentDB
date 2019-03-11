@@ -175,15 +175,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     public List<ItemElementRelationship> getRelatedMAARCRelationshipsForCurrent() {
         if (relatedMAARCRelationshipsForCurrent == null) {
-            List<ItemElementRelationship> itemElementRelationshipList = getCurrent().getSelfElement().getItemElementRelationshipList();
-            relatedMAARCRelationshipsForCurrent = new ArrayList<>();
-            String maarcRelationshipName = ItemDomainMAARCController.MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME;
-
-            for (ItemElementRelationship ier : itemElementRelationshipList) {
-                if (ier.getRelationshipType().getName().equals(maarcRelationshipName)) {
-                    relatedMAARCRelationshipsForCurrent.add(ier);
-                }
-            }
+            relatedMAARCRelationshipsForCurrent = ItemDomainMAARCController.getRelatedMAARCRelationshipsForItem(getCurrent()); 
         }
 
         return relatedMAARCRelationshipsForCurrent;

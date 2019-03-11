@@ -6,25 +6,43 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <ui:include src="../../common/private/commonChildListActionButtons.xhtml">        
         <ui:param name="childEntityController" value="#{itemDomainInventoryController}"/>
-        <ui:param name="childEntityTypeName" value="#{entityTypeName}InventoryRelationship"/>
-        <ui:param name="customizeDisplayChildEntityTypeName" 
-                  value="#{itemDomainInventoryController.entityTypeName}MaarcRelationship" />        
+        <ui:param name="childEntityTypeName" value="#{entityTypeName}Relationship"/>        
+        <ui:param name="customizableListDataTable" value="#{false}" /> 
     </ui:include>
 
-    <p:dataTable id="#{entityTypeName}InventoryRelationshipListDataTable"
-                 value="#{entityController.relatedInventoryRelationshipsForCurrent}"
+    <p:dataTable id="#{entityTypeName}RelationshipListDataTable"
+                 value="#{entityController.relatedRelationshipsForCurrent}"
                  var="itemElementRelationship">    
         <ui:param name="itemListObject"
-                      value="#{itemElementRelationship.firstItemElement.parentItem}"/>
-        <ui:include src="../../itemDomainInventory/private/itemDomainInventoryListObject.xhtml">            
-            <ui:param name="entityController"
-                      value="#{itemDomainInventoryController}" />
-        </ui:include>
-        <p:column headerText="Actions">
+                      value="#{itemElementRelationship.firstItemElement.parentItem}"/>        
+        
+        <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemThumbnailColumn.xhtml" />                                 
+        
+        <p:column headerText="Name"
+                  exportFunction="#{itemListObject.toString()}"> 
+            <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml"> 
+                <ui:param name="displayString"
+                          value="#{itemListObject}" />
+                <ui:param name="itemObject"
+                          value="#{itemListObject}" />
+            </ui:include>            
+        </p:column>
+        
+        <p:column headerText="Domain">
+            <h:outputText value="#{itemListObject.domain.name}" /> 
+        </p:column>
+        
+        <p:column headerText="QrId">
+            <h:outputText value="#{itemListObject.qrIdDisplay}" />            
+        </p:column>
+              
+        <p:column headerText="Actions"
+                  exportable="false">
             <p:commandLink id="#{entityTypeName}ItemElementRelationshipListDeleteLink" 
                            oncomplete="PF('ItemElementRelationshipDestroyConfirmDialogWidget#{itemElementRelationship.viewUUID}').show()" 
                            rendered="#{isEntityWriteable}" 
@@ -39,7 +57,7 @@ See LICENSE file.
                              severity="alert" 
                              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
                 <p:commandButton value="Yes" 
-                                 update="#{entityTypeName}InventoryRelationshipListDataTable"
+                                 update="#{entityTypeName}RelationshipListDataTable"
                                  id="#{containedItemListObject.viewUUID}relationshipDestroyDialogYesConfirmButton"
                                  onstart="PF('ItemElementRelationshipDestroyConfirmDialogWidget#{itemElementRelationship.viewUUID}').hide();
                                           PF('loadingDialog').show()" 
@@ -53,7 +71,7 @@ See LICENSE file.
 
     <ui:include src="../../item/private/itemBasicListCustomDisplayDialog.xhtml" >
         <ui:param name="viewName" value="MaarcRelationship"/>
-        <ui:param name="entityController" value="#{itemDomainInventoryController}"/>
+        <ui:param name="entityController" value="#{itemGenericViewController}"/>
     </ui:include>
 
 </ui:composition>
