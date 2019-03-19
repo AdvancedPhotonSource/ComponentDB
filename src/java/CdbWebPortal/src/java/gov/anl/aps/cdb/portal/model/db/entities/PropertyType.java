@@ -4,6 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -55,6 +57,21 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyType.findByIsDynamic", query = "SELECT p FROM PropertyType p WHERE p.isDynamic = :isDynamic"),
     @NamedQuery(name = "PropertyType.findByIsInternal", query = "SELECT p FROM PropertyType p WHERE p.isInternal = :isInternal"),
     @NamedQuery(name = "PropertyType.findByIsActive", query = "SELECT p FROM PropertyType p WHERE p.isActive = :isActive")})
+@JsonIgnoreProperties({
+    "allowedDomainList",
+    "entityTypeList",
+    "propertyValueList",
+    "propertyTypeCategory",
+    "propertyTypeHandler",
+    "propertyTypeMetadataList",
+    "allowedPropertyValueList",
+        
+    //Transient Variables 
+    "displayType",
+    "sortedAllowedPropertyValueList",
+    "allowedDomainString"
+})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PropertyType extends CdbEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -95,20 +112,20 @@ public class PropertyType extends CdbEntity implements Serializable {
     @JoinTable(name = "allowed_entity_type", joinColumns = {
         @JoinColumn(name = "property_type_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "entity_type_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany    
     private List<EntityType> entityTypeList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")    
     private List<PropertyValue> propertyValueList;
     @JoinColumn(name = "property_type_category_id", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne    
     private PropertyTypeCategory propertyTypeCategory;
     @JoinColumn(name = "property_type_handler_id", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne    
     private PropertyTypeHandler propertyTypeHandler;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")    
     private List<PropertyTypeMetadata> propertyTypeMetadataList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")
-    @OrderBy("sortOrder ASC")
+    @OrderBy("sortOrder ASC")    
     private List<AllowedPropertyValue> allowedPropertyValueList;
 
     private transient List<AllowedPropertyValue> sortedAllowedPropertyValueList;

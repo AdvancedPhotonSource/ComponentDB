@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -55,6 +56,19 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM ItemElement i WHERE i.description = :description"),
     @NamedQuery(name = "ItemElement.findBySortOrder",
             query = "SELECT i FROM ItemElement i WHERE i.sortOrder = :sortOrder"),})
+@JsonIgnoreProperties(value = {  
+    "itemCanHaveInventoryItem",
+    "catalogDisplayString",
+    "inventoryDisplayString",
+    "machineDesignDisplayString",
+    "constraintInformation",
+    "catalogItem",
+    "inventoryItem",
+    "machineDesignItem",
+    "temporaryIsRequiredValue",
+    "customizableSortOrder",
+    "childItemElementListTreeTableRootNode"
+})
 public class ItemElement extends CdbDomainEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

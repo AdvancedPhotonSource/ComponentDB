@@ -4,6 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -45,6 +48,16 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "UserInfo.findByEmail", query = "SELECT u FROM UserInfo u WHERE u.email = :email"),
     @NamedQuery(name = "UserInfo.findByPassword", query = "SELECT u FROM UserInfo u WHERE u.password = :password"),
     @NamedQuery(name = "UserInfo.findByDescription", query = "SELECT u FROM UserInfo u WHERE u.description = :description")})
+@JsonIgnoreProperties({
+    "itemElementLists",
+    "password",
+    "entityInfo",
+    
+    //Transient Variables 
+    "userGroupListString",
+    "fullNameForSelection"
+})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserInfo extends SettingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -323,6 +336,7 @@ public class UserInfo extends SettingEntity implements Serializable {
         return fullNameForSelection;
     }
     
+    @JsonIgnore
     public String getDisplayName() {
         return "(" + getUsername() + ") " + getFullNameForSelection();
     }
