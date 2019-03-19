@@ -668,14 +668,16 @@ class ItemHandler(CdbDbEntityHandler):
             else:
                 raise InvalidArgument("First item element should be inventory and second location. Invalid item element ids provided.")
         elif relationshipTypeName == self.relationshipTypeHandler.MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME:
-            if firstDomainName == self.domainHandler.INVENTORY_DOMAIN_NAME and secondDomainName == self.domainHandler.MAARC_DOMAIN_NAME:
-                # Check for duplicates
-                for itemElementRelationship in ierList:
-                    if itemElementRelationship.first_item_element_id == firstItemElementId and itemElementRelationship.second_item_element_id == secondItemElementId:
-                        raise ObjectAlreadyExists("The maarc connection relationship between the specified item elements already exists")
-                mayAdd = True
-            else:
-                raise InvalidArgument("First item element should be inventory and second maarc. Invalid item element ids provided.")
+            if firstDomainName == self.domainHandler.INVENTORY_DOMAIN_NAME or firstDomainName == self.domainHandler.MACHINE_DESIGN_NAME:
+                if secondDomainName == self.domainHandler.MAARC_DOMAIN_NAME:
+                    # Check for duplicates
+                    for itemElementRelationship in ierList:
+                        if itemElementRelationship.first_item_element_id == firstItemElementId and itemElementRelationship.second_item_element_id == secondItemElementId:
+                            raise ObjectAlreadyExists("The maarc connection relationship between the specified item elements already exists")
+                    mayAdd = True
+
+            if not mayAdd:
+                raise InvalidArgument("First item element should be inventory or machine design and second maarc. Invalid item element ids provided.")
         else:
             raise InvalidArgument("Unsupported relationship type name has been specified: %s." % relationshipTypeName)
 
