@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.dm.api.ExperimentDsApi;
 import gov.anl.aps.dm.common.exceptions.ConfigurationError;
 import gov.anl.aps.dm.common.exceptions.DmException;
@@ -15,6 +16,7 @@ import gov.anl.aps.dm.common.exceptions.ObjectNotFound;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import javax.jms.Session;
 import org.apache.log4j.Logger;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -49,7 +51,7 @@ public class DmPropertyTypeHandler extends AbstractPropertyTypeHandler {
     }
 
     @Override
-    public StreamedContent fileDownloadActionCommand(PropertyValue propertyValue) {
+    public StreamedContent fileDownloadActionCommand(PropertyValue propertyValue) throws ExternalServiceError {
         try {
             ByteArrayOutputStream byteArrayOutputStream = getByteArrayOutputStream(propertyValue); 
             String fileName = propertyValue.getPropertyMetadataValueForKey(EXPERIMENT_FILE_NAME_KEY);            
@@ -58,10 +60,9 @@ public class DmPropertyTypeHandler extends AbstractPropertyTypeHandler {
             String mimeContentType = generateMimeContentType(fileName);
             return new DefaultStreamedContent(pipedInputStream, mimeContentType, fileName);
         } catch (ExternalServiceError ex) {
-            logger.error("ERROR: " + ex.getMessage());
-        }
-
-        return null;
+            logger.error("ERROR: " + ex.getMessage());           
+            throw ex; 
+        }       
     }
 
     public ByteArrayOutputStream getByteArrayOutputStream(PropertyValue propertyValue) throws ExternalServiceError {
