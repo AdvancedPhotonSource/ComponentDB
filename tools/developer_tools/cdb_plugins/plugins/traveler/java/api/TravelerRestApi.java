@@ -19,24 +19,21 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.CdbExceptionFactory;
 import gov.anl.aps.cdb.common.utilities.NoServerVerificationSSLSocketFactory;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.net.URLEncoder;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.log4j.Logger;
 import org.primefaces.json.JSONObject;
-import org.primefaces.util.Base64;
 
 
 /**
@@ -94,7 +91,7 @@ public class TravelerRestApi {
     public TravelerRestApi(String webServiceUrl, String basicAuthUser, String basicAuthPass) throws ConfigurationError {
         this.basicAuth = true; 
         String basicAuthUserPass = basicAuthUser + ":" + basicAuthPass; 
-        this.basicAuthCredentials = Base64.encodeToString(basicAuthUserPass.getBytes(),true); 
+        this.basicAuthCredentials = Base64.getEncoder().encodeToString(basicAuthUserPass.getBytes()); 
         
         configureFromString(webServiceUrl);
     }
