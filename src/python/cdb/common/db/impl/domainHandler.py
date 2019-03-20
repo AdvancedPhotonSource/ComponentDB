@@ -18,6 +18,7 @@ class DomainHandler(CdbDbEntityHandler):
     INVENTORY_DOMAIN_NAME = "Inventory"
     LOCATION_DOMAIN_NAME = "Location"
     MAARC_DOMAIN_NAME = "MAARC"
+    MACHINE_DESIGN_NAME = "Machine Design"
 
     def __init__(self):
         CdbDbEntityHandler.__init__(self)
