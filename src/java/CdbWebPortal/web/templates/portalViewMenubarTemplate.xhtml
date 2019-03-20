@@ -17,37 +17,37 @@ See LICENSE file.
                                      or fn:startsWith(view.viewId, '/views/itemDomainInventory/browse')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Browse By Function" 
                             icon="ui-icon-catalog" 
-                            url="/views/itemDomainCatalog/browseCategoryType"  
+                            url="#{request.contextPath}/views/itemDomainCatalog/browseCategoryType"  
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browseCategoryType') ? 'activeMenuItem' : ''} "/>
                 <p:menuitem value="Browse By Owner"
                             icon="ui-icon-catalog" 
-                            url="/views/itemDomainCatalog/browseOwner"  
+                            url="#{request.contextPath}/views/itemDomainCatalog/browseOwner"  
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browseOwner') ? 'activeMenuItem' : ''} "/>
                 <p:menuitem value="Browse By Location" 
                             icon="ui-icon-inventory"
-                            url="/views/itemDomainInventory/browseLocation"  
+                            url="#{request.contextPath}/views/itemDomainInventory/browseLocation"  
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/browseLocation') ? 'activeMenuItem' : ''} "/>
 
             </p:submenu>
             <p:menuitem value="Catalog" id="catalogButton"
                         icon="ui-icon-catalog"
-                        url="/views/itemDomainCatalog/list"
+                        url="#{request.contextPath}/views/itemDomainCatalog/list"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') and 
                                       !fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} "/>
             <p:menuitem value="Inventory"
                         icon="ui-icon-inventory"
-                        id="inventoryMenubarButton" url="/views/itemDomainInventory/list"
+                        id="inventoryMenubarButton" url="#{request.contextPath}/views/itemDomainInventory/list"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') and 
                                       !fn:startsWith(view.viewId, '/views/itemDomainInventory/browse') ? 'activeMenuItem' : ''} "/>
             
             <p:menuitem value="Machine Design - Housing" 
                         icon="ui-icon-machine-design"
-                        id="machineDesignMenubarButton" url="/views/itemDomainMachineDesign/list"
+                        id="machineDesignMenubarButton" url="#{request.contextPath}/views/itemDomainMachineDesign/list"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/') ? 'activeMenuItem' : ''} "/>
             
             <p:menuitem value="MAARC" 
                         icon="ui-icon-maarc"
-                        id="maarcMenubarButton" url="/views/itemDomainMAARC/list" 
+                        id="maarcMenubarButton" url="#{request.contextPath}/views/itemDomainMAARC/list" 
                         rendered="#{resources.EnabledMAARCDomainFunctionality}"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMAARC/') ? 'activeMenuItem' : ''} "/>
             
@@ -90,13 +90,13 @@ See LICENSE file.
                                     icon="fa fa-book"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/adminLog/') ? 'activeMenuItem' : ''} "
-                                    url="/views/adminLog/browseSystemLogs" />
+                                    url="#{request.contextPath}/views/adminLog/browseSystemLogs" />
                             
                             <p:menuitem value="Sessions"
                                         icon="fa fa-connectdevelop"
                                         rendered="#{loginController.loggedInAsAdmin}"
                                         styleClass="#{fn:startsWith(view.viewId, '/views/system/') ? 'activeMenuItem' : ''} "
-                                        url="/views/system/browseSystemSessions" /> 
+                                        url="#{request.contextPath}/views/system/browseSystemSessions" /> 
                             
                             <p:menuitem value="Property Types" 
                                         id="adminPropertyTypesButton"
@@ -128,7 +128,7 @@ See LICENSE file.
                                     rendered="#{loginController.loggedIn}" icon="fa fa-cogs"/>
                         <p:menuitem value="Login" id="loginButton" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="fa fa-sign-in"/>
                         <p:menuitem value="Logout" id="logoutButton" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="fa fa-sign-out"/>
-                        <p:menuitem value="About" url="/views/about.xhtml" icon="fa fa-question"/>
+                        <p:menuitem value="About" url="#{request.contextPath}/views/about.xhtml" icon="fa fa-question"/>
                     </p:menubar>                    
                 </p:panelGrid>
             </f:facet>
