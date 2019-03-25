@@ -13,10 +13,10 @@ See LICENSE file.
     <p:inplace id="name#{viewName}" 
                widgetVar="name#{viewName}Widget"
                rendered="#{entityController.entityDisplayItemName}"
-               editor="#{isEntityWriteable}" 
+               editor="#{isEntityWriteable}"                
                toggleable="false"
                styleClass="entityDataEmphasizedText">
-        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
         <f:facet name="output">
             <p:outputPanel styleClass="inlineFlexOutputPanel">
                 <p:commandLink id="nameEditShowButton"
