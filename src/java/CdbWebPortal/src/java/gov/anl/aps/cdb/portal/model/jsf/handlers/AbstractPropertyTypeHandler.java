@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
+import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
@@ -89,7 +90,7 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
      * See PropertyTypeHandlerInterface
      */
     @Override
-    public StreamedContent fileDownloadActionCommand(PropertyValue propertyValue) {
+    public StreamedContent fileDownloadActionCommand(PropertyValue propertyValue) throws ExternalServiceError {
         return null;
     }
 

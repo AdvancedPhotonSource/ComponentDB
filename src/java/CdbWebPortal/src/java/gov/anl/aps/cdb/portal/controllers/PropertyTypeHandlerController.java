@@ -94,6 +94,7 @@ public class PropertyTypeHandlerController extends CdbEntityController<PropertyT
             for (int i = 0; i < allPluginPropertyTypeHandlerNames.size(); i++) {
                 String pluginPropertyTypeHanlder = allPluginPropertyTypeHandlerNames.get(i); 
                 PropertyTypeHandler newHandler = createEntityInstance();            
+                // Temporarly assigned to identifiy the list item. 
                 newHandler.setId((i+1)*-1);
                 newHandler.setName(pluginPropertyTypeHanlder);
                 newHandler.setDescription("Automatically added for plugin");

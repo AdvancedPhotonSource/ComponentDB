@@ -70,7 +70,7 @@ See LICENSE file.
 
     <p:inplace widgetVar="locationDetailsViewOutputEditableWidget"
                toggleable="false">
-        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
         <f:facet name="output">
             <p:outputPanel styleClass="inlineFlexOutputPanel">
                 <p:commandLink id="locationDetailsViewOutputEditShowButton"

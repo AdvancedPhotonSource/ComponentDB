@@ -142,8 +142,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         super.resetListDataModel();
         currentMachineDesignListRootTreeNode = null;
         machineDesignTemplateRootTreeNode = null;
-        machineDesignTreeRootTreeNode = null;
-        relatedMAARCRelationshipsForCurrent = null;
+        machineDesignTreeRootTreeNode = null;        
     }
 
     // <editor-fold defaultstate="collapsed" desc="Dual list view configuration implementation ">
@@ -1554,6 +1553,8 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     @Override
     protected void resetVariablesForCurrent() {
         super.resetVariablesForCurrent();
+        
+        relatedMAARCRelationshipsForCurrent = null; 
 
         resetItemElementEditVariables();
     }

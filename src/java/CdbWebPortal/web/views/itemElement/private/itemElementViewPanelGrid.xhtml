@@ -17,7 +17,7 @@ See LICENSE file.
 
         <h:outputLabel for="name" value="Name" styleClass="entityDataEmphasizedLabel"/>
         <p:inplace id="name" editor="#{isEntityWriteable}" toggleable="#{isEntityWriteable}" emptyLabel="-" styleClass="entityDataEmphasizedText">
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
             <p:inputText value="#{itemElementObject.name}" title="Name" styleClass="entityDataEmphasizedText"/>
         </p:inplace>
         
@@ -49,7 +49,7 @@ See LICENSE file.
                    toggleable="#{isEntityWriteable}" 
                    emptyLabel="-"
                    styleClass="entityDataText">
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
             <h:inputTextarea value="#{itemElementObject.description}" title="Description" styleClass="entityDataText"/>
         </p:inplace>
 
@@ -59,7 +59,7 @@ See LICENSE file.
                    toggleable="#{isEntityWriteable}" 
                    emptyLabel="-"
                    styleClass="entityDataText">
-            <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
             <h:inputText value="#{itemElementObject.sortOrder}" title="Sort Order" styleClass="entityDataText"/>
         </p:inplace>
 

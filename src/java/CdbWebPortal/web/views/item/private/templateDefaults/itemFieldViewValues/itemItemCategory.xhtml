@@ -16,7 +16,7 @@ See LICENSE file.
                editor="#{isEntityWriteable}" 
                toggleable="false" 
                styleClass="entityDataText" > 
-        <p:ajax event="save" oncomplete="inlineSaveEntity()" update="itemTypeSelectCB#{viewName}"/>
+        <p:ajax event="save" oncomplete="inlineSaveEntity()" update="@this itemTypeSelectCB#{viewName}"/>
         <p:ajax event="cancel" oncomplete="reloadItemCategory()"/>
 
         <f:facet name="output">
