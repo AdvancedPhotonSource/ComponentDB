@@ -397,6 +397,10 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
         return getItemController().isDisplayRowExpansionLogs(item);
     }
     
+    public boolean renderRowExpansionContents(Item item) {
+        return getItemController().renderRowExpansionContents(item); 
+    }
+    
     @Override
     public String update() {
         return getItemController().update();
