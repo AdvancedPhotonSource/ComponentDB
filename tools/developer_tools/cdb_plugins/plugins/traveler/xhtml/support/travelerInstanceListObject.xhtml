@@ -11,6 +11,15 @@ See LICENSE file.
 
     <ui:param name="renderedCreatedFromTemplate"
               value="#{renderedCreatedFromTemplate != null ? renderedCreatedFromTemplate : true}" /> 
+    
+    <ui:param name="renderedDescription"
+              value="#{renderedDescription != null ? renderedDescription : true}" /> 
+    
+    <ui:param name="renderedEstimatedProgress"
+              value="#{renderedEstimatedProgress != null ? renderedEstimatedProgress : true}" /> 
+    
+    <ui:param name="renderedArchivedOn"
+              value="#{renderedArchivedOn != null ? renderedArchivedOn : false}" /> 
               
 
     <p:column headerText="Title">
@@ -20,7 +29,8 @@ See LICENSE file.
         </h:outputLink>
     </p:column>
 
-    <p:column headerText="Description">
+    <p:column headerText="Description"
+              rendered="#{renderedDescription}">
         <h:outputText value="#{travelerObject.description}" />
     </p:column>
 
@@ -37,9 +47,15 @@ See LICENSE file.
         <h:outputText value="#{itemTravelerDomainInventoryController.getFormName(travelerObject)}" />
     </p:column>
 
-    <p:column headerText="Estimated Progress">
+    <p:column headerText="Estimated Progress"
+              rendered="#{renderedEstimatedProgress}">
         <ui:include src="travelerInstanceObjectProgress.xhtml" />
     </p:column>
+    
+    <p:column headerText="Archived On"
+              rendered="#{renderedArchivedOn}">
+        <h:outputText value="#{travelerObject.archivedOn}" />
+    </p:column>                  
 
 </ui:composition>
 
