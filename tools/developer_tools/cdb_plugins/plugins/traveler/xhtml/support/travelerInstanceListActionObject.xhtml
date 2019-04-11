@@ -8,7 +8,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">      
-    
+
     <ui:param name="renderAddToBinderButton"
               value="#{renderAddToBinderButton != null ? renderAddToBinderButton : true}" /> 
 
@@ -24,19 +24,43 @@ See LICENSE file.
             <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
                                          value="#{travelerObject}" />
         </p:commandLink>
-        
+
         <p:commandLink id="#{entityTypeName}TravelerMoveToBinder"
                        styleClass="fa-link-icon fa fa-suitcase"
                        update="@form:travelerInstanceAddToBinderDialog"
                        onstart="PF('loadingDialog').show()"
                        oncomplete="PF('loadingDialog').hide();
-                                   PF('travelerInstanceAddToBinderDialogWidget').show()"
+                       PF('travelerInstanceAddToBinderDialogWidget').show()"
                        action="#{itemTravelerDomainInventoryController.prepareShowAddTravelerToBinderDialog()}"
                        rendered="#{renderAddToBinderButton and isEntityWriteable and travelerObject.traveler}">
             <p:tooltip for="#{entityTypeName}TravelerMoveToBinder" value="Add traveler to binder."/>
             <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
                                          value="#{travelerObject}" />            
         </p:commandLink>
+
+        <p:commandLink id="#{entityTypeName}TravelerRemoveFromBinder"
+                       styleClass="fa-link-icon fa-icon-warning fa fa-suitcase"                       
+                       onstart="PF('loadingDialog').show()"                       
+                       oncomplete="PF('loadingDialog').hide();"
+                       update="@form"
+                       action="#{itemTravelerDomainInventoryController.removeTravelerFromBinder(binderObject, travelerObject)}"
+                       rendered="#{!renderAddToBinderButton and isEntityWriteable and travelerObject.traveler}">
+            <p:tooltip for="#{entityTypeName}TravelerRemoveFromBinder" value="Remove traveler from binder."/>                      
+        </p:commandLink>
+
+
+        <p:commandLink id="#{entityTypeName}TravelerArchive"
+                       styleClass="fa-link-icon fa-icon-warning fa fa-archive"                       
+                       onstart="PF('loadingDialog').show()"
+                       oncomplete="PF('loadingDialog').hide()"
+                       update="@form"
+                       action="#{itemTravelerDomainInventoryController.archiveTraveler(travelerObject)}"
+                       rendered="#{isEntityWriteable and travelerObject.traveler}">
+            <p:tooltip for="#{entityTypeName}TravelerArchive" value="Archive the traveler."/>
+            <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
+                                         value="#{travelerObject}" />
+        </p:commandLink>
+
     </p:column>
 
 </ui:composition>

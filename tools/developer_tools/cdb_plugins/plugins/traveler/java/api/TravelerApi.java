@@ -142,6 +142,19 @@ public class TravelerApi extends TravelerRestApi  {
         return binder;
     }
     
+    public Binder removeWorkFromBinder(String binderId, String workId, String userName) throws CdbException {
+        String requestUrl = "/apis/removeWork/binders/" + binderId + "/";
+        
+        Map data = new HashMap();         
+        data.put("workId", workId);
+        data.put("userName", userName); 
+        
+        String jsonString = invokePostRequest(requestUrl, data);
+        Binder binder = (Binder) TravelerObjectFactory.createObject(jsonString, Binder.class);         
+        
+        return binder;
+    }
+    
     public Form createForm(String formName, String userName, String html) throws InvalidArgument, ExternalServiceError, ObjectNotFound, CdbException{
         ArgumentUtility.verifyNonEmptyString("Form Name", formName);
         ArgumentUtility.verifyNonEmptyString("User Name", userName);
@@ -174,6 +187,20 @@ public class TravelerApi extends TravelerRestApi  {
         Traveler traveler = (Traveler) TravelerObjectFactory.createObject(jsonString, Traveler.class); 
         return traveler; 
         
+    }
+    
+    public Traveler updateTravelerArchived(String travelerId, Boolean archivedState) throws InvalidArgument, CdbException {
+        ArgumentUtility.verifyNonEmptyString("Traveler ID", travelerId);
+        ArgumentUtility.verifyNonNullObject("Archived State", archivedState);
+        
+        String requestUrl = "/apis/archived/traveler/" + travelerId + "/";
+        
+        Map data = new HashMap();        
+        data.put("archived", archivedState);
+        
+        String jsonString = invokePostRequest(requestUrl, data);
+        Traveler traveler = (Traveler) TravelerObjectFactory.createObject(jsonString, Traveler.class); 
+        return traveler; 
     }
     
     public Traveler updateTraveler(String travelerId, String userName, String title, String description, Date deadline, Double status) throws InvalidArgument, CdbException {
