@@ -569,6 +569,10 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     
     public List<Item> getItemsCreatedFromCurrentTemplateItem() {
         return getItemController().getItemsCreatedFromCurrentTemplateItem(); 
+    } 
+    
+    public void deleteProperty(PropertyValue cdbDomainEntityProperty) {
+        getItemController().deleteProperty(cdbDomainEntityProperty);
     }
 
 }
