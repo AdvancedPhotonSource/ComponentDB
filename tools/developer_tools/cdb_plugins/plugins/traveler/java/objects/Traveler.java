@@ -22,6 +22,7 @@ public class Traveler extends BinderTraveler {
     private double totalInput;
     private double finishedInput;
     private boolean archived; 
+    private String archivedOn; 
     private LinkedList<String> notes; 
     private LinkedList<String> data; 
     private String activeForm; 
@@ -80,6 +81,10 @@ public class Traveler extends BinderTraveler {
 
     public boolean isArchived() {
         return archived;
+    }
+
+    public String getArchivedOn() {
+        return archivedOn;
     }
 
     public LinkedList<String> getNotes() {
