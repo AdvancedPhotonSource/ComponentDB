@@ -4,8 +4,12 @@
  */
 package gov.anl.aps.cdb.rest.routes;
 
+import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -19,26 +23,59 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("/items")
 public class ItemRoute {
-    
-    @EJB 
-    ItemFacade itemFacade; 
-    
+
+    @EJB
+    ItemFacade itemFacade;
+
+    @EJB
+    DomainFacade domainFacade;
+
     @GET
     @Path("/ById/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Item getItemById(@PathParam("id") String id) {
         int identifier = Integer.parseInt(id);
-        Item findById = itemFacade.findById(identifier); 
-        return findById; 
+        Item findById = itemFacade.findById(identifier);
+        return findById;
     }
-    
+
     @GET
     @Path("/ByQrId/{qrId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Item getItemByQrId(@PathParam("qrId") String qrId) {
         int qrIdInt = Integer.parseInt(qrId);
-        Item findByQrId = itemFacade.findByQrId(qrIdInt); 
-        return findByQrId; 
+        Item findByQrId = itemFacade.findByQrId(qrIdInt);
+        return findByQrId;
+    }
+
+    @GET
+    @Path("/PropertiesForItem/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PropertyValue> getPropertiesForItem(@PathParam("itemId") String itemId) {
+        Item itemById = getItemById(itemId);
+        return itemById.getPropertyValueList();
     }
     
+    @GET
+    @Path("/ImagePropertiesForItem/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PropertyValue> getImagePropertiesForItem(@PathParam("itemId") String itemId) {
+        Item itemById = getItemById(itemId);
+        return itemById.getImagePropertyList();
+    }
+
+    @GET
+    @Path("/ByDomain/{domainName}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Item> getItemsByDomain(@PathParam("domainName") String domainName) {
+        return itemFacade.findByDomain(domainName);
+    }
+
+    @GET
+    @Path("/Domains")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Domain> getDomainList() {
+        return domainFacade.findAll();
+    }
+
 }
