@@ -29,7 +29,7 @@ See LICENSE file.
 
     <p:column headerText="Location Details" sortBy="#{locationDetails}" 
               rendered="#{settingObject.displayLocationDetails and renderedLocation}"
-              filterBy="#{locationDetails}"
+              filterBy="#{facesUtility.getFilterString(locationDetails)}"
               filterable="#{filterable}"
               sortable="#{sortable}"
               filterMatchMode="contains">
