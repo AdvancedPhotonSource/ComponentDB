@@ -106,4 +106,23 @@ public class FacesUtility {
     public void displayGrowlInfoMessage(String summary, String message) {
         SessionUtility.addInfoMessage(summary, message);
     }
+    
+    /**
+     * In Primefaces 7.0 the filterBy attribute of a column cannot have a ui:param specified directly. 
+     * ui:param value is passed into this function and returned to the filterBy attribute.
+     * Resolves issue with filterBy not working for columns with ui:param filterBy value. 
+     * 
+     * TODO: Remove functionality when not necessary. 
+     * 
+     * @param string
+     * @return 
+     */
+    public String getFilterString(String string) {
+        if (string != null) {
+            return string; 
+        }
+        else {
+            return ""; 
+        }
+    }
 }

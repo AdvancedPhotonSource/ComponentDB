@@ -1191,7 +1191,9 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         String result = super.getPrimaryImageValueForItem(item); 
         if (result.equals("")) {
             Item catalogItem = item.getDerivedFromItem();
-            return super.getPrimaryImageValueForItem(catalogItem);
+            if (catalogItem != null) {
+                return super.getPrimaryImageValueForItem(catalogItem);
+            }
         }
         return result; 
     }

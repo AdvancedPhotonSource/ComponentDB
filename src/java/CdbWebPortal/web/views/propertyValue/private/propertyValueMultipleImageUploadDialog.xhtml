@@ -30,11 +30,10 @@ See LICENSE file.
                                      update="propertyValueImageUploadSelectOne" />
                 </p:column>
             </p:panelGrid>
-
+                
             <p:fileUpload fileUploadListener="#{propertyValueImageUploadBean.handleFileUpload}"
                           multiple="true"
-                          allowTypes="/(\.|\/)(gif|jpe?g|png|pdf)$/"
-                          />
+                          allowTypes="/(\.|\/)([gG][iI][fF]|[jJ][pP][eE]?[gG]|[pP][nN][gG]|[pP][dD][fF])$/"/>
 
             <f:facet name="footer" class="dialog">
                 <p:commandButton id="#{entityTypeName}PropertyValueImageUploadSubmitButton"

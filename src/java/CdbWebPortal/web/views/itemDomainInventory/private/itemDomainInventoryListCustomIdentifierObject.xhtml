@@ -10,12 +10,14 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
     
     <ui:param name="rendered" value="#{rendered != null ? rendered : true}" />
+    <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
 
     <ui:param name="partNameString"
               value="#{partNameString != null ? partNameString : itemDomainInventoryController.getItemDisplayString(itemListObject)}" />
     <p:column headerText="Inventory Item"
               sortBy="#{partNameString}"
-              filterBy="#{partNameString}" filterMatchMode="contains"                  
+              filterBy="#{facesUtility.getFilterString(partNameString)}" 
+              filterMatchMode="contains"
               filterable="#{filterable}"
               sortable="#{sortable}"
               rendered="#{rendered}">
