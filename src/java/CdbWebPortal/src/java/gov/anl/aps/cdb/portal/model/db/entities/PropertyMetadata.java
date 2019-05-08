@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -51,6 +52,7 @@ public class PropertyMetadata extends CdbEntity implements Serializable {
     private String metadataValue;
     @JoinColumn(name = "property_value_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private PropertyValue propertyValue;
 
     public PropertyMetadata() {

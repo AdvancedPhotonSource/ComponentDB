@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,6 +22,7 @@ public abstract class SettingEntity extends CdbEntity implements Serializable {
     protected transient HashMap<String, EntitySetting> entitySettingMap = null;
     private transient Date userSettingsModificationDate = null;
 
+    @JsonIgnore
     public abstract List<EntitySetting> getSettingList();
     
     public abstract void setSettingList(List<EntitySetting> entitySettingList); 
