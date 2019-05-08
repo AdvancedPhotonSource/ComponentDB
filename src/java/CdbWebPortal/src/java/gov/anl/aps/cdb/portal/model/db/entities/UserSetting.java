@@ -4,6 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -29,6 +31,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "UserSetting.findAll", query = "SELECT u FROM UserSetting u"),
     @NamedQuery(name = "UserSetting.findById", query = "SELECT u FROM UserSetting u WHERE u.id = :id"),
     @NamedQuery(name = "UserSetting.findByValue", query = "SELECT u FROM UserSetting u WHERE u.value = :value")})
+@JsonIgnoreProperties({
+    "user"
+})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserSetting extends EntitySetting implements Serializable {
 
     private static final long serialVersionUID = 1L;

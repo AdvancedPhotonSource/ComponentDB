@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.text.ParseException;
@@ -102,17 +103,23 @@ public class PropertyValue extends CdbEntity implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")
     private List<PropertyValueHistory> propertyValueHistoryList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")
+    @JsonIgnore
     private List<PropertyMetadata> propertyMetadataList;
 
     public static final transient SimpleDateFormat InputDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
-
+    
+    @JsonIgnore
     private transient Boolean booleanValue;
+    @JsonIgnore
     private transient Date dateValue;
 
+    @JsonIgnore
     private transient String infoActionCommand;
+    @JsonIgnore
     private transient boolean handlerInfoSet;
 
-    private transient List<PropertyValueMetadata> propertyValueMetadataList;
+    private transient List<PropertyValueMetadata> propertyValueMetadataList;    
+    @JsonIgnore
     private transient Boolean isHasPropertyMetadata = null;
 
     public PropertyValue() {
@@ -560,6 +567,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
 
         PropertyTypeMetadata propertyTypeMetadata;
         PropertyMetadata propertyMetadata;
+        @JsonIgnore
         PropertyValue propertyValue;
 
         public PropertyValueMetadata(PropertyValue propertyValue, PropertyTypeMetadata propertyTypeMetadata) {

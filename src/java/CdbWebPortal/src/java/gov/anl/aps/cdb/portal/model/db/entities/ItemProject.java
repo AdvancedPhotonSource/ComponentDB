@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -46,6 +47,7 @@ public class ItemProject extends CdbEntity implements Serializable {
     @Size(max = 256)
     private String description;
     @ManyToMany(mappedBy = "itemProjectList")
+    @JsonIgnore
     private List<Item> itemList;
 
     public ItemProject() {

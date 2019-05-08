@@ -4,6 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
@@ -161,8 +164,35 @@ import org.primefaces.model.TreeNode;
     ),
 })
 
+@JsonIgnoreProperties(value = {
+    // Transient
+    "assemblyRootTreeNode",    
+    "itemTypeString",
+    "itemCategoryString",
+    "itemSourceString",
+    "itemProjectString",
+    "qrIdDisplay",
+    "qrIdFilter",
+    "itemCableConnectionsRelationshipList",
+    "itemAvaliableConnectorsList",
+    "editEntityTypeString",
+    "editItemProjectString",
+    "logList",
+    "itemElementDisplayList",
+    "itemElementDisplayListEmpty",
+    "itemElementRelationshipList",
+    "itemElementRelationshipList1",
+    "itemElementRelationshipList2",
+    "entityTypeString",
+    "entityTypeDisplayList", 
+    "listDisplayDescription",
+    "primaryImageValue",
+    "availableItemTypes",
+    "lastKnownItemCategoryList",
+    "isItemTemplate"
+})
 public class Item extends CdbDomainEntity implements Serializable {
-
+        
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -182,43 +212,47 @@ public class Item extends CdbDomainEntity implements Serializable {
     @JoinTable(name = "item_entity_type", joinColumns = {
         @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "entity_type_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany    
+    @JsonProperty("entityTypeList")
     private List<EntityType> entityTypeList;
     @JoinTable(name = "item_item_category", joinColumns = {
         @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "item_category_id", referencedColumnName = "id")})
     @ManyToMany
+    @JsonProperty("itemCategoryList")
     private List<ItemCategory> itemCategoryList;
     @JoinTable(name = "item_item_type", joinColumns = {
         @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "item_type_id", referencedColumnName = "id")})
     @ManyToMany
+    @JsonProperty("itemTypeList")
     private List<ItemType> itemTypeList;
     @JoinTable(name = "item_item_project", joinColumns = {
         @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "item_project_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany    
+    @JsonProperty("itemProjectList")
     private List<ItemProject> itemProjectList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem")
-    @OrderBy("sortOrder ASC")
+    @OrderBy("sortOrder ASC")        
     private List<ItemElement> fullItemElementList;
-    @OneToMany(mappedBy = "containedItem1")
+    @OneToMany(mappedBy = "containedItem1")        
     private List<ItemElement> itemElementMemberList;
-    @OneToMany(mappedBy = "containedItem2")
+    @OneToMany(mappedBy = "containedItem2")        
     private List<ItemElement> itemElementMemberList2;
     @JoinColumn(name = "domain_id", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    private Domain domain;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "derivedFromItem")
-    private List<Item> derivedFromItemList;
+    @ManyToOne(optional = false)    
+    private Domain domain;    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "derivedFromItem")    
+    private List<Item> derivedFromItemList;    
     @JoinColumn(name = "derived_from_item_id", referencedColumnName = "id")
     @ManyToOne
     private Item derivedFromItem;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
-    private List<ItemConnector> itemConnectorList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
-    private List<ItemSource> itemSourceList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")        
+    private List<ItemConnector> itemConnectorList;    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")    
+    private List<ItemSource> itemSourceList;    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")    
     private List<ItemResource> itemResourceList;
 
     // Item element representing self 
@@ -320,7 +354,8 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         return clonedItem;
     }
-
+    
+    @JsonIgnore
     public ItemController getItemDomainController() {
         if (itemDomainController == null) {            
             itemDomainController = ItemController.findDomainControllerForItem(this);            
@@ -586,7 +621,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.itemTypeList = itemTypeList;
     }
 
-    @XmlTransient
+    @XmlTransient    
     public List<ItemProject> getItemProjectList() {
         return itemProjectList;
     }
@@ -831,6 +866,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @Override
+    @JsonIgnore
     public List<PropertyValue> getPropertyValueList() {
         return this.getSelfElement().getPropertyValueList();
     }
@@ -937,6 +973,14 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setIsCloned(boolean isCloned) {
         this.isCloned = isCloned;
+    }
+    
+    public String getPrimaryImageForItem() {
+        PropertyValue primaryImagePropertyValueForItem = ItemController.getPrimaryImagePropertyValueForItem(this);
+        if (primaryImagePropertyValueForItem != null) {
+            return primaryImagePropertyValueForItem.getValue();
+        }
+        return null; 
     }
 
     @Override

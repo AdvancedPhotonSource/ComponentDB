@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.UUID;
@@ -14,8 +15,10 @@ import java.util.regex.Pattern;
  */
 public class CdbEntity implements Serializable, Cloneable {
     
+    @JsonIgnore
     private transient String viewUUID;
     
+    @JsonIgnore
     private transient String persitanceErrorMessage = null; 
     
     protected static final long serialVersionUID = 1L;
@@ -28,14 +31,14 @@ public class CdbEntity implements Serializable, Cloneable {
         return null;
     }
     
+    @JsonIgnore
     public Object getEntityInfo() {
         return null;
     }
     
     public SearchResult search(Pattern searchPattern) {
         return null;
-    }
-    
+    }        
     
     public String getViewUUID() {
         if (viewUUID == null) {

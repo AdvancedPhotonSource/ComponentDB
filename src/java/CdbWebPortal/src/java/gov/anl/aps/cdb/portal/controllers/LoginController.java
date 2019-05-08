@@ -139,6 +139,20 @@ public class LoginController implements Serializable {
 
         boolean isAdminUser = isAdmin(username);
         logger.debug("User " + username + " is admin: " + isAdminUser);
+                        
+        if (validateCredentials(user, password)) {
+            loadAuthenticatedUser();
+            return getLandingPage();
+        } else {
+            SessionUtility.addErrorMessage("Invalid Credentials", "Username/password combination could not be verified.");                        
+            LogUtility.addSystemLog(LOGIN_WARNING_LOG_LEVEL, "Authentication Failed: " + username);            
+            return (username = password = null);
+        }
+
+    }
+    
+    public static boolean validateCredentials(UserInfo user, String password) {
+        String username = user.getUsername(); 
         boolean validCredentials = false;
         if (user.getPassword() != null && CryptUtility.verifyPasswordWithPbkdf2(password, user.getPassword())) {
             logger.debug("User " + username + " is authorized by CDB");
@@ -149,16 +163,7 @@ public class LoginController implements Serializable {
         } else {
             logger.debug("User " + username + " is not authorized");
         }
-                
-        if (validCredentials) {
-            loadAuthenticatedUser();
-            return getLandingPage();
-        } else {
-            SessionUtility.addErrorMessage("Invalid Credentials", "Username/password combination could not be verified.");                        
-            LogUtility.addSystemLog(LOGIN_WARNING_LOG_LEVEL, "Authentication Failed: " + username);            
-            return (username = password = null);
-        }
-
+        return validCredentials; 
     }
     
     private void loadAuthenticatedUser() {
