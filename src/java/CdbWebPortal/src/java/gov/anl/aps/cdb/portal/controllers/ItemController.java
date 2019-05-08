@@ -85,7 +85,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     private static final Logger LOGGER = Logger.getLogger(Item.class.getName());
     protected final String FAVORITES_LIST_NAME = "Favorites";
-    protected final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";
+    protected static final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";
 
     @EJB
     protected ItemElementFacade itemElementFacade;
@@ -2030,7 +2030,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     }
 
-    private PropertyValue getPrimaryImagePropertyValueForItem(Item item) {
+    public static PropertyValue getPrimaryImagePropertyValueForItem(Item item) {
         List<PropertyValue> imagePropertyValueList = getPropertyValueListWithHandlerForImages(item);
         if (imagePropertyValueList != null && !imagePropertyValueList.isEmpty()) {
             for (PropertyValue propertyValue : imagePropertyValueList) {
@@ -2049,12 +2049,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return null;
     }
 
-    private List<PropertyValue> getPropertyValueListWithHandlerForImages(Item item) {
+    private static List<PropertyValue> getPropertyValueListWithHandlerForImages(Item item) {
         String imageHandlerName = ImagePropertyTypeHandler.HANDLER_NAME;
         return getPropertyValueListWithHandler(item.getPropertyValueList(), imageHandlerName);
     }
 
-    private List<PropertyValue> getPropertyValueListWithHandler(List<PropertyValue> propertyValueList, String handlerName) {
+    private static List<PropertyValue> getPropertyValueListWithHandler(List<PropertyValue> propertyValueList, String handlerName) {
         if (propertyValueList != null) {
             List<PropertyValue> resultingList = new ArrayList<>();
             for (PropertyValue propertyValue : propertyValueList) {
