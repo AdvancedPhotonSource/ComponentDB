@@ -8,7 +8,9 @@ import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.GET;
@@ -57,11 +59,20 @@ public class ItemRoute {
     }
     
     @GET
+    @Path("/LogsForItem/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Log> getLogsForItem(@PathParam("itemId") String itemId) {
+        Item itemById = getItemById(itemId);
+        return itemById.getLogList();
+    }
+    
+    @GET
     @Path("/ImagePropertiesForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<PropertyValue> getImagePropertiesForItem(@PathParam("itemId") String itemId) {
         Item itemById = getItemById(itemId);
-        return itemById.getImagePropertyList();
+        List<PropertyValue> propertyValueList = itemById.getPropertyValueList();
+        return PropertyValueUtility.prepareImagePropertyValueList(propertyValueList);
     }
 
     @GET
