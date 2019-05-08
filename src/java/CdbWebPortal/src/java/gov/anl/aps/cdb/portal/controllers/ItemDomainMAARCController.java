@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMAARCSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
@@ -32,6 +33,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -431,8 +433,15 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
             }
 
             PropertyTypeHandlerInterface handler = PropertyTypeHandlerFactory.getHandler(pv);
-
-            StreamedContent contentStream = handler.fileDownloadActionCommand(pv);
+            
+            StreamedContent contentStream;
+            try {
+                contentStream = handler.fileDownloadActionCommand(pv);
+            } catch (ExternalServiceError ex) {                
+                SessionUtility.addErrorMessage("Error Download File", ex.getMessage());
+                return null; 
+            }
+            
             InputStream stream = contentStream.getStream();
 
             byte[] originalData = IOUtils.toByteArray(stream);
@@ -580,7 +589,11 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
         if (pv != null) {
             PropertyTypeHandlerInterface handler = PropertyTypeHandlerFactory.getHandler(pv);
-            return handler.fileDownloadActionCommand(pv);
+            try {
+                return handler.fileDownloadActionCommand(pv);
+            } catch (ExternalServiceError ex) {
+                SessionUtility.addErrorMessage("Error Download File", ex.getMessage());
+            }
         }
 
         return null;

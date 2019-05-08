@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
+import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.controllers.settings.PropertyValueSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
@@ -21,6 +22,7 @@ import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -120,7 +122,11 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         if (propertyValueDisplayType == DisplayType.FILE_DOWNLOAD
                 || propertyValueDisplayType == DisplayType.GENERATED_HTTP_LINK_FILE_DOWNLOAD) {
             PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
-            return propertyTypeHandler.fileDownloadActionCommand(propertyValue);
+            try {
+                return propertyTypeHandler.fileDownloadActionCommand(propertyValue);
+            } catch (ExternalServiceError ex) {
+                SessionUtility.addErrorMessage("Error downloading File", ex.getMessage());
+            }
         }
         return null;
     }

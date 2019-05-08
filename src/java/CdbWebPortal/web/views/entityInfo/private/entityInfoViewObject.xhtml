@@ -15,7 +15,7 @@ See LICENSE file.
                widgetVar="ownerUserWidget"
                editor="#{isEntityWriteable}" 
                toggleable="false">
-        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
         <p:ajax event="cancel" oncomplete="reloadEntityInfoOwnerUser()"/>
 
         <f:facet name="output">
@@ -51,7 +51,7 @@ See LICENSE file.
                editor="#{isEntityWriteable}" 
                toggleable="false"
                styleClass="entityDataText">
-        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
         <p:ajax event="cancel" oncomplete="reloadEntityInfoOwnerGroup()"/>
 
         <f:facet name="output">
@@ -102,7 +102,7 @@ See LICENSE file.
                editor="#{isEntityWriteable}" 
                toggleable="false"
                styleClass="entityDataText">
-        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
 
         <f:facet name="output">
             <p:outputPanel>

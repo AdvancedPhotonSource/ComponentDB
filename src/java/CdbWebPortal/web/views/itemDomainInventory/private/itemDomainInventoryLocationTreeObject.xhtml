@@ -26,7 +26,8 @@ See LICENSE file.
                   value="#{itemDomainInventoryController.getItemDisplayString(itemListObject)}" />
         <p:column headerText="Location | Inventory Item"
                   sortBy="#{partNameString}"
-                  filterBy="#{partNameString}" filterMatchMode="contains"                  
+                  filterBy="#{facesUtility.getFilterString(partNameString)}" 
+                  filterMatchMode="contains"
                   filterable="#{filterable}"
                   sortable="#{sortable}">
             <ui:param name="itemIsInventoryItem"

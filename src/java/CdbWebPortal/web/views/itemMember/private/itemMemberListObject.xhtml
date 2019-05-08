@@ -20,7 +20,7 @@ See LICENSE file.
     <ui:param name="currentPartIdentifier" value="#{currentItemController.getItemMembmershipPartIdentifier(parentItemObject)}"/> 
     
     <p:column sortBy="#{currentPartIdentifier}"
-              filterBy="#{currentPartIdentifier}"
+              filterBy="#{facesUtility.getFilterString(currentPartIdentifier)}"
               filterMatchMode="contains"
               filterable="#{filterable}"
               headerText="Part Of"

@@ -17,7 +17,7 @@ See LICENSE file.
                toggleable="false" 
                styleClass="entityDataText" 
                label="#{itemObject.itemTypeString}"> 
-        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
         <p:ajax event="cancel" oncomplete="reloadItemType()"/>
 
         <f:facet name="output">

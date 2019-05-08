@@ -37,7 +37,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import javax.faces.model.ListDataModel;
 import javax.imageio.ImageIO;
-import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -492,7 +491,7 @@ public class PdmLinkDrawingBean implements Serializable {
                     }
                 }
             }
-            RequestContext.getCurrentInstance().execute(onSuccessCommand);
+            SessionUtility.executeRemoteCommand(onSuccessCommand);
         } catch (CdbException ex) {
             logger.error(ex);
             showErrorMessage(ex.getErrorMessage());

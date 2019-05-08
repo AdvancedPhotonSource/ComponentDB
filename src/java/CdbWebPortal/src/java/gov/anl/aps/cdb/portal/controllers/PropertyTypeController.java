@@ -147,7 +147,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
             throw new ObjectAlreadyExists("Property type " + propertyType.getName() + " already exists.");
         }
         logger.debug("Inserting new property type " + propertyType.getName());
-        verifyAndApplyPropertyTypeHandlerRequirements(propertyType);
+        verifyAndApplyPropertyTypeHandlerRequirements(propertyType);                
     }
 
     @Override
@@ -164,6 +164,11 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     private void verifyAndApplyPropertyTypeHandlerRequirements(PropertyType propertyType) {
         PropertyTypeHandler propertyTypeHandler = propertyType.getPropertyTypeHandler();
         if (propertyTypeHandler != null) {
+            // Remove invalid id used to identify the new handler. 
+            if (propertyTypeHandler.getId() < 0) {
+                propertyTypeHandler.setId(null);
+            }
+            
             PropertyTypeHandlerInterface handlerClass = PropertyTypeHandlerFactory.getHandler(propertyTypeHandler.getName());
             List<String> requiredMetadataKeys = handlerClass.getRequiredMetadataKeys();
             if (requiredMetadataKeys != null && requiredMetadataKeys.size() > 0) {

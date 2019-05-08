@@ -34,6 +34,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     List<ItemDomainEntity> itemsToAdd;
 
     private final String QUERY_STRING_START = "SELECT i FROM Item i ";
+    private final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"}; 
 
     public ItemFacadeBase(Class<ItemDomainEntity> entityClass) {
         super(entityClass);
@@ -257,19 +258,19 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         if (name == null || name.isEmpty()) {
             queryString += "AND (i.name is null OR i.name = '') ";
         } else {
-            queryString += "AND i.name = \"" + name + "\" ";
+            queryString += "AND i.name = '" + escapeCharacters(name) + "' ";
         }
 
         if (itemIdentifier1 == null || itemIdentifier1.isEmpty()) {
             queryString += "AND (i.itemIdentifier1 is null OR i.itemIdentifier1 = '') ";
         } else {
-            queryString += "AND i.itemIdentifier1 = \"" + itemIdentifier1 + "\" ";
+            queryString += "AND i.itemIdentifier1 = '" + escapeCharacters(itemIdentifier1) + "' ";
         }
 
         if (itemIdentifier2 == null || itemIdentifier2.isEmpty()) {
             queryString += "AND (i.itemIdentifier2 is null OR i.itemIdentifier2 = '') ";
         } else {
-            queryString += "AND i.itemIdentifier2 = \"" + itemIdentifier2 + "\" ";
+            queryString += "AND i.itemIdentifier2 = '" + escapeCharacters(itemIdentifier2) + "' ";
         }
 
         try {
@@ -278,6 +279,15 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
 
         return null;
+    }
+    
+    private String escapeCharacters(String queryParameter) {
+        for (CharSequence cs : ESCAPE_QUERY_CHARACTERS) {
+            if (queryParameter.contains(cs)) {
+                queryParameter = queryParameter.replace(cs, "'" + cs); 
+            }
+        }
+        return queryParameter;
     }
 
     public List<ItemDomainEntity> findByFilterViewCategoryTypeAttributes(ItemProject itemProject,

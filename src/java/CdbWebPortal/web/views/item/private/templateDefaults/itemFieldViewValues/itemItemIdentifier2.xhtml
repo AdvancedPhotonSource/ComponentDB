@@ -14,7 +14,7 @@ See LICENSE file.
                widgetVar="itemIdentifier2#{viewName}Widget"
                rendered="#{entityController.entityDisplayItemIdentifier2}"
                editor="#{isEntityWriteable}" toggleable="false">
-        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
 
         <f:facet name="output">
             <p:outputPanel styleClass="inlineFlexOutputPanel">

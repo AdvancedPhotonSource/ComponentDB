@@ -16,7 +16,7 @@ See LICENSE file.
                editor="#{isEntityWriteable}" 
                toggleable="false"
                styleClass="entityDataText"> 
-        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
         <p:ajax event="cancel" oncomplete="reloadItemProject()"/>
         
 

@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
+import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
@@ -79,7 +80,7 @@ public interface PropertyTypeHandlerInterface {
     /**
      * Command to be executed on the server when user clicks the link. 
      */
-    public abstract StreamedContent fileDownloadActionCommand(PropertyValue propertyValue); 
+    public abstract StreamedContent fileDownloadActionCommand(PropertyValue propertyValue) throws ExternalServiceError; 
 
     /**
      * Update the value the user sees to something meaningful.

@@ -8,7 +8,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../../../common/private/commonChildListActionButtons.xhtml"
                 xmlns:p="http://primefaces.org/ui">
-    
+
     <ui:define name="additionalButtons">
         <p:commandButton icon="fa fa-plus"
                          value="Create Binder"
@@ -16,11 +16,23 @@ See LICENSE file.
                          action="#{itemTravelerDomainInventoryController.addTravelerBinderToCurrent('onSuccessAddNewBinder()')}"                         
                          rendered="#{isEntityWriteable}"
                          oncomplete="PF('loadingDialog').hide();"/>
-        
+
         <p:remoteCommand name="onSuccessAddNewBinder"
                          update="travelerBinderAddDialog"
                          oncomplete="PF('travelerBinderAddDialogWidget').show()" />
-                         
+
+        <p:commandButton id="#{childEntityTypeName}ShowArchivedTravelers"
+                         alt="Show Archived Travelers" 
+                         onclick="PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide();
+                                     PF('travelerInstanceArchiveListDialogWidget').show()"
+                         icon="fa fa-archive" 
+                         update="travelerInstanceArchiveListDialog"
+                         action="#{itemTravelerDomainInventoryController.prepareShowArchivedTravelerListDialog()}"
+                         styleClass="actionButtonRight">
+            <p:tooltip for="#{childEntityTypeName}ShowArchivedTravelers" value="Show Archived Travelers."/>
+        </p:commandButton>
+
     </ui:define>
 
 

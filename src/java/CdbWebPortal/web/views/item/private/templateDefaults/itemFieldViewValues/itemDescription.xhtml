@@ -15,7 +15,7 @@ See LICENSE file.
                editor="#{isEntityWriteable}" 
                toggleable="false" 
                styleClass="entityDataText">
-        <p:ajax event="save" oncomplete="inlineSaveEntity()"/>
+        <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()"/>
         
         <f:facet name="output">
             <p:outputPanel styleClass="inlineFlexOutputPanel">
