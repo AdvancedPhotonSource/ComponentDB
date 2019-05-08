@@ -164,7 +164,7 @@ import org.primefaces.model.TreeNode;
     ),
 })
 
-@JsonIgnoreProperties(value = {    
+@JsonIgnoreProperties(value = {
     // Transient
     "assemblyRootTreeNode",    
     "itemTypeString",
@@ -973,6 +973,14 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setIsCloned(boolean isCloned) {
         this.isCloned = isCloned;
+    }
+    
+    public String getPrimaryImageForItem() {
+        PropertyValue primaryImagePropertyValueForItem = ItemController.getPrimaryImagePropertyValueForItem(this);
+        if (primaryImagePropertyValueForItem != null) {
+            return primaryImagePropertyValueForItem.getValue();
+        }
+        return null; 
     }
 
     @Override
