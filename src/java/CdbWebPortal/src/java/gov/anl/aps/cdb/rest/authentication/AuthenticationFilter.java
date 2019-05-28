@@ -11,7 +11,6 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 
 @Secured
@@ -28,22 +27,27 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         // Get the HTTP Authorization header from the request
-        String authorizationHeader =
-            requestContext.getHeaderString(HttpHeaders.COOKIE);
+         String authorizationHeader =
+            requestContext.getHeaderString(UserSessionKeeper.AUTH_TOKEN_KEY);
 
         // Check if the HTTP Authorization header is present and formatted correctly
-        if (authorizationHeader == null || !authorizationHeader.startsWith(UserSessionKeeper.TOKEN_COOKIE_KEY)) {
+         if (authorizationHeader == null) {
             throw new NotAuthorizedException("Authorization header must be provided");
         }
 
-        // Extract the token from the HTTP Authorization header
-        String token = authorizationHeader.substring((UserSessionKeeper.TOKEN_COOKIE_KEY + "=").length()).trim();
-        token = token.substring(0, token.indexOf(';')); 
+        // Extract the token from the HTTP Authorization header        
+        String token = authorizationHeader; 
 
         try {
-
+            
             // Validate the token
             validateToken(token);
+            
+            UserSessionKeeper instance = UserSessionKeeper.getInstance();
+            User user = instance.getUserForToken(token);
+             
+            String scheme = requestContext.getUriInfo().getRequestUri().getScheme();
+            requestContext.setSecurityContext(new CdbApiSecurityContext(user, scheme));
 
         } catch (Exception e) {
             requestContext.abortWith(

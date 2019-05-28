@@ -36,6 +36,10 @@ public class User implements Principal {
         expirationDate = new Date();
         expirationDate = new Date(expirationDate.getTime() + EXPIRATION_DURATION);
     }
+
+    public UserInfo getUser() {
+        return user;
+    }
     
     public long getExpirationDate() {
         return expirationDate.getTime(); 
