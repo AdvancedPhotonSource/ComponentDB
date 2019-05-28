@@ -59,7 +59,15 @@ public class EntityInfoUtility {
         if (entityInfo == null) {
             return;
         }
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
+        UserInfo userInfo = (UserInfo) SessionUtility.getUser();
+        updateEntityInfo(entityInfo, userInfo);
+    }
+    
+    public static void updateEntityInfo(EntityInfo entityInfo, UserInfo userInfo) {
+        if (entityInfo == null) {
+            return;
+        }
+        UserInfo lastModifiedByUser = userInfo; 
         Date lastModifiedOnDateTime = new Date();
         entityInfo.setLastModifiedOnDateTime(lastModifiedOnDateTime);
         entityInfo.setLastModifiedByUser(lastModifiedByUser);
