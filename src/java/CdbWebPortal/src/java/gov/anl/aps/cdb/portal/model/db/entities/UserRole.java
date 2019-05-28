@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import java.io.Serializable;
 import javax.persistence.EmbeddedId;
@@ -90,6 +91,7 @@ public class UserRole extends CdbEntity implements Serializable {
     }
 
     @Override
+    @JsonIgnore
     public Object getId() {
         return userRolePK; 
     }

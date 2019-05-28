@@ -4,7 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,6 +19,13 @@ import java.util.List;
  *
  * @author djarosz
  */
+@Schema(name = "SettingEntity",
+        subTypes = 
+                {
+                    UserGroup.class,
+                    UserInfo.class
+                }
+        )
 public abstract class SettingEntity extends CdbEntity implements Serializable {
 
     protected transient HashMap<String, EntitySetting> entitySettingMap = null;
@@ -100,6 +109,7 @@ public abstract class SettingEntity extends CdbEntity implements Serializable {
         userSettingsModificationDate = new Date();
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getSettingsModificationDate() {
         if (userSettingsModificationDate == null) {
             updateSettingsModificationDate();
@@ -164,6 +174,11 @@ public abstract class SettingEntity extends CdbEntity implements Serializable {
 
     public boolean hasSettings() {
         return getSettingList() != null && !getSettingList().isEmpty();
+    }
+
+    @Override
+    public Integer getId() {
+        return null; 
     }
 
 }
