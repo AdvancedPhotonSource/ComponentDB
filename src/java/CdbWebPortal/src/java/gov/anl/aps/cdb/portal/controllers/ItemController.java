@@ -178,6 +178,43 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public ItemController() {
     }
 
+    @Override
+    protected void loadEJBResourcesManually() {
+        super.loadEJBResourcesManually(); 
+        itemElementFacade = ItemElementFacade.getInstance();
+        
+        // TODO API load the rest of the ejbs.
+        /*        
+
+    @EJB
+    protected ItemTypeFacade itemTypeFacade;
+
+    @EJB
+    protected DomainFacade domainFacade;
+
+    @EJB
+    protected EntityTypeFacade entityTypeFacade;
+
+    @EJB
+    protected ItemCategoryFacade itemCategoryFacade;
+
+    @EJB
+    protected ListFacade listFacade;
+
+    @EJB
+    protected UserInfoFacade userInfoFacade;
+
+    @EJB
+    protected PropertyTypeCategoryFacade propertyTypeCategoryFacade;
+
+    @EJB
+    protected RelationshipTypeFacade relationshipTypeFacade;
+
+    @EJB
+    private ItemElementRelationshipFacade itemElementRelationshipFacade;
+        */
+    }
+        
     protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
 
     /**
@@ -396,7 +433,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         templateInformationLoadedForCurrent = false;
         createdFromTemplateForCurrentItem = null;
         itemsCreatedFromCurrentTemplateItem = null;
-        getItemElementController().resetCurrentItemVariables();
+        if (apiMode) {
+            // TODO API get api instance
+        } else {
+            getItemElementController().resetCurrentItemVariables();
+        }
     }
 
     @Override
@@ -2410,7 +2451,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         performPrepareEntityInsertUpdate(item);
         item.resetAttributesToNullIfEmpty();
         EntityInfo entityInfo = item.getEntityInfo();
-        EntityInfoUtility.updateEntityInfo(entityInfo);
+        if (apiMode){
+            EntityInfoUtility.updateEntityInfo(entityInfo, apiUser);
+        } else {
+            EntityInfoUtility.updateEntityInfo(entityInfo);
+        }
         Log logEntry = prepareLogEntry();
         if (logEntry != null) {
             List<Log> logList = item.getLogList();
@@ -2424,14 +2469,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         LOGGER.debug("Verifying properties for item " + item);
         PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
         item.clearPropertyValueCache();
-        prepareImageList(item);
+        if (!apiMode) {
+            prepareImageList(item);
+        }
 
         List<Item> derivedFromItemList = item.getDerivedFromItemList();
         if (derivedFromItemList != null) {
             for (Item derivedItem : derivedFromItemList) {
-                derivedItem.resetAttributesToNullIfEmpty();
-                ItemController derivedItemController = getItemItemController(derivedItem);
-                derivedItemController.checkItem(derivedItem);
+                derivedItem.resetAttributesToNullIfEmpty();                
+                ItemController derivedItemController = derivedItem.getItemDomainController(); 
+                derivedItemController.checkItem(derivedItem);                
             }
         }
 
@@ -2551,7 +2598,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             }
         }
 
-        if (verifyItemNameCombinationUniqueness(item) == false) {
+         if (verifyItemNameCombinationUniqueness(item) == false) {
             String additionalInfo = "Please update some of the following:  ";
 
             if (getEntityDisplayItemName()) {
@@ -2600,6 +2647,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public LocatableItemController getLocatableItemController() {
         if (locatableItemController == null) {
             locatableItemController = LocatableItemController.getInstance();
+        }
+        if (apiMode) {
+            locatableItemController.apiUser = apiUser; 
         }
         return locatableItemController;
     }
