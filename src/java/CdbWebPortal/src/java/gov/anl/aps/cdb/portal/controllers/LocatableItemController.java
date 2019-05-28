@@ -59,9 +59,33 @@ public class LocatableItemController implements Serializable {
 
     @EJB
     RelationshipTypeFacade relationshipTypeFacade;
+    
+    private static LocatableItemController apiInstance; 
+    protected boolean apiMode = false;
+    protected UserInfo apiUser;
+    
+    public static synchronized LocatableItemController getApiInstance() {
+        if (apiInstance == null) {
+            apiInstance = new LocatableItemController();            
+            apiInstance.apiMode = true; 
+            apiInstance.loadEJBResourcesManually(); 
+            
+        }
+        return apiInstance;
+    }
+    
+    protected void loadEJBResourcesManually() {
+        itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance(); 
+        itemFacade = itemFacade.getInstance();
+        relationshipTypeFacade = RelationshipTypeFacade.getInstance(); 
+    }
 
     public static LocatableItemController getInstance() {
-        return (LocatableItemController) SessionUtility.findBean(controllerNamed);
+        if (SessionUtility.runningFaces()) {
+            return (LocatableItemController) SessionUtility.findBean(controllerNamed);
+        } else {
+            return getApiInstance(); 
+        }
     }
 
     private ItemDomainLocationController getItemDomainLocationController() {
@@ -444,7 +468,7 @@ public class LocatableItemController implements Serializable {
 
             Integer locationIndex = itemElementRelationshipList.indexOf(itemElementRelationship);
 
-            if (item.getLocation() != null && item.getLocation().getSelfElement() != null) {
+              if (item.getLocation() != null && item.getLocation().getSelfElement() != null) {
                 itemElementRelationshipList.get(locationIndex).setSecondItemElement(item.getLocation().getSelfElement());
             } else {
                 // No location is set. 
@@ -455,8 +479,16 @@ public class LocatableItemController implements Serializable {
             // Add Item Element relationship history record. 
             ItemElementRelationship ier = itemElementRelationshipList.get(locationIndex);
             ItemElementRelationshipHistory ierh;
+            
+            UserInfo updateUser;
+            if (apiMode) {
+                updateUser = apiUser; 
+            } else {
+                updateUser = (UserInfo) SessionUtility.getUser(); 
+            }
+            
             ierh = ItemElementRelationshipUtility.createItemElementHistoryRecord(
-                    ier, (UserInfo) SessionUtility.getUser(), new Date());
+                    ier, updateUser, new Date());
             List<ItemElementRelationshipHistory> ierhList;
             ierhList = item.getSelfElement().getItemElementRelationshipHistoryList();
             if (ierhList == null) {

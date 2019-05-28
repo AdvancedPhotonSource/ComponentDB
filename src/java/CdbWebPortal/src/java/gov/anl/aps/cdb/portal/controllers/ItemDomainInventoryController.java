@@ -108,14 +108,34 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
 
     @EJB
     private ConnectorFacade connectorFacade;
+    
+    private static ItemDomainInventoryController apiInstance;        
 
-    public ItemDomainInventoryController() {
-        super();
+    public static synchronized ItemDomainInventoryController getApiInstance() {
+        if (apiInstance == null) {
+            apiInstance = new ItemDomainInventoryController();            
+            apiInstance.prepareApiInstance(); 
+        }
+        return apiInstance;
+    }
+    
+    @Override
+    protected void loadEJBResourcesManually() {
+        super.loadEJBResourcesManually(); 
+        itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance();
+        relationshipTypeFacade = RelationshipTypeFacade.getInstance();
+        propertyTypeFacade = PropertyTypeFacade.getInstance();
+        itemDomainInventoryFacade = ItemDomainInventoryFacade.getInstance();
+        connectorFacade = ConnectorFacade.getInstance();
     }
     
     public static ItemDomainInventoryController getInstance() {
-        return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);
-    }
+        if (SessionUtility.runningFaces()) {
+            return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);
+        } else {
+            return getApiInstance(); 
+        }
+    }        
 
     @Override
     protected ItemCreateWizardController getItemCreateWizardController() {
