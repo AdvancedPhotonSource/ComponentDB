@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -52,5 +53,10 @@ public class ConnectorFacade extends CdbEntityFacade<Connector> {
         }
         return null;
     }
+    
+    public static ConnectorFacade getInstance() {
+        return (ConnectorFacade) SessionUtility.findFacade(ConnectorFacade.class.getSimpleName()); 
+    }
+
     
 }
