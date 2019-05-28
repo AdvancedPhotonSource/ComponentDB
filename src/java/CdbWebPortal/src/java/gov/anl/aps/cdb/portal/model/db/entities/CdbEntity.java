@@ -40,6 +40,7 @@ public class CdbEntity implements Serializable, Cloneable {
         return null;
     }        
     
+    @JsonIgnore
     public String getViewUUID() {
         if (viewUUID == null) {
             viewUUID = UUID.randomUUID().toString().replaceAll("[-]", "");
