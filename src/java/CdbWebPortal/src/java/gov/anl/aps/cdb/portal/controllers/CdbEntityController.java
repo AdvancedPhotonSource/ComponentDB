@@ -102,7 +102,10 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     // TODO create a base cdbentitycontrollerextension helper. 
     private Set<ItemControllerExtensionHelper> subscribedResetForCurrentControllerHelpers;
     private Set<ItemControllerExtensionHelper> subscribePrepareInsertForCurrentControllerHelpers;
-
+       
+    protected boolean apiMode = false;
+    protected UserInfo apiUser;
+    
     /**
      * Default constructor.
      */
@@ -111,7 +114,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         subscribedResetForCurrentControllerHelpers = new HashSet<>();
         subscribePrepareInsertForCurrentControllerHelpers = new HashSet<>();
         contextRootPermanentUrl = ConfigurationUtility.getPortalProperty(CdbProperty.PERMANENT_CONTEXT_ROOT_URL_PROPERTY_NAME); 
-    }
+    }        
 
     /**
      * Initialize controller and update its settings.
@@ -119,6 +122,15 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     @PostConstruct
     public void initialize() {
         settingObject.updateSettings();
+    }
+    
+    protected void prepareApiInstance() {
+        apiMode = true; 
+        loadEJBResourcesManually();
+    }
+    
+    protected void loadEJBResourcesManually() {
+        // Will be abstract --- testing now. 
     }
         
     public void registerSearchable() {
@@ -838,11 +850,20 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @param message
      */
     private void addCdbEntitySystemLog(String logLevel, String message) {
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+        UserInfo sessionUser;
+        if (apiMode) {
+            sessionUser = apiUser;            
+        } else {
+            sessionUser = (UserInfo) SessionUtility.getUser();
+        }
         if (sessionUser != null) {
             String username = sessionUser.getUsername();
             message = "User: " + username + " | " + message;
-        }
+            
+            if (apiMode) {
+                message += " | REST API"; 
+            }
+        }        
         LogUtility.addSystemLog(logLevel, message);
     }
 
@@ -998,7 +1019,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public String update() {
         try {
             performUpdateOperations(current);
-            SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            if (!apiMode) {
+                SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
+            }
             return viewForCurrentEntity();
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", "Could not update " + getDisplayEntityTypeName() + ": " + ex.getMessage());
@@ -1621,5 +1644,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     public void setBreadcrumbViewParam(String breadcrumbViewParam) {
         this.breadcrumbViewParam = breadcrumbViewParam;
+    }
+
+    public void setApiUser(UserInfo apiUser) {
+        this.apiUser = apiUser;
     }
 }
