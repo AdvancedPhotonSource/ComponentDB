@@ -11,7 +11,10 @@ import javax.faces.application.FacesMessage;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -28,6 +31,9 @@ public class SessionUtility {
     public static final String VIEW_STACK_KEY = "viewStack";
     public static final String LAST_SESSION_ERROR_KEY = "lastSessionError";
     public static final String ROLE_KEY = "role";
+    public static final String FACADE_LOOKUP_NAME_START = "java:global/CdbWebPortal/";
+    
+    private static final Logger logger = org.apache.log4j.Logger.getLogger(SessionUtility.class.getName());          
 
     public SessionUtility() {
     }
@@ -210,6 +216,20 @@ public class SessionUtility {
     public static Object findBean(String beanName) {
         FacesContext context = FacesContext.getCurrentInstance();
         return (Object) context.getApplication().evaluateExpressionGet(context, "#{" + beanName + "}", Object.class);
+    }
+    
+    public static Object findFacade(String facadeName) {
+        try {
+            InitialContext context = new InitialContext();
+            return context.lookup(FACADE_LOOKUP_NAME_START + facadeName); 
+        } catch (NamingException ex) {
+            logger.error(ex);
+        }
+        return null; 
+    }
+    
+    public static boolean runningFaces() {
+        return FacesContext.getCurrentInstance() != null; 
     }
 
 }
