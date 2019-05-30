@@ -308,20 +308,11 @@ public class Item extends CdbDomainEntity implements Serializable {
     
     private transient Boolean isItemTemplate = null;       
         
-    // API generation variables
-    private transient Map<String, String> properties;
+    // API generation variables    
     private transient String descriptionFromAPI;
     
     public Item() {
-    }
-    
-    @JsonAnySetter
-    public void addJsonProperty(String key, String value) {
-        if (properties == null) {
-            properties = new HashMap<>(); 
-        }
-        properties.put(key, value);
-    }
+    }        
 
     public void init() {
         ItemElement selfElement = new ItemElement();

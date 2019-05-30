@@ -4,9 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -20,6 +23,8 @@ public class CdbEntity implements Serializable, Cloneable {
     
     @JsonIgnore
     private transient String persitanceErrorMessage = null; 
+    
+    private transient Map<String, String> apiProperties;
     
     protected static final long serialVersionUID = 1L;
     @Override
@@ -54,6 +59,14 @@ public class CdbEntity implements Serializable, Cloneable {
 
     public void setPersitanceErrorMessage(String persitanceErrorMessage) {
         this.persitanceErrorMessage = persitanceErrorMessage;
+    }
+    
+    @JsonAnySetter
+    public void addJsonProperty(String key, String value) {
+        if (apiProperties == null) {
+            apiProperties = new HashMap<>(); 
+        }
+        apiProperties.put(key, value);
     }
     
 }
