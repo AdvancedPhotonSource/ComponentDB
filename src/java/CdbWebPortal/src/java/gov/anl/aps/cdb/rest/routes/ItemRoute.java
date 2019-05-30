@@ -4,9 +4,10 @@
  */
 package gov.anl.aps.cdb.rest.routes;
 
+import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
+import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
@@ -14,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
@@ -89,7 +91,7 @@ public class ItemRoute extends BaseRoute {
     }
 
     @POST
-    @Path("/Update")
+    @Path("/UpdateDetails")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
@@ -112,6 +114,69 @@ public class ItemRoute extends BaseRoute {
         itemDomainControllerForApi.update();
 
         return dbItem;
+    }
+    
+    @POST
+    @Path("/UpdateProperty/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public PropertyValue updateItemPropertyValue(@PathParam("itemId") int itemId, PropertyValue propertyValue) throws InvalidArgument, ObjectNotFound {
+        Item dbItem = getItemById(itemId);
+        UserInfo updatedByUser = getCurrentRequestUserInfo();
+        
+        ItemController itemController = dbItem.getItemDomainController(); 
+        itemController.setApiUser(getCurrentRequestUserInfo());
+        PropertyValue dbPropertyValue = null; 
+        
+        int propIdx = -1; 
+        
+        if (propertyValue.getId() == null) {
+            PropertyType propertyType = propertyValue.getPropertyType();
+            if (propertyType == null) {
+                throw new InvalidArgument("Property type must be assigned to new property value."); 
+            }
+            dbPropertyValue = itemController.preparePropertyTypeValueAdd(dbItem, propertyType, null, null, updatedByUser);             
+        } else {
+            // Property already exists for the particular item.             
+            for (int i = 0; i < dbItem.getPropertyValueList().size(); i++) {
+                PropertyValue propertyValueIttr = dbItem.getPropertyValueList().get(i);
+                if (propertyValueIttr.getId().equals(propertyValue.getId())) {
+                    dbPropertyValue = propertyValueIttr; 
+                    propIdx = i; 
+                    break;
+                }
+            }                                    
+        }
+        
+        if (dbPropertyValue == null) {
+            throw new ObjectNotFound("There was an error trying to load the property value.");
+        }
+                        
+        // Set passed in property value to match db property value 
+        dbPropertyValue.setValue(propertyValue.getValue());
+        dbPropertyValue.setDisplayValue(propertyValue.getDisplayValue());
+        dbPropertyValue.setTag(propertyValue.getTag());
+        dbPropertyValue.setDescription(propertyValue.getDescription());
+        dbPropertyValue.setUnits(propertyValue.getUnits());
+        dbPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
+        dbPropertyValue.setIsUserWriteable(propertyValue.getIsUserWriteable());                
+        
+        itemController.setCurrent(dbItem);
+        itemController.update();
+        
+        dbItem = (Item) itemController.getCurrent(); 
+        
+        List<PropertyValue> pvList = dbItem.getPropertyValueList(); 
+        if (propIdx > 0) {
+            dbPropertyValue = pvList.get(propIdx); 
+        } else {
+            propIdx = pvList.size() -1; 
+            dbPropertyValue = pvList.get(propIdx); 
+        }
+        
+        return dbPropertyValue; 
     }
 
     @GET
