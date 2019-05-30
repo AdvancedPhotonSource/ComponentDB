@@ -67,8 +67,7 @@ import javax.xml.bind.annotation.XmlTransient;
     "allowedPropertyValueList",
         
     //Transient Variables 
-    "displayType",
-    "sortedAllowedPropertyValueList",
+    "displayType",    
     "allowedDomainString"
 })
 @JsonInclude(JsonInclude.Include.NON_NULL)
