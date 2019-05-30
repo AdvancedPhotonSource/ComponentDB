@@ -35,6 +35,9 @@ public class PropertyTypeRoute extends BaseRoute {
         return propertyTypeFacade.findAll();
     }
     
+    @GET
+    @Path("/inventoryStatusPropertyType")    
+    @Produces(MediaType.APPLICATION_JSON)    
     public PropertyType getInventoryStatusPropertyType() { 
         return propertyTypeFacade.findByName(ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
     }
