@@ -182,6 +182,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected void loadEJBResourcesManually() {
         super.loadEJBResourcesManually(); 
         itemElementFacade = ItemElementFacade.getInstance();
+        domainFacade = DomainFacade.getInstance(); 
         
         // TODO API load the rest of the ejbs.
         /*        
