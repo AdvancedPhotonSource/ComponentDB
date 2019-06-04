@@ -1010,6 +1010,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void updateWithoutRedirect() {
         update();
     }
+    
+    public synchronized void updateFromApi(EntityType entity, UserInfo updateUser) throws CdbException {
+        setApiUser(updateUser);
+        setCurrent(entity);
+        performUpdateOperations(current);
+    }
 
     /**
      * Update current entity and save changes in the database.
@@ -1646,7 +1652,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         this.breadcrumbViewParam = breadcrumbViewParam;
     }
 
-    public void setApiUser(UserInfo apiUser) {
+    private void setApiUser(UserInfo apiUser) {
         this.apiUser = apiUser;
     }
 }
