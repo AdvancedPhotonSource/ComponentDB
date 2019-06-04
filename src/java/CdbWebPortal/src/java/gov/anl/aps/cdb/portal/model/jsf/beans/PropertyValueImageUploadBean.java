@@ -10,7 +10,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.common.utilities.FileUtility;
 import gov.anl.aps.cdb.common.utilities.ImageUtility;
 import gov.anl.aps.cdb.portal.controllers.CdbDomainEntityController;
-import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
@@ -51,7 +50,7 @@ public class PropertyValueImageUploadBean implements Serializable {
     private CdbEntityController cdbEntityController;
     private List<PropertyType> imageHandlerPropertyTypes;
     private PropertyType selectedPropertyType;
-    private final String IMAGE_PROPERTY_TYPE_NAME = "Image";
+    public static final String IMAGE_PROPERTY_TYPE_NAME = "Image";
     private final List<Integer> uploadHashList = new ArrayList<>();
 
     public UploadedFile getUploadedFile() {
@@ -67,41 +66,54 @@ public class PropertyValueImageUploadBean implements Serializable {
             localUploadedFile = this.uploadedFile;
         }
 
-        Path uploadDirPath;
-        try {
-            if (localUploadedFile != null && !localUploadedFile.getFileName().isEmpty()) {
-                String uploadedExtension = FileUtility.getFileExtension(localUploadedFile.getFileName());
+        if (localUploadedFile != null && !localUploadedFile.getFileName().isEmpty()) {
+            String fileName = localUploadedFile.getFileName();
 
-                uploadDirPath = Paths.get(StorageUtility.getFileSystemPropertyValueImagesDirectory());
-                logger.debug("Using property value images directory: " + uploadDirPath.toString());
-                if (Files.notExists(uploadDirPath)) {
-                    Files.createDirectory(uploadDirPath);
-                }
-                File uploadDir = uploadDirPath.toFile();
-
-                String imageFormat = uploadedExtension;
-                String originalExtension = "." + uploadedExtension + CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION;
-                if (uploadedExtension.isEmpty()) {
-                    originalExtension = CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION;
-                    imageFormat = ImageUtility.DEFAULT_IMAGE_FORMAT;
-                }
-                File originalFile = File.createTempFile(CdbPropertyValue.IMAGE_PREFIX, originalExtension, uploadDir);
-                String baseName = originalFile.getName().replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, "");
+            try {
                 InputStream input = localUploadedFile.getInputstream();
-                Files.copy(input, originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                logger.debug("Saved file: " + originalFile.toPath());
-
-                GalleryUtility.storeImagePreviews(originalFile);
-
-                propertyValue.setValue(baseName);
-                logger.debug("Uploaded file name: " + localUploadedFile.getFileName());
-                SessionUtility.addInfoMessage("Success", "Uploaded file " + localUploadedFile.getFileName() + ".");
-
+                uploadImage(propertyValue, fileName, input);
+                SessionUtility.addInfoMessage("Success", "Uploaded file " + fileName + ".");
+            } catch (IOException ex) {
+                logger.error(ex);
+                SessionUtility.addErrorMessage("Error", ex.toString());
             }
-        } catch (IOException ex) {
-            logger.error(ex);
-            SessionUtility.addErrorMessage("Error", ex.toString());
         }
+
+    }
+
+    public static void uploadImage(PropertyValue propertyValue, String fileName, InputStream input) throws IOException {
+        Path uploadDirPath;
+        String uploadedExtension = FileUtility.getFileExtension(fileName);
+
+        uploadDirPath = Paths.get(StorageUtility.getFileSystemPropertyValueImagesDirectory());
+        logger.debug("Using property value images directory: " + uploadDirPath.toString());
+        if (Files.notExists(uploadDirPath)) {
+            Files.createDirectory(uploadDirPath);
+        }
+        File uploadDir = uploadDirPath.toFile();
+
+        String imageFormat = uploadedExtension;
+        String originalExtension = "." + uploadedExtension + CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION;
+        if (uploadedExtension.isEmpty()) {
+            originalExtension = CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION;
+            imageFormat = ImageUtility.DEFAULT_IMAGE_FORMAT;
+        }
+        File originalFile = File.createTempFile(CdbPropertyValue.IMAGE_PREFIX, originalExtension, uploadDir);
+        String baseName = originalFile.getName().replace(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION, "");
+        Files.copy(input, originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        logger.debug("Saved file: " + originalFile.toPath());
+        GalleryUtility.storeImagePreviews(originalFile);
+        propertyValue.setValue(baseName);
+        logger.debug("Uploaded file name: " + fileName);        
+    }
+    
+    public static PropertyType getImagePropertyType(PropertyTypeHandlerFacade pthf) {
+        PropertyTypeHandler imagePropertyTypeHandler = pthf.findByName(IMAGE_PROPERTY_TYPE_NAME);
+        List<PropertyType> propertyTypeList = imagePropertyTypeHandler.getPropertyTypeList();
+        if (propertyTypeList.size() > 0) {
+            return propertyTypeList.get(0);
+        }
+        return null; 
     }
 
     public void upload(PropertyValue propertyValue) {
@@ -184,7 +196,7 @@ public class PropertyValueImageUploadBean implements Serializable {
                     cdbEntityController.update();
                     return;
                 } else {
-                    throw new CdbException("Controller not set to update the gallery."); 
+                    throw new CdbException("Controller not set to update the gallery.");
                 }
 
             }
