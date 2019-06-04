@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.rest.routes;
 
 import gov.anl.aps.cdb.rest.authentication.Secured;
+import gov.anl.aps.cdb.rest.entities.ApiExceptionMessage;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import javax.ws.rs.GET;
@@ -34,6 +35,16 @@ public class TestRoute {
     @Produces(MediaType.APPLICATION_JSON)
     public boolean verifyConnection() {
         return true; 
+    }
+    
+    @GET
+    @Path("/SampleErrorMessage")
+    @Produces(MediaType.APPLICATION_JSON) 
+    public ApiExceptionMessage getSampleErrorMessage() {
+        Exception exception = new Exception("Sample Exception Message"); 
+        ApiExceptionMessage apiExceptionMessage = new ApiExceptionMessage(exception);
+        
+        return apiExceptionMessage;
     }
     
 }
