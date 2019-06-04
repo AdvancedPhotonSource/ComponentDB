@@ -11,7 +11,6 @@ import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.core.Response;
 
 @Secured
 @Provider
@@ -50,8 +49,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             requestContext.setSecurityContext(new CdbApiSecurityContext(user, scheme));
 
         } catch (Exception e) {
-            requestContext.abortWith(
-                Response.status(Response.Status.UNAUTHORIZED).build());
+             throw new NotAuthorizedException("The user auhorization token could not be validated.");
         }
     }
 
