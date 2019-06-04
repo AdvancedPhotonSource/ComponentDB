@@ -31,7 +31,7 @@ public class CdbRestService extends Application {
         restResourceClasses.add(AcceptHeaderOpenApiResource.class);        
         
         // Add json processor 
-        restResourceClasses.add(JacksonFeature.class);
+        restResourceClasses.add(JacksonFeature.class);        
         
         return restResourceClasses; 
     }
@@ -42,6 +42,7 @@ public class CdbRestService extends Application {
     private Set<Class<?>> getRestResourceClasses() {
         Set<Class<?>> resources = new java.util.HashSet<Class<?>>();
         resources.add(gov.anl.aps.cdb.rest.authentication.AuthenticationFilter.class);
+        resources.add(gov.anl.aps.cdb.rest.provider.GenericAPIExceptionProvider.class);
         resources.add(gov.anl.aps.cdb.rest.routes.AuthenticationRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.ItemRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.PropertyTypeRoute.class);
