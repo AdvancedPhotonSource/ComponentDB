@@ -4,12 +4,16 @@
  */
 package gov.anl.aps.cdb.rest.routes;
 
+import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.DbError;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
@@ -19,12 +23,18 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
+import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueImageUploadBean;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.authentication.User;
+import gov.anl.aps.cdb.rest.entities.FileUploadObject;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.security.Principal;
+import java.util.Base64;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -49,11 +59,18 @@ public class ItemRoute extends BaseRoute {
     @EJB
     DomainFacade domainFacade;
 
+    @EJB
+    PropertyTypeHandlerFacade propertyTypeHandlerFacade;
+
     @GET
     @Path("/ById/{id}")
-    @Produces(MediaType.APPLICATION_JSON)    
-    public Item getItemById(@PathParam("id") int id) {
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Fetch an item by its id.")
+    public Item getItemById(@PathParam("id") int id) throws ObjectNotFound {
         Item findById = itemFacade.findById(id);
+        if (findById == null) {
+            throw new ObjectNotFound("Could not find item with id: " + id); 
+        }
         return findById;
     }
 
@@ -75,17 +92,21 @@ public class ItemRoute extends BaseRoute {
     @Produces(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public boolean verifyUserPermissionForItem(@PathParam("id") int id) {
+    public boolean verifyUserPermissionForItem(@PathParam("id") int id) throws ObjectNotFound {
         Item itemById = getItemById(id);
         if (itemById != null) {
             UserInfo user = getCurrentRequestUserInfo();
-            if (user != null) {
-                if (isUserAdmin(user)) {
-                    return true;
-                }
-                return AuthorizationUtility.isEntityWriteableByUser(itemById, user);           
-            }
+            return verifyUserPermissionForItem(user, itemById);
+        }
+        return false;
+    }
 
+    private boolean verifyUserPermissionForItem(UserInfo user, Item item) {
+        if (user != null) {
+            if (isUserAdmin(user)) {
+                return true;
+            }
+            return AuthorizationUtility.isEntityWriteableByUser(item, user);
         }
         return false;
     }
@@ -96,7 +117,7 @@ public class ItemRoute extends BaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public Item updateItemDetails(Item item) {
+    public Item updateItemDetails(Item item) throws ObjectNotFound, CdbException {
         int itemId = item.getId();
         Item dbItem = getItemById(itemId);
 
@@ -107,53 +128,51 @@ public class ItemRoute extends BaseRoute {
         dbItem.setItemTypeList(item.getItemTypeList());
         dbItem.setItemCategoryList(item.getItemCategoryList());
 
-        ItemController itemDomainControllerForApi = dbItem.getItemDomainController(); 
+        ItemController itemDomainControllerForApi = dbItem.getItemDomainController();
 
-        itemDomainControllerForApi.setApiUser(getCurrentRequestUserInfo());
-        itemDomainControllerForApi.setCurrent(dbItem);
-        itemDomainControllerForApi.update();
+        UserInfo updateUser = getCurrentRequestUserInfo();
+        itemDomainControllerForApi.updateFromApi(dbItem, updateUser);
 
         return dbItem;
     }
-    
+
     @POST
     @Path("/UpdateProperty/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public PropertyValue updateItemPropertyValue(@PathParam("itemId") int itemId, PropertyValue propertyValue) throws InvalidArgument, ObjectNotFound {
+    public PropertyValue updateItemPropertyValue(@PathParam("itemId") int itemId, PropertyValue propertyValue) throws InvalidArgument, ObjectNotFound, CdbException {
         Item dbItem = getItemById(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
-        
-        ItemController itemController = dbItem.getItemDomainController(); 
-        itemController.setApiUser(getCurrentRequestUserInfo());
-        PropertyValue dbPropertyValue = null; 
-        
-        int propIdx = -1; 
-        
+
+        ItemController itemController = dbItem.getItemDomainController();        
+        PropertyValue dbPropertyValue = null;
+
+        int propIdx = -1;
+
         if (propertyValue.getId() == null) {
             PropertyType propertyType = propertyValue.getPropertyType();
             if (propertyType == null) {
-                throw new InvalidArgument("Property type must be assigned to new property value."); 
+                throw new InvalidArgument("Property type must be assigned to new property value.");
             }
-            dbPropertyValue = itemController.preparePropertyTypeValueAdd(dbItem, propertyType, null, null, updatedByUser);             
+            dbPropertyValue = itemController.preparePropertyTypeValueAdd(dbItem, propertyType, null, null, updatedByUser);
         } else {
             // Property already exists for the particular item.             
             for (int i = 0; i < dbItem.getPropertyValueList().size(); i++) {
                 PropertyValue propertyValueIttr = dbItem.getPropertyValueList().get(i);
                 if (propertyValueIttr.getId().equals(propertyValue.getId())) {
-                    dbPropertyValue = propertyValueIttr; 
-                    propIdx = i; 
+                    dbPropertyValue = propertyValueIttr;
+                    propIdx = i;
                     break;
                 }
-            }                                    
+            }
         }
-        
+
         if (dbPropertyValue == null) {
             throw new ObjectNotFound("There was an error trying to load the property value.");
         }
-                        
+
         // Set passed in property value to match db property value 
         dbPropertyValue.setValue(propertyValue.getValue());
         dbPropertyValue.setDisplayValue(propertyValue.getDisplayValue());
@@ -161,36 +180,81 @@ public class ItemRoute extends BaseRoute {
         dbPropertyValue.setDescription(propertyValue.getDescription());
         dbPropertyValue.setUnits(propertyValue.getUnits());
         dbPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
-        dbPropertyValue.setIsUserWriteable(propertyValue.getIsUserWriteable());                
-        
-        itemController.setCurrent(dbItem);
-        itemController.update();
-        
-        dbItem = (Item) itemController.getCurrent(); 
-        
-        List<PropertyValue> pvList = dbItem.getPropertyValueList(); 
+        dbPropertyValue.setIsUserWriteable(propertyValue.getIsUserWriteable());
+      
+        itemController.updateFromApi(dbItem, updatedByUser);
+
+        dbItem = (Item) itemController.getCurrent();
+
+        List<PropertyValue> pvList = dbItem.getPropertyValueList();
         if (propIdx > 0) {
-            dbPropertyValue = pvList.get(propIdx); 
+            dbPropertyValue = pvList.get(propIdx);
         } else {
-            propIdx = pvList.size() -1; 
-            dbPropertyValue = pvList.get(propIdx); 
+            propIdx = pvList.size() - 1;
+            dbPropertyValue = pvList.get(propIdx);
+        }
+
+        return dbPropertyValue;
+    }
+
+    @POST
+    @Path("/uploadImage/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public PropertyValue uploadImageForItem(@PathParam("itemId") int itemId, FileUploadObject imageUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
+        Item dbItem = getItemById(itemId);
+        UserInfo updatedByUser = getCurrentRequestUserInfo();
+        
+        if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {
+            //TODO add logger
+            throw new AuthorizationError("User does not have permission to upload image for the item");
+        }
+
+        Base64.Decoder decoder = Base64.getDecoder();
+        byte[] decode = decoder.decode(imageUpload.getBase64Binary());
+        ByteArrayInputStream stream = new ByteArrayInputStream(decode);       
+
+        ItemController itemController = dbItem.getItemDomainController();
+
+        PropertyType imagePropertyType = PropertyValueImageUploadBean.getImagePropertyType(propertyTypeHandlerFacade);
+        if (imagePropertyType == null) {
+            throw new DbError("Could not find image property type.");
+        }
+
+        PropertyValue pv = itemController.preparePropertyTypeValueAdd(dbItem, imagePropertyType, null, null, updatedByUser);
+
+        try {
+            PropertyValueImageUploadBean.uploadImage(pv, imageUpload.getFileName(), stream);
+        } catch (IOException ex) {
+            throw ex;
         }
         
-        return dbPropertyValue; 
+        itemController.updateFromApi(dbItem, updatedByUser);
+
+        List<PropertyValue> pvList = dbItem.getPropertyValueList();
+        int lastIdx = pvList.size() - 1;
+        pv = pvList.get(lastIdx);
+
+        return pv;
     }
 
     @GET
     @Path("/ByQrId/{qrId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Item getItemByQrId(@PathParam("qrId") int qrId) {
+    public Item getItemByQrId(@PathParam("qrId") int qrId) throws ObjectNotFound {
         Item findByQrId = itemFacade.findByQrId(qrId);
+        if (findByQrId == null) {
+            throw new ObjectNotFound("Could not find item with qrid: " + qrId);
+        }
         return findByQrId;
     }
 
     @GET
     @Path("/PropertiesForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<PropertyValue> getPropertiesForItem(@PathParam("itemId") int itemId) {
+    public List<PropertyValue> getPropertiesForItem(@PathParam("itemId") int itemId) throws ObjectNotFound {
         Item itemById = getItemById(itemId);
         return itemById.getPropertyValueList();
     }
@@ -198,7 +262,7 @@ public class ItemRoute extends BaseRoute {
     @GET
     @Path("/LogsForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Log> getLogsForItem(@PathParam("itemId") int itemId) {
+    public List<Log> getLogsForItem(@PathParam("itemId") int itemId) throws ObjectNotFound {
         Item itemById = getItemById(itemId);
         return itemById.getLogList();
     }
@@ -206,7 +270,7 @@ public class ItemRoute extends BaseRoute {
     @GET
     @Path("/ImagePropertiesForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<PropertyValue> getImagePropertiesForItem(@PathParam("itemId") int itemId) {
+    public List<PropertyValue> getImagePropertiesForItem(@PathParam("itemId") int itemId) throws ObjectNotFound {
         Item itemById = getItemById(itemId);
         List<PropertyValue> propertyValueList = itemById.getPropertyValueList();
         return PropertyValueUtility.prepareImagePropertyValueList(propertyValueList);
@@ -244,9 +308,9 @@ public class ItemRoute extends BaseRoute {
         Principal userPrincipal = securityContext.getUserPrincipal();
         if (userPrincipal instanceof User) {
             UserInfo user = ((User) userPrincipal).getUser();
-            return user; 
+            return user;
         }
-        return null; 
+        return null;
     }
 
 }
