@@ -30,8 +30,10 @@ public class SessionUtility {
     public static final String LAST_USERNAME_KEY = "lastUsername";
     public static final String VIEW_STACK_KEY = "viewStack";
     public static final String LAST_SESSION_ERROR_KEY = "lastSessionError";
-    public static final String ROLE_KEY = "role";
-    public static final String FACADE_LOOKUP_NAME_START = "java:global/CdbWebPortal/";
+    public static final String ROLE_KEY = "role";    
+    private static final String MODULE_NAME_LOOKUP = "java:module/ModuleName";
+    private static final String JAVA_LOOKUP_START = "java:global/";
+    private static String FACADE_LOOKUP_STRING_START = null; 
     
     private static final Logger logger = org.apache.log4j.Logger.getLogger(SessionUtility.class.getName());          
 
@@ -221,7 +223,13 @@ public class SessionUtility {
     public static Object findFacade(String facadeName) {
         try {
             InitialContext context = new InitialContext();
-            return context.lookup(FACADE_LOOKUP_NAME_START + facadeName); 
+            
+            if (FACADE_LOOKUP_STRING_START == null) {
+                String modName = (String) context.lookup(MODULE_NAME_LOOKUP);
+                FACADE_LOOKUP_STRING_START = JAVA_LOOKUP_START + modName + "/";                        
+            }
+            
+            return context.lookup(FACADE_LOOKUP_STRING_START + facadeName); 
         } catch (NamingException ex) {
             logger.error(ex);
         }
