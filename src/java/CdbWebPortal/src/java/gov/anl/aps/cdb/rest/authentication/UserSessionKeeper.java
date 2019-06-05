@@ -37,11 +37,16 @@ public class UserSessionKeeper {
     
     public String getToken(UserInfo user) {
         String token = UUID.randomUUID().toString();
-        User sessionUser = User.createFromUserInfo(user);                
+        User sessionUser = User.createFromUserInfo(user, token);                
         
         userTokenMap.put(token, sessionUser);                        
         
         return token; 
+    }
+    
+    public boolean revokeToken(String token) {
+        User remove = userTokenMap.remove(token);
+        return remove != null; 
     }
     
     public User getUserForToken(String token) {
