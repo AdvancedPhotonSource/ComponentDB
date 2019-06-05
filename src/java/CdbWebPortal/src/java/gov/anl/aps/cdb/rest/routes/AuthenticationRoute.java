@@ -4,10 +4,12 @@
  */
 package gov.anl.aps.cdb.rest.routes;
 
+import gov.anl.aps.cdb.common.exceptions.AuthenticationError;
 import gov.anl.aps.cdb.portal.controllers.LoginController;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
+import gov.anl.aps.cdb.rest.authentication.User;
 import gov.anl.aps.cdb.rest.authentication.UserSessionKeeper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -18,6 +20,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.security.Principal;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -28,8 +31,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("/login")
 @Tag(name = "Authentication")
+@Path("/auth")
 @SecurityScheme(name = "cdbAuth",
                 type = SecuritySchemeType.APIKEY,
                 in = SecuritySchemeIn.COOKIE,
@@ -40,6 +43,7 @@ public class AuthenticationRoute extends BaseRoute {
     private UserInfoFacade userFacade;
             
     @POST
+    @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)    
     @Operation(summary = "Logs user into the system",
@@ -58,7 +62,7 @@ public class AuthenticationRoute extends BaseRoute {
           }
     )
     public Response authenticateUser(@FormParam("username") String username, 
-                                     @FormParam("password") String password) {
+                                     @FormParam("password") String password) throws AuthenticationError {
                       
         UserInfo userInfo = userFacade.findByUsername(username); 
         boolean authenticated = LoginController.validateCredentials(userInfo, password);
@@ -69,7 +73,23 @@ public class AuthenticationRoute extends BaseRoute {
                                     
             return Response.ok(usk.getNext()).header(UserSessionKeeper.AUTH_TOKEN_KEY, token).build(); 
         } else {
-            return Response.status(Response.Status.UNAUTHORIZED).build(); 
+            throw new AuthenticationError("Could not verify username or password."); 
+        }
+    }
+    
+    @POST
+    @Path("/logout")
+    @Secured
+    public void logOut() throws AuthenticationError, Exception {
+        Principal userPrincipal = securityContext.getUserPrincipal();
+        if (userPrincipal instanceof User) {
+            String token = ((User) userPrincipal).getToken();
+            UserSessionKeeper sessionKeeper = UserSessionKeeper.getInstance();
+            if (!sessionKeeper.revokeToken(token)) {
+                throw new Exception("An error occurred logging user out."); 
+            }
+        } else {
+            throw new AuthenticationError("Could not fetch current logged in user."); 
         }
     }
     
