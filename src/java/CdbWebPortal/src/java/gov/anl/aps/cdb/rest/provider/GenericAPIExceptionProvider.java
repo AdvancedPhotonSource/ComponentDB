@@ -4,7 +4,9 @@
  */
 package gov.anl.aps.cdb.rest.provider;
 
+import gov.anl.aps.cdb.common.exceptions.AuthenticationError;
 import gov.anl.aps.cdb.rest.entities.ApiExceptionMessage;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -22,9 +24,15 @@ public class GenericAPIExceptionProvider  extends Exception implements Exception
     
     @Override
     public Response toResponse(Exception exception) {
+        int statusCode = 500; 
+        
+        if (exception instanceof NotAuthorizedException || exception instanceof AuthenticationError) {
+            statusCode = 401;
+        }
+        
         logger.error(exception); 
         ApiExceptionMessage message = new ApiExceptionMessage(exception); 
-        return Response.status(500).entity(message).type(MediaType.APPLICATION_JSON).build();
+        return Response.status(statusCode).entity(message).type(MediaType.APPLICATION_JSON).build();
     }
     
 }
