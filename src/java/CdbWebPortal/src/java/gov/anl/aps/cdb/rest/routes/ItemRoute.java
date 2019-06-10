@@ -73,6 +73,14 @@ public class ItemRoute extends BaseRoute {
         }
         return findById;
     }
+    
+    @GET
+    @Path("/ItemsDerivedFromItemByItemId/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Item> getItemsDerivedFromItemByItemId(@PathParam("id") int id) throws ObjectNotFound {
+        Item itemById = getItemById(id);        
+        return itemById.getDerivedFromItemList(); 
+    }
 
     @GET
     @Path("/ById/{id}/Status")
