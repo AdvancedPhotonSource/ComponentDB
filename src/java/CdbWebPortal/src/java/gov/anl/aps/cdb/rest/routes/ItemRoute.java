@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
@@ -18,6 +19,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -28,6 +30,7 @@ import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.authentication.User;
 import gov.anl.aps.cdb.rest.entities.FileUploadObject;
+import gov.anl.aps.cdb.rest.entities.ItemLocationInformation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -69,17 +72,17 @@ public class ItemRoute extends BaseRoute {
     public Item getItemById(@PathParam("id") int id) throws ObjectNotFound {
         Item findById = itemFacade.findById(id);
         if (findById == null) {
-            throw new ObjectNotFound("Could not find item with id: " + id); 
+            throw new ObjectNotFound("Could not find item with id: " + id);
         }
         return findById;
     }
-    
+
     @GET
     @Path("/ItemsDerivedFromItemByItemId/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Item> getItemsDerivedFromItemByItemId(@PathParam("id") int id) throws ObjectNotFound {
-        Item itemById = getItemById(id);        
-        return itemById.getDerivedFromItemList(); 
+        Item itemById = getItemById(id);
+        return itemById.getDerivedFromItemList();
     }
 
     @GET
@@ -93,6 +96,25 @@ public class ItemRoute extends BaseRoute {
         }
 
         return null;
+    }
+
+    @GET
+    @Path("/ById/{id}/Location")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ItemLocationInformation getItemLocation(@PathParam("id") int id) throws ObjectNotFound, InvalidArgument {
+        Item itemById = getItemById(id);
+
+        if (itemById instanceof LocatableItem) {
+            LocatableItem locatableItem = (LocatableItem) itemById;
+            LocatableItemController controller = LocatableItemController.getApiInstance();
+
+            controller.setItemLocationInfo(locatableItem);            
+
+            return new ItemLocationInformation(locatableItem);
+
+        } else {
+            throw new InvalidArgument("Item requested cannot have a location specified. Item Id: " + id);
+        }
     }
 
     @GET
@@ -154,7 +176,7 @@ public class ItemRoute extends BaseRoute {
         Item dbItem = getItemById(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
 
-        ItemController itemController = dbItem.getItemDomainController();        
+        ItemController itemController = dbItem.getItemDomainController();
         PropertyValue dbPropertyValue = null;
 
         int propIdx = -1;
@@ -189,7 +211,7 @@ public class ItemRoute extends BaseRoute {
         dbPropertyValue.setUnits(propertyValue.getUnits());
         dbPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
         dbPropertyValue.setIsUserWriteable(propertyValue.getIsUserWriteable());
-      
+
         itemController.updateFromApi(dbItem, updatedByUser);
 
         dbItem = (Item) itemController.getCurrent();
@@ -214,7 +236,7 @@ public class ItemRoute extends BaseRoute {
     public PropertyValue uploadImageForItem(@PathParam("itemId") int itemId, FileUploadObject imageUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
         Item dbItem = getItemById(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
-        
+
         if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {
             //TODO add logger
             throw new AuthorizationError("User does not have permission to upload image for the item");
@@ -222,7 +244,7 @@ public class ItemRoute extends BaseRoute {
 
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] decode = decoder.decode(imageUpload.getBase64Binary());
-        ByteArrayInputStream stream = new ByteArrayInputStream(decode);       
+        ByteArrayInputStream stream = new ByteArrayInputStream(decode);
 
         ItemController itemController = dbItem.getItemDomainController();
 
@@ -238,7 +260,7 @@ public class ItemRoute extends BaseRoute {
         } catch (IOException ex) {
             throw ex;
         }
-        
+
         itemController.updateFromApi(dbItem, updatedByUser);
 
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
