@@ -408,6 +408,11 @@ public class LocatableItemController implements Serializable {
     }
 
     protected void updateItemLocation(LocatableItem item) {
+        if (item.getOriginalLocationLoaded() == false) {
+            // Location was never loaded. 
+            return; 
+        }
+        
         // Determie updating of location relationship. 
         LocatableItem existingItem = null;
         ItemElementRelationship itemElementRelationship = null;
