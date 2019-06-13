@@ -25,24 +25,24 @@ public class ItemLocationInformation {
         this.locatableItem = locatableItem;
         
         locationItem = locatableItem.getLocation();        
+        locationDetails = locatableItem.getLocationDetails();
 
         if (locationItem != null) {
-            locationString = locatableItem.getLocationString(); 
-            locationDetails = locatableItem.getLocationDetails();
+            locationString = locatableItem.getLocationString();             
             
             // Set location hierarchy
             TreeNode locationTree = locatableItem.getLocationTree();
-            TreeNode parentNode = locationTree.getChildren().get(0);           
+            TreeNode parentNode = locationTree.getChildren().get(0);
             ItemHierarchy parentHierarchy = null;
 
             while (parentNode != null) {
                 Item parent = (Item) parentNode.getData();
 
                 if (locationSingleNodeHierarchy == null) {
-                    locationSingleNodeHierarchy = new ItemHierarchy((parent));
+                    locationSingleNodeHierarchy = new ItemHierarchy(parent, false);
                     parentHierarchy = locationSingleNodeHierarchy;
                 } else {
-                    ItemHierarchy child = new ItemHierarchy(parent);
+                    ItemHierarchy child = new ItemHierarchy(parent, false);
                     parentHierarchy.addChildItem(child);
                     parentHierarchy = child;
                 }

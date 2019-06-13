@@ -19,6 +19,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -30,13 +32,16 @@ import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.authentication.User;
 import gov.anl.aps.cdb.rest.entities.FileUploadObject;
+import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemLocationInformation;
+import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import javax.ejb.EJB;
@@ -140,6 +145,47 @@ public class ItemRoute extends BaseRoute {
         }
         return false;
     }
+    
+    @POST
+    @Path("/UpdateLocation")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemLocationInformation updateItemLocation(SimpleLocationInformation locationInformation) throws ObjectNotFound, InvalidArgument, CdbException {
+        // Validate ids provided 
+        Item item = getItemById(locationInformation.getLocatableItemId());               
+        if (item instanceof LocatableItem == false) {
+            throw new InvalidArgument("Locatable item id is not a locatable item");
+        }                
+        LocatableItem locatableItem = (LocatableItem) item;
+        
+        Integer locationItemId = locationInformation.getLocationItemId();
+        ItemDomainLocation locationItem = null; 
+        
+        if (locationItemId != null) {
+            Item locItem = getItemById(locationItemId); 
+            if(locItem instanceof ItemDomainLocation == false) {
+                throw new InvalidArgument("Location item id is not a location.");
+            }        
+            locationItem = (ItemDomainLocation) locItem; 
+        }
+        
+        // Load current location info
+        LocatableItemController locationController = LocatableItemController.getApiInstance();
+        locationController.setItemLocationInfo(locatableItem); 
+        
+        // Use the location information provided 
+        locatableItem.setLocation(locationItem);
+        locatableItem.setLocationDetails(locationInformation.getLocationDetails());
+        
+        // Perfrom update
+        UserInfo updateUser = getCurrentRequestUserInfo();
+        ItemController controller = locatableItem.getItemDomainController();
+        controller.updateFromApi(locatableItem, updateUser);
+        
+        return new ItemLocationInformation(locatableItem);
+    }
 
     @POST
     @Path("/UpdateDetails")
@@ -151,7 +197,7 @@ public class ItemRoute extends BaseRoute {
         int itemId = item.getId();
         Item dbItem = getItemById(itemId);
 
-        dbItem.setName(item.getName());
+        dbItem.setName(item.getName());        
         dbItem.setItemIdentifier1(item.getItemIdentifier1());
         dbItem.setItemIdentifier2(item.getItemIdentifier2());
         dbItem.setDescription(item.getDescriptionFromAPI());
@@ -333,7 +379,55 @@ public class ItemRoute extends BaseRoute {
     public List<Domain> getDomainList() {
         return domainFacade.findAll();
     }
-
+    
+    @GET
+    @Path("/LocationHierarchy")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemHierarchy> getLocationHierarchy() {
+        List<ItemDomainLocation> locationsTopLevel = getLocationsTopLevel();
+        
+        List<ItemHierarchy> result = new ArrayList<>(); 
+        
+        for(ItemDomainLocation location: locationsTopLevel) {
+            ItemHierarchy locationHierarchy = new ItemHierarchy(location, true); 
+            result.add(locationHierarchy);
+        }
+        
+        return result; 
+    }
+    
+    @GET
+    @Path("/LocationsTopLevel")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainLocation> getLocationsTopLevel() {
+        List<ItemDomainLocation> topLocations = 
+                (List<ItemDomainLocation>)(List<?>) itemFacade.findByDomainWithoutParents(ItemDomainName.location.getValue()); 
+        
+        return topLocations; 
+    }
+    
+    @GET
+    @Path("/LocationsChildLocations/{parentLocationId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainLocation> getChildLocations(@PathParam("parentLocationId") int itemId) throws ObjectNotFound, InvalidArgument {
+        Item itemById = getItemById(itemId);
+        
+        if (itemById instanceof ItemDomainLocation == false) {
+            throw new InvalidArgument("Item passed in is not for a location item."); 
+        }
+        
+        List<ItemDomainLocation> childLocations = new ArrayList<>(); 
+        
+        for (ItemElement element : itemById.getItemElementDisplayList()) {
+            Item containedItem = element.getContainedItem();
+            if (containedItem != null) {
+                childLocations.add((ItemDomainLocation) containedItem);
+            }
+        }
+        
+        return childLocations; 
+    }
+    
     private UserInfo getCurrentRequestUserInfo() {
         Principal userPrincipal = securityContext.getUserPrincipal();
         if (userPrincipal instanceof User) {
