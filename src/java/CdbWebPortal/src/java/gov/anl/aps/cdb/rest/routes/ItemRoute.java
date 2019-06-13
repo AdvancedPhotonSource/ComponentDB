@@ -197,7 +197,8 @@ public class ItemRoute extends BaseRoute {
         int itemId = item.getId();
         Item dbItem = getItemById(itemId);
 
-        dbItem.setName(item.getName());        
+        dbItem.setName(item.getName());
+        dbItem.setQrId(item.getQrId());
         dbItem.setItemIdentifier1(item.getItemIdentifier1());
         dbItem.setItemIdentifier2(item.getItemIdentifier2());
         dbItem.setDescription(item.getDescriptionFromAPI());

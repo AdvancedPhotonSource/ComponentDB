@@ -2531,7 +2531,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     protected void checkItem(ItemDomainEntity item, boolean skipProjects) throws CdbException {
         Domain itemDomain = item.getDomain();
-
+       
+        // Verify no qr id is specified when it is not allowed for the domain.
+        if (getEntityDisplayQrId() == false) {
+            if (item.getQrId() != null) {
+                throw new CdbException("QR Id cannot be specified for " + itemDomainToString(item)); 
+            }
+        }
+        
         if (itemDomain == null) {
             throw new CdbException("No domain has been specified for " + itemDomainToString(item));
         }
