@@ -11,10 +11,12 @@ import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
@@ -69,6 +71,9 @@ public class ItemRoute extends BaseRoute {
 
     @EJB
     PropertyTypeHandlerFacade propertyTypeHandlerFacade;
+    
+    @EJB
+    UserInfoFacade userInfoFacade; 
 
     @GET
     @Path("/ById/{id}")
@@ -365,6 +370,18 @@ public class ItemRoute extends BaseRoute {
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainCatalog> getCatalogItems() {
         return (List<ItemDomainCatalog>) (List<?>) getItemsByDomain(ItemDomainName.catalog.getValue());
+    }
+    
+    @GET
+    @Path("/Catalog/Favorites")
+    @Produces(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public List<ItemDomainCatalog> getFavoriteCatalogItems() {
+        ItemDomainCatalogController controller = ItemDomainCatalogController.getApiInstance();
+        UserInfo currentUser = getCurrentRequestUserInfo();
+        currentUser = userFacade.find(currentUser.getId());
+        return controller.getFavoriteItems(currentUser); 
     }
 
     @GET
