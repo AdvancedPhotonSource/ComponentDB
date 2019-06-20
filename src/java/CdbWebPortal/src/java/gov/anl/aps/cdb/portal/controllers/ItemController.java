@@ -172,18 +172,18 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected Domain defaultControllerDomain = null;
 
     protected Boolean hasElementReorderChangesForCurrent = false;
-    
-    protected List<String> expandedRowUUIDs = null; 
+
+    protected List<String> expandedRowUUIDs = null;
 
     public ItemController() {
     }
 
     @Override
     protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually(); 
+        super.loadEJBResourcesManually();
         itemElementFacade = ItemElementFacade.getInstance();
-        domainFacade = DomainFacade.getInstance(); 
-        
+        domainFacade = DomainFacade.getInstance();
+
         // TODO API load the rest of the ejbs.
         /*        
 
@@ -213,9 +213,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     @EJB
     private ItemElementRelationshipFacade itemElementRelationshipFacade;
-        */
+         */
     }
-        
+
     protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
 
     /**
@@ -257,12 +257,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public String getNameTitle() {
         return "Name";
     }
-    
+
     public String getItemElementsListTitle() {
         if (settingObject.getDisplayItemElementSimpleView()) {
             return "Assembly Listing";
         }
-        return "Elements"; 
+        return "Elements";
     }
 
     public String getItemEntityTypeTitle() {
@@ -388,8 +388,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public void processPreRenderList() {
         super.processPreRenderList();
         filteredObjectList = null;
-        
-        expandedRowUUIDs = new ArrayList<>(); 
+
+        expandedRowUUIDs = new ArrayList<>();
 
         // Check if itemProject registered. 
         if (itemProjectController == null) {
@@ -831,12 +831,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
                 // Show only favorites
                 if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
-                    List<ItemDomainEntity> itemList = null;
-                    if (getEntityDisplayTemplates()) {
-                        itemList = itemFacade.getItemListContainedInListExcludeEntityType(domainName, getFavoritesList(), templateEntityTypeName);
-                    } else {
-                        itemList = itemFacade.getItemListContainedInList(domainName, getFavoritesList());
-                    }
+                    List<ItemDomainEntity> itemList = getFavoriteItems();
                     scopedListDataModel = new ListDataModel(itemList);
                 } else {
                     // Show owned or owned & favorites. 
@@ -902,6 +897,24 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         loadPreProcessListDataModelIfNeeded(scopedListDataModel);
 
         return scopedListDataModel;
+    }
+    
+    public List<ItemDomainEntity> getFavoriteItems() {
+        return getFavoriteItems(null); 
+    }
+
+    public List<ItemDomainEntity> getFavoriteItems(SettingEntity settingEntity) {
+          String templateEntityTypeName = EntityTypeName.template.getValue();
+        ItemDomainEntityFacade itemFacade = getEntityDbFacade();
+        String domainName = getDefaultDomainName();
+        
+        List<ItemDomainEntity> itemList = null;
+        if (getEntityDisplayTemplates()) {
+            itemList = itemFacade.getItemListContainedInListExcludeEntityType(domainName, getFavoritesList(settingEntity), templateEntityTypeName);
+        } else {
+            itemList = itemFacade.getItemListContainedInList(domainName, getFavoritesList(settingEntity));
+        }
+        return itemList;
     }
 
     public List<String> getDisplayListDataScopeSelectionList() {
@@ -971,18 +984,24 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             relevantPropertyTypeCategories = propertyTypeCategoryFacade.findRelevantCategoriesByDomainId(getDefaultDomainName());
         }
         return relevantPropertyTypeCategories;
-    }
+    }                
 
-    private List<ListTbl> getSettingEntityItemElementLists() {
-        SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
+    private List<ListTbl> getSettingEntityItemElementLists(SettingEntity settingEntity) {        
+        if (settingEntity == null) {
+            settingEntity = getSettingController().getCurrentSettingEntity();        
+        }
         if (settingEntity != null) {
             return settingEntity.getItemElementLists();
         }
         return null;
     }
-
+    
     private ListTbl getFavoritesList() {
-        List<ListTbl> itemElementLists = getSettingEntityItemElementLists();
+        return getFavoritesList(null); 
+    }
+
+    private ListTbl getFavoritesList(SettingEntity settingEntity) {
+        List<ListTbl> itemElementLists = getSettingEntityItemElementLists(settingEntity);
         if (itemElementLists != null) {
             for (ListTbl list : itemElementLists) {
                 if (list.getName().equals(FAVORITES_LIST_NAME)) {
@@ -1565,7 +1584,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 newPropertyValue.setDescription(propertyValue.getDescription());
                 newPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
                 newPropertyValue.setEnteredOnDateTime(enteredOnDateTime);
-                newPropertyValue.setEnteredByUser(enteredByUser);                
+                newPropertyValue.setEnteredByUser(enteredByUser);
 
                 newItemPropertyValueList.add(newPropertyValue);
             }
@@ -1876,18 +1895,18 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         List<Item> itemList = new ArrayList<>();
 
         List<ItemElement> itemElementList = itemEntity.getItemElementMemberList();
-        itemElementList.addAll(itemEntity.getItemElementMemberList2()); 
+        itemElementList.addAll(itemEntity.getItemElementMemberList2());
         // Remove currently being viewed item. 
         if (itemElementList != null) {
             for (ItemElement itemElement : itemElementList) {
                 Item memberItem = itemElement.getParentItem();
-                
+
                 if (!ItemDomainMachineDesignController.isItemMachineDesign(itemEntity)) {
                     if (ItemDomainMachineDesignController.isItemMachineDesign(memberItem)) {
                         memberItem = itemElement.getContainedItem();
                     }
                 }
-               
+
                 if (itemList.contains(memberItem) == false) {
                     itemList.add(memberItem);
                 }
@@ -1957,7 +1976,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             if (propertyValue != null) {
                 if (imageList.size() > 0) {
                     imageList.remove(propertyValue);
-                } 
+                }
                 imageList.add(0, propertyValue);
             }
         }
@@ -2452,7 +2471,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         performPrepareEntityInsertUpdate(item);
         item.resetAttributesToNullIfEmpty();
         EntityInfo entityInfo = item.getEntityInfo();
-        if (apiMode){
+        if (apiMode) {
             EntityInfoUtility.updateEntityInfo(entityInfo, apiUser);
         } else {
             EntityInfoUtility.updateEntityInfo(entityInfo);
@@ -2477,16 +2496,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         List<Item> derivedFromItemList = item.getDerivedFromItemList();
         if (derivedFromItemList != null) {
             for (Item derivedItem : derivedFromItemList) {
-                derivedItem.resetAttributesToNullIfEmpty();                
-                ItemController derivedItemController = derivedItem.getItemDomainController(); 
-                derivedItemController.checkItem(derivedItem);                
+                derivedItem.resetAttributesToNullIfEmpty();
+                ItemController derivedItemController = derivedItem.getItemDomainController();
+                derivedItemController.checkItem(derivedItem);
             }
         }
 
         LOGGER.debug("Updating item " + item.getId()
                 + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
 
-    }        
+    }
 
     protected void performPrepareEntityInsertUpdate(Item item) {
         if (item instanceof LocatableItem) {
@@ -2531,14 +2550,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     protected void checkItem(ItemDomainEntity item, boolean skipProjects) throws CdbException {
         Domain itemDomain = item.getDomain();
-       
+
         // Verify no qr id is specified when it is not allowed for the domain.
         if (getEntityDisplayQrId() == false) {
             if (item.getQrId() != null) {
-                throw new CdbException("QR Id cannot be specified for " + itemDomainToString(item)); 
+                throw new CdbException("QR Id cannot be specified for " + itemDomainToString(item));
             }
         }
-        
+
         if (itemDomain == null) {
             throw new CdbException("No domain has been specified for " + itemDomainToString(item));
         }
@@ -2606,7 +2625,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             }
         }
 
-         if (verifyItemNameCombinationUniqueness(item) == false) {
+        if (verifyItemNameCombinationUniqueness(item) == false) {
             String additionalInfo = "Please update some of the following:  ";
 
             if (getEntityDisplayItemName()) {
@@ -2657,7 +2676,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             locatableItemController = LocatableItemController.getInstance();
         }
         if (apiMode) {
-            locatableItemController.apiUser = apiUser; 
+            locatableItemController.apiUser = apiUser;
         }
         return locatableItemController;
     }
@@ -2668,27 +2687,27 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
         return itemElementController;
     }
-    
+
     public void dataTableRowToggleListener(ToggleEvent event) {
         Item data = (Item) event.getData();
-        
+
         if (expandedRowUUIDs == null) {
-            expandedRowUUIDs = new ArrayList<>(); 
+            expandedRowUUIDs = new ArrayList<>();
         }
-        
+
         if (event.getVisibility() == Visibility.VISIBLE) {
-            expandedRowUUIDs.add(data.getViewUUID()); 
+            expandedRowUUIDs.add(data.getViewUUID());
         } else {
-            expandedRowUUIDs.remove(data.getViewUUID()); 
+            expandedRowUUIDs.remove(data.getViewUUID());
         }
     }
-    
+
     public boolean renderRowExpansionContents(Item item) {
         if (expandedRowUUIDs != null) {
-            String viewUUID = item.getViewUUID();        
-            return expandedRowUUIDs.contains(viewUUID); 
+            String viewUUID = item.getViewUUID();
+            return expandedRowUUIDs.contains(viewUUID);
         }
-        return false; 
+        return false;
     }
 
     @FacesConverter(value = "itemConverter", forClass = Item.class)
