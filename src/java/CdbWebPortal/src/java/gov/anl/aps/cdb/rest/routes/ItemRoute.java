@@ -37,6 +37,7 @@ import gov.anl.aps.cdb.rest.entities.FileUploadObject;
 import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemLocationInformation;
 import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
+import gov.anl.aps.cdb.rest.entities.LogEntryEditInformation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -62,19 +63,19 @@ import javax.ws.rs.core.MediaType;
 @Path("/items")
 @Tag(name = "Item")
 public class ItemRoute extends BaseRoute {
-
+    
     @EJB
     ItemFacade itemFacade;
-
+    
     @EJB
     DomainFacade domainFacade;
-
+    
     @EJB
     PropertyTypeHandlerFacade propertyTypeHandlerFacade;
     
     @EJB
-    UserInfoFacade userInfoFacade; 
-
+    UserInfoFacade userInfoFacade;    
+    
     @GET
     @Path("/ById/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -86,7 +87,7 @@ public class ItemRoute extends BaseRoute {
         }
         return findById;
     }
-
+    
     @GET
     @Path("/ItemsDerivedFromItemByItemId/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -94,39 +95,39 @@ public class ItemRoute extends BaseRoute {
         Item itemById = getItemById(id);
         return itemById.getDerivedFromItemList();
     }
-
+    
     @GET
     @Path("/ById/{id}/Status")
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyValue getItemStatus(@PathParam("id") int id) {
         Item item = itemFacade.findById(id);
-
+        
         if (item instanceof ItemDomainInventory) {
             return ((ItemDomainInventory) item).getInventoryStatusPropertyValue();
         }
-
+        
         return null;
     }
-
+    
     @GET
     @Path("/ById/{id}/Location")
     @Produces(MediaType.APPLICATION_JSON)
     public ItemLocationInformation getItemLocation(@PathParam("id") int id) throws ObjectNotFound, InvalidArgument {
         Item itemById = getItemById(id);
-
+        
         if (itemById instanceof LocatableItem) {
             LocatableItem locatableItem = (LocatableItem) itemById;
             LocatableItemController controller = LocatableItemController.getApiInstance();
-
+            
             controller.setItemLocationInfo(locatableItem);            
-
+            
             return new ItemLocationInformation(locatableItem);
-
+            
         } else {
             throw new InvalidArgument("Item requested cannot have a location specified. Item Id: " + id);
         }
     }
-
+    
     @GET
     @Path("/ById/{id}/Permission")
     @Produces(MediaType.APPLICATION_JSON)
@@ -140,7 +141,7 @@ public class ItemRoute extends BaseRoute {
         }
         return false;
     }
-
+    
     private boolean verifyUserPermissionForItem(UserInfo user, Item item) {
         if (user != null) {
             if (isUserAdmin(user)) {
@@ -159,31 +160,31 @@ public class ItemRoute extends BaseRoute {
     @Secured
     public ItemLocationInformation updateItemLocation(SimpleLocationInformation locationInformation) throws ObjectNotFound, InvalidArgument, CdbException {
         // Validate ids provided 
-        Item item = getItemById(locationInformation.getLocatableItemId());               
+        Item item = getItemById(locationInformation.getLocatableItemId());        
         if (item instanceof LocatableItem == false) {
             throw new InvalidArgument("Locatable item id is not a locatable item");
-        }                
+        }        
         LocatableItem locatableItem = (LocatableItem) item;
         
         Integer locationItemId = locationInformation.getLocationItemId();
-        ItemDomainLocation locationItem = null; 
+        ItemDomainLocation locationItem = null;        
         
         if (locationItemId != null) {
-            Item locItem = getItemById(locationItemId); 
-            if(locItem instanceof ItemDomainLocation == false) {
+            Item locItem = getItemById(locationItemId);            
+            if (locItem instanceof ItemDomainLocation == false) {
                 throw new InvalidArgument("Location item id is not a location.");
-            }        
-            locationItem = (ItemDomainLocation) locItem; 
+            }            
+            locationItem = (ItemDomainLocation) locItem;            
         }
-        
+
         // Load current location info
         LocatableItemController locationController = LocatableItemController.getApiInstance();
-        locationController.setItemLocationInfo(locatableItem); 
-        
+        locationController.setItemLocationInfo(locatableItem);
+
         // Use the location information provided 
         locatableItem.setLocation(locationItem);
         locatableItem.setLocationDetails(locationInformation.getLocationDetails());
-        
+
         // Perfrom update
         UserInfo updateUser = getCurrentRequestUserInfo();
         ItemController controller = locatableItem.getItemDomainController();
@@ -191,7 +192,7 @@ public class ItemRoute extends BaseRoute {
         
         return new ItemLocationInformation(locatableItem);
     }
-
+    
     @POST
     @Path("/UpdateDetails")
     @Produces(MediaType.APPLICATION_JSON)
@@ -201,7 +202,7 @@ public class ItemRoute extends BaseRoute {
     public Item updateItemDetails(Item item) throws ObjectNotFound, CdbException {
         int itemId = item.getId();
         Item dbItem = getItemById(itemId);
-
+        
         dbItem.setName(item.getName());
         dbItem.setQrId(item.getQrId());
         dbItem.setItemIdentifier1(item.getItemIdentifier1());
@@ -209,15 +210,15 @@ public class ItemRoute extends BaseRoute {
         dbItem.setDescription(item.getDescriptionFromAPI());
         dbItem.setItemTypeList(item.getItemTypeList());
         dbItem.setItemCategoryList(item.getItemCategoryList());
-
+        
         ItemController itemDomainControllerForApi = dbItem.getItemDomainController();
-
+        
         UserInfo updateUser = getCurrentRequestUserInfo();
         itemDomainControllerForApi.updateFromApi(dbItem, updateUser);
-
+        
         return dbItem;
     }
-
+    
     @POST
     @Path("/UpdateProperty/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -227,12 +228,12 @@ public class ItemRoute extends BaseRoute {
     public PropertyValue updateItemPropertyValue(@PathParam("itemId") int itemId, PropertyValue propertyValue) throws InvalidArgument, ObjectNotFound, CdbException {
         Item dbItem = getItemById(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
-
+        
         ItemController itemController = dbItem.getItemDomainController();
         PropertyValue dbPropertyValue = null;
-
+        
         int propIdx = -1;
-
+        
         if (propertyValue.getId() == null) {
             PropertyType propertyType = propertyValue.getPropertyType();
             if (propertyType == null) {
@@ -250,7 +251,7 @@ public class ItemRoute extends BaseRoute {
                 }
             }
         }
-
+        
         if (dbPropertyValue == null) {
             throw new ObjectNotFound("There was an error trying to load the property value.");
         }
@@ -263,11 +264,11 @@ public class ItemRoute extends BaseRoute {
         dbPropertyValue.setUnits(propertyValue.getUnits());
         dbPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
         dbPropertyValue.setIsUserWriteable(propertyValue.getIsUserWriteable());
-
+        
         itemController.updateFromApi(dbItem, updatedByUser);
-
+        
         dbItem = (Item) itemController.getCurrent();
-
+        
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
         if (propIdx > 0) {
             dbPropertyValue = pvList.get(propIdx);
@@ -275,10 +276,35 @@ public class ItemRoute extends BaseRoute {
             propIdx = pvList.size() - 1;
             dbPropertyValue = pvList.get(propIdx);
         }
-
+        
         return dbPropertyValue;
     }
-
+    
+    @POST
+    @Path("/addLogEntry")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public Log addLogEntryToItem(LogEntryEditInformation logEntryEditInformation) throws ObjectNotFound, CdbException {
+        int itemId = logEntryEditInformation.getItemId();
+        Item itemById = getItemById(itemId);
+        
+        ItemController controller = itemById.getItemDomainController();
+        UserInfo updateUser = getCurrentRequestUserInfo();
+        Log newLog = controller.prepareAddLog(itemById, updateUser);
+        
+        newLog.setText(logEntryEditInformation.getLogEntry());        
+        if (logEntryEditInformation.getEffectiveDate() != null) {
+            newLog.setEffectiveFromDateTime(logEntryEditInformation.getEffectiveDate()); 
+        }
+        
+        
+        controller.updateFromApi(itemById, updateUser);
+        
+        return newLog;
+    }
+    
     @POST
     @Path("/uploadImage/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -288,40 +314,40 @@ public class ItemRoute extends BaseRoute {
     public PropertyValue uploadImageForItem(@PathParam("itemId") int itemId, FileUploadObject imageUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
         Item dbItem = getItemById(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
-
+        
         if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {
             //TODO add logger
             throw new AuthorizationError("User does not have permission to upload image for the item");
         }
-
+        
         Base64.Decoder decoder = Base64.getDecoder();
         byte[] decode = decoder.decode(imageUpload.getBase64Binary());
         ByteArrayInputStream stream = new ByteArrayInputStream(decode);
-
+        
         ItemController itemController = dbItem.getItemDomainController();
-
+        
         PropertyType imagePropertyType = PropertyValueImageUploadBean.getImagePropertyType(propertyTypeHandlerFacade);
         if (imagePropertyType == null) {
             throw new DbError("Could not find image property type.");
         }
-
+        
         PropertyValue pv = itemController.preparePropertyTypeValueAdd(dbItem, imagePropertyType, null, null, updatedByUser);
-
+        
         try {
             PropertyValueImageUploadBean.uploadImage(pv, imageUpload.getFileName(), stream);
         } catch (IOException ex) {
             throw ex;
         }
-
+        
         itemController.updateFromApi(dbItem, updatedByUser);
-
+        
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
         int lastIdx = pvList.size() - 1;
         pv = pvList.get(lastIdx);
-
+        
         return pv;
     }
-
+    
     @GET
     @Path("/ByQrId/{qrId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -332,7 +358,7 @@ public class ItemRoute extends BaseRoute {
         }
         return findByQrId;
     }
-
+    
     @GET
     @Path("/PropertiesForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -340,7 +366,7 @@ public class ItemRoute extends BaseRoute {
         Item itemById = getItemById(itemId);
         return itemById.getPropertyValueList();
     }
-
+    
     @GET
     @Path("/LogsForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -348,7 +374,7 @@ public class ItemRoute extends BaseRoute {
         Item itemById = getItemById(itemId);
         return itemById.getLogList();
     }
-
+    
     @GET
     @Path("/ImagePropertiesForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -357,14 +383,14 @@ public class ItemRoute extends BaseRoute {
         List<PropertyValue> propertyValueList = itemById.getPropertyValueList();
         return PropertyValueUtility.prepareImagePropertyValueList(propertyValueList);
     }
-
+    
     @GET
     @Path("/ByDomain/{domainName}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Item> getItemsByDomain(@PathParam("domainName") String domainName) {
         return itemFacade.findByDomain(domainName);
     }
-
+    
     @GET
     @Path("/Catalog")
     @Produces(MediaType.APPLICATION_JSON)
@@ -381,16 +407,16 @@ public class ItemRoute extends BaseRoute {
         ItemDomainCatalogController controller = ItemDomainCatalogController.getApiInstance();
         UserInfo currentUser = getCurrentRequestUserInfo();
         currentUser = userFacade.find(currentUser.getId());
-        return controller.getFavoriteItems(currentUser); 
+        return controller.getFavoriteItems(currentUser);        
     }
-
+    
     @GET
     @Path("/Inventory")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainInventory> getInventoryItems() {
         return (List<ItemDomainInventory>) (List<?>) getItemsByDomain(ItemDomainName.inventory.getValue());
     }
-
+    
     @GET
     @Path("/Domains")
     @Produces(MediaType.APPLICATION_JSON)
@@ -404,24 +430,24 @@ public class ItemRoute extends BaseRoute {
     public List<ItemHierarchy> getLocationHierarchy() {
         List<ItemDomainLocation> locationsTopLevel = getLocationsTopLevel();
         
-        List<ItemHierarchy> result = new ArrayList<>(); 
+        List<ItemHierarchy> result = new ArrayList<>();        
         
-        for(ItemDomainLocation location: locationsTopLevel) {
-            ItemHierarchy locationHierarchy = new ItemHierarchy(location, true); 
+        for (ItemDomainLocation location : locationsTopLevel) {
+            ItemHierarchy locationHierarchy = new ItemHierarchy(location, true);            
             result.add(locationHierarchy);
         }
         
-        return result; 
+        return result;        
     }
     
     @GET
     @Path("/LocationsTopLevel")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainLocation> getLocationsTopLevel() {
-        List<ItemDomainLocation> topLocations = 
-                (List<ItemDomainLocation>)(List<?>) itemFacade.findByDomainWithoutParents(ItemDomainName.location.getValue()); 
+        List<ItemDomainLocation> topLocations
+                = (List<ItemDomainLocation>) (List<?>) itemFacade.findByDomainWithoutParents(ItemDomainName.location.getValue());        
         
-        return topLocations; 
+        return topLocations;        
     }
     
     @GET
@@ -431,10 +457,10 @@ public class ItemRoute extends BaseRoute {
         Item itemById = getItemById(itemId);
         
         if (itemById instanceof ItemDomainLocation == false) {
-            throw new InvalidArgument("Item passed in is not for a location item."); 
+            throw new InvalidArgument("Item passed in is not for a location item.");            
         }
         
-        List<ItemDomainLocation> childLocations = new ArrayList<>(); 
+        List<ItemDomainLocation> childLocations = new ArrayList<>();        
         
         for (ItemElement element : itemById.getItemElementDisplayList()) {
             Item containedItem = element.getContainedItem();
@@ -443,7 +469,7 @@ public class ItemRoute extends BaseRoute {
             }
         }
         
-        return childLocations; 
+        return childLocations;        
     }
     
     private UserInfo getCurrentRequestUserInfo() {
@@ -454,5 +480,5 @@ public class ItemRoute extends BaseRoute {
         }
         return null;
     }
-
+    
 }
