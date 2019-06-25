@@ -553,12 +553,23 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         newLogEdit = null;
         update();
     }
+    
+    public Log prepareAddLog(EntityType cdbDomainEntity) {
+        return prepareAddLog(cdbDomainEntity, null); 
+    }
 
-    public void prepareAddLog(EntityType cdbDomainEntity) {
-        Log logEntry = LogUtility.createLogEntry();
+    public Log prepareAddLog(EntityType cdbDomainEntity, UserInfo user) {
+        Log logEntry = null;
+        if (user == null) {
+            logEntry = LogUtility.createLogEntry();
+        } else {
+            logEntry = LogUtility.createLogEntry(user);
+        }
+        
         setNewLogEdit(logEntry);
         List<Log> cdbDomainEntityLogList = cdbDomainEntity.getLogList();
         cdbDomainEntityLogList.add(0, logEntry);
+        return logEntry; 
     }
 
     public List<Log> getLogList() {
