@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -33,6 +34,10 @@ public class ItemTypeFacade extends CdbEntityFacade<ItemType> {
         return (List<ItemType>) em.createNamedQuery("ItemType.findByDomainName")
                 .setParameter("domainName", domainName)
                 .getResultList(); 
+    }
+    
+    public static ItemTypeFacade getInstance() {
+        return (ItemTypeFacade) SessionUtility.findFacade(ItemTypeFacade.class.getSimpleName()); 
     }
     
 }

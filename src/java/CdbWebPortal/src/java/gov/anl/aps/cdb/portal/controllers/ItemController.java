@@ -183,37 +183,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         super.loadEJBResourcesManually();
         itemElementFacade = ItemElementFacade.getInstance();
         domainFacade = DomainFacade.getInstance();
-
-        // TODO API load the rest of the ejbs.
-        /*        
-
-    @EJB
-    protected ItemTypeFacade itemTypeFacade;
-
-    @EJB
-    protected DomainFacade domainFacade;
-
-    @EJB
-    protected EntityTypeFacade entityTypeFacade;
-
-    @EJB
-    protected ItemCategoryFacade itemCategoryFacade;
-
-    @EJB
-    protected ListFacade listFacade;
-
-    @EJB
-    protected UserInfoFacade userInfoFacade;
-
-    @EJB
-    protected PropertyTypeCategoryFacade propertyTypeCategoryFacade;
-
-    @EJB
-    protected RelationshipTypeFacade relationshipTypeFacade;
-
-    @EJB
-    private ItemElementRelationshipFacade itemElementRelationshipFacade;
-         */
+        itemTypeFacade = ItemTypeFacade.getInstance(); 
+        entityTypeFacade = EntityTypeFacade.getInstance();
+        itemCategoryFacade = ItemCategoryFacade.getInstance(); 
+        listFacade = ListFacade.getInstance();
+        userInfoFacade = UserInfoFacade.getInstance(); 
+        propertyTypeCategoryFacade = PropertyTypeCategoryFacade.getInstance(); 
+        relationshipTypeFacade = RelationshipTypeFacade.getInstance();
+        itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance();        
     }
 
     protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
@@ -433,12 +410,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         hasElementReorderChangesForCurrent = false;
         templateInformationLoadedForCurrent = false;
         createdFromTemplateForCurrentItem = null;
-        itemsCreatedFromCurrentTemplateItem = null;
-        if (apiMode) {
-            // TODO API get api instance
-        } else {
-            getItemElementController().resetCurrentItemVariables();
-        }
+        itemsCreatedFromCurrentTemplateItem = null;        
+        getItemElementController().resetCurrentItemVariables();        
     }
 
     @Override

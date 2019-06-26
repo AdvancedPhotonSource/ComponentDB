@@ -60,12 +60,34 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     private ItemController currentSettingsItemController = null;
 
     private ItemController currentItemReorderController = null;
+    
+    private static ItemElementController apiInstance; 
 
     public ItemElementController() {
     }
+    
+    public static synchronized ItemElementController getApiInstance() {
+        if (apiInstance == null) {
+            apiInstance = new ItemElementController();            
+            apiInstance.prepareApiInstance(); 
+        }
+        return apiInstance;
+    } 
+
+    @Override
+    protected void loadEJBResourcesManually() {
+        super.loadEJBResourcesManually(); 
+        
+        itemElementFacade = ItemElementFacade.getInstance(); 
+    }
 
     public static ItemElementController getInstance() {
-        return (ItemElementController) SessionUtility.findBean("itemElementController");
+        if (SessionUtility.runningFaces()) {
+            return (ItemElementController) SessionUtility.findBean("itemElementController");
+        } else {
+            return getApiInstance(); 
+        }
+        
     }
 
     public void resetCurrentItemVariables() {
