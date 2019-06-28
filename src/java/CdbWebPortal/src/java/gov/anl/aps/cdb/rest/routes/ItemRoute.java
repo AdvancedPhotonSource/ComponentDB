@@ -189,6 +189,10 @@ public class ItemRoute extends BaseRoute {
         UserInfo updateUser = getCurrentRequestUserInfo();
         ItemController controller = locatableItem.getItemDomainController();
         controller.updateFromApi(locatableItem, updateUser);
+
+        // Get the latest item after update to respond
+        locatableItem = (LocatableItem) getItemById(locatableItem.getId());
+        locationController.setItemLocationInfo(locatableItem);
         
         return new ItemLocationInformation(locatableItem);
     }
