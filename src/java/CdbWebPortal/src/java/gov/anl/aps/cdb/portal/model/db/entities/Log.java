@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -117,6 +118,7 @@ public class Log extends CdbEntity implements Serializable {
         this.text = text;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getEnteredOnDateTime() {
         return enteredOnDateTime;
     }
@@ -141,6 +143,7 @@ public class Log extends CdbEntity implements Serializable {
         this.logTopic = logTopic;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getEffectiveFromDateTime() {
         return effectiveFromDateTime;
     }
@@ -149,6 +152,7 @@ public class Log extends CdbEntity implements Serializable {
         this.effectiveFromDateTime = effectiveFromDateTime;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getEffectiveToDateTime() {
         return effectiveToDateTime;
     }

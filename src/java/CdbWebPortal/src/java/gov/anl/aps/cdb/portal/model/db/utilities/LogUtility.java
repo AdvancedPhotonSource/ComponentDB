@@ -21,6 +21,10 @@ public class LogUtility {
 
     public static Log createLogEntry() {
         UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
+        return createLogEntry(enteredByUser); 
+    }
+    
+    public static Log createLogEntry(UserInfo enteredByUser) {        
         Date enteredOnDateTime = new Date();
         Log logEntry = new Log();
         logEntry.setEnteredByUser(enteredByUser);

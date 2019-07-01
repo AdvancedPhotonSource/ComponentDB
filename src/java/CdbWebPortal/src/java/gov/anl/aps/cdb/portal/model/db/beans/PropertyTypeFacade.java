@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -175,6 +176,10 @@ public class PropertyTypeFacade extends CdbEntityFacade<PropertyType> {
         
         
         return null;         
+    }
+    
+    public static PropertyTypeFacade getInstance() {
+        return (PropertyTypeFacade) SessionUtility.findFacade(PropertyTypeFacade.class.getSimpleName()); 
     }
     
 }

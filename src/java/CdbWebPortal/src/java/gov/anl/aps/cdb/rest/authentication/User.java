@@ -14,14 +14,16 @@ public class User implements Principal {
             
     private UserInfo user;
     private Date expirationDate;
+    private String token; 
     
     private User() {
         updateExpiration();
     }
     
-    public static User createFromUserInfo(UserInfo userInfo) {
+    public static User createFromUserInfo(UserInfo userInfo, String token) {
         User user = new User();
         user.user = userInfo;
+        user.token = token; 
         
         return user; 
     }
@@ -36,6 +38,10 @@ public class User implements Principal {
         expirationDate = new Date();
         expirationDate = new Date(expirationDate.getTime() + EXPIRATION_DURATION);
     }
+
+    public UserInfo getUser() {
+        return user;
+    }
     
     public long getExpirationDate() {
         return expirationDate.getTime(); 
@@ -44,5 +50,9 @@ public class User implements Principal {
     @Override
     public String getName() {
         return this.user.getFirstName() + " " + this.user.getLastName();
+    }
+
+    public String getToken() {
+        return token;
     }
 }

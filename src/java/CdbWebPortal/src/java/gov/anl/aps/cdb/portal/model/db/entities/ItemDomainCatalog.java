@@ -6,6 +6,8 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -37,6 +39,11 @@ public class ItemDomainCatalog extends Item {
 
     public void setMachineDesignPlaceholderName(String machineDesignPlaceholderName) {
         this.machineDesignPlaceholderName = machineDesignPlaceholderName;
+    }
+    
+    @Override
+    public ItemController getItemDomainController() {
+        return ItemDomainCatalogController.getInstance();
     }
    
 }

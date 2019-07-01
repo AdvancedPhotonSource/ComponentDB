@@ -108,6 +108,10 @@ public class LoginController implements Serializable {
     }
 
     private boolean isAdmin(String username) {
+        return isAdmin(username, userFacade);
+    }
+    
+    public static boolean isAdmin(String username, UserInfoFacade userFacade)  {
         for (String adminGroupName : adminGroupNameList) {
             if (userFacade.isUserMemberOfUserGroup(username, adminGroupName)) {
                 return true;

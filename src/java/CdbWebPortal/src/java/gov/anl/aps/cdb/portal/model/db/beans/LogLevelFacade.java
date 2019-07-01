@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.LogLevel;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -37,6 +38,10 @@ public class LogLevelFacade extends CdbEntityFacade<LogLevel> {
         } catch (NoResultException ex) {
         }
         return null; 
+    }
+    
+    public static LogLevelFacade getInstance() {
+        return (LogLevelFacade) SessionUtility.findFacade(LogLevelFacade.class.getSimpleName()); 
     }
     
 }

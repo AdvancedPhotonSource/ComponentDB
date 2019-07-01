@@ -46,13 +46,35 @@ public class LogController extends CdbEntityController<Log, LogFacade, LogSettin
 
     private List<LogLevel> filterViewSelectedLogLevels = null;
     private List<Log> filterViewListDataModelSystemLogs = null;
+    
+    private static LogController apiInstance; 
 
     public LogController() {
         super();
     }
 
+    @Override
+    protected void loadEJBResourcesManually() {
+        super.loadEJBResourcesManually(); 
+        logFacade = LogFacade.getInstance();
+        logLevelFacade = LogLevelFacade.getInstance(); 
+        userInfoFacade = UserInfoFacade.getInstance();
+    }
+    
+    public static synchronized LogController getApiInstance() {
+        if (apiInstance == null) {
+            apiInstance = new LogController();            
+            apiInstance.prepareApiInstance(); 
+        }
+        return apiInstance;
+    }
+
     public static LogController getInstance() {
-        return (LogController) SessionUtility.findBean("logController");
+        if (SessionUtility.runningFaces()) {
+            return (LogController) SessionUtility.findBean("logController");
+        } else {
+            return getApiInstance();
+        }
     }
 
     @Override

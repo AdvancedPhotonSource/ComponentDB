@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 
 /**
@@ -17,6 +18,10 @@ public class ItemFacade extends ItemFacadeBase<Item> {
     
     public ItemFacade() {
         super(Item.class);
+    }
+    
+    public static ItemFacade getInstance() {
+        return (ItemFacade) SessionUtility.findFacade(ItemFacade.class.getSimpleName()); 
     }
     
 }

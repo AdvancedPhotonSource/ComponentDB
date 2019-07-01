@@ -7,6 +7,8 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
@@ -74,7 +76,8 @@ public class ItemDomainInventory extends LocatableItem {
     } 
 
     @Override
-    @JsonIgnore
+    // TODO API Change back to json ignore and utilize the catalog item 
+    //@JsonIgnore
     public Item getDerivedFromItem() {
         return super.getDerivedFromItem(); //To change body of generated methods, choose Tools | Templates.
     }
@@ -161,6 +164,11 @@ public class ItemDomainInventory extends LocatableItem {
             getInventoryStatusPropertyValue().setValue(status);
             sparePartIndicator = null;
         }
+    }
+
+    @Override
+    public ItemController getItemDomainController() {
+        return ItemDomainInventoryController.getInstance(); 
     }
 
 }
