@@ -45,7 +45,7 @@ fi
 
 CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 CDB_CONTEXT_ROOT=${CDB_CONTEXT_ROOT:=cdb}
-GLASSFISH_DIR=$CDB_SUPPORT_DIR/glassfish/$CDB_HOST_ARCH
+GLASSFISH_DIR=$CDB_SUPPORT_DIR/payara/$CDB_HOST_ARCH
 CDB_DEPLOY_DIR=$GLASSFISH_DIR/glassfish/domains/domain1/autodeploy
 CDB_APP_DIR=$GLASSFISH_DIR/glassfish/domains/domain1/applications/$CDB_CONTEXT_ROOT
 CDB_DIST_DIR=$CDB_ROOT_DIR/src/java/CdbWebPortal/dist
