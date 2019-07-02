@@ -6,10 +6,10 @@
 
 CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 CDB_HOSTNAME=`hostname -f`
-GLASSFISH_VERSION=5.0
-GLASSFISH_ZIP_FILE=glassfish-$GLASSFISH_VERSION.zip
-GLASSFISH_DOWNLOAD_URL=http://download.java.net/glassfish/$GLASSFISH_VERSION/release/$GLASSFISH_ZIP_FILE
-GLASSFISH_DNAME="CN=${CDB_HOSTNAME}"
+PAYARA_VERSION=5.192
+PAYARA_ZIP_FILE=payara-$PAYARA_VERSION.zip
+PAYARA_DOWNLOAD_URL=https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/$PAYARA_VERSION/$PAYARA_ZIP_FILE
+PAYARA_DN_NAME="CN=${CDB_HOSTNAME}"
 
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`
@@ -20,50 +20,52 @@ binDir=$topDir/bin
 glassfishMasterPasswordExpectScript=$binDir/glassfish_master_password.expect
 glassfishAdminPasswordExpectScript=$binDir/glassfish_admin_password.expect
 glassfishAutoLoginExpectScript=$binDir/glassfish_auto_login.expect
-glassfishInstallDir=$topDir/glassfish/$CDB_HOST_ARCH
+payaraInstallDir=$topDir/payara/$CDB_HOST_ARCH
 javaInstallDir=$topDir/java/$CDB_HOST_ARCH
 
 export AS_JAVA=$javaInstallDir
-ASADMIN_CMD=$glassfishInstallDir/bin/asadmin
+ASADMIN_CMD=$payaraInstallDir/bin/asadmin
 KEYTOOL_CMD=$AS_JAVA/bin/keytool
 
 # get glassfish
 mkdir -p $srcDir
 cd $srcDir
-if [ ! -f $GLASSFISH_ZIP_FILE ]; then
-    echo "Retrieving $GLASSFISH_DOWNLOAD_URL"
-    curl -L -O $GLASSFISH_DOWNLOAD_URL
+if [ ! -f $PAYARA_ZIP_FILE ]; then
+    echo "Retrieving $PAYARA_DOWNLOAD_URL"
+    curl -L -O $PAYARA_DOWNLOAD_URL
 fi
 
-if [ ! -f $GLASSFISH_ZIP_FILE ]; then
-    echo "File $srcDir/$GLASSFISH_ZIP_FILE not found."
+if [ ! -f $PAYARA_ZIP_FILE ]; then
+    echo "File $srcDir/$PAYARA_ZIP_FILE not found."
     exit 1
 fi
 
 mkdir -p $buildDir
 cd $buildDir
 
-echo "Unpacking $GLASSFISH_ZIP_FILE"
-mkdir -p `dirname $glassfishInstallDir`
-cd `dirname $glassfishInstallDir`
-rm -rf `basename $glassfishInstallDir`
-unzip -q $srcDir/$GLASSFISH_ZIP_FILE
-mv glassfish* `basename $glassfishInstallDir`
+echo "Unpacking $PAYARA_ZIP_FILE"
+mkdir -p `dirname $payaraInstallDir`
+cd `dirname $payaraInstallDir`
+rm -rf `basename $payaraInstallDir`
+unzip -q $srcDir/$PAYARA_ZIP_FILE
+mv payara* `basename $payaraInstallDir`
 
 # configure directory permissions for app deployment
 # owner/group can execute/read/modify bin files and autodeploy
 # remove privileges from others
-chmod -R ug+rwx $glassfishInstallDir/bin
-chmod -R ug+rwx $glassfishInstallDir/glassfish/bin
-chmod -R ug+rwx $glassfishInstallDir/glassfish/domains/domain1/autodeploy/
+mkdir $payaraInstallDir/glassfish/domains/domain1/autodeploy
 
-chmod -R o-rwx $glassfishInstallDir/bin
-chmod -R o-rwx $glassfishInstallDir/glassfish/bin
-chmod -R o-w $glassfishInstallDir/glassfish/domains/domain1/autodeploy
+chmod -R ug+rwx $payaraInstallDir/bin
+chmod -R ug+rwx $payaraInstallDir/glassfish/bin
+chmod -R ug+rwx $payaraInstallDir/glassfish/domains/domain1/autodeploy/
+
+chmod -R o-rwx $payaraInstallDir/bin
+chmod -R o-rwx $payaraInstallDir/glassfish/bin
+chmod -R o-w $payaraInstallDir/glassfish/domains/domain1/autodeploy
 
 # backup passwords
 echo "Backing up original passwords"
-cd $glassfishInstallDir/glassfish
+cd $payaraInstallDir/glassfish
 PASSWORD_FILES="domains/domain1/config/domain-passwords domains/domain1/config/keystore.jks domains/domain1/config/cacerts.jks"
 for f in domains/domain1/master-password domains/domain1/local-password; do
     if [ -f $f ]; then
@@ -103,9 +105,9 @@ $tmpFile
 # two certificates in keystore.jks, and many additional ones in cacerts.jks.
 echo
 echo "Checking master password: list keystore certificates"
-$KEYTOOL_CMD -list -v -keystore $glassfishInstallDir/glassfish/domains/domain1/config/keystore.jks --storepass $MASTER_PASSWORD > /dev/null || exit 1
+$KEYTOOL_CMD -list -v -keystore $payaraInstallDir/glassfish/domains/domain1/config/keystore.jks --storepass $MASTER_PASSWORD > /dev/null || exit 1
 echo "Checking master password: list ca certificates"
-$KEYTOOL_CMD -list -v -keystore $glassfishInstallDir/glassfish/domains/domain1/config/cacerts.jks --storepass $MASTER_PASSWORD > /dev/null || exit 1
+$KEYTOOL_CMD -list -v -keystore $payaraInstallDir/glassfish/domains/domain1/config/cacerts.jks --storepass $MASTER_PASSWORD > /dev/null || exit 1
 
 # start glassfish
 echo
@@ -157,7 +159,7 @@ rm -f $tmpFile
 # inspect keystore.jks
 echo
 echo "Inspecting keystore"
-cd $glassfishInstallDir/glassfish/domains/domain1/config/
+cd $payaraInstallDir/glassfish/domains/domain1/config/
 $KEYTOOL_CMD -list -keystore keystore.jks -storepass $MASTER_PASSWORD
 
 # update keystore.jks
@@ -166,8 +168,8 @@ echo "Updating keystore"
 $KEYTOOL_CMD -delete -alias s1as -keystore keystore.jks -storepass $MASTER_PASSWORD
 $KEYTOOL_CMD -delete -alias glassfish-instance -keystore keystore.jks -storepass $MASTER_PASSWORD
 
-$KEYTOOL_CMD -genkeypair -alias s1as -dname "$GLASSFISH_DNAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore keystore.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
-$KEYTOOL_CMD -genkeypair -alias glassfish-instance -dname "$GLASSFISH_DNAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore keystore.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
+$KEYTOOL_CMD -genkeypair -alias s1as -dname "$PAYARA_DN_NAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore keystore.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
+$KEYTOOL_CMD -genkeypair -alias glassfish-instance -dname "$PAYARA_DN_NAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore keystore.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
 
 # check keystore.jks
 echo
