@@ -53,7 +53,7 @@ CDB_DB_PORT=${CDB_DB_PORT:=3306}
 CDB_DB_USER=${CDB_DB_USER:=cdb}
 CDB_DB_POOL=mysql_${CDB_DB_NAME}_DbPool
 CDB_DATA_SOURCE=${CDB_DB_NAME}_DataSource
-CDB_DOMAIN=domain1
+CDB_DOMAIN=production
 
 # Check password from file
 passwordFile=$CDB_INSTALL_DIR/etc/$CDB_DB_NAME.db.passwd

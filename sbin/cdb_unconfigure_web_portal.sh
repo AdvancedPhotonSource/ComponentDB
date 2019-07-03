@@ -52,7 +52,7 @@ ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin
 
 CDB_DB_POOL=mysql_${CDB_DB_NAME}_DbPool
 CDB_DATA_SOURCE=${CDB_DB_NAME}_DataSource
-CDB_DOMAIN=domain1
+CDB_DOMAIN=production
 
 # restart server
 echo "Restarting glassfish"
