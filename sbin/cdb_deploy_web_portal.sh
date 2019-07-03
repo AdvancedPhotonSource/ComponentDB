@@ -47,7 +47,6 @@ CDB_CONTEXT_ROOT=${CDB_CONTEXT_ROOT:=cdb}
 CDB_PERM_CONTEXT_ROOT_URL=${CDB_PERM_CONTEXT_ROOT_URL:=http://localhost:8080/cdb}
 CDB_DATA_DIR=${CDB_DATA_DIR:=/cdb}
 GLASSFISH_DIR=$CDB_SUPPORT_DIR/payara/$CDB_HOST_ARCH
-CDB_DEPLOY_DIR=$GLASSFISH_DIR/glassfish/domains/domain1/autodeploy
 CDB_DIST_DIR=$CDB_ROOT_DIR/src/java/CdbWebPortal/dist
 CDB_BUILD_WAR_FILE=CdbWebPortal.war
 CDB_WAR_FILE=$CDB_CONTEXT_ROOT.war
@@ -140,22 +139,5 @@ jar cf ../$CDB_WAR_FILE *
 export AS_JAVA=$JAVA_HOME
 ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin
 
-# copy war file
-echo "Copying war file $CDB_DIST_DIR/$CDB_WAR_FILE to $CDB_DEPLOY_DIR"
-rm -f $CDB_DEPLOY_DIR/${CDB_WAR_FILE}_*
-cp $CDB_DIST_DIR/$CDB_WAR_FILE $CDB_DEPLOY_DIR
-
-# wait on deployment
-echo "Waiting on war deployment..."
-WAIT_TIME=60
-cd $CDB_DEPLOY_DIR
-t=0
-while [ $t -lt $WAIT_TIME ]; do
-    sleep 1
-    deploymentStatus=`ls -c1 ${CDB_WAR_FILE}_* 2> /dev/null | sed 's?.*war_??g'`
-    if [ ! -z "$deploymentStatus" ]; then
-        break
-    fi
-    t=`expr $t + 1`
-done
-echo "Deployment Status: $deploymentStatus"
+$ASADMIN_CMD undeploy $CDB_CONTEXT_ROOT
+$ASADMIN_CMD deploy $CDB_DIST_DIR/$CDB_WAR_FILE
