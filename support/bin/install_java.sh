@@ -14,19 +14,15 @@ cd `dirname $0`/.. && topDir=`pwd`
 srcDir=$topDir/src
 buildDir=$topDir/build
 javaInstallDir=$topDir/java/$CMS_HOST_ARCH
-javaFileName=openjdk-$JAVA_VERSION_linux-x64_bin.tar.gz
+javaFileName="openjdk-${JAVA_VERSION}_linux-x64_bin.tar.gz"
 
 DOWNLOAD_URL="https://download.java.net/openjdk/$JDK_VERSION/ri/$javaFileName"
 
 mkdir -p $srcDir
 cd $srcDir
 if [ ! -f $javaFileName ]; then    
-        echo "Retrieving $DOWNLOAD_URL"
-        curl -o $javaFileName $DOWNLOAD_URL         
-    else
-        echo 'Cannot continue with the Java installation, Download URL needs to be provided.'
-        exit 1
-    fi
+    echo "Retrieving $DOWNLOAD_URL"
+    curl -o $javaFileName $DOWNLOAD_URL
 fi
 
 if [ -f $javaFileName ]; then
