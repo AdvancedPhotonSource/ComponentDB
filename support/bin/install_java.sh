@@ -3,9 +3,9 @@
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
 
-JAVA_VERSION=11.0.3
-SHA=37f5e150db5247ab9333b11c1dddcd30
-BREF=12
+JAVA_VERSION=11+28
+JDK_VERSION=jdk11
+
 CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 
 currentDir=`pwd`
@@ -14,25 +14,15 @@ cd `dirname $0`/.. && topDir=`pwd`
 srcDir=$topDir/src
 buildDir=$topDir/build
 javaInstallDir=$topDir/java/$CMS_HOST_ARCH
-javaFileName=jdk-$JAVA_VERSION-linux-x64.tar.gz
+javaFileName=openjdk-$JAVA_VERSION_linux-x64_bin.tar.gz
 
-DOWNLOAD_URL="https://download.oracle.com/otn/java/jdk/$JAVA_VERSION+$BREF/$SHA/$javaFileName"
+DOWNLOAD_URL="https://download.java.net/openjdk/$JDK_VERSION/ri/$javaFileName"
 
 mkdir -p $srcDir
 cd $srcDir
-if [ ! -f $javaFileName ]; then
-    echo "Please Follow the $javaFileName in your webrowser and when download begins copy the download url from the browser."
-    echo "https://www.oracle.com/technetwork/java/javase/downloads/jdk11-downloads-5066655.html"
-    read -p 'Resulting URL with Auth complete: ' NEW_DOWNLOAD_URL
-
-    echo $NEW_DOWNLOAD_URL
-
-    if [ ! -z $NEW_DOWNLOAD_URL ]; then
-        echo 'License Accepted'
-        echo "Retrieving $NEW_DOWNLOAD_URL"
-        curl -o $javaFileName $NEW_DOWNLOAD_URL -L -b "oraclelicense=accept-securebackup-cookie"
-        ls
-        #mv $javaFileName* $javaFileName
+if [ ! -f $javaFileName ]; then    
+        echo "Retrieving $DOWNLOAD_URL"
+        curl -o $javaFileName $DOWNLOAD_URL         
     else
         echo 'Cannot continue with the Java installation, Download URL needs to be provided.'
         exit 1
