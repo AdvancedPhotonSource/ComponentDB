@@ -57,31 +57,53 @@ For detailed development instructions please refer to our [developers guide](htt
     # Getting support software
     cd ComponentDb
     make support 
-    
-    # Getting the tools for development of the portal (Netbeans)
-    wget http://download.netbeans.org/netbeans/8.1/final/bundles/netbeans-8.1-linux.sh
-    sh netbeans-8.1-linux.sh
-    # In the installation instructions, ensure that:
-    # - Glassfish Option is checked
-    # - Recommended Directories
-    #   - desired_dev_directory/support-`hostname`/netbeans/netbeans-8.1
-    #   - desired_dev_directory/support-`hostname`/netbeans/glassfish-4.1.1
-    # - Use jdk located in desired_dev_directory/support-`hostname`/java/linux-x86_64
-    rm netbeans-8.1-linux.sh    # When installation of netbeans is complete 
-    
-    # Getting the db ready
+    # Get Netbeans
+    make support-netbeans
+
+    # Load up the environment 
+    source setup.sh
+
+    # Prepare Dev DB    
     # mysql could be installed as part of ComponentDB support by running 'make support-mysql' 
     # - Afterwards run `./etc/init.d/cdb-mysql start`
-    # if you have mysql installed run...
-    make clean-db     # sample-db will be coming later 
+    # if you have mysql installed and started run...
+    make clean-db   # sample-db will be coming later 
     
     # Start development
-    make dev-config 
-    
-    # For portal development
-    ../support-`hostname`/netbeans/netbeans-8.1/bin/netbeans
-    # Open the project: src/java/CdbWebPortal
-    
+    make dev-config     
+
+    # Open Netbeans
+    netbeans & 
+
+## Preparing Netbeans
+Once netbeans is open a few steps need to be taken to prepare netbeans for CDB development.
+1. Click Tools > Plugins
+2. Navigate to Available Plugins and install the following:
+    * nbjavac Library
+    * Oracle JS Parser Implementation
+    * Payara EE Common
+    * Payara Common
+    * Payara Server
+    * Payara Tooling
+3. Add payara server reference. 
+4. Click Window > Services 
+5. Right click Server > Add Server
+6. Select Payara 
+7. Use installation location: $desired_dev_directory/support-`hostname`/netbeans/payara
+8. Ensure Local domain is selected and hit next. 
+9. Leaave defaults and hit finish. 
+10. Open CDB Project: File > Open Project
+11. Navigate to $desired_dev_directory/ComponentDB/src/java
+12. Select CdbWebPortal and hit Open Project
+13. If prompted install: JavaFX Implementation for linux
+14. Right click CdbWebPortal and hit Resolve Data Source Problem...
+15. Add Connection > Add Driver File
+16. Navigate to $desired_dev_directory/ComponentDB/src/java/CdbWebPortal/lib/mysql-connector-java-*-bin.jar
+17. Finish Add Connection wizard.
+18. Run the project 
+
+## Python Web Service Development
+    # Code is located in $desired_dev_directory/ComponentDB/src/python
     # For web service development (Use your favorite python editor) to test run web service using:
     ./sbin/cdbWebService.sh
     
