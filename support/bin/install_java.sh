@@ -35,7 +35,7 @@ if [ -f $javaFileName ]; then
 
     echo Installing JDK $JAVA_VERSION
     tar zxf $srcDir/$javaFileName
-    mkdir -p `dirname $javaInstallDir`
+    mkdir -p $javaInstallDir
     mv jdk* $javaInstallDir
 else
     echo "Error: filename $srcDir/$$javaFileName does not exist"
