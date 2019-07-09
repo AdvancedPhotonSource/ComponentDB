@@ -85,6 +85,7 @@ prependPathIfDirExists $CDB_GLASSFISH_DIR/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/ant/bin
+prependPathIfDirExists $CDB_SUPPORT_DIR/netbeans/currentNetbeans/bin
 prependPathIfDirExists $CDB_ROOT_DIR/bin
 
 # Check if we have  local python
