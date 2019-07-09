@@ -139,5 +139,7 @@ jar cf ../$CDB_WAR_FILE *
 export AS_JAVA=$JAVA_HOME
 ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin
 
+echo "Attempting to undeploy application"
 $ASADMIN_CMD undeploy $CDB_CONTEXT_ROOT
+echo "Attempting to deploy application"
 $ASADMIN_CMD deploy $CDB_DIST_DIR/$CDB_WAR_FILE
