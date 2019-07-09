@@ -3,6 +3,7 @@
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
 
+# Usage install_glassfish.sh [Install_DIR] [CONFIGURE 0/1]
 
 CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 CDB_HOSTNAME=`hostname -f`
@@ -20,8 +21,18 @@ binDir=$topDir/bin
 glassfishMasterPasswordExpectScript=$binDir/glassfish_master_password.expect
 glassfishAdminPasswordExpectScript=$binDir/glassfish_admin_password.expect
 glassfishAutoLoginExpectScript=$binDir/glassfish_auto_login.expect
-payaraInstallDir=$topDir/payara/$CDB_HOST_ARCH
 javaInstallDir=$topDir/java/$CDB_HOST_ARCH
+if [ ! -z $1 ]; then
+    payaraInstallDir=$1
+else 
+    payaraInstallDir=$topDir/payara/$CDB_HOST_ARCH
+fi
+
+if [ ! -z $2 ]; then
+    skipConfig=$2
+else
+    skipConfig=0
+fi
 
 export AS_JAVA=$javaInstallDir
 ASADMIN_CMD=$payaraInstallDir/bin/asadmin
@@ -49,6 +60,10 @@ cd `dirname $payaraInstallDir`
 rm -rf `basename $payaraInstallDir`
 unzip -q $srcDir/$PAYARA_ZIP_FILE
 mv payara* `basename $payaraInstallDir`
+
+if [ $skipConfig -ne 0 ]; then
+    exit 0
+fi
 
 # configure directory permissions for app deployment
 # owner/group can execute/read/modify bin files
