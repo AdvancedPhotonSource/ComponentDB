@@ -22,4 +22,4 @@ cd `dirname $CDB_SUPPORT_DIR`
 execute cp -R $CDB_ROOT_DIR/support/* $CDB_SUPPORT_DIR
 
 cd $CDB_SUPPORT_DIR
-execute $CDB_SUPPORT_DIR/bin/build_mysql.sh
+execute $CDB_SUPPORT_DIR/bin/install_netbeans.sh

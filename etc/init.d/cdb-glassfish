@@ -31,13 +31,14 @@ fi
 . ${CDB_ENV_FILE} > /dev/null
 
 export AS_JAVA=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
-GLASSFISH_DIR=$CDB_SUPPORT_DIR/glassfish/$CDB_HOST_ARCH
-DERBY_DIR=$CDB_SUPPORT_DIR/glassfish/$CDB_HOST_ARCH/javadb/bin
+GLASSFISH_DIR=$CDB_SUPPORT_DIR/payara/$CDB_HOST_ARCH
+DERBY_DIR=$CDB_SUPPORT_DIR/payara/$CDB_HOST_ARCH/javadb/bin
 
 CDB_DAEMON_NAME=glassfish
 CDB_DAEMON_CONTROL_CMD=$GLASSFISH_DIR/bin/asadmin
-CDB_DAEMON_START_ARGS="start-domain domain1"
-CDB_DAEMON_STOP_ARGS="stop-domain domain1"
+CDB_DOMAIN_NAME=production
+CDB_DAEMON_START_ARGS="start-domain $CDB_DOMAIN_NAME"
+CDB_DAEMON_STOP_ARGS="stop-domain $CDB_DOMAIN_NAME"
 CDB_DAEMON_STATUS_CMDS="uptime list-domains list-applications list-jdbc-resources"
 
 start() {
