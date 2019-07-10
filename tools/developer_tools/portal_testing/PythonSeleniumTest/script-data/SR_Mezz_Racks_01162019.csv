@@ -1,0 +1,1147 @@
+Machine Design Item Name,,,Machine Design Item Description,Alternate Name,Assigned Catalog,Location,User
+,,,,,,,
+APS-U: SR Mezzanine,,,,,,,apsu
+,Area-01,,,,placeholder,SR_Mezz_Area-01 [C58-61],apsu
+,,sr leak detection system,Mechanical Operations & Maintenance,sr leak detection system,Generic: Enclosure,parent,apsu
+,,PS-SR-T1-S40&01,Power Systems,PS-SR-T1-S40&01,T1-T4 SR Raw Supply,parent,apsu
+,,RF1 Rack 11,RF,RF1 Rack 11,Generic: Rack,parent,apsu
+,,RF1 Rack 12,RF,RF1 Rack 12,Generic: Rack,parent,apsu
+,,SR-RR40&1,Mechanical Operations & Maintenance,SR-RR40&1,Generic: Rack,parent,apsu
+,,PS-SR-T2-S40&01,Power Systems,PS-SR-T2-S40&01,T1-T4 SR Raw Supply,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0007,Power Systems,PS-SR-CAB1-0007,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-T4-S40&01,Power Systems,PS-SR-T4-S40&01,T1-T4 SR Raw Supply,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0001,Power Systems,PS-SR-CAB2-0001,Power Supply Cabinet - Type 1,parent,apsu
+,,01-01,Mechanical Operations & Maintenance,01-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0001,Power Systems,PS-SR-CAB3-0001,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0001,Power Systems,PS-SR-CAB4-0001,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB5-0007,Power Systems,PS-SR-CAB5-0007,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-02,,,,,SR_Mezz_Area-02 [C61-64],apsu
+,,01-02,Mechanical Operations & Maintenance,01-02,Generic: Rack,parent,apsu
+,,01-03,Controls,01-03,Generic: Rack,parent,apsu
+,,01-04,Diagnostics,01-04,Generic: Rack,parent,apsu
+,,02-04,Diagnostics,02-04,Generic: Rack,parent,apsu
+,,02-03,Information Technology,02-03,Generic: Rack,parent,apsu
+,,02-02,Mechanical Operations & Maintenance,02-02,Generic: Rack,parent,apsu
+,,01-ID-AR-RR01,Controls,01-ID-AR-RR01,Generic: Rack,parent,apsu
+,,01-ID-AR-RR02,Controls,01-ID-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0004,Power Systems,PS-SR-CAB1-0004,Power Supply Cabinet - Type 1,parent,apsu
+,,01-BM-AR-RR01,Safety Interlocks,01-BM-AR-RR01,Generic: Rack,parent,apsu
+,,01-BM-AR-RR02,Safety Interlocks,01-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0003,Power Systems,PS-SR-CAB2-0003,Power Supply Cabinet - Type 1,parent,apsu
+,,01-BM-AR-RR03,Mechanical Operations & Maintenance,01-BM-AR-RR03,Generic: Rack,parent,apsu
+,,01-BM-AR-RR04,Controls,01-BM-AR-RR04,Generic: Rack,parent,apsu
+,,02-01,Mechanical Operations & Maintenance,02-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0005,Power Systems,PS-SR-CAB3-0005,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0008,Power Systems,PS-SR-CAB4-0008,Power Supply Cabinet - Type 1,parent,apsu
+,,01-ID-AR-RR03,Safety Interlocks,01-ID-AR-RR03,Generic: Rack,parent,apsu
+,,01-ID-AR-RR04,Safety Interlocks,01-ID-AR-RR04,Generic: Rack,parent,apsu
+,,01-ID-AR-RR05,Controls,01-ID-AR-RR05,Generic: Rack,parent,apsu
+,,DG-RR-02-05,Diagnostics,DG-RR-02-05,Generic: Rack,parent,apsu
+,,DG-RR-02-06,Diagnostics,DG-RR-02-06,Generic: Rack,parent,apsu
+,,01-ID-AR-RR06,Mechanical Operations & Maintenance,01-ID-AR-RR06,Generic: Rack,parent,apsu
+,,02-ID-AR-RR01,Controls,02-ID-AR-RR01,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0009,Power Systems,PS-SR-CAB5-0009,Power Supply Cabinet - Type 1,parent,apsu
+,,02-ID-AR-RR02,Controls,02-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-03,,,,,SR_Mezz_Area-03 [C64-67],apsu
+,,PS-SR-T4-S2&3,Power Systems,PS-SR-T4-S2&3,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S2&3,Power Systems,PS-SR-T3-S2&3,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR02&03,Power Systems,SR-RR02&03,Generic: Rack,parent,apsu
+,,PS-SR-T2-S2&3,Power Systems,PS-SR-T2-S2&3,T1-T4 SR Raw Supply,parent,apsu
+,,ACIS Door-A,Safety Interlocks,ACIS Door-A,Generic: Rack,parent,apsu
+,,PS-SR-T1-S2&3,Power Systems,PS-SR-T1-S2&3,T1-T4 SR Raw Supply,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0005,Power Systems,PS-SR-CAB1-0005,Power Supply Cabinet - Type 1,parent,apsu
+,,02-BM-AR-RR01,Safety Interlocks,02-BM-AR-RR01,Generic: Rack,parent,apsu
+,,02-BM-AR-RR02,Safety Interlocks,02-BM-AR-RR02,Generic: Rack,parent,apsu
+,,02-BM-AR-RR03,Mechanical Operations & Maintenance,02-BM-AR-RR03,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0002,Power Systems,PS-SR-CAB2-0002,Power Supply Cabinet - Type 1,parent,apsu
+,,02-BM-AR-RR04,Controls,02-BM-AR-RR04,Generic: Rack,parent,apsu
+,,03-01,Mechanical Operations & Maintenance,03-01,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0007,Power Systems,PS-SR-CAB3-0007,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0009,Power Systems,PS-SR-CAB4-0009,Power Supply Cabinet - Type 1,parent,apsu
+,,02-ID-AR-RR03,Safety Interlocks,02-ID-AR-RR03,Generic: Rack,parent,apsu
+,,02-ID-AR-RR04,Safety Interlocks,02-ID-AR-RR04,Generic: Rack,parent,apsu
+,,DG-RR-03-05,Diagnostics,DG-RR-03-05,Generic: Rack,parent,apsu
+,,02-ID-AR-RR05,Controls,02-ID-AR-RR05,Generic: Rack,parent,apsu
+,,02-ID-AR-RR06,Mechanical Operations & Maintenance,02-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0010,Power Systems,PS-SR-CAB5-0010,Power Supply Cabinet - Type 1,parent,apsu
+,,03-ID-AR-RR01,Mechanical Operations & Maintenance,03-ID-AR-RR01,Generic: Rack,parent,apsu
+,,03-ID-AR-RR02,Mechanical Operations & Maintenance,03-ID-AR-RR02,Generic: Rack,parent,apsu
+,,03-SRTUNE,Diagnostics,03-SRTUNE,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-04,,,,,SR_Mezz_Area-04 [C67-70],apsu
+,,03-02,Mechanical Operations & Maintenance,03-02,Generic: Rack,parent,apsu
+,,03-03,Controls,03-03,Generic: Rack,parent,apsu
+,,03-04,Diagnostics,03-04,Generic: Rack,parent,apsu
+,,04-04,Diagnostics,04-04,Generic: Rack,parent,apsu
+,,04-03,Controls,04-03,Generic: Rack,parent,apsu
+,,04-02,Mechanical Operations & Maintenance,04-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0016,Power Systems,PS-SR-CAB1-0016,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB2-0018,Power Systems,PS-SR-CAB2-0018,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,03-BM-AR-RR01,Safety Interlocks,03-BM-AR-RR01,Generic: Rack,parent,apsu
+,,03-BM-AR-RR02,Safety Interlocks,03-BM-AR-RR02,Generic: Rack,parent,apsu
+,,03-BM-AR-RR03,Mechanical Operations & Maintenance,03-BM-AR-RR03,Generic: Rack,parent,apsu
+,,03-BM-AR-RR04,Mechanical Operations & Maintenance,03-BM-AR-RR04,Generic: Rack,parent,apsu
+,,04-01,Mechanical Operations & Maintenance,04-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0015,Power Systems,PS-SR-CAB3-0015,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0018,Power Systems,PS-SR-CAB4-0018,Power Supply Cabinet - Type 1,parent,apsu
+,,03-ID-AR-RR03,Safety Interlocks,03-ID-AR-RR03,Generic: Rack,parent,apsu
+,,03-ID-AR-RR04,Safety Interlocks,03-ID-AR-RR04,Generic: Rack,parent,apsu
+,,03-ID-AR-RR05,Mechanical Operations & Maintenance,03-ID-AR-RR05,Generic: Rack,parent,apsu
+,,03-ID-AR-RR06,Mechanical Operations & Maintenance,03-ID-AR-RR06,Generic: Rack,parent,apsu
+,,04-ID-AR-RR01,Controls,04-ID-AR-RR01,Generic: Rack,parent,apsu
+,,04-ID-AR-RR02,Controls,04-ID-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0019,Power Systems,PS-SR-CAB5-0019,Power Supply Cabinet - Type 1,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-05,,,,,SR_Mezz_Area-05 [C70-73],apsu
+,,PS-SR-T4-S4&5,Power Systems,PS-SR-T4-S4&5,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S4&5,Power Systems,PS-SR-T3-S4&5,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR04&05,Power Systems,SR-RR04&05,Generic: Rack,parent,apsu
+,,PS-SR-T2-S4&5,Power Systems,PS-SR-T2-S4&5,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S4&5,Power Systems,PS-SR-T1-S4&5,T1-T4 SR Raw Supply,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0017,Power Systems,PS-SR-CAB1-0017,Power Supply Cabinet - Type 1,parent,apsu
+,,04-BM-AR-RR01,Safety Interlocks,04-BM-AR-RR01,Generic: Rack,parent,apsu
+,,04-CPU-CAB1,Power Systems,04-CPU-CAB1,Generic: Rack,parent,apsu
+,,04-BM-AR-RR02,Safety Interlocks,04-BM-AR-RR02,Generic: Rack,parent,apsu
+,,04-CPU-CAB2,Power Systems,04-CPU-CAB2,Generic: Rack,parent,apsu
+,,04-CPU-CAB2A,Controls,04-CPU-CAB2A,Generic: Rack,parent,apsu
+,,04-BM-AR-RR03,Mechanical Operations & Maintenance,04-BM-AR-RR03,Generic: Rack,parent,apsu
+,,04-CPU-CAB3,Power Systems,04-CPU-CAB3,Generic: Rack,parent,apsu
+,,04-CPU-CAB3A,Controls,04-CPU-CAB3A,Generic: Rack,parent,apsu
+,,04-BM-AR-RR04,Controls,04-BM-AR-RR04,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0017,Power Systems,PS-SR-CAB2-0017,Power Supply Cabinet - Type 1,parent,apsu
+,,05-01,Mechanical Operations & Maintenance,05-01,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0004,Power Systems,PS-SR-CAB3-0004,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0017,Power Systems,PS-SR-CAB4-0017,Power Supply Cabinet - Type 1,parent,apsu
+,,04-ID-AR-RR03,Safety Interlocks,04-ID-AR-RR03,Generic: Rack,parent,apsu
+,,04-ID-AR-RR04,Safety Interlocks,04-ID-AR-RR04,Generic: Rack,parent,apsu
+,,04-ID-AR-RR05,Controls,04-ID-AR-RR05,Generic: Rack,parent,apsu
+,,04-ID-AR-RR06,Mechanical Operations & Maintenance,04-ID-AR-RR06,Generic: Rack,parent,apsu
+,,05-ID-AR-RR01,Controls,05-ID-AR-RR01,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0018,Power Systems,PS-SR-CAB5-0018,Power Supply Cabinet - Type 1,parent,apsu
+,,05-ID-AR-RR02,Controls,05-ID-AR-RR02,Generic: Rack,parent,apsu
+,,05-ID-A (FOE),Unknown,05-ID-A (FOE),Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-06,,,,,SR_Mezz_Area-06 [C73-76],apsu
+,,05-02,Mechanical Operations & Maintenance,05-02,Generic: Rack,parent,apsu
+,,05-03,Controls,05-03,Generic: Rack,parent,apsu
+,,05-04,Diagnostics,05-04,Generic: Rack,parent,apsu
+,,06-04,Diagnostics,06-04,Generic: Rack,parent,apsu
+,,06-03,Controls,06-03,Generic: Rack,parent,apsu
+,,06-02,Mechanical Operations & Maintenance,06-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0021,Power Systems,PS-SR-CAB1-0021,Power Supply Cabinet - Type 1,parent,apsu
+,,05-BM-AR-RR01,Safety Interlocks,05-BM-AR-RR01,Generic: Rack,parent,apsu
+,,05-BM-AR-RR02,Safety Interlocks,05-BM-AR-RR02,Generic: Rack,parent,apsu
+,,05-BM-AR-RR03,Mechanical Operations & Maintenance,05-BM-AR-RR03,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0023,Power Systems,PS-SR-CAB2-0023,Power Supply Cabinet - Type 1,parent,apsu
+,,05-BM-AR-RR04,Controls,05-BM-AR-RR04,Generic: Rack,parent,apsu
+,,06-01,Mechanical Operations & Maintenance,06-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0019,Power Systems,PS-SR-CAB3-0019,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0022,Power Systems,PS-SR-CAB4-0022,Power Supply Cabinet - Type 1,parent,apsu
+,,05-ID-AR-RR03,Safety Interlocks,05-ID-AR-RR03,Generic: Rack,parent,apsu
+,,05-ID-AR-RR04,Safety Interlocks,05-ID-AR-RR04,Generic: Rack,parent,apsu
+,,05-ID-AR-RR05,Controls,05-ID-AR-RR05,Generic: Rack,parent,apsu
+,,DG-RR-06-05,Diagnostics,DG-RR-06-05,Generic: Rack,parent,apsu
+,,05-ID-AR-RR06,Mechanical Operations & Maintenance,05-ID-AR-RR06,Generic: Rack,parent,apsu
+,,06-ID-AR-RR01,Controls,06-ID-AR-RR01,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0006,Power Systems,PS-SR-CAB5-0006,Power Supply Cabinet - Type 1,parent,apsu
+,,06-ID-AR-RR02,Controls,06-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-07,,,,,SR_Mezz_Area-07 [C76-79],apsu
+,,PS-SR-T4-S6&7,Power Systems,PS-SR-T4-S6&7,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S6&7,Power Systems,PS-SR-T3-S6&7,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR6&7,Power Systems,SR-RR6&7,Generic: Rack,parent,apsu
+,,PS-SR-T2-S6&7,Power Systems,PS-SR-T2-S6&7,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S6&7,Power Systems,PS-SR-T1-S6&7,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0022,Power Systems,PS-SR-CAB1-0022,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,06-BM-AR-RR01,Safety Interlocks,06-BM-AR-RR01,Generic: Rack,parent,apsu
+,,06-BM-AR-RR02,Safety Interlocks,06-BM-AR-RR02,Generic: Rack,parent,apsu
+,,06-BM-AR-RR03,Mechanical Operations & Maintenance,06-BM-AR-RR03,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-007,Power Systems,PS-SR-CAB2-007,Power Supply Cabinet - Type 1,parent,apsu
+,,06-BM-AR-RR04,Controls,06-BM-AR-RR04,Generic: Rack,parent,apsu
+,,07-01,Mechanical Operations & Maintenance,07-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0020,Power Systems,PS-SR-CAB3-0020,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0023,Power Systems,PS-SR-CAB4-0023,Power Supply Cabinet - Type 1,parent,apsu
+,,Controls_Rover_2,Controls,Controls_Rover_2,Generic: Rack,parent,apsu
+,,06-ID-AR-RR03,Safety Interlocks,06-ID-AR-RR03,Generic: Rack,parent,apsu
+,,06-ID-AR-RR04,Safety Interlocks,06-ID-AR-RR04,Generic: Rack,parent,apsu
+,,06-ID-AR-RR05,Controls,06-ID-AR-RR05,Generic: Rack,parent,apsu
+,,06-ID-AR-RR06,Mechanical Operations & Maintenance,06-ID-AR-RR06,Generic: Rack,parent,apsu
+,,S06-SCU-ID,Controls,S06-SCU-ID,Generic: Rack,parent,apsu
+,,07-ID-AR-RR01,Controls,07-ID-AR-RR01,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0024,Power Systems,PS-SR-CAB5-0024,Power Supply Cabinet - Type 1,parent,apsu
+,,07-ID-AR-RR02,Controls,07-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-08,,,,,SR_Mezz_Area-08 [C79-82],apsu
+,,07-02,Mechanical Operations & Maintenance,07-02,Generic: Rack,parent,apsu
+,,07-03,Controls,07-03,Generic: Rack,parent,apsu
+,,07-04,Diagnostics,07-04,Generic: Rack,parent,apsu
+,,08-04,Diagnostics,08-04,Generic: Rack,parent,apsu
+,,08-03,Controls,08-03,Generic: Rack,parent,apsu
+,,08-02,Mechanical Operations & Maintenance,08-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0011,Power Systems,PS-SR-CAB1-0011,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB2-0011,Power Systems,PS-SR-CAB2-0011,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,07-BM-AR-RR01,Safety Interlocks,07-BM-AR-RR01,Generic: Rack,parent,apsu
+,,07-BM-AR-RR02,Safety Interlocks,07-BM-AR-RR02,Generic: Rack,parent,apsu
+,,07-BM-AR-RR03,Mechanical Operations & Maintenance,07-BM-AR-RR03,Generic: Rack,parent,apsu
+,,07-BM-AR-RR04,Controls,07-BM-AR-RR04,Generic: Rack,parent,apsu
+,,08-01,Mechanical Operations & Maintenance,08-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0010,Power Systems,PS-SR-CAB3-0010,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0012,Power Systems,PS-SR-CAB4-0012,Power Supply Cabinet - Type 1,parent,apsu
+,,07-ID-AR-RR03,Safety Interlocks,07-ID-AR-RR03,Generic: Rack,parent,apsu
+,,07-ID-AR-RR04,Safety Interlocks,07-ID-AR-RR04,Generic: Rack,parent,apsu
+,,07-ID-AR-RR05,Controls,07-ID-AR-RR05,Generic: Rack,parent,apsu
+,,07-ID-AR-RR06,Mechanical Operations & Maintenance,07-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0013,Power Systems,PS-SR-CAB5-0013,Power Supply Cabinet - Type 1,parent,apsu
+,,08-ID-AR-RR01,Controls,08-ID-AR-RR01,Generic: Rack,parent,apsu
+,,08-ID-AR-RR02,Controls,08-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-09,,,,,SR_Mezz_Area-09 [C82-85],apsu
+,,PS-SR-T4-S8&9,Power Systems,PS-SR-T4-S8&9,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S8&9,Power Systems,PS-SR-T3-S8&9,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR8&9,Power Systems,SR-RR8&9,Generic: Rack,parent,apsu
+,,PS-SR-T2-S8&9,Power Systems,PS-SR-T2-S8&9,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S8&9,Power Systems,PS-SR-T1-S8&9,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0010,Power Systems,PS-SR-CAB1-0010,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,08-BM-AR-RR01,Safety Interlocks,08-BM-AR-RR01,Generic: Rack,parent,apsu
+,,08-BM-AR-RR02,Safety Interlocks,08-BM-AR-RR02,Generic: Rack,parent,apsu
+,,08-BM-AR-RR03,Mechanical Operations & Maintenance,08-BM-AR-RR03,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0010,Power Systems,PS-SR-CAB2-0010,Power Supply Cabinet - Type 1,parent,apsu
+,,08-BM-AR-RR04,Controls,08-BM-AR-RR04,Generic: Rack,parent,apsu
+,,09-01,Mechanical Operations & Maintenance,09-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0009,Power Systems,PS-SR-CAB3-0009,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0011,Power Systems,PS-SR-CAB4-0011,Power Supply Cabinet - Type 1,parent,apsu
+,,08-ID-AR-RR03,Safety Interlocks,08-ID-AR-RR03,Generic: Rack,parent,apsu
+,,08-ID-AR-RR04,Safety Interlocks,08-ID-AR-RR04,Generic: Rack,parent,apsu
+,,08-ID-AR-RR05,Controls,08-ID-AR-RR05,Generic: Rack,parent,apsu
+,,08-ID-AR-RR06,Mechanical Operations & Maintenance,08-ID-AR-RR06,Generic: Rack,parent,apsu
+,,09-ID-AR-RR01,Controls,09-ID-AR-RR01,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0012,Power Systems,PS-SR-CAB5-0012,Power Supply Cabinet - Type 1,parent,apsu
+,,09-ID-AR-RR02,Controls,09-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-10,,,,,SR_Mezz_Area-10 [C85-88],apsu
+,,09-02,Mechanical Operations & Maintenance,09-02,Generic: Rack,parent,apsu
+,,09-03,Controls,09-03,Generic: Rack,parent,apsu
+,,09-04,Diagnostics,09-04,Generic: Rack,parent,apsu
+,,10-04,Diagnostics,10-04,Generic: Rack,parent,apsu
+,,10-03,Controls,10-03,Generic: Rack,parent,apsu
+,,10-02,Mechanical Operations & Maintenance,10-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0014,Power Systems,PS-SR-CAB1-0014,Power Supply Cabinet - Type 1,parent,apsu
+,,09-BM-AR-RR01,Safety Interlocks,09-BM-AR-RR01,Generic: Rack,parent,apsu
+,,09-BM-AR-RR02,Safety Interlocks,09-BM-AR-RR02,Generic: Rack,parent,apsu
+,,09-BM-AR-RR03,Mechanical Operations & Maintenance,09-BM-AR-RR03,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0016,Power Systems,PS-SR-CAB2-0016,Power Supply Cabinet - Type 1,parent,apsu
+,,09-BM-AR-RR04,Controls,09-BM-AR-RR04,Generic: Rack,parent,apsu
+,,10-01,Mechanical Operations & Maintenance,10-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0014,Power Systems,PS-SR-CAB3-0014,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0015,Power Systems,PS-SR-CAB4-0015,Power Supply Cabinet - Type 1,parent,apsu
+,,09-ID-AR-RR03,Safety Interlocks,09-ID-AR-RR03,Generic: Rack,parent,apsu
+,,09-ID-AR-RR04,Safety Interlocks,09-ID-AR-RR04,Generic: Rack,parent,apsu
+,,09-ID-AR-RR05,Controls,09-ID-AR-RR05,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0016,Power Systems,PS-SR-CAB5-0016,Power Supply Cabinet - Type 1,parent,apsu
+,,09-ID-AR-RR06,Mechanical Operations & Maintenance,09-ID-AR-RR06,Generic: Rack,parent,apsu
+,,10-ID-AR-RR01,Controls,10-ID-AR-RR01,Generic: Rack,parent,apsu
+,,10-ID-AR-RR02,Controls,10-ID-AR-RR02,Generic: Rack,parent,apsu
+,,10-BM-AR-RR01,Safety Interlocks,10-BM-AR-RR01,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-11,,,,,SR_Mezz_Area-11 [C88-91],apsu
+,,PS-SR-T4-S10&11,Power Systems,PS-SR-T4-S10&11,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S10&11,Power Systems,PS-SR-T3-S10&11,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR10&11,Power Systems,SR-RR10&11,Generic: Rack,parent,apsu
+,,PS-SR-T2-S10&11,Power Systems,PS-SR-T2-S10&11,T1-T4 SR Raw Supply,parent,apsu
+,,ACIS Door B,Safety Interlocks,ACIS Door B,Generic: Rack,parent,apsu
+,,PS-SR-T1-S10&11,Power Systems,PS-SR-T1-S10&11,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0015,Power Systems,PS-SR-CAB1-0015,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,10-BM-AR-RR02,Safety Interlocks,10-BM-AR-RR02,Generic: Rack,parent,apsu
+,,10-BM-AR-RR03,Mechanical Operations & Maintenance,10-BM-AR-RR03,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0015,Power Systems,PS-SR-CAB2-0015,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,10-BM-AR-RR04,Controls,10-BM-AR-RR04,Generic: Rack,parent,apsu
+,,11-01,Mechanical Operations & Maintenance,11-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0013,Power Systems,PS-SR-CAB3-0013,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0016,Power Systems,PS-SR-CAB4-0016,Power Supply Cabinet - Type 1,parent,apsu
+,,10-ID-AR-RR03,Safety Interlocks,10-ID-AR-RR03,Generic: Rack,parent,apsu
+,,10-ID-AR-RR04,Safety Interlocks,10-ID-AR-RR04,Generic: Rack,parent,apsu
+,,10-ID-AR-RR05,Controls,10-ID-AR-RR05,Generic: Rack,parent,apsu
+,,10-ID-AR-RR06,Mechanical Operations & Maintenance,10-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0017,Power Systems,PS-SR-CAB5-0017,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,11-ID-AR-RR01,Controls,11-ID-AR-RR01,Generic: Rack,parent,apsu
+,,11-ID-AR-RR02,Controls,11-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-12,,,,,SR_Mezz_Area-12 [C91-94],apsu
+,,11-ID-SR-EMW-RR03,Power Systems,11-ID-SR-EMW-RR03,Generic: Rack,parent,apsu
+,,11-02,Mechanical Operations & Maintenance,11-02,Generic: Rack,parent,apsu
+,,11-03,Controls,11-03,Generic: Rack,parent,apsu
+,,11-04,Diagnostics,11-04,Generic: Rack,parent,apsu
+,,11-ID-SR-EMW-RR01,Power Systems,11-ID-SR-EMW-RR01,Generic: Rack,parent,apsu
+,,11-ID-SR-EMW-RR02,Power Systems,11-ID-SR-EMW-RR02,Generic: Rack,parent,apsu
+,,12-04,Diagnostics,12-04,Generic: Rack,parent,apsu
+,,12-03,Information Technology,12-03,Generic: Rack,parent,apsu
+,,12-02,Mechanical Operations & Maintenance,12-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0012,Power Systems,PS-SR-CAB1-0012,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB2-0012,Power Systems,PS-SR-CAB2-0012,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,11-BM-AR-RR01,Safety Interlocks,11-BM-AR-RR01,Generic: Rack,parent,apsu
+,,11-BM-AR-RR02,Safety Interlocks,11-BM-AR-RR02,Generic: Rack,parent,apsu
+,,11-BM-AR-RR03,Mechanical Operations & Maintenance,11-BM-AR-RR03,Generic: Rack,parent,apsu
+,,11-BM-AR-RR04,Controls,11-BM-AR-RR04,Generic: Rack,parent,apsu
+,,12-01,Mechanical Operations & Maintenance,12-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0011,Power Systems,PS-SR-CAB3-0011,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0013,Power Systems,PS-SR-CAB4-0013,Power Supply Cabinet - Type 1,parent,apsu
+,,11-ID-AR-RR03,Safety Interlocks,11-ID-AR-RR03,Generic: Rack,parent,apsu
+,,11-ID-AR-RR04,Safety Interlocks,11-ID-AR-RR04,Generic: Rack,parent,apsu
+,,11-ID-AR-RR05,Controls,11-ID-AR-RR05,Generic: Rack,parent,apsu
+,,11-ID-AR-RR06,Mechanical Operations & Maintenance,11-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0014,Power Systems,PS-SR-CAB5-0014,Power Supply Cabinet - Type 1,parent,apsu
+,,12-ID-AR-RR01,Controls,12-ID-AR-RR01,Generic: Rack,parent,apsu
+,,12-ID-AR-RR02,Controls,12-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-13,,,,,SR_Mezz_Area-13 [C94-97],apsu
+,,PS-SR-T4-S12&13,Power Systems,PS-SR-T4-S12&13,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S12&13,Power Systems,PS-SR-T3-S12&13,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR12&13,Power Systems,SR-RR12&13,Generic: Rack,parent,apsu
+,,PS-SR-T2-S12&13,Power Systems,PS-SR-T2-S12&13,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S12&13,Power Systems,PS-SR-T1-S12&13,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0013,Power Systems,PS-SR-CAB1-0013,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,12-BM-AR-RR01,Safety Interlocks,12-BM-AR-RR01,Generic: Rack,parent,apsu
+,,12-BM-AR-RR02,Safety Interlocks,12-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0013,Power Systems,PS-SR-CAB2-0013,Power Supply Cabinet - Type 1,parent,apsu
+,,12-BM-AR-RR03,Mechanical Operations & Maintenance,12-BM-AR-RR03,Generic: Rack,parent,apsu
+,,12-BM-AR-RR04,Controls,12-BM-AR-RR04,Generic: Rack,parent,apsu
+,,13-01,Mechanical Operations & Maintenance,13-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0012,Power Systems,PS-SR-CAB3-0012,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0014,Power Systems,PS-SR-CAB4-0014,Power Supply Cabinet - Type 1,parent,apsu
+,,12-ID-AR-RR03,Safety Interlocks,12-ID-AR-RR03,Generic: Rack,parent,apsu
+,,12-ID-AR-RR04,Safety Interlocks,12-ID-AR-RR04,Generic: Rack,parent,apsu
+,,12-ID-AR-RR05,Controls,12-ID-AR-RR05,Generic: Rack,parent,apsu
+,,12-ID-AR-RR06,Mechanical Operations & Maintenance,12-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0015,Power Systems,PS-SR-CAB5-0015,Power Supply Cabinet - Type 1,parent,apsu
+,,13-ID-AR-RR01,Controls,13-ID-AR-RR01,Generic: Rack,parent,apsu
+,,13-ID-AR-RR02,Controls,13-ID-AR-RR02,Generic: Rack,parent,apsu
+,,13-ID-A (FOE),Unknown,13-ID-A (FOE),Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-14,,,,,SR_Mezz_Area-14 [C97-100],apsu
+,,13-02,Mechanical Operations & Maintenance,13-02,Generic: Rack,parent,apsu
+,,13-03,Controls,13-03,Generic: Rack,parent,apsu
+,,13-04,Diagnostics,13-04,Generic: Rack,parent,apsu
+,,14-04,Diagnostics,14-04,Generic: Rack,parent,apsu
+,,14-03,Controls,14-03,Generic: Rack,parent,apsu
+,,14-02,Mechanical Operations & Maintenance,14-02,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0018,Power Systems,PS-SR-CAB1-0018,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,13-BM-AR-RR01,Safety Interlocks,13-BM-AR-RR01,Generic: Rack,parent,apsu
+,,13-BM-AR-RR02,Safety Interlocks,13-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0020,Power Systems,PS-SR-CAB2-0020,Power Supply Cabinet - Type 1,parent,apsu
+,,13-BM-AR-RR03,Mechanical Operations & Maintenance,13-BM-AR-RR03,Generic: Rack,parent,apsu
+,,13-BM-AR-RR04,Controls,13-BM-AR-RR04,Generic: Rack,parent,apsu
+,,14-01,Mechanical Operations & Maintenance,14-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0016,Power Systems,PS-SR-CAB3-0016,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0019,Power Systems,PS-SR-CAB4-0019,Power Supply Cabinet - Type 1,parent,apsu
+,,13-ID-AR-RR03,Safety Interlocks,13-ID-AR-RR03,Generic: Rack,parent,apsu
+,,13-ID-AR-RR04,Safety Interlocks,13-ID-AR-RR04,Generic: Rack,parent,apsu
+,,13-ID-AR-RR05,Controls,13-ID-AR-RR05,Generic: Rack,parent,apsu
+,,13-ID-AR-RR06,Mechanical Operations & Maintenance,13-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0021,Power Systems,PS-SR-CAB5-0021,Power Supply Cabinet - Type 1,parent,apsu
+,,14-ID-AR-RR01,Controls,14-ID-AR-RR01,Generic: Rack,parent,apsu
+,,14-ID-AR-RR02,Controls,14-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-15,,,,,SR_Mezz_Area-15 [C100-103],apsu
+,,PS-SR-T4-S14&15,Power Systems,PS-SR-T4-S14&15,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S14&15,Power Systems,PS-SR-T3-S14&15,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR14&15,Power Systems,SR-RR14&15,Generic: Rack,parent,apsu
+,,PS-SR-T2-S14&15,Power Systems,PS-SR-T2-S14&15,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S14&15,Power Systems,PS-SR-T1-S14&15,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0019,Power Systems,PS-SR-CAB1-0019,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,14-BM-AR-RR01,Safety Interlocks,14-BM-AR-RR01,Generic: Rack,parent,apsu
+,,14-BM-AR-RR02,Safety Interlocks,14-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0021,Power Systems,PS-SR-CAB2-0021,Power Supply Cabinet - Type 1,parent,apsu
+,,14-BM-AR-RR03,Mechanical Operations & Maintenance,14-BM-AR-RR03,Generic: Rack,parent,apsu
+,,14-BM-AR-RR04,Controls,14-BM-AR-RR04,Generic: Rack,parent,apsu
+,,15-01,Mechanical Operations & Maintenance,15-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0017,Power Systems,PS-SR-CAB3-0017,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0020,Power Systems,PS-SR-CAB4-0020,Power Supply Cabinet - Type 1,parent,apsu
+,,14-ID-AR-RR03,Safety Interlocks,14-ID-AR-RR03,Generic: Rack,parent,apsu
+,,14-ID-AR-RR04,Safety Interlocks,14-ID-AR-RR04,Generic: Rack,parent,apsu
+,,14-ID-AR-RR05,Controls,14-ID-AR-RR05,Generic: Rack,parent,apsu
+,,14-ID-AR-RR06,Mechanical Operations & Maintenance,14-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5,Power Systems,PS-SR-CAB5,Power Supply Cabinet - Type 1,parent,apsu
+,,15-ID-AR-RR01,Controls,15-ID-AR-RR01,Generic: Rack,parent,apsu
+,,15-ID-AR-RR02,Controls,15-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-16,,,,,SR_Mezz_Area-16 [C103-106],apsu
+,,15-02,Mechanical Operations & Maintenance,15-02,Generic: Rack,parent,apsu
+,,15-03,Controls,15-03,Generic: Rack,parent,apsu
+,,15-04,Diagnostics,15-04,Generic: Rack,parent,apsu
+,,16-04,Diagnostics,16-04,Generic: Rack,parent,apsu
+,,16-03,Controls,16-03,Generic: Rack,parent,apsu
+,,16-02,Mechanical Operations & Maintenance,16-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0020,Power Systems,PS-SR-CAB1-0020,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB2-0019,Power Systems,PS-SR-CAB2-0019,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,15-BM-AR-RR01,Safety Interlocks,15-BM-AR-RR01,Generic: Rack,parent,apsu
+,,15-BM-AR-RR02,Safety Interlocks,15-BM-AR-RR02,Generic: Rack,parent,apsu
+,,15-BM-AR-RR03,Mechanical Operations & Maintenance,15-BM-AR-RR03,Generic: Rack,parent,apsu
+,,15-BM-AR-RR04,Controls,15-BM-AR-RR04,Generic: Rack,parent,apsu
+,,16-01,Mechanical Operations & Maintenance,16-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0018,Power Systems,PS-SR-CAB3-0018,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0021,Power Systems,PS-SR-CAB4-0021,Power Supply Cabinet - Type 1,parent,apsu
+,,15-ID-AR-RR03,Safety Interlocks,15-ID-AR-RR03,Generic: Rack,parent,apsu
+,,15-ID-AR-RR04,Safety Interlocks,15-ID-AR-RR04,Generic: Rack,parent,apsu
+,,15-ID-AR-RR05,Controls,15-ID-AR-RR05,Generic: Rack,parent,apsu
+,,15-ID-AR-RR06,Mechanical Operations & Maintenance,15-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0023,Power Systems,PS-SR-CAB5-0023,Power Supply Cabinet - Type 1,parent,apsu
+,,16-ID-AR-RR01,Controls,16-ID-AR-RR01,Generic: Rack,parent,apsu
+,,16-ID-AR-RR02,Controls,16-ID-AR-RR02,Generic: Rack,parent,apsu
+,,16-ID-A (FOE),Unknown,16-ID-A (FOE),Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-17,,,,,SR_Mezz_Area-17 [C106-109],apsu
+,,PS-SR-T4-S16&17,Power Systems,PS-SR-T4-S16&17,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S16&17,Power Systems,PS-SR-T3-S16&17,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR16&17,Power Systems,SR-RR16&17,Generic: Rack,parent,apsu
+,,PS-SR-T2-S16&17,Power Systems,PS-SR-T2-S16&17,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S16&17,Power Systems,PS-SR-T1-S16&17,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0023,Power Systems,PS-SR-CAB1-0023,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,16-BM-AR-RR01,Safety Interlocks,16-BM-AR-RR01,Generic: Rack,parent,apsu
+,,16-BM-AR-RR02,Safety Interlocks,16-BM-AR-RR02,Generic: Rack,parent,apsu
+,,16-BM-AR-RR03,Mechanical Operations & Maintenance,16-BM-AR-RR03,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0024,Power Systems,PS-SR-CAB2-0024,Power Supply Cabinet - Type 1,parent,apsu
+,,16-BM-AR-RR04,Controls,16-BM-AR-RR04,Generic: Rack,parent,apsu
+,,17-01,Mechanical Operations & Maintenance,17-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0021,Power Systems,PS-SR-CAB3-0021,Power Supply Cabinet - Type 1,parent,apsu
+,,16-ID-AR-RR03,Safety Interlocks,16-ID-AR-RR03,Generic: Rack,parent,apsu
+,,16-ID-AR-RR04,Safety Interlocks,16-ID-AR-RR04,Generic: Rack,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0024,Power Systems,PS-SR-CAB4-0024,Power Supply Cabinet - Type 1,parent,apsu
+,,16-ID-AR-RR05,Controls,16-ID-AR-RR05,Generic: Rack,parent,apsu
+,,16-ID-AR-RR06,Mechanical Operations & Maintenance,16-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0025,Power Systems,PS-SR-CAB5-0025,Power Supply Cabinet - Type 1,parent,apsu
+,,17-ID-AR-RR01,Controls,17-ID-AR-RR01,Generic: Rack,parent,apsu
+,,17-ID-AR-RR02,Controls,17-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-18,,,,,SR_Mezz_Area-18 [C109-112],apsu
+,,17-02,Mechanical Operations & Maintenance,17-02,Generic: Rack,parent,apsu
+,,17-03,Controls,17-03,Generic: Rack,parent,apsu
+,,17-04,Diagnostics,17-04,Generic: Rack,parent,apsu
+,,ACIS Door C,Safety Interlocks,ACIS Door C,Generic: Rack,parent,apsu
+,,18-04,Diagnostics,18-04,Generic: Rack,parent,apsu
+,,18-03,Controls,18-03,Generic: Rack,parent,apsu
+,,18-02,Mechanical Operations & Maintenance,18-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0040,Power Systems,PS-SR-CAB1-0040,Power Supply Cabinet - Type 1,parent,apsu
+,,17-BM-AR-RR01,Safety Interlocks,17-BM-AR-RR01,Generic: Rack,parent,apsu
+,,17-BM-AR-RR02,Safety Interlocks,17-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0043,Power Systems,PS-SR-CAB2-0043,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,17-BM-AR-RR03,Mechanical Operations & Maintenance,17-BM-AR-RR03,Generic: Rack,parent,apsu
+,,17-BM-AR-RR04,Controls,17-BM-AR-RR04,Generic: Rack,parent,apsu
+,,18-01,Mechanical Operations & Maintenance,18-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0040,Power Systems,PS-SR-CAB3-0040,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0042,Power Systems,PS-SR-CAB4-0042,Power Supply Cabinet - Type 1,parent,apsu
+,,17-ID-AR-RR03,Safety Interlocks,17-ID-AR-RR03,Generic: Rack,parent,apsu
+,,17-ID-AR-RR04,Safety Interlocks,17-ID-AR-RR04,Generic: Rack,parent,apsu
+,,17-ID-AR-RR05,Controls,17-ID-AR-RR05,Generic: Rack,parent,apsu
+,,17-ID-AR-RR06,Mechanical Operations & Maintenance,17-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0041,Power Systems,PS-SR-CAB5-0041,Power Supply Cabinet - Type 1,parent,apsu
+,,18-ID-AR-RR01,Controls,18-ID-AR-RR01,Generic: Rack,parent,apsu
+,,18-ID-AR-RR02,Controls,18-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-19,,,,,SR_Mezz_Area-19 [C112-115],apsu
+,,PS-SR-T4-S18&19,Power Systems,PS-SR-T4-S18&19,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S18&19,Power Systems,PS-SR-T3-S18&19,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR18&19,Power Systems,SR-RR18&19,Generic: Rack,parent,apsu
+,,PS-SR-T2-S18&19,Power Systems,PS-SR-T2-S18&19,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S18&19,Power Systems,PS-SR-T1-S18&19,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0041,Power Systems,PS-SR-CAB1-0041,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,18-BM-AR-RR01,Safety Interlocks,18-BM-AR-RR01,Generic: Rack,parent,apsu
+,,18-BM-AR-RR02,Safety Interlocks,18-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0042,Power Systems,PS-SR-CAB2-0042,Power Supply Cabinet - Type 1,parent,apsu
+,,18-BM-AR-RR03,Mechanical Operations & Maintenance,18-BM-AR-RR03,Generic: Rack,parent,apsu
+,,18-BM-AR-RR04,Controls,18-BM-AR-RR04,Generic: Rack,parent,apsu
+,,19-01,Mechanical Operations & Maintenance,19-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0041,Power Systems,PS-SR-CAB3-0041,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0043,Power Systems,PS-SR-CAB4-0043,Power Supply Cabinet - Type 1,parent,apsu
+,,18-ID-AR-RR03,Safety Interlocks,18-ID-AR-RR03,Generic: Rack,parent,apsu
+,,18-ID-AR-RR04,Safety Interlocks,18-ID-AR-RR04,Generic: Rack,parent,apsu
+,,18-ID-AR-RR05,Controls,18-ID-AR-RR05,Generic: Rack,parent,apsu
+,,18-ID-AR-RR06,Mechanical Operations & Maintenance,18-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0042,Power Systems,PS-SR-CAB5-0042,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,19-ID-AR-RR01,Controls,19-ID-AR-RR01,Generic: Rack,parent,apsu
+,,19-ID-AR-RR02,Controls,19-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-20,,,,,SR_Mezz_Area-20 [C115-118],apsu
+,,19-02,Mechanical Operations & Maintenance,19-02,Generic: Rack,parent,apsu
+,,19-03,Controls,19-03,Generic: Rack,parent,apsu
+,,19-04,Diagnostics,19-04,Generic: Rack,parent,apsu
+,,20-04,Diagnostics,20-04,Generic: Rack,parent,apsu
+,,20-03,Controls,20-03,Generic: Rack,parent,apsu
+,,20-02,Mechanical Operations & Maintenance,20-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0051,Power Systems,PS-SR-CAB1-0051,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB2-0044,Power Systems,PS-SR-CAB2-0044,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,19-BM-AR-RR01,Safety Interlocks,19-BM-AR-RR01,Generic: Rack,parent,apsu
+,,19-BM-AR-RR02,Safety Interlocks,19-BM-AR-RR02,Generic: Rack,parent,apsu
+,,19-BM-AR-RR03,Mechanical Operations & Maintenance,19-BM-AR-RR03,Generic: Rack,parent,apsu
+,,19-BM-AR-RR04,Controls,19-BM-AR-RR04,Generic: Rack,parent,apsu
+,,20-01,Mechanical Operations & Maintenance,20-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0042,Power Systems,PS-SR-CAB3-0042,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0044,Power Systems,PS-SR-CAB4-0044,Power Supply Cabinet - Type 1,parent,apsu
+,,19-ID-AR-RR03,Safety Interlocks,19-ID-AR-RR03,Generic: Rack,parent,apsu
+,,19-ID-AR-RR04,Safety Interlocks,19-ID-AR-RR04,Generic: Rack,parent,apsu
+,,19-ID-AR-RR05,Controls,19-ID-AR-RR05,Generic: Rack,parent,apsu
+,,19-ID-AR-RR06,Mechanical Operations & Maintenance,19-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0043,Power Systems,PS-SR-CAB5-0043,Power Supply Cabinet - Type 1,parent,apsu
+,,20-ID-AR-RR01,Controls,20-ID-AR-RR01,Generic: Rack,parent,apsu
+,,20-ID-AR-RR02,Controls,20-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-21,,,,,SR_Mezz_Area-21 [C118-121],apsu
+,,PS-SR-T4-S20&21,Power Systems,PS-SR-T4-S20&21,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S20&21,Power Systems,PS-SR-T3-S20&21,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR20&21,Power Systems,SR-RR20&21,Generic: Rack,parent,apsu
+,,PS-SR-T2-S20&21,Power Systems,PS-SR-T2-S20&21,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S20&21,Power Systems,PS-SR-T1-S20&21,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0039,Power Systems,PS-SR-CAB1-0039,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,20-BM-AR-RR01,Safety Interlocks,20-BM-AR-RR01,Generic: Rack,parent,apsu
+,,20-BM-AR-RR02,Safety Interlocks,20-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0041,Power Systems,PS-SR-CAB2-0041,Power Supply Cabinet - Type 1,parent,apsu
+,,20-BM-AR-RR03,Mechanical Operations & Maintenance,20-BM-AR-RR03,Generic: Rack,parent,apsu
+,,20-BM-AR-RR04,Controls,20-BM-AR-RR04,Generic: Rack,parent,apsu
+,,21-01,Mechanical Operations & Maintenance,21-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0039,Power Systems,PS-SR-CAB3-0039,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0041,Power Systems,PS-SR-CAB4-0041,Power Supply Cabinet - Type 1,parent,apsu
+,,20-ID-AR-RR03,Safety Interlocks,20-ID-AR-RR03,Generic: Rack,parent,apsu
+,,20-ID-AR-RR04,Safety Interlocks,20-ID-AR-RR04,Generic: Rack,parent,apsu
+,,20-ID-AR-RR05,Controls,20-ID-AR-RR05,Generic: Rack,parent,apsu
+,,20-ID-AR-RR06,Mechanical Operations & Maintenance,20-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0040,Power Systems,PS-SR-CAB5-0040,Power Supply Cabinet - Type 1,parent,apsu
+,,21-ID-AR-RR01,Controls,21-ID-AR-RR01,Generic: Rack,parent,apsu
+,,21-ID-AR-RR02,Controls,21-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-22,,,,,SR_Mezz_Area-22 [C121-124],apsu
+,,21-02,Mechanical Operations & Maintenance,21-02,Generic: Rack,parent,apsu
+,,21-03,Controls,21-03,Generic: Rack,parent,apsu
+,,21-04,Diagnostics,21-04,Generic: Rack,parent,apsu
+,,22-04,Diagnostics,22-04,Generic: Rack,parent,apsu
+,,22-03,Information Technology,22-03,Generic: Rack,parent,apsu
+,,22-02,Mechanical Operations & Maintenance,22-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0038,Power Systems,PS-SR-CAB1-0038,Power Supply Cabinet - Type 1,parent,apsu
+,,21-BM-AR-RR01,Safety Interlocks,21-BM-AR-RR01,Generic: Rack,parent,apsu
+,,21-BM-AR-RR02,Safety Interlocks,21-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0040,Power Systems,PS-SR-CAB2-0040,Power Supply Cabinet - Type 1,parent,apsu
+,,21-BM-AR-RR03,Mechanical Operations & Maintenance,21-BM-AR-RR03,Generic: Rack,parent,apsu
+,,21-BM-AR-RR04,Controls,21-BM-AR-RR04,Generic: Rack,parent,apsu
+,,22-01,Mechanical Operations & Maintenance,22-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0038,Power Systems,PS-SR-CAB3-0038,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0040,Power Systems,PS-SR-CAB4-0040,Power Supply Cabinet - Type 1,parent,apsu
+,,21-ID-AR-RR03,Safety Interlocks,21-ID-AR-RR03,Generic: Rack,parent,apsu
+,,21-ID-AR-RR04,Safety Interlocks,21-ID-AR-RR04,Generic: Rack,parent,apsu
+,,21-ID-AR-RR05,Controls,21-ID-AR-RR05,Generic: Rack,parent,apsu
+,,21-ID-AR-RR06,Mechanical Operations & Maintenance,21-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0039,Power Systems,PS-SR-CAB5-0039,Power Supply Cabinet - Type 1,parent,apsu
+,,22-ID-AR-RR01,Controls,22-ID-AR-RR01,Generic: Rack,parent,apsu
+,,22-ID-AR-RR02,Controls,22-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-23,,,,,SR_Mezz_Area-23 [C124-127],apsu
+,,PS-SR-T4-S22&23,Power Systems,PS-SR-T4-S22&23,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S22&23,Power Systems,PS-SR-T3-S22&23,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR22&23,Power Systems,SR-RR22&23,Generic: Rack,parent,apsu
+,,PS-SR-T2-S22&23,Power Systems,PS-SR-T2-S22&23,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S22&23,Power Systems,PS-SR-T1-S22&23,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0037,Power Systems,PS-SR-CAB1-0037,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,22-BM-AR-RR01,Safety Interlocks,22-BM-AR-RR01,Generic: Rack,parent,apsu
+,,22-BM-AR-RR02,Safety Interlocks,22-BM-AR-RR02,Generic: Rack,parent,apsu
+,,22-BM-AR-RR03,Mechanical Operations & Maintenance,22-BM-AR-RR03,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0039,Power Systems,PS-SR-CAB2-0039,Power Supply Cabinet - Type 1,parent,apsu
+,,22-BM-AR-RR04,Controls,22-BM-AR-RR04,Generic: Rack,parent,apsu
+,,23-01,Mechanical Operations & Maintenance,23-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0037,Power Systems,PS-SR-CAB3-0037,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0039,Power Systems,PS-SR-CAB4-0039,Power Supply Cabinet - Type 1,parent,apsu
+,,22-ID-AR-RR03,Safety Interlocks,22-ID-AR-RR03,Generic: Rack,parent,apsu
+,,22-ID-AR-RR04,Safety Interlocks,22-ID-AR-RR04,Generic: Rack,parent,apsu
+,,22-ID-AR-RR05,Controls,22-ID-AR-RR05,Generic: Rack,parent,apsu
+,,22-ID-AR-RR06,Mechanical Operations & Maintenance,22-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0038,Power Systems,PS-SR-CAB5-0038,Power Supply Cabinet - Type 1,parent,apsu
+,,23-ID-AR-RR01,Controls,23-ID-AR-RR01,Generic: Rack,parent,apsu
+,,23-ID-AR-RR02,Controls,23-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-24,,,,,SR_Mezz_Area-24 [C127-130],apsu
+,,23-02,Mechanical Operations & Maintenance,23-02,Generic: Rack,parent,apsu
+,,23-03,Controls,23-03,Generic: Rack,parent,apsu
+,,23-04,Diagnostics,23-04,Generic: Rack,parent,apsu
+,,24-04,Diagnostics,24-04,Generic: Rack,parent,apsu
+,,24-03,Controls,24-03,Generic: Rack,parent,apsu
+,,24-02,Mechanical Operations & Maintenance,24-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0036,Power Systems,PS-SR-CAB1-0036,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB2-0037,Power Systems,PS-SR-CAB2-0037,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,23-BM-AR-RR01,Safety Interlocks,23-BM-AR-RR01,Generic: Rack,parent,apsu
+,,23-BM-AR-RR02,Safety Interlocks,23-BM-AR-RR02,Generic: Rack,parent,apsu
+,,23-BM-AR-RR03,Mechanical Operations & Maintenance,23-BM-AR-RR03,Generic: Rack,parent,apsu
+,,23-BM-AR-RR04,Controls,23-BM-AR-RR04,Generic: Rack,parent,apsu
+,,24-01,Mechanical Operations & Maintenance,24-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0034,Power Systems,PS-SR-CAB3-0034,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0036,Power Systems,PS-SR-CAB4-0036,Power Supply Cabinet - Type 1,parent,apsu
+,,23-ID-AR-RR03,Safety Interlocks,23-ID-AR-RR03,Generic: Rack,parent,apsu
+,,23-ID-AR-RR04,Safety Interlocks,23-ID-AR-RR04,Generic: Rack,parent,apsu
+,,23-ID-AR-RR05,Controls,23-ID-AR-RR05,Generic: Rack,parent,apsu
+,,23-ID-AR-RR06,Mechanical Operations & Maintenance,23-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0036,Power Systems,PS-SR-CAB5-0036,Power Supply Cabinet - Type 1,parent,apsu
+,,24-ID-AR-RR01,Controls,24-ID-AR-RR01,Generic: Rack,parent,apsu
+,,24-ID-AR-RR02,Controls,24-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-25,,,,,SR_Mezz_Area-25 [C130-133],apsu
+,,PS-SR-T4-S24&25,Power Systems,PS-SR-T4-S24&25,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S24&25,Power Systems,PS-SR-T3-S24&25,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR24&25,Power Systems,SR-RR24&25,Generic: Rack,parent,apsu
+,,PS-SR-T2-S24&25,Power Systems,PS-SR-T2-S24&25,T1-T4 SR Raw Supply,parent,apsu
+,,ACIS Door D,Safety Interlocks,ACIS Door D,Generic: Rack,parent,apsu
+,,PS-SR-T1-S24&25,Power Systems,PS-SR-T1-S24&25,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0035,Power Systems,PS-SR-CAB1-0035,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,24-BM-AR-RR01,Safety Interlocks,24-BM-AR-RR01,Generic: Rack,parent,apsu
+,,24-BM-AR-RR02,Safety Interlocks,24-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0036,Power Systems,PS-SR-CAB2-0036,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,24-BM-AR-RR03,Mechanical Operations & Maintenance,24-BM-AR-RR03,Generic: Rack,parent,apsu
+,,24-BM-AR-RR04,Controls,24-BM-AR-RR04,Generic: Rack,parent,apsu
+,,25-01,Mechanical Operations & Maintenance,25-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0036,Power Systems,PS-SR-CAB3-0036,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0038,Power Systems,PS-SR-CAB4-0038,Power Supply Cabinet - Type 1,parent,apsu
+,,24-ID-AR-RR03,Safety Interlocks,24-ID-AR-RR03,Generic: Rack,parent,apsu
+,,24-ID-AR-RR04,Safety Interlocks,24-ID-AR-RR04,Generic: Rack,parent,apsu
+,,24-ID-AR-RR05,Controls,24-ID-AR-RR05,Generic: Rack,parent,apsu
+,,24-ID-AR-RR06,Mechanical Operations & Maintenance,24-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0037,Power Systems,PS-SR-CAB5-0037,Power Supply Cabinet - Type 1,parent,apsu
+,,25-ID-AR-RR01,Controls,25-ID-AR-RR01,Generic: Rack,parent,apsu
+,,25-ID-AR-RR02,Controls,25-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-26,,,,,SR_Mezz_Area-26 [C133-136],apsu
+,,25-02,Mechanical Operations & Maintenance,25-02,Generic: Rack,parent,apsu
+,,25-03,Controls,25-03,Generic: Rack,parent,apsu
+,,25-04,Diagnostics,25-04,Generic: Rack,parent,apsu
+,,26-04,Diagnostics,26-04,Generic: Rack,parent,apsu
+,,26-03,Controls,26-03,Generic: Rack,parent,apsu
+,,26-02,Mechanical Operations & Maintenance,26-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0032,Power Systems,PS-SR-CAB1-0032,Power Supply Cabinet - Type 1,parent,apsu
+,,25-BM-AR-RR01 (missing),Safety Interlocks,25-BM-AR-RR01 (missing),Generic: Rack,parent,apsu
+,,25-BM-AR-RR02 (missing),Safety Interlocks,25-BM-AR-RR02 (missing),Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0035,Power Systems,PS-SR-CAB2-0035,Power Supply Cabinet - Type 1,parent,apsu
+,,25-BM-AR-RR03 (missing),Mechanical Operations & Maintenance,25-BM-AR-RR03 (missing),Generic: Rack,parent,apsu
+,,25-BM-AR-RR04 (missing),Controls,25-BM-AR-RR04 (missing),Generic: Rack,parent,apsu
+,,26-01,Mechanical Operations & Maintenance,26-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0035,Power Systems,PS-SR-CAB3-0035,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0032,Power Systems,PS-SR-CAB4-0032,Power Supply Cabinet - Type 1,parent,apsu
+,,25-ID-AR-RR03 (missing),Safety Interlocks,25-ID-AR-RR03 (missing),Generic: Rack,parent,apsu
+,,25-ID-AR-RR04 (missing),Safety Interlocks,25-ID-AR-RR04 (missing),Generic: Rack,parent,apsu
+,,25-ID-AR-RR05 (missing),Controls,25-ID-AR-RR05 (missing),Generic: Rack,parent,apsu
+,,25-ID-AR-RR06 (missing),Mechanical Operations & Maintenance,25-ID-AR-RR06 (missing),Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0035,Power Systems,PS-SR-CAB5-0035,Power Supply Cabinet - Type 1,parent,apsu
+,,26-ID-AR-RR01,Controls,26-ID-AR-RR01,Generic: Rack,parent,apsu
+,,26-ID-AR-RR02,Controls,26-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-27,,,,,SR_Mezz_Area-27 [C136-139],apsu
+,,PS-SR-T4-S26&27,Power Systems,PS-SR-T4-S26&27,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S26&27,Power Systems,PS-SR-T3-S26&27,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR26&27,Power Systems,SR-RR26&27,Generic: Rack,parent,apsu
+,,PS-SR-T2-S26&27,Power Systems,PS-SR-T2-S26&27,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S26&27,Power Systems,PS-SR-T1-S26&27,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0033,Power Systems,PS-SR-CAB1-0033,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,26-BM-AR-RR01,Safety Interlocks,26-BM-AR-RR01,Generic: Rack,parent,apsu
+,,26-BM-AR-RR02,Safety Interlocks,26-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0033,Power Systems,PS-SR-CAB2-0033,Power Supply Cabinet - Type 1,parent,apsu
+,,26-BM-AR-RR03,Mechanical Operations & Maintenance,26-BM-AR-RR03,Generic: Rack,parent,apsu
+,,26-BM-AR-RR04,Controls,26-BM-AR-RR04,Generic: Rack,parent,apsu
+,,27-01,Mechanical Operations & Maintenance,27-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0031,Power Systems,PS-SR-CAB3-0031,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0034,Power Systems,PS-SR-CAB4-0034,Power Supply Cabinet - Type 1,parent,apsu
+,,26-ID-AR-RR03,Safety Interlocks,26-ID-AR-RR03,Generic: Rack,parent,apsu
+,,26-ID-AR-RR04,Safety Interlocks,26-ID-AR-RR04,Generic: Rack,parent,apsu
+,,26-ID-AR-RR05,Controls,26-ID-AR-RR05,Generic: Rack,parent,apsu
+,,26-ID-AR-RR06,Mechanical Operations & Maintenance,26-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0033,Power Systems,PS-SR-CAB5-0033,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,27-ID-AR-RR01,Controls,27-ID-AR-RR01,Generic: Rack,parent,apsu
+,,27-ID-AR-RR02,Controls,27-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-28,,,,,SR_Mezz_Area-28 [C139-142],apsu
+,,27-02,Mechanical Operations & Maintenance,27-02,Generic: Rack,parent,apsu
+,,27-03,Controls,27-03,Generic: Rack,parent,apsu
+,,27-04,Diagnostics,27-04,Generic: Rack,parent,apsu
+,,28-04,Diagnostics,28-04,Generic: Rack,parent,apsu
+,,28-03,Controls,28-03,Generic: Rack,parent,apsu
+,,28-02,Mechanical Operations & Maintenance,28-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0034,Power Systems,PS-SR-CAB1-0034,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB2-0034,Power Systems,PS-SR-CAB2-0034,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,27-BM-AR-RR01 (missing),Safety Interlocks,27-BM-AR-RR01 (missing),Generic: Rack,parent,apsu
+,,27-BM-AR-RR02 (missing),Safety Interlocks,27-BM-AR-RR02 (missing),Generic: Rack,parent,apsu
+,,27-BM-AR-RR03 (missing),Mechanical Operations & Maintenance,27-BM-AR-RR03 (missing),Generic: Rack,parent,apsu
+,,27-BM-AR-RR04 (missing),Controls,27-BM-AR-RR04 (missing),Generic: Rack,parent,apsu
+,,28-01,Mechanical Operations & Maintenance,28-01,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0032,Power Systems,PS-SR-CAB3-0032,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0035,Power Systems,PS-SR-CAB4-0035,Power Supply Cabinet - Type 1,parent,apsu
+,,27-ID-AR-RR03,Safety Interlocks,27-ID-AR-RR03,Generic: Rack,parent,apsu
+,,27-ID-AR-RR04,Safety Interlocks,27-ID-AR-RR04,Generic: Rack,parent,apsu
+,,27-ID-AR-RR05,Controls,27-ID-AR-RR05,Generic: Rack,parent,apsu
+,,27-ID-AR-RR06 (missing),Mechanical Operations & Maintenance,27-ID-AR-RR06 (missing),Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0034,Power Systems,PS-SR-CAB5-0034,Power Supply Cabinet - Type 1,parent,apsu
+,,28-ID-AR-RR01,Controls,28-ID-AR-RR01,Generic: Rack,parent,apsu
+,,28-ID-AR-RR02,Controls,28-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-29,,,,,SR_Mezz_Area-29 [C142-145],apsu
+,,PS-SR-T4-S28&29,Power Systems,PS-SR-T4-S28&29,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S28&29,Power Systems,PS-SR-T3-S28&29,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR28&29,Power Systems,SR-RR28&29,Generic: Rack,parent,apsu
+,,PS-SR-T2-S28&29,Power Systems,PS-SR-T2-S28&29,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S28&29,Power Systems,PS-SR-T1-S28&29,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0030,Power Systems,PS-SR-CAB1-0030,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,28-BM-AR-RR01 (missing),Safety Interlocks,28-BM-AR-RR01 (missing),Generic: Rack,parent,apsu
+,,28-BM-AR-RR02 (missing),Safety Interlocks,28-BM-AR-RR02 (missing),Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0031,Power Systems,PS-SR-CAB2-0031,Power Supply Cabinet - Type 1,parent,apsu
+,,28-BM-AR-RR03 (missing),Mechanical Operations & Maintenance,28-BM-AR-RR03 (missing),Generic: Rack,parent,apsu
+,,28-BM-AR-RR04 (missing),Controls,28-BM-AR-RR04 (missing),Generic: Rack,parent,apsu
+,,29-01,Mechanical Operations & Maintenance,29-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0030,Power Systems,PS-SR-CAB3-0030,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0037,Power Systems,PS-SR-CAB4-0037,Power Supply Cabinet - Type 1,parent,apsu
+,,28-ID-AR-RR03 (missing),Safety Interlocks,28-ID-AR-RR03 (missing),Generic: Rack,parent,apsu
+,,28-ID-AR-RR04 (missing),Safety Interlocks,28-ID-AR-RR04 (missing),Generic: Rack,parent,apsu
+,,28-ID-AR-RR05 (missing),Controls,28-ID-AR-RR05 (missing),Generic: Rack,parent,apsu
+,,28-ID-AR-RR06 (missing),Mechanical Operations & Maintenance,28-ID-AR-RR06 (missing),Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0032,Power Systems,PS-SR-CAB5-0032,Power Supply Cabinet - Type 1,parent,apsu
+,,29-ID-AR-RR01,Controls,29-ID-AR-RR01,Generic: Rack,parent,apsu
+,,29-ID-AR-RR02,Controls,29-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-30,,,,,SR_Mezz_Area-30 [C145-148],apsu
+,,29-02,Mechanical Operations & Maintenance,29-02,Generic: Rack,parent,apsu
+,,29-03,Controls,29-03,Generic: Rack,parent,apsu
+,,29-04,Diagnostics,29-04,Generic: Rack,parent,apsu
+,,30-04,Diagnostics,30-04,Generic: Rack,parent,apsu
+,,30-03,Controls,30-03,Generic: Rack,parent,apsu
+,,30-02,Mechanical Operations & Maintenance,30-02,Generic: Rack,parent,apsu
+,,S29-IEX-ID,Controls,S29-IEX-ID,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0031,Power Systems,PS-SR-CAB1-0031,Power Supply Cabinet - Type 1,parent,apsu
+,,29-BM-AR-RR01 (missing),Safety Interlocks,29-BM-AR-RR01 (missing),Generic: Rack,parent,apsu
+,,29-BM-AR-RR02 (missing),Safety Interlocks,29-BM-AR-RR02 (missing),Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0038,Power Systems,PS-SR-CAB2-0038,Power Supply Cabinet - Type 1,parent,apsu
+,,29-BM-AR-RR03 (missing),Mechanical Operations & Maintenance,29-BM-AR-RR03 (missing),Generic: Rack,parent,apsu
+,,29-BM-AR-RR04 (missing),Controls,29-BM-AR-RR04 (missing),Generic: Rack,parent,apsu
+,,30-01,Mechanical Operations & Maintenance,30-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0029,Power Systems,PS-SR-CAB3-0029,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0033,Power Systems,PS-SR-CAB4-0033,Power Supply Cabinet - Type 1,parent,apsu
+,,29-ID-AR-RR03,Safety Interlocks,29-ID-AR-RR03,Generic: Rack,parent,apsu
+,,29-ID-AR-RR04,Safety Interlocks,29-ID-AR-RR04,Generic: Rack,parent,apsu
+,,29-ID-AR-RR05,Controls,29-ID-AR-RR05,Generic: Rack,parent,apsu
+,,29-ID-AR-RR06,Mechanical Operations & Maintenance,29-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0031,Power Systems,PS-SR-CAB5-0031,Power Supply Cabinet - Type 1,parent,apsu
+,,30-ID-AR-RR01,Controls,30-ID-AR-RR01,Generic: Rack,parent,apsu
+,,30-ID-AR-RR02,Controls,30-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-31,,,,,SR_Mezz_Area-31 [C148-151],apsu
+,,PS-SR-T4-S30&31,Power Systems,PS-SR-T4-S30&31,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S30&31,Power Systems,PS-SR-T3-S30&31,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR30&31,Power Systems,SR-RR30&31,Generic: Rack,parent,apsu
+,,PS-SR-T2-S30&31,Power Systems,PS-SR-T2-S30&31,T1-T4 SR Raw Supply,parent,apsu
+,,ACIS Door E,Safety Interlocks,ACIS Door E,Generic: Rack,parent,apsu
+,,PS-SR-T1-S30&31,Power Systems,PS-SR-T1-S30&31,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0028,Power Systems,PS-SR-CAB1-0028,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,30-BM-AR-RR01,Safety Interlocks,30-BM-AR-RR01,Generic: Rack,parent,apsu
+,,30-BM-AR-RR02,Safety Interlocks,30-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0032,Power Systems,PS-SR-CAB2-0032,Power Supply Cabinet - Type 1,parent,apsu
+,,30-BM-AR-RR03,Mechanical Operations & Maintenance,30-BM-AR-RR03,Generic: Rack,parent,apsu
+,,30-BM-AR-RR04,Controls,30-BM-AR-RR04,Generic: Rack,parent,apsu
+,,31-01,Mechanical Operations & Maintenance,31-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0028,Power Systems,PS-SR-CAB3-0028,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0031,Power Systems,PS-SR-CAB4-0031,Power Supply Cabinet - Type 1,parent,apsu
+,,30-ID-AR-RR03,Safety Interlocks,30-ID-AR-RR03,Generic: Rack,parent,apsu
+,,30-ID-AR-RR04,Safety Interlocks,30-ID-AR-RR04,Generic: Rack,parent,apsu
+,,30-ID-AR-RR05,Controls,30-ID-AR-RR05,Generic: Rack,parent,apsu
+,,30-ID-AR-RR06,Mechanical Operations & Maintenance,30-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0030,Power Systems,PS-SR-CAB5-0030,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,31-ID-AR-RR01,Controls,31-ID-AR-RR01,Generic: Rack,parent,apsu
+,,31-ID-AR-RR02,Controls,31-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-32,,,,,SR_Mezz_Area-32 [C151-154],apsu
+,,31-05,Diagnostics,31-05,Generic: Rack,parent,apsu
+,,31-02,Mechanical Operations & Maintenance,31-02,Generic: Rack,parent,apsu
+,,31-03,Controls,31-03,Generic: Rack,parent,apsu
+,,31-04,Diagnostics,31-04,Generic: Rack,parent,apsu
+,,32-04,Diagnostics,32-04,Generic: Rack,parent,apsu
+,,32-03,Information Technology,32-03,Generic: Rack,parent,apsu
+,,32-02,Mechanical Operations & Maintenance,32-02,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0029,Power Systems,PS-SR-CAB1-0029,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB2-0029,Power Systems,PS-SR-CAB2-0029,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,31-BM-AR-RR01,Safety Interlocks,31-BM-AR-RR01,Generic: Rack,parent,apsu
+,,31-BM-AR-RR02,Safety Interlocks,31-BM-AR-RR02,Generic: Rack,parent,apsu
+,,31-BM-AR-RR03,Mechanical Operations & Maintenance,31-BM-AR-RR03,Generic: Rack,parent,apsu
+,,31-BM-AR-RR04,Controls,31-BM-AR-RR04,Generic: Rack,parent,apsu
+,,32-01,Mechanical Operations & Maintenance,32-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0027,Power Systems,PS-SR-CAB3-0027,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0030,Power Systems,PS-SR-CAB4-0030,Power Supply Cabinet - Type 1,parent,apsu
+,,31-ID-AR-RR03,Safety Interlocks,31-ID-AR-RR03,Generic: Rack,parent,apsu
+,,31-ID-AR-RR04,Safety Interlocks,31-ID-AR-RR04,Generic: Rack,parent,apsu
+,,31-ID-AR-RR05,Controls,31-ID-AR-RR05,Generic: Rack,parent,apsu
+,,31-ID-AR-RR06,Mechanical Operations & Maintenance,31-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0029,Power Systems,PS-SR-CAB5-0029,Power Supply Cabinet - Type 1,parent,apsu
+,,32-ID-AR-RR01,Controls,32-ID-AR-RR01,Generic: Rack,parent,apsu
+,,32-ID-AR-RR02,Controls,32-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-33,,,,,SR_Mezz_Area-33 [C154-157],apsu
+,,PS-SR-T4-S32&33,Power Systems,PS-SR-T4-S32&33,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S32&33,Power Systems,PS-SR-T3-S32&33,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR32&33,Power Systems,SR-RR32&33,Generic: Rack,parent,apsu
+,,PS-SR-T2-S32&33,Power Systems,PS-SR-T2-S32&33,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S32&33,Power Systems,PS-SR-T1-S32&33,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0006,Power Systems,PS-SR-CAB1-0006,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,32-BM-AR-RR01,Safety Interlocks,32-BM-AR-RR01,Generic: Rack,parent,apsu
+,,32-BM-AR-RR02,Safety Interlocks,32-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0030,Power Systems,PS-SR-CAB2-0030,Power Supply Cabinet - Type 1,parent,apsu
+,,32-BM-AR-RR03,Mechanical Operations & Maintenance,32-BM-AR-RR03,Generic: Rack,parent,apsu
+,,32-BM-AR-RR04,Controls,32-BM-AR-RR04,Generic: Rack,parent,apsu
+,,33-01,Mechanical Operations & Maintenance,33-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0026,Power Systems,PS-SR-CAB3-0026,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0028,Power Systems,PS-SR-CAB4-0028,Power Supply Cabinet - Type 1,parent,apsu
+,,32-ID-AR-RR03,Safety Interlocks,32-ID-AR-RR03,Generic: Rack,parent,apsu
+,,32-ID-AR-RR04,Safety Interlocks,32-ID-AR-RR04,Generic: Rack,parent,apsu
+,,32-ID-AR-RR05,Controls,32-ID-AR-RR05,Generic: Rack,parent,apsu
+,,32-ID-AR-RR06,Mechanical Operations & Maintenance,32-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0028,Power Systems,PS-SR-CAB5-0028,Power Supply Cabinet - Type 1,parent,apsu
+,,33-ID-AR-RR01,Controls,33-ID-AR-RR01,Generic: Rack,parent,apsu
+,,33-ID-AR-RR02,Controls,33-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-34,,,,,SR_Mezz_Area-34 [C157-160],apsu
+,,33-02,Mechanical Operations & Maintenance,33-02,Generic: Rack,parent,apsu
+,,33-03,Controls,33-03,Generic: Rack,parent,apsu
+,,33-04,Diagnostics,33-04,Generic: Rack,parent,apsu
+,,34-04,Diagnostics,34-04,Generic: Rack,parent,apsu
+,,34-03,Controls,34-03,Generic: Rack,parent,apsu
+,,34-02,Mechanical Operations & Maintenance,34-02,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0024,Power Systems,PS-SR-CAB1-0024,Power Supply Cabinet - Type 1,parent,apsu
+,,33-BM-AR-RR01,Safety Interlocks,33-BM-AR-RR01,Generic: Rack,parent,apsu
+,,33-BM-AR-RR02,Safety Interlocks,33-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0025,Power Systems,PS-SR-CAB2-0025,Power Supply Cabinet - Type 1,parent,apsu
+,,33-BM-AR-RR03,Mechanical Operations & Maintenance,33-BM-AR-RR03,Generic: Rack,parent,apsu
+,,33-BM-AR-RR04,Controls,33-BM-AR-RR04,Generic: Rack,parent,apsu
+,,34-01,Mechanical Operations & Maintenance,34-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0022,Power Systems,PS-SR-CAB3-0022,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0025,Power Systems,PS-SR-CAB4-0025,Power Supply Cabinet - Type 1,parent,apsu
+,,33-ID-AR-RR03,Safety Interlocks,33-ID-AR-RR03,Generic: Rack,parent,apsu
+,,33-ID-AR-RR04,Safety Interlocks,33-ID-AR-RR04,Generic: Rack,parent,apsu
+,,33-ID-AR-RR05,Controls,33-ID-AR-RR05,Generic: Rack,parent,apsu
+,,33-ID-AR-RR06,Mechanical Operations & Maintenance,33-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0026,Power Systems,PS-SR-CAB5-0026,Power Supply Cabinet - Type 1,parent,apsu
+,,34-ID-AR-RR01,Controls,34-ID-AR-RR01,Generic: Rack,parent,apsu
+,,34-ID-AR-RR02,Controls,34-ID-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new1?,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-new2?,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-35,,,,,SR_Mezz_Area-35 [C160-163],apsu
+,,PS-SR-T4-S34&35,Power Systems,PS-SR-T4-S34&35,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S34&35,Power Systems,PS-SR-T3-S34&35,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR34&35,Power Systems,SR-RR34&35,Generic: Rack,parent,apsu
+,,PS-SR-T2-S34&35,Power Systems,PS-SR-T2-S34&35,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S34&35,Power Systems,PS-SR-T1-S34&35,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-CAB1-0025,Power Systems,PS-SR-CAB1-0025,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,34-BM-AR-RR01,Safety Interlocks,34-BM-AR-RR01,Generic: Rack,parent,apsu
+,,34-BM-AR-RR02,Safety Interlocks,34-BM-AR-RR02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0026,Power Systems,PS-SR-CAB2-0026,Power Supply Cabinet - Type 1,parent,apsu
+,,34-BM-AR-RR03,Mechanical Operations & Maintenance,34-BM-AR-RR03,Generic: Rack,parent,apsu
+,,34-BM-AR-RR04,Controls,34-BM-AR-RR04,Generic: Rack,parent,apsu
+,,35-01,Mechanical Operations & Maintenance,35-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0023,Power Systems,PS-SR-CAB3-0023,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0026,Power Systems,PS-SR-CAB4-0026,Power Supply Cabinet - Type 1,parent,apsu
+,,34-ID-AR-RR03,Safety Interlocks,34-ID-AR-RR03,Generic: Rack,parent,apsu
+,,34-ID-AR-RR04,Safety Interlocks,34-ID-AR-RR04,Generic: Rack,parent,apsu
+,,34-ID-AR-RR05,Controls,34-ID-AR-RR05,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0027,Power Systems,PS-SR-CAB5-0027,Power Supply Cabinet - Type 1,parent,apsu
+,,34-ID-AR-RR06,Mechanical Operations & Maintenance,34-ID-AR-RR06,Generic: Rack,parent,apsu
+,,35-02,Mechanical Operations & Maintenance,35-02,Generic: Rack,parent,apsu
+,,35-ID-AR-RR01,Controls,35-ID-AR-RR01,Generic: Rack,parent,apsu
+,,35-03,Controls,35-03,Generic: Rack,parent,apsu
+,,35-ID-AR-RR02,Controls,35-ID-AR-RR02,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-36,,,,,SR_Mezz_Area-36 [C163-166],apsu
+,,35-04,Diagnostics,35-04,Generic: Rack,parent,apsu
+,,DGRR 35-05,Diagnostics,DGRR 35-05,Generic: Rack,parent,apsu
+,,DGRR 35-06,Diagnostics,DGRR 35-06,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0026,Power Systems,PS-SR-CAB1-0026,Power Supply Cabinet - Type 1,parent,apsu
+,,36-04,Diagnostics,36-04,Generic: Rack,parent,apsu
+,,36-03,Controls,36-03,Generic: Rack,parent,apsu
+,,36-02,Mechanical Operations & Maintenance,36-02,Generic: Rack,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-022,Power Systems,PS-SR-CAB2-022,Power Supply Cabinet - Type 1,parent,apsu
+,,35-BM-AR-RR01,Safety Interlocks,35-BM-AR-RR01,Generic: Rack,parent,apsu
+,,36-01,Mechanical Operations & Maintenance,36-01,Generic: Rack,parent,apsu
+,,35-BM-AR-RR02,Safety Interlocks,35-BM-AR-RR02,Generic: Rack,parent,apsu
+,,35-BM-AR-RR03,Mechanical Operations & Maintenance,35-BM-AR-RR03,Generic: Rack,parent,apsu
+,,35-BM-AR-RR04 (missing),Controls,35-BM-AR-RR04 (missing),Generic: Rack,parent,apsu
+,,35-BM-AR-RR05,Diagnostics,35-BM-AR-RR05,Generic: Rack,parent,apsu
+,,35-BM-AR-RR06,Diagnostics,35-BM-AR-RR06,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0025,Power Systems,PS-SR-CAB3-0025,Power Supply Cabinet - Type 1,parent,apsu
+,,35-ID-AR-RR03,Safety Interlocks,35-ID-AR-RR03,Generic: Rack,parent,apsu
+,,35-ID-AR-RR03-A,Diagnostics,35-ID-AR-RR03-A,Generic: Rack,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0029,Power Systems,PS-SR-CAB4-0029,Power Supply Cabinet - Type 1,parent,apsu
+,,35-ID-AR-RR04,Safety Interlocks,35-ID-AR-RR04,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0020,Power Systems,PS-SR-CAB5-0020,Power Supply Cabinet - Type 1,parent,apsu
+,,35-ID-AR-RR05,Controls,35-ID-AR-RR05,Generic: Rack,parent,apsu
+,,35-ID-AR-RR06,Mechanical Operations & Maintenance,35-ID-AR-RR06,Generic: Rack,parent,apsu
+,,PS-SR-T4-S36&37,Power Systems,PS-SR-T4-S36&37,T1-T4 SR Raw Supply,parent,apsu
+,,35-ID-AR-RR07,Diagnostics,35-ID-AR-RR07,Generic: Rack,parent,apsu
+,,35-ID-AR-RR08,Diagnostics,35-ID-AR-RR08,Generic: Rack,parent,apsu
+,,PS-SR-T3-S36&37,Power Systems,PS-SR-T3-S36&37,T1-T4 SR Raw Supply,parent,apsu
+,,35-ID-AR-RR09,Diagnostics,35-ID-AR-RR09,Generic: Rack,parent,apsu
+,,35-BM-AR-RR10,Diagnostics,35-BM-AR-RR10,Generic: Rack,parent,apsu
+,,35-BM-AR-RR11,Diagnostics,35-BM-AR-RR11,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-37,,,,,SR_Mezz_Area-37 [C166-169],apsu
+,,SR-RR36&37,Power Systems,SR-RR36&37,Generic: Rack,parent,apsu
+,,S36-PING,Power Systems,S36-PING,Generic: Rack,parent,apsu
+,,RF2 Rack 11,RF,RF2 Rack 11,Generic: Rack,parent,apsu
+,,RF2 Rack 12,RF,RF2 Rack 12,Generic: Rack,parent,apsu
+,,PS-SR-T2-S36&37,Power Systems,PS-SR-T2-S36&37,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S36&37,Power Systems,PS-SR-T1-S36&37,T1-T4 SR Raw Supply,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0027,Power Systems,PS-SR-CAB1-0027,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB2-0027,Power Systems,PS-SR-CAB2-0027,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,37-01,Mechanical Operations & Maintenance,37-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0024,Power Systems,PS-SR-CAB3-0024,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB4-0027,Power Systems,PS-SR-CAB4-0027,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,SR-RR-INJ2,Power Systems,SR-RR-INJ2,Generic: Rack,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0001,Power Systems,PS-SR-CAB5-0001,Power Supply Cabinet - Type 1,parent,apsu
+,,37-02,Mechanical Operations & Maintenance,37-02,Generic: Rack,parent,apsu
+,,37-03,Controls,37-03,Generic: Rack,parent,apsu
+,,37-04,Diagnostics,37-04,Generic: Rack,parent,apsu
+,,37-05,Controls,37-05,Generic: Rack,parent,apsu
+,,Controls_Rover_1,Controls,Controls_Rover_1,Generic: Rack,parent,apsu
+,,RF3 Rack 11,RF,RF3 Rack 11,Generic: Rack,parent,apsu
+,,RF3 Rack 12,RF,RF3 Rack 12,Generic: Rack,parent,apsu
+,,38-04,Diagnostics,38-04,Generic: Rack,parent,apsu
+,,38-03,Controls,38-03,Generic: Rack,parent,apsu
+,,38-02,Mechanical Operations & Maintenance,38-02,Generic: Rack,parent,apsu
+,,SR-RR36-37,Power Systems,SR-RR36-37,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-38,,,,,SR_Mezz_Area-38 [C169-52],apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0008,Power Systems,PS-SR-CAB1-0008,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0004,Power Systems,PS-SR-CAB2-0004,Power Supply Cabinet - Type 1,parent,apsu
+,,38-01,Mechanical Operations & Maintenance,38-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0002,Power Systems,PS-SR-CAB3-0002,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0004,Power Systems,PS-SR-CAB4-0004,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0002,Power Systems,PS-SR-CAB5-0002,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-T4-S38&39,Power Systems,PS-SR-T4-S38&39,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T3-S38&39,Power Systems,PS-SR-T3-S38&39,T1-T4 SR Raw Supply,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-39,,,,,SR_Mezz_Area-39 [C52-55],apsu
+,,S38IK1,Power Systems,S38IK1,Enclosure,parent,apsu
+,,RF4 Rack 11,RF,RF4 Rack 11,Generic: Rack,parent,apsu
+,,RF4 Rack 12,RF,RF4 Rack 12,Generic: Rack,parent,apsu
+,,PS-SR-T2-S38&39,Power Systems,PS-SR-T2-S38&39,T1-T4 SR Raw Supply,parent,apsu
+,,PS-SR-T1-S38&39,Power Systems,PS-SR-T1-S38&39,T1-T4 SR Raw Supply,parent,apsu
+,,SR-RR38&39,Power Systems,SR-RR38&39,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0001,Power Systems,PS-SR-CAB1-0001,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-CAB2-0006,Power Systems,PS-SR-CAB2-0006,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,39-01,Mechanical Operations & Maintenance,39-01,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0006,Power Systems,PS-SR-CAB3-0006,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0005,Power Systems,PS-SR-CAB4-0005,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0008,Power Systems,PS-SR-CAB5-0008,Power Supply Cabinet - Type 1,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu
+,Area-40,,,,,SR_Mezz_Area-40 [C55-58],apsu
+,,39-02,Mechanical Operations & Maintenance,39-02,Generic: Rack,parent,apsu
+,,39-03,Controls,39-03,Generic: Rack,parent,apsu
+,,39-04,Diagnostics,39-04,Generic: Rack,parent,apsu
+,,S39IS1,Power Systems,S39IS1,Power Supply Cabinet - Type 1,parent,apsu
+,,S39IS2,Power Systems,S39IS2,Power Supply Cabinet - Type 1,parent,apsu
+,,RR-SR-INJ1,Power Systems,RR-SR-INJ1,Generic: Rack,parent,apsu
+,,40-04,Diagnostics,40-04,Generic: Rack,parent,apsu
+,,40-03,Controls,40-03,Generic: Rack,parent,apsu
+,,PS-new1,Power Systems,PS-new1,Generic: Rack,parent,apsu
+,,PS-SR-CAB1-0009,Power Systems,PS-SR-CAB1-0009,Power Supply Cabinet - Type 1,parent,apsu
+,,40-02,Mechanical Operations & Maintenance,40-02,Generic: Rack,parent,apsu
+,,PS-SR-CAB2-0009,Power Systems,PS-SR-CAB2-0009,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-new2,Power Systems,PS-new2,Generic: Rack,parent,apsu
+,,PS-new3,Power Systems,PS-new3,Generic: Rack,parent,apsu
+,,PS-SR-CAB3-0008,Power Systems,PS-SR-CAB3-0008,Power Supply Cabinet - Type 1,parent,apsu
+,,40-01,Mechanical Operations & Maintenance,40-01,Generic: Rack,parent,apsu
+,,PS-new4,Power Systems,PS-new4,Generic: Rack,parent,apsu
+,,PS-SR-CAB4-0010,Power Systems,PS-SR-CAB4-0010,Power Supply Cabinet - Type 1,parent,apsu
+,,PS-SR-T3-S40&01,Power Systems,PS-SR-T3-S40&01,T1-T4 SR Raw Supply,parent,apsu
+,,PS-new5,Power Systems,PS-new5,Generic: Rack,parent,apsu
+,,PS-SR-CAB5-0011,Power Systems,PS-SR-CAB5-0011,Power Supply Cabinet - Type 1,parent,apsu
+,,S40IK4,Power Systems,S40IK4,Generic: Rack,parent,apsu
+,,DG-new1,Diagnostics,DG-new1,APS-U EMI Cabinet,parent,apsu

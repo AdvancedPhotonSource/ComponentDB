@@ -1,0 +1,91 @@
+Machine Design Item Name,,,Machine Design Item Description,Assigned Catalog,Location,User
+,,,,,,
+APS-OPS: SR Mezzanine,,,,,,nda
+,Area-36,,,,SR_Mezz_Area-36 [C163-166],nda
+,,35-BM-AR-RR01,Safety Interlocks,Generic: Rack,parent,nda
+,,36-01,Mechanical Operations & Maintenance,Generic: Rack,parent,nda
+,,35-BM-AR-RR02,Safety Interlocks,Generic: Rack,parent,nda
+,,35-BM-AR-RR03,Mechanical Operations & Maintenance,Generic: Rack,parent,nda
+,,35-BM-AR-RR04 (missing),Controls,Generic: Rack,parent,nda
+,,35-BM-AR-RR05,Diagnostics,Generic: Rack,parent,nda
+,,35-BM-AR-RR06,Diagnostics,Generic: Rack,parent,nda
+,,PS-SR-CAB3-0025,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,35-ID-AR-RR03,Safety Interlocks,Generic: Rack,parent,nda
+,,35-ID-AR-RR03-A,Diagnostics,Generic: Rack,parent,nda
+,,PS-SR-CAB4-0029,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,35-ID-AR-RR04,Safety Interlocks,Generic: Rack,parent,nda
+,,PS-SR-CAB5-0020,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,35-ID-AR-RR05,Controls,Generic: Rack,parent,nda
+,,35-ID-AR-RR06,Mechanical Operations & Maintenance,Generic: Rack,parent,nda
+,,PS-SR-T4-S36&37,Power Systems,T1-T4 SR Raw Supply,parent,nda
+,,35-ID-AR-RR07,Diagnostics,Generic: Rack,parent,nda
+,,35-ID-AR-RR08,Diagnostics,Generic: Rack,parent,nda
+,,PS-SR-T3-S36&37,Power Systems,T1-T4 SR Raw Supply,parent,nda
+,,35-ID-AR-RR09,Diagnostics,Generic: Rack,parent,nda
+,,35-BM-AR-RR10,Diagnostics,Generic: Rack,parent,nda
+,,35-BM-AR-RR11,Diagnostics,Generic: Rack,parent,nda
+,Area-37,,,,SR_Mezz_Area-37 [C166-169],nda
+,,SR-RR36&37,Power Systems,Generic: Rack,parent,nda
+,,S36-PING,Power Systems,Generic: Rack,parent,nda
+,,RF2 Rack 11,RF,Generic: Rack,parent,nda
+,,RF2 Rack 12,RF,Generic: Rack,parent,nda
+,,PS-SR-T2-S36&37,Power Systems,T1-T4 SR Raw Supply,parent,nda
+,,PS-SR-T1-S36&37,Power Systems,T1-T4 SR Raw Supply,parent,nda
+,,PS-SR-CAB1-0027,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,PS-SR-CAB2-0027,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,37-01,Mechanical Operations & Maintenance,Generic: Rack,parent,nda
+,,PS-SR-CAB3-0024,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,PS-SR-CAB4-0027,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,SR-RR-INJ2,Power Systems,Generic: Rack,parent,nda
+,,PS-SR-CAB5-0001,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,37-02,Mechanical Operations & Maintenance,Generic: Rack,parent,nda
+,,37-03,Controls,Generic: Rack,parent,nda
+,,37-04,Diagnostics,Generic: Rack,parent,nda
+,,37-05,Controls,Generic: Rack,parent,nda
+,,Controls_Rover_1,Controls,Generic: Rack,parent,nda
+,,RF3 Rack 11,RF,Generic: Rack,parent,nda
+,,RF3 Rack 12,RF,Generic: Rack,parent,nda
+,,38-04,Diagnostics,Generic: Rack,parent,nda
+,,38-03,Controls,Generic: Rack,parent,nda
+,,38-02,Mechanical Operations & Maintenance,Generic: Rack,parent,nda
+,,SR-RR36-37,Power Systems,Generic: Rack,parent,nda
+,Area-38,,,,SR_Mezz_Area-38 [C169-52],nda
+,,PS-SR-CAB1-0008,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,PS-SR-CAB2-0004,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,38-01,Mechanical Operations & Maintenance,Generic: Rack,parent,nda
+,,PS-SR-CAB3-0002,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,PS-SR-CAB4-0004,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,PS-SR-CAB5-0002,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,PS-SR-T4-S38&39,Power Systems,T1-T4 SR Raw Supply,parent,nda
+,,PS-SR-T3-S38&39,Power Systems,T1-T4 SR Raw Supply,parent,nda
+,Area-39,,,,SR_Mezz_Area-39 [C52-55],nda
+,,S38IK1,Power Systems,Enclosure,parent,nda
+,,RF4 Rack 11,RF,Generic: Rack,parent,nda
+,,RF4 Rack 12,RF,Generic: Rack,parent,nda
+,,PS-SR-T2-S38&39,Power Systems,T1-T4 SR Raw Supply,parent,nda
+,,PS-SR-T1-S38&39,Power Systems,T1-T4 SR Raw Supply,parent,nda
+,,SR-RR38&39,Power Systems,Generic: Rack,parent,nda
+,,PS-SR-CAB1-0001,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,PS-SR-CAB2-0006,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,39-01,Mechanical Operations & Maintenance,Generic: Rack,parent,nda
+,,PS-SR-CAB3-0006,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,PS-SR-CAB4-0005,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,PS-SR-CAB5-0008,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,Area-40,,,,SR_Mezz_Area-40 [C55-58],nda
+,,39-02,Mechanical Operations & Maintenance,Generic: Rack,parent,nda
+,,39-03,Controls,Generic: Rack,parent,nda
+,,39-04,Diagnostics,Generic: Rack,parent,nda
+,,S39IS1,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,S39IS2,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,RR-SR-INJ1,Power Systems,Generic: Rack,parent,nda
+,,40-04,Diagnostics,Generic: Rack,parent,nda
+,,40-03,Controls,Generic: Rack,parent,nda
+,,PS-SR-CAB1-0009,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,40-02,Mechanical Operations & Maintenance,Generic: Rack,parent,nda
+,,PS-SR-CAB2-0009,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,PS-SR-CAB3-0008,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,40-01,Mechanical Operations & Maintenance,Generic: Rack,parent,nda
+,,PS-SR-CAB4-0010,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,PS-SR-T3-S40&01,Power Systems,T1-T4 SR Raw Supply,parent,nda
+,,PS-SR-CAB5-0011,Power Systems,Power Supply Cabinet - Type 1,parent,nda
+,,S40IK4,Power Systems,Generic: Rack,parent,nda
