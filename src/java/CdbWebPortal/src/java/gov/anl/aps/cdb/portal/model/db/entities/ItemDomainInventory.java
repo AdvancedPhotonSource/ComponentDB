@@ -4,8 +4,11 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
@@ -49,7 +52,7 @@ public class ItemDomainInventory extends LocatableItem {
 
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare";
-
+    
     private transient List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = null;
 
     private transient TreeNode itemElementAssemblyRootTreeNode = null;
@@ -70,8 +73,16 @@ public class ItemDomainInventory extends LocatableItem {
 
     public ItemDomainCatalog getCatalogItem() {
         return (ItemDomainCatalog) getDerivedFromItem();
+    } 
+
+    @Override
+    // TODO API Change back to json ignore and utilize the catalog item 
+    //@JsonIgnore
+    public Item getDerivedFromItem() {
+        return super.getDerivedFromItem(); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @JsonIgnore
     public List<InventoryBillOfMaterialItem> getInventoryDomainBillOfMaterialList() {
         return inventoryDomainBillOfMaterialList;
     }
@@ -80,6 +91,7 @@ public class ItemDomainInventory extends LocatableItem {
         this.inventoryDomainBillOfMaterialList = inventoryDomainBillOfMaterialList;
     }
 
+    @JsonIgnore
     public TreeNode getItemElementAssemblyRootTreeNode() throws CdbException {
         if (itemElementAssemblyRootTreeNode == null) {
             if (getItemElementDisplayList().size() > 0) {
@@ -89,6 +101,7 @@ public class ItemDomainInventory extends LocatableItem {
         return itemElementAssemblyRootTreeNode;
     }
 
+    @JsonIgnore
     public InventoryBillOfMaterialItem getContainedInBOM() {
         return containedInBOM;
     }
@@ -97,6 +110,7 @@ public class ItemDomainInventory extends LocatableItem {
         this.containedInBOM = containedInBOM;
     }
 
+    @JsonIgnore
     public Boolean getSparePartIndicator() {
         if (sparePartIndicator == null) {
             boolean spare = getInventoryStatusValue().equals(ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE);
@@ -105,6 +119,7 @@ public class ItemDomainInventory extends LocatableItem {
         return sparePartIndicator;
     }
 
+    @JsonIgnore
     public SparePartsBean getSparePartsBean() {
         if (sparePartsBean == null) {
             sparePartsBean = SparePartsBean.getInstance();
@@ -112,6 +127,7 @@ public class ItemDomainInventory extends LocatableItem {
         return sparePartsBean;
     }
 
+    @JsonIgnore
     public PropertyValue getInventoryStatusPropertyValue() {
         if (!loadedCurrentStatusPropertyValue) {
             if (this.getPropertyValueInternalList() != null) {
@@ -132,6 +148,7 @@ public class ItemDomainInventory extends LocatableItem {
         this.inventoryStatusPropertyValue = inventoryStatusPropertyValue;
     }
 
+    @JsonIgnore
     public String getInventoryStatusValue() {
         if (getInventoryStatusPropertyValue() != null) {
             String value = getInventoryStatusPropertyValue().getValue();
@@ -147,6 +164,11 @@ public class ItemDomainInventory extends LocatableItem {
             getInventoryStatusPropertyValue().setValue(status);
             sparePartIndicator = null;
         }
+    }
+
+    @Override
+    public ItemController getItemDomainController() {
+        return ItemDomainInventoryController.getInstance(); 
     }
 
 }

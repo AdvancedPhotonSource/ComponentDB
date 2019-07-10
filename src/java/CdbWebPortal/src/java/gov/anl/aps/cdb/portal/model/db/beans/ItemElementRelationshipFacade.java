@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -66,6 +67,10 @@ public class ItemElementRelationshipFacade extends CdbEntityFacade<ItemElementRe
             
         }
         return null;
+    }
+    
+    public static ItemElementRelationshipFacade getInstance() {
+        return (ItemElementRelationshipFacade) SessionUtility.findFacade(ItemElementRelationshipFacade.class.getSimpleName()); 
     }
     
 }

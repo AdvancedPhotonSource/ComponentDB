@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -72,6 +73,10 @@ public class UserInfoFacade extends CdbEntityFacade<UserInfo> {
             }
         }
         return false;
+    }
+    
+    public static UserInfoFacade getInstance() {
+        return (UserInfoFacade) SessionUtility.findFacade(UserInfoFacade.class.getSimpleName()); 
     }
     
 }

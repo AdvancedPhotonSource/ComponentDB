@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.FilterViewItemHierarchySelection;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,19 +47,41 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     
     private boolean renderLocationSelectionDialog = false; 
     private boolean renderLocationInplaceEditTieredMenu = false; 
+    
+    private static ItemDomainLocationController apiInstance;
 
     @EJB
     DomainFacade domainFacade;
     
     @EJB
     ItemDomainLocationFacade itemDomainLocationFacade;             
-
+    
     public ItemDomainLocationController() {
         super();        
     }
+    
+    public static synchronized ItemDomainLocationController getApiInstance() {
+        if (apiInstance == null) {
+            apiInstance = new ItemDomainLocationController();
+            apiInstance.prepareApiInstance();
+        }
+        return apiInstance;
+    } 
+
+    @Override
+    protected void loadEJBResourcesManually() {
+        super.loadEJBResourcesManually();
+        
+        domainFacade = DomainFacade.getInstance();
+        itemDomainLocationFacade = ItemDomainLocationFacade.getInstance(); 
+    }
 
     public static ItemDomainLocationController getInstance() {
-        return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);
+        if (SessionUtility.runningFaces()) {        
+            return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);
+        } else {
+            return getApiInstance(); 
+        }
     }
 
     @Override

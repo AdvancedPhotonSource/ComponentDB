@@ -50,7 +50,7 @@ if [ ! -d $CDB_WAR_BACKUP_DIR ]; then
     mkdir -p $CDB_WAR_BACKUP_DIR
 fi
 
-CDB_GLASSFISH_WAR_FILE_PATH="$CDB_SUPPORT_DIR/glassfish/linux-x86_64/glassfish/domains/domain1/autodeploy/$CDB_DB_NAME.war"
+CDB_GLASSFISH_WAR_FILE_PATH="$CDB_SUPPORT_DIR/payara/linux-x86_64/glassfish/domains/production/applications/__internal/$CDB_DB_NAME/$CDB_DB_NAME.war"
 if [ ! -f $CDB_GLASSFISH_WAR_FILE_PATH ]; then
     >&2 echo "Error: file $CDB_GLASSFISH_WAR_FILE_PATH was not found"
     exit 1

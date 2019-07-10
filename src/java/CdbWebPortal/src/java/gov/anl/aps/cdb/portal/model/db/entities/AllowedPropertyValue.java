@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -52,6 +53,7 @@ public class AllowedPropertyValue extends CdbEntity implements Serializable {
     private Float sortOrder;
     @JoinColumn(name = "property_type_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
+    @JsonIgnore
     private PropertyType propertyType;
 
     public AllowedPropertyValue() {

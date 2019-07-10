@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -38,6 +39,10 @@ public class RelationshipTypeFacade extends CdbEntityFacade<RelationshipType> {
 
     public RelationshipTypeFacade() {
         super(RelationshipType.class);
+    }
+    
+    public static RelationshipTypeFacade getInstance() {
+        return (RelationshipTypeFacade) SessionUtility.findFacade(RelationshipTypeFacade.class.getSimpleName()); 
     }
     
 }

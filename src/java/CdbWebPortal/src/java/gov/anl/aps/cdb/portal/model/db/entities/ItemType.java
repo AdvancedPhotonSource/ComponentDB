@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
@@ -54,6 +55,7 @@ public class ItemType extends ItemTypeCategoryEntity implements Serializable {
     @Size(max = 256)
     private String description;
     @ManyToMany(mappedBy = "itemTypeList")
+    @JsonIgnore
     private List<Item> itemList;
     @JoinColumn(name = "domain_id", referencedColumnName = "id")
     @ManyToOne
@@ -132,7 +134,8 @@ public class ItemType extends ItemTypeCategoryEntity implements Serializable {
         itemCategoryString = null;
         this.itemCategoryList = itemCategoryList;
     }
-
+    
+    @JsonIgnore
     public String getItemCategoryString() {
         if (itemCategoryString == null) {
             itemCategoryString = StringUtility.getStringifyCdbList(itemCategoryList);
@@ -140,6 +143,7 @@ public class ItemType extends ItemTypeCategoryEntity implements Serializable {
         return itemCategoryString;
     }
 
+    @JsonIgnore
     public String getEditItemCategoryString() {
         itemCategoryString = getItemCategoryString();
         if (itemCategoryString.equals("-")) {

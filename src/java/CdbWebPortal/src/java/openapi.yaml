@@ -1,0 +1,14 @@
+resourcePackages:
+- gov.anl.aps.cdb.rest
+prettyPrint: true
+cacheTTL: 0
+openAPI:
+  info:
+    version: '3.7.0'
+    title: Component Database API
+    description: 'The API that provides access to Component Database data.'
+    contact:
+      email: djarosz@anl.gov
+    license:
+      name: Copyright (c) UChicago Argonne, LLC. All rights reserved.
+      url: https://raw.githubusercontent.com/AdvancedPhotonSource/ComponentDB/master/LICENSE

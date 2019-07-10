@@ -30,6 +30,8 @@ import gov.anl.aps.cdb.portal.plugins.support.PluginRegistrar;
 public class CdbPluginManager implements Serializable {
 
     Set<PluginManagerBase> pluginManagerSet = null;
+    
+    private static CdbPluginManager apiInstance = null; 
 
     private Boolean displayMultiEditExtrasCatalog = null;
     private Boolean displayMultiEditExtrasInventory = null;
@@ -40,7 +42,14 @@ public class CdbPluginManager implements Serializable {
     }
 
     public static CdbPluginManager getInstance() {
-        return (CdbPluginManager) SessionUtility.findBean("cdbPluginManager");
+        if (SessionUtility.runningFaces()) {
+            return (CdbPluginManager) SessionUtility.findBean("cdbPluginManager");
+        } else {
+            if (apiInstance == null) {
+                apiInstance = new CdbPluginManager(); 
+            } 
+            return apiInstance;
+        }
     }
 
     /**

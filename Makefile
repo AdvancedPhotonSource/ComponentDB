@@ -28,6 +28,9 @@ support:
 support-mysql:
 	$(TOP)/sbin/cdb_install_support_mysql.sh && $(TOP)/sbin/cdb_deploy_mysqld.sh
 
+support-netbeans:
+	$(TOP)/sbin/cdb_install_support_netbeans.sh
+
 clean-db:
 	$(TOP)/sbin/cdb_create_db.sh cdb $(TOP)/db/sql/clean
 
