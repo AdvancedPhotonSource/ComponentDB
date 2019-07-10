@@ -45,6 +45,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
 import org.primefaces.model.TreeNode;
@@ -224,6 +225,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Column(name = "item_identifier2")
     private String itemIdentifier2;
     @Column(name = "qr_id")
+    @Min(0) 
     private Integer qrId;
     @JoinTable(name = "item_entity_type", joinColumns = {
         @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {
@@ -472,10 +474,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         return qrIdFilter;
     }
 
+    @Size(max = 256)
     public String getDescription() {
         return getSelfElement().getDescription();
     }
-
+    
     public void setDescription(String description) {
         this.getSelfElement().setDescription(description);
     } 
