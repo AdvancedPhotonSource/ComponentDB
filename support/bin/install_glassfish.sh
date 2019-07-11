@@ -3,13 +3,14 @@
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
 
+# Usage install_glassfish.sh [Install_DIR] [CONFIGURE 0/1]
 
 CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 CDB_HOSTNAME=`hostname -f`
-GLASSFISH_VERSION=5.0
-GLASSFISH_ZIP_FILE=glassfish-$GLASSFISH_VERSION.zip
-GLASSFISH_DOWNLOAD_URL=http://download.java.net/glassfish/$GLASSFISH_VERSION/release/$GLASSFISH_ZIP_FILE
-GLASSFISH_DNAME="CN=${CDB_HOSTNAME}"
+PAYARA_VERSION=5.192
+PAYARA_ZIP_FILE=payara-$PAYARA_VERSION.zip
+PAYARA_DOWNLOAD_URL=https://search.maven.org/remotecontent?filepath=fish/payara/distributions/payara/$PAYARA_VERSION/$PAYARA_ZIP_FILE
+PAYARA_DN_NAME="CN=${CDB_HOSTNAME}"
 
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`
@@ -20,52 +21,66 @@ binDir=$topDir/bin
 glassfishMasterPasswordExpectScript=$binDir/glassfish_master_password.expect
 glassfishAdminPasswordExpectScript=$binDir/glassfish_admin_password.expect
 glassfishAutoLoginExpectScript=$binDir/glassfish_auto_login.expect
-glassfishInstallDir=$topDir/glassfish/$CDB_HOST_ARCH
 javaInstallDir=$topDir/java/$CDB_HOST_ARCH
+if [ ! -z $1 ]; then
+    payaraInstallDir=$1
+else 
+    payaraInstallDir=$topDir/payara/$CDB_HOST_ARCH
+fi
+
+if [ ! -z $2 ]; then
+    skipConfig=$2
+else
+    skipConfig=0
+fi
 
 export AS_JAVA=$javaInstallDir
-ASADMIN_CMD=$glassfishInstallDir/bin/asadmin
+ASADMIN_CMD=$payaraInstallDir/bin/asadmin
 KEYTOOL_CMD=$AS_JAVA/bin/keytool
 
 # get glassfish
 mkdir -p $srcDir
 cd $srcDir
-if [ ! -f $GLASSFISH_ZIP_FILE ]; then
-    echo "Retrieving $GLASSFISH_DOWNLOAD_URL"
-    curl -L -O $GLASSFISH_DOWNLOAD_URL
+if [ ! -f $PAYARA_ZIP_FILE ]; then
+    echo "Retrieving $PAYARA_DOWNLOAD_URL"
+    curl -L -O $PAYARA_DOWNLOAD_URL
 fi
 
-if [ ! -f $GLASSFISH_ZIP_FILE ]; then
-    echo "File $srcDir/$GLASSFISH_ZIP_FILE not found."
+if [ ! -f $PAYARA_ZIP_FILE ]; then
+    echo "File $srcDir/$PAYARA_ZIP_FILE not found."
     exit 1
 fi
 
 mkdir -p $buildDir
 cd $buildDir
 
-echo "Unpacking $GLASSFISH_ZIP_FILE"
-mkdir -p `dirname $glassfishInstallDir`
-cd `dirname $glassfishInstallDir`
-rm -rf `basename $glassfishInstallDir`
-unzip -q $srcDir/$GLASSFISH_ZIP_FILE
-mv glassfish* `basename $glassfishInstallDir`
+echo "Unpacking $PAYARA_ZIP_FILE"
+mkdir -p `dirname $payaraInstallDir`
+cd `dirname $payaraInstallDir`
+rm -rf `basename $payaraInstallDir`
+unzip -q $srcDir/$PAYARA_ZIP_FILE
+mv payara* `basename $payaraInstallDir`
+
+if [ $skipConfig -ne 0 ]; then
+    exit 0
+fi
 
 # configure directory permissions for app deployment
-# owner/group can execute/read/modify bin files and autodeploy
+# owner/group can execute/read/modify bin files
 # remove privileges from others
-chmod -R ug+rwx $glassfishInstallDir/bin
-chmod -R ug+rwx $glassfishInstallDir/glassfish/bin
-chmod -R ug+rwx $glassfishInstallDir/glassfish/domains/domain1/autodeploy/
+chmod -R ug+rwx $payaraInstallDir/bin
+chmod -R ug+rwx $payaraInstallDir/glassfish/bin
 
-chmod -R o-rwx $glassfishInstallDir/bin
-chmod -R o-rwx $glassfishInstallDir/glassfish/bin
-chmod -R o-w $glassfishInstallDir/glassfish/domains/domain1/autodeploy
+chmod -R o-rwx $payaraInstallDir/bin
+chmod -R o-rwx $payaraInstallDir/glassfish/bin
+
+export PAYARA_DOMAIN_NAME=production
 
 # backup passwords
 echo "Backing up original passwords"
-cd $glassfishInstallDir/glassfish
-PASSWORD_FILES="domains/domain1/config/domain-passwords domains/domain1/config/keystore.jks domains/domain1/config/cacerts.jks"
-for f in domains/domain1/master-password domains/domain1/local-password; do
+cd $payaraInstallDir/glassfish
+PASSWORD_FILES="domains/$PAYARA_DOMAIN_NAME/config/domain-passwords domains/$PAYARA_DOMAIN_NAME/config/keystore.jks domains/$PAYARA_DOMAIN_NAME/config/cacerts.jks"
+for f in domains/$PAYARA_DOMAIN_NAME/master-password domains/$PAYARA_DOMAIN_NAME/local-password; do
     if [ -f $f ]; then
         PASSWORD_FILES="$PASSWORD_FILES $f"
     fi
@@ -81,7 +96,7 @@ tar cf $PASSWORD_TAR_FILE $PASSWORD_FILES
 # seconds. Then you will find new versions of 'master-password'
 # 'domain-passwords' 'keystore.jks' and 'cacerts.jks'.
 #echo "Changing master password ['changeit']:"
-#$ASADMIN_CMD change-master-password --savemasterpassword=true domain1 || exit 1
+#$ASADMIN_CMD change-master-password --savemasterpassword=true $PAYARA_DOMAIN_NAME || exit 1
 
 # Read new master password
 echo
@@ -94,7 +109,7 @@ echo
 
 # Change master password
 tmpFile=/tmp/`basename $0`.`id -u`.tmp
-eval "cat $glassfishMasterPasswordExpectScript | sed 's?OLD_PASSWORD?changeit?' | sed 's?MASTER_PASSWORD?$MASTER_PASSWORD?' > $tmpFile"
+eval "cat $glassfishMasterPasswordExpectScript | sed 's?OLD_PASSWORD?changeit?' | sed 's?MASTER_PASSWORD?$MASTER_PASSWORD?' | sed 's?PAYARA_DOMAIN_NAME?$PAYARA_DOMAIN_NAME?' > $tmpFile"
 chmod a+x $tmpFile
 cd `dirname $ASADMIN_CMD`
 $tmpFile
@@ -103,14 +118,14 @@ $tmpFile
 # two certificates in keystore.jks, and many additional ones in cacerts.jks.
 echo
 echo "Checking master password: list keystore certificates"
-$KEYTOOL_CMD -list -v -keystore $glassfishInstallDir/glassfish/domains/domain1/config/keystore.jks --storepass $MASTER_PASSWORD > /dev/null || exit 1
+$KEYTOOL_CMD -list -v -keystore $payaraInstallDir/glassfish/domains/$PAYARA_DOMAIN_NAME/config/keystore.jks --storepass $MASTER_PASSWORD > /dev/null || exit 1
 echo "Checking master password: list ca certificates"
-$KEYTOOL_CMD -list -v -keystore $glassfishInstallDir/glassfish/domains/domain1/config/cacerts.jks --storepass $MASTER_PASSWORD > /dev/null || exit 1
+$KEYTOOL_CMD -list -v -keystore $payaraInstallDir/glassfish/domains/$PAYARA_DOMAIN_NAME/config/cacerts.jks --storepass $MASTER_PASSWORD > /dev/null || exit 1
 
 # start glassfish
 echo
 echo "Starting glassfish"
-$ASADMIN_CMD start-domain domain1
+$ASADMIN_CMD start-domain $PAYARA_DOMAIN_NAME
 
 # read new glassfish admin password
 echo
@@ -132,7 +147,7 @@ $tmpFile
 # Enter admin password> [By default this is blank, so just press Enter]
 # Enter new admin password> [Must contain at least 8 chars (e.g. 'myAdminPwd')]
 # Enter new admin password again>
-# There will now be a new version of '$GLASSFISH_HOME/domains/domain1/config/admin-keyfile'
+# There will now be a new version of '$GLASSFISH_HOME/domains/$PAYARA_DOMAIN_NAME/config/admin-keyfile'
 
 # Store admin password, to enable automatic login to localhost:4848
 #$ASADMIN_CMD --host localhost --port 4848 login
@@ -151,13 +166,13 @@ cd `dirname $ASADMIN_CMD`
 $tmpFile
 
 # stop glassfish
-$ASADMIN_CMD stop-domain domain1
+$ASADMIN_CMD stop-domain $PAYARA_DOMAIN_NAME
 rm -f $tmpFile
 
 # inspect keystore.jks
 echo
 echo "Inspecting keystore"
-cd $glassfishInstallDir/glassfish/domains/domain1/config/
+cd $payaraInstallDir/glassfish/domains/$PAYARA_DOMAIN_NAME/config/
 $KEYTOOL_CMD -list -keystore keystore.jks -storepass $MASTER_PASSWORD
 
 # update keystore.jks
@@ -166,8 +181,8 @@ echo "Updating keystore"
 $KEYTOOL_CMD -delete -alias s1as -keystore keystore.jks -storepass $MASTER_PASSWORD
 $KEYTOOL_CMD -delete -alias glassfish-instance -keystore keystore.jks -storepass $MASTER_PASSWORD
 
-$KEYTOOL_CMD -genkeypair -alias s1as -dname "$GLASSFISH_DNAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore keystore.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
-$KEYTOOL_CMD -genkeypair -alias glassfish-instance -dname "$GLASSFISH_DNAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore keystore.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
+$KEYTOOL_CMD -genkeypair -alias s1as -dname "$PAYARA_DN_NAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore keystore.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
+$KEYTOOL_CMD -genkeypair -alias glassfish-instance -dname "$PAYARA_DN_NAME" -keyalg RSA -keysize 2048 -validity 3650 -keystore keystore.jks -storepass $MASTER_PASSWORD -keypass $MASTER_PASSWORD
 
 # check keystore.jks
 echo
@@ -196,12 +211,12 @@ $KEYTOOL_CMD -list -keystore cacerts.jks -storepass $MASTER_PASSWORD > /dev/null
 rm -f s1as.cert glassfish-instance.cert
 
 # The commands here change the file at
-# glassfish/domains/domain1/config/domain.xml
+# glassfish/domains/$PAYARA_DOMAIN_NAME/config/domain.xml
 
 # start glassfish
 echo
 echo "Starting glassfish"
-$ASADMIN_CMD start-domain domain1
+$ASADMIN_CMD start-domain $PAYARA_DOMAIN_NAME
 
 # enable https for remote access to admin console
 # requests to http://xxx:4848 are redirected to https://xxx:4848
@@ -225,8 +240,8 @@ $ASADMIN_CMD create-jvm-options -Xms1024m
 # restart to take effect
 echo
 echo "Restarting glassfish"
-$ASADMIN_CMD stop-domain domain1
-$ASADMIN_CMD start-domain domain1
+$ASADMIN_CMD stop-domain $PAYARA_DOMAIN_NAME
+$ASADMIN_CMD start-domain $PAYARA_DOMAIN_NAME
 
 # list current JVM options
 echo
@@ -281,5 +296,5 @@ $ASADMIN_CMD set server.network-config.protocols.protocol.admin-listener.http.xp
 
 # stop server after install
 echo "Stopping glassfish"
-$ASADMIN_CMD stop-domain domain1
+$ASADMIN_CMD stop-domain $PAYARA_DOMAIN_NAME
 echo "Glassfish installation/configuration done"

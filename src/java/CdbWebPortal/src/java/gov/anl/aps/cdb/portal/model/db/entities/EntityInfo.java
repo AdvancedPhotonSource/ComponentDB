@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.Date;
@@ -126,6 +127,7 @@ public class EntityInfo implements Serializable {
         this.isGroupWriteable = isGroupWriteable;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getCreatedOnDateTime() {
         return createdOnDateTime;
     }
@@ -134,6 +136,7 @@ public class EntityInfo implements Serializable {
         this.createdOnDateTime = createdOnDateTime;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getLastModifiedOnDateTime() {
         return lastModifiedOnDateTime;
     }
@@ -142,6 +145,7 @@ public class EntityInfo implements Serializable {
         this.lastModifiedOnDateTime = lastModifiedOnDateTime;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getObsoletedOnDateTime() {
         return obsoletedOnDateTime;
     }

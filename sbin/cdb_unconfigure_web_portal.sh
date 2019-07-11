@@ -44,7 +44,7 @@ else
 fi
 
 CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
-GLASSFISH_DIR=$CDB_SUPPORT_DIR/glassfish/$CDB_HOST_ARCH
+GLASSFISH_DIR=$CDB_SUPPORT_DIR/payara/$CDB_HOST_ARCH
 JAVA_HOME=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
 
 export AS_JAVA=$JAVA_HOME
@@ -52,7 +52,7 @@ ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin
 
 CDB_DB_POOL=mysql_${CDB_DB_NAME}_DbPool
 CDB_DATA_SOURCE=${CDB_DB_NAME}_DataSource
-CDB_DOMAIN=domain1
+CDB_DOMAIN=production
 
 # restart server
 echo "Restarting glassfish"

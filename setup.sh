@@ -70,7 +70,7 @@ if [ ! -d $CDB_SUPPORT_DIR ]; then
     echo "Warning: $CDB_SUPPORT_DIR directory does not exist. Developers should point CDB_SUPPORT_DIR to the desired area." 
     #unset CDB_SUPPORT_DIR
 else
-    export CDB_GLASSFISH_DIR=$CDB_SUPPORT_DIR/glassfish/$CDB_HOST_ARCH
+    export CDB_GLASSFISH_DIR=$CDB_SUPPORT_DIR/payara/$CDB_HOST_ARCH
 fi
 
 # Add to path only if directory exists.
@@ -81,9 +81,11 @@ prependPathIfDirExists() {
     fi
 }
 
+prependPathIfDirExists $CDB_GLASSFISH_DIR/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/mysql/$CDB_HOST_ARCH/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/ant/bin
+prependPathIfDirExists $CDB_SUPPORT_DIR/netbeans/currentNetbeans/bin
 prependPathIfDirExists $CDB_ROOT_DIR/bin
 
 # Check if we have  local python

@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.rest.routes;
 
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.GET;
@@ -19,7 +20,8 @@ import javax.ws.rs.core.MediaType;
  * @author djarosz
  */
 @Path("/users")
-public class UsersRoute {
+@Tag(name = "Users")
+public class UsersRoute extends BaseRoute {
     // TODO add logger       
     
     @EJB

@@ -7,12 +7,14 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -183,14 +185,28 @@ import org.primefaces.model.TreeNode;
     "itemElementRelationshipList",
     "itemElementRelationshipList1",
     "itemElementRelationshipList2",
+    "derivedFromItemList",
     "entityTypeString",
     "entityTypeDisplayList", 
     "listDisplayDescription",
     "primaryImageValue",
     "availableItemTypes",
     "lastKnownItemCategoryList",
-    "isItemTemplate"
+    "isItemTemplate",    
+    "selfElement",
+    "descriptionFromAPI"
 })
+@Schema(name="Item", 
+        subTypes= 
+        {
+            ItemDomainCatalog.class,
+            ItemDomainInventory.class,
+            ItemDomainMachineDesign.class,
+            ItemDomainCable.class,            
+            ItemDomainMAARC.class,
+            ItemDomainLocation.class
+        }
+)
 public class Item extends CdbDomainEntity implements Serializable {
         
     private static final long serialVersionUID = 1L;
@@ -288,10 +304,13 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient List<ItemType> availableItemTypes = null;
     private transient List<ItemCategory> lastKnownItemCategoryList = null;
     
-    private transient Boolean isItemTemplate = null;        
-
+    private transient Boolean isItemTemplate = null;       
+        
+    // API generation variables    
+    private transient String descriptionFromAPI;
+    
     public Item() {
-    }
+    }        
 
     public void init() {
         ItemElement selfElement = new ItemElement();
@@ -356,13 +375,13 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
     
     @JsonIgnore
-    public ItemController getItemDomainController() {
+    public ItemController getItemDomainController() {        
         if (itemDomainController == null) {            
             itemDomainController = ItemController.findDomainControllerForItem(this);            
         }
 
         return itemDomainController;
-    }
+    }       
 
     public Item(Integer id) {
         this.id = id;
@@ -459,6 +478,15 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setDescription(String description) {
         this.getSelfElement().setDescription(description);
+    } 
+    
+    public String getDescriptionFromAPI() {
+        return descriptionFromAPI;
+    }
+
+    @JsonSetter("description")
+    public void setDescriptionFromApi(String descriptionTmp) {
+        this.descriptionFromAPI = descriptionTmp;
     }
         
     public List<ItemElementRelationship> getItemElementRelationshipList() {
@@ -581,6 +609,11 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         entityTypeString = null;
         this.entityTypeList = entityTypeList;
+    }
+    
+    @JsonSetter("entityTypeList")
+    public void setEntityTypeListFromApi(List<EntityType> entityTypeList) {
+        this.entityTypeList = entityTypeList; 
     }
 
     @XmlTransient

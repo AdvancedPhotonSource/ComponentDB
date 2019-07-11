@@ -8,7 +8,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
-import javax.ws.rs.core.NewCookie;
 
 /**
  *
@@ -16,7 +15,7 @@ import javax.ws.rs.core.NewCookie;
  */
 public class UserSessionKeeper {
     
-    public static String TOKEN_COOKIE_KEY = "token";     
+    public static final String AUTH_TOKEN_KEY = "token";     
     
     private static UserSessionKeeper instance = null; 
     
@@ -29,23 +28,29 @@ public class UserSessionKeeper {
         userTokenMap = new HashMap<>(); 
     }
     
-    public static UserSessionKeeper getInstance() {
+    public static synchronized UserSessionKeeper getInstance() {
         if (instance == null) {
             instance = new UserSessionKeeper(); 
         }
-        return instance; 
+        return instance;   
     }
     
-    public NewCookie[] getToken(UserInfo user) {
+    public String getToken(UserInfo user) {
         String token = UUID.randomUUID().toString();
-        User sessionUser = User.createFromUserInfo(user);                
+        User sessionUser = User.createFromUserInfo(user, token);                
         
-        userTokenMap.put(token, sessionUser);        
+        userTokenMap.put(token, sessionUser);                        
         
-        NewCookie[] userToken = new NewCookie[1]; 
-        userToken[0] = new NewCookie(TOKEN_COOKIE_KEY, token); 
-        
-        return userToken; 
+        return token; 
+    }
+    
+    public boolean revokeToken(String token) {
+        User remove = userTokenMap.remove(token);
+        return remove != null; 
+    }
+    
+    public User getUserForToken(String token) {
+        return userTokenMap.get(token);
     }
     
     public boolean validateToken(String token) {

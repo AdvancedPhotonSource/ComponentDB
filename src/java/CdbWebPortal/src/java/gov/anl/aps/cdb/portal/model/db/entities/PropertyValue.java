@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import java.io.Serializable;
@@ -68,16 +69,13 @@ public class PropertyValue extends CdbEntity implements Serializable {
     @Size(max = 256)
     private String description;
     @Basic(optional = false)
-    @NotNull
     @Column(name = "entered_on_date_time")
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)    
     private Date enteredOnDateTime;
-    @Basic(optional = false)
-    @NotNull
+    @Basic(optional = false)    
     @Column(name = "is_user_writeable")
     private boolean isUserWriteable;
-    @Basic(optional = false)
-    @NotNull
+    @Basic(optional = false)    
     @Column(name = "is_dynamic")
     private boolean isDynamic;
     @Size(max = 512)
@@ -193,6 +191,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
         this.enteredByUser = enteredByUser;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getEnteredOnDateTime() {
         return enteredOnDateTime;
     }
@@ -328,7 +327,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
         }
         return false;
     }
-
+    
     public Boolean getBooleanValue() {
         if (booleanValue == null) {
             if (value == null || value.isEmpty()) {
@@ -348,6 +347,7 @@ public class PropertyValue extends CdbEntity implements Serializable {
         }
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getDateValue() {
         if (dateValue == null && value != null && !value.isEmpty()) {
             try {

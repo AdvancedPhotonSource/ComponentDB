@@ -5,7 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
-import java.util.List;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -38,6 +38,10 @@ public class DomainFacade extends CdbEntityFacade<Domain> {
         } catch (NoResultException ex) {
         }
         return null;
+    }
+    
+    public static DomainFacade getInstance() {
+        return (DomainFacade) SessionUtility.findFacade(DomainFacade.class.getSimpleName()); 
     }
 
 }

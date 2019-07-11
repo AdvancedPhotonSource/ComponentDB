@@ -11,7 +11,10 @@ import javax.faces.application.FacesMessage;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -27,7 +30,12 @@ public class SessionUtility {
     public static final String LAST_USERNAME_KEY = "lastUsername";
     public static final String VIEW_STACK_KEY = "viewStack";
     public static final String LAST_SESSION_ERROR_KEY = "lastSessionError";
-    public static final String ROLE_KEY = "role";
+    public static final String ROLE_KEY = "role";    
+    private static final String MODULE_NAME_LOOKUP = "java:module/ModuleName";
+    private static final String JAVA_LOOKUP_START = "java:global/";
+    private static String FACADE_LOOKUP_STRING_START = null; 
+    
+    private static final Logger logger = org.apache.log4j.Logger.getLogger(SessionUtility.class.getName());          
 
     public SessionUtility() {
     }
@@ -210,6 +218,26 @@ public class SessionUtility {
     public static Object findBean(String beanName) {
         FacesContext context = FacesContext.getCurrentInstance();
         return (Object) context.getApplication().evaluateExpressionGet(context, "#{" + beanName + "}", Object.class);
+    }
+    
+    public static Object findFacade(String facadeName) {
+        try {
+            InitialContext context = new InitialContext();
+            
+            if (FACADE_LOOKUP_STRING_START == null) {
+                String modName = (String) context.lookup(MODULE_NAME_LOOKUP);
+                FACADE_LOOKUP_STRING_START = JAVA_LOOKUP_START + modName + "/";                        
+            }
+            
+            return context.lookup(FACADE_LOOKUP_STRING_START + facadeName); 
+        } catch (NamingException ex) {
+            logger.error(ex);
+        }
+        return null; 
+    }
+    
+    public static boolean runningFaces() {
+        return FacesContext.getCurrentInstance() != null; 
     }
 
 }

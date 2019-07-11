@@ -43,11 +43,11 @@ else
     echo "Deployment config file $deployConfigFile not found, using defaults"
 fi
 
+CDB_DOMAIN_NAME="production"
 CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 CDB_CONTEXT_ROOT=${CDB_CONTEXT_ROOT:=cdb}
-GLASSFISH_DIR=$CDB_SUPPORT_DIR/glassfish/$CDB_HOST_ARCH
-CDB_DEPLOY_DIR=$GLASSFISH_DIR/glassfish/domains/domain1/autodeploy
-CDB_APP_DIR=$GLASSFISH_DIR/glassfish/domains/domain1/applications/$CDB_CONTEXT_ROOT
+GLASSFISH_DIR=$CDB_SUPPORT_DIR/payara/$CDB_HOST_ARCH
+CDB_APP_DIR=$GLASSFISH_DIR/glassfish/domains/$CDB_DOMAIN_NAME/applications/$CDB_CONTEXT_ROOT
 CDB_DIST_DIR=$CDB_ROOT_DIR/src/java/CdbWebPortal/dist
 CDB_WAR_FILE=$CDB_CONTEXT_ROOT.war
 JAVA_HOME=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
@@ -56,8 +56,8 @@ export AS_JAVA=$JAVA_HOME
 ASADMIN_CMD=$GLASSFISH_DIR/bin/asadmin
 
 # remove war file from autodeploy directory
-echo "Removing war file $CDB_DEPLOY_DIR/$CDB_WAR_FILE"
-rm -f $CDB_DEPLOY_DIR/${CDB_WAR_FILE}*
+$ASADMIN_CMD undeploy $CDB_CONTEXT_ROOT
+
 
 # remove war file from autodeploy directory
 if [ -d $CDB_APP_DIR ]; then
@@ -69,5 +69,5 @@ fi
 
 # restart server
 echo "Restarting glassfish"
-$ASADMIN_CMD stop-domain ${CDB_DOMAIN}
-$ASADMIN_CMD start-domain ${CDB_DOMAIN}
+$ASADMIN_CMD stop-domain ${CDB_DOMAIN_NAME}
+$ASADMIN_CMD start-domain ${CDB_DOMAIN_NAME}

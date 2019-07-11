@@ -49,8 +49,24 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
     private List<ItemDomainInventory> inventoryNonSparesList = null;
     private Boolean displayInventorySpares = null;        
     
+    private static ItemDomainCatalogController apiInstance; 
+   
     @EJB
-    ItemDomainCatalogFacade itemDomainCatalogFacade;    
+    ItemDomainCatalogFacade itemDomainCatalogFacade;            
+    
+    public static synchronized ItemDomainCatalogController getApiInstance() {
+        if (apiInstance == null) {
+            apiInstance = new ItemDomainCatalogController();            
+            apiInstance.prepareApiInstance(); 
+        }
+        return apiInstance;
+    }
+    
+    @Override
+    protected void loadEJBResourcesManually() {
+        super.loadEJBResourcesManually(); 
+        itemDomainCatalogFacade = ItemDomainCatalogFacade.getInstance();         
+    }
 
     @Override
     public List<ItemDomainCatalog> getItemList() {
@@ -63,7 +79,11 @@ public class ItemDomainCatalogController extends ItemController<ItemDomainCatalo
     } 
     
     public static ItemDomainCatalogController getInstance() {
-        return (ItemDomainCatalogController) SessionUtility.findBean("itemDomainCatalogController");
+        if (SessionUtility.runningFaces()) {
+            return (ItemDomainCatalogController) SessionUtility.findBean("itemDomainCatalogController");
+        } else {
+            return getApiInstance();
+        }
     }
 
     @Override
