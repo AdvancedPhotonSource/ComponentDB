@@ -19,7 +19,7 @@ import javax.ws.rs.core.MediaType;
  *
  * @author djarosz
  */
-@Path("/propertyTypes")
+@Path("/PropertyTypes")
 @Tag(name = "Property")
 public class PropertyTypeRoute extends BaseRoute {
     // TODO add logger 

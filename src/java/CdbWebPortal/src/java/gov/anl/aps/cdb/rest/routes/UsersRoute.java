@@ -19,7 +19,7 @@ import javax.ws.rs.core.MediaType;
  *
  * @author djarosz
  */
-@Path("/users")
+@Path("/Users")
 @Tag(name = "Users")
 public class UsersRoute extends BaseRoute {
     // TODO add logger       
