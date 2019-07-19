@@ -16,6 +16,7 @@ See LICENSE file.
                  onkeyup="updateQrId#{viewName}()"/>
               <p:remoteCommand name="updateQrId#{viewName}"
                                update="qrId#{viewName}" />
+              <p:message for="qrIdIT#{viewName}" />
     </p:column>
 
 </ui:composition>
