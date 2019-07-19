@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
  *
  * @author djarosz
  */
-@Path("/test")
+@Path("/Test")
 @Tag(name = "Test")
 public class TestRoute {
     

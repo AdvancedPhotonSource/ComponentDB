@@ -60,7 +60,7 @@ import javax.ws.rs.core.MediaType;
  *
  * @author djarosz
  */
-@Path("/items")
+@Path("/Items")
 @Tag(name = "Item")
 public class ItemRoute extends BaseRoute {
     
@@ -484,5 +484,5 @@ public class ItemRoute extends BaseRoute {
         }
         return null;
     }
-    
+        
 }
