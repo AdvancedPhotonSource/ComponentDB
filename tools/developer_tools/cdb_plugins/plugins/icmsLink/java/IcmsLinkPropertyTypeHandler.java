@@ -28,19 +28,19 @@ public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
 
     private static final String IcmsUrl = IcmsLinkPluginManager.getIcmsUrlString(); 
     
-    //private IcmsWatermarkUtility icmsWatermarkUtility; 
+    private IcmsWatermarkUtility icmsWatermarkUtility; 
 
     public IcmsLinkPropertyTypeHandler() {
         // Switch to File Download to utilize the icms watermark utility.
         super(HANDLER_NAME, DisplayType.GENERATED_HTTP_LINK);
-        /* 
+        
         icmsWatermarkUtility = new IcmsWatermarkUtility(
                 IcmsLinkPluginManager.getSoapEndpointUrl(), 
                 IcmsLinkPluginManager.getSoapGetFileActionUrl(), 
                 IcmsLinkPluginManager.getSoapUsername(), 
-                IcmsLinkPluginManager.getSoapPassword()); */
+                IcmsLinkPluginManager.getSoapPassword()); 
     }
-    /*
+    
     public StreamedContent fileDownloadActionCommand(PropertyValue propertyValue) {
         try { 
             byte[] stampedPDFByteArray = icmsWatermarkUtility.generateICMSPDFDocument(propertyValue.getValue());
@@ -52,7 +52,7 @@ public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
         }
         
         return null; 
-    }*/
+    }
 
     public static String formatIcmsLink(String contentId) {
         //Given a document ContentID # like APS_1273342  or just 1273342, use link
