@@ -27,6 +27,8 @@ import org.apache.pdfbox.rendering.PDFRenderer;
 public class GalleryUtility {
 
     private static final Logger logger = Logger.getLogger(GalleryUtility.class.getName());
+    
+    protected static boolean utilMode = false; 
 
     public static String getImageFormat(String fileName) {
         if (fileName.endsWith(CdbPropertyValue.ORIGINAL_IMAGE_EXTENSION)) {
@@ -104,9 +106,11 @@ public class GalleryUtility {
         } catch (IOException ex) {
             logger.error(ex);
             // Check allows this class to run as a utility without server running. 
-            FacesContext context = FacesContext.getCurrentInstance();
-            if (context != null) {
-                SessionUtility.addErrorMessage("Error", ex.toString());
+            if (!utilMode) {
+                FacesContext context = FacesContext.getCurrentInstance();
+                if (context != null) {
+                    SessionUtility.addErrorMessage("Error", ex.toString());
+                }
             }
         }
     }
@@ -141,9 +145,11 @@ public class GalleryUtility {
         } catch (IOException | ImageProcessingFailed ex) {
             logger.error(ex);
             // Check allows this class to run as a utility without server running. 
-            FacesContext context = FacesContext.getCurrentInstance();
-            if (context != null) {
-                SessionUtility.addErrorMessage("Error", ex.toString());
+            if (!utilMode) {
+                FacesContext context = FacesContext.getCurrentInstance();
+                if (context != null) {
+                    SessionUtility.addErrorMessage("Error", ex.toString());
+                }
             }
         }
     }
@@ -186,6 +192,7 @@ public class GalleryUtility {
      * @param args
      */
     public static void main(String[] args) throws Exception {
+        GalleryUtility.utilMode = true; 
         Path imageUploadDirPath;
         Path documentUploadDirPath;
 
