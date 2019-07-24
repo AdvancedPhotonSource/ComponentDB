@@ -29,18 +29,11 @@ See LICENSE file.
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/browseLocation') ? 'activeMenuItem' : ''} "/>
 
             </p:submenu>
-            <p:submenu label="Catalog"
-                       styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/list') 
-                                     or fn:startsWith(view.viewId, '/views/itemDomainCableCatalog/list')) ? 'activeSubMenuParentItem' : ''} ">
-                <p:menuitem value="Component"
-                            icon="ui-icon-catalog"
-                            url="#{request.contextPath}/views/itemDomainCatalog/list"
-                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/list') ? 'activeMenuItem' : ''} "/>
-                <p:menuitem value="Cable"
-                            icon="ui-icon-catalog"
-                            url="#{request.contextPath}/views/itemDomainCableCatalog/list"
-                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableCatalog/list') ? 'activeMenuItem' : ''} "/>
-            </p:submenu>
+            <p:menuitem value="Catalog" id="catalogButton"
+                        icon="ui-icon-catalog"
+                        url="#{request.contextPath}/views/itemDomainCatalog/list"
+                        styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') and 
+                                      !fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} "/>
             <p:menuitem value="Inventory"
                         icon="ui-icon-inventory"
                         id="inventoryMenubarButton" url="#{request.contextPath}/views/itemDomainInventory/list"
