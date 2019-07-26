@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -14,16 +13,16 @@ import javax.persistence.Entity;
  * @author djarosz
  */
 @Entity
-@DiscriminatorValue(value = ItemDomainName.CABLE_CATALOG_ID + "")   
-public class ItemDomainCableCatalog extends Item {
+@DiscriminatorValue(value = ItemDomainName.CABLE_INVENTORY_ID + "")   
+public class ItemDomainCableInventory extends Item {
 
     @Override
     public Item createInstance() {
-        return new ItemDomainCableCatalog(); 
+        return new ItemDomainCableInventory(); 
     }
 
-    public List<ItemDomainCableInventory> getCableInventoryItemList() {
-        return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
+    public ItemDomainCableCatalog getCableCatalogItem() {
+        return (ItemDomainCableCatalog) getDerivedFromItem();
     }
     
 }

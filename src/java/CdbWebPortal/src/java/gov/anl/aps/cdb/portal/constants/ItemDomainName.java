@@ -21,6 +21,7 @@ public enum ItemDomainName {
         public final static int MAARC_ID = 5; 
         public final static int MACHINE_DESIGN_ID = 6; 
         public final static int CABLE_CATALOG_ID = 7; 
+        public final static int CABLE_INVENTORY_ID = 8; 
 
         private String value;
 
