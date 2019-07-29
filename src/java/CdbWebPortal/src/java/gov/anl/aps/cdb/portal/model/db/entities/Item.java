@@ -574,14 +574,15 @@ public class Item extends CdbDomainEntity implements Serializable {
             entityTypeString = "";
             List<EntityType> entityTypeDisplayList = getEntityTypeDisplayList();
             if (entityTypeDisplayList != null) {
-                for (EntityType entityType : entityTypeDisplayList) {
-                    if (entityTypeString.length() > 0) {
+                for (int i = 0; i < entityTypeDisplayList.size(); i++) {
+                    EntityType entityType = entityTypeDisplayList.get(i); 
+                    boolean lastIdx = i == entityTypeDisplayList.size() -1; 
+                    if (entityTypeString.length() > 0 && lastIdx) {
                         entityTypeString += " ";
                     }
                     entityTypeString += entityType.getName();
                 }
-            }
-            entityTypeString = entityTypeString.replaceAll(" ", " | ");
+            }            
         }
 
         return entityTypeString;
