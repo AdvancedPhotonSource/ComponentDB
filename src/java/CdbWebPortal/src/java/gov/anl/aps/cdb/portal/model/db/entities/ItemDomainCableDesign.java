@@ -14,16 +14,12 @@ import javax.persistence.Entity;
  * @author djarosz
  */
 @Entity
-@DiscriminatorValue(value = ItemDomainName.CABLE_CATALOG_ID + "")   
-public class ItemDomainCableCatalog extends Item {
+@DiscriminatorValue(value = ItemDomainName.CABLE_DESIGN_ID + "")   
+public class ItemDomainCableDesign extends Item {
 
     @Override
     public Item createInstance() {
-        return new ItemDomainCableCatalog(); 
+        return new ItemDomainCableDesign(); 
     }
 
-    public List<ItemDomainCableInventory> getCableInventoryItemList() {
-        return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
-    }
-    
 }
