@@ -1254,3 +1254,7 @@ h2 {
     overflow: visible; 
 }
 
+.quickLinksDiv > a {
+    display: block; 
+    padding: 4px 10px;
+}

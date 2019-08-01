@@ -14,15 +14,17 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author djarosz
  */
-@Path("/users")
+@Path("/Users")
 @Tag(name = "Users")
 public class UsersRoute extends BaseRoute {
-    // TODO add logger       
+    
+    private static final Logger LOGGER = Logger.getLogger(UsersRoute.class.getName());
     
     @EJB
     UserInfoFacade userInfoFacade; 
@@ -30,14 +32,16 @@ public class UsersRoute extends BaseRoute {
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UserInfo> getAll() {                        
+    public List<UserInfo> getAll() { 
+        LOGGER.debug("Fetching all users.");
         return userInfoFacade.findAll(); 
     }
     
     @GET
     @Path("/ByUsername/{username}")
     @Produces(MediaType.APPLICATION_JSON)
-    public UserInfo addPropertyType(@PathParam("username") String username) {
+    public UserInfo getUserByUsername(@PathParam("username") String username) {
+        LOGGER.debug("Fetching user by username: " + username); 
         return userInfoFacade.findByUsername(username);
     }        
     

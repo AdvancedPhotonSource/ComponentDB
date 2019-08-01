@@ -44,6 +44,7 @@ public class CdbRestService extends Application {
         resources.add(gov.anl.aps.cdb.rest.authentication.AuthenticationFilter.class);
         resources.add(gov.anl.aps.cdb.rest.provider.GenericAPIExceptionProvider.class);
         resources.add(gov.anl.aps.cdb.rest.routes.AuthenticationRoute.class);
+        resources.add(gov.anl.aps.cdb.rest.routes.DownloadRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.ItemRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.PropertyTypeRoute.class);
         resources.add(gov.anl.aps.cdb.rest.routes.TestRoute.class);

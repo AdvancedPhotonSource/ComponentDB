@@ -346,6 +346,6 @@ description.','true'),
 (22030,'ItemDomainMAARC.List.FilterBy.PropertyValue4','Filter for property value with displayed property type id #4.',''),
 (22031,'ItemDomainMAARC.List.FilterBy.PropertyValue5','Filter for property value with displayed property type id #5.',''),
 (22032,'ItemDomainMAARC.ItemElementList.Display.NumberOfItemsPerPage','Display specified number of items per page for elements.','10'),
-(22033,'ItemDomainMAARC.List.FilterBy.ItemEntityType','Filter for item entity type for items.','Study');
+(22033,'ItemDomainMAARC.List.FilterBy.ItemEntityType','Filter for item entity type for items.','Measurement Data');
 /*!40000 ALTER TABLE `setting_type` ENABLE KEYS */;
 UNLOCK TABLES;
