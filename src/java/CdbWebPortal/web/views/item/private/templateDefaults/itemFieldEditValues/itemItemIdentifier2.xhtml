@@ -16,7 +16,8 @@ See LICENSE file.
                      styleClass="entityDataEmphasizedText"
                      onkeyup="updateItemIdentifier2#{viewName}()"/>
         <p:remoteCommand name="updateItemIdentifier2#{viewName}"
-                         update="itemIdentifier2#{viewName}"/>        
+                         update="itemIdentifier2#{viewName}"/>
+        <p:message for="itemIdentifier2IT#{viewName}" />
     </p:column>
     
 </ui:composition>

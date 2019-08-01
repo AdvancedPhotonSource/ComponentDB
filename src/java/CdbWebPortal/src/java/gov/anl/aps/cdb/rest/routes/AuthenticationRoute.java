@@ -30,6 +30,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.log4j.Logger;
 
 @Tag(name = "Authentication")
 @Path("/auth")
@@ -38,6 +39,8 @@ import javax.ws.rs.core.Response;
                 in = SecuritySchemeIn.COOKIE,
                 paramName = UserSessionKeeper.AUTH_TOKEN_KEY)
 public class AuthenticationRoute extends BaseRoute {
+    
+    private static final Logger LOGGER = Logger.getLogger(AuthenticationRoute.class.getName());
     
     @EJB
     private UserInfoFacade userFacade;
@@ -63,7 +66,7 @@ public class AuthenticationRoute extends BaseRoute {
     )
     public Response authenticateUser(@FormParam("username") String username, 
                                      @FormParam("password") String password) throws AuthenticationError {
-                      
+        LOGGER.debug("Authenticating user: " + username);
         UserInfo userInfo = userFacade.findByUsername(username); 
         boolean authenticated = LoginController.validateCredentials(userInfo, password);
         
@@ -84,6 +87,7 @@ public class AuthenticationRoute extends BaseRoute {
         Principal userPrincipal = securityContext.getUserPrincipal();
         if (userPrincipal instanceof User) {
             String token = ((User) userPrincipal).getToken();
+            LOGGER.debug("Logging out user: " + userPrincipal.getName());
             UserSessionKeeper sessionKeeper = UserSessionKeeper.getInstance();
             if (!sessionKeeper.revokeToken(token)) {
                 throw new Exception("An error occurred logging user out."); 
@@ -99,6 +103,7 @@ public class AuthenticationRoute extends BaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public boolean verifyAuthenticated() {
+        LOGGER.debug("User is authenticated.");
         return true; 
     }
     
