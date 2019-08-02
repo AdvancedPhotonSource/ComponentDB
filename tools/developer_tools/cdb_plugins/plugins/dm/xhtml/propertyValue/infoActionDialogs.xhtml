@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <style type="text/css">
+        .dmInfoActionDialog {
+            text-align: left;
+            width: 70% !important;
+        }
+        .dmInfoActionDialog .ui-dialog-content {            
+            height: 500px !important;
+        }
+        .dmInfoActionTextOutputDiv {
+            white-space: pre-wrap; 
+            font-size: 12px;
+            margin: 2em 0px;
+        }
+    </style>
+
+    <p:dialog widgetVar="dmInfoActionDialogWidget"
+              id="dmInfoActionDialog"
+              styleClass="viewTransparentBackgroundDialog dmInfoActionDialog"              
+              resizable="false"
+              dynamic="true"              
+              modal="true">
+        <ui:param name="dmPluginManager"
+                  value="#{cdbPluginManager.getPluginManagerByName('dm')}" />         
+        <div class="dmInfoActionTextOutputDiv">#{dmPluginManager.infoActionText}</div>
+        <f:facet name="footer">
+            <p:commandButton value="Close"
+                      oncomplete="PF('dmInfoActionDialogWidget').hide()"
+                      icon="fa fa-times"/> 
+        </f:facet>
+    </p:dialog>
+
+    <p:remoteCommand name="showDMInfoActionDialog"
+                     update="dmInfoActionDialog"
+                     oncomplete="PF('dmInfoActionDialogWidget').show();"/>
+
+</ui:composition>
