@@ -23,15 +23,18 @@ See LICENSE file.
             margin: 2em 0px;
         }
     </style>
+    
+    <ui:param name="dmPluginManager"
+                  value="#{cdbPluginManager.getPluginManagerByName('dm')}" />
 
     <p:dialog widgetVar="dmInfoActionDialogWidget"
               id="dmInfoActionDialog"
-              styleClass="viewTransparentBackgroundDialog dmInfoActionDialog"              
+              styleClass="viewTransparentBackgroundDialog dmInfoActionDialog"
+              header="#{dmPluginManager.infoActionDialogHeader}"
               resizable="false"
-              dynamic="true"              
+              dynamic="true"
               modal="true">
-        <ui:param name="dmPluginManager"
-                  value="#{cdbPluginManager.getPluginManagerByName('dm')}" />         
+        
         <div class="dmInfoActionTextOutputDiv">#{dmPluginManager.infoActionText}</div>
         <f:facet name="footer">
             <p:commandButton value="Close"

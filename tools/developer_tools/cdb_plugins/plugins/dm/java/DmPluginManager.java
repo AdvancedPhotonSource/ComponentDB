@@ -29,6 +29,7 @@ public class DmPluginManager extends PluginManagerBase {
     private static final String DM_PORTAL_URL_KEY = "dmPortalUrl";
     
     private String infoActionText = null;
+    private String infoActionDialogHeader = null; 
     
     public static String getServiceUrlProperty() {
         return DM_PROPERTIES.getProperty(DM_SERVICE_URL_KEY, ""); 
@@ -52,6 +53,7 @@ public class DmPluginManager extends PluginManagerBase {
         infoActionText = null; 
         try { 
             ByteArrayOutputStream byteArrayOutputStream = handler.getByteArrayOutputStream(propertyValue);
+            infoActionDialogHeader = "Showing text for: " + propertyValue.getValue(); 
             byte[] toByteArray = byteArrayOutputStream.toByteArray();
             infoActionText = new String(toByteArray);
             super.performInfoActionLoad(propertyValue);
@@ -63,6 +65,10 @@ public class DmPluginManager extends PluginManagerBase {
 
     public String getInfoActionText() {
         return infoActionText;
+    }
+
+    public String getInfoActionDialogHeader() {
+        return infoActionDialogHeader;
     }
     
     @Override
