@@ -5,12 +5,12 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
 from cdb.cdb_web_service.api.propertyRestApi import PropertyRestApi
-from cdbWebServiceCli import CdbWebServiceCli
+from cdbWebServiceSessionCli import CdbWebServiceSessionCli
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 
-class addPropertyMetadataToPropertyValueCli(CdbWebServiceCli):
+class addPropertyMetadataToPropertyValueCli(CdbWebServiceSessionCli):
     def __init__(self):
-        CdbWebServiceCli.__init__(self)
+        CdbWebServiceSessionCli.__init__(self)
         self.addOption('', '--property-value-id', dest='propertyValueId', help='Property value id of the property metadata is being added to')
         self.addOption('', '--metadata-dict', dest='metadataDict', help='Metadata dict with key value pairs for new metadata')
         self.addOption('', '--metadata-key', dest='metadataKey', help='Key of the metadata value being added')

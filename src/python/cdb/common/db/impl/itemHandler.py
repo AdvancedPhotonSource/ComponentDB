@@ -605,6 +605,16 @@ class ItemHandler(CdbDbEntityHandler):
                                enteredByUserId=None, isUserWriteable=None, isDynamic=None,
                                displayValue=None, targetValue=None, enteredOnDateTime = None, allowInternal=False):
         dbItemElement = self.getItemElementById(session, itemElementId)
+
+        dbPropertyType = self.propertyTypeHandler.getPropertyTypeByName(session, propertyTypeName)
+        dbItemElementProperties = self.propertyValueHandler.getItemElementProperties(session, itemElementId, propertyTypeName)
+
+        # Verify that we are not adding the same property again
+        for dbItemElementProperty in dbItemElementProperties:
+            dbPropertyValue = dbItemElementProperty.propertyValue
+            if dbPropertyValue.tag == tag and dbPropertyValue.value == value and dbPropertyValue.units == units and dbPropertyValue.description == description:
+                raise ObjectAlreadyExists('There is already identical property of type %s for item element id %s.' % (propertyTypeName, itemElementId))
+
         self.permissionHandler.verifyPermissionsForWriteToItemElement(session, enteredByUserId, dbItemElementObject=dbItemElement)
         dbPropertyValue = self.propertyValueHandler.createPropertyValue(session, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue,targetValue, enteredOnDateTime, allowInternal)
 
