@@ -134,17 +134,10 @@ See LICENSE file.
                                       and (propertyValueObject.displayValue == null or propertyValueObject.displayValue == '')}"  />
         </p:outputPanel>
 
-        <p:commandLink id="#{entityTypeName}PropertyMetadataActionButton" 
-                       styleClass="fa fa-link-icon fa-tags" 
-                       title="View Metadata"
-                       update="@form:propertyValueMetadataListDialog"
-                       rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueObject) 
-                                   and entityController.getDisplayPropertyMetadata(propertyValueObject) }"
-                       oncomplete="PF('propertyValueMetadataListDialogWidget').show();">
-            <p:tooltip for="#{entityTypeName}PropertyMetadataActionButton" value="View metadata."/>
-            <f:setPropertyActionListener target="#{propertyValueController.current}"
-                                         value="#{propertyValueObject}" />
-        </p:commandLink>
+        <ui:include src="../../propertyMetadata/private/propertyMetadataActionButtonCommandLink.xhtml" >
+            <ui:param name="propertyValueBaseObject"
+                      value="#{propertyValueObject}" /> 
+        </ui:include>
     </p:outputPanel>
 
 </ui:composition>

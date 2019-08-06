@@ -73,7 +73,15 @@ See LICENSE file.
         <ui:fragment rendered="#{propertyValueHistoryController.displayBooleanValue()}">         
             <h:outputText value="" styleClass="ui-icon ui-icon-check" 
                           rendered="#{propertyValueHistoryObject.value}"/>
-        </ui:fragment>        
+        </ui:fragment>   
+        
+        <ui:include src="../../propertyMetadata/private/propertyMetadataActionButtonCommandLink.xhtml" >
+            <ui:param name="propertyValueBaseObject"
+                      value="#{propertyValueHistoryObject}" /> 
+            <ui:param name="viewName" 
+                      value="History" /> 
+        </ui:include>
+        
     </p:column>
 
     <p:column sortBy="#{propertyValueHistoryObject.units}" headerText="Units"
