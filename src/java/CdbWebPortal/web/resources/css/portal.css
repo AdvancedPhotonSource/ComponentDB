@@ -1255,6 +1255,6 @@ h2 {
 }
 
 .quickLinksDiv > a {
-    display: block; 
+    display: table; 
     padding: 4px 10px;
 }

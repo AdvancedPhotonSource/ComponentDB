@@ -55,17 +55,15 @@ See LICENSE file.
             <f:facet name="options">
                 <p:panelGrid columns="2" styleClass="plainPanelGrid">                         
                     <p:column>                        
-                        <h:form>
-                            <p:inputText id="menuBarSearchInput" placeholder="Search"
-                                         styleClass="expandingInputText entityDataText menuBarInputText" 
-                                         value="#{searchController.inputBoxSearchString}" 
-                                         title="Search String"/>
-                            <p:defaultCommand target="menuBarSearchInputCommand" />
-                            <p:commandButton id="menuBarSearchInputCommand" 
-                                             style="display: none" 
-                                             update="@form" 
-                                             action="#{searchController.performInputBoxSearch()}"/>                            
-                        </h:form>
+                        <p:inputText id="menuBarSearchInput" placeholder="Search"
+                                     styleClass="expandingInputText entityDataText menuBarInputText" 
+                                     value="#{searchController.inputBoxSearchString}" 
+                                     title="Search String"/>
+                        <p:defaultCommand target="menuBarSearchInputCommand" />
+                        <p:commandButton id="menuBarSearchInputCommand" 
+                                         style="display: none" 
+                                         update="@form" 
+                                         action="#{searchController.performInputBoxSearch()}"/>
                     </p:column>
                     
                     <p:menubar styleClass="menuBarSupportingItems">                        
