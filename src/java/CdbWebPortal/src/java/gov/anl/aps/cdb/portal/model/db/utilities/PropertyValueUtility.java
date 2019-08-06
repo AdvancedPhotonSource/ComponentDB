@@ -63,7 +63,7 @@ public class PropertyValueUtility {
             if (index >= 0) {
                 // Original property was there.
                 PropertyValue originalPropertyValue = originalPropertyValueList.get(index);
-                if (!newPropertyValue.equalsByTagAndValueAndUnitsAndDescription(originalPropertyValue)) {
+                if (!newPropertyValue.equalsByTagAndValueAndUnitsAndDescriptionAndMetadata(originalPropertyValue)) {
                     // Property value was modified.
                     logger.debug("Property value for type " + originalPropertyValue.getPropertyType()
                             + " was modified (original value: " + originalPropertyValue + "; new value: " + newPropertyValue + ")");
