@@ -7,14 +7,14 @@ See LICENSE file.
 
 
 import os
-from cdbWebServiceCli import CdbWebServiceCli
+from cdbWebServiceSessionCli import CdbWebServiceSessionCli
 from cdb.cdb_web_service.api.designRestApi import DesignRestApi
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 from cdb.common.exceptions.invalidArgument import InvalidArgument
 
-class LoadLatticeDesignCli(CdbWebServiceCli):
+class LoadLatticeDesignCli(CdbWebServiceSessionCli):
     def __init__(self):
-        CdbWebServiceCli.__init__(self)
+        CdbWebServiceSessionCli.__init__(self)
         self.addOption('', '--csv-file', dest='csvFile', help='CSV file containing lattice design (required).')
         self.addOption('', '--name', dest='name', help='Lattice design name (required).')
         self.addOption('', '--description', dest='description', help='Lattice design description.')

@@ -5,12 +5,12 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
 from cdb.cdb_web_service.api.itemRestApi import ItemRestApi
-from cdbWebServiceCli import CdbWebServiceCli
+from cdbWebServiceSessionCli import CdbWebServiceSessionCli
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 
-class DeleteItemPropertyValueCli(CdbWebServiceCli):
+class DeleteItemPropertyValueCli(CdbWebServiceSessionCli):
     def __init__(self):
-        CdbWebServiceCli.__init__(self)
+        CdbWebServiceSessionCli.__init__(self)
         self.addOption('', '--item-id', dest='itemId', help='item id of item to add property value for')
         self.addOption('', '--property-type-name', dest='propertyTypeName', help='Property type name of the property to add to item')
 

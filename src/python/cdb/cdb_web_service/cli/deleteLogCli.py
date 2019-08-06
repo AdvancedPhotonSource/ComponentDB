@@ -6,12 +6,12 @@ See LICENSE file.
 """
 
 from cdb.cdb_web_service.api.logRestApi import LogRestApi
-from cdbWebServiceCli import CdbWebServiceCli
+from cdbWebServiceSessionCli import CdbWebServiceSessionCli
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 
-class DeleteLogCli(CdbWebServiceCli):
+class DeleteLogCli(CdbWebServiceSessionCli):
     def __init__(self):
-        CdbWebServiceCli.__init__(self)
+        CdbWebServiceSessionCli.__init__(self)
         self.addOption('', '--log-id', dest='logId', help='Id of the log entry to add attachment for')
 
     def checkArgs(self):
