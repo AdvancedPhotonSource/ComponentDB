@@ -20,9 +20,7 @@ class CdbRestCli(CdbCli):
         serviceGroup = 'Service Options'
         self.addOptionGroup(serviceGroup, None)
         # These will be set via env variables
-        self.addOptionToGroup(serviceGroup, '', '--service-host', dest='serviceHost', default=self.getDefaultServiceHost(), help='Service host (default: %s, can be set via CDB_SERVICE_HOST environment variable).' % self.getDefaultServiceHost())
-        self.addOptionToGroup(serviceGroup, '', '--service-port', dest='servicePort', default=self.getDefaultServicePort(), help='Service port (default: %s, can be set via CDB_SERVICE_PORT environment variable).' % self.getDefaultServicePort())
-        self.addOptionToGroup(serviceGroup, '', '--service-protocol', dest='serviceProtocol', default=self.getDefaultServiceProtocol(), help='Service protocol (default: %s, can be set via CDB_SERVICE_PROTOCOL environment variable).' % self.getDefaultServiceProtocol())
+        self.addOptionToGroup(serviceGroup, '', '--service-url', dest='serviceUrl', default=self.getDefaultServiceUrl(), help='Service URL (default: %s, can be set via CDB_SERVICE_URL environment variable).' % self.getDefaultServiceUrl())
 
         # SSL options, disabled for now.
         #self.addOptionToGroup(commonGroup, '', '--ssl-key', dest='sslKeyFile', help='SSL key file (needed if service requires peer verification, can be set via CDB_SSL_KEY_FILE environment variable).')
@@ -38,15 +36,17 @@ class CdbRestCli(CdbCli):
     def getDefaultServiceProtocol(self):
         return ConfigurationManager.getInstance().getServiceProtocol()
 
+    def getDefaultServiceUrl(self):
+        return ConfigurationManager.getInstance().getServiceUrl()
+
     def parseArgs(self, usage=None):
         CdbCli.parseArgs(self, usage)
         configManager = ConfigurationManager.getInstance()
-        self.serviceHost = self.options.serviceHost
-        configManager.setServiceHost(self.serviceHost)
-        self.servicePort = self.options.servicePort
-        configManager.setServicePort(self.servicePort)
-        self.serviceProtocol = self.options.serviceProtocol
-        configManager.setServiceProtocol(self.serviceProtocol)
+        self.serviceUrl = self.options.serviceUrl
+        configManager.setServiceUrl(self.serviceUrl)
+        self.serviceHost = configManager.getServiceHost()
+        self.servicePort = configManager.getServicePort()
+        self.serviceProtocol = configManager.getServiceProtocol()
 
         # SSL options, comment out for now
         #self.sslCaCertFile = self.options.sslCaCertFile

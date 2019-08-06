@@ -7,37 +7,57 @@ See LICENSE file.
 
 
 from cdb.common.cli.cdbRestCli import CdbRestCli
+from cdb.common.utility.configurationManager import ConfigurationManager
 
 class CdbRestSessionCli(CdbRestCli):
     """ Base cdb session cli class. """
 
     def __init__(self, validArgCount=0):
         CdbRestCli.__init__(self, validArgCount)
-        self.username = None
-        self.password = None
 
         loginGroup = 'Login Options'
         self.addOptionGroup(loginGroup, None)
-        self.addOptionToGroup(loginGroup, '', '--login-username', dest='loginUsername', help='Login username.')
-        self.addOptionToGroup(loginGroup, '', '--login-password', dest='loginPassword', help='Login password.')
+        self.addOptionToGroup(loginGroup, '', '--username', dest='username', help='Login username.')
+        self.addOptionToGroup(loginGroup, '', '--password', dest='password', help='Login password.')
+        self.addOptionToGroup(loginGroup, '', '--login-file', dest='loginFile', help='Login file (can be set via CDB_LOGIN_FILE environment variable).')
 
     def parseArgs(self, usage=None):
         CdbRestCli.parseArgs(self, usage)
-        self.loginUsername = self.options.loginUsername
-        self.loginPassword = self.options.loginPassword
+        self.username = self.options.username
+        self.password = self.options.password
+        self.loginFile = self.options.loginFile
+        self.parseLoginFile()
         return (self.options, self.args)
 
-    def getLoginUsername(self):
-        return self.loginUsername
+    def getUsername(self):
+        return self.username
 
-    def getLoginPassword(self):
-        return self.loginPassword
+    def getPassword(self):
+        return self.password
+
+    def getLoginFile(self):
+        if not self.loginFile:
+            configManager = ConfigurationManager.getInstance()
+            self.loginFile = configManager.getLoginFile()
+        return self.loginFile
+
+    def parseLoginFile(self):
+        if self.getLoginFile() and not self.username and not self.password:
+            try:
+                # Assume form <username>|<password>
+                tokenList = open(self.loginFile).readline().split('|')
+                if len(tokenList) == 2:
+                    self.username = tokenList[0].strip()
+                    self.password = tokenList[1].strip()
+            except:
+                # Ignore invalid login file
+                pass
 
     def hasCredentials(self):
-        return (self.loginUsername != None and self.loginPassword != None)
+        return (self.username != None and self.password != None)
 
 #######################################################################
 # Testing
 
 if __name__ == '__main__':
-        pass
+    pass

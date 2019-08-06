@@ -8,6 +8,7 @@ See LICENSE file.
 from datetime import datetime
 
 from sqlalchemy import exists
+from sqlalchemy import and_
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql.functions import session_user
@@ -604,6 +605,16 @@ class ItemHandler(CdbDbEntityHandler):
                                enteredByUserId=None, isUserWriteable=None, isDynamic=None,
                                displayValue=None, targetValue=None, enteredOnDateTime = None, allowInternal=False):
         dbItemElement = self.getItemElementById(session, itemElementId)
+
+        dbPropertyType = self.propertyTypeHandler.getPropertyTypeByName(session, propertyTypeName)
+        dbItemElementProperties = self.propertyValueHandler.getItemElementProperties(session, itemElementId, propertyTypeName)
+
+        # Verify that we are not adding the same property again
+        for dbItemElementProperty in dbItemElementProperties:
+            dbPropertyValue = dbItemElementProperty.propertyValue
+            if dbPropertyValue.tag == tag and dbPropertyValue.value == value and dbPropertyValue.units == units and dbPropertyValue.description == description:
+                raise ObjectAlreadyExists('There is already identical property of type %s for item element id %s.' % (propertyTypeName, itemElementId))
+
         self.permissionHandler.verifyPermissionsForWriteToItemElement(session, enteredByUserId, dbItemElementObject=dbItemElement)
         dbPropertyValue = self.propertyValueHandler.createPropertyValue(session, propertyTypeName, tag, value, units, description, enteredByUserId, isUserWriteable, isDynamic, displayValue,targetValue, enteredOnDateTime, allowInternal)
 
@@ -623,6 +634,21 @@ class ItemHandler(CdbDbEntityHandler):
 
         self.logger.debug('Added property value (type: %s) for item element id %s' % (propertyTypeName, itemElementId))
         return dbItemElementProperty
+
+    def deleteItemElementProperties(self, session, itemElementId, propertyTypeName, enteredByUserId):
+        dbItemElement = self.getItemElementById(session, itemElementId)
+        dbPropertyType = self.propertyTypeHandler.getPropertyTypeByName(session, propertyTypeName)
+        dbItemElementProperties = self.propertyValueHandler.getItemElementProperties(session, itemElementId, propertyTypeName)
+        if not len(dbItemElementProperties):
+            raise ObjectNotFound('There are no properties of type %s for item element id %s.' % (propertyTypeName, itemElementId))
+        self.permissionHandler.verifyPermissionsForWriteToItemElement(session, enteredByUserId, dbItemElementObject=dbItemElement)
+        for dbItemElementProperty in dbItemElementProperties: 
+            # We need cascade delete to avoid extra work here
+            session.delete(dbItemElementProperty)
+            session.delete(dbItemElementProperty.propertyValue)
+        self.logger.debug('Deleted all property values of type %s for item element id %s' % (propertyTypeName, itemElementId))
+        session.flush()
+        return dbItemElementProperties
 
     def addValidItemElementRelationship(self, session, firstItemElementId, secondItemElementId, relationshipTypeName,
                                         enteredByUserId, relationshipDetails=None, description=None):

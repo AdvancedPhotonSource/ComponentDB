@@ -21,4 +21,4 @@ export PATH=$pythonInstallDir/lib:$PATH
 export LD_LIBRARY_PATH=$pythonInstallDir/lib:$LD_LIBRARY_PATH
 cd $buildDir
 echo Installing sphinx
-easy_install sphinx || exit 1
+pip install sphinx || exit 1
