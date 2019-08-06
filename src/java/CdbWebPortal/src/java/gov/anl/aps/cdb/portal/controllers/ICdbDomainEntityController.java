@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueBase;
 
 /**
  *
@@ -52,7 +53,7 @@ public interface ICdbDomainEntityController<DomainEntity extends CdbDomainEntity
      * @param propertyValue
      * @return 
      */
-    public Boolean getDisplayPropertyMetadata(PropertyValue propertyValue);
+    public Boolean getDisplayPropertyMetadata(PropertyValueBase propertyValue);
     
     /**
      * Save the list of properties for current item.

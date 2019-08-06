@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue.PropertyValueMetad
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueBase;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
@@ -148,9 +149,9 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         return result;
     }
 
-    public boolean displayShowMetadataForPropertyValue(PropertyValue propertyValue) {
-        if (propertyValue.getPropertyMetadataList() != null) {
-            return propertyValue.getPropertyMetadataList().size() > 0;
+    public boolean displayShowMetadataForPropertyValue(PropertyValueBase propertyValue) {
+        if (propertyValue.getPropertyMetadataBaseList() != null) {
+            return propertyValue.getPropertyMetadataBaseList().size() > 0;
         }
         return false;
     }
