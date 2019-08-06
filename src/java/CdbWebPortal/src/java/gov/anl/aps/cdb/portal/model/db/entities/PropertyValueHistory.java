@@ -5,9 +5,13 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -17,12 +21,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -41,7 +47,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PropertyValueHistory.findByEnteredOnDateTime", query = "SELECT p FROM PropertyValueHistory p WHERE p.enteredOnDateTime = :enteredOnDateTime"),
     @NamedQuery(name = "PropertyValueHistory.findByDisplayValue", query = "SELECT p FROM PropertyValueHistory p WHERE p.displayValue = :displayValue"),
     @NamedQuery(name = "PropertyValueHistory.findByTargetValue", query = "SELECT p FROM PropertyValueHistory p WHERE p.targetValue = :targetValue")})
-public class PropertyValueHistory extends CdbEntity implements Serializable {
+public class PropertyValueHistory extends PropertyValueBase implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -72,7 +78,10 @@ public class PropertyValueHistory extends CdbEntity implements Serializable {
     private PropertyValue propertyValue;
     @JoinColumn(name = "entered_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private UserInfo enteredByUser;
+    private UserInfo enteredByUser;    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValueHistory")
+    @JsonIgnore
+    private List<PropertyMetadataHistory> propertyMetadataHistoryList;
     
     private transient String infoActionCommand; 
 
@@ -168,6 +177,20 @@ public class PropertyValueHistory extends CdbEntity implements Serializable {
     public void setEnteredByUser(UserInfo enteredByUser) {
         this.enteredByUser = enteredByUser;
     }
+
+    @XmlTransient
+    public List<PropertyMetadataHistory> getPropertyMetadataHistoryList() {
+        return propertyMetadataHistoryList;
+    }
+    
+    @Override
+    public List<PropertyMetadataBase> getPropertyMetadataBaseList() {
+        return (List<PropertyMetadataBase>) (List<?>) getPropertyMetadataHistoryList();
+    }
+
+    public void setPropertyMetadataHistoryList(List<PropertyMetadataHistory> propertyMetadataHistoryList) {
+        this.propertyMetadataHistoryList = propertyMetadataHistoryList;
+    }
     
     public void updateFromPropertyValue(PropertyValue propertyValue) {
         this.propertyValue = propertyValue;
@@ -177,6 +200,19 @@ public class PropertyValueHistory extends CdbEntity implements Serializable {
         this.description = propertyValue.getDescription();
         this.enteredByUser = propertyValue.getEnteredByUser();
         this.enteredOnDateTime = propertyValue.getEnteredOnDateTime();
+        
+        if (propertyValue.getIsHasPropertyMetadata()) {
+            List<PropertyMetadataHistory> propertyMetadataHistoryList = new ArrayList<>(); 
+            for (PropertyMetadata propertyMetadata : this.propertyValue.getPropertyMetadataList()) {
+                PropertyMetadataHistory pmh = new PropertyMetadataHistory(); 
+                pmh.setPropertyValueHistory(this);
+                pmh.setMetadataKey(propertyMetadata.getMetadataKey());
+                pmh.setMetadataValue(propertyMetadata.getMetadataValue()); 
+                propertyMetadataHistoryList.add(pmh);
+            }
+            
+            this.setPropertyMetadataHistoryList(propertyMetadataHistoryList);
+        }
     }
 
     public String getInfoActionCommand() {

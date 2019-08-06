@@ -26,14 +26,14 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author djarosz
  */
 @Entity
-@Table(name = "property_metadata")
+@Table(name = "property_metadata_history")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "PropertyMetadata.findAll", query = "SELECT p FROM PropertyMetadata p"),
-    @NamedQuery(name = "PropertyMetadata.findById", query = "SELECT p FROM PropertyMetadata p WHERE p.id = :id"),
-    @NamedQuery(name = "PropertyMetadata.findByMetadataKey", query = "SELECT p FROM PropertyMetadata p WHERE p.metadataKey = :metadataKey"),
-    @NamedQuery(name = "PropertyMetadata.findByMetadataValue", query = "SELECT p FROM PropertyMetadata p WHERE p.metadataValue = :metadataValue")})
-public class PropertyMetadata extends PropertyMetadataBase implements Serializable {
+    @NamedQuery(name = "PropertyMetadataHistory.findAll", query = "SELECT p FROM PropertyMetadataHistory p"),
+    @NamedQuery(name = "PropertyMetadataHistory.findById", query = "SELECT p FROM PropertyMetadataHistory p WHERE p.id = :id"),
+    @NamedQuery(name = "PropertyMetadataHistory.findByMetadataKey", query = "SELECT p FROM PropertyMetadataHistory p WHERE p.metadataKey = :metadataKey"),
+    @NamedQuery(name = "PropertyMetadataHistory.findByMetadataValue", query = "SELECT p FROM PropertyMetadataHistory p WHERE p.metadataValue = :metadataValue")})
+public class PropertyMetadataHistory extends PropertyMetadataBase implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -50,19 +50,19 @@ public class PropertyMetadata extends PropertyMetadataBase implements Serializab
     @Size(min = 0, max = 64)
     @Column(name = "metadata_value")
     private String metadataValue;
-    @JoinColumn(name = "property_value_id", referencedColumnName = "id")
+    @JoinColumn(name = "property_value_history_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     @JsonIgnore
-    private PropertyValue propertyValue;
+    private PropertyValueHistory propertyValueHistory;
 
-    public PropertyMetadata() {
+    public PropertyMetadataHistory() {
     }
 
-    public PropertyMetadata(Integer id) {
+    public PropertyMetadataHistory(Integer id) {
         this.id = id;
     }
 
-    public PropertyMetadata(Integer id, String metadataKey, String metadataValue) {
+    public PropertyMetadataHistory(Integer id, String metadataKey, String metadataValue) {
         this.id = id;
         this.metadataKey = metadataKey;
         this.metadataValue = metadataValue;
@@ -94,12 +94,12 @@ public class PropertyMetadata extends PropertyMetadataBase implements Serializab
         this.metadataValue = metadataValue;
     }
 
-    public PropertyValue getPropertyValue() {
-        return propertyValue;
+    public PropertyValueHistory getPropertyValueHistory() {
+        return propertyValueHistory;
     }
 
-    public void setPropertyValue(PropertyValue propertyValue) {
-        this.propertyValue = propertyValue;
+    public void setPropertyValueHistory(PropertyValueHistory propertyValueHistory) {
+        this.propertyValueHistory = propertyValueHistory;
     }
 
     @Override
@@ -112,18 +112,18 @@ public class PropertyMetadata extends PropertyMetadataBase implements Serializab
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof PropertyMetadata)) {
+        if (!(object instanceof PropertyMetadataHistory)) {
             return false;
         }
         
-        PropertyMetadata other = (PropertyMetadata) object;
+        PropertyMetadataHistory other = (PropertyMetadataHistory) object;
         
-        if (this.propertyValue == null) {
+        if (this.propertyValueHistory == null) {
             // Comparison cannot be made. 
             return false; 
         }
                
-        if (this.propertyValue.equals(other.getPropertyValue())) {
+        if (this.propertyValueHistory.equals(other.getPropertyValueHistory())) {
             if (this.metadataKey.equals(other.metadataKey)) {
                 return true; 
             }
@@ -137,7 +137,7 @@ public class PropertyMetadata extends PropertyMetadataBase implements Serializab
         if (metadataValue != null && metadataKey != null) {
             return "Key: " + metadataKey + " - Value: " + metadataValue;
         }
-        return "gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata[ id=" + id + " ]";
+        return "gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadataHistory[ id=" + id + " ]";
     }
     
 }
