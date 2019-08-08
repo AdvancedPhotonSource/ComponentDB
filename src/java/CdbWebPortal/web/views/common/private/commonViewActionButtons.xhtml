@@ -27,7 +27,7 @@ See LICENSE file.
         
         <ui:include src="commonViewPermalinkActionButton.xhtml" />                 
         
-        <p:commandButton id="#{entityTypeName}ViewDoneButton" action="#{entityController.followBreadcrumbOrPrepareList()}" 
+        <p:commandButton id="#{entityTypeName}ViewDoneButton" action="#{clientViewManagerController.returnToPreviousPage()}" 
                          rendered="#{renderReturn == null or renderReturn}" value="Return" alt="Return" icon="fa fa-arrow-circle-o-left">
             <p:tooltip for="#{entityTypeName}ViewDoneButton" value="Return to previous page."/>
         </p:commandButton>
