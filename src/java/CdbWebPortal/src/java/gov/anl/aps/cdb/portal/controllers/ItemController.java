@@ -2380,7 +2380,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             }
         }
 
-        SessionUtility.navigateTo(desiredViewId + "?" + paramString + "faces-redirect=true");
+        String newUrl = desiredViewId + "?" + paramString + "faces-redirect=true"; 
+        ClientViewManagerController.addAppropriateLastUrl(newUrl);
+        
+        SessionUtility.navigateTo(newUrl);
         return null;
     }
 
