@@ -17,8 +17,13 @@ See LICENSE file.
         <ui:include src="itemDomainMachineDesignItemElementAddCablePanel.xhtml">
         </ui:include>
         
-        <ui:include src="itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
-        
+        <p:commandButton value="Cancel"
+                icon="fa fa-times"
+                update="@form"
+                ajax="false"
+                immediate="true"
+                action="#{itemDomainMachineDesignController.cancelAddCable()}"/> 
+       
         <p:commandButton value="Next" 
                  action="#{entityController.addCableMachineDesignListConfiguration}"
                  update="@form"/> 

@@ -68,6 +68,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     // <editor-fold defaultstate="collapsed" desc="Dual list view configuration variables ">
     private TreeNode selectedItemInListTreeTable = null;
+    private TreeNode savedSelectionBeforeAddCable = null;
     private TreeNode lastExpandedNode = null;
 
     private TreeNode currentMachineDesignListRootTreeNode = null;
@@ -616,9 +617,18 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     public void prepareAddCableMachineDesignListConfiguration() {
         updateCurrentUsingSelectedItemInTreeTable();
         currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
+        savedSelectionBeforeAddCable = selectedItemInListTreeTable;
 
         displayListConfigurationView = true;
         displayAddCableListConfigurationPanel = true;
+    }
+    
+    public void cancelAddCable() {
+        resetListConfigurationVariables();
+        resetListDataModel();
+        setSelectedItemInListTreeTable(savedSelectionBeforeAddCable);
+        savedSelectionBeforeAddCable = null;
+        expandToSelectedTreeNodeAndSelect();
     }
 
     public void addCableMachineDesignListConfiguration() {
@@ -626,6 +636,8 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
         resetListConfigurationVariables();
         resetListDataModel();
+        setSelectedItemInListTreeTable(savedSelectionBeforeAddCable);
+        savedSelectionBeforeAddCable = null;
         expandToSelectedTreeNodeAndSelect();
     }
 
