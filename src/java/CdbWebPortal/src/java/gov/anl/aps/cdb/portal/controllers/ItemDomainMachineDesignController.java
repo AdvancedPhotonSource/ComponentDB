@@ -86,6 +86,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
     private boolean displayCreateMachineDesignForTemplateElementPlaceholder = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
+    private boolean displayAddCableListConfigurationPanel = true;
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
     private TreeNode newCatalogItemsInMachineDesignModel = null;
@@ -357,6 +358,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         displayAssignInventoryItemListConfigurationPanel = false;
         displayCreateMachineDesignForTemplateElementPlaceholder = false;
         displayMachineDesignReorderOverlayPanel = false;
+        displayAddCableListConfigurationPanel = false;
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
@@ -471,6 +473,10 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     public boolean isDisplayMachineDesignReorderOverlayPanel() {
         return displayMachineDesignReorderOverlayPanel;
+    }
+
+    public boolean isDisplayAddCableListConfigurationPanel() {
+        return displayAddCableListConfigurationPanel;
     }
 
     private void updateCurrentUsingSelectedItemInTreeTable() {
@@ -601,6 +607,22 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     public void assignInventoryMachineDesignListConfiguration() {
         updateInstalledInventoryItem();
+
+        resetListConfigurationVariables();
+        resetListDataModel();
+        expandToSelectedTreeNodeAndSelect();
+    }
+
+    public void prepareAddCableMachineDesignListConfiguration() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
+
+        displayListConfigurationView = true;
+        displayAddCableListConfigurationPanel = true;
+    }
+
+    public void addCableMachineDesignListConfiguration() {
+    //    updateInstalledInventoryItem();
 
         resetListConfigurationVariables();
         resetListDataModel();
