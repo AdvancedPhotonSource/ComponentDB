@@ -1,3 +1,0 @@
-# Add new optional column to component table
-cat populate_component.sql | awk -F"'," '{if (NF==3) print $1"__NULL,"$2"__"$3; if (NF==2) print $1"__NULL,"$2; if (NF==1) print $0}' | sed "s/__/',/g"
- 
