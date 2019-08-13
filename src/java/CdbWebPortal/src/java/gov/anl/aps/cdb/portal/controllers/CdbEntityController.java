@@ -598,6 +598,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * view otherwise
      */
     public String followBreadcrumbOrPrepareList() {
+        // TODO investigate for breadcrumb issue
         String loadView = breadcrumbViewParam;
         if (loadView == null) {
             loadView = prepareList();

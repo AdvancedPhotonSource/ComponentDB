@@ -17,6 +17,7 @@ import socket
 import pwd
 import UserDict
 import ConfigParser
+import urlparse
 
 from cdb.common.constants import cdbServiceConstants
 from cdb.common.exceptions.configurationError import ConfigurationError
@@ -53,8 +54,10 @@ DEFAULT_CDB_PROPERTY_IMAGE_PATH = 'propertyValue/images'
 DEFAULT_CDB_SERVICE_PORT = 10232           # 10CDB
 DEFAULT_CDB_SERVICE_HOST = '127.0.0.1'
 DEFAULT_CDB_SERVICE_PROTOCOL = cdbServiceConstants.CDB_SERVICE_PROTOCOL_HTTP
+DEFAULT_CDB_SERVICE_URL = '%s://%s:%s' % (DEFAULT_CDB_SERVICE_PROTOCOL,DEFAULT_CDB_SERVICE_HOST,DEFAULT_CDB_SERVICE_PORT) 
 DEFAULT_CDB_SERVICE_USERNAME = ''
 DEFAULT_CDB_SERVICE_PASSWORD = ''
+DEFAULT_CDB_LOGIN_FILE = None
 
 DEFAULT_CDB_PORTAL_WEB_ADDRESS = 'http://localhost:8080/cdb'
 
@@ -148,12 +151,14 @@ class ConfigurationManager(UserDict.UserDict):
         self['defaultServicePort'] = DEFAULT_CDB_SERVICE_PORT
         self['defaultServiceHost'] = DEFAULT_CDB_SERVICE_HOST
         self['defaultServiceProtocol'] = DEFAULT_CDB_SERVICE_PROTOCOL
+        self['defaultServiceUrl'] = DEFAULT_CDB_SERVICE_URL
         self['defaultServiceUsername'] = DEFAULT_CDB_SERVICE_USERNAME  
         self['defaultServicePassword'] = DEFAULT_CDB_SERVICE_PASSWORD
         self['defaultDb'] = DEFAULT_CDB_DB
         self['defaultDbHost'] = DEFAULT_CDB_DB_HOST
         self['defaultDbPort'] = DEFAULT_CDB_DB_PORT
         self['defaultDbPassword'] = DEFAULT_CDB_DB_PASSWORD
+        self['defaultLoginFile'] = DEFAULT_CDB_LOGIN_FILE
         self['defaultDbPasswordFile'] = DEFAULT_CDB_DB_PASSWORD_FILE % self.getInstallDir()
         self['defaultDbUser'] = DEFAULT_CDB_DB_USER
         self['defaultDbSchema'] = DEFAULT_CDB_DB_SCHEMA
@@ -177,11 +182,13 @@ class ConfigurationManager(UserDict.UserDict):
         self.__setFromEnvVar('cherrypyLogFile', 'CDB_CHERRYPY_LOG_FILE')
         self.__setFromEnvVar('cherrypyAccessFile', 'CDB_CHERRYPY_ACCESS_FILE')
 
+        self.__setFromEnvVar('serviceUrl', 'CDB_SERVICE_URL')
         self.__setFromEnvVar('serviceProtocol', 'CDB_SERVICE_PROTOCOL')
         self.__setFromEnvVar('serviceHost', 'CDB_SERVICE_HOST')
         self.__setFromEnvVar('servicePort', 'CDB_SERVICE_PORT')
         self.__setFromEnvVar('serviceUsername', 'CDB_SERVICE_USERNAME')
         self.__setFromEnvVar('servicePassword', 'CDB_SERVICE_PASSWORD')
+        self.__setFromEnvVar('loginFile', 'CDB_LOGIN_FILE')
 
         self.__setFromEnvVar('contextRoot', 'CDB_CONTEXT_ROOT')
 
@@ -574,6 +581,42 @@ class ConfigurationManager(UserDict.UserDict):
             return True
         return False
 
+    def parseUrl(cls, url, defaultHost=None, defaultPort=None):
+        host = defaultHost
+        port = defaultPort
+        parseResult = urlparse.urlparse(url)
+        scheme = parseResult.scheme
+        netlocTokens = parseResult.netloc
+        if netlocTokens:
+            netlocTokens = netlocTokens.split(':')
+            host = netlocTokens[0]
+            if len(netlocTokens) > 1:
+                port = int(netlocTokens[1])
+        dirPath = parseResult.path
+        dirPath = os.path.normpath(dirPath)
+        return (scheme, host, port, dirPath)
+
+    def getUrl(self, protocol, host, port):
+        return '%s://%s:%s' % (protocol, host, port)
+
+    def getDefaultServiceUrl(self):
+        return self['defaultServiceUrl']
+
+    def setServiceUrl(self, serviceUrl):
+        if serviceUrl:
+            (protocol, host, port, dirPath) = self.parseUrl(serviceUrl)
+            self.setServiceProtocol(protocol)
+            self.setServiceHost(host)
+            self.setServicePort(port)
+        self['serviceUrl'] = serviceUrl
+
+    def getServiceUrl(self, default='__cdb_default__'):
+        default = self.getUrl(self.getServiceProtocol(), self.getServiceHost(), self.getServicePort())
+        return self.__getKeyValue('serviceUrl', default)
+
+    def hasServiceUrl(self):
+        return self.has_key('serviceUrl')
+
     def getDefaultServiceProtocol(self):
         return self['defaultServiceProtocol']
 
@@ -818,6 +861,18 @@ class ConfigurationManager(UserDict.UserDict):
 
     def hasPassword(self):
         return self.has_key('password')
+
+    def getDefaultLoginFile(self):
+        return self['defaultLoginFile']
+
+    def setLoginFile(self, loginFile):
+        self['loginFile'] = loginFile
+
+    def getLoginFile(self, default='__cdb_default__'):
+        return self.__getKeyValue('loginFile', default)
+
+    def hasLoginFile(self):
+        return self.has_key('loginFile')
 
 #######################################################################
 # Testing.

@@ -29,7 +29,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -53,7 +52,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "PropertyValue.findByIsDynamic", query = "SELECT p FROM PropertyValue p WHERE p.isDynamic = :isDynamic"),
     @NamedQuery(name = "PropertyValue.findByDisplayValue", query = "SELECT p FROM PropertyValue p WHERE p.displayValue = :displayValue"),
     @NamedQuery(name = "PropertyValue.findByTargetValue", query = "SELECT p FROM PropertyValue p WHERE p.targetValue = :targetValue")})
-public class PropertyValue extends CdbEntity implements Serializable {
+public class PropertyValue extends PropertyValueBase implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -296,6 +295,11 @@ public class PropertyValue extends CdbEntity implements Serializable {
     public List<PropertyMetadata> getPropertyMetadataList() {
         return propertyMetadataList;
     }
+    
+    @Override
+    public List<PropertyMetadataBase> getPropertyMetadataBaseList() {
+        return (List<PropertyMetadataBase>) (List<?>) getPropertyMetadataList();
+    }
 
     public void setPropertyMetadataList(List<PropertyMetadata> propertyMetadataList) {
         this.propertyMetadataList = propertyMetadataList;
@@ -318,12 +322,33 @@ public class PropertyValue extends CdbEntity implements Serializable {
         return false;
     }
 
-    public boolean equalsByTagAndValueAndUnitsAndDescription(PropertyValue other) {
+    public boolean equalsByTagAndValueAndUnitsAndDescriptionAndMetadata(PropertyValue other) {
         if (other != null) {
-            return (ObjectUtility.equals(this.tag, other.tag)
+            boolean equal = (ObjectUtility.equals(this.tag, other.tag)
                     && ObjectUtility.equals(this.value, other.value)
                     && ObjectUtility.equals(this.units, other.units)
                     && ObjectUtility.equals(this.description, other.description));
+            
+            if (equal) {
+                if (this.getIsHasPropertyMetadata()) {
+                    if (other.getIsHasPropertyMetadata()) {
+                        for (PropertyMetadata pm : this.getPropertyMetadataList()) {
+                            String metadataKey = pm.getMetadataKey();
+                            PropertyMetadata otherPm = other.getPropertyMetadataForKey(metadataKey); 
+                            if (!pm.getMetadataValue().equals(otherPm.getMetadataValue())) {
+                                equal = false; 
+                                break; 
+                            }
+                        }
+                    } else {
+                        equal = false; 
+                    }                 
+                } else if (other.getIsHasPropertyMetadata()) {
+                    equal = false; 
+                }
+            }
+            
+            return equal;
         }
         return false;
     }

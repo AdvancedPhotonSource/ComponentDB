@@ -55,6 +55,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -63,6 +64,8 @@ import javax.ws.rs.core.MediaType;
 @Path("/Items")
 @Tag(name = "Item")
 public class ItemRoute extends BaseRoute {
+    
+    private static final Logger LOGGER = Logger.getLogger(ItemRoute.class.getName());
     
     @EJB
     ItemFacade itemFacade;
@@ -80,10 +83,17 @@ public class ItemRoute extends BaseRoute {
     @Path("/ById/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Fetch an item by its id.")
-    public Item getItemById(@PathParam("id") int id) throws ObjectNotFound {
+    public Item getItemByIdFromAPI(@PathParam("id") int id) throws ObjectNotFound {
+        LOGGER.debug("Fetching item by id: " + id); 
+        return getItemById(id); 
+    }
+        
+    public Item getItemById(@PathParam("id") int id) throws ObjectNotFound {        
         Item findById = itemFacade.findById(id);
         if (findById == null) {
-            throw new ObjectNotFound("Could not find item with id: " + id);
+            ObjectNotFound ex = new ObjectNotFound("Could not find item with id: " + id);
+            LOGGER.error(ex);
+            throw ex; 
         }
         return findById;
     }
@@ -91,7 +101,8 @@ public class ItemRoute extends BaseRoute {
     @GET
     @Path("/ItemsDerivedFromItemByItemId/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Item> getItemsDerivedFromItemByItemId(@PathParam("id") int id) throws ObjectNotFound {
+    public List<Item> getItemsDerivedFromItemByItemId(@PathParam("id") int id) throws ObjectNotFound {        
+        LOGGER.debug("Fetching derived from item list for item id: " + id); 
         Item itemById = getItemById(id);
         return itemById.getDerivedFromItemList();
     }
@@ -100,6 +111,7 @@ public class ItemRoute extends BaseRoute {
     @Path("/ById/{id}/Status")
     @Produces(MediaType.APPLICATION_JSON)
     public PropertyValue getItemStatus(@PathParam("id") int id) {
+        LOGGER.debug("Fetching status for item id: " + id);
         Item item = itemFacade.findById(id);
         
         if (item instanceof ItemDomainInventory) {
@@ -113,8 +125,9 @@ public class ItemRoute extends BaseRoute {
     @Path("/ById/{id}/Location")
     @Produces(MediaType.APPLICATION_JSON)
     public ItemLocationInformation getItemLocation(@PathParam("id") int id) throws ObjectNotFound, InvalidArgument {
+        LOGGER.debug("Fetching location for item with id: " + id);
         Item itemById = getItemById(id);
-        
+                
         if (itemById instanceof LocatableItem) {
             LocatableItem locatableItem = (LocatableItem) itemById;
             LocatableItemController controller = LocatableItemController.getApiInstance();
@@ -124,7 +137,9 @@ public class ItemRoute extends BaseRoute {
             return new ItemLocationInformation(locatableItem);
             
         } else {
-            throw new InvalidArgument("Item requested cannot have a location specified. Item Id: " + id);
+            InvalidArgument ex = new InvalidArgument("Item requested cannot have a location specified. Item Id: " + id);
+            LOGGER.error(ex);
+            throw ex; 
         }
     }
     
@@ -134,15 +149,17 @@ public class ItemRoute extends BaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public boolean verifyUserPermissionForItem(@PathParam("id") int id) throws ObjectNotFound {
+        LOGGER.debug("Performing permission verification for item: " + id);
         Item itemById = getItemById(id);
-        if (itemById != null) {
+        if (itemById != null) {            
             UserInfo user = getCurrentRequestUserInfo();
+            LOGGER.debug("Continuing permission verification for user: " + user.getUsername());
             return verifyUserPermissionForItem(user, itemById);
         }
         return false;
     }
     
-    private boolean verifyUserPermissionForItem(UserInfo user, Item item) {
+    private boolean verifyUserPermissionForItem(UserInfo user, Item item) {        
         if (user != null) {
             if (isUserAdmin(user)) {
                 return true;
@@ -159,10 +176,13 @@ public class ItemRoute extends BaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public ItemLocationInformation updateItemLocation(SimpleLocationInformation locationInformation) throws ObjectNotFound, InvalidArgument, CdbException {
+        LOGGER.debug("Updating location for item with id: " + locationInformation.getLocatableItemId());
         // Validate ids provided 
         Item item = getItemById(locationInformation.getLocatableItemId());        
         if (item instanceof LocatableItem == false) {
-            throw new InvalidArgument("Locatable item id is not a locatable item");
+            InvalidArgument invalidArgument = new InvalidArgument("Locatable item id is not a locatable item");
+            LOGGER.error(invalidArgument);
+            throw invalidArgument; 
         }        
         LocatableItem locatableItem = (LocatableItem) item;
         
@@ -172,7 +192,9 @@ public class ItemRoute extends BaseRoute {
         if (locationItemId != null) {
             Item locItem = getItemById(locationItemId);            
             if (locItem instanceof ItemDomainLocation == false) {
-                throw new InvalidArgument("Location item id is not a location.");
+                InvalidArgument invalidArgument = new InvalidArgument("Location item id is not a location.");
+                LOGGER.error(invalidArgument);
+                throw invalidArgument; 
             }            
             locationItem = (ItemDomainLocation) locItem;            
         }
@@ -204,6 +226,7 @@ public class ItemRoute extends BaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public Item updateItemDetails(Item item) throws ObjectNotFound, CdbException {
+        LOGGER.debug("Updating details for item with id: " + item.getId());
         int itemId = item.getId();
         Item dbItem = getItemById(itemId);
         
@@ -230,6 +253,7 @@ public class ItemRoute extends BaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public PropertyValue updateItemPropertyValue(@PathParam("itemId") int itemId, PropertyValue propertyValue) throws InvalidArgument, ObjectNotFound, CdbException {
+        LOGGER.debug("Updating details for item with id: " + itemId);
         Item dbItem = getItemById(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
         
@@ -241,7 +265,9 @@ public class ItemRoute extends BaseRoute {
         if (propertyValue.getId() == null) {
             PropertyType propertyType = propertyValue.getPropertyType();
             if (propertyType == null) {
-                throw new InvalidArgument("Property type must be assigned to new property value.");
+                InvalidArgument invalidArgument = new InvalidArgument("Property type must be assigned to new property value.");
+                LOGGER.error(invalidArgument);
+                throw invalidArgument; 
             }
             dbPropertyValue = itemController.preparePropertyTypeValueAdd(dbItem, propertyType, null, null, updatedByUser);
         } else {
@@ -257,7 +283,9 @@ public class ItemRoute extends BaseRoute {
         }
         
         if (dbPropertyValue == null) {
-            throw new ObjectNotFound("There was an error trying to load the property value.");
+            ObjectNotFound objectNotFound = new ObjectNotFound("There was an error trying to load the property value.");
+            LOGGER.error(objectNotFound);
+            throw objectNotFound; 
         }
 
         // Set passed in property value to match db property value 
@@ -291,6 +319,7 @@ public class ItemRoute extends BaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public Log addLogEntryToItem(LogEntryEditInformation logEntryEditInformation) throws ObjectNotFound, CdbException {
+        LOGGER.debug("Adding log for item with id: " + logEntryEditInformation.getItemId());
         int itemId = logEntryEditInformation.getItemId();
         Item itemById = getItemById(itemId);
         
@@ -316,12 +345,14 @@ public class ItemRoute extends BaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public PropertyValue uploadImageForItem(@PathParam("itemId") int itemId, FileUploadObject imageUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
+        LOGGER.debug("Uploading image for item: " + itemId);
         Item dbItem = getItemById(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
         
-        if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {
-            //TODO add logger
-            throw new AuthorizationError("User does not have permission to upload image for the item");
+        if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to upload image for the item");
+            LOGGER.error(ex);
+            throw ex; 
         }
         
         Base64.Decoder decoder = Base64.getDecoder();
@@ -332,7 +363,9 @@ public class ItemRoute extends BaseRoute {
         
         PropertyType imagePropertyType = PropertyValueImageUploadBean.getImagePropertyType(propertyTypeHandlerFacade);
         if (imagePropertyType == null) {
-            throw new DbError("Could not find image property type.");
+            DbError dbError = new DbError("Could not find image property type.");
+            LOGGER.error(dbError);
+            throw dbError; 
         }
         
         PropertyValue pv = itemController.preparePropertyTypeValueAdd(dbItem, imagePropertyType, null, null, updatedByUser);
@@ -340,6 +373,7 @@ public class ItemRoute extends BaseRoute {
         try {
             PropertyValueImageUploadBean.uploadImage(pv, imageUpload.getFileName(), stream);
         } catch (IOException ex) {
+            LOGGER.error(ex);
             throw ex;
         }
         
@@ -356,9 +390,12 @@ public class ItemRoute extends BaseRoute {
     @Path("/ByQrId/{qrId}")
     @Produces(MediaType.APPLICATION_JSON)
     public Item getItemByQrId(@PathParam("qrId") int qrId) throws ObjectNotFound {
+        LOGGER.debug("Fetching item by qrId: " + qrId);
         Item findByQrId = itemFacade.findByQrId(qrId);
         if (findByQrId == null) {
-            throw new ObjectNotFound("Could not find item with qrid: " + qrId);
+            ObjectNotFound objectNotFound = new ObjectNotFound("Could not find item with qrid: " + qrId);
+            LOGGER.error(objectNotFound);
+            throw objectNotFound;
         }
         return findByQrId;
     }
@@ -367,6 +404,7 @@ public class ItemRoute extends BaseRoute {
     @Path("/PropertiesForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<PropertyValue> getPropertiesForItem(@PathParam("itemId") int itemId) throws ObjectNotFound {
+        LOGGER.debug("Fetching properties for item by id: " + itemId);
         Item itemById = getItemById(itemId);
         return itemById.getPropertyValueList();
     }
@@ -375,6 +413,7 @@ public class ItemRoute extends BaseRoute {
     @Path("/LogsForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Log> getLogsForItem(@PathParam("itemId") int itemId) throws ObjectNotFound {
+        LOGGER.debug("Fetching logs for item by id: " + itemId);
         Item itemById = getItemById(itemId);
         return itemById.getLogList();
     }
@@ -383,6 +422,7 @@ public class ItemRoute extends BaseRoute {
     @Path("/ImagePropertiesForItem/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<PropertyValue> getImagePropertiesForItem(@PathParam("itemId") int itemId) throws ObjectNotFound {
+        LOGGER.debug("Fetching image properties for item by id: " + itemId);
         Item itemById = getItemById(itemId);
         List<PropertyValue> propertyValueList = itemById.getPropertyValueList();
         return PropertyValueUtility.prepareImagePropertyValueList(propertyValueList);
@@ -392,6 +432,7 @@ public class ItemRoute extends BaseRoute {
     @Path("/ByDomain/{domainName}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Item> getItemsByDomain(@PathParam("domainName") String domainName) {
+        LOGGER.debug("Fetch items for domain: " + domainName);
         return itemFacade.findByDomain(domainName);
     }
     
@@ -407,9 +448,10 @@ public class ItemRoute extends BaseRoute {
     @Produces(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public List<ItemDomainCatalog> getFavoriteCatalogItems() {
+    public List<ItemDomainCatalog> getFavoriteCatalogItems() {        
         ItemDomainCatalogController controller = ItemDomainCatalogController.getApiInstance();
         UserInfo currentUser = getCurrentRequestUserInfo();
+        LOGGER.debug("Fetching favorite catalog items for user: " + currentUser.getUsername());
         currentUser = userFacade.find(currentUser.getId());
         return controller.getFavoriteItems(currentUser);        
     }
@@ -425,6 +467,7 @@ public class ItemRoute extends BaseRoute {
     @Path("/Domains")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Domain> getDomainList() {
+        LOGGER.debug("Fetching domain list");
         return domainFacade.findAll();
     }
     
@@ -432,6 +475,7 @@ public class ItemRoute extends BaseRoute {
     @Path("/LocationHierarchy")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemHierarchy> getLocationHierarchy() {
+        LOGGER.debug("Fetching location hierarchy");
         List<ItemDomainLocation> locationsTopLevel = getLocationsTopLevel();
         
         List<ItemHierarchy> result = new ArrayList<>();        
@@ -448,6 +492,7 @@ public class ItemRoute extends BaseRoute {
     @Path("/LocationsTopLevel")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainLocation> getLocationsTopLevel() {
+        LOGGER.debug("Fetching locations top level");
         List<ItemDomainLocation> topLocations
                 = (List<ItemDomainLocation>) (List<?>) itemFacade.findByDomainWithoutParents(ItemDomainName.location.getValue());        
         
@@ -458,10 +503,13 @@ public class ItemRoute extends BaseRoute {
     @Path("/LocationsChildLocations/{parentLocationId}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainLocation> getChildLocations(@PathParam("parentLocationId") int itemId) throws ObjectNotFound, InvalidArgument {
+        LOGGER.debug("Fetching child locations for location id: " + itemId);
         Item itemById = getItemById(itemId);
         
         if (itemById instanceof ItemDomainLocation == false) {
-            throw new InvalidArgument("Item passed in is not for a location item.");            
+            InvalidArgument invalidArgument = new InvalidArgument("Item passed in is not for a location item.");
+            LOGGER.error(invalidArgument);
+            throw invalidArgument; 
         }
         
         List<ItemDomainLocation> childLocations = new ArrayList<>();        

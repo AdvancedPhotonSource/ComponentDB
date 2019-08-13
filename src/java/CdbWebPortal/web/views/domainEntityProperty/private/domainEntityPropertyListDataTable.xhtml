@@ -44,13 +44,8 @@ See LICENSE file.
                                                  value="#{propertyValueObject}"/>
                     <p:tooltip for="#{entityTypeName}PropertyValueHistoryListViewButton" value="View property value history."/>
                 </p:commandLink>
-                <p:commandLink id="#{entityTypeName}PropertyInfoActionButton" 
-                               rendered="#{propertyValueObject.infoActionCommand != null}"
-                               styleClass="fa fa-link-icon fa-info-circle" 
-                               title="View property info"
-                               onclick="#{entityTypeName}PropertyInfoAction#{propertyValueObject.id}()">
-                    <p:tooltip for="#{entityTypeName}PropertyInfoActionButton" value="View property info."/>
-                </p:commandLink>
+                
+                <ui:include src="../../propertyValue/private/propertyValueInfoActionButton.xhtml" /> 
 
                 <p:commandLink id="#{entityTypeName}PropertyEditActionButton" 
                                styleClass="fa fa-link-icon fa-pencil" 

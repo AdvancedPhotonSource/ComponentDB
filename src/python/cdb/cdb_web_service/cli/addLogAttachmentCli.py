@@ -6,12 +6,12 @@ See LICENSE file.
 """
 from cdb.cdb_web_service.api.itemRestApi import ItemRestApi
 from cdb.cdb_web_service.api.logRestApi import LogRestApi
-from cdbWebServiceCli import CdbWebServiceCli
+from cdbWebServiceSessionCli import CdbWebServiceSessionCli
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 
-class addItemLogAttachment(CdbWebServiceCli):
+class addItemLogAttachment(CdbWebServiceSessionCli):
     def __init__(self):
-        CdbWebServiceCli.__init__(self)
+        CdbWebServiceSessionCli.__init__(self)
         self.addOption('', '--log-id', dest='logId', help='Id of the log entry to add attachment for')
         self.addOption('', '--attachment', dest='attachment', help='Attachment to add to the log entry.')
         self.addOption('', '--attachment-description', dest='attachmentDescription', help='Attachment description')

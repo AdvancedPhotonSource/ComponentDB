@@ -217,6 +217,15 @@ class ItemRouteDescriptor:
                 'method': ['POST']
             },
 
+            # Delete property value from item
+            {
+                'name': 'deletePropertyValuesFromItemByItemId',
+                'path': '%s/items/:(itemId)/deletePropertyValues/:(propertyTypeName)' % contextRoot,
+                'controller': itemSessionController,
+                'action': 'deletePropertyValuesFromItemByItemId',
+                'method': ['DELETE']
+            },
+
             # Get all domains
             {
                 'name': 'getDomains',

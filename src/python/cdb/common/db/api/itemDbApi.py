@@ -598,6 +598,23 @@ class ItemDbApi(CdbDbApi):
         return dbItemElementProperty.getCdbObject()
 
     @CdbDbApi.executeTransaction
+    def deleteItemElementProperties(self, itemElementId, propertyTypeName, enteredByUserId, **kwargs):
+        """
+        Delete all properties of a given type from the specified item element.
+
+        NOTE: items have properties through their 'self element'.
+
+        :param itemElementId:
+        :param propertyTypeName:
+        :param enteredByUserId:
+        :param kwargs:
+        :return: [(CdbObject)] deleted records.
+        """
+        session = kwargs['session']
+        dbItemElementProperties = self.itemHandler.deleteItemElementProperties(session, itemElementId, propertyTypeName, enteredByUserId)
+        return self.toCdbObjectList(dbItemElementProperties)
+
+    @CdbDbApi.executeTransaction
     def addItemElementImageProperty(self, itemElementId, enteredByUserId, generatedName, fileName, **kwargs):
 	    """
 	    Stores a property value reference to a file an image file stored in the CDB storage directory.

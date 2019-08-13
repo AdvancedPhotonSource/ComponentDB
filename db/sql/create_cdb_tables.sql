@@ -853,7 +853,7 @@ CREATE TABLE `property_type` (
 CREATE TABLE `property_type_metadata` (
 	`id` int(11) unsigned NOT NULL AUTO_INCREMENT,
     `property_type_id` int(11) unsigned NOT NULL,
-    `metadata_key` varchar(32) NOT NULL,
+    `metadata_key` varchar(64) NOT NULL,
     `description` varchar(256) DEFAULT NULL,
 	PRIMARY KEY (`id`),
 	UNIQUE KEY `property_type_metadata_u1` (`metadata_key`, `property_type_id`), 
@@ -868,7 +868,7 @@ CREATE TABLE `property_type_metadata` (
 CREATE TABLE `allowed_property_metadata_value` (
     `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
     `property_type_metadata_id` int(11) unsigned NOT NULL,
-    `metadata_value` varchar(64) NOT NULL, 
+    `metadata_value` varchar(255) NOT NULL, 
     `description` varchar(256) DEFAULT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `allowed_property_metadata_value_u1` (`property_type_metadata_id`,`metadata_value`), 
@@ -972,10 +972,10 @@ DROP TABLE IF EXISTS `property_metadata`;
 CREATE TABLE `property_metadata` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `property_value_id` int(11) unsigned NOT NULL,
-  `metadata_key` varchar(32) NOT NULL,
-  `metadata_value` varchar(64) NOT NULL,
+  `metadata_key` varchar(64) NOT NULL,
+  `metadata_value` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `property_metadata_u1` (`property_value_id`, `metadata_key`, `metadata_value`),
+  UNIQUE KEY `property_metadata_u1` (`property_value_id`, `metadata_key`),
   KEY `property_metadata_k1` (`property_value_id`),
   CONSTRAINT `property_metadata_fk1` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -1001,6 +1001,22 @@ CREATE TABLE `property_value_history` (
   KEY `property_value_history_k2` (`entered_by_user_id`),
   CONSTRAINT `property_value_history_fk1` FOREIGN KEY (`property_value_id`) REFERENCES `property_value` (`id`) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT `property_value_history_fk2` FOREIGN KEY (`entered_by_user_id`) REFERENCES `user_info` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+--
+-- Table `property_metadata_history`
+--
+
+DROP TABLE IF EXISTS `property_metadata_history`;
+CREATE TABLE `property_metadata_history` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `property_value_history_id` int(11) unsigned NOT NULL,
+  `metadata_key` varchar(64) NOT NULL,
+  `metadata_value` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `property_metadata_history_u1` (`property_value_history_id`, `metadata_key`),
+  KEY `property_metadata_history_k1` (`property_value_history_id`),
+  CONSTRAINT `property_metadata_history_fk1` FOREIGN KEY (`property_value_history_id`) REFERENCES `property_value_history` (`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --

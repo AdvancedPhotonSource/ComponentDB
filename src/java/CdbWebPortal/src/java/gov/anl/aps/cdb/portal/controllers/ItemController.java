@@ -83,7 +83,7 @@ import org.primefaces.model.Visibility;
 
 public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity, ItemSettingsObject> {
 
-    private static final Logger LOGGER = Logger.getLogger(Item.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ItemController.class.getName());
     protected final String FAVORITES_LIST_NAME = "Favorites";
     protected static final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";
 
@@ -2380,7 +2380,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             }
         }
 
-        SessionUtility.navigateTo(desiredViewId + "?" + paramString + "faces-redirect=true");
+        String newUrl = desiredViewId + "?" + paramString + "faces-redirect=true"; 
+        ClientViewManagerController.addAppropriateLastUrl(newUrl);
+        
+        SessionUtility.navigateTo(newUrl);
         return null;
     }
 

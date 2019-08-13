@@ -7,8 +7,8 @@ package gov.anl.aps.cdb.portal.plugins.support.dm;
 import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
-import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.dm.api.ExperimentDsApi;
 import gov.anl.aps.dm.common.exceptions.ConfigurationError;
 import gov.anl.aps.dm.common.exceptions.DmException;
@@ -16,7 +16,6 @@ import gov.anl.aps.dm.common.exceptions.ObjectNotFound;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import javax.jms.Session;
 import org.apache.log4j.Logger;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -36,6 +35,9 @@ public class DmPropertyTypeHandler extends AbstractPropertyTypeHandler {
     public static final String APP_MIME_CONENT_TYPE = "application/";
     public static final String PDF_EXTENSION = "pdf";
     public static final String DATA_EXTENSION = "octet-stream";
+    
+    private static final String INFO_ACTION_COMMAND = "showDMInfoActionDialog();";
+    private static final String[] TEXT_FILE_EXTENSIONS = { "txt" , "log" }; 
 
     public static final String IMAGE_MIME_CONTENT_TYPE = "image/";
     public static final String[] IMAGE_FILE_EXTENSIONS = {
@@ -86,8 +88,7 @@ public class DmPropertyTypeHandler extends AbstractPropertyTypeHandler {
     }
 
     public String generateMimeContentType(String fileName) {
-        int extStart = fileName.lastIndexOf(".") + 1;
-        String ext = fileName.substring(extStart);
+        String ext = getFileExtension(fileName);
         String result = APP_MIME_CONENT_TYPE;
 
         for (String imageExt : IMAGE_FILE_EXTENSIONS) {
@@ -105,6 +106,36 @@ public class DmPropertyTypeHandler extends AbstractPropertyTypeHandler {
         }
 
         return result;
+    }
+    
+    private String getFileExtension(String fileName) {
+        int extStart = fileName.lastIndexOf(".") + 1;
+        String ext = fileName.substring(extStart);
+        return ext;
+    }
+    
+    private boolean isTextFile(String fileName)  {
+        String ext = getFileExtension(fileName);
+        for (String textExt : TEXT_FILE_EXTENSIONS) {
+            if (ext.equalsIgnoreCase(textExt)) {
+                return true; 
+            }
+        }
+        return false; 
+    }
+    
+    @Override
+    public void setInfoActionCommand(PropertyValue propertyValue){
+        if (isTextFile(propertyValue.getValue())) {
+            propertyValue.setInfoActionCommand(INFO_ACTION_COMMAND);
+        }        
+    }
+    
+    @Override
+    public void setInfoActionCommand(PropertyValueHistory propertyValueHistory){
+        if (isTextFile(propertyValueHistory.getValue())) {
+            propertyValueHistory.setInfoActionCommand(INFO_ACTION_COMMAND);
+        }
     }
 
     @Override
