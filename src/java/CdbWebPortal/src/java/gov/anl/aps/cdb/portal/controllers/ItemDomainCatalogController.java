@@ -36,12 +36,13 @@ import org.apache.log4j.Logger;
  *
  * @author djarosz
  */
-@Named("itemDomainCatalogController")
+@Named(ItemDomainCatalogController.CONTROLLER_NAMED)
 @SessionScoped
 public class ItemDomainCatalogController extends ItemController<ItemDomainCatalog, ItemDomainCatalogFacade, ItemDomainCatalogSettings>  {
 
     private final String DOMAIN_TYPE_NAME = ItemDomainName.catalog.getValue();
     private final String DERIVED_DOMAIN_NAME = "Inventory";    
+    public final static String CONTROLLER_NAMED = "itemDomainCatalogController";
     
     private static final Logger logger = Logger.getLogger(ItemDomainCatalogController.class.getName());          
 
