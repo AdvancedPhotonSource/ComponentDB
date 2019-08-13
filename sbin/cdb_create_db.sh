@@ -251,6 +251,7 @@ CDB_DB_TABLES="\
     property_value \
     property_metadata \
     property_value_history \
+    property_metadata_history \
     item_connector_property \
     item_element_relationship_property \
     item_element_property \
