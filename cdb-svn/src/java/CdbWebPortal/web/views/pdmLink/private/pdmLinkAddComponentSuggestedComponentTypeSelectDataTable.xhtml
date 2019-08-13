@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+              
+    <p:dataTable id="pdmLinkSuggestedComponentTypeSelectDataTable" 
+                 widgetVar="pdmLinkSuggestedComponentTypeSelectDataTableWidget"
+                 var="componentTypeObject" 
+                 value="#{pdmLinkDrawingBean.createSuggestedTypesDataModel(componentTypeController)}" 
+                 rowKey="#{componentTypeObject.id}"
+                 selection="#{componentTypeController.selectedComponentType}"
+                 selectionMode="single"
+                 paginator="true"
+                 paginatorAlwaysVisible="true"
+                 rows="#{resources.SelectDataTableNumberOfRows}"
+                 emptyMessage="No available component types found."
+                 >
+
+        <p:column sortBy="#{componentTypeObject.name}" headerText="Name">
+            <h:outputText value="#{componentTypeObject.name}"/>
+        </p:column>
+
+        <p:column sortBy="#{componentTypeObject.componentTypeCategory.name}" headerText="Category">
+            <h:outputText value="#{componentTypeObject.componentTypeCategory.name}"/>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>

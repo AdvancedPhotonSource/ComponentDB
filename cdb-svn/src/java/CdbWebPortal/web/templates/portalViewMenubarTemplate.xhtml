@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <p:outputPanel styleClass="mainMenuBar">
+        <p:menubar>
+            <p:submenu label="Browse"
+                       styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') 
+                                     or fn:startsWith(view.viewId, '/views/itemDomainInventory/browse')) ? 'activeSubMenuParentItem' : ''} ">
+                <p:menuitem value="Browse By Function" url="/views/itemDomainCatalog/browseCategoryType"  
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browseCategoryType') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="Browse By Ownership" url="/views/itemDomainCatalog/browseOwner"  
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browseOwner') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="Browse By Location" url="/views/itemDomainInventory/browseLocation"  
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/browseLocation') ? 'activeMenuItem' : ''} "/>
+
+            </p:submenu>
+            <p:menuitem value="Catalog" url="/views/itemDomainCatalog/list" 
+                        styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') and 
+                                      !fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} "/>
+            <p:menuitem value="Inventory" url="/views/itemDomainInventory/list"
+                        styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') and 
+                                      !fn:startsWith(view.viewId, '/views/itemDomainInventory/browse') ? 'activeMenuItem' : ''} "/>
+            <f:facet name="options">
+                <p:panelGrid columns="2" styleClass="plainPanelGrid">                         
+                    <p:column>                        
+                        <h:form>
+                            <p:inputText id="menuBarSearchInput" placeholder="Search"
+                                         styleClass="expandingInputText entityDataText menuBarInputText" 
+                                         value="#{searchController.inputBoxSearchString}" 
+                                         title="Search String"/>
+                            <p:defaultCommand target="menuBarSearchInputCommand" />
+                            <p:commandButton id="menuBarSearchInputCommand" 
+                                             style="display: none" 
+                                             update="@form" 
+                                             action="#{searchController.performInputBoxSearch()}"/>                            
+                        </h:form>
+                    </p:column>
+                    
+                    <p:menubar styleClass="menuBarSupportingItems">
+                        <p:menuitem value="Locations" 
+                                    rendered="#{loginController.loggedInAsAdmin}"
+                                    styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainLocation/') ? 'activeMenuItem' : ''} "
+                                    action="#{itemDomainLocationController.prepareListFromViewPath('/views/itemDomainLocation')}"/>
+                        <p:menuitem value="Property Types" 
+                                    rendered="#{loginController.loggedInAsAdmin}"
+                                    styleClass="#{fn:startsWith(view.viewId, '/views/propertyType/') ? 'activeMenuItem' : ''} "
+                                    action="#{propertyTypeController.prepareListFromViewPath('/views/propertyType')}"/>
+                        <p:menuitem value="Sources"
+                                    rendered="#{loginController.loggedInAsAdmin}"
+                                    styleClass="#{fn:startsWith(view.viewId, '/views/source/') ? 'activeMenuItem' : ''} "
+                                    action="#{sourceController.prepareListFromViewPath('/views/source')}"/>
+                        <p:menuitem value="Users"
+                                    rendered="#{loginController.loggedInAsAdmin}"
+                                    styleClass="#{fn:startsWith(view.viewId, '/views/userInfo/') ? 'activeMenuItem' : ''} "
+                                    action="#{userInfoController.prepareListFromViewPath('/views/userInfo')}"/> 
+                        <p:menuitem value="Settings"
+                                    action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
+                                    rendered="#{loginController.loggedIn}" icon="ui-icon-gear"/>
+                        <p:menuitem value="Login" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="ui-icon-person"/>
+                        <p:menuitem value="Logout" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="ui-icon-close"/>
+                        <p:menuitem value="About" url="/views/about.xhtml" icon="ui-icon-help"/>
+                    </p:menubar>
+                </p:panelGrid>
+            </f:facet>
+        </p:menubar>
+    </p:outputPanel>
+</ui:composition>

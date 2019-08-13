@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../item/private/templates/itemDomainEntityCustomizeDisplayDialogTemplate.xhtml">
+    
+    <ui:define name="domainEntitySpecificRowExpansion">
+        <p:selectBooleanCheckbox id="designElementDisplayBillOfMaterialsActionColumn" value="#{itemElementController.displayBillOfMaterialsActionColumn}"/>  
+        <h:outputLabel for="designElementDisplayBillOfMaterialsActionColumn" value="Display BOM Action Column in Flat Table Expansion" styleClass="dialogDataLabel"/>
+    </ui:define>
+
+    <ui:define name="domainEntitySpecificOthers">
+        <p:selectBooleanCheckbox id="designElementDisplayFlatTableView" value="#{itemElementController.displayFlatTableView}"/>  
+        <h:outputLabel for="designElementDisplayFlatTableView" value="Display Flat Table View*" styleClass="dialogDataLabel"/>
+
+        <p:selectBooleanCheckbox id="designElementDisplayRowColor" value="#{itemElementController.displayItemElementRowColor}"/>  
+        <h:outputLabel for="designElementDisplayRowColor" value="Display Row Color" styleClass="dialogDataLabel"/>
+    </ui:define>
+
+    <ui:define name="domainEntityPropertyValueColumnsIncludeParamaters">
+        <ui:param name="filterable" value="#{false}" />
+    </ui:define>
+
+    <ui:define name="domainEntityExtraTabs">
+        <p:tab title="Sorting">
+            <p:panelGrid columns="2">
+                <p:selectBooleanCheckbox id="designElementDisplaySortOrder" value="#{itemElementController.displaySortOrder}"/>  
+                <h:outputLabel for="designElementDisplaySortOrder" value="Display Sort Order" styleClass="dialogDataLabel"/>
+
+                <p:selectOneMenu id="#{entityTypeName}SortByPropertyType" value="#{itemElementController.sortByPropertyTypeId}" 
+                                 styleClass="entityDataSelectOne">
+                    <f:selectItem itemLabel="None: Default Sort Order" noSelectionOption="true"/>
+                    <f:selectItems var="sortPropertyType" value="#{propertyTypeController.availableItems}" 
+                                   itemLabel="#{sortPropertyType.name}" itemValue="#{sortPropertyType.id}"/>
+                </p:selectOneMenu>
+                <h:outputLabel for="#{entityTypeName}SortByPropertyType" value="Sort By Property Type" styleClass="dialogDataLabel"/>  
+            </p:panelGrid>
+        </p:tab>
+    </ui:define>
+
+</ui:composition>

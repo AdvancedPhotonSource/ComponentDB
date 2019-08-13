@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../templates/contentViewTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="pageTitle">: Sources</ui:define>        
+    <ui:define name="middleCenter">
+        
+        <f:metadata>
+            <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+            <f:event type="preRenderComponent" listener="#{sourceController.processPreRenderList()}"/>
+        </f:metadata>
+
+        <h:form id="viewSourceListForm">      
+            <div class="pageTitle">
+                <h1>Source Catalog</h1>
+            </div>
+
+            <ui:param name="entityController" value="#{sourceController}"/>
+            <ui:include src="../common/private/commonListActionButtons.xhtml"/>
+            <h:panelGroup>  
+                <ui:include src="private/sourceListDataTable.xhtml"/>
+            </h:panelGroup>
+            <ui:include src="private/sourceDestroyDialog.xhtml"/>
+
+            <ui:include src="private/sourceListCustomizeDisplayDialog.xhtml"/>
+
+        </h:form>
+        <h:outputScript library="javascript" name="sourceListFilter.js"/>
+
+    </ui:define>
+</ui:composition>

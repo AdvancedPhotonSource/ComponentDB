@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:panel header="#{itemDomainCatalogController.displayEntityTypeName}s"
+             rendered="#{searchController.displayCatalogItems}"
+             collapsed="#{!itemDomainCatalogController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainCatalogController}" />
+        </ui:include>
+    </p:panel>
+
+    <p:panel header="#{itemDomainInventoryController.displayEntityTypeName}s"
+             rendered="#{searchController.displayInventoryItems}"
+             collapsed="#{!itemDomainInventoryController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainInventoryController}" />
+        </ui:include>
+    </p:panel>
+
+    <p:panel header="Item Elements" 
+             rendered="#{searchController.displayItemElements}"
+             collapsed="#{!itemElementController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../itemElement/private/itemElementSearchDataTable.xhtml"/>
+    </p:panel>
+
+    <p:panel header="#{itemDomainLocationController.displayEntityTypeName}s"
+             rendered="#{searchController.displayLocationItems}"
+             collapsed="#{!itemDomainLocationController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../item/private/itemSearchDataTable.xhtml">
+            <ui:param name="itemDomainController" value="#{itemDomainLocationController}" />
+        </ui:include>
+    </p:panel>
+
+    <p:panel header="Item Categories" 
+             rendered="#{searchController.displayItemCategories}"
+             collapsed="#{!itemCategoryController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../itemCategory/private/itemCategorySearchDataTable.xhtml"/>
+    </p:panel> 
+
+    <p:panel header="Item Types" 
+             rendered="#{searchController.displayItemTypes}"
+             collapsed="#{!itemTypeController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../itemType/private/itemTypeSearchDataTable.xhtml"/>
+    </p:panel>
+
+
+    <p:panel header="Property Types" 
+             rendered="#{searchController.displayPropertyTypes}"
+             collapsed="#{!propertyTypeController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../propertyType/private/propertyTypeSearchDataTable.xhtml"/>
+    </p:panel>   
+
+    <p:panel header="Property Type Categories" 
+             rendered="#{searchController.displayPropertyTypeCategories}"
+             collapsed="#{!propertyTypeCategoryController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../propertyTypeCategory/private/propertyTypeCategorySearchDataTable.xhtml"/>
+    </p:panel>  
+
+    <p:panel header="Sources" 
+             rendered="#{searchController.displaySources}"
+             collapsed="#{!sourceController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../source/private/sourceSearchDataTable.xhtml"/>
+    </p:panel>                              
+
+    <p:panel header="Users" 
+             rendered="#{searchController.displayUsers}"
+             collapsed="#{!userInfoController.displaySearchResultList}"
+             toggleable="true"                                         
+             >
+        <ui:include src="../../userInfo/private/userInfoSearchDataTable.xhtml"/>
+    </p:panel>
+
+    <p:panel header="User Groups" 
+             rendered="#{searchController.displayUserGroups}"
+             collapsed="#{!userGroupController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../userGroup/private/userGroupSearchDataTable.xhtml"/>
+    </p:panel> 
+
+</ui:composition>

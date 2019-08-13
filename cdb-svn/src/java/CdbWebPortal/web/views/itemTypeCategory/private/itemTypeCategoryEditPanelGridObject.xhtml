@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- Specify itemTypeCategoryController for this page --> 
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"              
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">       
+    
+    <h:outputLabel for="domain" 
+                   value="Domain" 
+                   styleClass="entityDataLabel"/>
+    
+    <p:column>
+        <p:selectOneMenu id="domain" 
+                         value="#{simpleEntityObject.domain}"  
+                         disabled="#{itemTypeCategoryController.itemTypeCategoryDomainEditDisabled}"
+                         required="true" 
+                         styleClass="entityDataText"
+                         onchange="itemTypeCategoryChanged()">
+            <f:selectItems var="domain" value="#{domainController.availableItems}" itemLabel="#{domain.name}" itemValue="#{domain}"/>
+        </p:selectOneMenu>
+        
+        <p:remoteCommand name="itemTypeCategoryChanged"
+                         update="@form"/> 
+    </p:column>
+
+</ui:composition>
+
+

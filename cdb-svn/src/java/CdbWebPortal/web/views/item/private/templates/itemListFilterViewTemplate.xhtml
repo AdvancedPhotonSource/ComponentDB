@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                template="itemListFilterViewTemplateBase.xhtml">  
+
+    <ui:define name="resultsDataTable">
+        <p:dataTable value="#{filterViewListDataModel}"
+                     var="filterViewItemResultObject"
+                     paginator="true"
+                     rows="20">
+            <ui:param name="itemListObject" value="#{filterViewItemResultObject.itemObject}"/>
+            <p:column headerText="Assy" styleClass="narrowColumn">
+                <p:rowToggler rendered="#{filterViewItemResultObject.displayExpansion}" />
+            </p:column>
+            <ui:insert name="itemFilterViewListObject">
+                <ui:include src="../itemListFilterViewObject.xhtml" />
+            </ui:insert>
+            <p:rowExpansion styleClass="defaultBackground">
+                <ui:repeat value="#{filterViewItemResultObject.filterViewExpansionList}"
+                           var="resultExpansionObject">
+                    <p:panel header="#{resultExpansionObject.headerTitle}">
+                        <p:treeTable value="#{resultExpansionObject.rootTreeNode}"
+                                     var="itemTreeNode">                        
+                            <ui:insert name="itemFilterViewListTreeObject">
+                                <ui:include src="../itemListFilterViewObject.xhtml" >
+                                    <ui:param name="itemListObject"
+                                              value="#{itemTreeNode}"/>
+                                </ui:include>
+                            </ui:insert>
+                        </p:treeTable>
+                    </p:panel>
+                </ui:repeat>
+            </p:rowExpansion>
+        </p:dataTable>
+    </ui:define>
+
+</ui:composition>

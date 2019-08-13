@@ -1,0 +1,67 @@
+PREPARE CODE/DB
+===============
+1) backup production db
+make backup
+
+2) go to backup directory and compare all tables with what is currently in svn,
+make sure they are in sync with latest schema, and copy prd tables to svn
+
+for f in `ls -c1 *.sql | grep -v setting_type | grep -v user_setting | grep -v backup`; do echo $f; diff $f ../../../dev/db/sql/cdb/$f; done
+
+3) edit software version in etd/cdb.deploy.conf
+
+4) edit doc/RELEASE_NOTES.txt
+
+5) commit changes
+svn commit -m "preparing release"
+
+6) copy documents/images from prd to dev
+cd ..
+rsync -arvlP data/* data_cdb_dev/
+
+RELEASE DEV 
+===========
+1) update/clean dev area, make sure code builds
+svn update
+make clean
+make dist
+
+2) recreate dev db
+make db-dev
+
+3) deploy dev web service 
+make deploy-web-service-dev
+
+4) deploy dev web portal
+make deploy-web-portal-dev
+
+5) tag/release
+svn commit -m "preparing tag"
+./sbin/cdb_svn_tag.sh 20150331
+./sbin/cdb_svn_release.sh 2.0 20150331
+
+RELEASE PRD
+===========
+1) checkout new release
+svn co https://svn.aps.anl.gov/cdb/releases/2.0 2.0
+
+2) go to new release area and make sure code builds
+cd 2.0
+source setup.sh
+make dist
+
+3) recreate db (optional)
+make db
+
+4) deploy web service 
+make deploy-web-service
+
+5) deploy web portal
+make deploy-web-portal
+
+6) commit branch changes
+svn commit -m "release updates"
+
+7) update current version link
+cd ..
+rm current; ln -s 2.0 current

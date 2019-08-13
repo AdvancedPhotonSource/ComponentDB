@@ -1,0 +1,16 @@
+[mysql]
+socket=CDB_INSTALL_DIR/var/run/mysqld/mysql.sock
+
+[mysqld]
+datadir=CDB_INSTALL_DIR/data/mysql
+socket=CDB_INSTALL_DIR/var/run/mysqld/mysql.sock
+log-error=CDB_INSTALL_DIR/var/log/mysqld/mysqld.log
+pid-file=CDB_INSTALL_DIR/var/run/mysqld/mysqld.pid
+user=mysql
+port=CDB_DB_PORT
+bind-address=CDB_DB_HOST
+symbolic-links=0
+
+[mysqld_safe]
+log-error=CDB_INSTALL_DIR/var/log/mysqld/mysqld.log
+pid-file=CDB_INSTALL_DIR/var/run/mysqld/mysqld.pid

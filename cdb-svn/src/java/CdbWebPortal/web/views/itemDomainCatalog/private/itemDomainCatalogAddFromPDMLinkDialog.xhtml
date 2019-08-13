@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="itemDomainCatalogPDMLinkDrawingSearchDialog" 
+              widgetVar="itemDomainCatalogPDMLinkDrawingSearchDialogWidget" 
+              header="Search for PDMLink Drawing" 
+              styleClass="viewTransparentBackgroundDialog"
+              onShow="#{pdmLinkDrawingBean.reloadPdmLinkImageStreamedContent()}"
+              resizable="false">
+
+        <ui:include src="../../pdmLink/private/pdmLinkDrawingDialogSearchBox.xhtml">
+            <ui:param name="updateTarget" value="pdmLinkDrawingSearchResultOutputPanel"/>
+            <ui:param name="parentDialogWidgetVar" value="itemDomainCatalogPDMLinkDrawingSearchDialogWidget"/>
+        </ui:include>
+        
+        <p:outputPanel>
+            <p:outputPanel id="pdmLinkDrawingSearchResultOutputPanel">
+                <p:outputPanel rendered="#{pdmLinkDrawingBean.searchResults != null}">
+                    <p/>                   
+                    <p:outputPanel styleClass="borderAbove">
+                        <p/>
+                        
+                        <ui:include src="../../pdmLink/private/pdmLinkDrawingSearchResult.xhtml">
+                            <ui:param name="parentDialogWidgetVar" value="itemDomainCatalogPDMLinkDrawingSearchDialogWidget" />
+                            <ui:param name="searchResultUpdate" value=":#{p:component('pdmLinkDrawingSearchResultOutputPanel')}" />
+                        </ui:include>
+                    </p:outputPanel>
+
+                    <p:outputPanel styleClass="borderAbove"
+                                   rendered="#{pdmLinkDrawingBean.drawing != null}">
+                        <p/>
+                        <p:commandButton value="Add Drawing to Catalog"
+                                         action="#{pdmLinkDrawingBean.createCatalogItemFromDrawingNumber('createdCatalogItemFromPDMLinkDrawing()')}"/>
+                        <p:remoteCommand name="createdCatalogItemFromPDMLinkDrawing"
+                                         action="simpleCreate"/>
+                    </p:outputPanel>
+                </p:outputPanel>
+            </p:outputPanel>
+        </p:outputPanel>
+    </p:dialog>
+
+    <ui:include src="../../pdmLink/private/pdmLinkHelpDialog.xhtml"/>
+
+</ui:composition>
+

@@ -1,0 +1,19 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../../item/private/templateDefaults/itemListRowExpansion/itemDerivedFromItemTab.xhtml">
+
+    <ui:define name="itemDerivedFromItemListObject">
+        <ui:include src="../../../itemDomainInventory/private/itemDomainInventoryListObject.xhtml">
+            <ui:param name="itemListObject" value="#{derivedFromItemObject}" />
+            <ui:param name="entityController" value="#{derivedDomainController}" />
+            <ui:param name="filterable" value="#{false}" />
+        </ui:include>
+    </ui:define>
+    
+    <ui:define name="assemblyTab">
+        <ui:include src="../../../itemDomainInventory/private/templateDefaults/itemDomainInventoryAssemblyTab.xhtml">
+            <ui:param name="entityController" value="#{derivedDomainController}" />
+        </ui:include>
+    </ui:define>
+
+</ui:composition>

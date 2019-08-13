@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../templates/contentViewTemplate.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+        <f:event type="preRenderComponent" listener="#{userInfoController.processViewRequestParams}"/>
+    </f:metadata>
+
+    <ui:define name="pageTitle">: View User #{userInfoController.selected.username}</ui:define>
+    <ui:define name="middleCenter">
+        <h:form id="viewUserInfoForm">
+
+            <div class="middleCenterLeftContent">
+                <div class="pageTitle">
+                    <h1>User Details</h1>
+                </div>
+
+                <ui:include src="private/userInfoViewPanelGrid.xhtml"/>
+
+                <p/>
+                <ui:param name="entityController" value="#{userInfoController}"/>
+                <ui:param name="isEntityWriteable" value="#{loginController.isUserWriteable(userInfoController.selected)}"/>
+                <ui:include src="../common/private/commonViewActionButtons.xhtml"/>
+                <ui:include src="private/userInfoDestroyDialog.xhtml"/>
+
+            </div>
+            <div class="middleCenterRightContent">
+                <p:accordionPanel multiple="true" activeIndex="0,1"
+                                  rendered="#{loginController.loggedIn}">
+                    <p:tab title="Settings">
+                        <ui:include src="../userSetting/private/userSettingView.xhtml"/>
+                    </p:tab>
+                    <p:tab title="User Role">
+                        <ui:include src="../userRole/private/userInfoUserRoleList.xhtml"/>
+                        
+                    </p:tab>
+                </p:accordionPanel>
+            </div>
+        </h:form>
+
+    </ui:define>
+
+</ui:composition>
+
+

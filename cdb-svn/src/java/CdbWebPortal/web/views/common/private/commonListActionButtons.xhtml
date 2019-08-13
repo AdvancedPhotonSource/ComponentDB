@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
+    <ui:param name="entityTypeNames" value="#{entityTypeName}s"/>
+    <ui:param name="entityTypeDataListId" value="#{entityTypeName}ListDataTable" />
+    <ui:param name="entityTypeGroupName" value="#{entityController.entityTypeGroupName}"/>
+    <ui:param name="entityTypeCategoryName" value="#{entityController.entityTypeCategoryName}"/>
+    <ui:param name="entityTypeTypeName" value="#{entityController.entityTypeTypeName}"/>
+    <ui:param name="displayAddButton" value="#{loginController.loggedInAsAdmin or (loginController.loggedIn and entityController.entityCanBeCreatedByUsers())}"/>
+    <ui:param name="displayShowEntityListPageHelpFragmentButton" value="#{entityController.displayListPageHelpFragmentSettingTypeKey != null}" />
+    <ui:param name="displayLoadPropertiesFilterValuesButton" value="#{entityController.displayLoadPropertyValuesButton}" />
+        
+    <div class="actionButton">
+        <ui:insert name="listAddButton">
+            <ui:include src="reusedParts/listAddButton.xhtml" />
+        </ui:insert>
+        
+        <ui:insert name="additonalListButtons"/>
+
+        <p:commandButton id="#{entityTypeName}LoadPropertyValuesButton" 
+                         rendered="#{displayLoadPropertiesFilterValuesButton}" 
+                         value="Load Property Filters" alt="Load property value filters"
+                         onstart="PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide()"
+                         action="#{entityController.loadPreProcessPropertyValueInformationColumns()}"
+                         update="#{entityTypeName}ListDataTable @parent">
+            <p:tooltip for="#{entityTypeName}LoadPropertyValuesButton" value="Load property value filters."/>
+        </p:commandButton>
+
+        <p:commandButton id="#{entityTypeName}ExportXlsButton" action="#{entityController.exportDataTableAsXls(entityTypeDataListId, entityTypeNames)}" styleClass="actionButtonRight" ajax="false" icon="ui-icon-excel">
+            <p:tooltip for="#{entityTypeName}ExportXlsButton" value="Export list to excel file."/>
+        </p:commandButton>  
+        <p:commandButton id="#{entityTypeName}ExportPdfButton" action="#{entityController.exportDataTableAsPdf(entityTypeDataListId, entityTypeNames)}" styleClass="actionButtonRight" ajax="false" icon="ui-icon-pdf">
+            <p:tooltip for="#{entityTypeName}ExportPdfButton" value="Export list to pdf file."/>
+        </p:commandButton>  
+        <p:commandButton id="#{entityTypeName}PrintButton" styleClass="actionButtonRight" icon="ui-icon-print">
+            <p:printer target="#{entityTypeName}ListDataTable"/>
+            <p:tooltip for="#{entityTypeName}PrintButton" value="Print list."/>
+        </p:commandButton> 
+        <p:commandButton id="#{entityTypeName}CustomizeDisplayButton" oncomplete="PF('#{entityTypeName}ListCustomizeDisplayDialogWidget').show()" alt="Customize List" styleClass="actionButtonRight" update="@form" icon="ui-icon-wrench">
+            <p:tooltip for="#{entityTypeName}CustomizeDisplayButton" value="Customize list view."/>
+        </p:commandButton>
+        <p:commandButton id="#{entityTypeName}ResetFiltersButton" action="#{entityController.resetList()}" alt="Clear Filters" icon="ui-icon-refresh" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityTypeName}ResetFiltersButton" value="Reset list filters."/>
+        </p:commandButton>
+
+        <ui:insert name="listTypeCategoryActionButtons">
+            <ui:include src="reusedParts/listTypeCategoryActionButtons.xhtml"/>
+        </ui:insert>
+
+        <p:button id="#{entityTypeName}ViewGroupsButton" href="../#{entityTypeGroupName}/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight">
+            <p:tooltip for="#{entityTypeName}ViewGroupsButton" value="View groups."/>
+        </p:button>
+
+        <p:commandButton id="showEntityListPageHelpFragmentButton" icon="ui-icon-help" styleClass="actionButtonRight" onclick="PF('showEntityListPageHelpFragmentPanelWidget').toggle()" rendered="#{displayShowEntityListPageHelpFragmentButton}">
+            <p:tooltip for="showEntityListPageHelpFragmentButton" value="Toggle help information for this entity"/>
+        </p:commandButton>
+
+        <p:commandButton id="#{entityTypeName}NoOp" style="visibility:hidden" value="NoOp"/>
+        <p:defaultCommand target="#{entityTypeName}NoOp"/>
+    </div>
+
+</ui:composition>

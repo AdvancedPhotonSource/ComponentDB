@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog id="#{entityTypeName}PropertySelectDialog" 
+              widgetVar="#{entityTypeName}PropertySelectDialogWidget" 
+              header="Select #{entityTypeDisplayName} Property Types" 
+              resizable="false"
+              styleClass="viewTransparentBackgroundDialog">
+        <div>         
+            <ui:include src="domainEntitySelectionFilterView.xhtml">
+                <ui:param name="propertySelectDataTableSelectionValue" value="#{propertyTypeController.selectedObjectList}" />
+                <ui:param name="propertySelectionMode" value="multiple" />
+            </ui:include>
+            
+            <f:facet name="footer" class="dialog">
+                
+                <p:remoteCommand name="#{entityTypeName}PropertySelectionMade"
+                                 action="#{entityController.selectPropertyTypes(propertyTypeController.getSelectedObjectListAndResetSelectDataModel())}"
+                                 update="@form"
+                                 oncomplete="PF('#{entityTypeName}PropertySelectDialogWidget').hide()" 
+                                 />
+                
+                <p:commandButton value="Done" alt="Done" 
+                                 onclick="#{entityTypeName}PropertySelectionMade()"
+                                 icon="ui-icon-arrowreturnthick-1-w"/>
+            </f:facet>
+        </div>
+    </p:dialog>
+    
+    <ui:include src="domainEntitySelectionFilterViewCustomizeDisplayDialog.xhtml"/>
+
+</ui:composition>
+
+

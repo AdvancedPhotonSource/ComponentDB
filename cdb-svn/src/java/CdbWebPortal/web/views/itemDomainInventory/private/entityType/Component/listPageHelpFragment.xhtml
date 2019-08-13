@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../../../../templates/entityListPageHelpFragmentTemplate.xhtml">
+
+    <ui:define name="entityListPageHelpFragmentImage">
+        <p:graphicImage styleClass="entityListPageHelpFragmentImage" library="images" name="component-instances.png" />
+    </ui:define>
+    <ui:define name="entityListPageHelpFragmentHelpContent">
+        <div class="sectionTitleHelp">
+            <h2>Component Instance:</h2>
+        </div>  
+        <div class="sectionText">
+            <ul>
+                <li>
+                    Physical instantiation of a given component
+                </li>
+                <li>
+                    Has unique identifier (e.g., serial number) that can be used to distinguish between two instances of the same component 
+                </li>
+                <li>
+                    Part of the <strong>Component Inventory</strong>
+                </li>
+            </ul>
+        </div>
+    </ui:define>
+
+</ui:composition>
+
+

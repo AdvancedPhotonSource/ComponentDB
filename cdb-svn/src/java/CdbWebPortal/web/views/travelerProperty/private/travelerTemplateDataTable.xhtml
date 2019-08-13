@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dataTable
+        id="#{dataTableId}"
+        widgetVar="travelerTemplatesDataTableWidget"
+        var="travelerTemplate" 
+        value="#{travelerTemplateList}" 
+        selectionMode="single"
+        rowKey="#{travelerTemplate}"
+        selection="#{travelerSelectedValue}"
+        paginator="true" 
+        paginatorPosition="bottom"
+        rows="#{resources.DialogSearchResultsDataTableNumberOfRows}"
+        paginatorAlwaysVisible="true"
+        emptyMessage="No traveler templates found">
+        <p:ajax event="rowSelect" oncomplete="#{rowSelectEvent}" />
+        
+        <p:ajax event="rowDblselect" oncomplete="#{travelerTemplateDoubleClickSelectionEvent}" />
+
+        <p:column sortBy="#{travelerTemplate.title}"
+                  headerText="Template Title" >
+            <h:outputText value="#{travelerTemplate.title}" />
+            <h:outputLink target="_blank" value="#{travelerBean.getTravelerTemplateUrl(travelerTemplate.id)}">
+
+            </h:outputLink>
+
+        </p:column>
+        <p:column sortBy="#{travelerTemplate.createdBy}"
+                  headerText="Created By" >
+            <h:outputText value="#{travelerTemplate.createdBy}" />
+        </p:column>
+        <p:column sortBy="#{travelerTemplate.createdOn}"
+                  headerText="Created On" >
+            <h:outputText value="#{travelerTemplate.createdOn}" />
+        </p:column>
+
+        <p:column headerText="Actions" exportable="false">
+            <div>
+                
+                <ui:param name="templateViewStyleClass" value="#{travelerTemplate.createdBy == loginController.username ? 'ui-icon-pencil' : 'ui-icon-info'}" />
+                
+                <h:outputLink id="travelerTemplateViewLink"
+                              target="_blank"
+                              value="#{travelerBean.getTravelerTemplateUrl(travelerTemplate.id)}"
+                              styleClass="ui-icon #{templateViewStyleClass}">
+                     <p:tooltip for="travelerTemplateViewLink" value="Go to traveler template."/>  
+                 </h:outputLink>
+                
+            </div>
+        </p:column>
+    </p:dataTable>
+
+</ui:composition>
+

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="userObject" value="#{userInfoController.selected}"/>
+
+    <p:panelGrid columns="2" styleClass="viewEntityDetails">
+
+        <h:outputLabel for="username" value="Username" styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText id="username" value="#{userObject.username}" title="Username" styleClass="entityDataEmphasizedText"/>
+
+        <h:outputLabel for="id" value="Id" styleClass="entityDataLabel"/>
+        <h:outputText id="id" value="#{userObject.id}" title="Id" styleClass="entityDataText"/>
+
+        <h:outputLabel for="lastName" value="Last Name" styleClass="entityDataLabel"/>
+        <h:outputText id="lastName" value="#{userObject.lastName}" title="Last Name" styleClass="entityDataText"/>
+
+        <h:outputLabel for="firstName" value="First Name" styleClass="entityDataLabel"/>
+        <h:outputText id="firstName" value="#{userObject.firstName}" title="First Name" styleClass="entityDataText"/>
+
+        <h:outputLabel for="middleName" value="Middle Name" styleClass="entityDataLabel"/>
+        <h:outputText id="middleName" value="#{userObject.middleName}" title="Middle Name" styleClass="entityDataText"/>
+
+        <h:outputLabel for="email" value="Email" styleClass="entityDataLabel"/>
+        <h:outputText id="email" value="#{userObject.email}" title="Email" styleClass="entityDataText"/>
+
+        <h:outputLabel for="description" value="Description" styleClass="entityDataLabel"/>
+        <h:outputText id="description" value="#{userObject.description}" title="Email" styleClass="entityDataText"/>
+
+        <h:outputLabel for="userGroups" value="Groups" styleClass="entityDataLabel"/>
+        <h:outputText id="userGroups" value="#{userInfoController.displayEntityList(userObject.userGroupList)}" title="Groups" styleClass="entityDataText"/>
+        
+    </p:panelGrid>
+
+</ui:composition>
+
+

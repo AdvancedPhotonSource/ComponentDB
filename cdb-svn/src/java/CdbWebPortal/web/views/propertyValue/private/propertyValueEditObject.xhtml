@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:column sortBy="#{propertyValueObject.id}" headerText="Id"
+              rendered="#{propertyValueController.displayId}">
+        <h:outputText id="id" value="#{propertyValueObject.id}"/>
+        <p:tooltip for="id" value="Property value id cannot be modified."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.propertyType.name}" headerText="Type">
+        <h:outputText value="#{propertyValueObject.propertyType.name}"/>
+        <p:tooltip id="type" for="type" value="Property type cannot be modified."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.propertyType.propertyTypeCategory.name}" headerText="Category" 
+              rendered="#{propertyValueController.displayTypeCategory}">
+        <h:outputText id="typeCategory" value="#{propertyValueObject.propertyType.propertyTypeCategory.name}"/>
+        <p:tooltip for="typeCategory" value="Property type category cannot be modified."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.tag}" headerText="Tag"
+              rendered="#{propertyValueController.displayTag}">
+        <h:inputText id="name" value="#{propertyValueObject.tag}" styleClass="cellInput"/>
+        <p:tooltip for="name" value="Property value tag is optional."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.value}" headerText="Value">
+
+        <ui:include src="propertyValueEditObjectValue.xhtml" />
+
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.units}" headerText="Units">
+        <h:inputText id="units" value="#{propertyValueObject.units}" styleClass="cellInput"/>
+        <p:tooltip for="units" value="Units field is optional."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.description}" headerText="Description">
+        <h:inputText id="description" value="#{propertyValueObject.description}" styleClass="longCellInput"/>
+        <p:tooltip for="description" value="Description is optional."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.enteredByUser.username}" headerText="Entered By"
+              rendered="#{propertyValueController.displayEnteredByUser}">
+        <h:outputText id="enteredBy" value="#{propertyValueObject.enteredByUser.username}"/>
+        <p:tooltip for="enteredBy" value="Entered by user field cannot be modified."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.enteredOnDateTime}" headerText="Entered On"
+              rendered="#{propertyValueController.displayEnteredOnDateTime}">
+        <h:outputText id="enteredOn" value="#{propertyValueObject.enteredOnDateTime}"/>
+        <p:tooltip for="enteredOn" value="Entered on date/time field cannot be modified."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Dynamic"
+              rendered="#{propertyValueController.displayIsDynamic}">
+        <div class="dataTableCheckbox">
+            <p:selectBooleanCheckbox id="dynamic" value="#{propertyValueObject.isDynamic}"/>
+        </div>
+        <p:tooltip for="dynamic" value="Check this box if inherited property value can be overriden."/>
+    </p:column>
+
+    <p:column sortBy="#{propertyValueObject.isUserWriteable}" headerText="User-Writeable"
+              rendered="#{propertyValueController.displayIsUserWriteable}">
+        <div class="dataTableCheckbox">
+            <p:selectBooleanCheckbox id="userWriteable" value="#{propertyValueObject.isUserWriteable}"/>
+        </div>
+        <p:tooltip for="userWriteable" value="Check this box if property value can be modified by any user."/>
+    </p:column>
+
+</ui:composition>
+
+

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                template="private/templates/itemCreateTemplate.xhtml">
+
+    <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+        <f:event type="preRenderComponent" listener="#{itemGenericViewController.processCreateRequestParams}"/>
+        <f:event type="preRenderComponent" listener="#{logController.processPreRender()}"/>        
+    </f:metadata>
+
+    <ui:param name="entityController" value="#{itemGenericViewController}"/>
+    
+    <ui:param name="pageRendered" value="#{loginController.loggedInAsAdmin}" />
+    
+    
+</ui:composition>
+
+

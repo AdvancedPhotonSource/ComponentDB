@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:param name="breadcrumb" value="#{itemElementController.currentViewId}"/>
+    <ui:param name="breadcrumbObjectId" value="#{itemObject.id}"/>  
+    <ui:param name="itemElementDataList" value="#{itemObject.itemElementDisplayList}" />
+    <ui:param name="itemElementListFilterable" value="#{facesUtility.displayFiltersForList(itemElementDataList, resources.DisplayFiltersForViewDataTablesWithNumberOfRows)}" />
+
+    <p:dataTable id="#{childEntityTypeName}ListDataTable"
+                 widgetVar="#{childEntityTypeName}ListDataTableWidget"
+                 value="#{itemElementDataList}"
+                 var="itemElementObject"
+                 filteredValue="#{itemElementController.filteredObjectList}"
+                 rows="#{itemElementController.displayNumberOfItemsPerPage}"
+                 sortBy="#{itemElementObject.customizableSortOrder}"
+                 resizableColumns="true"
+                 liveResize="true"
+                 paginator="true" 
+                 paginatorAlwaysVisible="false"
+                 emptyMessage="No item elements found."
+                 rowStyleClass="#{itemElementController.getDisplayRowColor(itemElementObject)}">
+        
+        <p:column exportable="false">
+            <p:rowToggler rendered="#{itemElementController.displayRowExpansion and itemElementController.displayFlatTableView}"/>
+        </p:column>
+        
+        <ui:include src="itemElementListObject.xhtml" >
+            <ui:param name="filterable" value="#{itemElementListFilterable}"/>
+        </ui:include>
+
+        <ui:include src="../../propertyValue/private/propertyValueDomainEntityListColumnObject.xhtml">
+            <ui:param name="entityController" value="#{itemElementController}" />
+            <ui:param name="cdbDomainEntityObject" value="#{itemElementObject}" />
+            <ui:param name="filterable" value="#{itemElementListFilterable}"/>
+        </ui:include>
+
+        <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
+            <ui:param name="entityController" value="#{itemElementController}"/>
+            <ui:param name="entityInfoObject" value="#{itemElementObject.entityInfo}"/>
+            <ui:param name="filterable" value="#{itemElementListFilterable}"/>
+        </ui:include>
+
+        <ui:include src="itemElementListObjectActions.xhtml" />
+
+        <p:rowExpansion styleClass="domainEntityRowExpansion" rendered="#{itemElementController.displayRowExpansion}">
+            <ui:include src="itemElementListDataTableRowExpansion.xhtml">
+                <ui:param name="parentDesignElementObject" value="#{itemElementObject}" />
+                <ui:param name="entityController" value="#{itemElementController}" />
+                <ui:param name="viewMode" value="#{viewMode != null ? viewMode : 'inViewRowExpansion'}" />
+            </ui:include>
+        </p:rowExpansion>
+    </p:dataTable>
+
+
+
+</ui:composition>
+
+

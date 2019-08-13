@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) == null}">
+        <h:inputText id="freeFormTextValue" value="#{propertyValueObject.value}" styleClass="cellInput"
+                     rendered="#{propertyValueController.displayFreeFormTextValue(propertyValueObject)}"/>
+        <p:tooltip for="freeFormTextValue" value="Enter property value."/>
+
+        <p:selectOneMenu id="selectedTextValue" value="#{propertyValueObject.value}" styleClass="entityDataText"
+                         rendered="#{propertyValueController.displaySelectedTextValue(propertyValueObject)}">
+            <f:selectItems var="allowedPropertyValue" value="#{propertyValueObject.propertyType.allowedPropertyValueList}" 
+                           itemLabel="#{allowedPropertyValue.value}" itemValue="#{allowedPropertyValue.value}"/>
+        </p:selectOneMenu>
+        <p:tooltip for="selectedTextValue" value="Select property value."/>
+
+        <p:panelGrid columns="2" rendered="#{propertyValueController.displayImageValue(propertyValueObject)}">
+            <p:column>
+                <p:graphicImage id="imageValue" value="/propertyValue/images/#{propertyValueObject.value}.thumbnail" 
+                                alt="#{propertyValueObject.value}" title="#{propertyValueObject.value}"/>
+                <p:tooltip for="imageValue" value="Upload new image using upload action button."/>
+            </p:column>
+            <p:commandButton value="Upload Image"
+                             oncomplete="PF('propertyValueImageUploadDialogWidget').show()"
+                             icon="ui-icon-circle-arrow-n"
+                             update="@this">
+                <f:setPropertyActionListener target="#{propertyValueController.current}"
+                                             value="#{propertyValueObject}" />
+            </p:commandButton>
+        </p:panelGrid>
+
+        <h:inputText id="httpLinkValue" value="#{propertyValueObject.value}" styleClass="cellInput"
+                     rendered="#{propertyValueController.displayHttpLinkValue(propertyValueObject)}"/>
+        <p:tooltip for="httpLinkValue" value="Enter link value."/>
+
+        <h:inputText id="infoActionDisplayValue" value="#{propertyValueObject.value}" styleClass="cellInput"
+                     rendered="#{propertyValueController.displayInfoActionValue(propertyValueObject)}"/>
+        <p:tooltip for="infoActionDisplayValue" value="Enter property value."/>
+
+        <p:outputPanel rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}">
+            <p:commandButton value="Upload Document" 
+                             icon="ui-icon-circle-arrow-n" 
+                             oncomplete="PF('propertyValueDocumentUploadDialogWidget').show()"
+                             update="@this">
+                <f:setPropertyActionListener target="#{propertyValueController.current}"
+                                             value="#{propertyValueObject}" />
+            </p:commandButton>
+            <h:inputText id="documentValue" value="#{propertyValueObject.value}"/>
+            <p:tooltip for="documentValue" value="Upload new document using upload action button."/>  
+            
+        </p:outputPanel>
+
+        <p:selectBooleanCheckbox id="booleanValue" value="#{propertyValueObject.booleanValue}"
+                                 styleClass="dataTableCheckbox"
+                                 rendered="#{propertyValueController.displayBooleanValue(propertyValueObject)}"/>
+        <p:tooltip for="booleanValue" value="Use checkbox to set property value to true."/>           
+
+        <p:calendar id="dateValue" value="#{propertyValueObject.dateValue}"
+                    rendered="#{propertyValueController.displayDateValue(propertyValueObject)}"/>
+        <p:tooltip for="dateValue" value="Use calendar to set date."/>
+    </p:outputPanel>
+
+    <p:outputPanel rendered="#{propertyValueController.getPropertyEditPage(propertyValueObject) != null}">
+        <p:outputPanel rendered='#{propertyValueController.getPropertyEditPage(propertyValueObject) 
+                                   == "travelerTemplatePropertyValueEditPanel"}' styleClass="longCellInput">
+            <ui:include src="../../travelerProperty/private/travelerTemplatePropertyValueEditPanel.xhtml"/>
+        </p:outputPanel>
+        <p:outputPanel rendered='#{propertyValueController.getPropertyEditPage(propertyValueObject) 
+                                   == "travelerInstancePropertyValueEditPanel"}' styleClass="longCellInput">
+            <ui:include src="../../travelerProperty/private/travelerInstancePropertyValueEditPanel.xhtml"/>
+        </p:outputPanel>
+    </p:outputPanel>
+
+</ui:composition>
+
+
