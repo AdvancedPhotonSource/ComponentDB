@@ -29,21 +29,44 @@ See LICENSE file.
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/browseLocation') ? 'activeMenuItem' : ''} "/>
 
             </p:submenu>
-            <p:menuitem value="Catalog" id="catalogButton"
-                        icon="ui-icon-catalog"
-                        url="#{request.contextPath}/views/itemDomainCatalog/list"
-                        styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/') and 
-                                      !fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') ? 'activeMenuItem' : ''} "/>
-            <p:menuitem value="Inventory"
-                        icon="ui-icon-inventory"
-                        id="inventoryMenubarButton" url="#{request.contextPath}/views/itemDomainInventory/list"
-                        styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/') and 
-                                      !fn:startsWith(view.viewId, '/views/itemDomainInventory/browse') ? 'activeMenuItem' : ''} "/>
+            <p:submenu label="Catalog"
+                       styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/list') 
+                                     or fn:startsWith(view.viewId, '/views/itemDomainCableCatalog/list')) ? 'activeSubMenuParentItem' : ''} ">
+                <p:menuitem value="Component"
+                            icon="ui-icon-catalog"
+                            url="#{request.contextPath}/views/itemDomainCatalog/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/list') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="Cable"
+                            icon="ui-icon-catalog"
+                            url="#{request.contextPath}/views/itemDomainCableCatalog/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableCatalog/list') ? 'activeMenuItem' : ''} "/>
+            </p:submenu>
             
-            <p:menuitem value="Machine Design - Housing" 
-                        icon="ui-icon-machine-design"
-                        id="machineDesignMenubarButton" url="#{request.contextPath}/views/itemDomainMachineDesign/list"
-                        styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/') ? 'activeMenuItem' : ''} "/>
+            <p:submenu label="Inventory"
+                       styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainInventory/list') 
+                                     or fn:startsWith(view.viewId, '/views/itemDomainCableInventory/list')) ? 'activeSubMenuParentItem' : ''} ">
+                <p:menuitem value="Component"
+                            icon="ui-icon-inventory"
+                            url="#{request.contextPath}/views/itemDomainInventory/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/list') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="Cable"
+                            icon="ui-icon-inventory"
+                            url="#{request.contextPath}/views/itemDomainCableInventory/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableInventory/list') ? 'activeMenuItem' : ''} "/>
+            </p:submenu>
+            
+            <p:submenu label="Design"
+                       styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') 
+                                     or fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list')) ? 'activeSubMenuParentItem' : ''} ">
+                <p:menuitem value="Machine"
+                            icon="ui-icon-machine-design"
+                            url="#{request.contextPath}/views/itemDomainMachineDesign/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="Cable"
+                            icon="ui-icon-machine-design"
+                            url="#{request.contextPath}/views/itemDomainCableDesign/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list') ? 'activeMenuItem' : ''} "/>
+            </p:submenu>
             
             <p:menuitem value="MAARC" 
                         icon="ui-icon-maarc"
