@@ -11,7 +11,7 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">    
 
 
-    <p:wizard showStepStatus="false">
+    <p:wizard showStepStatus="false" flowListener="#{entityController.addCableWizard.onFlowProcess}">
         
         <p:tab id="endpoint">
             <p:panel header="Select second endpoint for cable"
@@ -25,6 +25,8 @@ See LICENSE file.
                                  value="addCablePanel" />
                         <ui:param name="hideOptionalColumns"
                                  value="#{false}" /> 
+                        <ui:param name="selectionModel"
+                                  value="#{entityController.addCableWizard.endpoint2}" />
                     </ui:include>
 
                 </p:panel>
@@ -43,7 +45,9 @@ See LICENSE file.
             <p:panel header="Indicate whether cable is placeholder or choose type">
                 <p:outputPanel id="cableTypePanel">
                     
-                    <p:selectOneRadio id="cableTypeRadio" layout="custom">
+                    <p:selectOneRadio id="cableTypeRadio" 
+                                      value="#{entityController.addCableWizard.cableType}" 
+                                      layout="custom">
                         <f:selectItem itemLabel="Placeholder" itemValue="placeholder" />
                         <f:selectItem itemLabel="Cable Catalog" itemValue="catalog" />
                     </p:selectOneRadio>
@@ -59,6 +63,12 @@ See LICENSE file.
                     </h:panelGrid>
                     
                 </p:outputPanel>
+            </p:panel>
+        </p:tab>
+        
+        <p:tab id="cableReviewTab">
+            <p:panel header="Review cable properties before saving">
+                
             </p:panel>
         </p:tab>
     
