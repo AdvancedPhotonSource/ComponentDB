@@ -11,7 +11,10 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">    
 
 
-    <p:wizard showStepStatus="false" flowListener="#{entityController.addCableWizard.onFlowProcess}">
+    <p:wizard flowListener="#{entityController.addCableWizard.onFlowProcess}" 
+              widgetVar="cableWizard"
+              showStepStatus="false" 
+              showNavBar="true">
         
         <p:tab id="endpoint">
             <p:panel header="Select second endpoint for cable"
@@ -73,7 +76,50 @@ See LICENSE file.
         </p:tab>
     
     </p:wizard>
+    <ui:remove>
+        <p:outputPanel id="cableWizardButtonPanel">
+        <div style="float: left">
+            <p:commandButton value="Previous Step" 
+                             onclick="PF('cableWizard').back();"
+                             onstart="PF('loadingDialog').show();" 
+                             oncomplete="PF('loadingDialog').hide();"
+                             icon="ui-icon-arrowthick-1-w"/>
+            <ui:remove>
+                onstart="PF('loadingDialog').show();PF('#{entityTypeName}ItemCreateWizardWidget').back();"
+                rendered="#{!entityController.isCreateWizardOnFirstStep()}
+                update="@form"
+            </ui:remove>
 
+            <ui:include src="../../common/private/commonCreateCancelButton.xhtml" />
+        </div>
+        <div style="float: right">
+            <ui:include src="../../common/private/commonCreateSaveButton.xhtml"> 
+                <ui:remove>
+                    <ui:param name="saveButtonRendered" 
+                              value="#{entityController.isCreateWizardOnLastStep()}" />
+                </ui:remove>
+            </ui:include>
+            <p:commandButton value="Next Step"
+                             onclick="PF('cableWizard').next();"
+                             onstart="PF('loadingDialog').show();"
+                             oncomplete="PF('loadingDialog').hide();"
+                             icon="ui-icon-arrowthick-1-e"
+                             iconPos="right"/>
+
+            <ui:remove>
+                 id="#{entityTypeName}createWizardNextStep" 
+                 update="@form"
+                 onstart="PF('loadingDialog').show();PF('#{entityTypeName}ItemCreateWizardWidget').next();"
+                 rendered="#{!entityController.isCreateWizardOnLastStep()}"
+            </ui:remove>
+
+        </div>
+
+        <p:remoteCommand name="updateCableWizardButtons"
+                         update="cableWizardButtonPanel" />
+        </p:outputPanel>
+
+    </ui:remove>
 
 </ui:composition>
 
