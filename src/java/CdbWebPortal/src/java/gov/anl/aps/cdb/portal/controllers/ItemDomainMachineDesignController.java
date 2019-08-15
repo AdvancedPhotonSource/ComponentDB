@@ -20,6 +20,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
+import gov.anl.aps.cdb.portal.view.objects.ItemDomainCableDesignWizard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -69,6 +70,9 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     // <editor-fold defaultstate="collapsed" desc="Dual list view configuration variables ">
     private TreeNode selectedItemInListTreeTable = null;
     private TreeNode lastExpandedNode = null;
+    
+    // backing bean for add cable wizard
+    private ItemDomainCableDesignWizard addCableWizard = null;
 
     private TreeNode currentMachineDesignListRootTreeNode = null;
     private TreeNode machineDesignTreeRootTreeNode = null;
@@ -86,6 +90,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
     private boolean displayCreateMachineDesignForTemplateElementPlaceholder = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
+    private boolean displayAddCableListConfigurationPanel = true;
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
     private TreeNode newCatalogItemsInMachineDesignModel = null;
@@ -357,6 +362,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         displayAssignInventoryItemListConfigurationPanel = false;
         displayCreateMachineDesignForTemplateElementPlaceholder = false;
         displayMachineDesignReorderOverlayPanel = false;
+        displayAddCableListConfigurationPanel = false;
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
@@ -471,6 +477,10 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     public boolean isDisplayMachineDesignReorderOverlayPanel() {
         return displayMachineDesignReorderOverlayPanel;
+    }
+
+    public boolean isDisplayAddCableListConfigurationPanel() {
+        return displayAddCableListConfigurationPanel;
     }
 
     private void updateCurrentUsingSelectedItemInTreeTable() {
@@ -1013,6 +1023,46 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     public TreeNode getNewCatalogItemsInMachineDesignModel() {
         return newCatalogItemsInMachineDesignModel;
+    }
+    
+    public ItemDomainCableDesignWizard getAddCableWizard() {
+        return addCableWizard;
+    }
+    
+    public void setAddCableWizard(ItemDomainCableDesignWizard wizard) {
+        addCableWizard = wizard;
+    }
+    
+    public void prepareAddCableWizard() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
+        
+        // create model for wizard
+        addCableWizard = new ItemDomainCableDesignWizard();
+        addCableWizard.setEndpoint1(selectedItemInListTreeTable);
+
+        displayListConfigurationView = true;
+        displayAddCableListConfigurationPanel = true;
+    }
+    
+    public void cancelAddCable() {
+        resetListConfigurationVariables();
+        resetListDataModel();
+        setSelectedItemInListTreeTable(getAddCableWizard().getEndpoint1());
+        expandToSelectedTreeNodeAndSelect();
+        
+        // null out model for wizard
+        setAddCableWizard(null);
+    }
+
+    public void completeAddCable() {
+    //    updateInstalledInventoryItem();
+
+        resetListConfigurationVariables();
+        resetListDataModel();
+        setSelectedItemInListTreeTable(getAddCableWizard().getEndpoint1());
+        setAddCableWizard(null);
+        expandToSelectedTreeNodeAndSelect();
     }
 
     // </editor-fold>    
