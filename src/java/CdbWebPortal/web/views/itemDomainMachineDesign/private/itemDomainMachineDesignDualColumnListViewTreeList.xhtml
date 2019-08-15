@@ -13,30 +13,10 @@ See LICENSE file.
 
     <ui:param name="settingObject" value="#{itemDomainMachineDesignController.settingObject}" /> 
               
-    <p:treeTable id='itemMachineDesignListDataTable'
-                 styleClass="machineDesignListTreeTable"
-                 value="#{entityController.currentMachineDesignListRootTreeNode}"
-                 selectionMode="single"
-                 selection="#{entityController.selectedItemInListTreeTable}"
-                 var="itemElementTreeListObject">
-
-        <p:ajax event="select"
-                onstart="PF('loadingDialog').show()"
-                oncomplete="PF('loadingDialog').hide();
-                showLastContextMenu()"
-                update="@form:machineDesignDualViewContextMenuPermissions" />
-        
-        <!--Saves the collapse status for tree nodes. Seems its a bug in primefaces that this is needed.-->
-        <p:ajax event="collapse" /> 
-
-        <ui:include src="itemDomainMachineDesignListObject.xhtml">
-            <ui:param name="hideOptionalColumns"
-                      value="#{!dualConfigurationViewEnabled}" /> 
-            <ui:param name="itemElementListObject"
-                      value="#{itemElementTreeListObject}" /> 
-        </ui:include>
-
-    </p:treeTable>
+    <ui:include src="itemDomainMachineDesignTreeTable.xhtml">
+        <ui:param name="hideOptionalColumns"
+                  value="#{!dualConfigurationViewEnabled}" /> 
+    </ui:include>
 
     <ui:include src="itemDomainMachineDesignDualColumnListViewTreeBlockUI.xhtml" />
 
