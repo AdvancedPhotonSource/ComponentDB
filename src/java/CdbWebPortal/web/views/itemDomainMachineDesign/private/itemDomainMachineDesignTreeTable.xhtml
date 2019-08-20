@@ -8,12 +8,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
     
-    <ui:param name="selectionModel" 
-              value="#{selectionModel != null ? selectionModel : entityController.selectedItemInListTreeTable}" />
-
+    <!-- Must provide params "valueModel", "selectionModel", "hideOptionalColumns".-->
+    
     <p:treeTable id='itemMachineDesignListDataTable#{viewId}'
                  styleClass="machineDesignListTreeTable"
-                 value="#{entityController.currentMachineDesignListRootTreeNode}"
+                 value="#{valueModel}"
                  selectionMode="single"
                  selection="#{selectionModel}"
                  var="itemElementTreeListObject">

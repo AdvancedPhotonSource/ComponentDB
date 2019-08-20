@@ -12,9 +12,10 @@ See LICENSE file.
 
 
     <p:wizard flowListener="#{entityController.addCableWizard.onFlowProcess}" 
+              id="cableWizardId"
               widgetVar="cableWizard"
               showStepStatus="false" 
-              showNavBar="true">
+              showNavBar="false">
         
         <p:tab id="endpoint">
             <p:panel header="Select second endpoint for cable"
@@ -24,13 +25,11 @@ See LICENSE file.
                 <p:panel>
 
                     <ui:include src="itemDomainMachineDesignTreeTable.xhtml">
-                        <ui:param name="viewId"
-                                 value="addCablePanel" />
-                        <ui:param name="hideOptionalColumns"
-                                 value="#{false}" /> 
-                        <ui:param name="selectionModel"
-                                  value="#{entityController.addCableWizard.endpoint2}" />
-                    </ui:include>
+                        <ui:param name="viewId" value="addCablePanel" />
+                        <ui:param name="hideOptionalColumns" value="#{false}" /> 
+                        <ui:param name="valueModel" value="#{entityController.addCableWizard.rootTreeNode}" />
+                        <ui:param name="selectionModel" value="#{entityController.addCableWizard.endpoint2}" /> 
+                   </ui:include>
 
                 </p:panel>
 
@@ -40,7 +39,7 @@ See LICENSE file.
                         ajax="false"
                         immediate="true"
                         action="#{entityController.cancelAddCable()}"/> 
-
+                                        
             </p:panel>
         </p:tab>
         
@@ -76,18 +75,15 @@ See LICENSE file.
         </p:tab>
     
     </p:wizard>
-    <ui:remove>
-        <p:outputPanel id="cableWizardButtonPanel">
+
+    <p:outputPanel id="cableWizardButtonPanel">
         <div style="float: left">
             <p:commandButton value="Previous Step" 
-                             onclick="PF('cableWizard').back();"
-                             onstart="PF('loadingDialog').show();" 
+                             onstart="PF('loadingDialog').show();PF('cableWizard').back();"
                              oncomplete="PF('loadingDialog').hide();"
                              icon="ui-icon-arrowthick-1-w"/>
             <ui:remove>
-                onstart="PF('loadingDialog').show();PF('#{entityTypeName}ItemCreateWizardWidget').back();"
                 rendered="#{!entityController.isCreateWizardOnFirstStep()}
-                update="@form"
             </ui:remove>
 
             <ui:include src="../../common/private/commonCreateCancelButton.xhtml" />
@@ -100,16 +96,13 @@ See LICENSE file.
                 </ui:remove>
             </ui:include>
             <p:commandButton value="Next Step"
-                             onclick="PF('cableWizard').next();"
-                             onstart="PF('loadingDialog').show();"
+                             onstart="PF('loadingDialog').show();PF('cableWizard').next();"
                              oncomplete="PF('loadingDialog').hide();"
                              icon="ui-icon-arrowthick-1-e"
                              iconPos="right"/>
 
             <ui:remove>
                  id="#{entityTypeName}createWizardNextStep" 
-                 update="@form"
-                 onstart="PF('loadingDialog').show();PF('#{entityTypeName}ItemCreateWizardWidget').next();"
                  rendered="#{!entityController.isCreateWizardOnLastStep()}"
             </ui:remove>
 
@@ -117,10 +110,9 @@ See LICENSE file.
 
         <p:remoteCommand name="updateCableWizardButtons"
                          update="cableWizardButtonPanel" />
-        </p:outputPanel>
-
-    </ui:remove>
-
+        
+    </p:outputPanel>
+ 
 </ui:composition>
 
 

@@ -1039,6 +1039,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         
         // create model for wizard
         addCableWizard = new ItemDomainCableDesignWizard();
+        addCableWizard.setRootTreeNode(loadMachineDesignRootTreeNode(false));
         addCableWizard.setEndpoint1(selectedItemInListTreeTable);
 
         displayListConfigurationView = true;

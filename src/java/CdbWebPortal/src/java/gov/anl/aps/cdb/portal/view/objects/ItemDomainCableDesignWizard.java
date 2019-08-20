@@ -21,9 +21,18 @@ import org.primefaces.model.TreeNode;
  */
 public class ItemDomainCableDesignWizard implements Serializable {
 
+    private TreeNode rootTreeNode = null;
     private TreeNode endpoint1 = null;
     private TreeNode endpoint2 = null;
     private String cableType = null;
+
+    public TreeNode getRootTreeNode() {
+        return rootTreeNode;
+    }
+
+    public void setRootTreeNode(TreeNode rootTreeNode) {
+        this.rootTreeNode = rootTreeNode;
+    }
 
     public TreeNode getEndpoint1() {
         return endpoint1;

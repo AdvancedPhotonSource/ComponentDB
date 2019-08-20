@@ -14,8 +14,9 @@ See LICENSE file.
     <ui:param name="settingObject" value="#{itemDomainMachineDesignController.settingObject}" /> 
               
     <ui:include src="itemDomainMachineDesignTreeTable.xhtml">
-        <ui:param name="hideOptionalColumns"
-                  value="#{!dualConfigurationViewEnabled}" /> 
+        <ui:param name="hideOptionalColumns" value="#{!dualConfigurationViewEnabled}" /> 
+        <ui:param name="valueModel" value="#{entityController.currentMachineDesignListRootTreeNode}" />
+        <ui:param name="selectionModel" value="#{entityController.selectedItemInListTreeTable}" />
     </ui:include>
 
     <ui:include src="itemDomainMachineDesignDualColumnListViewTreeBlockUI.xhtml" />
