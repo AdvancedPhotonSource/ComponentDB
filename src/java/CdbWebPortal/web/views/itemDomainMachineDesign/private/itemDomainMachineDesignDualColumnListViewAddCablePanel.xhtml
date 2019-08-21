@@ -11,15 +11,15 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">    
 
 
-    <p:wizard flowListener="#{entityController.addCableWizard.onFlowProcess}" 
-              id="cableWizardId"
+    <p:wizard id="addCableWizard"
+              flowListener="#{entityController.addCableWizard.onFlowProcess}" 
               widgetVar="cableWizard"
               showStepStatus="false" 
               showNavBar="false">
         
-        <p:tab id="endpoint">
+        <p:tab id="endpointTab">
             <p:panel header="Select second endpoint for cable"
-                     id="addCableListConfigurationPanel"
+                     id="cableEndpointPanel"
                      rendered="#{entityController.displayAddCableListConfigurationPanel}">
 
                 <p:panel>
@@ -32,14 +32,6 @@ See LICENSE file.
                    </ui:include>
 
                 </p:panel>
-
-                <p:commandButton value="Cancel"
-                        icon="fa fa-times"
-                        update="@form"
-                        ajax="false"
-                        immediate="true"
-                        action="#{entityController.cancelAddCable()}"/> 
-                                        
             </p:panel>
         </p:tab>
         
@@ -55,12 +47,12 @@ See LICENSE file.
                     </p:selectOneRadio>
                     
                     <h:panelGrid columns="3">
-                        <p:radioButton id="opt1" for="cableTypeRadio" itemIndex="0" />
-                        <h:outputLabel for="opt1" value="placeholder" />
+                        <p:radioButton id="placeholderRadio" for="cableTypeRadio" itemIndex="0" />
+                        <h:outputLabel for="placeholderRadio" value="placeholder" />
                         <h:outputLabel/>
 
-                        <p:radioButton id="opt2" for="cableTypeRadio" itemIndex="1" />
-                        <h:outputLabel for="opt2" value="catalog" />
+                        <p:radioButton id="catalogRadio" for="cableTypeRadio" itemIndex="1" />
+                        <h:outputLabel for="catalogRadio" value="catalog" />
                         <p:inputText />
                     </h:panelGrid>
                     
@@ -78,6 +70,7 @@ See LICENSE file.
 
     <p:outputPanel id="cableWizardButtonPanel">
         <div style="float: left">
+            
             <p:commandButton value="Previous Step" 
                              process="@this"
                              update="@this"
@@ -88,15 +81,37 @@ See LICENSE file.
                 rendered="#{!entityController.isCreateWizardOnFirstStep()}
             </ui:remove>
 
-            <ui:include src="../../common/private/commonCreateCancelButton.xhtml" />
+            <p:commandButton value="Cancel"
+                             alt="Cancel"
+                             action="#{entityController.addCableWizard.cancel()}"
+                             id="cancelButton"
+                             icon="fa fa-times-circle-o"
+                             rendered="true"
+                             ajax="false"
+                             immediate="true"
+                             process="@this"
+                             update="@this"> 
+                <p:tooltip for="cancelButton" 
+                           value="Cancel add cable operation and close wizard."/>
+            </p:commandButton>
+                                        
         </div>
         <div style="float: right">
-            <ui:include src="../../common/private/commonCreateSaveButton.xhtml"> 
-                <ui:remove>
-                    <ui:param name="saveButtonRendered" 
-                              value="#{entityController.isCreateWizardOnLastStep()}" />
-                </ui:remove>
-            </ui:include>
+            
+            <p:commandButton value="Save"
+                             alt="Save"
+                             action="#{entityController.addCableWizard.save()}"
+                             id="saveButton"
+                             icon="ui-icon-check"
+                             rendered="true"
+                             ajax="false"
+                             immediate="false"
+                             process="addCableWizard"
+                             update="addCableWizard"> 
+                <p:tooltip for="saveButton" 
+                           value="Save cable data and close wizard."/>
+            </p:commandButton>
+            
             <p:commandButton value="Next Step"
                              process="@this"
                              update="@this"
@@ -104,7 +119,6 @@ See LICENSE file.
                              oncomplete="PF('loadingDialog').hide();"
                              icon="ui-icon-arrowthick-1-e"
                              iconPos="right"/>
-
             <ui:remove>
                  id="#{entityTypeName}createWizardNextStep" 
                  rendered="#{!entityController.isCreateWizardOnLastStep()}"

@@ -21,6 +21,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.ItemDomainCableDesignWizard;
+import gov.anl.aps.cdb.portal.view.objects.ItemDomainCableDesignWizardClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -41,7 +42,9 @@ import org.primefaces.model.TreeNode;
  */
 @Named(ItemDomainMachineDesignController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignController extends ItemController<ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings> {
+public class ItemDomainMachineDesignController 
+        extends ItemController<ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings> 
+        implements ItemDomainCableDesignWizardClient {
 
     private static final Logger LOGGER = Logger.getLogger(ItemDomainMachineDesignController.class.getName());
 
@@ -1033,12 +1036,12 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         addCableWizard = wizard;
     }
     
-    public void prepareAddCableWizard() {
+    public void prepareCableWizard() {
         updateCurrentUsingSelectedItemInTreeTable();
         currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
         
         // create model for wizard
-        addCableWizard = new ItemDomainCableDesignWizard();
+        addCableWizard = new ItemDomainCableDesignWizard(this);
         addCableWizard.setRootTreeNode(loadMachineDesignRootTreeNode(false));
         addCableWizard.setEndpoint1(selectedItemInListTreeTable);
 
@@ -1046,7 +1049,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         displayAddCableListConfigurationPanel = true;
     }
     
-    public void cancelAddCable() {
+    public void cleanupCableWizard() {
         resetListConfigurationVariables();
         resetListDataModel();
         setSelectedItemInListTreeTable(getAddCableWizard().getEndpoint1());
@@ -1054,16 +1057,6 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         
         // null out model for wizard
         setAddCableWizard(null);
-    }
-
-    public void completeAddCable() {
-    //    updateInstalledInventoryItem();
-
-        resetListConfigurationVariables();
-        resetListDataModel();
-        setSelectedItemInListTreeTable(getAddCableWizard().getEndpoint1());
-        setAddCableWizard(null);
-        expandToSelectedTreeNodeAndSelect();
     }
 
     // </editor-fold>    
