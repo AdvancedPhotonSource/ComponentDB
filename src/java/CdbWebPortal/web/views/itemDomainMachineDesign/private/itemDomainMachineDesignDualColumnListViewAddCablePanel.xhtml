@@ -36,7 +36,7 @@ See LICENSE file.
         </p:tab>
         
         <p:tab id="cableTypeTab">
-            <p:panel header="Indicate whether cable is placeholder or choose type">
+            <p:panel header="Indicate cable type">
                 <p:outputPanel id="cableTypePanel">
                     
                     <p:selectOneRadio id="cableTypeRadio" 
@@ -44,26 +44,48 @@ See LICENSE file.
                                       layout="custom">
                         <f:selectItem itemLabel="Placeholder" itemValue="placeholder" />
                         <f:selectItem itemLabel="Cable Catalog" itemValue="catalog" />
+                        <f:selectItem itemLabel="Bundle" itemValue="bundle" />
+                        <f:selectItem itemLabel="Virtual" itemValue="virtual" />
                     </p:selectOneRadio>
                     
-                    <h:panelGrid columns="3">
+                    <h:panelGrid columns="2">
+                        
                         <p:radioButton id="placeholderRadio" for="cableTypeRadio" itemIndex="0" />
                         <h:outputLabel for="placeholderRadio" value="placeholder" />
-                        <h:outputLabel/>
 
                         <p:radioButton id="catalogRadio" for="cableTypeRadio" itemIndex="1" />
                         <h:outputLabel for="catalogRadio" value="catalog" />
-                        <p:inputText />
+
+                        <p:radioButton id="bundleRadio" 
+                                       for="cableTypeRadio" 
+                                       itemIndex="2"
+                                       disabled="true" />
+                        <h:outputLabel for="bundleRadio" value="bundle" />
+                        
+                        <p:radioButton id="virtualRadio" 
+                                       for="cableTypeRadio" 
+                                       itemIndex="3" 
+                                       disabled="true"/>
+                        <h:outputLabel for="virtualRadio" value="virtual" />
+                        
                     </h:panelGrid>
                     
                 </p:outputPanel>
             </p:panel>
         </p:tab>
         
-        <p:tab id="cableReviewTab">
-            <p:panel header="Review cable properties before saving">
-                
+        <p:tab id="cableDetailsTab">
+            
+            <p:panel id="cableDetailsPanelPlaceholder" 
+                     header="Edit placeholder cable details"
+                     rendered="#{entityController.addCableWizard.cableType eq 'placeholder'}">                
             </p:panel>
+            
+            <p:panel id="cableDetailsPanelCatalog" 
+                     header="Select cable catalog item and edit details"
+                     rendered="#{entityController.addCableWizard.cableType eq 'catalog'}">                
+            </p:panel>
+            
         </p:tab>
     
     </p:wizard>
@@ -77,9 +99,6 @@ See LICENSE file.
                              onstart="PF('loadingDialog').show();PF('cableWizard').back();"
                              oncomplete="PF('loadingDialog').hide();"
                              icon="ui-icon-arrowthick-1-w"/>
-            <ui:remove>
-                rendered="#{!entityController.isCreateWizardOnFirstStep()}
-            </ui:remove>
 
             <p:commandButton value="Cancel"
                              alt="Cancel"
@@ -119,10 +138,6 @@ See LICENSE file.
                              oncomplete="PF('loadingDialog').hide();"
                              icon="ui-icon-arrowthick-1-e"
                              iconPos="right"/>
-            <ui:remove>
-                 id="#{entityTypeName}createWizardNextStep" 
-                 rendered="#{!entityController.isCreateWizardOnLastStep()}"
-            </ui:remove>
 
         </div>
 
