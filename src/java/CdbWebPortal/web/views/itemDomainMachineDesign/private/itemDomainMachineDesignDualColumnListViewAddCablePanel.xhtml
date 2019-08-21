@@ -79,6 +79,8 @@ See LICENSE file.
     <p:outputPanel id="cableWizardButtonPanel">
         <div style="float: left">
             <p:commandButton value="Previous Step" 
+                             process="@this"
+                             update="@this"
                              onstart="PF('loadingDialog').show();PF('cableWizard').back();"
                              oncomplete="PF('loadingDialog').hide();"
                              icon="ui-icon-arrowthick-1-w"/>
@@ -96,6 +98,8 @@ See LICENSE file.
                 </ui:remove>
             </ui:include>
             <p:commandButton value="Next Step"
+                             process="@this"
+                             update="@this"
                              onstart="PF('loadingDialog').show();PF('cableWizard').next();"
                              oncomplete="PF('loadingDialog').hide();"
                              icon="ui-icon-arrowthick-1-e"
@@ -108,8 +112,10 @@ See LICENSE file.
 
         </div>
 
-        <p:remoteCommand name="updateCableWizardButtons"
+        <ui:remove>
+            <p:remoteCommand name="updateCableWizardButtons"
                          update="cableWizardButtonPanel" />
+        </ui:remove>
         
     </p:outputPanel>
  
