@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.view.objects;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import java.io.Serializable;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.model.TreeNode;
@@ -23,10 +24,11 @@ import org.primefaces.model.TreeNode;
 public class ItemDomainCableDesignWizard implements Serializable {
 
     private ItemDomainCableDesignWizardClient client;
-    private TreeNode rootTreeNode = null;
+    private TreeNode machineDesignTree = null;
     private TreeNode endpoint1 = null;
-    private TreeNode endpoint2 = null;
+    private TreeNode selectedEndpoint = null;
     private String cableType = null;
+    private Item selectedCableCatalogItem = null;
 
     /**
      * Creates new instance with a "dummy" client implementation of the
@@ -52,15 +54,15 @@ public class ItemDomainCableDesignWizard implements Serializable {
      * Returns the root node of the machine design tree that is used to populate
      * the wizard's endpoint selection tab.
      */
-    public TreeNode getRootTreeNode() {
-        return rootTreeNode;
+    public TreeNode getMachineDesignTree() {
+        return machineDesignTree;
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getRootTreeNode 
+     * @link ItemDomainCableDesignWizard#getMachineDesignTree 
      */
-    public void setRootTreeNode(TreeNode rootTreeNode) {
-        this.rootTreeNode = rootTreeNode;
+    public void setMachineDesignTree(TreeNode machineDesignTree) {
+        this.machineDesignTree = machineDesignTree;
     }
 
     /**
@@ -83,15 +85,15 @@ public class ItemDomainCableDesignWizard implements Serializable {
      * endpoint selection tab, and is the selection model for the machine design
      * tree table.
      */
-    public TreeNode getEndpoint2() {
-        return endpoint2;
+    public TreeNode getSelectedEndpoint() {
+        return selectedEndpoint;
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getEndpoint2 
+     * @link ItemDomainCableDesignWizard#getSelectedEndpoint 
      */
-    public void setEndpoint2(TreeNode endpoint2) {
-        this.endpoint2 = endpoint2;
+    public void setSelectedEndpoint(TreeNode selectedEndpoint) {
+        this.selectedEndpoint = selectedEndpoint;
     }
 
     /**
@@ -110,6 +112,20 @@ public class ItemDomainCableDesignWizard implements Serializable {
      */
     public void setCableType(String cableType) {
         this.cableType = cableType;
+    }
+
+    /**
+     * Returns the selection model for the cable catalog data table.
+     */
+    public Item getSelectedCableCatalogItem() {
+        return selectedCableCatalogItem;
+    }
+
+    /**
+     * @link ItemDomainCableDesignWizard#getSelectedCableCatalogItem 
+     */
+    public void setSelectedCableCatalogItem(Item selectedCableCatalogItem) {
+        this.selectedCableCatalogItem = selectedCableCatalogItem;
     }
     
     /**
