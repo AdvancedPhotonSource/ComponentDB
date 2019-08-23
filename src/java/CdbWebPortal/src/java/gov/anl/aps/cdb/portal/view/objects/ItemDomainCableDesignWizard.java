@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.view.objects;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import java.io.Serializable;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.model.TreeNode;
@@ -79,6 +80,18 @@ public class ItemDomainCableDesignWizard implements Serializable {
     public void setEndpoint1(TreeNode endpoint1) {
         this.endpoint1 = endpoint1;
     }
+    
+    /**
+     * Returns endpoint1 as a string. 
+     * @link ItemDomainCableDesignWizard#getEndpoint1 
+     */
+    public String getEndpoint1String() {
+        if (endpoint1 == null) {
+            return new String();
+        } else {
+            return ((ItemElement)(endpoint1.getData())).getContainedItem().toString();
+        }
+    }
 
     /**
      * Returns the cable's second endpoint.  This is set by the wizard's
@@ -87,6 +100,14 @@ public class ItemDomainCableDesignWizard implements Serializable {
      */
     public TreeNode getSelectedEndpoint() {
         return selectedEndpoint;
+    }
+    
+    public String getSelectedEndpointString() {
+        if (selectedEndpoint == null) {
+            return new String();
+        } else {
+            return ((ItemElement)(selectedEndpoint.getData())).getContainedItem().toString();
+        } 
     }
 
     /**

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+
+    <p:panel>
+
+        <p:wizard id="addCableWizard"
+                  flowListener="#{entityController.addCableWizard.onFlowProcess}" 
+                  widgetVar="cableWizard"
+                  showStepStatus="false" 
+                  showNavBar="false">
+
+            <p:tab id="endpointTab">
+                <p:panel header="Select second endpoint for cable"
+                         id="cableEndpointPanel">
+
+                    <p:panel>
+
+                        <ui:include src="../../../itemDomainMachineDesign/private/itemDomainMachineDesignTreeTable.xhtml">
+                            <ui:param name="viewId" value="addCablePanel" />
+                            <ui:param name="hideOptionalColumns" value="#{false}" /> 
+                            <ui:param name="valueModel" value="#{entityController.addCableWizard.machineDesignTree}" />
+                            <ui:param name="selectionModel" value="#{entityController.addCableWizard.selectedEndpoint}" /> 
+                        </ui:include>
+
+                    </p:panel>
+                </p:panel>
+            </p:tab>
+
+            <p:tab id="cableTypeTab">
+                <p:panel header="Indicate cable type">
+                    <p:outputPanel id="cableTypePanel">
+
+                        <p:selectOneRadio id="cableTypeRadio" 
+                                          value="#{entityController.addCableWizard.cableType}" 
+                                          layout="custom">
+                            <f:selectItem itemLabel="Placeholder" itemValue="placeholder" />
+                            <f:selectItem itemLabel="Cable Catalog" itemValue="catalog" />
+                            <f:selectItem itemLabel="Bundle" itemValue="bundle" />
+                            <f:selectItem itemLabel="Virtual" itemValue="virtual" />
+                        </p:selectOneRadio>
+
+                        <p:panelGrid columns="2">
+
+                            <p:radioButton id="placeholderRadio" for="cableTypeRadio" itemIndex="0" />
+                            <p:outputLabel for="placeholderRadio" value="placeholder" />
+
+                            <p:radioButton id="catalogRadio" for="cableTypeRadio" itemIndex="1" />
+                            <p:outputLabel for="catalogRadio" value="catalog" />
+
+                            <p:radioButton id="bundleRadio" 
+                                           for="cableTypeRadio" 
+                                           itemIndex="2"
+                                           disabled="true" />
+                            <p:outputLabel for="bundleRadio" value="bundle" />
+
+                            <p:radioButton id="virtualRadio" 
+                                           for="cableTypeRadio" 
+                                           itemIndex="3" 
+                                           disabled="true"/>
+                            <p:outputLabel for="virtualRadio" value="virtual" />
+
+                        </p:panelGrid>
+
+                    </p:outputPanel>
+                </p:panel>
+            </p:tab>
+
+            <p:tab id="cableDetailsTab">
+
+                <p:panel id="cableDetailsPanelPlaceholder" 
+                         header="Edit placeholder cable details"
+                         rendered="#{entityController.addCableWizard.cableType eq 'placeholder'}">                
+                </p:panel>
+
+                <p:panel id="cableDetailsPanelCatalog" 
+                         header="Select cable catalog item and edit details"
+                         rendered="#{entityController.addCableWizard.cableType eq 'catalog'}">
+
+                    <p:dataTable id="selectCableCatalogDataTable"
+                                 value="#{itemDomainCableCatalogController.selectDataModel}"
+                                 var="itemListObject"
+                                 rowKey="#{itemListObject.id}"
+                                 selection="#{entityController.addCableWizard.selectedCableCatalogItem}"
+                                 rows="#{resources.SelectDataTableNumberOfRows}"
+                                 paginator="true">         
+
+                        <ui:remove>
+                        </ui:remove>
+
+                        <f:facet name="header">
+                            RadioButton
+                        </f:facet>
+                        <p:column selectionMode="single" style="width:16px;text-align:center"/>
+
+                        <ui:include src="../../../item/private/itemListObject.xhtml" >
+                            <ui:param name="entityController"
+                                      value="#{itemDomainCableCatalogController}" /> 
+                            <ui:param name="filterable"
+                                      value="#{true}"/>
+                            <ui:param name="sortable"
+                                      value="#{false}"/>
+                        </ui:include>
+
+                    </p:dataTable>
+
+                </p:panel>
+
+            </p:tab>
+
+            <p:tab id="cableReviewTab">
+
+                <p:panel id="cableReviewPanelPlaceholder" 
+                         header="Review and save placeholder cable"
+                         rendered="#{entityController.addCableWizard.cableType eq 'placeholder'}">                
+                    <p:panelGrid columns="2">
+                        <ui:include src="reviewTabCommon.xhtml">
+                            <ui:param name="viewId" value="cableReviewPanelPlaceholder" />
+                        </ui:include>
+                    </p:panelGrid>
+
+                </p:panel>
+
+                <p:panel id="cableReviewPanelCatalog" 
+                         header="Review and save cable with catalog type"
+                         rendered="#{entityController.addCableWizard.cableType eq 'catalog'}">
+
+                    <p:panelGrid columns="2">
+                        <ui:include src="reviewTabCommon.xhtml">
+                            <ui:param name="viewId" value="cableReviewPanelCatalog" />
+                        </ui:include>
+
+                        <p:outputLabel for="cableReviewInputCableCatalog" value="Cable Catalog Item" />
+                        <p:inputText id="cableReviewInputCableCatalog"
+                                     readonly="true"
+                                     value="#{entityController.addCableWizard.selectedCableCatalogItem}" />
+                    </p:panelGrid>
+
+                </p:panel>
+
+            </p:tab>
+
+        </p:wizard>
+
+        <p:outputPanel id="cableWizardButtonPanel">
+            <div style="float: left">
+
+                <p:commandButton value="Previous Step" 
+                                 process="@this"
+                                 update="@this"
+                                 onstart="PF('loadingDialog').show();PF('cableWizard').back();"
+                                 oncomplete="PF('loadingDialog').hide();"
+                                 icon="ui-icon-arrowthick-1-w"/>
+
+                <p:commandButton value="Cancel"
+                                 alt="Cancel"
+                                 action="#{entityController.addCableWizard.cancel()}"
+                                 id="cancelButton"
+                                 icon="fa fa-times-circle-o"
+                                 rendered="true"
+                                 ajax="false"
+                                 immediate="true"
+                                 process="@this"
+                                 update="@this"> 
+                    <p:tooltip for="cancelButton" 
+                               value="Cancel add cable operation and close wizard."/>
+                </p:commandButton>
+
+            </div>
+            <div style="float: right">
+
+                <p:commandButton value="Save"
+                                 alt="Save"
+                                 action="#{entityController.addCableWizard.save()}"
+                                 id="saveButton"
+                                 icon="ui-icon-check"
+                                 rendered="true"
+                                 ajax="false"
+                                 immediate="false"
+                                 process="addCableWizard"
+                                 update="addCableWizard"> 
+                    <p:tooltip for="saveButton" 
+                               value="Save cable data and close wizard."/>
+                </p:commandButton>
+
+                <p:commandButton value="Next Step"
+                                 process="@this"
+                                 update="@this"
+                                 onstart="PF('loadingDialog').show();PF('cableWizard').next();"
+                                 oncomplete="PF('loadingDialog').hide();"
+                                 icon="ui-icon-arrowthick-1-e"
+                                 iconPos="right"/>
+
+            </div>
+
+        </p:outputPanel>
+
+    </p:panel>
+
+    <p:remoteCommand name="resetCableWizard"
+                     oncomplete="PF('cableWizard').loadStep(PF('cableWizard').cfg.steps[0], true)"/>
+
+</ui:composition>
