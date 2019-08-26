@@ -46,7 +46,7 @@ See LICENSE file.
                     </p:outputPanel>
                 </p:panel>
             </p:tab>
-            
+
             <p:tab id="cableTypeTab">
                 <p:panel header="Indicate cable type">
                     <p:outputPanel id="cableTypePanel">
@@ -132,12 +132,12 @@ See LICENSE file.
 
                 <p:panel id="cableReviewPanelPlaceholder" 
                          header="Review and save placeholder cable"
-                         rendered="#{entityController.addCableWizard.cableType eq 'placeholder'}">                
-                    <p:panelGrid columns="2">
-                        <ui:include src="reviewTabCommon.xhtml">
-                            <ui:param name="viewId" value="cableReviewPanelPlaceholder" />
-                        </ui:include>
-                    </p:panelGrid>
+                         rendered="#{entityController.addCableWizard.cableType eq 'placeholder'}">
+
+                    <ui:decorate template="templates/reviewTabTemplate.xhtml" >                        
+                        <ui:param name="viewId" value="cableReviewPanelPlaceholder"/>
+                        <ui:define name="typeSpecificFields" />
+                    </ui:decorate>
 
                 </p:panel>
 
@@ -145,22 +145,26 @@ See LICENSE file.
                          header="Review and save cable with catalog type"
                          rendered="#{entityController.addCableWizard.cableType eq 'catalog'}">
 
-                    <p:panelGrid columns="2">
-                        <ui:include src="reviewTabCommon.xhtml">
-                            <ui:param name="viewId" value="cableReviewPanelCatalog" />
-                        </ui:include>
-
-                        <p:outputLabel for="cableReviewInputCableCatalog" value="Cable Catalog Item" />
-                        <p:inputText id="cableReviewInputCableCatalog"
-                                     readonly="true"
-                                     value="#{entityController.addCableWizard.selectedCableCatalogItem}" />
-                    </p:panelGrid>
-
+                    <ui:decorate template="templates/reviewTabTemplate.xhtml">
+                        
+                        <ui:param name="viewId" value="cableReviewPanelCatalog" />
+                        
+                        <ui:define name="typeSpecificFields">
+                            <p:outputLabel for="cableReviewInputCableCatalog" value="Cable Catalog Item" />
+                            <p:inputText id="cableReviewInputCableCatalog"
+                                         readonly="true"
+                                         value="#{entityController.addCableWizard.selectedCableCatalogItem}" />
+                        </ui:define>
+                        
+                    </ui:decorate>
                 </p:panel>
 
             </p:tab>
 
         </p:wizard>
+        
+        <p:remoteCommand name="resetCableWizard" 
+                         oncomplete="PF('cableWizard').loadStep(PF('cableWizard').cfg.steps[0], true)"/>
 
         <p:outputPanel id="cableWizardButtonPanel">
             <div style="float: left">
@@ -216,8 +220,5 @@ See LICENSE file.
         </p:outputPanel>
 
     </p:panel>
-
-    <p:remoteCommand name="resetCableWizard"
-                     oncomplete="PF('cableWizard').loadStep(PF('cableWizard').cfg.steps[0], true)"/>
 
 </ui:composition>
