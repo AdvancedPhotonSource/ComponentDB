@@ -10,6 +10,11 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">    
 
+    <p:outputLabel for="cableReviewInputName#{viewId}" value="Name" />
+    <p:inputText id="cableReviewInputName#{viewId}"
+                 readonly="true"
+                 value="#{entityController.addCableWizard.getName()}" />
+
     <p:outputLabel for="cableReviewInputEndpoint1#{viewId}" value="Endpoint1" />
     <p:inputText id="cableReviewInputEndpoint1#{viewId}"
                  readonly="true"

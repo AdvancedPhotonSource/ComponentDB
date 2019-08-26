@@ -26,9 +26,10 @@ public class ItemDomainCableDesignWizard implements Serializable {
 
     private ItemDomainCableDesignWizardClient client;
     private TreeNode machineDesignTree = null;
+    private String name = "";
     private TreeNode endpoint1 = null;
     private TreeNode selectedEndpoint = null;
-    private String cableType = null;
+    private String cableType = "";
     private Item selectedCableCatalogItem = null;
 
     /**
@@ -64,6 +65,21 @@ public class ItemDomainCableDesignWizard implements Serializable {
      */
     public void setMachineDesignTree(TreeNode machineDesignTree) {
         this.machineDesignTree = machineDesignTree;
+    }
+
+    /**
+     * Returns the cable name.  This is the model for the name input on the
+     * "basics" tab.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @link ItemDomainCableDesignWizard#getName 
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**

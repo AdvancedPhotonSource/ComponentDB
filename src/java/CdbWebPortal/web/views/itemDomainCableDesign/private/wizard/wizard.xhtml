@@ -35,6 +35,18 @@ See LICENSE file.
                 </p:panel>
             </p:tab>
 
+            <p:tab id="cableBasicsTab">
+                <p:panel header="Provide basic cable information">
+                    <p:outputPanel id="cableBasicsPanel">
+                        <p:panelGrid columns="2">
+                            <p:outputLabel for="cableBasicsInputCableName" value="Cable Name" />
+                            <p:inputText id="cableBasicsInputCableName"
+                                         value="#{entityController.addCableWizard.name}" />
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:panel>
+            </p:tab>
+            
             <p:tab id="cableTypeTab">
                 <p:panel header="Indicate cable type">
                     <p:outputPanel id="cableTypePanel">
