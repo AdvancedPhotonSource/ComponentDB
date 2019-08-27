@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
@@ -31,11 +32,13 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueImageUploadBean;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.authentication.User;
 import gov.anl.aps.cdb.rest.entities.FileUploadObject;
 import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemLocationInformation;
+import gov.anl.aps.cdb.rest.entities.ItemSearchResults;
 import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
 import gov.anl.aps.cdb.rest.entities.LogEntryEditInformation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,6 +49,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.LinkedList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
@@ -522,6 +526,23 @@ public class ItemRoute extends BaseRoute {
         }
         
         return childLocations;        
+    }
+    
+    @GET
+    @Path("/Search/{searchText}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ItemSearchResults getSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
+        LOGGER.debug("Performing an item search for search query: " + searchText);
+        
+        ItemDomainCatalogController catalogInstance = ItemDomainCatalogController.getApiInstance();
+        ItemDomainInventoryController inventoryInstance = ItemDomainInventoryController.getApiInstance();
+        
+        catalogInstance.performEntitySearch(searchText, true);        
+        LinkedList<SearchResult> catalogResults = catalogInstance.getSearchResultList();
+        inventoryInstance.performEntitySearch(searchText, true);
+        LinkedList<SearchResult> inventoryResults = inventoryInstance.getSearchResultList();
+        
+        return new ItemSearchResults(catalogResults, inventoryResults);
     }
     
     private UserInfo getCurrentRequestUserInfo() {

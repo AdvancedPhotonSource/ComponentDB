@@ -1043,7 +1043,9 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         searchResult.doesValueContainPattern("created by", getEntityInfo().getCreatedByUser().getUsername(), searchPattern);
         searchResult.doesValueContainPattern("last modified by", getEntityInfo().getLastModifiedByUser().getUsername(), searchPattern);
-        searchResult.doesValueContainPattern("owned by", getEntityInfo().getOwnerUser().getUsername(), searchPattern);
+        if (getEntityInfo().getOwnerUser() != null) {
+            searchResult.doesValueContainPattern("owned by", getEntityInfo().getOwnerUser().getUsername(), searchPattern);
+        }
         searchResult.doesValueContainPattern("description", getDescription(), searchPattern);
         return searchResult;
     }
