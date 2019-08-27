@@ -24,12 +24,23 @@ See LICENSE file.
 
                     <p:panel>
 
-                        <ui:include src="../../../itemDomainMachineDesign/private/itemDomainMachineDesignTreeTable.xhtml">
+                        <ui:decorate template="../../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+
                             <ui:param name="viewId" value="addCablePanel" />
                             <ui:param name="hideOptionalColumns" value="#{false}" /> 
                             <ui:param name="valueModel" value="#{entityController.addCableWizard.machineDesignTree}" />
-                            <ui:param name="selectionModel" value="#{entityController.addCableWizard.selectedEndpoint}" /> 
-                        </ui:include>
+                            <ui:param name="selectionModel" value="#{entityController.addCableWizard.selectionEndpoint2}" /> 
+
+                            <ui:define name="treeTableEvents">
+                                <p:ajax event="select" 
+                                        listener="#{entityController.addCableWizard.selectListenerEndpoint2}" 
+                                        oncomplete="updateWizardButtons();" />
+                                <p:ajax event="unselect" 
+                                        listener="#{entityController.addCableWizard.unselectListenerEndpoint2}" 
+                                        oncomplete="updateWizardButtons();" />
+                            </ui:define>
+
+                        </ui:decorate>
 
                     </p:panel>
                 </p:panel>
@@ -41,7 +52,11 @@ See LICENSE file.
                         <p:panelGrid columns="2">
                             <p:outputLabel for="cableBasicsInputCableName" value="Cable Name" />
                             <p:inputText id="cableBasicsInputCableName"
-                                         value="#{entityController.addCableWizard.name}" />
+                                         value="#{entityController.addCableWizard.name}">
+                                <p:ajax event="keyup" 
+                                        listener="#{entityController.addCableWizard.keyupListenerName}"
+                                        oncomplete="updateWizardButtons();"/>
+                            </p:inputText>
                         </p:panelGrid>
                     </p:outputPanel>
                 </p:panel>
@@ -54,10 +69,21 @@ See LICENSE file.
                         <p:selectOneRadio id="cableTypeRadio" 
                                           value="#{entityController.addCableWizard.cableType}" 
                                           layout="custom">
-                            <f:selectItem itemLabel="Placeholder" itemValue="placeholder" />
-                            <f:selectItem itemLabel="Cable Catalog" itemValue="catalog" />
-                            <f:selectItem itemLabel="Bundle" itemValue="bundle" />
-                            <f:selectItem itemLabel="Virtual" itemValue="virtual" />
+                            <f:selectItem itemLabel="Placeholder" 
+                                          itemValue="placeholder" />
+                            <f:selectItem itemLabel="Cable Catalog" 
+                                          itemValue="catalog" />
+                            <f:selectItem itemLabel="Bundle" 
+                                          itemValue="bundle"
+                                          itemDisabled="true"/>
+                            <f:selectItem itemLabel="Virtual" 
+                                          itemValue="virtual"
+                                          itemDisabled="true" />
+                            
+                            <p:ajax event="click"
+                                    listener="#{entityController.addCableWizard.clickListenerCableType}"
+                                    oncomplete="updateWizardButtons();"/>
+                            
                         </p:selectOneRadio>
 
                         <p:panelGrid columns="2">
@@ -72,13 +98,17 @@ See LICENSE file.
                                            for="cableTypeRadio" 
                                            itemIndex="2"
                                            disabled="true" />
-                            <p:outputLabel for="bundleRadio" value="bundle" />
+                            <p:outputLabel for="bundleRadio" 
+                                           value="bundle" 
+                                           disabled="true"/>
 
                             <p:radioButton id="virtualRadio" 
                                            for="cableTypeRadio" 
                                            itemIndex="3" 
                                            disabled="true"/>
-                            <p:outputLabel for="virtualRadio" value="virtual" />
+                            <p:outputLabel for="virtualRadio" 
+                                           value="virtual"
+                                           disabled="true"/>
 
                         </p:panelGrid>
 
@@ -101,12 +131,9 @@ See LICENSE file.
                                  value="#{itemDomainCableCatalogController.selectDataModel}"
                                  var="itemListObject"
                                  rowKey="#{itemListObject.id}"
-                                 selection="#{entityController.addCableWizard.selectedCableCatalogItem}"
+                                 selection="#{entityController.addCableWizard.selectionCableCatalogItem}"
                                  rows="#{resources.SelectDataTableNumberOfRows}"
                                  paginator="true">         
-
-                        <ui:remove>
-                        </ui:remove>
 
                         <f:facet name="header">
                             RadioButton
@@ -121,6 +148,10 @@ See LICENSE file.
                             <ui:param name="sortable"
                                       value="#{false}"/>
                         </ui:include>
+                        
+                        <p:ajax event="rowSelectRadio"
+                                listener="#{entityController.addCableWizard.selectListenerCableCatalogItem}"
+                                oncomplete="updateWizardButtons();"/>
 
                     </p:dataTable>
 
@@ -146,25 +177,22 @@ See LICENSE file.
                          rendered="#{entityController.addCableWizard.cableType eq 'catalog'}">
 
                     <ui:decorate template="templates/reviewTabTemplate.xhtml">
-                        
+
                         <ui:param name="viewId" value="cableReviewPanelCatalog" />
-                        
+
                         <ui:define name="typeSpecificFields">
                             <p:outputLabel for="cableReviewInputCableCatalog" value="Cable Catalog Item" />
                             <p:inputText id="cableReviewInputCableCatalog"
                                          readonly="true"
-                                         value="#{entityController.addCableWizard.selectedCableCatalogItem}" />
+                                         value="#{entityController.addCableWizard.selectionCableCatalogItem}" />
                         </ui:define>
-                        
+
                     </ui:decorate>
                 </p:panel>
 
             </p:tab>
 
         </p:wizard>
-        
-        <p:remoteCommand name="resetCableWizard" 
-                         oncomplete="PF('cableWizard').loadStep(PF('cableWizard').cfg.steps[0], true)"/>
 
         <p:outputPanel id="cableWizardButtonPanel">
             <div style="float: left">
@@ -173,7 +201,8 @@ See LICENSE file.
                                  process="@this"
                                  update="@this"
                                  onstart="PF('loadingDialog').show();PF('cableWizard').back();"
-                                 oncomplete="PF('loadingDialog').hide();"
+                                 oncomplete="PF('loadingDialog').hide(); updateWizardButtons();"
+                                 disabled="#{entityController.addCableWizard.disableButtonPrev}"
                                  icon="ui-icon-arrowthick-1-w"/>
 
                 <p:commandButton value="Cancel"
@@ -184,6 +213,8 @@ See LICENSE file.
                                  rendered="true"
                                  ajax="false"
                                  immediate="true"
+                                 oncomplete="updateWizardButtons();"
+                                 disabled="#{entityController.addCableWizard.disableButtonCancel}"
                                  process="@this"
                                  update="@this"> 
                     <p:tooltip for="cancelButton" 
@@ -201,6 +232,8 @@ See LICENSE file.
                                  rendered="true"
                                  ajax="false"
                                  immediate="false"
+                                 oncomplete="updateWizardButtons();"
+                                 disabled="#{entityController.addCableWizard.disableButtonSave}"
                                  process="addCableWizard"
                                  update="addCableWizard"> 
                     <p:tooltip for="saveButton" 
@@ -211,13 +244,20 @@ See LICENSE file.
                                  process="@this"
                                  update="@this"
                                  onstart="PF('loadingDialog').show();PF('cableWizard').next();"
-                                 oncomplete="PF('loadingDialog').hide();"
+                                 oncomplete="PF('loadingDialog').hide(); updateWizardButtons();"
+                                 disabled="#{entityController.addCableWizard.disableButtonNext}"
                                  icon="ui-icon-arrowthick-1-e"
                                  iconPos="right"/>
 
             </div>
 
         </p:outputPanel>
+
+        <p:remoteCommand name="resetCableWizard" 
+                         oncomplete="PF('cableWizard').loadStep(PF('cableWizard').cfg.steps[0], true)"/>
+
+        <p:remoteCommand name="updateWizardButtons" 
+                         update="cableWizardButtonPanel"/>
 
     </p:panel>
 

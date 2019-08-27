@@ -16,17 +16,10 @@ See LICENSE file.
                  selectionMode="single"
                  selection="#{selectionModel}"
                  var="itemElementTreeListObject">
-
-        <p:ajax event="select"
-                onstart="PF('loadingDialog').show()"
-                oncomplete="PF('loadingDialog').hide();
-                showLastContextMenu()"
-                update="@form:machineDesignDualViewContextMenuPermissions" />
         
-        <!--Saves the collapse status for tree nodes. Seems its a bug in primefaces that this is needed.-->
-        <p:ajax event="collapse" /> 
+        <ui:insert name="treeTableEvents" />
 
-        <ui:include src="itemDomainMachineDesignListObject.xhtml">
+        <ui:include src="../itemDomainMachineDesignListObject.xhtml">
             <ui:param name="hideOptionalColumns"
                       value="#{hideOptionalColumns}" /> 
             <ui:param name="itemElementListObject"

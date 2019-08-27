@@ -13,11 +13,25 @@ See LICENSE file.
 
     <ui:param name="settingObject" value="#{itemDomainMachineDesignController.settingObject}" /> 
               
-    <ui:include src="itemDomainMachineDesignTreeTable.xhtml">
+    <ui:decorate template="templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+
         <ui:param name="hideOptionalColumns" value="#{!dualConfigurationViewEnabled}" /> 
         <ui:param name="valueModel" value="#{entityController.currentMachineDesignListRootTreeNode}" />
         <ui:param name="selectionModel" value="#{entityController.selectedItemInListTreeTable}" />
-    </ui:include>
+
+        <ui:define name="treeTableEvents">
+            <p:ajax event="select"
+                    onstart="PF('loadingDialog').show()"
+                    oncomplete="PF('loadingDialog').hide();
+                    showLastContextMenu()"
+                    update="@form:machineDesignDualViewContextMenuPermissions" />
+
+            <!--Saves the collapse status for tree nodes. Seems its a bug in primefaces that this is needed.-->
+            <p:ajax event="collapse" /> 
+
+        </ui:define>
+
+    </ui:decorate>
 
     <ui:include src="itemDomainMachineDesignDualColumnListViewTreeBlockUI.xhtml" />
 
