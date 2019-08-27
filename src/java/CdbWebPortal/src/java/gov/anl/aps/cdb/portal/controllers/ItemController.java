@@ -2458,9 +2458,17 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             logList.add(logEntry);
             item.setLogList(logList);
         }
+        
+        // Prepare history 
+        Item originalItem = getEntityDbFacade().findById(item.getId());
+        // Compare elements with what is in the db 
+        List<ItemElement> originalElementList = originalItem.getItemElementDisplayList(); 
+        List<ItemElement> newElementList = item.getItemElementDisplayList(); 
+        LOGGER.debug("Verifying elements for item " + item);
+        ItemElementUtility.prepareItemElementHistory(originalElementList, newElementList, entityInfo);                                
 
         // Compare properties with what is in the db
-        List<PropertyValue> originalPropertyValueList = getEntityDbFacade().findById(item.getId()).getPropertyValueList();
+        List<PropertyValue> originalPropertyValueList = originalItem.getPropertyValueList();
         List<PropertyValue> newPropertyValueList = item.getPropertyValueList();
         LOGGER.debug("Verifying properties for item " + item);
         PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
