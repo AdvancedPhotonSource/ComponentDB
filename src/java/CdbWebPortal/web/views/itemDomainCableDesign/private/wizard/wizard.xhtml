@@ -11,6 +11,9 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">    
 
     <p:panel>
+        
+        <ui:param name="addCableWizard"
+                  value="#{entityController.addCableWizard}" />
 
         <p:wizard id="addCableWizard"
                   flowListener="#{entityController.addCableWizard.onFlowProcess}" 
@@ -47,16 +50,31 @@ See LICENSE file.
             </p:tab>
 
             <p:tab id="cableBasicsTab">
-                <p:panel header="Provide basic cable information">
+                <p:panel header="Enter cable name and select project(s)">
                     <p:outputPanel id="cableBasicsPanel">
                         <p:panelGrid columns="2">
+                            
                             <p:outputLabel for="cableBasicsInputCableName" value="Cable Name" />
                             <p:inputText id="cableBasicsInputCableName"
-                                         value="#{entityController.addCableWizard.name}">
+                                         value="#{entityController.addCableWizard.inputValueName}">
                                 <p:ajax event="keyup" 
                                         listener="#{entityController.addCableWizard.keyupListenerName}"
                                         oncomplete="updateWizardButtons();"/>
                             </p:inputText>
+
+                            <h:outputLabel for="selectCheckboxProject"
+                                           value="Project"
+                                           styleClass="entityDataLabel"/>
+                            <p:selectCheckboxMenu id="selectCheckboxProject"
+                                                  label="Select Project"
+                                                  value="#{itemDomainMachineDesignController.addCableWizard.selectionProjectList}"
+                                                  converter="itemProjectConverter"
+                                                  filter="true" 
+                                                  filterMatchMode="contains">
+                                <f:selectItems value="#{itemProjectController.availableItems}" /> 
+                                <p:ajax listener="#{entityController.addCableWizard.selectListenerProjectList}" 
+                                        oncomplete="updateWizardButtons();" />
+                            </p:selectCheckboxMenu>                                   
                         </p:panelGrid>
                     </p:outputPanel>
                 </p:panel>
@@ -67,7 +85,7 @@ See LICENSE file.
                     <p:outputPanel id="cableTypePanel">
 
                         <p:selectOneRadio id="cableTypeRadio" 
-                                          value="#{entityController.addCableWizard.cableType}" 
+                                          value="#{entityController.addCableWizard.selectionCableType}" 
                                           layout="custom">
                             <f:selectItem itemLabel="Placeholder" 
                                           itemValue="placeholder" />
@@ -99,16 +117,14 @@ See LICENSE file.
                                            itemIndex="2"
                                            disabled="true" />
                             <p:outputLabel for="bundleRadio" 
-                                           value="bundle" 
-                                           disabled="true"/>
+                                           value="bundle" />
 
                             <p:radioButton id="virtualRadio" 
                                            for="cableTypeRadio" 
                                            itemIndex="3" 
-                                           disabled="true"/>
+                                           disabled="true" />
                             <p:outputLabel for="virtualRadio" 
-                                           value="virtual"
-                                           disabled="true"/>
+                                           value="virtual" />
 
                         </p:panelGrid>
 
@@ -120,12 +136,12 @@ See LICENSE file.
 
                 <p:panel id="cableDetailsPanelPlaceholder" 
                          header="Edit placeholder cable details"
-                         rendered="#{entityController.addCableWizard.cableType eq 'placeholder'}">                
+                         rendered="#{entityController.addCableWizard.selectionCableType eq 'placeholder'}">                
                 </p:panel>
 
                 <p:panel id="cableDetailsPanelCatalog" 
                          header="Select cable catalog item and edit details"
-                         rendered="#{entityController.addCableWizard.cableType eq 'catalog'}">
+                         rendered="#{entityController.addCableWizard.selectionCableType eq 'catalog'}">
 
                     <p:dataTable id="selectCableCatalogDataTable"
                                  value="#{itemDomainCableCatalogController.selectDataModel}"
@@ -163,7 +179,7 @@ See LICENSE file.
 
                 <p:panel id="cableReviewPanelPlaceholder" 
                          header="Review and save placeholder cable"
-                         rendered="#{entityController.addCableWizard.cableType eq 'placeholder'}">
+                         rendered="#{entityController.addCableWizard.selectionCableType eq 'placeholder'}">
 
                     <ui:decorate template="templates/reviewTabTemplate.xhtml" >                        
                         <ui:param name="viewId" value="cableReviewPanelPlaceholder"/>
@@ -174,7 +190,7 @@ See LICENSE file.
 
                 <p:panel id="cableReviewPanelCatalog" 
                          header="Review and save cable with catalog type"
-                         rendered="#{entityController.addCableWizard.cableType eq 'catalog'}">
+                         rendered="#{entityController.addCableWizard.selectionCableType eq 'catalog'}">
 
                     <ui:decorate template="templates/reviewTabTemplate.xhtml">
 
@@ -260,5 +276,11 @@ See LICENSE file.
                          update="cableWizardButtonPanel"/>
 
     </p:panel>
+    
+    <ui:remove>
+<!--        print supported events for selectCheckboxComponent-->
+        <p:selectCheckboxMenu binding="#{ac}" />
+        <h:outputText value="#{ac.eventNames}" />
+    </ui:remove>
 
 </ui:composition>

@@ -4,10 +4,22 @@
  */
 package gov.anl.aps.cdb.portal.view.objects;
 
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.RelationshipTypeController;
+import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
@@ -17,21 +29,22 @@ import org.primefaces.model.TreeNode;
  * This class is intended to be used by another controller class, e.g.,
  * ItemDomainMachineDesignController, and is utilized when adding a new cable
  * design item.
- * 
+ *
  * I have not added annotations for the named bean or scope since it's not
  * envisioned to be used that way, and I'm not sure if they'd cause problems by
  * being present.
- * 
+ *
  * @author cmcchesney
  */
 public class ItemDomainCableDesignWizard implements Serializable {
 
     private ItemDomainCableDesignWizardClient client;
     private TreeNode machineDesignTree = null;
-    private String name = "";
-    private TreeNode endpoint1 = null;
+    private String inputValueName = "";
+    private List<ItemProject> selectionProjectList = new ArrayList<>();
+    private TreeNode selectionEndpoint1 = null;
     private TreeNode selectionEndpoint2 = null;
-    private String cableType = "";
+    private String selectionCableType = "";
     private Item selectionCableCatalogItem = null;
     private Boolean disableButtonPrev = true;
     private Boolean disableButtonNext = true;
@@ -45,17 +58,18 @@ public class ItemDomainCableDesignWizard implements Serializable {
      */
     public ItemDomainCableDesignWizard() {
         // "empty" lambda implementation of ItemDomainCableDesignWizardClient cleanupCableWizard() method
-        client = (() -> {}); 
+        client = (() -> {
+        });
     }
 
     /**
-     * Creates new instance with specified client.  Methods in
+     * Creates new instance with specified client. Methods in
      * ItemDomainCableDesignWizardClient interface will be invoked on client.
-     * 
-     * @param aClient The client, which must implement ItemDomainCableDesignWizardClient
-     * interface.
+     *
+     * @param aClient The client, which must implement
+     * ItemDomainCableDesignWizardClient interface.
      */
-     public ItemDomainCableDesignWizard(ItemDomainCableDesignWizardClient aClient) {
+    public ItemDomainCableDesignWizard(ItemDomainCableDesignWizardClient aClient) {
         client = aClient;
     }
 
@@ -68,94 +82,114 @@ public class ItemDomainCableDesignWizard implements Serializable {
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getMachineDesignTree 
+     * @link ItemDomainCableDesignWizard#getMachineDesignTree
      */
     public void setMachineDesignTree(TreeNode machineDesignTree) {
         this.machineDesignTree = machineDesignTree;
     }
 
     /**
-     * Returns the cable name.  This is the model for the name input on the
+     * Returns the cable name. This is the model for the name input on the
      * "basics" tab.
      */
-    public String getName() {
-        return name;
+    public String getInputValueName() {
+        return inputValueName;
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getName 
+     * @link ItemDomainCableDesignWizard#getName
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setInputValueName(String inputValueName) {
+        this.inputValueName = inputValueName;
+    }
+
+    /**
+     * Returns the selected list of projects for the cable.
+     */
+    public List<ItemProject> getSelectionProjectList() {
+        return selectionProjectList;
+    }
+
+    /**
+     * @link ItemDomainCableDesignWizard#getSelectionProjectList
+     */
+    public void setSelectionProjectList(List<ItemProject> projectList) {
+        this.selectionProjectList = projectList;
+        System.out.println("setList: " + this.selectionProjectList.toString());
+        System.out.println(this.selectionProjectList.size());
     }
 
     /**
      * Returns the cable's first endpoint, intended to be set by the client
      * after creating an instance of this class.
      */
-    public TreeNode getEndpoint1() {
-        return endpoint1;
+    public TreeNode getSelectionEndpoint1() {
+        return selectionEndpoint1;
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getEndpoint1 
+     * @link ItemDomainCableDesignWizard#getEndpoint1
      */
-    public void setEndpoint1(TreeNode endpoint1) {
-        this.endpoint1 = endpoint1;
+    public void setSelectionEndpoint1(TreeNode selectionEndpoint1) {
+        this.selectionEndpoint1 = selectionEndpoint1;
     }
-    
+
     /**
-     * Returns endpoint1 as a string. 
-     * @link ItemDomainCableDesignWizard#getEndpoint1 
+     * Returns selectionEndpoint1 as a string.
+     * @link ItemDomainCableDesignWizard#getSelectionEndpoint1
      */
     public String getEndpoint1String() {
-        if (endpoint1 == null) {
+        if (selectionEndpoint1 == null) {
             return new String();
         } else {
-            return ((ItemElement)(endpoint1.getData())).getContainedItem().toString();
+            return ((ItemElement) (selectionEndpoint1.getData())).getContainedItem().toString();
         }
     }
 
     /**
-     * Returns the cable's second endpoint.  This is set by the wizard's
-     * endpoint selection tab, and is the selection model for the machine design
-     * tree table.
+     * Returns the cable's second endpoint. This is set by the wizard's endpoint
+     * selection tab, and is the selection model for the machine design tree
+     * table.
      */
     public TreeNode getSelectionEndpoint2() {
         return selectionEndpoint2;
     }
-    
-    public String getSelectedEndpointString() {
+
+    /**
+     * Returns endpoint2 as a string.
+     * @link ItemDomainCableDesignWizard#getSelectionEndpoint2
+     */
+    public String getEndpoint2String() {
         if (selectionEndpoint2 == null) {
             return new String();
         } else {
-            return ((ItemElement)(selectionEndpoint2.getData())).getContainedItem().toString();
-        } 
+            return ((ItemElement) (selectionEndpoint2.getData())).getContainedItem().toString();
+        }
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getSelectedEndpoint 
+     * @link ItemDomainCableDesignWizard#getSelectedEndpoint
      */
     public void setSelectionEndpoint2(TreeNode selectionEndpoint2) {
         this.selectionEndpoint2 = selectionEndpoint2;
     }
 
     /**
-     * Returns the logical cable type (e.g., placeholder, catalog, bundle, virtual),
-     * not to be confused with the cable catalog item for the cable design object
-     * that will be created by this wizard (in that case, the cable type is
-     * "catalog").  This is the model for radio buttons on the wizard's cable
-     * type tab.
+     * Returns the logical cable type (e.g., placeholder, catalog, bundle,
+     * virtual), not to be confused with the cable catalog item for the cable
+     * design object that will be created by this wizard (in that case, the
+     * cable type is "catalog"). This is the model for radio buttons on the
+     * wizard's cable type tab.
      */
-    public String getCableType() {
-        return cableType;
+    public String getSelectionCableType() {
+        return selectionCableType;
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getCableType 
+     * @link ItemDomainCableDesignWizard#getCableType
      */
-    public void setCableType(String cableType) {
-        this.cableType = cableType;
+    public void setSelectionCableType(String selectionCableType) {
+        this.selectionCableType = selectionCableType;
     }
 
     /**
@@ -166,7 +200,7 @@ public class ItemDomainCableDesignWizard implements Serializable {
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getSelectedCableCatalogItem 
+     * @link ItemDomainCableDesignWizard#getSelectedCableCatalogItem
      */
     public void setSelectionCableCatalogItem(Item selectionCableCatalogItem) {
         this.selectionCableCatalogItem = selectionCableCatalogItem;
@@ -175,12 +209,12 @@ public class ItemDomainCableDesignWizard implements Serializable {
     /**
      * Returns true if the previous button should be disabled.
      */
-   public Boolean getDisableButtonPrev() {
+    public Boolean getDisableButtonPrev() {
         return disableButtonPrev;
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getDisableButtonPrev 
+     * @link ItemDomainCableDesignWizard#getDisableButtonPrev
      */
     public void setDisableButtonPrev(Boolean disableButtonPrev) {
         this.disableButtonPrev = disableButtonPrev;
@@ -194,7 +228,7 @@ public class ItemDomainCableDesignWizard implements Serializable {
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getDisableButtonNext 
+     * @link ItemDomainCableDesignWizard#getDisableButtonNext
      */
     public void setDisableButtonNext(Boolean disableButtonNext) {
         this.disableButtonNext = disableButtonNext;
@@ -208,7 +242,7 @@ public class ItemDomainCableDesignWizard implements Serializable {
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getDisableButtonSave 
+     * @link ItemDomainCableDesignWizard#getDisableButtonSave
      */
     public void setDisableButtonSave(Boolean disableButtonSave) {
         this.disableButtonSave = disableButtonSave;
@@ -222,30 +256,30 @@ public class ItemDomainCableDesignWizard implements Serializable {
     }
 
     /**
-     * @link ItemDomainCableDesignWizard#getDisableButtonCancel 
+     * @link ItemDomainCableDesignWizard#getDisableButtonCancel
      */
     public void setDisableButtonCancel(Boolean disableButtonCancel) {
         this.disableButtonCancel = disableButtonCancel;
     }
-    
+
     /**
      * Handles FlowEvents generated by the wizard component.
      */
-    public String onFlowProcess(FlowEvent event) {    
-        
+    public String onFlowProcess(FlowEvent event) {
+
         String nextStep = event.getNewStep();
         String currStep = event.getOldStep();
-        
+
         setEnablement(nextStep);
-        
+
         currentTab = nextStep;
-        
+
         return nextStep;
     }
-    
+
     /**
      * Handles select events generated by the machine design tree table
-     * component.  Must call client side remoteCommand to update button state
+     * component. Must call client side remoteCommand to update button state
      * from oncomplete attribute for this event tag.
      */
     public void selectListenerEndpoint2(NodeSelectEvent event) {
@@ -253,120 +287,187 @@ public class ItemDomainCableDesignWizard implements Serializable {
     }
     
     /**
+     * Handles select event on the p:selectCheckboxMenu for selecting project.
+     */
+    public void selectListenerProjectList() {
+        setEnablementForCurrentTab();
+    }
+
+     /**
+     * Handles unselect event on the p:selectCheckboxMenu for selecting project.
+     */
+    public void unselectListenerProjectList() {
+        System.out.println("selectListenerProjectList");
+        setEnablementForCurrentTab();
+    }
+
+   /**
      * Handles unselect events generated by the machine design tree table
-     * component.  Must call client side remoteCommand to update button state
+     * component. Must call client side remoteCommand to update button state
      * from oncomplete attribute for this event tag.
      */
     public void unselectListenerEndpoint2(NodeUnselectEvent event) {
         setEnablementForCurrentTab();
     }
-    
+
     /**
-     * Handles keyup events for the name inputText component.
+     * Handles keyup events for the inputValueName inputText component.
      */
-    public void keyupListenerName()
-    {
+    public void keyupListenerName() {
         setEnablementForCurrentTab();
     }
-    
+
     /**
-     * Handles click events for the cableType selectOneRadio component.
+     * Handles click events for the selectionCableType selectOneRadio component.
      */
-    public void clickListenerCableType()
-    {
+    public void clickListenerCableType() {
         setEnablementForCurrentTab();
     }
-    
-     /**
+
+    /**
      * Handles selection events for the cable catalog item datatable component.
      */
-    public void selectListenerCableCatalogItem()
-    {
+    public void selectListenerCableCatalogItem() {
         setEnablementForCurrentTab();
     }
-    
-   /**
+
+    /**
      * Implements the cancel operation, invoked by the wizard's "Cancel"
      * navigation button.
      */
     public void cancel() {
         client.cleanupCableWizard();
     }
-    
+
     /**
      * Implements the save operation, invoked by the wizard's "Save" navigation
      * button.
      */
     public void save() {
-        client.cleanupCableWizard();
+
+        if (selectionEndpoint1 == null) {
+            SessionUtility.addErrorMessage(
+                    "Could not save cable",
+                    "Please specify first endpoint.");
+            return;
+        }
+
+        if (selectionEndpoint2 == null) {
+            SessionUtility.addErrorMessage(
+                    "Could not save cable",
+                    "Please specify second endpoint.");
+            return;
+        }
+
+        if (inputValueName.isEmpty()) {
+            SessionUtility.addErrorMessage(
+                    "Could not save cable",
+                    "Please specify cable name.");
+            return;
+        }
+
+        if (selectionCableType.isEmpty()) {
+            SessionUtility.addErrorMessage(
+                    "Could not save cable",
+                    "Please specify second endpoint.");
+            return;
+        }
+
+        switch (selectionCableType) {
+            case "catalog":
+                if (selectionCableCatalogItem == null) {
+                    SessionUtility.addErrorMessage(
+                            "Could not save cable",
+                            "Please select cable catalog item.");
+                    return;
+                }
+                break;
+        }
+
+        Item itemEndpoint1 = ((ItemElement) (selectionEndpoint1.getData())).getContainedItem();
+        Item itemEndpoint2 = ((ItemElement) (selectionEndpoint2.getData())).getContainedItem();
+
+        ItemDomainCableDesignController controller
+                = ItemDomainCableDesignController.getInstance();
+
+        if (controller.createCable(itemEndpoint1, 
+                itemEndpoint2, 
+                inputValueName, 
+                selectionProjectList)) {
+            client.cleanupCableWizard();
+        } else {
+        }
     }
-    
+
     /**
      * Sets enable/disable state for the navigation buttons based on the current
      * tab and input elements.
      */
-    private void setEnablement(String tab)
-    {
+    private void setEnablement(String tab) {
 
-        switch(tab)
-        {
+        switch (tab) {
             case "endpointTab":
                 disableButtonPrev = true;
                 disableButtonCancel = false;
-                disableButtonSave = true;          
-                if (selectionEndpoint2 != null) 
+                disableButtonSave = true;
+                if (selectionEndpoint2 != null) {
                     disableButtonNext = false;
-                else
-                    disableButtonNext = true;               
+                } else {
+                    disableButtonNext = true;
+                }
                 break;
-            
+
             case "cableBasicsTab":
                 disableButtonPrev = false;
                 disableButtonCancel = false;
-                disableButtonSave = true;          
-                if (name.isEmpty())
+                disableButtonSave = true;
+                if ((inputValueName.isEmpty()) || 
+                        (selectionProjectList.isEmpty())) {
                     disableButtonNext = true;
-                else
+                } else {
                     disableButtonNext = false;
+                }
                 break;
-            
+
             case "cableTypeTab":
                 disableButtonPrev = false;
                 disableButtonCancel = false;
                 disableButtonSave = true;
-                if (cableType.isEmpty())
+                if (selectionCableType.isEmpty()) {
                     disableButtonNext = true;
-                else
+                } else {
                     disableButtonNext = false;
+                }
                 break;
-            
+
             case "cableDetailsTab":
                 disableButtonPrev = false;
                 disableButtonCancel = false;
                 disableButtonSave = true;
-                
-                switch (cableType) {
+
+                switch (selectionCableType) {
                     case "placeholder":
                         disableButtonNext = false;
                         break;
                     case "catalog":
-                        if (selectionCableCatalogItem != null)
+                        if (selectionCableCatalogItem != null) {
                             disableButtonNext = false;
-                        else
+                        } else {
                             disableButtonNext = true;
+                        }
                         break;
                     default:
-                        disableButtonNext = true;                               
+                        disableButtonNext = true;
                 }
                 break;
-            
+
             case "cableReviewTab":
                 disableButtonPrev = false;
                 disableButtonCancel = false;
                 disableButtonSave = false;
                 disableButtonNext = true;
                 break;
-            
+
             default:
                 disableButtonPrev = true;
                 disableButtonCancel = false;
@@ -374,13 +475,12 @@ public class ItemDomainCableDesignWizard implements Serializable {
                 disableButtonNext = true;
         }
     }
-    
+
     /**
      * Sets enable/disable state for the navigation buttons based on the current
      * tab and input elements.
      */
-    private void setEnablementForCurrentTab()
-    {
+    private void setEnablementForCurrentTab() {
         setEnablement(currentTab);
     }
 }

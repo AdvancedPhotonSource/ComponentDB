@@ -1043,7 +1043,7 @@ public class ItemDomainMachineDesignController
         // create model for wizard
         addCableWizard = new ItemDomainCableDesignWizard(this);
         addCableWizard.setMachineDesignTree(loadMachineDesignRootTreeNode(false));
-        addCableWizard.setEndpoint1(selectedItemInListTreeTable);
+        addCableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
 
         displayListConfigurationView = true;
         displayAddCableListConfigurationPanel = true;
@@ -1052,7 +1052,7 @@ public class ItemDomainMachineDesignController
     public void cleanupCableWizard() {
         resetListConfigurationVariables();
         resetListDataModel();
-        setSelectedItemInListTreeTable(getAddCableWizard().getEndpoint1());
+        setSelectedItemInListTreeTable(getAddCableWizard().getSelectionEndpoint1());
         expandToSelectedTreeNodeAndSelect();
         
         // null out model for wizard

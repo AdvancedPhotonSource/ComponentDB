@@ -15,7 +15,7 @@ See LICENSE file.
         <p:outputLabel for="cableReviewInputName#{viewId}" value="Name" />
         <p:inputText id="cableReviewInputName#{viewId}"
                      readonly="true"
-                     value="#{entityController.addCableWizard.getName()}" />
+                     value="#{entityController.addCableWizard.getInputValueName()}" />
 
         <p:outputLabel for="cableReviewInputEndpoint1#{viewId}" value="Endpoint1" />
         <p:inputText id="cableReviewInputEndpoint1#{viewId}"
@@ -25,7 +25,7 @@ See LICENSE file.
         <p:outputLabel for="cableReviewInputEndpoint2#{viewId}" value="Endpoint2" />
         <p:inputText id="cableReviewInputEndpoint2#{viewId}"
                      readonly="true"
-                     value="#{entityController.addCableWizard.getSelectedEndpointString()}" />
+                     value="#{entityController.addCableWizard.getEndpoint2String()}" />
         
         <ui:insert name="typeSpecificFields" />
 
