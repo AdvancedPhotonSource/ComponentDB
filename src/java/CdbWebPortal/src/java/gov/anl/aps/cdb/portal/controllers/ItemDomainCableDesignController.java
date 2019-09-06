@@ -172,31 +172,86 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     } 
 
     /**
-     * Creates cable design connecting the specified endpoints.
+     * Creates a cable design object and sets the core variables, intended to be
+     * invoked for creating the various "subtypes" of cable design, e.g.,
+     * placeholder, catalog, bundle, etc.
      * @param itemEndpoint1
      * @param itemEndpoint2
      * @param cableName
      * @return 
      */
-    public boolean createCable(Item itemEndpoint1, Item itemEndpoint2, String cableName, List<ItemProject> projectList) {
+    private ItemDomainCableDesign createCableCommon(Item itemEndpoint1, 
+            Item itemEndpoint2, 
+            String cableName, 
+            List<ItemProject> projectList) {
         
         ItemDomainCableDesign newCable = this.createEntityInstance();
         newCable.setName(cableName);
         newCable.setItemProjectList(projectList);
-        
+
         // create relationships from cable to endpoints
         ItemElementRelationship relationshipEndpoint1 = createRelationship(itemEndpoint1, newCable);
         ItemElementRelationship relationshipEndpoint2 = createRelationship(itemEndpoint2, newCable);
-        
+
         // Create list for cable's relationships. 
         ItemElement cableSelfElement = newCable.getSelfElement();
         cableSelfElement.setItemElementRelationshipList1(new ArrayList<>());
-        
+
         // Add appropriate item relationships to model.
         addItemElementRelationshipToItem(itemEndpoint1, relationshipEndpoint1, false);
         addItemElementRelationshipToItem(itemEndpoint2, relationshipEndpoint2, false);
         addItemElementRelationshipToItem(newCable, relationshipEndpoint1, true);
-        addItemElementRelationshipToItem(newCable, relationshipEndpoint2, true);      
+        addItemElementRelationshipToItem(newCable, relationshipEndpoint2, true);
+
+        return newCable;
+    }
+        
+    /**
+     * Creates placeholder cable design connecting the specified endpoints.
+     * @param itemEndpoint1
+     * @param itemEndpoint2
+     * @param cableName
+     * @return 
+     */
+    public boolean createCablePlaceholder(Item itemEndpoint1, 
+            Item itemEndpoint2, 
+            String cableName, 
+            List<ItemProject> projectList) {
+        
+        ItemDomainCableDesign newCable = this.createCableCommon(itemEndpoint1,
+                itemEndpoint2,
+                cableName,
+                projectList);
+        
+        if (this.create() == null)  {
+            return false;
+        } else {
+            return true;
+        }
+        
+    }
+    
+    /**
+     * Creates placeholder cable design connecting the specified endpoints.
+     * @param itemEndpoint1
+     * @param itemEndpoint2
+     * @param cableName
+     * @return 
+     */
+    public boolean createCableCatalog(Item itemEndpoint1, 
+            Item itemEndpoint2, 
+            String cableName, 
+            List<ItemProject> projectList,
+            Item itemCableCatalog) {
+        
+        ItemDomainCableDesign newCable = this.createCableCommon(itemEndpoint1,
+                itemEndpoint2,
+                cableName,
+                projectList);
+        
+        // "assign" catalog item to cable design
+        ItemElement selfElementCable = newCable.getSelfElement();
+        selfElementCable.setContainedItem2(itemCableCatalog);
         
         if (this.create() == null)  {
             return false;
