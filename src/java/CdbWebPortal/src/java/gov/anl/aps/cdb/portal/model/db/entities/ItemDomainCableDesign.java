@@ -88,5 +88,19 @@ public class ItemDomainCableDesign extends Item {
             return "";
         }
     }
+    
+    public Item getCatalogItem() {
+        ItemElement selfElementCable = this.getSelfElement();
+        return selfElementCable.getContainedItem2();       
+    }
+
+    public String getCatalogItemString() {
+        Item iCatalog = this.getCatalogItem();
+        if (iCatalog != null) {
+            return iCatalog.getName();
+        } else {
+            return "";
+        }
+    }
 
 }
