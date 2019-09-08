@@ -118,8 +118,6 @@ public class ItemDomainCableDesignWizard implements Serializable {
      */
     public void setSelectionProjectList(List<ItemProject> projectList) {
         this.selectionProjectList = projectList;
-        System.out.println("setList: " + this.selectionProjectList.toString());
-        System.out.println(this.selectionProjectList.size());
     }
 
     /**
@@ -300,7 +298,6 @@ public class ItemDomainCableDesignWizard implements Serializable {
      * Handles unselect event on the p:selectCheckboxMenu for selecting project.
      */
     public void unselectListenerProjectList() {
-        System.out.println("selectListenerProjectList");
         setEnablementForCurrentTab();
     }
 

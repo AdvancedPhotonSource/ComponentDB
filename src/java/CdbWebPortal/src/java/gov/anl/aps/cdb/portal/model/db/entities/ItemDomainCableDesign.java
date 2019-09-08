@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.RelationshipTypeController;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,75 @@ public class ItemDomainCableDesign extends Item {
             return null;
         }
     }
+    
+    private RelationshipType getCableConnectionRelationshipType() {
+        RelationshipType relationshipType = 
+                RelationshipTypeFacade.getInstance().findByName(
+                        ItemElementRelationshipTypeNames.itemCableConnection.getValue());
+        if (relationshipType == null) {
+            RelationshipTypeController controller = RelationshipTypeController.getInstance();
+            String name = ItemElementRelationshipTypeNames.itemCableConnection.getValue();
+            relationshipType = controller.createRelationshipTypeWithName(name);
+        }
+        return relationshipType;
+    }    
+
+    /**
+     * Creates ItemElementRelationship for the 2 specified items.
+     * @param item Machine design item for cable endpoint.
+     * @return New instance of ItemElementRelationshipo for specified items.
+     */
+    private ItemElementRelationship createRelationship(Item item) {
+        
+        ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
+        itemElementRelationship.setFirstItemElement(item.getSelfElement());
+        itemElementRelationship.setSecondItemElement(this.getSelfElement());
+
+        RelationshipType cableConnectionRelationshipType = getCableConnectionRelationshipType();
+        itemElementRelationship.setRelationshipType(cableConnectionRelationshipType);
+
+        return itemElementRelationship;
+    }
+
+    /**
+     * Adds specified relationship for specified item.
+     * @param item Item to add relationship for.
+     * @param ier Relationship to add.
+     * @param secondItem True if the item is the second item in the relationship.
+     */
+    private void addItemElementRelationshipToItem(Item item, ItemElementRelationship ier, boolean secondItem) {
+        ItemElement selfElement = item.getSelfElement();
+        List<ItemElementRelationship> ierList;
+        if (secondItem) {
+            ierList = selfElement.getItemElementRelationshipList1();
+        } else {
+            ierList = selfElement.getItemElementRelationshipList();
+        }
+        ierList.add(ier);
+    }
+    
+    private void addCableRelationship(Item endpoint) {       
+        // create relationships from cable to endpoints
+        ItemElementRelationship relationship = createRelationship(endpoint);
+
+        // Create list for cable's relationships. 
+        ItemElement selfElement = this.getSelfElement();
+        if (selfElement.getItemElementRelationshipList1() == null) {
+            selfElement.setItemElementRelationshipList1(new ArrayList<>());
+        }
+
+        // Add appropriate item relationships to model.
+        addItemElementRelationshipToItem(endpoint, relationship, false);
+        addItemElementRelationshipToItem(this, relationship, true);
+    }
+    
+    public void setEndpoint1(Item itemEndpoint1) {
+        this.addCableRelationship(itemEndpoint1);
+    }
+    
+    public void setEndpoint2(Item itemEndpoint2) {
+        this.addCableRelationship(itemEndpoint2);
+     }
 
     public Item getEndpoint1() {
         List<Item> iList = this.getEndpointList();
@@ -87,6 +157,12 @@ public class ItemDomainCableDesign extends Item {
         } else {
             return "";
         }
+    }
+    
+    public void setCatalogItem(Item itemCableCatalog) {
+        // "assign" catalog item to cable design
+        ItemElement selfElement = this.getSelfElement();
+        selfElement.setContainedItem2(itemCableCatalog);
     }
     
     public Item getCatalogItem() {

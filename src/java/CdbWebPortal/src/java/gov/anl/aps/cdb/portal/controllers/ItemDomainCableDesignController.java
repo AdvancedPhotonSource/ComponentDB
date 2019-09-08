@@ -188,20 +188,10 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         ItemDomainCableDesign newCable = this.createEntityInstance();
         newCable.setName(cableName);
         newCable.setItemProjectList(projectList);
-
-        // create relationships from cable to endpoints
-        ItemElementRelationship relationshipEndpoint1 = createRelationship(itemEndpoint1, newCable);
-        ItemElementRelationship relationshipEndpoint2 = createRelationship(itemEndpoint2, newCable);
-
-        // Create list for cable's relationships. 
-        ItemElement cableSelfElement = newCable.getSelfElement();
-        cableSelfElement.setItemElementRelationshipList1(new ArrayList<>());
-
-        // Add appropriate item relationships to model.
-        addItemElementRelationshipToItem(itemEndpoint1, relationshipEndpoint1, false);
-        addItemElementRelationshipToItem(itemEndpoint2, relationshipEndpoint2, false);
-        addItemElementRelationshipToItem(newCable, relationshipEndpoint1, true);
-        addItemElementRelationshipToItem(newCable, relationshipEndpoint2, true);
+        
+        // set endpoints
+        newCable.setEndpoint1(itemEndpoint1);
+        newCable.setEndpoint2(itemEndpoint2);
 
         return newCable;
     }
@@ -249,9 +239,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                 cableName,
                 projectList);
         
-        // "assign" catalog item to cable design
-        ItemElement selfElementCable = newCable.getSelfElement();
-        selfElementCable.setContainedItem2(itemCableCatalog);
+        newCable.setCatalogItem(itemCableCatalog);
         
         if (this.create() == null)  {
             return false;
@@ -259,52 +247,5 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             return true;
         }
         
-    }
-    
-    /**
-     * Creates ItemElementRelationship for the 2 specified items.
-     * @param item Machine design item for cable endpoint.
-     * @param cableItem Cable design item.
-     * @return New instance of ItemElementRelationshipo for specified items.
-     */
-    private ItemElementRelationship createRelationship(Item item, Item cableItem) {
-        
-        ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
-        itemElementRelationship.setFirstItemElement(item.getSelfElement());
-        itemElementRelationship.setSecondItemElement(cableItem.getSelfElement());
-
-        RelationshipType cableConnectionRelationshipType = getCableConnectionRelationshipType();
-        itemElementRelationship.setRelationshipType(cableConnectionRelationshipType);
-
-        return itemElementRelationship;
-    }
-
-    private RelationshipType getCableConnectionRelationshipType() {
-        RelationshipType relationshipType = 
-                RelationshipTypeFacade.getInstance().findByName(
-                        ItemElementRelationshipTypeNames.itemCableConnection.getValue());
-        if (relationshipType == null) {
-            RelationshipTypeController controller = RelationshipTypeController.getInstance();
-            String name = ItemElementRelationshipTypeNames.itemCableConnection.getValue();
-            relationshipType = controller.createRelationshipTypeWithName(name);
-        }
-        return relationshipType;
-    }    
-
-    /**
-     * Adds specified relationship for specified item.
-     * @param item Item to add relationship for.
-     * @param ier Relationship to add.
-     * @param secondItem True if the item is the second item in the relationship.
-     */
-    private void addItemElementRelationshipToItem(Item item, ItemElementRelationship ier, boolean secondItem) {
-        ItemElement selfElement = item.getSelfElement();
-        List<ItemElementRelationship> ierList;
-        if (secondItem) {
-            ierList = selfElement.getItemElementRelationshipList1();
-        } else {
-            ierList = selfElement.getItemElementRelationshipList();
-        }
-        ierList.add(ier);
     }
 }
