@@ -100,8 +100,8 @@ public class ItemDomainMachineDesignController
     @EJB
     RelationshipTypeFacade relationshipTypeFacade;
 
-    public ItemDomainMachineDesign getInstance() {
-        return (ItemDomainMachineDesign) SessionUtility.findBean(controllerNamed);
+    public static ItemDomainMachineDesignController getInstance() {
+        return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
     }
 
     public boolean getCurrentHasInventoryItem() {
@@ -235,7 +235,7 @@ public class ItemDomainMachineDesignController
         return machineDesignTemplateRootTreeNode;
     }
 
-    private TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate) {
+    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate) {
         TreeNode rootTreeNode = new DefaultTreeNode();
         List<ItemDomainMachineDesign> itemsWithoutParents
                 = getItemsWithoutParents();
@@ -1030,7 +1030,6 @@ public class ItemDomainMachineDesignController
         // create model for wizard
         ItemDomainCableDesignWizard addCableWizard = ItemDomainCableDesignWizard.getInstance();
         addCableWizard.registerClient(this);
-        addCableWizard.setMachineDesignTree(loadMachineDesignRootTreeNode(false));
         addCableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
 
         displayListConfigurationView = true;

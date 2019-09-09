@@ -81,6 +81,10 @@ public class ItemDomainCableDesignWizard implements Serializable {
      * the wizard's endpoint selection tab.
      */
     public TreeNode getMachineDesignTree() {
+        if (machineDesignTree == null) {
+            ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
+            machineDesignTree = controller.loadMachineDesignRootTreeNode(false);
+        }
         return machineDesignTree;
     }
 
