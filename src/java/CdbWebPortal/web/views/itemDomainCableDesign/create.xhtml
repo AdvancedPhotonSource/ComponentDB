@@ -7,6 +7,7 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
                 template="../item/private/templates/itemCreateTemplate.xhtml">
 
     <f:metadata>
@@ -17,6 +18,14 @@ See LICENSE file.
 
     <ui:param name="entityController" value="#{itemDomainCableDesignController}"/>    
     
+    <ui:define name="middleCenter">
+        <p:panel rendered="#{true}">
+
+            <ui:include src="private/wizard/wizard.xhtml">
+            </ui:include>
+
+        </p:panel>
+
+    </ui:define>
+    
 </ui:composition>
-
-

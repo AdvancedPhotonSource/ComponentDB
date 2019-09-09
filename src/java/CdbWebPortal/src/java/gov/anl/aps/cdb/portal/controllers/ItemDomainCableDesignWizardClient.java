@@ -2,7 +2,7 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
-package gov.anl.aps.cdb.portal.view.objects;
+package gov.anl.aps.cdb.portal.controllers;
 
 /**
  * This class defines the interface for clients of the class 

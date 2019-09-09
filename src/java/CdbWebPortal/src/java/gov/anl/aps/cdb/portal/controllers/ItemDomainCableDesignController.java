@@ -24,7 +24,7 @@ import javax.inject.Named;
 
 /**
  *
- * @author djarosz
+ * @author cmcchesney
  */
 @Named(ItemDomainCableDesignController.CONTROLLER_NAMED)
 @SessionScoped

@@ -2,7 +2,7 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
-package gov.anl.aps.cdb.portal.view.objects;
+package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
@@ -20,6 +20,8 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Named;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
@@ -30,14 +32,14 @@ import org.primefaces.model.TreeNode;
  * ItemDomainMachineDesignController, and is utilized when adding a new cable
  * design item.
  *
- * I have not added annotations for the named bean or scope since it's not
- * envisioned to be used that way, and I'm not sure if they'd cause problems by
- * being present.
- *
  * @author cmcchesney
  */
+@Named(ItemDomainCableDesignWizard.CONTROLLER_NAMED)
+@SessionScoped
 public class ItemDomainCableDesignWizard implements Serializable {
 
+    public static final String CONTROLLER_NAMED = "cableWizard";
+    
     private ItemDomainCableDesignWizardClient client;
     private TreeNode machineDesignTree = null;
     private String inputValueName = "";
@@ -60,22 +62,20 @@ public class ItemDomainCableDesignWizard implements Serializable {
      * ItemDomainCableDesignWizardClient using no ops.
      */
     public ItemDomainCableDesignWizard() {
-        // "empty" lambda implementation of ItemDomainCableDesignWizardClient cleanupCableWizard() method
-        client = (() -> {
-        });
     }
 
-    /**
-     * Creates new instance with specified client. Methods in
-     * ItemDomainCableDesignWizardClient interface will be invoked on client.
-     *
-     * @param aClient The client, which must implement
-     * ItemDomainCableDesignWizardClient interface.
-     */
-    public ItemDomainCableDesignWizard(ItemDomainCableDesignWizardClient aClient) {
-        client = aClient;
-    }
+    public static ItemDomainCableDesignWizard getInstance() {
+        return (ItemDomainCableDesignWizard) SessionUtility.findBean(ItemDomainCableDesignWizard.CONTROLLER_NAMED);
+    } 
 
+    public void registerClient(ItemDomainCableDesignWizardClient client) {
+        this.client = client;
+    }
+    
+    public void unregisterClient(ItemDomainCableDesignWizardClient client) {
+        this.client = null;
+    }
+    
     /**
      * Returns the root node of the machine design tree that is used to populate
      * the wizard's endpoint selection tab.
@@ -330,6 +330,20 @@ public class ItemDomainCableDesignWizard implements Serializable {
     public void selectListenerCableCatalogItem() {
         setEnablementForCurrentTab();
     }
+    
+    /**
+     * Resets models for wizard components.
+     */
+    private void reset() {
+        currentTab = "";
+        machineDesignTree = null;
+        inputValueName = "";
+        selectionEndpoint1 = null;
+        selectionEndpoint2 = null;
+        selectionCableType = "";
+        selectionCableCatalogItem = null;
+        selectionProjectList = null;
+    }
 
     /**
      * Implements the cancel operation, invoked by the wizard's "Cancel"
@@ -337,6 +351,7 @@ public class ItemDomainCableDesignWizard implements Serializable {
      */
     public void cancel() {
         client.cleanupCableWizard();
+        this.reset();
     }
 
     /**
@@ -412,6 +427,7 @@ public class ItemDomainCableDesignWizard implements Serializable {
 
         if (result) {
             client.cleanupCableWizard();
+            this.reset();
         }
     }
 

@@ -16,7 +16,7 @@ import javax.persistence.Entity;
 
 /**
  *
- * @author djarosz
+ * @author cmcchesney
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_DESIGN_ID + "")

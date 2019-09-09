@@ -13,10 +13,10 @@ See LICENSE file.
     <p:panel>
         
         <ui:param name="addCableWizard"
-                  value="#{entityController.addCableWizard}" />
+                  value="#{cableWizard}" />
 
         <p:wizard id="addCableWizard"
-                  flowListener="#{entityController.addCableWizard.onFlowProcess}" 
+                  flowListener="#{cableWizard.onFlowProcess}" 
                   widgetVar="cableWizard"
                   showStepStatus="false" 
                   showNavBar="false">
@@ -31,15 +31,15 @@ See LICENSE file.
 
                             <ui:param name="viewId" value="addCablePanel" />
                             <ui:param name="hideOptionalColumns" value="#{false}" /> 
-                            <ui:param name="valueModel" value="#{entityController.addCableWizard.machineDesignTree}" />
-                            <ui:param name="selectionModel" value="#{entityController.addCableWizard.selectionEndpoint2}" /> 
+                            <ui:param name="valueModel" value="#{cableWizard.machineDesignTree}" />
+                            <ui:param name="selectionModel" value="#{cableWizard.selectionEndpoint2}" /> 
 
                             <ui:define name="treeTableEvents">
                                 <p:ajax event="select" 
-                                        listener="#{entityController.addCableWizard.selectListenerEndpoint2}" 
+                                        listener="#{cableWizard.selectListenerEndpoint2}" 
                                         oncomplete="updateWizardButtons();" />
                                 <p:ajax event="unselect" 
-                                        listener="#{entityController.addCableWizard.unselectListenerEndpoint2}" 
+                                        listener="#{cableWizard.unselectListenerEndpoint2}" 
                                         oncomplete="updateWizardButtons();" />
                             </ui:define>
 
@@ -56,9 +56,9 @@ See LICENSE file.
                             
                             <p:outputLabel for="cableBasicsInputCableName" value="Cable Name" />
                             <p:inputText id="cableBasicsInputCableName"
-                                         value="#{entityController.addCableWizard.inputValueName}">
+                                         value="#{cableWizard.inputValueName}">
                                 <p:ajax event="keyup" 
-                                        listener="#{entityController.addCableWizard.keyupListenerName}"
+                                        listener="#{cableWizard.keyupListenerName}"
                                         oncomplete="updateWizardButtons();"/>
                             </p:inputText>
 
@@ -67,12 +67,12 @@ See LICENSE file.
                                            styleClass="entityDataLabel"/>
                             <p:selectCheckboxMenu id="selectCheckboxProject"
                                                   label="Select Project"
-                                                  value="#{itemDomainMachineDesignController.addCableWizard.selectionProjectList}"
+                                                  value="#{cableWizard.selectionProjectList}"
                                                   converter="itemProjectConverter"
                                                   filter="true" 
                                                   filterMatchMode="contains">
                                 <f:selectItems value="#{itemProjectController.availableItems}" /> 
-                                <p:ajax listener="#{entityController.addCableWizard.selectListenerProjectList}" 
+                                <p:ajax listener="#{cableWizard.selectListenerProjectList}" 
                                         oncomplete="updateWizardButtons();" />
                             </p:selectCheckboxMenu>                                   
                         </p:panelGrid>
@@ -85,7 +85,7 @@ See LICENSE file.
                     <p:outputPanel id="cableTypePanel">
 
                         <p:selectOneRadio id="cableTypeRadio" 
-                                          value="#{entityController.addCableWizard.selectionCableType}" 
+                                          value="#{cableWizard.selectionCableType}" 
                                           layout="custom">
                             <f:selectItem itemLabel="Placeholder" 
                                           itemValue="placeholder" />
@@ -99,7 +99,7 @@ See LICENSE file.
                                           itemDisabled="true" />
                             
                             <p:ajax event="click"
-                                    listener="#{entityController.addCableWizard.clickListenerCableType}"
+                                    listener="#{cableWizard.clickListenerCableType}"
                                     oncomplete="updateWizardButtons();"/>
                             
                         </p:selectOneRadio>
@@ -136,18 +136,18 @@ See LICENSE file.
 
                 <p:panel id="cableDetailsPanelPlaceholder" 
                          header="Edit placeholder cable details"
-                         rendered="#{entityController.addCableWizard.selectionCableType eq 'placeholder'}">                
+                         rendered="#{cableWizard.selectionCableType eq 'placeholder'}">                
                 </p:panel>
 
                 <p:panel id="cableDetailsPanelCatalog" 
                          header="Select cable catalog item and edit details"
-                         rendered="#{entityController.addCableWizard.selectionCableType eq 'catalog'}">
+                         rendered="#{cableWizard.selectionCableType eq 'catalog'}">
 
                     <p:dataTable id="selectCableCatalogDataTable"
                                  value="#{itemDomainCableCatalogController.selectDataModel}"
                                  var="itemListObject"
                                  rowKey="#{itemListObject.id}"
-                                 selection="#{entityController.addCableWizard.selectionCableCatalogItem}"
+                                 selection="#{cableWizard.selectionCableCatalogItem}"
                                  rows="#{resources.SelectDataTableNumberOfRows}"
                                  paginator="true">         
 
@@ -166,7 +166,7 @@ See LICENSE file.
                         </ui:include>
                         
                         <p:ajax event="rowSelectRadio"
-                                listener="#{entityController.addCableWizard.selectListenerCableCatalogItem}"
+                                listener="#{cableWizard.selectListenerCableCatalogItem}"
                                 oncomplete="updateWizardButtons();"/>
 
                     </p:dataTable>
@@ -179,7 +179,7 @@ See LICENSE file.
 
                 <p:panel id="cableReviewPanelPlaceholder" 
                          header="Review and save placeholder cable"
-                         rendered="#{entityController.addCableWizard.selectionCableType eq 'placeholder'}">
+                         rendered="#{cableWizard.selectionCableType eq 'placeholder'}">
 
                     <ui:decorate template="templates/reviewTabTemplate.xhtml" >                        
                         <ui:param name="viewId" value="cableReviewPanelPlaceholder"/>
@@ -190,7 +190,7 @@ See LICENSE file.
 
                 <p:panel id="cableReviewPanelCatalog" 
                          header="Review and save cable with catalog type"
-                         rendered="#{entityController.addCableWizard.selectionCableType eq 'catalog'}">
+                         rendered="#{cableWizard.selectionCableType eq 'catalog'}">
 
                     <ui:decorate template="templates/reviewTabTemplate.xhtml">
 
@@ -200,7 +200,7 @@ See LICENSE file.
                             <p:outputLabel for="cableReviewInputCableCatalog" value="Cable Catalog Item" />
                             <p:inputText id="cableReviewInputCableCatalog"
                                          readonly="true"
-                                         value="#{entityController.addCableWizard.selectionCableCatalogItem}" />
+                                         value="#{cableWizard.selectionCableCatalogItem}" />
                         </ui:define>
 
                     </ui:decorate>
@@ -218,19 +218,19 @@ See LICENSE file.
                                  update="@this"
                                  onstart="PF('loadingDialog').show();PF('cableWizard').back();"
                                  oncomplete="PF('loadingDialog').hide(); updateWizardButtons();"
-                                 disabled="#{entityController.addCableWizard.disableButtonPrev}"
+                                 disabled="#{cableWizard.disableButtonPrev}"
                                  icon="ui-icon-arrowthick-1-w"/>
 
                 <p:commandButton value="Cancel"
                                  alt="Cancel"
-                                 action="#{entityController.addCableWizard.cancel()}"
+                                 action="#{cableWizard.cancel()}"
                                  id="cancelButton"
                                  icon="fa fa-times-circle-o"
                                  rendered="true"
                                  ajax="false"
                                  immediate="true"
                                  oncomplete="updateWizardButtons();"
-                                 disabled="#{entityController.addCableWizard.disableButtonCancel}"
+                                 disabled="#{cableWizard.disableButtonCancel}"
                                  process="@this"
                                  update="@this"> 
                     <p:tooltip for="cancelButton" 
@@ -242,14 +242,14 @@ See LICENSE file.
 
                 <p:commandButton value="Save"
                                  alt="Save"
-                                 action="#{entityController.addCableWizard.save()}"
+                                 action="#{cableWizard.save()}"
                                  id="saveButton"
                                  icon="ui-icon-check"
                                  rendered="true"
                                  ajax="false"
                                  immediate="false"
                                  oncomplete="updateWizardButtons();"
-                                 disabled="#{entityController.addCableWizard.disableButtonSave}"
+                                 disabled="#{cableWizard.disableButtonSave}"
                                  process="addCableWizard"
                                  update="addCableWizard"> 
                     <p:tooltip for="saveButton" 
@@ -261,7 +261,7 @@ See LICENSE file.
                                  update="@this"
                                  onstart="PF('loadingDialog').show();PF('cableWizard').next();"
                                  oncomplete="PF('loadingDialog').hide(); updateWizardButtons();"
-                                 disabled="#{entityController.addCableWizard.disableButtonNext}"
+                                 disabled="#{cableWizard.disableButtonNext}"
                                  icon="ui-icon-arrowthick-1-e"
                                  iconPos="right"/>
 
