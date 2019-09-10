@@ -24,28 +24,54 @@ See LICENSE file.
             <p:tab id="endpointTab">
                 <p:panel header="Select second endpoint for cable"
                          id="cableEndpointPanel">
+                    
+                    <p:panelGrid>
+                        <p:column>
 
-                    <p:panel>
+                            <ui:decorate template="../../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
 
-                        <ui:decorate template="../../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+                                <ui:param name="viewId" value="endpoint1Tree" />
+                                <ui:param name="hideOptionalColumns" value="#{false}" /> 
+                                <ui:param name="valueModel" value="#{cableWizard.machineDesignTreeEndpoint1}" />
+                                <ui:param name="selectionModel" value="#{cableWizard.selectionEndpoint1}" /> 
+                                <ui:param name="rendered" value="#{selectEndpoint1}" />
 
-                            <ui:param name="viewId" value="addCablePanel" />
-                            <ui:param name="hideOptionalColumns" value="#{false}" /> 
-                            <ui:param name="valueModel" value="#{cableWizard.machineDesignTree}" />
-                            <ui:param name="selectionModel" value="#{cableWizard.selectionEndpoint2}" /> 
+                                <ui:define name="treeTableEvents">
+                                    <p:ajax event="select" 
+                                            listener="#{cableWizard.selectListenerEndpoint1}" 
+                                            oncomplete="updateWizardButtons();" />
+                                    <p:ajax event="unselect" 
+                                            listener="#{cableWizard.selectListenerEndpoint1}" 
+                                            oncomplete="updateWizardButtons();" />
+                                </ui:define>
 
-                            <ui:define name="treeTableEvents">
-                                <p:ajax event="select" 
-                                        listener="#{cableWizard.selectListenerEndpoint2}" 
-                                        oncomplete="updateWizardButtons();" />
-                                <p:ajax event="unselect" 
-                                        listener="#{cableWizard.unselectListenerEndpoint2}" 
-                                        oncomplete="updateWizardButtons();" />
-                            </ui:define>
+                            </ui:decorate>
+                        </p:column>
+                        
+                        <p:column>
 
-                        </ui:decorate>
+                            <ui:decorate template="../../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
 
-                    </p:panel>
+                                <ui:param name="viewId" value="endpoint2Tree" />
+                                <ui:param name="hideOptionalColumns" value="#{false}" /> 
+                                <ui:param name="valueModel" value="#{cableWizard.machineDesignTreeEndpoint2}" />
+                                <ui:param name="selectionModel" value="#{cableWizard.selectionEndpoint2}" /> 
+                                <ui:param name="rendered" value="#{true}" />
+
+                                <ui:define name="treeTableEvents">
+                                    <p:ajax event="select" 
+                                            listener="#{cableWizard.selectListenerEndpoint2}" 
+                                            oncomplete="updateWizardButtons();" />
+                                    <p:ajax event="unselect" 
+                                            listener="#{cableWizard.unselectListenerEndpoint2}" 
+                                            oncomplete="updateWizardButtons();" />
+                                </ui:define>
+
+                            </ui:decorate>
+                        </p:column>
+
+                    </p:panelGrid>
+
                 </p:panel>
             </p:tab>
 

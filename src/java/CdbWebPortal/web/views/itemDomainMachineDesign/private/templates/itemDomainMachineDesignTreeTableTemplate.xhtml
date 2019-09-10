@@ -11,6 +11,7 @@ See LICENSE file.
     <!-- Must provide params "valueModel", "selectionModel", "hideOptionalColumns".-->
     
     <p:treeTable id='itemMachineDesignListDataTable#{viewId}'
+                 rendered="#{rendered}"
                  styleClass="machineDesignListTreeTable"
                  value="#{valueModel}"
                  selectionMode="single"

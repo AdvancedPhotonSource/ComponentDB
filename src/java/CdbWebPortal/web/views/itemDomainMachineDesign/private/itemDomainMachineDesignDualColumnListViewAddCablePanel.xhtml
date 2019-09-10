@@ -13,6 +13,7 @@ See LICENSE file.
     <p:panel rendered="#{entityController.displayAddCableListConfigurationPanel}">
 
         <ui:include src="../../itemDomainCableDesign/private/wizard/wizard.xhtml">
+            <ui:param name="selectEndpoint1" value="#{false}" />
         </ui:include>
 
     </p:panel>
