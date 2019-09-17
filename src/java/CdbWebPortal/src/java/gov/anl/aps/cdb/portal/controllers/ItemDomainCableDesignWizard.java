@@ -467,7 +467,7 @@ public class ItemDomainCableDesignWizard implements Serializable {
                 client.cleanupCableWizard();
             }
             this.reset();
-            return "list"; 
+            return "/views/itemDomainCableDesign/view?faces-redirect=true"; 
         }
         else {
             return "";

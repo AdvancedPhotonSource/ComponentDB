@@ -19,17 +19,11 @@ See LICENSE file.
     </f:metadata>
     
     <ui:define name="domainEntityListExtraColumns">
-        <p:column headerText="Endpoint1"
+        <p:column headerText="Endpoints"
                   filterable="#{true}"
-                  filterBy="#{itemListObject.endpoint1String}" 
+                  filterBy="#{itemListObject.endpointsString}" 
                   filterMatchMode="contains">
-            <h:outputText value="#{itemListObject.endpoint1String}" /> 
-        </p:column>        
-        <p:column headerText="Endpoint2"
-                  filterable="#{true}"
-                  filterBy="#{itemListObject.endpoint2String}" 
-                  filterMatchMode="contains">
-            <h:outputText value="#{itemListObject.endpoint2String}" /> 
+            <h:outputText value="#{itemListObject.endpointsString}" /> 
         </p:column>        
         <p:column headerText="Catalog Item"
                   filterable="#{true}"

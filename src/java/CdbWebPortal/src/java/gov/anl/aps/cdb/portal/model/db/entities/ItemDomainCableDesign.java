@@ -120,6 +120,23 @@ public class ItemDomainCableDesign extends Item {
     public void setEndpoint2(Item itemEndpoint2) {
         this.addCableRelationship(itemEndpoint2);
      }
+    
+    /**
+     * Returns a string containing the cables endpoints for display.
+     */
+    public String getEndpointsString() {
+        String result = "";
+        int count = 0;
+        List<Item> iList = this.getEndpointList();      
+        for (Item endpoint : iList) {
+            count = count + 1;
+            result = result + endpoint.getName();
+            if (count != iList.size()) {
+                result = result + ", ";
+            }
+        }
+        return result;
+    }
 
     public Item getEndpoint1() {
         List<Item> iList = this.getEndpointList();
