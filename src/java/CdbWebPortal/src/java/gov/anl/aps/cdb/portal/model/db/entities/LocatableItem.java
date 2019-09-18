@@ -5,6 +5,8 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
+import java.util.List;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuModel;
 
@@ -14,8 +16,10 @@ import org.primefaces.model.menu.DefaultMenuModel;
  */
 public abstract class LocatableItem extends Item {
 
+    private transient List<Item> cachedLocationHierarchy = null; 
     private transient TreeNode locationTree = null;
-    private transient String locationDetails = null;
+    private transient String locationDetails = null;        
+    private transient Item membershipLocation; 
     private transient ItemDomainLocation location;
     private transient ItemElementRelationship locationRelationship; 
     private transient String locationString;
@@ -26,12 +30,14 @@ public abstract class LocatableItem extends Item {
     
     public void resetLocationVariables() {
         locationTree = null; 
-        locationDetails = null; 
+        locationDetails = null;         
         location = null;
         locationString = null; 
         locationMenuModel = null; 
         originalLocationLoaded = false; 
-        locationRelationship = null; 
+        locationRelationship = null;
+        membershipLocation = null;      
+        cachedLocationHierarchy = null; 
     }
 
     @JsonIgnore
@@ -41,6 +47,14 @@ public abstract class LocatableItem extends Item {
 
     public void setLocationTree(TreeNode locationTree) {
         this.locationTree = locationTree;
+    }
+
+    public List<Item> getCachedLocationHierarchy() {
+        return cachedLocationHierarchy;
+    }
+
+    public void setCachedLocationHierarchy(List<Item> cachedLocationHierarchy) {
+        this.cachedLocationHierarchy = cachedLocationHierarchy;
     }
 
     @JsonIgnore
@@ -63,20 +77,42 @@ public abstract class LocatableItem extends Item {
 
     @JsonIgnore
     public String getLocationDetails() {
+        if (membershipLocation != null) {
+            return LocatableItemController.generateLocationDetailsFromItem(membershipLocation); 
+        }
         return locationDetails;
     }
 
     public void setLocationDetails(String locationDetails) {
+        if (membershipLocation != null) {
+            return;
+        }
         this.locationDetails = locationDetails;
-    }
+    }  
 
     @JsonIgnore
-    public ItemDomainLocation getLocation() {
+    public ItemDomainLocation getLocationItem() {
         return location;
     }
 
     public void setLocation(ItemDomainLocation location) {
         this.location = location;
+    }  
+    
+    @JsonIgnore
+    public Item getActiveLocation() {
+        if (membershipLocation != null) {
+            return membershipLocation;            
+        }
+        return location; 
+    }
+
+    public Item getMembershipLocation() {
+        return membershipLocation;
+    }
+
+    public void setMembershipLocation(Item membershipLocation) {
+        this.membershipLocation = membershipLocation;
     }
 
     @JsonIgnore

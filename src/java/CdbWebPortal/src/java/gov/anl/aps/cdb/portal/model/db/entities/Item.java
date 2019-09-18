@@ -216,7 +216,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Basic(optional = false)
     private Integer id;
     @Basic(optional = false)
-    @Size(max = 64)
+    @Size(max = 128)
     private String name;
     @Size(max = 32)
     @Column(name = "item_identifier1")
@@ -271,7 +271,11 @@ public class Item extends CdbDomainEntity implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")    
     private List<ItemSource> itemSourceList;    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")    
-    private List<ItemResource> itemResourceList;
+    private List<ItemResource> itemResourceList;    
+    @OneToMany(mappedBy = "containedItem1")        
+    private List<ItemElementHistory> historyMemberList; 
+    @OneToMany(mappedBy = "containedItem2")        
+    private List<ItemElementHistory> historyMemberList2; 
 
     // Item element representing self 
     private transient ItemElement selfItemElement = null;
@@ -774,6 +778,16 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setItemElementMemberList2(List<ItemElement> itemElementMemberList2) {
         this.itemElementMemberList2 = itemElementMemberList2;
+    }
+
+    @XmlTransient
+    public List<ItemElementHistory> getHistoryMemberList() {
+        return historyMemberList;
+    }
+
+    @XmlTransient
+    public List<ItemElementHistory> getHistoryMemberList2() {
+        return historyMemberList2;
     }
 
     @XmlTransient

@@ -10,15 +10,25 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <p:treeNode>                    
+        <h:outputText value="#{node.name}" />
+    </p:treeNode>
+    
+    <p:treeNode type="Machine Design" icon="ui-icon-machine-design">
+        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+            <ui:param name="itemObject" value="#{node}"/>
+            <ui:param name="viewName" value="locationMDLink" />
+        </ui:include>        
+    </p:treeNode>
+
+    <p:treeNode type="Location" icon="fa fa-building">
         <h:outputText value="#{node.name}" />         
     </p:treeNode>
 
-    <p:treeNode type="Location" icon="ui-icon-image">
-        <h:outputText value="#{node.name}" />         
-    </p:treeNode>
-
-    <p:treeNode type="Inventory" icon="ui-icon-tag">
-        <h:outputText value="#{itemDomainInventoryController.getItemDisplayString(node)}" />
+    <p:treeNode type="Inventory" icon="ui-icon-inventory">
+        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+            <ui:param name="displayString" value="#{itemDomainInventoryController.getItemDisplayString(node)}" />
+            <ui:param name="itemObject" value="#{node}"/> 
+        </ui:include>        
     </p:treeNode>
 
 

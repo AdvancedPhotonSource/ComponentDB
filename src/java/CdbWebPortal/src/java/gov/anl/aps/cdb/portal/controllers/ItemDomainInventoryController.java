@@ -1057,10 +1057,12 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         if (item.getDerivedFromItem() == null) {
             throw new CdbException("Please specify " + getDerivedFromItemTitle());
         }
-
-        super.prepareEntityInsert(item);
-        checkNewItemsToAdd();
-
+        
+        // Restart the element list if an insert failed previously
+        ItemElement itemSelfElement = item.getSelfElement();
+        item.getFullItemElementList().clear();
+        item.getFullItemElementList().add(itemSelfElement); 
+        
         if (newItemsToAdd != null) {
             // Clear new item elements for new items. In case a previous insert failed. 
             for (ItemDomainInventory itemToAdd : newItemsToAdd) {
@@ -1078,6 +1080,10 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             updatePermissionOnAllNewPartsIfNeeded();
             addItemElementsFromBillOfMaterials(item);
         }
+
+        super.prepareEntityInsert(item);
+        checkNewItemsToAdd();
+        
     }
 
     private void clearItemElementsForItem(ItemDomainInventory item) {

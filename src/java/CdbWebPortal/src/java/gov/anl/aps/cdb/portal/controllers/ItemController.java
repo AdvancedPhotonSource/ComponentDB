@@ -1867,7 +1867,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
         List<Item> itemList = new ArrayList<>();
 
-        List<ItemElement> itemElementList = itemEntity.getItemElementMemberList();
+        List<ItemElement> itemElementList = new ArrayList<>(); 
+        itemElementList.addAll(itemEntity.getItemElementMemberList());
         itemElementList.addAll(itemEntity.getItemElementMemberList2());
         // Remove currently being viewed item. 
         if (itemElementList != null) {
@@ -2439,6 +2440,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
         checkItem(item);
         performPrepareEntityInsertUpdate(item);
+        
+        List<ItemElement> newElementList = item.getItemElementDisplayList(); 
+        LOGGER.debug("Adding innitial element history for " + item);
+        EntityInfo entityInfo = item.getEntityInfo();
+        ItemElementUtility.prepareItemElementHistory(null, newElementList, entityInfo);
     }
 
     @Override
@@ -2465,7 +2471,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         List<ItemElement> originalElementList = originalItem.getItemElementDisplayList(); 
         List<ItemElement> newElementList = item.getItemElementDisplayList(); 
         LOGGER.debug("Verifying elements for item " + item);
-        ItemElementUtility.prepareItemElementHistory(originalElementList, newElementList, entityInfo);                                
+        ItemElementUtility.prepareItemElementHistory(originalElementList, newElementList, entityInfo);
 
         // Compare properties with what is in the db
         List<PropertyValue> originalPropertyValueList = originalItem.getPropertyValueList();
@@ -2491,7 +2497,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     }
 
-    protected void performPrepareEntityInsertUpdate(Item item) {
+    protected void performPrepareEntityInsertUpdate(Item item) throws InvalidRequest {
         if (item instanceof LocatableItem) {
             LocatableItem locatableItem = (LocatableItem) item;
             getLocatableItemController().updateItemLocation(locatableItem);
@@ -2551,7 +2557,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 checkItemProject(item);
             }
         }
-
+                
         checkItemUniqueness(item);
         checkItemElementsForItem(item);
     }
@@ -2692,7 +2698,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             return expandedRowUUIDs.contains(viewUUID);
         }
         return false;
-    }
+    }        
 
     @FacesConverter(value = "itemConverter", forClass = Item.class)
     public static class ItemControllerConverter implements Converter {

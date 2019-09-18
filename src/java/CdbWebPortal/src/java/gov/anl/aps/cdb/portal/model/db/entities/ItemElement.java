@@ -130,7 +130,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private List<ItemElementRelationship> itemElementRelationshipList1;
     @OneToMany(mappedBy = "linkItemElement")
     private List<ItemElementRelationship> itemElementRelationshipList2;
-    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "itemElement")
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "itemElement")
     @OrderBy("enteredOnDateTime DESC")
     private List<ItemElementHistory> itemElementHistoryList;
 

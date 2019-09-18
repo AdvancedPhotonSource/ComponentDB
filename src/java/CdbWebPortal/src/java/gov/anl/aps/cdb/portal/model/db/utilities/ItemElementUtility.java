@@ -115,7 +115,11 @@ public class ItemElementUtility {
     public static void prepareItemElementHistory(List<ItemElement> originalItemElementList,
             List<ItemElement> newItemElementList, EntityInfo entityInfo) {
         for (ItemElement itemElementValue : newItemElementList) {
-            int index = originalItemElementList.indexOf(itemElementValue);
+            int index = -1;
+            if (originalItemElementList != null) {
+                index = originalItemElementList.indexOf(itemElementValue);
+            }
+            
             if (index >= 0) {
                 // Original element was there.
                 ItemElement originalItemElement = originalItemElementList.get(index);
