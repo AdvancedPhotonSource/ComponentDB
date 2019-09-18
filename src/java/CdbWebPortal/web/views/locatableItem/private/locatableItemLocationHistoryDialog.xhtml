@@ -17,14 +17,14 @@ See LICENSE file.
               header="Item Location History"
               styleClass="viewTransparentBackgroundDialog"
               dynamic="true">
-        <p:dataTable value="#{locatableItemController.getItemLocationRelationshipHistory(itemObject)}"
+        <p:dataTable value="#{locatableItemController.getLocationHistoryObjectList(itemObject)}"
                      var="itemElementLocationRelationshipHistoryObject"
                      draggableColumns="true"
                      rows="15">
             <p:column headerText="Location">
                 
-                <p:outputPanel rendered="#{itemElementLocationRelationshipHistoryObject.secondItemElement != null}">
-                    <p:tree value="#{itemDomainLocationController.generateLocationNodeTreeBranch(itemElementLocationRelationshipHistoryObject.secondItemElement.parentItem)}"
+                <p:outputPanel rendered="#{itemElementLocationRelationshipHistoryObject.locationItem != null}">
+                    <p:tree value="#{locatableItemController.getLocationTreeForLocationHistoryObject(itemElementLocationRelationshipHistoryObject)}"
                             var="node"
                             styleClass="transparent-tree">
                         <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
@@ -32,7 +32,7 @@ See LICENSE file.
                 </p:outputPanel>
             </p:column>
             <p:column headerText="Location Details">
-                <h:outputText value="#{itemElementLocationRelationshipHistoryObject.relationshipDetails}" />
+                <h:outputText value="#{itemElementLocationRelationshipHistoryObject.locationDetails}" />
             </p:column>
             <p:column headerText="Entered On Date">
                 <h:outputText value="#{itemElementLocationRelationshipHistoryObject.enteredOnDateTime}" />
