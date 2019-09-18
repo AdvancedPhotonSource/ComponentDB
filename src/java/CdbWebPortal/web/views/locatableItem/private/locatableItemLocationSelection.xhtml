@@ -9,10 +9,12 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
-    <ui:param name="displayLocationSelectionTieredMenu" value="#{displayLocationSelectionTieredMenu != null ? displayLocationSelectionTieredMenu : true}" />
+    <ui:param name="displayLocationSelectionTieredMenu" value="#{displayLocationSelectionTieredMenu != null ? displayLocationSelectionTieredMenu : true}" />    
+    <ui:param name="locationEditable" value="#{locationEditable != null ? locationEditable : true}" />
 
     <h:outputLabel for="location#{viewName}" value="Location" styleClass="entityDataEmphasizedLabel"/>
-    <p:column id="location#{viewName}">
+    <p:column id="location#{viewName}"
+              rendered="#{locationEditable}">
         <p:panelGrid columns="2" styleClass="noCellPaddingPanelGrid">      
             <p:column>
                 <p:outputPanel styleClass="locationTieredMenuPickerContainer" rendered="#{displayLocationSelectionTieredMenu}">
@@ -34,6 +36,15 @@ See LICENSE file.
                 <p:tooltip for="locationSelectButton#{viewName}" value="Search for location."/>
             </p:commandButton>                               
         </p:panelGrid>
+    </p:column>
+    <p:column id="locationNoEdit#{viewName}"
+              rendered="#{!locationEditable}">
+        
+        Location is not editable. Part of another hierarchy. 
+        <ui:include src="locatableItemLocationRelationshipTree.xhtml">
+            <ui:param name="cdbDomainEntityObject" value="#{itemObject}" />
+        </ui:include>
+
     </p:column>
 
 </ui:composition>
