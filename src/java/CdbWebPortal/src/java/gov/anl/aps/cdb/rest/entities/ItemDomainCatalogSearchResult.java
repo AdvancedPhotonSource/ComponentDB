@@ -20,6 +20,7 @@ public class ItemDomainCatalogSearchResult extends SearchResult {
     
     public ItemDomainCatalogSearchResult(SearchResult result, ItemDomainCatalog catalogItem) {
         super(result.getObjectId(), result.getObjectName());
+        super.setObjectAttributeMatchMap(result.getObjectAttributeMatchMap());
         this.catalogItem = catalogItem; 
         inventoryList = catalogItem.getInventoryItemList();
     }
