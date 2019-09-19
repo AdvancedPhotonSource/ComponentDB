@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -46,6 +47,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     
     protected TravelerApi travelerApi;
     private static final Logger logger = Logger.getLogger(ItemTravelerController.class.getName());
+    
+    protected static final int FORM_ARCHIVED_STATUS = 2; 
     
     protected PropertyValue propertyValue;
     private Traveler currentTravelerInstance;
@@ -66,7 +69,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     private Form selectedTravelerInstanceTemplate;
     
     private String travelerTemplateTitle;
-    private Forms travelerTemplates;
+    private Forms activeTravelerTemplates;
     
     private String travelerInstanceTitle;
     
@@ -1236,9 +1239,20 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * @param onSuccessCommand Remote command to execute only on successful
      * completion
      */
-    public void loadTravelerTemplates(String onSuccessCommand) {
+    public void loadActiveTravelerTemplates(String onSuccessCommand) {
         try {
-            travelerTemplates = travelerApi.getForms();
+            Forms allForms = travelerApi.getForms();
+            
+            LinkedList<Form> activeForms = new LinkedList<>(); 
+            activeTravelerTemplates = new Forms();             
+            activeTravelerTemplates.setForms(activeForms);
+            
+            for (Form template : allForms.getForms()) {
+                if (template.getStatus() != FORM_ARCHIVED_STATUS) {
+                    activeForms.add(template); 
+                }
+            }
+            
             if (onSuccessCommand != null) {
                 SessionUtility.executeRemoteCommand(onSuccessCommand);
             }
@@ -1316,11 +1330,11 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         this.travelerTemplateTitle = travelerTemplateTitle;
     }
     
-    public List<Form> getTravelerTemplates() {
-        if (travelerTemplates == null) {
+    public List<Form> getActiveTravelerTemplates() {
+        if (activeTravelerTemplates == null) {
             return null;
         }
-        return travelerTemplates.getForms();
+        return activeTravelerTemplates.getForms();
     }
     
     public void setSelectedTemplate(Form selectedTemplate) {

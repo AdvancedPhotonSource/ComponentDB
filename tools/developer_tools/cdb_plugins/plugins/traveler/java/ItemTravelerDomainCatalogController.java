@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.primefaces.component.panel.Panel;
 
 /**
  *
@@ -62,7 +61,7 @@ public class ItemTravelerDomainCatalogController extends ItemTravelerController 
     public void prepareMultiEditAppplyTempalteToAllItems() {        
         applyAllCreateNew = null;          
         multiEditSelectedTemplate = null;         
-        loadTravelerTemplates(null);
+        loadActiveTravelerTemplates(null);
     }
     
 }

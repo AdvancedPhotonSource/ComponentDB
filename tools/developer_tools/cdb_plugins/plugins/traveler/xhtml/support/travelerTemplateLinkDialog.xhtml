@@ -19,7 +19,7 @@ See LICENSE file.
               modal="true"
               resizable="false">
         <ui:include src="travelerTemplateDataTable.xhtml">
-            <ui:param name="travelerTemplateList" value="#{itemTravelerDomainCatalogController.travelerTemplates}" />
+            <ui:param name="travelerTemplateList" value="#{itemTravelerDomainCatalogController.activeTravelerTemplates}" />
             <ui:param name="travelerSelectedValue" value="#{itemTravelerDomainCatalogController.selectedTemplate}" />
             <ui:param name="dataTableId" value="travelerTemplatesDataTable" />
             <ui:param name="travelerTemplateDoubleClickSelectionEvent" value="linkSelectedTravelerTemplate()" />

@@ -36,7 +36,7 @@ See LICENSE file.
                              oncomplete="PF('loadingDialog').hide();" />
 
             <p:commandButton value="Link to existing traveler template"                              
-                             action="#{itemTravelerDomainCatalogController.loadTravelerTemplates('showTravelerTemplateLinkDialog();')}"
+                             action="#{itemTravelerDomainCatalogController.loadActiveTravelerTemplates('showTravelerTemplateLinkDialog();')}"
                              onstart="PF('loadingDialog').show()"
                              onerror="PF('loadingDialog').hide()"
                              icon="ui-icon-search"
