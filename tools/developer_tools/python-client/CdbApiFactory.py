@@ -1,3 +1,8 @@
+#!/bin/python3
+
+# Copyright (c) UChicago Argonne, LLC. All rights reserved.
+# See LICENSE file.
+
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
 from cdbApi.api.property_api import PropertyApi
@@ -7,7 +12,6 @@ from cdbApi.configuration import Configuration
 
 
 class CdbApiFactory:
-
 	def __init__(self, cdbUrl):
 		config = Configuration(host=cdbUrl)
 		apiClient = ApiClient(configuration=config)
@@ -46,18 +50,3 @@ if __name__ == '__main__':
 
 	inventoryItemPerCatalog = itemApi.get_items_derived_from_item_by_item_id(catalogId)
 	print(inventoryItemPerCatalog)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
