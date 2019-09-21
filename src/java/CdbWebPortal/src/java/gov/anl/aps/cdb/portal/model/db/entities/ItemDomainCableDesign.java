@@ -22,6 +22,8 @@ import javax.persistence.Entity;
 @DiscriminatorValue(value = ItemDomainName.CABLE_DESIGN_ID + "")
 public class ItemDomainCableDesign extends Item {
 
+    private static final String endpointsSeparator = " | ";
+
     @Override
     public Item createInstance() {
         return new ItemDomainCableDesign();
@@ -132,7 +134,7 @@ public class ItemDomainCableDesign extends Item {
             count = count + 1;
             result = result + endpoint.getName();
             if (count != iList.size()) {
-                result = result + ", ";
+                result = result + endpointsSeparator;
             }
         }
         return result;
