@@ -12,20 +12,24 @@ See LICENSE file.
 
     <p:panelGrid columns="2">
 
-        <p:outputLabel for="cableReviewInputName#{viewId}" value="Name" />
-        <p:inputText id="cableReviewInputName#{viewId}"
-                     readonly="true"
-                     value="#{cableWizard.getInputValueName()}" />
+        <p:outputLabel for="cableReviewName#{viewId}" value="Name" />
+        <p:inputText id="cableReviewName#{viewId}"
+                     value="#{cableWizard.inputValueName}" />
+        
+        <p:outputLabel value="Project" />
+        <h:outputText value="#{cableWizard.getProjectsString()}" 
+                      title="Item Project" 
+                      styleClass="entityDataEmphasizedText" />
 
-        <p:outputLabel for="cableReviewInputEndpoint1#{viewId}" value="Endpoint1" />
-        <p:inputText id="cableReviewInputEndpoint1#{viewId}"
-                     readonly="true"
-                     value="#{cableWizard.getEndpoint1String()}" />
+        <p:outputLabel value="Endpoint1" />
+        <h:outputText value="#{cableWizard.getEndpoint1String()}"  
+                      title="First Endpoint" 
+                      styleClass="entityDataEmphasizedText" />
 
-        <p:outputLabel for="cableReviewInputEndpoint2#{viewId}" value="Endpoint2" />
-        <p:inputText id="cableReviewInputEndpoint2#{viewId}"
-                     readonly="true"
-                     value="#{cableWizard.getEndpoint2String()}" />
+        <p:outputLabel value="Endpoint2" />
+        <h:outputText value="#{cableWizard.getEndpoint2String()}"  
+                      title="Second Endpoint" 
+                      styleClass="entityDataEmphasizedText" />
         
         <ui:insert name="typeSpecificFields" />
 

@@ -162,12 +162,12 @@ See LICENSE file.
 
                 <p:panel id="cableDetailsPanelPlaceholder" 
                          header="Edit placeholder cable details"
-                         rendered="#{cableWizard.selectionCableType eq 'placeholder'}">                
+                         rendered="#{cableWizard.isTypePlaceholder()}">                
                 </p:panel>
 
                 <p:panel id="cableDetailsPanelCatalog" 
                          header="Select cable catalog item and edit details"
-                         rendered="#{cableWizard.selectionCableType eq 'catalog'}">
+                         rendered="#{cableWizard.isTypeCatalog()}">
 
                     <p:dataTable id="selectCableCatalogDataTable"
                                  value="#{itemDomainCableCatalogController.selectDataModel}"
@@ -205,7 +205,7 @@ See LICENSE file.
 
                 <p:panel id="cableReviewPanelPlaceholder" 
                          header="Review and save placeholder cable"
-                         rendered="#{cableWizard.selectionCableType eq 'placeholder'}">
+                         rendered="#{cableWizard.isTypePlaceholder()}">
 
                     <ui:decorate template="templates/reviewTabTemplate.xhtml" >                        
                         <ui:param name="viewId" value="cableReviewPanelPlaceholder"/>
@@ -216,17 +216,17 @@ See LICENSE file.
 
                 <p:panel id="cableReviewPanelCatalog" 
                          header="Review and save cable with catalog type"
-                         rendered="#{cableWizard.selectionCableType eq 'catalog'}">
+                         rendered="#{cableWizard.isTypeCatalog()}">
 
                     <ui:decorate template="templates/reviewTabTemplate.xhtml">
 
                         <ui:param name="viewId" value="cableReviewPanelCatalog" />
 
                         <ui:define name="typeSpecificFields">
-                            <p:outputLabel for="cableReviewInputCableCatalog" value="Cable Catalog Item" />
-                            <p:inputText id="cableReviewInputCableCatalog"
-                                         readonly="true"
-                                         value="#{cableWizard.selectionCableCatalogItem}" />
+                            <p:outputLabel value="Cable Catalog Item" />
+                            <h:outputText value="#{cableWizard.selectionCableCatalogItem}"   
+                                          title="Second Endpoint" 
+                                          styleClass="entityDataEmphasizedText" />
                         </ui:define>
 
                     </ui:decorate>

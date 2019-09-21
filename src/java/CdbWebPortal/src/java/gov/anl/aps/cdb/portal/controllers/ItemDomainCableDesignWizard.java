@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
@@ -136,6 +137,13 @@ public class ItemDomainCableDesignWizard implements Serializable {
     public List<ItemProject> getSelectionProjectList() {
         return selectionProjectList;
     }
+    
+    /**
+     * Returns project list as String for display.
+     */
+    public String getProjectsString() {
+        return StringUtility.getStringifyCdbList(selectionProjectList);
+    }
 
     /**
      * @link ItemDomainCableDesignWizard#getSelectionProjectList
@@ -215,6 +223,28 @@ public class ItemDomainCableDesignWizard implements Serializable {
      */
     public void setSelectionCableType(String selectionCableType) {
         this.selectionCableType = selectionCableType;
+    }
+    
+    /**
+     * Returns true if the cable type is placeholder.
+     */
+    public Boolean isTypePlaceholder() {
+        if (selectionCableType == null) {
+            return false;
+        } else {
+            return selectionCableType.equals(cableTypePlaceholder);
+        }
+    }
+
+    /**
+     * Returns true if the cable type is catalog.
+     */
+    public Boolean isTypeCatalog() {
+        if (selectionCableType == null) {
+            return false;
+        } else {
+            return selectionCableType.equals(cableTypeCatalog);
+        }
     }
 
     /**
