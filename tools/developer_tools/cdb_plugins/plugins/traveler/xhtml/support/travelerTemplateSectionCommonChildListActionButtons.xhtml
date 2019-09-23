@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../../../common/private/commonChildListActionButtons.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="additionalButtons">      
+        <p:commandButton id="#{childEntityTypeName}ShowArchivedTravelers"
+                         alt="Show Archived Templates" 
+                         onclick="PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide();
+                                     PF('travelerTemplateArchiveListDialogWidget').show()"
+                         icon="fa fa-archive" 
+                         update="travelerTemplateArchiveListDialog"                         
+                         styleClass="actionButtonRight">
+            <p:tooltip for="#{childEntityTypeName}ShowArchivedTravelers" value="Show Archived Travelers."/>
+        </p:commandButton>
+
+    </ui:define>
+
+
+
+</ui:composition>
+

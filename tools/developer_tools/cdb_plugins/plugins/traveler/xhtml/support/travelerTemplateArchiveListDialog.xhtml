@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="travelerTemplateArchiveListDialog" 
+              widgetVar="travelerTemplateArchiveListDialogWidget" 
+              header="Traveler Template Archive List" 
+              modal="true"
+              resizable="false"
+              styleClass="viewTransparentBackgroundDialog">
+
+        <p:dataTable id="travelerTemplateArchivedListDataTable"
+                     value="#{itemTravelerDomainCatalogController.archivedTemplatesForCurrent}"
+                     var="templateObject"                     
+                     emptyMessage="No templates have been archived yet."
+                     paginator="true" 
+                     paginatorPosition="bottom"
+                     rows="#{resources.DialogDataTableNumberOfRows}"
+                     paginatorAlwaysVisible="false">
+
+            <ui:include src="travelerTemplateListObject.xhtml" >
+                <ui:param name="renderedArchivedOn"
+                          value="#{true}"/>
+                <ui:param name="renderedEstimatedProgress"
+                          value="#{false}"/> 
+                <ui:param name="renderedDescription"
+                          value="#{false}"/> 
+            </ui:include>         
+
+        </p:dataTable>
+
+        <f:facet name="footer" class="dialog">
+            <p:commandButton onclick="PF('travelerTemplateArchiveListDialogWidget').hide()"
+                             value="Done"
+                             icon="fa fa-times" /> 
+        </f:facet>
+
+
+    </p:dialog>
+
+</ui:composition>
+
