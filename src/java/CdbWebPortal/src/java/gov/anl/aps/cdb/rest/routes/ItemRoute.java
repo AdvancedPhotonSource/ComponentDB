@@ -36,6 +36,7 @@ import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.authentication.User;
 import gov.anl.aps.cdb.rest.entities.FileUploadObject;
+import gov.anl.aps.cdb.rest.entities.ItemDomainCatalogSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemLocationInformation;
 import gov.anl.aps.cdb.rest.entities.ItemSearchResults;
@@ -543,6 +544,27 @@ public class ItemRoute extends BaseRoute {
         LinkedList<SearchResult> inventoryResults = inventoryInstance.getSearchResultList();
         
         return new ItemSearchResults(catalogResults, inventoryResults);
+    }
+    
+    @GET
+    @Path("/DetailedCatalogSearch/{searchText}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainCatalogSearchResult> getDetailedCatalogSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
+        LOGGER.debug("Performing a detailed catalog item search for search query: " + searchText);
+        
+        ItemDomainCatalogController catalogInstance = ItemDomainCatalogController.getApiInstance();        
+        
+        catalogInstance.performEntitySearch(searchText, true);        
+        LinkedList<SearchResult> catalogResults = catalogInstance.getSearchResultList();
+        
+        List<ItemDomainCatalogSearchResult> detailedSearchResults = new ArrayList<>(); 
+        for (SearchResult result : catalogResults) {
+            ItemDomainCatalog item = (ItemDomainCatalog) catalogInstance.getItem(result.getObjectId()); 
+            
+            detailedSearchResults.add(new ItemDomainCatalogSearchResult(result, item));                         
+        }
+        
+        return detailedSearchResults; 
     }
     
     private UserInfo getCurrentRequestUserInfo() {
