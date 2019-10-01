@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:selectOneMenu id="source#{viewName}" value="#{itemSourceObject.source}" required="true" 
+                     styleClass="cellSelect">
+        <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+        <f:selectItems var="source" value="#{sourceController.availableSourcesSortedByName}" itemLabel="#{source.name}" itemValue="#{source}"/>
+    </p:selectOneMenu>
+    <p:tooltip for="source#{viewName}" value="Select source name."/>
+
+</ui:composition>
+
+
