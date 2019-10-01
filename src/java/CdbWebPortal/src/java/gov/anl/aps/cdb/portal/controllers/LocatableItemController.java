@@ -243,12 +243,12 @@ public class LocatableItemController implements Serializable {
     }
 
     private Item getParentLocationItem(Item item) {
-        List<ItemElement> allMembershipList = new ArrayList<>(); 
-        allMembershipList.addAll(item.getItemElementMemberList());
-        if (allMembershipList == null) {
+        if (item.getItemElementMemberList() == null) {
             // For new items it will be null
             return null;
         }
+        List<ItemElement> allMembershipList = new ArrayList<>(); 
+        allMembershipList.addAll(item.getItemElementMemberList());
         allMembershipList.addAll(item.getItemElementMemberList2());
 
         if (allMembershipList.size() > 1) {
