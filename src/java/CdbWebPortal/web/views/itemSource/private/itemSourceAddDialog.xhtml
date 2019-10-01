@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="viewName"
+              value="ItemSourceAddDialog"/> 
+
+    <p:dialog id="#{entityTypeName}ItemSourceAddDialog"
+              widgetVar="#{entityTypeName}ItemSourceAddDialogWidget" 
+              header="Add Item Source Entry" 
+              styleClass="viewTransparentBackgroundDialog"
+              closable="false"
+              resizable="false"
+              modal="true">
+
+        <ui:param name="itemSourceObject" value="#{entityController.currentEditItemSource}" />
+        
+        <ui:param name="inputStyleClass" value="longCellInput" />
+
+        <p:panelGrid columns="2" rendered="#{itemSourceObject != null}"
+                     id="#{entityTypeName}ItemSourceAddDialogPanelGrid"
+                     styleClass="leftAlignedText">
+            <h:outputText value="Name"/>
+            <p:column>
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceName.xhtml" />
+            </p:column>
+
+            <h:outputText value="Part Number"/> 
+            <p:column>
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourcePartNumber.xhtml"/> 
+            </p:column>
+
+            <h:outputText value="Cost"/> 
+            <p:column>
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceCost.xhtml"/> 
+            </p:column>
+
+            <h:outputText value="Contact Info"/> 
+            <p:column>
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceContactInfo.xhtml"/> 
+            </p:column>
+
+            <h:outputText value="Manufacturer"/> 
+            <p:column>
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceManufacturer.xhtml"/> 
+            </p:column>
+
+            <h:outputText value="Vendor"/> 
+            <p:column>
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceVendor.xhtml"/> 
+            </p:column>
+
+            <h:outputText value="URL"/> 
+            <p:column>
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceURL.xhtml"/>
+            </p:column>
+
+            <h:outputText value="Description"/>
+            <p:column>
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceDescription.xhtml"/>
+            </p:column>
+        </p:panelGrid>
+        <f:facet name="footer" class="dialog">
+            <p:outputPanel rendered="#{itemSourceObject != null}">
+                <p:commandButton value="Save" alt="Save" 
+                                 id="#{entityTypeName}SaveItemSourceButton"                                 
+                                 update="#{entityTypeName}ItemSourceAddDialogPanelGrid"
+                                 onsuccess="verifyDataEnteredAddItemSource()"
+                                 icon="ui-icon-disk"/>
+                
+                <p:remoteCommand name="verifyDataEnteredAddItemSource"
+                                 immediate="true"
+                                 action="#{entityController.verifySaveCurrentEditItemSource('onSuccessAddItemSource()')}"/>
+                
+                <p:remoteCommand name="onSuccessAddItemSource"
+                                 action="#{entityController.saveSourceList()}"
+                                 update="@form"
+                                 oncomplete="PF('#{entityTypeName}ItemSourceAddDialogWidget').hide()" /> 
+                                 
+
+                <p:commandButton value="Close" 
+                                 icon="ui-icon-arrowreturnthick-1-w"
+                                 oncomplete="PF('#{entityTypeName}ItemSourceAddDialogWidget').hide()"
+                                 immediate="true"
+                                 action="#{entityController.removeCurrentEditItemSource()}"
+                                 update="@form"
+                                 />
+            </p:outputPanel>
+        </f:facet>
+
+    </p:dialog>
+
+</ui:composition>
+
+
