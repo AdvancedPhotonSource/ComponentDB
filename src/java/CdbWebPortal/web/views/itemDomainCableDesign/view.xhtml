@@ -26,18 +26,101 @@ See LICENSE file.
 
     <ui:define name="additionPanelGridContent">
         <p:panelGrid columns="2" styleClass="#{panelGridStyle}">
-            <p:outputLabel value="Endpoint1" 
+
+            <p:outputLabel for="endpoint1#{viewName}"
+                           value="Endpoint1" 
                            styleClass="entityDataEmphasizedLabel"/>
-            <h:outputText value="#{itemObject.getEndpoint1String()}"  
-                          title="First Endpoint" 
-                          styleClass="entityDataEmphasizedText" />
+
+            <p:inplace id="endpoint1#{viewName}" 
+                       widgetVar="endpoint1#{viewName}Widget"
+                       editor="#{isEntityWriteable}"                
+                       toggleable="false"
+                       styleClass="entityDataEmphasizedText">
+                <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+                <f:facet name="output">
+                    <p:outputPanel styleClass="inlineFlexOutputPanel">
+                        <p:commandLink id="endpoint1EditShowButton"
+                                       styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                       onclick="PF('endpoint1#{viewName}Widget').show();"
+                                       rendered="#{isEntityWriteable}">
+                            <p:tooltip for="endpoint1EditShowButton"
+                                       value="Edit First Endpoint" />
+                        </p:commandLink>
+                        <h:outputText value="#{itemObject.getEndpoint1String()}" 
+                                      title="Endpoint1" 
+                                      styleClass="entityDataEmphasizedText" />
+                    </p:outputPanel>
+                </f:facet>
+                <f:facet name="input">
+                    <p:scrollPanel style="width:100%;height:200px">
+                        <ui:decorate template="../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+                            <ui:param name="viewId" value="endpoint1Tree" />
+                            <ui:param name="hideOptionalColumns" value="#{false}" /> 
+                            <ui:param name="valueModel" value="#{cableWizard.machineDesignTreeEndpoint1}" />
+                            <ui:param name="selectionModel" value="#{cableWizard.selectionEndpoint1}" />
+                            <ui:param name="rendered" value="#{true}" />
+                        </ui:decorate>
+                    </p:scrollPanel>
+                </f:facet>
+            </p:inplace>
 
             <p:outputLabel value="Endpoint2" 
                            styleClass="entityDataEmphasizedLabel"/>
-            <h:outputText value="#{itemObject.getEndpoint2String()}"  
-                          title="Second Endpoint" 
-                          styleClass="entityDataEmphasizedText" />
+            <p:outputPanel styleClass="inlineFlexOutputPanel">
+                <p:commandLink id="endpoint2EditShowButton"
+                               styleClass="fa-link-icon fa-icon fa fa-pencil"
+                               onclick="PF('endpoint2Dialog').show();"
+                               action='#{entityController.prepareDialogEndpoint2()}'
+                               rendered="#{isEntityWriteable}">
+                    <p:tooltip for="endpoint2EditShowButton"
+                               value="Edit Second Endpoint" />
+                </p:commandLink>
+                <h:outputText value="#{itemObject.getEndpoint2String()}" 
+                              title="Endpoint2" 
+                              styleClass="entityDataEmphasizedText" />
+            </p:outputPanel>
+            <p:dialog header="Select new Endpoint2" 
+                      widgetVar="endpoint2Dialog" 
+                      modal="true"
+                      closable="false">
+                <ui:decorate template="../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+                    <ui:param name="viewId" value="endpoint2Tree" />
+                    <ui:param name="hideOptionalColumns" value="#{false}" /> 
+                    <ui:param name="valueModel" value="#{entityController.dialogEndpoint2.valueModelTree}" />
+                    <ui:param name="selectionModel" value="#{entityController.dialogEndpoint2.selectionModelEndpoint}" />
+                    <ui:param name="rendered" value="#{true}" />
+                </ui:decorate>
+                <f:facet name="footer" class="dialog">
+                    <p:commandButton  action="#{entityController.dialogEndpoint2.save('saveEndpoint2Success()')}"
+                                      id="endpoint2DialogSaveButton"
+                                      value="Save" 
+                                      alt="Save" 
+                                      icon="ui-icon-check"/>
+
+                    <p:commandButton action="#{entityController.dialogEndpoint2.cancel()}" 
+                                     immediate="true" 
+                                     value="Cancel" alt="Cancel" 
+                                     update="@form"
+                                     icon="ui-icon-cancel" />
+
+                    <p:remoteCommand name="saveEndpoint2Success"                             
+                                     actionListener="#{entityController.dialogEndpoint2.actionListenerSaveSuccess}"
+                                     update="@form"
+                                     onstart="PF('endpoint2Dialog').hide()" />
+                </f:facet>
+            </p:dialog>
+
         </p:panelGrid>
     </ui:define>
+
+    <ui:remove>    
+        <h:outputText value="#{itemObject.getEndpoint1String()}"  
+                      title="First Endpoint" 
+                      styleClass="entityDataEmphasizedText" />
+
+        <p:inputText value="#{itemObject.endpoint1String}" 
+                     title="Endpoint1" 
+                     styleClass="entityDataEmphasizedText"/>
+    </ui:remove>
 
 </ui:composition>

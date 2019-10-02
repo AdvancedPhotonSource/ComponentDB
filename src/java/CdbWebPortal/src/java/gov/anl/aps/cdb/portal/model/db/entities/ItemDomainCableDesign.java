@@ -40,9 +40,6 @@ public class ItemDomainCableDesign extends Item {
                         = RelationshipTypeFacade.getInstance().findByName(
                                 ItemElementRelationshipTypeNames.itemCableConnection.getValue());
                 if (cableIerType != null) {
-                    if (ierList.size() > 0) {
-                        System.out.println(ierList.get(0).getRelationshipType().getName().equals(cableIerType.getName()));
-                    }
                     return ierList.stream().
                             filter(ier -> ier.getRelationshipType().getName().equals(cableIerType.getName())).
                             map(ier -> ier.getFirstItemElement().getParentItem()).
@@ -121,7 +118,40 @@ public class ItemDomainCableDesign extends Item {
     
     public void setEndpoint2(Item itemEndpoint2) {
         this.addCableRelationship(itemEndpoint2);
-     }
+    }
+    
+    /**
+     * Updates oldEndpoint to newEndpoint.
+     * @param oldEndpoint
+     * @param newEndpoint 
+     */
+    public Boolean updateEndpoint(Item oldEndpoint, Item newEndpoint) {
+
+        ItemElement selfElement = this.getSelfElement();
+        List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
+        
+        // find cable relationship for old endpoint
+        if (ierList != null) {
+
+            RelationshipType cableIerType
+                    = RelationshipTypeFacade.getInstance().findByName(
+                            ItemElementRelationshipTypeNames.itemCableConnection.getValue());
+
+            ItemElementRelationship cableRelationship = ierList.stream()
+                    .filter(ier -> (ier.getRelationshipType().getName().equals(cableIerType.getName()))
+                    && (ier.getFirstItemElement().equals(oldEndpoint.getSelfElement())))
+                    .findAny()
+                    .orElse(null);
+            
+            if (cableRelationship != null) {
+                cableRelationship.setFirstItemElement(newEndpoint.getSelfElement());
+                // null out connector too, for when we add support for port-level connections
+                cableRelationship.setFirstItemConnector(null);
+            }
+        }
+        
+        return true;
+    }
     
     /**
      * Returns a string containing the cables endpoints for display.
