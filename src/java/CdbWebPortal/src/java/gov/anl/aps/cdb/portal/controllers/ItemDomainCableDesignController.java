@@ -106,23 +106,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     @EJB
     ItemDomainCableDesignFacade itemDomainCableDesignFacade;
 
-    private EndpointDialog dialogEndpoint1 = new EndpointDialog();
-    private EndpointDialog dialogEndpoint2 = new EndpointDialog();
+    private EndpointDialog dialogEndpoint = new EndpointDialog();
 
-    public EndpointDialog getDialogEndpoint1() {
-        return dialogEndpoint1;
+    public EndpointDialog getDialogEndpoint() {
+        return dialogEndpoint;
     }
 
-    public void setDialogEndpoint1(EndpointDialog endpoint1Dialog) {
-        this.dialogEndpoint1 = endpoint1Dialog;
-    }
-
-    public EndpointDialog getDialogEndpoint2() {
-        return dialogEndpoint2;
-    }
-
-    public void setDialogEndpoint2(EndpointDialog endpoint2Dialog) {
-        this.dialogEndpoint2 = dialogEndpoint2;
+    public void setDialogEndpoint(EndpointDialog endpoint2Dialog) {
+        this.dialogEndpoint = dialogEndpoint;
     }
 
     public static ItemDomainCableDesignController getInstance() {
@@ -211,10 +202,17 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     /**
-     * Prepares dialog for editing endpoint2.
+     * Prepares endpoint dialog for editing endpoint1.
+     */
+    public void prepareDialogEndpoint1() {
+        dialogEndpoint.setItemEndpoint(getCurrent().getEndpoint1());
+    }
+
+    /**
+     * Prepares endpoint dialog for editing endpoint2.
      */
     public void prepareDialogEndpoint2() {
-        dialogEndpoint2.setItemEndpoint(getCurrent().getEndpoint2());
+        dialogEndpoint.setItemEndpoint(getCurrent().getEndpoint2());
     }
 
     @Override
