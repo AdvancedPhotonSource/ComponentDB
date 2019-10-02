@@ -172,6 +172,24 @@ class ItemSessionController(CdbSessionController):
     @cherrypy.expose
     @CdbSessionController.require(CdbSessionController.isLoggedIn())
     @CdbSessionController.execute
+    def deletePropertyValuesFromItemByItemId(self, itemId, propertyTypeName):
+        if not itemId:
+            raise InvalidRequest("Invalid itemId provided")
+        if not propertyTypeName:
+            raise InvalidRequest("Invalid propertyTypeName provided")
+
+        propertyTypeName = Encoder.decode(propertyTypeName)
+
+        sessionUser = self.getSessionUser()
+        enteredByUserId = sessionUser.get('id')
+
+        deletedPropertyValues = self.itemControllerImpl.deletePropertyValuesFromItemByItemId(itemId, propertyTypeName, enteredByUserId)
+        response = self.listToJson(deletedPropertyValues)
+        return response
+
+    @cherrypy.expose
+    @CdbSessionController.require(CdbSessionController.isLoggedIn())
+    @CdbSessionController.execute
     def addItem(self, domainName, name, itemProjectName=None, ownerUserId=None, ownerGroupId=None, itemIdentifier1=None, itemIdentifier2=None,
                 qrId=None, description=None, isGroupWriteable=None, entityTypeNames = None, derivedFromItemId=None):
         if not domainName:

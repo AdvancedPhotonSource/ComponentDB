@@ -11,6 +11,7 @@ from cdb.common.objects.domain import Domain
 from cdb.common.objects.log import Log
 from cdb.common.objects.item import Item
 from cdb.common.objects.itemElement import ItemElement
+from cdb.common.objects.itemElementProperty import ItemElementProperty
 from cdb.common.objects.propertyValue import PropertyValue
 from cdb.common.objects.itemElementRelationship import ItemElementRelationship
 from cdb.common.api.cdbRestApi import CdbRestApi
@@ -130,6 +131,19 @@ class ItemRestApi(CdbRestApi):
 
         return self.__createAddPropertyRequest(url, itemElementId, propertyTypeName, tag, value, units, description,
                                       isUserWriteable, isDynamic, displayValue)
+
+    def deletePropertyValuesFromItemWithId(self, itemId, propertyTypeName):
+        if itemId is not None:
+            itemId = str(itemId)
+        if itemId is None or not len(itemId):
+            raise InvalidRequest("itemId must be provided")
+        if propertyTypeName is None or not len(propertyTypeName):
+            raise InvalidRequest("propertyTypeName must be provided")
+        propertyTypeName = Encoder.encode(propertyTypeName)
+        url = '%s/items/%s/deletePropertyValues/%s'
+        url = url % (self.getContextRoot(), itemId, propertyTypeName)
+        responseData = self.sendSessionRequest(url=url, method='DELETE')
+        return self.toCdbObjectList(responseData, PropertyValue)
 
     def getLogEntriesForItemWithQrId(self, qrId):
         if qrId is not None:

@@ -8,7 +8,7 @@ See LICENSE file.
 from setuptools import setup
 
 setup(name='cdb-api',
-      version='3.7.1',
+      version='3.8.0',
       license='Copyright (c) UChicago Argonne, LLC. All rights reserved.',
       packages=['cdb',
                 'cdb.cdb_web_service',
@@ -31,7 +31,9 @@ setup(name='cdb-api',
           'cdb-add-item-property-value = cdb.cdb_web_service.cli.addItemPropertyValueCli:runCommand',
           'cdb-add-log-attachment = cdb.cdb_web_service.cli.addLogAttachmentCli:runCommand',
           'cdb-add-property-metadata-to-property-value = cdb.cdb_web_service.cli.addPropertyMetadataToPropertyValueCli:runCommand',
+          'cdb-delete-item-property-values = cdb.cdb_web_service.cli.deleteItemPropertyValuesCli:runCommand',
           'cdb-delete-log = cdb.cdb_web_service.cli.deleteLogCli:runCommand',
+          'cdb-get-item = cdb.cdb_web_service.cli.getItemCli:runCommand',
           'cdb-get-item-logs = cdb.cdb_web_service.cli.getItemLogsCli:runCommand',
           'cdb-get-user = cdb.cdb_web_service.cli.getUserCli:runCommand',
           'cdb-get-user-groups = cdb.cdb_web_service.cli.getUserGroupsCli:runCommand',

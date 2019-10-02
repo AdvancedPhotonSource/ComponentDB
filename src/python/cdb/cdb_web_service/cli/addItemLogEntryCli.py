@@ -5,12 +5,12 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
 from cdb.cdb_web_service.api.itemRestApi import ItemRestApi
-from cdbWebServiceCli import CdbWebServiceCli
+from cdbWebServiceSessionCli import CdbWebServiceSessionCli
 from cdb.common.exceptions.invalidRequest import InvalidRequest
 
-class addItemLogEntry(CdbWebServiceCli):
+class addItemLogEntry(CdbWebServiceSessionCli):
     def __init__(self):
-        CdbWebServiceCli.__init__(self)
+        CdbWebServiceSessionCli.__init__(self)
         self.addOption('', '--qr-id', dest='qrId', help='QrId of item to add log entry for')
         self.addOption('', '--item-id', dest='itemId', help='Item id of an item to add log entry for')
         self.addOption('', '--log-entry', dest='logEntry', help='Log entry text to add to the item with qrId specified.')
@@ -36,7 +36,7 @@ class addItemLogEntry(CdbWebServiceCli):
 
     def runCommand(self):
         self.parseArgs(usage="""
-    cdb-add-item-log-entry --qr-id=QRID --item-id=ITEMID
+    cdb-add-item-log-entry --qr-id=QRID|--item-id=ITEMID
         --log-entry=LOGENTRY
         --attachment=ATTACHMENT
 

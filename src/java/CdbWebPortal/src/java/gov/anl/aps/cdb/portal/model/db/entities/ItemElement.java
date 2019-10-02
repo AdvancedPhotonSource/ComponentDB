@@ -130,6 +130,9 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private List<ItemElementRelationship> itemElementRelationshipList1;
     @OneToMany(mappedBy = "linkItemElement")
     private List<ItemElementRelationship> itemElementRelationshipList2;
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, mappedBy = "itemElement")
+    @OrderBy("enteredOnDateTime DESC")
+    private List<ItemElementHistory> itemElementHistoryList;
 
     private static transient Integer sortByPropertyTypeId = null;
     private transient TreeNode childItemElementListTreeTableRootNode = null;
@@ -279,6 +282,15 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     @XmlTransient
     public List<Log> getLogList() {
         return logList;
+    }
+
+    @XmlTransient
+    public List<ItemElementHistory> getItemElementHistoryList() {
+        return itemElementHistoryList;
+    }
+
+    public void setItemElementHistoryList(List<ItemElementHistory> itemElementHistoryList) {
+        this.itemElementHistoryList = itemElementHistoryList;
     }
 
     @XmlTransient
@@ -541,6 +553,25 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
             return false;
         }
         return true;
+    }
+    
+    public boolean equalsByIdContainedItemsAndParentItem(ItemElement other) {
+        if (this.equals(other)){
+            return nullSafeComparison(this.containedItem1, other.containedItem1)
+                    && nullSafeComparison(this.containedItem2, other.containedItem2)
+                    && nullSafeComparison(this.parentItem, other.parentItem);
+        }
+        return false; 
+    }
+    
+    private boolean nullSafeComparison(Object object1, Object object2) {
+        if (object1 == null && object2 == null) {
+            return true;
+        } else if (object1 == null || object2 == null) {
+            return false; 
+        } else {
+            return object1.equals(object2); 
+        }
     }
 
     @Override

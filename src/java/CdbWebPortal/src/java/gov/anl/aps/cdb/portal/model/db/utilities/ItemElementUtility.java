@@ -6,11 +6,14 @@ package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidObjectState;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.view.objects.ItemHierarchyCache;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
@@ -25,8 +28,10 @@ public class ItemElementUtility {
     private final static String ITEM_ELEMENT_NODE_TYPE = "itemElement";
 
     private final static String SELECTION_MENU_MODEL_ONCLICK_TEMPLATE = "#{%s.%s(itemGenericViewController.findById(%s))}";
-    private final static String CLEAR_ITEM_ONCLICK_TEMPLATE = "#{%s.%s(%s)}"; 
+    private final static String CLEAR_ITEM_ONCLICK_TEMPLATE = "#{%s.%s(%s)}";
     private final static String ACTIVE_LOCATION_MENU_ITEM_STYLE = "activeLocationMenuItem";
+
+    private static final Logger logger = Logger.getLogger(ItemElementUtility.class.getName());
 
     public static TreeNode createItemElementRoot(Item parentItem) throws CdbException {
         return createTreeRoot(parentItem, false);
@@ -107,6 +112,46 @@ public class ItemElementUtility {
         return itemHierarchyCaches;
     }
 
+    public static void prepareItemElementHistory(List<ItemElement> originalItemElementList,
+            List<ItemElement> newItemElementList, EntityInfo entityInfo) {
+        for (ItemElement itemElementValue : newItemElementList) {
+            int index = -1;
+            if (originalItemElementList != null) {
+                index = originalItemElementList.indexOf(itemElementValue);
+            }
+            
+            if (index >= 0) {
+                // Original element was there.
+                ItemElement originalItemElement = originalItemElementList.get(index);
+                prepareItemElementHistory(originalItemElement, itemElementValue, entityInfo);
+            } else {
+                prepareItemElementHistory(null, itemElementValue, entityInfo);
+            }
+        }
+    }
+
+    public static void prepareItemElementHistory(ItemElement originalItemElement, ItemElement itemElementValue, EntityInfo entityInfo) {
+        if (originalItemElement != null) {
+            if (!itemElementValue.equalsByIdContainedItemsAndParentItem(originalItemElement)) {
+                // Property value was modified.
+                logger.debug("Item element: " + itemElementValue + " was modified, storing history");
+
+                // Save history
+                List<ItemElementHistory> itemElementHistoryList = itemElementValue.getItemElementHistoryList();
+                ItemElementHistory itemElementHistory = new ItemElementHistory(itemElementValue, entityInfo);
+                itemElementHistoryList.add(itemElementHistory);
+            }
+        } else {
+            // New Item Element
+            logger.debug("Adding item element history for new item element record " + itemElementValue);
+            ItemElementHistory itemElementHistory = new ItemElementHistory(itemElementValue, entityInfo);
+            if (itemElementValue.getItemElementHistoryList() == null) {
+                itemElementValue.setItemElementHistoryList(new ArrayList<>());
+            }
+            itemElementValue.getItemElementHistoryList().add(itemElementHistory);
+        }
+    }
+
     /**
      * Generates hierarchy of nodes in the form of MenuModel meant to be used as
      * a model in a tiered menu. Could be used in other menus.
@@ -133,21 +178,21 @@ public class ItemElementUtility {
         if (firstLevelItemList != null) {
             DefaultSubMenu defaultSubMenu = new DefaultSubMenu(baseNodeName);
             generatedMenuModel.addElement(defaultSubMenu);
-            
+
             // Add null item 
             DefaultMenuItem nullMenuItem = new DefaultMenuItem();
             nullMenuItem.setValue(nullOption);
             String onClick = String.format(CLEAR_ITEM_ONCLICK_TEMPLATE, selectionController, selectionMethod, "null");
-            nullMenuItem.setCommand(onClick); 
+            nullMenuItem.setCommand(onClick);
             nullMenuItem.setUpdate(updateTarget);
-            nullMenuItem.setProcess(processTarget);            
+            nullMenuItem.setProcess(processTarget);
             defaultSubMenu.addElement(nullMenuItem);
-            
+
             generateItemSelectionMenuModel(defaultSubMenu, firstLevelItemList, selectionController, selectionMethod, activeItemList, updateTarget, processTarget);
         } else {
             DefaultMenuItem menuItem = new DefaultMenuItem(baseNodeName);
             menuItem.setDisabled(true);
-            generatedMenuModel.addElement(menuItem);            
+            generatedMenuModel.addElement(menuItem);
         }
 
         return generatedMenuModel;

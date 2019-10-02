@@ -4,7 +4,7 @@
 # See LICENSE file.
 
 
-PYTHON_VERSION=2.7.9
+PYTHON_VERSION=2.7.16
 CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
 
 currentDir=`pwd`

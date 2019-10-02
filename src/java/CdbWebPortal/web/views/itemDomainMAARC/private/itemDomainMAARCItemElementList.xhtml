@@ -53,7 +53,11 @@ See LICENSE file.
             <ui:include src="../../propertyValue/private/propertyValueDomainEntityListDataTableColumnObject.xhtml">
                 <ui:param name="propertyValueInformation" 
                           value="#{containedItemListObject.getPropertyValueInformation(filePropertyTypeId)}"/>
-            </ui:include>                                
+                <ui:param name="includeInfoActionWithValue"
+                          value="#{true}"/> 
+            </ui:include>
+            
+            
         </p:column>
 
         <p:column headerText="Actions">

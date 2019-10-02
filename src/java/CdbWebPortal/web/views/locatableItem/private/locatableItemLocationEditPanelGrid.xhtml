@@ -8,6 +8,9 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets">
 
 
+    <ui:param name="locationEditable"
+              value="#{locatableItemController.locationEditable(itemObject)}"/> 
+    
     <ui:include src="locatableItemLocationSelection.xhtml" />
     
     <ui:include src="locatableItemLocationDetailsEditObject.xhtml" />

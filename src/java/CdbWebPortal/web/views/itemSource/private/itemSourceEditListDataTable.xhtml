@@ -30,58 +30,42 @@ See LICENSE file.
         </p:column>
 
         <p:column sortBy="#{itemSourceObject.source.name}" headerText="Name">
-            <p:selectOneMenu id="source" value="#{itemSourceObject.source}" required="true" 
-                             styleClass="cellSelect">
-                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
-                <f:selectItems var="source" value="#{sourceController.availableSourcesSortedByName}" itemLabel="#{source.name}" itemValue="#{source}"/>
-            </p:selectOneMenu>
-            <p:tooltip for="source" value="Select source name."/>
+            <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceName.xhtml"/> 
         </p:column>
 
         <p:column sortBy="#{itemSourceObject.partNumber}" headerText="Part Number"
                   rendered="#{itemSourceSettingObject.displayPartNumber}">
-            <h:inputText id="partNumber" value="#{itemSourceObject.partNumber}" styleClass="cellInput"/>
-            <p:tooltip for="partNumber" value="Part number is optional."/>
+            <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourcePartNumber.xhtml"/> 
         </p:column>
 
         <p:column sortBy="#{itemSourceObject.cost}" headerText="Cost [$]"
                   rendered="#{itemSourceSettingObject.displayCost}">
-            <h:inputText id="cost" value="#{itemSourceObject.cost}" styleClass="cellInput"/>
-            <p:tooltip for="cost" value="Cost is optional."/>
+            <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceCost.xhtml"/>
         </p:column>
 
         <p:column sortBy="#{itemSourceObject.description}" headerText="Description"
                   rendered="#{itemSourceSettingObject.displayDescription}">
-            <h:inputText id="description" value="#{itemSourceObject.description}" styleClass="longCellInput"/>
-            <p:tooltip for="description" value="Description is optional."/>
+            <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceDescription.xhtml"/>
         </p:column>
 
         <p:column sortBy="#{itemSourceObject.contactInfo}" headerText="Contact Info"
                   rendered="#{itemSourceSettingObject.displayContactInfo}">
-            <h:inputText id="contactInfo" value="#{itemSourceObject.contactInfo}" styleClass="cellInput"/>
-            <p:tooltip for="contactInfo" value="Enter contact info."/>
+            <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceContactInfo.xhtml" /> 
         </p:column>    
 
         <p:column sortBy="#{itemSourceObject.url}" headerText="URL"
                   rendered="#{itemSourceSettingObject.displayUrl}">
-            <h:inputText id="url" value="#{itemSourceObject.url}" styleClass="cellInput"/>
-            <p:tooltip for="url" value="Enter item source URL."/>
+            <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceURL.xhtml" /> 
         </p:column>         
 
         <p:column sortBy="#{itemSourceObject.isManufacturer}" headerText="Manufacturer"
                   rendered="#{itemSourceSettingObject.displayIsManufacturer}">
-            <div class="dataTableCheckbox">
-                <p:selectBooleanCheckbox id="isManufacturer" value="#{itemSourceObject.isManufacturer}"/>
-                <p:tooltip for="isManufacturer" value="Check this box if item source is a manufacturer."/>
-            </div>
+            <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceManufacturer.xhtml" /> 
         </p:column>   
 
         <p:column sortBy="#{itemSourceObject.isVendor}" headerText="Vendor"
                   rendered="#{itemSourceSettingObject.displayIsVendor}">
-            <div class="dataTableCheckbox">
-                <p:selectBooleanCheckbox id="isVendor" value="#{itemSourceObject.isVendor}"/>
-                <p:tooltip for="isVendor" value="Check this box if item source is a vendor."/>
-            </div>
+            <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceVendor.xhtml" />
         </p:column>  
 
         <p:column headerText="Actions" exportable="false">

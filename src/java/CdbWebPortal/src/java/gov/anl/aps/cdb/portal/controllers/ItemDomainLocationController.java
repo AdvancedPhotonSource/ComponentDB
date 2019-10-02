@@ -24,7 +24,6 @@ import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.log4j.Logger;
-import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 @Named("itemDomainLocationController")
@@ -281,167 +280,23 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         resetListDataModel();
         setSelectedLocationTreeNodeByItem(item);
     }
-
+    
     public void setSelectedLocationTreeNodeByItem(Item item) {
         if (item != null) {
             // check selected node.. 
-            TreeNode root = getLocationsWithInventoryItemsRootNode();
-            setExpandedSelectedOnAllChildren(root, false, false);
-
-            selectedLocationTreeNode = findTreeNodeWithItem(item, root);
+            TreeNode root = getItemsWithNoParentsRootNode();
+            ItemUtility.setExpandedSelectedOnAllChildren(root, false, false);
+            
+            selectedLocationTreeNode = ItemUtility.findTreeNodeWithItem(item, root);
             if (selectedLocationTreeNode != null) {
                 selectedLocationTreeNode.setSelected(true);
-                expandTreeBranch(selectedLocationTreeNode);
+                ItemUtility.expandTreeBranch(selectedLocationTreeNode);
             }
         } else {
             selectedLocationTreeNode = null;
         }
     }
-
-    public static List<ItemDomainLocation> generateLocationHierarchyList(ItemDomainLocation lowestLocationItem) {
-        if (lowestLocationItem != null) {
-            List<ItemDomainLocation> itemHerarchyList = new ArrayList<>();
-            ItemDomainLocation currentLowestItem = lowestLocationItem;
-            ItemElement currentLowestLocationSelfElement;
-
-            itemHerarchyList.add(0, lowestLocationItem);
-
-            // Check if item is linked using location relationship
-            currentLowestLocationSelfElement = currentLowestItem.getSelfElement();
-            List<ItemElementRelationship> relationshipList = currentLowestLocationSelfElement.getItemElementRelationshipList();
-
-            // Keep track of iterated items to avoid a circular reference 
-            List<ItemElement> locationElementList = new ArrayList<>();
-            locationElementList.add(currentLowestLocationSelfElement);
-            while (relationshipList != null && !relationshipList.isEmpty()) {
-                relationshipList = currentLowestLocationSelfElement.getItemElementRelationshipList();
-                ItemElementRelationship locationRelationship = findLocationItemElementRelationship(relationshipList);
-                if (locationRelationship != null) {
-                    currentLowestLocationSelfElement = locationRelationship.getSecondItemElement();
-                    if (locationElementList.contains(currentLowestLocationSelfElement)) {
-                        logger.warn("Circular reference occured in location relationship check. "
-                                + "For lowest location item: " + lowestLocationItem.toString());
-                        break;
-                    } else {
-                        locationElementList.add(currentLowestLocationSelfElement);
-                    }
-                    itemHerarchyList.add(0, (ItemDomainLocation) currentLowestLocationSelfElement.getParentItem());
-                }
-            }
-
-            // No longer needed
-            locationElementList = null;
-
-            // Use the location herarchy relationship to complete the tree. 
-            currentLowestItem = (ItemDomainLocation) currentLowestLocationSelfElement.getParentItem();
-            while (currentLowestItem != null) {
-                if (currentLowestItem != null) {
-                    List<ItemElement> itemElementMembershipList = currentLowestItem.getItemElementMemberList();
-                    if (itemElementMembershipList.size() > 0) {
-                        ItemElement memberOfItemElement = itemElementMembershipList.get(0);
-                        currentLowestItem = (ItemDomainLocation) memberOfItemElement.getParentItem();
-                        itemHerarchyList.add(0, currentLowestItem);
-                    } else {
-                        currentLowestItem = null;
-                    }
-                }
-            }
-            return itemHerarchyList;
-        }
-        return null;
-    }
-
-    /**
-     * Function generates a treebranch for a specific location (single item on
-     * each branch)
-     *
-     * @param lowestLocationItem lowest desired item of the branch.
-     * @return root of tree branch that has item passed at lowest level of
-     * branch.
-     */
-    public static TreeNode generateLocationNodeTreeBranch(ItemDomainLocation lowestLocationItem) {
-        if (lowestLocationItem != null) {
-            List<ItemDomainLocation> itemHierarchyList = generateLocationHierarchyList(lowestLocationItem);
-
-            if (itemHierarchyList != null) {
-                TreeNode rootTreeNode = new DefaultTreeNode(null, null);
-                TreeNode prevNode = rootTreeNode;
-
-                for (Item item : itemHierarchyList) {
-                    prevNode = ItemUtility.createNewTreeNode(item, prevNode);
-                }
-                
-                // Allow for quick view full location. 
-                setExpandedSelectedOnAllChildren(rootTreeNode, true, false);
-                if (rootTreeNode.getChildCount() > 0) {
-                    rootTreeNode.getChildren().get(0).setExpanded(false);
-                }
-                
-
-                return rootTreeNode;
-            }
-        }
-
-        return null;
-    }
-
-    public static String generateLocatonHierarchyString(ItemDomainLocation lowestLocationItem) {
-        if (lowestLocationItem != null) {
-            List<ItemDomainLocation> itemHierarchyList = generateLocationHierarchyList(lowestLocationItem);
-
-            if (itemHierarchyList != null) {
-                String result = "";
-                for (ItemDomainLocation item : itemHierarchyList) {
-                    result += item.getName();
-                    // Still more items to load.
-                    if (itemHierarchyList.indexOf(item) != itemHierarchyList.size() - 1) {
-                        result += " ➜ ";
-                    }
-                }
-                return result;
-            }
-        }
-
-        return null;
-    }
-        
-    private void expandTreeBranch(TreeNode childNode) {
-        TreeNode parentNode = childNode.getParent();
-        if (parentNode != null) {
-            parentNode.setExpanded(true);
-            expandTreeBranch(parentNode);
-        }
-    }
-
-    private static void setExpandedSelectedOnAllChildren(TreeNode node, Boolean expanded, Boolean selected) {
-        if (expanded != null) {
-            node.setExpanded(expanded);
-        }
-        if (selected != null) {
-            node.setSelected(selected);
-        }
-        for (TreeNode childNode : node.getChildren()) {
-            setExpandedSelectedOnAllChildren(childNode, expanded, selected);
-        }
-    }
-
-    private TreeNode findTreeNodeWithItem(Item item, TreeNode node) {
-        Item nodeItem = (Item) node.getData();
-
-        if (nodeItem != null && nodeItem.equals(item)) {
-            return node;
-        }
-
-        for (TreeNode childNode : node.getChildren()) {
-            TreeNode foundNode = findTreeNodeWithItem(item, childNode);
-            if (foundNode != null) {
-                return foundNode;
-            }
-        }
-
-        return null;
-    }
-
+    
     @Override
     public boolean getEntityDisplayItemName() {
         return true;

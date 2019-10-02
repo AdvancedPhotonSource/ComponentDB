@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "PropertyMetadata.findById", query = "SELECT p FROM PropertyMetadata p WHERE p.id = :id"),
     @NamedQuery(name = "PropertyMetadata.findByMetadataKey", query = "SELECT p FROM PropertyMetadata p WHERE p.metadataKey = :metadataKey"),
     @NamedQuery(name = "PropertyMetadata.findByMetadataValue", query = "SELECT p FROM PropertyMetadata p WHERE p.metadataValue = :metadataValue")})
-public class PropertyMetadata extends CdbEntity implements Serializable {
+public class PropertyMetadata extends PropertyMetadataBase implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -76,6 +76,7 @@ public class PropertyMetadata extends CdbEntity implements Serializable {
         this.id = id;
     }
 
+    @Override
     public String getMetadataKey() {
         return metadataKey;
     }
@@ -84,6 +85,7 @@ public class PropertyMetadata extends CdbEntity implements Serializable {
         this.metadataKey = metadataKey;
     }
 
+    @Override
     public String getMetadataValue() {
         return metadataValue;
     }

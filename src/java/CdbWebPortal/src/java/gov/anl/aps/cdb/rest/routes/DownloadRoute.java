@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -22,26 +23,31 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 @Tag(name = "Downloads")
 public class DownloadRoute extends BaseRoute {   
     
+    private static final Logger LOGGER = Logger.getLogger(DownloadRoute.class.getName());
+    
     @GET
     @Path("/PropertyValue/Image/{imageName}/{scaling}")       
-    public Response getImage(@PathParam("imageName") String imageName,@PathParam("scaling") String scaling) throws FileNotFoundException {        
-        String fullImageName = imageName+"."+scaling;         
-        String filePath = StorageUtility.getFileSystemPropertyValueImagePath(fullImageName);        
+    public Response getImage(@PathParam("imageName") String imageName,@PathParam("scaling") String scaling) throws FileNotFoundException {  
+        LOGGER.debug("Fetching " + scaling + " image: " + imageName);
+        String fullImageName = imageName+"."+scaling;
+        String filePath = StorageUtility.getFileSystemPropertyValueImagePath(fullImageName);
         
-        return getFileResponse("Image: " + fullImageName, imageName, filePath);        
+        return getFileResponse("Image: " + fullImageName, imageName, filePath);
     }
     
     private Response getFileResponse(String errorFileTypeColonName, String fileName, String storageFilePath) throws FileNotFoundException {
-        File file = new File(storageFilePath);  
+        File file = new File(storageFilePath);
         
         if (file.exists()) {
             ResponseBuilder response = Response.ok((Object) file);
             response.header("Content-Disposition",
                     "attachment; filename=" + fileName);
-            return response.build();        
+            return response.build();
         }        
         
-        throw new FileNotFoundException(errorFileTypeColonName + " requested was not found."); 
+        FileNotFoundException fileNotFoundException = new FileNotFoundException(errorFileTypeColonName + " requested was not found."); 
+        LOGGER.error(fileNotFoundException);
+        throw fileNotFoundException; 
     }
         
 }

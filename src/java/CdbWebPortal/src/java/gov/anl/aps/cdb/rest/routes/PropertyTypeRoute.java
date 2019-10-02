@@ -14,6 +14,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -22,7 +23,8 @@ import javax.ws.rs.core.MediaType;
 @Path("/PropertyTypes")
 @Tag(name = "Property")
 public class PropertyTypeRoute extends BaseRoute {
-    // TODO add logger 
+    
+    private static final Logger LOGGER = Logger.getLogger(PropertyType.class.getName());
     
     @EJB
     private PropertyTypeFacade propertyTypeFacade;
@@ -31,7 +33,7 @@ public class PropertyTypeRoute extends BaseRoute {
     @Path("/all")    
     @Produces(MediaType.APPLICATION_JSON)    
     public List<PropertyType> getAll() {        
-        System.out.println("REST returinging find all");
+        LOGGER.debug("Fetching all property types.");
         return propertyTypeFacade.findAll();
     }
     
@@ -39,6 +41,7 @@ public class PropertyTypeRoute extends BaseRoute {
     @Path("/inventoryStatusPropertyType")    
     @Produces(MediaType.APPLICATION_JSON)    
     public PropertyType getInventoryStatusPropertyType() { 
+        LOGGER.debug("Fetching inventory item status property type.");
         return propertyTypeFacade.findByName(ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
     }
     

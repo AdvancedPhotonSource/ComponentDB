@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueBase;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
@@ -154,7 +155,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         return cdbDomainEntityImageList;
     }
     
-    public Boolean getDisplayPropertyMetadata(PropertyValue propertyValue) {
+    public Boolean getDisplayPropertyMetadata(PropertyValueBase propertyValue) {
         // Maybe future property types will have internal property metadata. 
         // Temporarly done for disabling the metadata for specific entitiees. 
         return true; 
@@ -253,6 +254,9 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
      * process actions.
      */
     protected void loadPreProcessListDataModelIfNeeded(DataModel preProcessListDataModel) {
+        if (apiMode) {
+            return;
+        }
         if (preProcessListDataModel != null) {
             preProcessDomainEntityListDataModel = preProcessListDataModel;
 
