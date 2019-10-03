@@ -27,45 +27,6 @@ See LICENSE file.
     <ui:define name="additionPanelGridContent">
         <p:panelGrid columns="2" styleClass="#{panelGridStyle}">
 
-            <ui:remove>
-                <p:outputLabel for="endpoint1#{viewName}"
-                               value="Endpoint1" 
-                               styleClass="entityDataEmphasizedLabel"/>
-
-                <p:inplace id="endpoint1#{viewName}" 
-                           widgetVar="endpoint1#{viewName}Widget"
-                           editor="#{isEntityWriteable}"                
-                           toggleable="false"
-                           styleClass="entityDataEmphasizedText">
-                    <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
-                    <f:facet name="output">
-                        <p:outputPanel styleClass="inlineFlexOutputPanel">
-                            <p:commandLink id="endpoint1EditShowButton"
-                                           styleClass="fa-link-icon fa-icon fa fa-pencil"
-                                           onclick="PF('endpoint1#{viewName}Widget').show();"
-                                           rendered="#{isEntityWriteable}">
-                                <p:tooltip for="endpoint1EditShowButton"
-                                           value="Edit First Endpoint" />
-                            </p:commandLink>
-                            <h:outputText value="#{itemObject.getEndpoint1String()}" 
-                                          title="Endpoint1" 
-                                          styleClass="entityDataEmphasizedText" />
-                        </p:outputPanel>
-                    </f:facet>
-                    <f:facet name="input">
-                        <p:scrollPanel style="width:100%;height:200px">
-                            <ui:decorate template="../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
-                                <ui:param name="viewId" value="endpoint1Tree" />
-                                <ui:param name="hideOptionalColumns" value="#{false}" /> 
-                                <ui:param name="valueModel" value="#{cableWizard.machineDesignTreeEndpoint1}" />
-                                <ui:param name="selectionModel" value="#{cableWizard.selectionEndpoint1}" />
-                                <ui:param name="rendered" value="#{true}" />
-                            </ui:decorate>
-                        </p:scrollPanel>
-                    </f:facet>
-                </p:inplace>
-            </ui:remove>
-
             <p:outputLabel value="Endpoint1" 
                            styleClass="entityDataEmphasizedLabel"/>
             <p:outputPanel styleClass="inlineFlexOutputPanel">
@@ -99,6 +60,7 @@ See LICENSE file.
             </p:outputPanel>
             
             <p:dialog header="Select New Endpoint" 
+                      id="dialogEndpoint"
                       widgetVar="endpointDialog" 
                       modal="true"
                       closable="false">
@@ -108,25 +70,41 @@ See LICENSE file.
                     <ui:param name="valueModel" value="#{entityController.dialogEndpoint.valueModelTree}" />
                     <ui:param name="selectionModel" value="#{entityController.dialogEndpoint.selectionModelEndpoint}" />
                     <ui:param name="rendered" value="#{true}" />
+                    <ui:define name="treeTableEvents">
+                        <p:ajax event="select" 
+                                listener="#{entityController.dialogEndpoint.selectListenerEndpoint}" 
+                                oncomplete="updateButtonsDialogEndpoint();" />
+                        <p:ajax event="unselect" 
+                                listener="#{entityController.dialogEndpoint.selectListenerEndpoint}" 
+                                oncomplete="updateButtonsDialogEndpoint();" />
+                    </ui:define>
                 </ui:decorate>
                 <f:facet name="footer" class="dialog">
-                    <p:commandButton  action="#{entityController.dialogEndpoint.save('saveEndpointSuccess()')}"
-                                      id="endpointDialogSaveButton"
-                                      value="Save" 
-                                      alt="Save" 
-                                      icon="ui-icon-check"/>
+                    <p:outputPanel id="dialogEndpointButtonPanel">
+                        <p:commandButton  action="#{entityController.dialogEndpoint.save('saveEndpointSuccess()')}"
+                                          id="endpointDialogSaveButton"
+                                          value="Save" 
+                                          alt="Save" 
+                                          update="dialogEndpoint"
+                                          disabled="#{entityController.dialogEndpoint.disableButtonSave}"
+                                          icon="ui-icon-check"/>
 
-                    <p:commandButton action="#{entityController.dialogEndpoint.cancel()}" 
-                                     immediate="true" 
-                                     value="Cancel" alt="Cancel" 
-                                     update="@form"
-                                     icon="ui-icon-cancel" />
+                        <p:commandButton action="#{entityController.dialogEndpoint.cancel()}" 
+                                         immediate="true" 
+                                         value="Cancel" alt="Cancel" 
+                                         update="dialogEndpoint"
+                                         icon="ui-icon-cancel" />
 
-                    <p:remoteCommand name="saveEndpointSuccess"                             
-                                     actionListener="#{entityController.dialogEndpoint.actionListenerSaveSuccess}"
-                                     update="@form"
-                                     onstart="PF('endpointDialog').hide()" />
+                        <p:remoteCommand name="saveEndpointSuccess"                             
+                                         actionListener="#{entityController.dialogEndpoint.actionListenerSaveSuccess}"
+                                         update="@form"
+                                         onstart="PF('endpointDialog').hide()" />
+                    </p:outputPanel>
                 </f:facet>
+                
+                <p:remoteCommand name="updateButtonsDialogEndpoint" 
+                                 update="dialogEndpointButtonPanel"/>
+
             </p:dialog>
 
         </p:panelGrid>
