@@ -11,8 +11,9 @@ See LICENSE file.
     <p:menuitem value="Add Cable" icon="ui-icon-machine-design"
                 update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel"
                 disabled="#{disabledEditContextMenuItemForSelection}"
-                immediate="true"                
-                action='#{entityController.prepareAddCableWizard()}'/>
+                immediate="true"
+                action='#{entityController.prepareCableWizard()}'
+                oncomplete="resetCableWizard()"/>
 
 </ui:composition>
 

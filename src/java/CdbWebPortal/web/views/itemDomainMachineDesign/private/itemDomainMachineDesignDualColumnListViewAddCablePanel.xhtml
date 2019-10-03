@@ -10,118 +10,12 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">    
 
+    <p:panel rendered="#{entityController.displayAddCableListConfigurationPanel}">
 
-    <p:wizard flowListener="#{entityController.addCableWizard.onFlowProcess}" 
-              widgetVar="cableWizard"
-              showStepStatus="false" 
-              showNavBar="true">
-        
-        <p:tab id="endpoint">
-            <p:panel header="Select second endpoint for cable"
-                     id="addCableListConfigurationPanel"
-                     rendered="#{entityController.displayAddCableListConfigurationPanel}">
+        <ui:include src="../../itemDomainCableDesign/private/wizard/wizard.xhtml">
+            <ui:param name="selectEndpoint1" value="#{false}" />
+        </ui:include>
 
-                <p:panel>
-
-                    <ui:include src="itemDomainMachineDesignTreeTable.xhtml">
-                        <ui:param name="viewId"
-                                 value="addCablePanel" />
-                        <ui:param name="hideOptionalColumns"
-                                 value="#{false}" /> 
-                        <ui:param name="selectionModel"
-                                  value="#{entityController.addCableWizard.endpoint2}" />
-                    </ui:include>
-
-                </p:panel>
-
-                <p:commandButton value="Cancel"
-                        icon="fa fa-times"
-                        update="@form"
-                        ajax="false"
-                        immediate="true"
-                        action="#{entityController.cancelAddCable()}"/> 
-
-            </p:panel>
-        </p:tab>
-        
-        <p:tab id="cableTypeTab">
-            <p:panel header="Indicate whether cable is placeholder or choose type">
-                <p:outputPanel id="cableTypePanel">
-                    
-                    <p:selectOneRadio id="cableTypeRadio" 
-                                      value="#{entityController.addCableWizard.cableType}" 
-                                      layout="custom">
-                        <f:selectItem itemLabel="Placeholder" itemValue="placeholder" />
-                        <f:selectItem itemLabel="Cable Catalog" itemValue="catalog" />
-                    </p:selectOneRadio>
-                    
-                    <h:panelGrid columns="3">
-                        <p:radioButton id="opt1" for="cableTypeRadio" itemIndex="0" />
-                        <h:outputLabel for="opt1" value="placeholder" />
-                        <h:outputLabel/>
-
-                        <p:radioButton id="opt2" for="cableTypeRadio" itemIndex="1" />
-                        <h:outputLabel for="opt2" value="catalog" />
-                        <p:inputText />
-                    </h:panelGrid>
-                    
-                </p:outputPanel>
-            </p:panel>
-        </p:tab>
-        
-        <p:tab id="cableReviewTab">
-            <p:panel header="Review cable properties before saving">
-                
-            </p:panel>
-        </p:tab>
-    
-    </p:wizard>
-    <ui:remove>
-        <p:outputPanel id="cableWizardButtonPanel">
-        <div style="float: left">
-            <p:commandButton value="Previous Step" 
-                             onclick="PF('cableWizard').back();"
-                             onstart="PF('loadingDialog').show();" 
-                             oncomplete="PF('loadingDialog').hide();"
-                             icon="ui-icon-arrowthick-1-w"/>
-            <ui:remove>
-                onstart="PF('loadingDialog').show();PF('#{entityTypeName}ItemCreateWizardWidget').back();"
-                rendered="#{!entityController.isCreateWizardOnFirstStep()}
-                update="@form"
-            </ui:remove>
-
-            <ui:include src="../../common/private/commonCreateCancelButton.xhtml" />
-        </div>
-        <div style="float: right">
-            <ui:include src="../../common/private/commonCreateSaveButton.xhtml"> 
-                <ui:remove>
-                    <ui:param name="saveButtonRendered" 
-                              value="#{entityController.isCreateWizardOnLastStep()}" />
-                </ui:remove>
-            </ui:include>
-            <p:commandButton value="Next Step"
-                             onclick="PF('cableWizard').next();"
-                             onstart="PF('loadingDialog').show();"
-                             oncomplete="PF('loadingDialog').hide();"
-                             icon="ui-icon-arrowthick-1-e"
-                             iconPos="right"/>
-
-            <ui:remove>
-                 id="#{entityTypeName}createWizardNextStep" 
-                 update="@form"
-                 onstart="PF('loadingDialog').show();PF('#{entityTypeName}ItemCreateWizardWidget').next();"
-                 rendered="#{!entityController.isCreateWizardOnLastStep()}"
-            </ui:remove>
-
-        </div>
-
-        <p:remoteCommand name="updateCableWizardButtons"
-                         update="cableWizardButtonPanel" />
-        </p:outputPanel>
-
-    </ui:remove>
+    </p:panel>
 
 </ui:composition>
-
-
- 
