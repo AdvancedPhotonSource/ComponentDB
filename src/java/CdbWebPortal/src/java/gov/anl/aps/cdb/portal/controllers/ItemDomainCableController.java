@@ -57,8 +57,8 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
     }
 
     @Override
-    protected ItemDomainCable createEntityInstance() {
-        ItemDomainCable item = super.createEntityInstance(); 
+    protected ItemDomainCable createEntityInstance() { 
+       ItemDomainCable item = super.createEntityInstance(); 
         setCurrent(item);
         
         // Create the two connectors

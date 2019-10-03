@@ -8,26 +8,19 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
     
-    <ui:param name="selectionModel" 
-              value="#{selectionModel != null ? selectionModel : entityController.selectedItemInListTreeTable}" />
-
+    <!-- Must provide params "valueModel", "selectionModel", "hideOptionalColumns".-->
+    
     <p:treeTable id='itemMachineDesignListDataTable#{viewId}'
+                 rendered="#{rendered}"
                  styleClass="machineDesignListTreeTable"
-                 value="#{entityController.currentMachineDesignListRootTreeNode}"
+                 value="#{valueModel}"
                  selectionMode="single"
                  selection="#{selectionModel}"
                  var="itemElementTreeListObject">
-
-        <p:ajax event="select"
-                onstart="PF('loadingDialog').show()"
-                oncomplete="PF('loadingDialog').hide();
-                showLastContextMenu()"
-                update="@form:machineDesignDualViewContextMenuPermissions" />
         
-        <!--Saves the collapse status for tree nodes. Seems its a bug in primefaces that this is needed.-->
-        <p:ajax event="collapse" /> 
+        <ui:insert name="treeTableEvents" />
 
-        <ui:include src="itemDomainMachineDesignListObject.xhtml">
+        <ui:include src="../itemDomainMachineDesignListObject.xhtml">
             <ui:param name="hideOptionalColumns"
                       value="#{hideOptionalColumns}" /> 
             <ui:param name="itemElementListObject"
