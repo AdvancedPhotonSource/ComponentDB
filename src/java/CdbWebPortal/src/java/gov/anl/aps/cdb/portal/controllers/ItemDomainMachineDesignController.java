@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -1044,6 +1045,31 @@ public class ItemDomainMachineDesignController
         expandToSelectedTreeNodeAndSelect();
         addCableWizard.unregisterClient(this);
     }
+    
+    
+    public List<ItemConnector> getConnectorsForCurrent() {
+        ItemDomainMachineDesign current = getCurrent();
+        List<ItemConnector> itemConnectorList = current.getItemConnectorList();
+        
+        if (itemConnectorList.size() == 0) {
+            ItemElement ie = current.getCurrentItemElement();
+            Item catalogItem = ie.getCatalogItem(); 
+            if (catalogItem != null) {
+                return catalogItem.getItemConnectorList(); 
+            }
+        }
+        
+        return itemConnectorList;
+    } 
+    
+    @Override
+    public boolean getDisplayItemConnectorList() {
+        if (!super.getDisplayItemConnectorList()) {
+            return getConnectorsForCurrent().size() > 0; 
+        }
+        
+        return true;
+    }
 
     // </editor-fold>    
     public boolean verifyValidTemplateName(String templateName, boolean printMessage) {
@@ -1693,7 +1719,7 @@ public class ItemDomainMachineDesignController
 
     @Override
     public boolean getEntityDisplayItemConnectors() {
-        return false;
+        return true;
     }
 
     @Override
