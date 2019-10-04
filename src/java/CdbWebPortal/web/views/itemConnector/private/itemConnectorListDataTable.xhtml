@@ -7,9 +7,12 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="itemConnectorList" 
+              value="#{itemConnectorList != null ? itemConnectorList : itemObject.itemConnectorList}"/>
 
     <p:dataTable id="#{itemConnectorEntityTypeName}ListDataTable"
-                 value="#{itemObject.itemConnectorList}"
+                 value="#{itemConnectorList}"
                  var="itemConnectorObject">        
 
         <ui:include src="itemConnectorListObject.xhtml" />

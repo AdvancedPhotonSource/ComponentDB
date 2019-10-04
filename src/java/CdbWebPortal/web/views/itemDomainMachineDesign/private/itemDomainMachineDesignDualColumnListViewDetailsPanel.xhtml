@@ -55,7 +55,17 @@ See LICENSE file.
                  collapsed="#{entityController.displayContentsOfCreatedFromTemplateItem}">
             <ui:include src="../../item/private/itemListCreatedFromTemplateDataTable.xhtml" /> 
         </p:panel>
-        
+
+        <p:panel header="Connectors"                 
+                 toggleable="true"
+                 rendered="#{entityController.entityDisplayItemConnectors and resources.EnabledConnectorAndConnectionsFunctionality}"
+                 collapsed="#{!entityController.displayItemConnectorList}">
+            <ui:include src="../../itemConnector/private/itemConnectorList.xhtml">
+                <ui:param name="itemConnectorList" 
+                          value="#{itemDomainMachineDesignController.connectorsForCurrent}" />
+            </ui:include>
+        </p:panel>
+
         <p:panel header="Related MAARC Items"
                  toggleable="true"
                  collapsed="#{entityController.collapsedRelatedMAARCItemsForCurrent}">
