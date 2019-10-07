@@ -6,11 +6,13 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import static gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController.isItemMachineDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -18,6 +20,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -38,7 +41,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         private Item itemEndpoint;
         private TreeNode valueModelTree = null;
         private TreeNode selectionModelEndpoint = null;
-
+        
         public Boolean getDisableButtonSave() {
             return disableButtonSave;
         }
@@ -53,6 +56,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         public void setItemEndpoint(Item itemEndpoint) {
             this.itemEndpoint = itemEndpoint;
+            expandToSpecificMachineDesignItem((ItemDomainMachineDesign) itemEndpoint);
         }
 
         public TreeNode getValueModelTree() {
@@ -76,8 +80,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
 
         /**
-         * Determines whether endpoint changed, and call update if it did to save
-         * the change.
+         * Determines whether endpoint changed, and call update if it did to
+         * save the change.
          */
         public String save(String remoteCommandSuccess) {
 
@@ -95,7 +99,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                         reloadCurrent();
                         return view();
                     }
-                    
+
                     reset();
 
                     SessionUtility.executeRemoteCommand(remoteCommandSuccess);
@@ -119,7 +123,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         public void actionListenerSaveSuccess() {
         }
-        
+
         /**
          * Resets the dialog components when closing.
          */
@@ -148,6 +152,64 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     setDisableButtonSave((Boolean) true);
                 } else {
                     setDisableButtonSave((Boolean) false);
+                }
+            }
+        }
+
+        private void expandToSpecificMachineDesignItem(ItemDomainMachineDesign item) {
+            Stack<ItemDomainMachineDesign> machineDesingItemStack = new Stack<>();
+
+            machineDesingItemStack.push(item);
+
+            List<Item> parentItemList = getParentItemList(item);
+
+            while (parentItemList != null) {
+                ItemDomainMachineDesign parentItem = null;
+                for (Item ittrItem : parentItemList) {
+                    if (ittrItem instanceof ItemDomainMachineDesign) {
+                        // Machine design items should only have one parent
+                        parentItem = (ItemDomainMachineDesign) parentItemList.get(0);
+                        break;
+                    }
+                }
+
+                if (parentItem != null) {
+                    machineDesingItemStack.push(parentItem);
+                    parentItemList = getParentItemList(parentItem);
+                } else {
+                    parentItemList = null;
+                }
+            }
+
+            TreeNode machineDesignTreeRootTreeNode = getValueModelTree();
+
+            if (selectionModelEndpoint != null) {
+                selectionModelEndpoint.setSelected(false);
+                selectionModelEndpoint = null;
+            }
+
+            List<TreeNode> children = machineDesignTreeRootTreeNode.getChildren();
+
+            while (children != null && machineDesingItemStack.size() > 0) {
+                ItemDomainMachineDesign pop = machineDesingItemStack.pop();
+
+                for (TreeNode treeNode : children) {
+                    ItemElement data = (ItemElement) treeNode.getData();
+                    Item containedItem = data.getContainedItem();
+                    if (isItemMachineDesign(containedItem)) {
+                        if (containedItem.equals(pop)) {
+                            if (machineDesingItemStack.size() == 0) {
+                                selectionModelEndpoint = treeNode;
+                                treeNode.setSelected(true);
+                                children = null;
+                                break;
+                            } else {
+                                treeNode.setExpanded(true);
+                                children = treeNode.getChildren();
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }

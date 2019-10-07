@@ -34,7 +34,8 @@ See LICENSE file.
                                styleClass="fa-link-icon fa-icon fa fa-pencil"
                                onclick="PF('endpointDialog').show();"
                                action='#{entityController.prepareDialogEndpoint1()}'
-                               rendered="#{isEntityWriteable}">
+                               rendered="#{isEntityWriteable}"
+                               update="itemMachineDesignListDataTableendpointDialogTree">
                     <p:tooltip for="endpoint1EditShowButton"
                                value="Edit Second Endpoint" />
                 </p:commandLink>
@@ -50,7 +51,8 @@ See LICENSE file.
                                styleClass="fa-link-icon fa-icon fa fa-pencil"
                                onclick="PF('endpointDialog').show();"
                                action='#{entityController.prepareDialogEndpoint2()}'
-                               rendered="#{isEntityWriteable}">
+                               rendered="#{isEntityWriteable}"
+                               update="itemMachineDesignListDataTableendpointDialogTree">
                     <p:tooltip for="endpoint2EditShowButton"
                                value="Edit Second Endpoint" />
                 </p:commandLink>
@@ -105,19 +107,12 @@ See LICENSE file.
                 <p:remoteCommand name="updateButtonsDialogEndpoint" 
                                  update="dialogEndpointButtonPanel"/>
 
+                <p:remoteCommand name="updateTreeDialogEndpoint" 
+                                 update="itemMachineDesignListDataTableendpointDialogTree"/>
+
             </p:dialog>
 
         </p:panelGrid>
     </ui:define>
-
-    <ui:remove>    
-        <h:outputText value="#{itemObject.getEndpoint1String()}"  
-                      title="First Endpoint" 
-                      styleClass="entityDataEmphasizedText" />
-
-        <p:inputText value="#{itemObject.endpoint1String}" 
-                     title="Endpoint1" 
-                     styleClass="entityDataEmphasizedText"/>
-    </ui:remove>
 
 </ui:composition>
