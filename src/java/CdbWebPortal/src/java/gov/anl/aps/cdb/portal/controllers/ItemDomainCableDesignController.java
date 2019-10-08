@@ -31,7 +31,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public class EndpointDialog {
 
         private Boolean disableButtonSave = true;
-        private Item itemEndpoint;
+        private Item itemEndpoint = null;
         private TreeNode valueModelTree = null;
         private TreeNode selectionModelEndpoint = null;
         
@@ -52,11 +52,18 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             expandToSpecificMachineDesignItem((ItemDomainMachineDesign) itemEndpoint);
         }
 
+        public String getItemEndpointString() {
+            if (itemEndpoint == null) {
+                return "";
+            } else {
+                return itemEndpoint.getName();
+            }
+        }
+
         public TreeNode getValueModelTree() {
             if (valueModelTree == null) {
                 ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
                 valueModelTree = controller.loadMachineDesignRootTreeNode(false);
-                System.out.println("initialized machine design tree in endpoint dialog");
             }
             return valueModelTree;
         }

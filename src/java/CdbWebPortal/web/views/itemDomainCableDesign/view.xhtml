@@ -32,10 +32,11 @@ See LICENSE file.
             <p:outputPanel styleClass="inlineFlexOutputPanel">
                 <p:commandLink id="endpoint1EditShowButton"
                                styleClass="fa-link-icon fa-icon fa fa-pencil"
-                               onclick="PF('endpointDialog').show();"
+                               onstart="PF('loadingDialog').show()"
+                               oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
                                action='#{entityController.prepareDialogEndpoint1()}'
                                rendered="#{isEntityWriteable}"
-                               update="itemMachineDesignListDataTableendpointDialogTree">
+                               update="itemMachineDesignListDataTableendpointDialogTree outputTextOriginalEndpoint">
                     <p:tooltip for="endpoint1EditShowButton"
                                value="Edit Second Endpoint" />
                 </p:commandLink>
@@ -43,16 +44,17 @@ See LICENSE file.
                               title="Endpoint1" 
                               styleClass="entityDataEmphasizedText" />
             </p:outputPanel>
-            
+
             <p:outputLabel value="Endpoint2" 
                            styleClass="entityDataEmphasizedLabel"/>
             <p:outputPanel styleClass="inlineFlexOutputPanel">
                 <p:commandLink id="endpoint2EditShowButton"
                                styleClass="fa-link-icon fa-icon fa fa-pencil"
-                               onclick="PF('endpointDialog').show();"
+                               onstart="PF('loadingDialog').show()"
+                               oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
                                action='#{entityController.prepareDialogEndpoint2()}'
                                rendered="#{isEntityWriteable}"
-                               update="itemMachineDesignListDataTableendpointDialogTree">
+                               update="itemMachineDesignListDataTableendpointDialogTree outputTextOriginalEndpoint">
                     <p:tooltip for="endpoint2EditShowButton"
                                value="Edit Second Endpoint" />
                 </p:commandLink>
@@ -60,12 +62,13 @@ See LICENSE file.
                               title="Endpoint2" 
                               styleClass="entityDataEmphasizedText" />
             </p:outputPanel>
-            
+
             <p:dialog header="Select New Endpoint" 
                       id="dialogEndpoint"
                       widgetVar="endpointDialog" 
                       modal="true"
                       closable="false">
+                
                 <ui:decorate template="../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
                     <ui:param name="viewId" value="endpointDialogTree" />
                     <ui:param name="hideOptionalColumns" value="#{false}" /> 
@@ -81,7 +84,16 @@ See LICENSE file.
                                 oncomplete="updateButtonsDialogEndpoint();" />
                     </ui:define>
                 </ui:decorate>
+                
                 <f:facet name="footer" class="dialog">
+                    
+                    <p:outputPanel>
+                        <h:outputText id="outputTextOriginalEndpoint"
+                                      value="Original Endpoint: #{entityController.dialogEndpoint.itemEndpointString}"
+                                      title="Original Endpoint"
+                                      styleClass="centeredContent" />
+                    </p:outputPanel>
+
                     <p:outputPanel id="dialogEndpointButtonPanel">
                         <p:commandButton  action="#{entityController.dialogEndpoint.save('saveEndpointSuccess()')}"
                                           id="endpointDialogSaveButton"
@@ -103,7 +115,7 @@ See LICENSE file.
                                          onstart="PF('endpointDialog').hide()" />
                     </p:outputPanel>
                 </f:facet>
-                
+
                 <p:remoteCommand name="updateButtonsDialogEndpoint" 
                                  update="dialogEndpointButtonPanel"/>
 
