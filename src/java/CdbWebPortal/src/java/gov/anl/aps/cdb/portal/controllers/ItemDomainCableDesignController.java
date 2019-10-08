@@ -5,22 +5,15 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
-import static gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController.isItemMachineDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -63,6 +56,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             if (valueModelTree == null) {
                 ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
                 valueModelTree = controller.loadMachineDesignRootTreeNode(false);
+                System.out.println("initialized machine design tree in endpoint dialog");
             }
             return valueModelTree;
         }
@@ -100,8 +94,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                         return view();
                     }
 
-                    reset();
-
                     SessionUtility.executeRemoteCommand(remoteCommandSuccess);
                 }
             }
@@ -109,7 +101,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
 
         public void cancel() {
-            reset();
         }
 
         /**
@@ -127,9 +118,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         /**
          * Resets the dialog components when closing.
          */
-        private void reset() {
-            getSelectionModelEndpoint().setSelected(false);
+        public void reset() {
             setSelectionModelEndpoint(null);
+            valueModelTree = null;
             setEnablement();
         }
 
@@ -157,29 +148,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
 
         private void expandToSpecificMachineDesignItem(ItemDomainMachineDesign item) {
-            Stack<ItemDomainMachineDesign> machineDesingItemStack = new Stack<>();
-
-            machineDesingItemStack.push(item);
-
-            List<Item> parentItemList = getParentItemList(item);
-
-            while (parentItemList != null) {
-                ItemDomainMachineDesign parentItem = null;
-                for (Item ittrItem : parentItemList) {
-                    if (ittrItem instanceof ItemDomainMachineDesign) {
-                        // Machine design items should only have one parent
-                        parentItem = (ItemDomainMachineDesign) parentItemList.get(0);
-                        break;
-                    }
-                }
-
-                if (parentItem != null) {
-                    machineDesingItemStack.push(parentItem);
-                    parentItemList = getParentItemList(parentItem);
-                } else {
-                    parentItemList = null;
-                }
-            }
 
             TreeNode machineDesignTreeRootTreeNode = getValueModelTree();
 
@@ -188,30 +156,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                 selectionModelEndpoint = null;
             }
 
-            List<TreeNode> children = machineDesignTreeRootTreeNode.getChildren();
-
-            while (children != null && machineDesingItemStack.size() > 0) {
-                ItemDomainMachineDesign pop = machineDesingItemStack.pop();
-
-                for (TreeNode treeNode : children) {
-                    ItemElement data = (ItemElement) treeNode.getData();
-                    Item containedItem = data.getContainedItem();
-                    if (isItemMachineDesign(containedItem)) {
-                        if (containedItem.equals(pop)) {
-                            if (machineDesingItemStack.size() == 0) {
-                                selectionModelEndpoint = treeNode;
-                                treeNode.setSelected(true);
-                                children = null;
-                                break;
-                            } else {
-                                treeNode.setExpanded(true);
-                                children = treeNode.getChildren();
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            TreeNode selectedNode = ItemDomainMachineDesignController.
+                    expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, item);
+            selectionModelEndpoint = selectedNode;
         }
 
     }
@@ -320,6 +267,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * Prepares endpoint dialog for editing endpoint1.
      */
     public void prepareDialogEndpoint1() {
+        dialogEndpoint.reset();
         dialogEndpoint.setItemEndpoint(getCurrent().getEndpoint1());
     }
 
@@ -327,6 +275,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * Prepares endpoint dialog for editing endpoint2.
      */
     public void prepareDialogEndpoint2() {
+        dialogEndpoint.reset();
         dialogEndpoint.setItemEndpoint(getCurrent().getEndpoint2());
     }
 

@@ -1916,7 +1916,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return parentItemList;
     }
 
-    public List<Item> getParentItemList(Item itemEntity) {
+    public static List<Item> getParentItemList(Item itemEntity) {
 
         List<Item> itemList = new ArrayList<>();
 
