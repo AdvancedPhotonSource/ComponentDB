@@ -36,7 +36,7 @@ See LICENSE file.
                                oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
                                action='#{entityController.prepareDialogEndpoint1()}'
                                rendered="#{isEntityWriteable}"
-                               update="itemMachineDesignListDataTableendpointDialogTree outputTextOriginalEndpoint">
+                               update="dialogEndpoint">
                     <p:tooltip for="endpoint1EditShowButton"
                                value="Edit Second Endpoint" />
                 </p:commandLink>
@@ -54,7 +54,7 @@ See LICENSE file.
                                oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
                                action='#{entityController.prepareDialogEndpoint2()}'
                                rendered="#{isEntityWriteable}"
-                               update="itemMachineDesignListDataTableendpointDialogTree outputTextOriginalEndpoint">
+                               update="dialogEndpoint">
                     <p:tooltip for="endpoint2EditShowButton"
                                value="Edit Second Endpoint" />
                 </p:commandLink>
@@ -63,7 +63,7 @@ See LICENSE file.
                               styleClass="entityDataEmphasizedText" />
             </p:outputPanel>
 
-            <p:dialog header="Select New Endpoint" 
+            <p:dialog header="Select New Endpoint (Current: #{entityController.dialogEndpoint.itemEndpointString})" 
                       id="dialogEndpoint"
                       widgetVar="endpointDialog" 
                       modal="true"
@@ -87,13 +87,6 @@ See LICENSE file.
                 
                 <f:facet name="footer" class="dialog">
                     
-                    <p:outputPanel>
-                        <h:outputText id="outputTextOriginalEndpoint"
-                                      value="Original Endpoint: #{entityController.dialogEndpoint.itemEndpointString}"
-                                      title="Original Endpoint"
-                                      styleClass="centeredContent" />
-                    </p:outputPanel>
-
                     <p:outputPanel id="dialogEndpointButtonPanel">
                         <p:commandButton  action="#{entityController.dialogEndpoint.save('saveEndpointSuccess()')}"
                                           id="endpointDialogSaveButton"
