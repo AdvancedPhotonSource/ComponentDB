@@ -11,7 +11,7 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">    
 
     <p:panel>
-        
+
         <ui:param name="addCableWizard"
                   value="#{cableWizard}" />
 
@@ -22,9 +22,9 @@ See LICENSE file.
                   showNavBar="false">
 
             <p:tab id="endpointTab">
-                <p:panel header="Select second endpoint for cable"
+                <p:panel header="#{selectEndpoint1 ? 'Select cable endpoints' : 'Select second endpoint for cable'}"
                          id="cableEndpointPanel">
-                    
+
                     <p:panelGrid>
                         <p:column>
 
@@ -47,7 +47,7 @@ See LICENSE file.
 
                             </ui:decorate>
                         </p:column>
-                        
+
                         <p:column>
 
                             <ui:decorate template="../../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
@@ -79,7 +79,7 @@ See LICENSE file.
                 <p:panel header="Enter cable name and select project(s)">
                     <p:outputPanel id="cableBasicsPanel">
                         <p:panelGrid columns="2">
-                            
+
                             <p:outputLabel for="cableBasicsInputCableName" value="Cable Name" />
                             <p:inputText id="cableBasicsInputCableName"
                                          value="#{cableWizard.inputValueName}">
@@ -93,6 +93,7 @@ See LICENSE file.
                                            styleClass="entityDataLabel"/>
                             <p:selectCheckboxMenu id="selectCheckboxProject"
                                                   label="Select Project"
+                                                  multiple="true"
                                                   value="#{cableWizard.selectionProjectList}"
                                                   converter="itemProjectConverter"
                                                   filter="true" 
@@ -100,6 +101,7 @@ See LICENSE file.
                                 <f:selectItems value="#{itemProjectController.availableItems}" /> 
                                 <p:ajax listener="#{cableWizard.selectListenerProjectList}" 
                                         oncomplete="updateWizardButtons();" />
+
                             </p:selectCheckboxMenu>                                   
                         </p:panelGrid>
                     </p:outputPanel>
@@ -123,11 +125,11 @@ See LICENSE file.
                             <f:selectItem itemLabel="Virtual" 
                                           itemValue="virtual"
                                           itemDisabled="true" />
-                            
+
                             <p:ajax event="click"
                                     listener="#{cableWizard.clickListenerCableType}"
                                     oncomplete="updateWizardButtons();"/>
-                            
+
                         </p:selectOneRadio>
 
                         <p:panelGrid columns="2">
@@ -177,9 +179,6 @@ See LICENSE file.
                                  rows="#{resources.SelectDataTableNumberOfRows}"
                                  paginator="true">         
 
-                        <f:facet name="header">
-                            RadioButton
-                        </f:facet>
                         <p:column selectionMode="single" style="width:16px;text-align:center"/>
 
                         <ui:include src="../../../item/private/itemListObject.xhtml" >
@@ -190,7 +189,7 @@ See LICENSE file.
                             <ui:param name="sortable"
                                       value="#{false}"/>
                         </ui:include>
-                        
+
                         <p:ajax event="rowSelectRadio"
                                 listener="#{cableWizard.selectListenerCableCatalogItem}"
                                 oncomplete="updateWizardButtons();"/>
@@ -302,5 +301,5 @@ See LICENSE file.
                          update="cableWizardButtonPanel"/>
 
     </p:panel>
-    
+
 </ui:composition>
