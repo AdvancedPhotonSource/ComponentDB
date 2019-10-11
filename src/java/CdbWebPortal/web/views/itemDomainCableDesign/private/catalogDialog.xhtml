@@ -16,36 +16,25 @@ See LICENSE file.
               modal="true"
               closable="false">
 
-        <p:dataTable id="catalogDialogCatalogDataTable"
-                     value="#{itemDomainCableCatalogController.selectDataModel}"
-                     var="itemListObject"
-                     rowKey="#{itemListObject.id}"
-                     selection="#{entityController.dialogCatalog.selectionModelCatalog}"
-                     rows="#{resources.SelectDataTableNumberOfRows}"
-                     paginator="true">         
+        <ui:decorate template="../../itemDomainCableCatalog/private/templates/itemDomainCableCatalogDataTableTemplate.xhtml">
 
-            <p:column selectionMode="single" style="width:16px;text-align:center"/>
+            <ui:param name="cableCatalogDataTableSelectionModel" 
+                      value="#{entityController.dialogCatalog.selectionModelCatalog}" /> 
+            <ui:param name="viewId" 
+                      value="cableDesignCatalogDialog" />
 
-            <ui:include src="../../item/private/itemListObject.xhtml" >
-                <ui:param name="entityController"
-                          value="#{itemDomainCableCatalogController}" /> 
-                <ui:param name="filterable"
-                          value="#{true}"/>
-                <ui:param name="sortable"
-                          value="#{false}"/>
-            </ui:include>
+            <ui:define name="cableCatalogDataTableEvents">
+                <p:ajax event="rowSelectRadio"
+                        listener="#{entityController.dialogCatalog.selectListenerCatalog}"
+                        oncomplete="updateButtonsDialogCatalog();"/>
+            </ui:define>
 
-            <p:ajax event="rowSelectRadio"
-                    listener="#{entityController.dialogCatalog.selectListenerCatalog}"
-                    oncomplete="updateButtonsDialogCatalog();"/>
-
-        </p:dataTable>
-
+        </ui:decorate>
 
         <f:facet name="footer" class="dialog">
 
             <p:outputPanel id="dialogCatalogButtonPanel">
-                
+
                 <p:commandButton  action="#{entityController.dialogCatalog.save('saveCatalogSuccess()')}"
                                   id="catalogDialogSaveButton"
                                   value="Save" 
@@ -64,7 +53,7 @@ See LICENSE file.
                                  actionListener="#{entityController.dialogCatalog.actionListenerSaveSuccess}"
                                  update="@form"
                                  onstart="PF('catalogDialog').hide()" />
-                
+
             </p:outputPanel>
         </f:facet>
 
@@ -72,7 +61,7 @@ See LICENSE file.
                          update="dialogCatalogButtonPanel"/>
 
         <p:remoteCommand name="updateDataTableCatalog" 
-                         update="catalogDialogCatalogDataTable"/>
+                         update="cableCatalogDataTable-cableDesignCatalogDialog"/>
 
     </p:dialog>
 
