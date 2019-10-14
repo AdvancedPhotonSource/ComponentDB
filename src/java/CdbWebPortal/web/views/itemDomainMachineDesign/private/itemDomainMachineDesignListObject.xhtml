@@ -75,17 +75,19 @@ See LICENSE file.
 
     <p:column headerText="Assigned Catalog &#38; Inventory Item" >
         <ui:fragment rendered="#{!topLevelItem}">
-            <p:commandLink id="#{entityTypeName}AssignedItemHistory" 
-                           onstart="PF('loadingDialog').show();"
-                           oncomplete="PF('loadingDialog').hide();
-                                        PF('itemDomainMachineDesignAssignedItemHistoryDialogWidget').show()"
-                           styleClass="fa fa-link-icon fa-history" 
-                           title="View assigned item history"
-                           update="@form:itemDomainMachineDesignAssignedItemHistoryDialog">
-                <f:setPropertyActionListener target="#{itemElementController.current}" 
-                                             value="#{itemElementListObject}"/>
-                <p:tooltip for="#{entityTypeName}AssignedItemHistory" value="View assigned item history."/>
-            </p:commandLink>
+            <ui:remove>
+                <p:commandLink id="#{entityTypeName}AssignedItemHistory" 
+                               onstart="PF('loadingDialog').show();"
+                               oncomplete="PF('loadingDialog').hide();
+                               PF('itemDomainMachineDesignAssignedItemHistoryDialogWidget').show()"
+                               styleClass="fa fa-link-icon fa-history" 
+                               title="View assigned item history"
+                               update="@form:itemDomainMachineDesignAssignedItemHistoryDialog">
+                    <f:setPropertyActionListener target="#{itemElementController.current}" 
+                                                 value="#{itemElementListObject}"/>
+                    <p:tooltip for="#{entityTypeName}AssignedItemHistory" value="View assigned item history."/>
+                </p:commandLink>
+            </ui:remove>
         </ui:fragment>
         <ui:fragment rendered="#{isAssignedItemInventory}">
             <div class="actionLink">

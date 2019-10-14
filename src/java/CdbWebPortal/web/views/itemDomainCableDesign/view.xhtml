@@ -27,53 +27,16 @@ See LICENSE file.
     <ui:define name="additionPanelGridContent">
         <p:panelGrid columns="2" styleClass="#{panelGridStyle}">
 
-            <ui:remove>
-                <p:outputLabel for="endpoint1#{viewName}"
-                               value="Endpoint1" 
-                               styleClass="entityDataEmphasizedLabel"/>
-
-                <p:inplace id="endpoint1#{viewName}" 
-                           widgetVar="endpoint1#{viewName}Widget"
-                           editor="#{isEntityWriteable}"                
-                           toggleable="false"
-                           styleClass="entityDataEmphasizedText">
-                    <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
-                    <f:facet name="output">
-                        <p:outputPanel styleClass="inlineFlexOutputPanel">
-                            <p:commandLink id="endpoint1EditShowButton"
-                                           styleClass="fa-link-icon fa-icon fa fa-pencil"
-                                           onclick="PF('endpoint1#{viewName}Widget').show();"
-                                           rendered="#{isEntityWriteable}">
-                                <p:tooltip for="endpoint1EditShowButton"
-                                           value="Edit First Endpoint" />
-                            </p:commandLink>
-                            <h:outputText value="#{itemObject.getEndpoint1String()}" 
-                                          title="Endpoint1" 
-                                          styleClass="entityDataEmphasizedText" />
-                        </p:outputPanel>
-                    </f:facet>
-                    <f:facet name="input">
-                        <p:scrollPanel style="width:100%;height:200px">
-                            <ui:decorate template="../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
-                                <ui:param name="viewId" value="endpoint1Tree" />
-                                <ui:param name="hideOptionalColumns" value="#{false}" /> 
-                                <ui:param name="valueModel" value="#{cableWizard.machineDesignTreeEndpoint1}" />
-                                <ui:param name="selectionModel" value="#{cableWizard.selectionEndpoint1}" />
-                                <ui:param name="rendered" value="#{true}" />
-                            </ui:decorate>
-                        </p:scrollPanel>
-                    </f:facet>
-                </p:inplace>
-            </ui:remove>
-
             <p:outputLabel value="Endpoint1" 
                            styleClass="entityDataEmphasizedLabel"/>
             <p:outputPanel styleClass="inlineFlexOutputPanel">
                 <p:commandLink id="endpoint1EditShowButton"
                                styleClass="fa-link-icon fa-icon fa fa-pencil"
-                               onclick="PF('endpointDialog').show();"
+                               onstart="PF('loadingDialog').show()"
+                               oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
                                action='#{entityController.prepareDialogEndpoint1()}'
-                               rendered="#{isEntityWriteable}">
+                               rendered="#{isEntityWriteable}"
+                               update="dialogEndpoint">
                     <p:tooltip for="endpoint1EditShowButton"
                                value="Edit Second Endpoint" />
                 </p:commandLink>
@@ -81,15 +44,17 @@ See LICENSE file.
                               title="Endpoint1" 
                               styleClass="entityDataEmphasizedText" />
             </p:outputPanel>
-            
+
             <p:outputLabel value="Endpoint2" 
                            styleClass="entityDataEmphasizedLabel"/>
             <p:outputPanel styleClass="inlineFlexOutputPanel">
                 <p:commandLink id="endpoint2EditShowButton"
                                styleClass="fa-link-icon fa-icon fa fa-pencil"
-                               onclick="PF('endpointDialog').show();"
+                               onstart="PF('loadingDialog').show()"
+                               oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
                                action='#{entityController.prepareDialogEndpoint2()}'
-                               rendered="#{isEntityWriteable}">
+                               rendered="#{isEntityWriteable}"
+                               update="dialogEndpoint">
                     <p:tooltip for="endpoint2EditShowButton"
                                value="Edit Second Endpoint" />
                 </p:commandLink>
@@ -97,49 +62,39 @@ See LICENSE file.
                               title="Endpoint2" 
                               styleClass="entityDataEmphasizedText" />
             </p:outputPanel>
-            
-            <p:dialog header="Select New Endpoint" 
-                      widgetVar="endpointDialog" 
-                      modal="true"
-                      closable="false">
-                <ui:decorate template="../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
-                    <ui:param name="viewId" value="endpointDialogTree" />
-                    <ui:param name="hideOptionalColumns" value="#{false}" /> 
-                    <ui:param name="valueModel" value="#{entityController.dialogEndpoint.valueModelTree}" />
-                    <ui:param name="selectionModel" value="#{entityController.dialogEndpoint.selectionModelEndpoint}" />
-                    <ui:param name="rendered" value="#{true}" />
-                </ui:decorate>
-                <f:facet name="footer" class="dialog">
-                    <p:commandButton  action="#{entityController.dialogEndpoint.save('saveEndpointSuccess()')}"
-                                      id="endpointDialogSaveButton"
-                                      value="Save" 
-                                      alt="Save" 
-                                      icon="ui-icon-check"/>
 
-                    <p:commandButton action="#{entityController.dialogEndpoint.cancel()}" 
-                                     immediate="true" 
-                                     value="Cancel" alt="Cancel" 
-                                     update="@form"
-                                     icon="ui-icon-cancel" />
+            <p:outputLabel value="Assigned Catalog Item" 
+                           styleClass="entityDataEmphasizedLabel"/>
+            <p:outputPanel styleClass="inlineFlexOutputPanel">
+                <p:commandLink id="catalogEditShowButton"
+                               styleClass="fa-link-icon fa-icon fa fa-pencil"
+                               onstart="PF('loadingDialog').show()"
+                               oncomplete="PF('loadingDialog').hide();PF('catalogDialog').show();"
+                               action='#{entityController.prepareDialogCatalog()}'
+                               rendered="#{isEntityWriteable}"
+                               update="dialogCatalog">
+                    <p:tooltip for="catalogEditShowButton"
+                               value="Edit Assigned Catalog Item" />
+                </p:commandLink>
+                <h:outputText value="#{itemObject.getCatalogItemString()}" 
+                              title="Assigned Catalog Item" 
+                              styleClass="entityDataEmphasizedText" />
+            </p:outputPanel>
 
-                    <p:remoteCommand name="saveEndpointSuccess"                             
-                                     actionListener="#{entityController.dialogEndpoint.actionListenerSaveSuccess}"
-                                     update="@form"
-                                     onstart="PF('endpointDialog').hide()" />
-                </f:facet>
-            </p:dialog>
+
+            <ui:include src="private/endpointDialog.xhtml" >
+            </ui:include>
+
+            <ui:include src="private/catalogDialog.xhtml" >
+            </ui:include>
 
         </p:panelGrid>
+        
+        <p:remoteCommand name="inlineSaveEntity"
+                         action="#{entityController.inlineUpdate()}"                         
+                         onstart="PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide()"/>
+
     </ui:define>
-
-    <ui:remove>    
-        <h:outputText value="#{itemObject.getEndpoint1String()}"  
-                      title="First Endpoint" 
-                      styleClass="entityDataEmphasizedText" />
-
-        <p:inputText value="#{itemObject.endpoint1String}" 
-                     title="Endpoint1" 
-                     styleClass="entityDataEmphasizedText"/>
-    </ui:remove>
 
 </ui:composition>
