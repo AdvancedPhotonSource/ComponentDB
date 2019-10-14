@@ -8,11 +8,13 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
     
-    <!-- Must provide params "valueModel", "selectionModel", "hideOptionalColumns".-->
+    <!-- Must provide params "viewId", "valueModel", "selectionModel", "hideOptionalColumns".-->
     
     <p:treeTable id='itemMachineDesignListDataTable#{viewId}'
                  rendered="#{rendered}"
                  styleClass="machineDesignListTreeTable"
+                 scrollable="true"
+                 scrollHeight="65vh"
                  value="#{valueModel}"
                  selectionMode="single"
                  selection="#{selectionModel}"
@@ -31,6 +33,3 @@ See LICENSE file.
 
 
 </ui:composition>
-
-
- 

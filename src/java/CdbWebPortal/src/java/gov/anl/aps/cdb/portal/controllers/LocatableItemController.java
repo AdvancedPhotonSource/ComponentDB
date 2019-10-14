@@ -639,7 +639,7 @@ public class LocatableItemController implements Serializable {
 
         if (newItemWithNewLocation || locationDifferentOnCurrentItem) {            
             // Verify that the location can be changed. 
-            if (locationEditable(existingItem) == false) {
+            if ((existingItem != null) && (locationEditable(existingItem)) == false) {
                 Item location = existingItem.getActiveLocation();
                 throw new InvalidRequest("Error updating location. The item is currently part of a " + location.getDomain().getName() + " item.");
             }

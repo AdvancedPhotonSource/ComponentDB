@@ -130,19 +130,20 @@ public class ItemDomainCableDesign extends Item {
         ItemElement selfElement = this.getSelfElement();
         List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
         
-        // find cable relationship for old endpoint
         if (ierList != null) {
 
             RelationshipType cableIerType
                     = RelationshipTypeFacade.getInstance().findByName(
                             ItemElementRelationshipTypeNames.itemCableConnection.getValue());
 
+            // find cable relationship for old endpoint
             ItemElementRelationship cableRelationship = ierList.stream()
                     .filter(ier -> (ier.getRelationshipType().getName().equals(cableIerType.getName()))
                     && (ier.getFirstItemElement().equals(oldEndpoint.getSelfElement())))
                     .findAny()
                     .orElse(null);
             
+            // update cable relationship to new endpoint
             if (cableRelationship != null) {
                 cableRelationship.setFirstItemElement(newEndpoint.getSelfElement());
                 // null out connector too, for when we add support for port-level connections

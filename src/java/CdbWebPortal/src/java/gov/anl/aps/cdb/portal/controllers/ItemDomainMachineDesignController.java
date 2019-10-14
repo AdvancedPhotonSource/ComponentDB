@@ -705,6 +705,30 @@ public class ItemDomainMachineDesignController
     }
 
     private void expandToSpecificMachineDesignItem(ItemDomainMachineDesign item) {
+        
+        TreeNode machineDesignTreeRootTreeNode = getCurrentMachineDesignListRootTreeNode();
+
+        if (selectedItemInListTreeTable != null) {
+            selectedItemInListTreeTable.setSelected(false);
+            selectedItemInListTreeTable = null;
+        }
+        
+        TreeNode selectedNode = expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, item);        
+        selectedItemInListTreeTable = selectedNode;
+    }
+
+    /**
+     * Expands the parent nodes in the supplied tree above the specified
+     * machine design item.  Returns the TreeNode for the specified item, so that
+     * the caller can call select to highlight it if appropriate.
+     * @param machineDesignTreeRootTreeNode Root node of machine design hierarchy.
+     * @param item Child node to expand the nodes above.
+     * @return 
+     */
+    public static TreeNode expandToSpecificMachineDesignItem(
+            TreeNode machineDesignTreeRootTreeNode, 
+            ItemDomainMachineDesign item) {
+        
         Stack<ItemDomainMachineDesign> machineDesingItemStack = new Stack<>();
 
         machineDesingItemStack.push(item);
@@ -729,14 +753,9 @@ public class ItemDomainMachineDesignController
             }
         }
 
-        TreeNode machineDesignTreeRootTreeNode = getCurrentMachineDesignListRootTreeNode();
-
-        if (selectedItemInListTreeTable != null) {
-            selectedItemInListTreeTable.setSelected(false);
-            selectedItemInListTreeTable = null;
-        }
-
         List<TreeNode> children = machineDesignTreeRootTreeNode.getChildren();
+        
+        TreeNode result = null;
 
         while (children != null && machineDesingItemStack.size() > 0) {
             ItemDomainMachineDesign pop = machineDesingItemStack.pop();
@@ -746,8 +765,8 @@ public class ItemDomainMachineDesignController
                 Item containedItem = data.getContainedItem();
                 if (isItemMachineDesign(containedItem)) {
                     if (containedItem.equals(pop)) {
-                        if (machineDesingItemStack.size() == 0) {
-                            selectedItemInListTreeTable = treeNode;
+                        if (machineDesingItemStack.isEmpty()) {
+                            result = treeNode;
                             treeNode.setSelected(true);
                             children = null;
                             break;
@@ -760,7 +779,7 @@ public class ItemDomainMachineDesignController
                 }
             }
         }
-
+        return result;
     }
 
     private void expandToSelectedTreeNodeAndSelectChildItemElement(ItemElement element) {
