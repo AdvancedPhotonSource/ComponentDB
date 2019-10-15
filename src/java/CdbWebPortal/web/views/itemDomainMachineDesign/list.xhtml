@@ -10,7 +10,8 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
 
-    <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />        
+    <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+    <ui:param name="renderedShowElementHistory" value="#{true}" />
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
@@ -37,7 +38,7 @@ See LICENSE file.
     <ui:define name="additionalListSupport" >
         <ui:insert name="additionalSupport" />
         <ui:include src="private/itemDomainMachineDesignReorderOverlayPanel.xhtml" />
-        <ui:include src="private/itemDomainMachineDesignAssignedItemHistoryDialog.xhtml" />
+        <ui:include src="private/itemDomainMachineDesignAssignedItemHistoryDialog.xhtml" />        
     </ui:define>
 
 
