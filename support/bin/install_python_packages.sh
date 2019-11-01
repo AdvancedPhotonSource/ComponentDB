@@ -10,9 +10,9 @@ binDir=$topDir/bin
 
 $binDir/build_python.sh || exit 1
 $binDir/install_setuptools.sh || exit 1
-$binDir/install_sphinx.sh || exit 1
 $binDir/install_python_ldap.sh || exit 1
 $binDir/install_pip.sh || exit 1
+$binDir/install_sphinx.sh || exit 1
 $binDir/install_twine.sh || exit 1
 $binDir/build_cherrypy.sh || exit 1
 $binDir/install_routes.sh || exit 1

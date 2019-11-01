@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -40,7 +41,9 @@ import org.primefaces.model.TreeNode;
  */
 @Named(ItemDomainMachineDesignController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignController extends ItemController<ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings> {
+public class ItemDomainMachineDesignController 
+        extends ItemController<ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings> 
+        implements ItemDomainCableDesignWizardClient {
 
     private static final Logger LOGGER = Logger.getLogger(ItemDomainMachineDesignController.class.getName());
 
@@ -69,7 +72,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     // <editor-fold defaultstate="collapsed" desc="Dual list view configuration variables ">
     private TreeNode selectedItemInListTreeTable = null;
     private TreeNode lastExpandedNode = null;
-
+    
     private TreeNode currentMachineDesignListRootTreeNode = null;
     private TreeNode machineDesignTreeRootTreeNode = null;
     private TreeNode machineDesignTemplateRootTreeNode = null;
@@ -86,6 +89,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
     private boolean displayCreateMachineDesignForTemplateElementPlaceholder = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
+    private boolean displayAddCableListConfigurationPanel = true;
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
     private TreeNode newCatalogItemsInMachineDesignModel = null;
@@ -97,8 +101,8 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     @EJB
     RelationshipTypeFacade relationshipTypeFacade;
 
-    public ItemDomainMachineDesign getInstance() {
-        return (ItemDomainMachineDesign) SessionUtility.findBean(controllerNamed);
+    public static ItemDomainMachineDesignController getInstance() {
+        return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
     }
 
     public boolean getCurrentHasInventoryItem() {
@@ -232,7 +236,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         return machineDesignTemplateRootTreeNode;
     }
 
-    private TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate) {
+    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate) {
         TreeNode rootTreeNode = new DefaultTreeNode();
         List<ItemDomainMachineDesign> itemsWithoutParents
                 = getItemsWithoutParents();
@@ -357,6 +361,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
         displayAssignInventoryItemListConfigurationPanel = false;
         displayCreateMachineDesignForTemplateElementPlaceholder = false;
         displayMachineDesignReorderOverlayPanel = false;
+        displayAddCableListConfigurationPanel = false;
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
@@ -471,6 +476,10 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     public boolean isDisplayMachineDesignReorderOverlayPanel() {
         return displayMachineDesignReorderOverlayPanel;
+    }
+
+    public boolean isDisplayAddCableListConfigurationPanel() {
+        return displayAddCableListConfigurationPanel;
     }
 
     private void updateCurrentUsingSelectedItemInTreeTable() {
@@ -696,6 +705,30 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
     }
 
     private void expandToSpecificMachineDesignItem(ItemDomainMachineDesign item) {
+        
+        TreeNode machineDesignTreeRootTreeNode = getCurrentMachineDesignListRootTreeNode();
+
+        if (selectedItemInListTreeTable != null) {
+            selectedItemInListTreeTable.setSelected(false);
+            selectedItemInListTreeTable = null;
+        }
+        
+        TreeNode selectedNode = expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, item);        
+        selectedItemInListTreeTable = selectedNode;
+    }
+
+    /**
+     * Expands the parent nodes in the supplied tree above the specified
+     * machine design item.  Returns the TreeNode for the specified item, so that
+     * the caller can call select to highlight it if appropriate.
+     * @param machineDesignTreeRootTreeNode Root node of machine design hierarchy.
+     * @param item Child node to expand the nodes above.
+     * @return 
+     */
+    public static TreeNode expandToSpecificMachineDesignItem(
+            TreeNode machineDesignTreeRootTreeNode, 
+            ItemDomainMachineDesign item) {
+        
         Stack<ItemDomainMachineDesign> machineDesingItemStack = new Stack<>();
 
         machineDesingItemStack.push(item);
@@ -720,14 +753,9 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
             }
         }
 
-        TreeNode machineDesignTreeRootTreeNode = getCurrentMachineDesignListRootTreeNode();
-
-        if (selectedItemInListTreeTable != null) {
-            selectedItemInListTreeTable.setSelected(false);
-            selectedItemInListTreeTable = null;
-        }
-
         List<TreeNode> children = machineDesignTreeRootTreeNode.getChildren();
+        
+        TreeNode result = null;
 
         while (children != null && machineDesingItemStack.size() > 0) {
             ItemDomainMachineDesign pop = machineDesingItemStack.pop();
@@ -737,8 +765,8 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 Item containedItem = data.getContainedItem();
                 if (isItemMachineDesign(containedItem)) {
                     if (containedItem.equals(pop)) {
-                        if (machineDesingItemStack.size() == 0) {
-                            selectedItemInListTreeTable = treeNode;
+                        if (machineDesingItemStack.isEmpty()) {
+                            result = treeNode;
                             treeNode.setSelected(true);
                             children = null;
                             break;
@@ -751,7 +779,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
                 }
             }
         }
-
+        return result;
     }
 
     private void expandToSelectedTreeNodeAndSelectChildItemElement(ItemElement element) {
@@ -1013,6 +1041,53 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     public TreeNode getNewCatalogItemsInMachineDesignModel() {
         return newCatalogItemsInMachineDesignModel;
+    }
+    
+    public void prepareCableWizard() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
+        
+        // create model for wizard
+        ItemDomainCableDesignWizard addCableWizard = ItemDomainCableDesignWizard.getInstance();
+        addCableWizard.registerClient(this);
+        addCableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
+
+        displayListConfigurationView = true;
+        displayAddCableListConfigurationPanel = true;
+    }
+    
+    public void cleanupCableWizard() {
+        resetListConfigurationVariables();
+        resetListDataModel();
+        ItemDomainCableDesignWizard addCableWizard = ItemDomainCableDesignWizard.getInstance();
+        setSelectedItemInListTreeTable(addCableWizard.getSelectionEndpoint1());
+        expandToSelectedTreeNodeAndSelect();
+        addCableWizard.unregisterClient(this);
+    }
+    
+    
+    public List<ItemConnector> getConnectorsForCurrent() {
+        ItemDomainMachineDesign current = getCurrent();
+        List<ItemConnector> itemConnectorList = current.getItemConnectorList();
+        
+        if (itemConnectorList.size() == 0) {
+            ItemElement ie = current.getCurrentItemElement();
+            Item catalogItem = ie.getCatalogItem(); 
+            if (catalogItem != null) {
+                return catalogItem.getItemConnectorList(); 
+            }
+        }
+        
+        return itemConnectorList;
+    } 
+    
+    @Override
+    public boolean getDisplayItemConnectorList() {
+        if (!super.getDisplayItemConnectorList()) {
+            return getConnectorsForCurrent().size() > 0; 
+        }
+        
+        return true;
     }
 
     // </editor-fold>    
@@ -1663,7 +1738,7 @@ public class ItemDomainMachineDesignController extends ItemController<ItemDomain
 
     @Override
     public boolean getEntityDisplayItemConnectors() {
-        return false;
+        return true;
     }
 
     @Override

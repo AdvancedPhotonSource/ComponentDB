@@ -45,6 +45,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
 import org.primefaces.model.TreeNode;
@@ -215,7 +216,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Basic(optional = false)
     private Integer id;
     @Basic(optional = false)
-    @Size(max = 64)
+    @Size(max = 128)
     private String name;
     @Size(max = 32)
     @Column(name = "item_identifier1")
@@ -224,6 +225,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Column(name = "item_identifier2")
     private String itemIdentifier2;
     @Column(name = "qr_id")
+    @Min(0) 
     private Integer qrId;
     @JoinTable(name = "item_entity_type", joinColumns = {
         @JoinColumn(name = "item_id", referencedColumnName = "id")}, inverseJoinColumns = {
@@ -269,7 +271,11 @@ public class Item extends CdbDomainEntity implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")    
     private List<ItemSource> itemSourceList;    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")    
-    private List<ItemResource> itemResourceList;
+    private List<ItemResource> itemResourceList;    
+    @OneToMany(mappedBy = "containedItem1")        
+    private List<ItemElementHistory> historyMemberList; 
+    @OneToMany(mappedBy = "containedItem2")        
+    private List<ItemElementHistory> historyMemberList2; 
 
     // Item element representing self 
     private transient ItemElement selfItemElement = null;
@@ -472,10 +478,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         return qrIdFilter;
     }
 
+    @Size(max = 256)
     public String getDescription() {
         return getSelfElement().getDescription();
     }
-
+    
     public void setDescription(String description) {
         this.getSelfElement().setDescription(description);
     } 
@@ -571,14 +578,15 @@ public class Item extends CdbDomainEntity implements Serializable {
             entityTypeString = "";
             List<EntityType> entityTypeDisplayList = getEntityTypeDisplayList();
             if (entityTypeDisplayList != null) {
-                for (EntityType entityType : entityTypeDisplayList) {
-                    if (entityTypeString.length() > 0) {
+                for (int i = 0; i < entityTypeDisplayList.size(); i++) {
+                    EntityType entityType = entityTypeDisplayList.get(i); 
+                    boolean lastIdx = i == entityTypeDisplayList.size() -1; 
+                    if (entityTypeString.length() > 0 && lastIdx) {
                         entityTypeString += " ";
                     }
                     entityTypeString += entityType.getName();
                 }
-            }
-            entityTypeString = entityTypeString.replaceAll(" ", " | ");
+            }            
         }
 
         return entityTypeString;
@@ -770,6 +778,16 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setItemElementMemberList2(List<ItemElement> itemElementMemberList2) {
         this.itemElementMemberList2 = itemElementMemberList2;
+    }
+
+    @XmlTransient
+    public List<ItemElementHistory> getHistoryMemberList() {
+        return historyMemberList;
+    }
+
+    @XmlTransient
+    public List<ItemElementHistory> getHistoryMemberList2() {
+        return historyMemberList2;
     }
 
     @XmlTransient
@@ -1039,7 +1057,9 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         searchResult.doesValueContainPattern("created by", getEntityInfo().getCreatedByUser().getUsername(), searchPattern);
         searchResult.doesValueContainPattern("last modified by", getEntityInfo().getLastModifiedByUser().getUsername(), searchPattern);
-        searchResult.doesValueContainPattern("owned by", getEntityInfo().getOwnerUser().getUsername(), searchPattern);
+        if (getEntityInfo().getOwnerUser() != null) {
+            searchResult.doesValueContainPattern("owned by", getEntityInfo().getOwnerUser().getUsername(), searchPattern);
+        }
         searchResult.doesValueContainPattern("description", getDescription(), searchPattern);
         return searchResult;
     }

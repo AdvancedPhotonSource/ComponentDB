@@ -1254,3 +1254,11 @@ h2 {
     overflow: visible; 
 }
 
+.quickLinksDiv > a {
+    display: table; 
+    padding: 4px 10px;
+}
+
+.ui-row-editor {
+    display: inline-block; 
+}

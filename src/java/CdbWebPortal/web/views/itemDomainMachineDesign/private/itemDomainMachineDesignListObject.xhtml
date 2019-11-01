@@ -14,6 +14,10 @@ See LICENSE file.
               value="#{hideOptionalColumns != null 
                        ? hideOptionalColumns 
                        : false}" />
+    
+    <!-- Requires the dialog to be included to function properly. Disabled by default -->
+    <ui:param name="renderedShowElementHistory"
+              value="#{renderedShowElementHistory != null ? renderedShowElementHistory : false}" /> 
 
     <ui:param name="itemTreeListObject"
               value="#{itemElementListObject.containedItem}" />
@@ -43,7 +47,7 @@ See LICENSE file.
         </ui:fragment>
 
     </p:column>
-    
+
     <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemItemIdentifier1.xhtml" /> 
 
     <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemThumbnailColumn.xhtml" >             
@@ -74,6 +78,20 @@ See LICENSE file.
               value="#{itemDomainMachineDesignController.isItemCatalog(assignedItem)}" /> 
 
     <p:column headerText="Assigned Catalog &#38; Inventory Item" >
+        <ui:fragment rendered="#{!topLevelItem}">            
+            <p:commandLink id="#{entityTypeName}AssignedItemHistory" 
+                           onstart="PF('loadingDialog').show();"
+                           oncomplete="PF('loadingDialog').hide();
+                           PF('itemDomainMachineDesignAssignedItemHistoryDialogWidget').show()"
+                           styleClass="fa fa-link-icon fa-history" 
+                           title="View assigned item history"
+                           rendered="#{renderedShowElementHistory}"
+                           update="@form:itemDomainMachineDesignAssignedItemHistoryDialog">
+                <f:setPropertyActionListener target="#{itemElementController.current}" 
+                                             value="#{itemElementListObject}"/>
+                <p:tooltip for="#{entityTypeName}AssignedItemHistory" value="View assigned item history."/>
+            </p:commandLink>            
+        </ui:fragment>
         <ui:fragment rendered="#{isAssignedItemInventory}">
             <div class="actionLink">
                 <p:commandLink id="#{entityTypeName}CatalogLink" 

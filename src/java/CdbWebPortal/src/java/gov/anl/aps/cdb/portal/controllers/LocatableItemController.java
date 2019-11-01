@@ -5,13 +5,17 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
@@ -19,10 +23,13 @@ import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementRelationshipUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
+import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.ItemHierarchyCache;
+import gov.anl.aps.cdb.portal.view.objects.LocationHistoryObject;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -59,32 +66,32 @@ public class LocatableItemController implements Serializable {
 
     @EJB
     RelationshipTypeFacade relationshipTypeFacade;
-    
-    private static LocatableItemController apiInstance; 
+
+    private static LocatableItemController apiInstance;
     protected boolean apiMode = false;
     protected UserInfo apiUser;
-    
+
     public static synchronized LocatableItemController getApiInstance() {
         if (apiInstance == null) {
-            apiInstance = new LocatableItemController();            
-            apiInstance.apiMode = true; 
-            apiInstance.loadEJBResourcesManually(); 
-            
+            apiInstance = new LocatableItemController();
+            apiInstance.apiMode = true;
+            apiInstance.loadEJBResourcesManually();
+
         }
         return apiInstance;
     }
-    
+
     protected void loadEJBResourcesManually() {
-        itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance(); 
+        itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance();
         itemFacade = itemFacade.getInstance();
-        relationshipTypeFacade = RelationshipTypeFacade.getInstance(); 
+        relationshipTypeFacade = RelationshipTypeFacade.getInstance();
     }
 
     public static LocatableItemController getInstance() {
         if (SessionUtility.runningFaces()) {
             return (LocatableItemController) SessionUtility.findBean(controllerNamed);
         } else {
-            return getApiInstance(); 
+            return getApiInstance();
         }
     }
 
@@ -157,20 +164,21 @@ public class LocatableItemController implements Serializable {
      */
     public void loadCachedLocationStringForItem(List<ItemElementRelationship> cache, LocatableItem locatableItem) {
         Integer itemId = locatableItem.getId();
-        
+
         for (int i = 0; i < cache.size(); i++) {
-            ItemElementRelationship ier = cache.get(i);    
-            
+            ItemElementRelationship ier = cache.get(i);
+
             ItemElement firstItemElement = ier.getFirstItemElement();
             Item parentItem = firstItemElement.getParentItem();
             Integer relationshipItemId = parentItem.getId();
-            
+
             if (relationshipItemId.equals(itemId)) {
-                loadItemLocationInfoFromRelationship(ier, locatableItem, false, true);
-                cache.remove(i); 
+                loadItemLocationInfo(ier, locatableItem, false, true);
+                cache.remove(i);
                 return;
             }
         }
+        loadItemLocationInfo(null, locatableItem, false, true);
 
     }
 
@@ -189,38 +197,99 @@ public class LocatableItemController implements Serializable {
 
     public void setItemLocationInfo(LocatableItem locatableItem, boolean loadLocationTreeForItem, boolean loadLocationHierarchyString) {
         if (locatableItem.getOriginalLocationLoaded() == false) {
-            ItemDomainLocation itemLocationItem = locatableItem.getLocation();
+            ItemDomainLocation itemLocationItem = locatableItem.getLocationItem();
 
             if (itemLocationItem == null) {
                 ItemElementRelationship itemElementRelationship;
                 itemElementRelationship = getItemLocationRelationship(locatableItem);
 
-                if (itemElementRelationship != null) {
-                    loadItemLocationInfoFromRelationship(itemElementRelationship, locatableItem, loadLocationTreeForItem, loadLocationHierarchyString);
-                }
+                loadItemLocationInfo(itemElementRelationship, locatableItem, loadLocationTreeForItem, loadLocationHierarchyString);
             }
             locatableItem.setOriginalLocationLoaded(true);
         }
     }
 
-    private void loadItemLocationInfoFromRelationship(
-            ItemElementRelationship locationRelationship, 
-            LocatableItem locatableItem,  
-            boolean loadLocationTreeForItem, 
-            boolean loadLocationHierarchyString) {      
-        
+    private void loadItemLocationInfo(
+            ItemElementRelationship locationRelationship,
+            LocatableItem locatableItem,
+            boolean loadLocationTreeForItem,
+            boolean loadLocationHierarchyString) {
+
+        if (locationRelationship != null) {
+            loadItemLocationInfoFromRelationship(locationRelationship, locatableItem);
+        }
+        loadItemLocationInfoItemMembership(locatableItem);
+
+        if (loadLocationTreeForItem) {
+            updateLocationTreeForItem(locatableItem);
+        }
+        if (loadLocationHierarchyString) {
+            updateLocationStringForItem(locatableItem);
+        }
+    }
+
+    private void loadItemLocationInfoFromRelationship(ItemElementRelationship locationRelationship, LocatableItem locatableItem) {
         ItemElement locationSelfItemElement = locationRelationship.getSecondItemElement();
         if (locationSelfItemElement != null) {
             ItemDomainLocation locationItem = (ItemDomainLocation) locationSelfItemElement.getParentItem();
             locatableItem.setLocation(locationItem);
-            if (loadLocationTreeForItem) {
-                updateLocationTreeForItem(locatableItem);
-            }
-            if (loadLocationHierarchyString) {
-                updateLocationStringForItem(locatableItem);
-            }
         }
         locatableItem.setLocationDetails(locationRelationship.getRelationshipDetails());
+    }
+
+    private void loadItemLocationInfoItemMembership(LocatableItem locatableItem) {
+        Item parentItem = getParentLocationItem(locatableItem);
+        locatableItem.setMembershipLocation(parentItem);
+    }
+
+    private Item getParentLocationItem(Item item) {
+        if (item.getItemElementMemberList() == null) {
+            // For new items it will be null
+            return null;
+        }
+        List<ItemElement> allMembershipList = new ArrayList<>(); 
+        allMembershipList.addAll(item.getItemElementMemberList());
+        allMembershipList.addAll(item.getItemElementMemberList2());
+
+        if (allMembershipList.size() > 1) {
+            SessionUtility.addWarningMessage("Error loading location", "More then one membership for item: " + item.getId());
+        } else if (allMembershipList.size() == 1) {
+            ItemElement element = allMembershipList.get(0);
+
+            return getLocationItemFromElementObject(element, item);
+        }
+        return null;
+    }
+
+    public static Item getLocationItemFromElementObject(CdbEntity itemElementObject, Item locatableItem) {
+        if (itemElementObject instanceof ItemElement || itemElementObject instanceof ItemElementHistory) {
+            Item parentItem = null;
+            Item locationItem = null;
+
+            if (itemElementObject instanceof ItemElement) {
+                parentItem = ((ItemElement) itemElementObject).getParentItem();
+            } else {
+                parentItem = ((ItemElementHistory) itemElementObject).getParentItem();
+            }
+
+            locationItem = parentItem;
+
+            int parentDomainId = parentItem.getDomain().getId();
+            int locatableDomainId = locatableItem.getDomain().getId();
+            if (parentDomainId == ItemDomainName.MACHINE_DESIGN_ID
+                    && locatableDomainId != ItemDomainName.MACHINE_DESIGN_ID) {
+                if (itemElementObject instanceof ItemElement) {
+                    locationItem = ((ItemElement) itemElementObject).getContainedItem();
+                } else {
+                    locationItem = ((ItemElementHistory) itemElementObject).getContainedItem();
+                }
+            }
+
+            return locationItem;
+
+        } else {
+            return null;
+        }
     }
 
     private ItemElementRelationship getItemLocationRelationship(LocatableItem item) {
@@ -252,8 +321,12 @@ public class LocatableItemController implements Serializable {
      */
     public void updateLocationStringForItem(LocatableItem item) {
         if (item != null) {
-            ItemDomainLocation locationItem = item.getLocation();
-            item.setLocationString(ItemDomainLocationController.generateLocatonHierarchyString(locationItem));
+            List<Item> locationHierarchyListForItem = getLocationHierarchyListForItem(item);
+            if (locationHierarchyListForItem != null) {
+                String locationString = ItemUtility.generateHierarchyNodeString(locationHierarchyListForItem);
+                item.setLocationString(locationString);
+            }
+
         }
     }
 
@@ -263,17 +336,88 @@ public class LocatableItemController implements Serializable {
      * @param item
      */
     public void updateLocationTreeForItem(LocatableItem item) {
-        if (item != null) {
-            ItemDomainLocation location = item.getLocation();
-            item.setLocationTree(ItemDomainLocationController.generateLocationNodeTreeBranch(location));
+        List<Item> hiearchyList = getLocationHierarchyListForItem(item);
+        if (hiearchyList != null) {
+            TreeNode treeBranch = ItemUtility.generateHierarchyNodeTreeBranch(hiearchyList);
+            prepLocationTreeForView(treeBranch);
+            item.setLocationTree(treeBranch);
         }
     }
 
+    public TreeNode getLocationTreeForLocationHistoryObject(LocationHistoryObject locationHistoryObject) {
+        TreeNode locationTree = locationHistoryObject.getLocationTree();
+        if (locationTree == null) {
+            Item locationItem = locationHistoryObject.getLocationItem();
+            locationTree = generateLocationTreeForLocationItem(locationItem);
+            locationHistoryObject.setLocationTree(locationTree);
+        }
+        return locationTree;
+    }
+
+    public TreeNode generateLocationTreeForLocationItem(Item location) {
+        if (location != null) {
+            List<Item> hierarchyList = generateLocationHierarchyList(location);
+            TreeNode treeRoot = ItemUtility.generateHierarchyNodeTreeBranch(hierarchyList);
+            prepLocationTreeForView(treeRoot);
+
+            return treeRoot;
+        }
+        return null;
+    }
+
+    private void prepLocationTreeForView(TreeNode root) {
+        // Allow for quick view full location. 
+        ItemUtility.setExpandedSelectedOnAllChildren(root, true, false);
+        if (root.getChildCount() > 0) {
+            root.getChildren().get(0).setExpanded(false);
+        }
+    }
+
+    public List<Item> getLocationHierarchyListForItem(LocatableItem item) {
+        List<Item> cachedLocationHierarchy = item.getCachedLocationHierarchy();
+        if (cachedLocationHierarchy != null) {
+            return cachedLocationHierarchy;
+        } else {
+            Item location = item.getActiveLocation();
+            if (location != null) {
+                List<Item> hierarchyList = generateLocationHierarchyList(location);
+
+                item.setCachedLocationHierarchy(hierarchyList);
+
+                return hierarchyList;
+            }
+        }
+
+        return null;
+
+    }
+
+    public List<Item> generateLocationHierarchyList(Item lowestLocationItem) {
+        if (lowestLocationItem != null) {
+            List<Item> itemHerarchyList = new ArrayList<>();
+            Item currentLowestItem = lowestLocationItem;
+
+            while (currentLowestItem != null) {
+                itemHerarchyList.add(0, currentLowestItem);
+                if (currentLowestItem instanceof LocatableItem) {
+                    setItemLocationInfo((LocatableItem) currentLowestItem, false, false);
+                    currentLowestItem = ((LocatableItem) currentLowestItem).getActiveLocation();
+                } else {
+                    // Location item 
+                    currentLowestItem = getParentLocationItem(currentLowestItem);
+                }
+            }
+
+            return itemHerarchyList;
+        }
+        return null;
+    }
+
     public ItemDomainLocation getLocation(LocatableItem inventoryItem) {
-        if (inventoryItem.getLocation() == null) {
+        if (inventoryItem.getLocationItem() == null) {
             setItemLocationInfo(inventoryItem);
         }
-        return inventoryItem.getLocation();
+        return inventoryItem.getLocationItem();
     }
 
     public DefaultMenuModel getItemLocataionDefaultMenuModel(LocatableItem item) {
@@ -289,7 +433,7 @@ public class LocatableItemController implements Serializable {
 
         if (editItemElement.getParentItem() != null) {
             LocatableItem parentItem = (LocatableItem) editItemElement.getParentItem();
-            ItemDomainLocation location = null;
+            Item location = null;
 
             while (parentItem != null) {
                 location = getLocation(parentItem);
@@ -309,9 +453,9 @@ public class LocatableItemController implements Serializable {
             }
 
             if (location != null) {
-                List<ItemDomainLocation> locationList = ItemDomainLocationController.generateLocationHierarchyList(location);
+                List<Item> locationList = generateLocationHierarchyList(location);
                 List<ItemHierarchyCache> currentItemHierarchyCache = getLocationItemHierarchyCaches();
-                for (ItemDomainLocation locationItem : locationList) {
+                for (Item locationItem : locationList) {
                     if (currentItemHierarchyCache != null) {
                         for (ItemHierarchyCache ihc : currentItemHierarchyCache) {
                             if (ihc.getParentItem().equals(locationItem)) {
@@ -346,9 +490,9 @@ public class LocatableItemController implements Serializable {
                         locationString = "No more locations in hierarchy";
                     }
                 }
-                ItemDomainLocation lowestLocation = item.getLocation();
+                Item lowestLocation = item.getActiveLocation();
 
-                List<Item> activeItemList = (List<Item>) (List<?>) ItemDomainLocationController.generateLocationHierarchyList(lowestLocation);
+                List<Item> activeItemList = (List<Item>) (List<?>) generateLocationHierarchyList(lowestLocation);
 
                 // TODO reset hierarchy caches on location change. 
                 itemLocationMenuModel = ItemElementUtility.generateItemSelectionMenuModel(
@@ -367,17 +511,17 @@ public class LocatableItemController implements Serializable {
         return null;
     }
 
-    public void updateLocationForLastRequestedMenuModel(Item item) {                    
-            if (lastInventoryItemRequestedLocationMenuModel != null) {
-                if (item instanceof ItemDomainLocation) {
-                    ItemDomainLocation locationItem = (ItemDomainLocation) item;
-                    updateLocationForItem(lastInventoryItemRequestedLocationMenuModel, locationItem, null);                    
-                } else if (item == null) {
-                    updateLocationForItem(lastInventoryItemRequestedLocationMenuModel, null, null);
-                }                
-            } else {
-                SessionUtility.addErrorMessage("Error", "No current item.");
-            }        
+    public void updateLocationForLastRequestedMenuModel(Item item) {
+        if (lastInventoryItemRequestedLocationMenuModel != null) {
+            if (item instanceof ItemDomainLocation) {
+                ItemDomainLocation locationItem = (ItemDomainLocation) item;
+                updateLocationForItem(lastInventoryItemRequestedLocationMenuModel, locationItem, null);
+            } else if (item == null) {
+                updateLocationForItem(lastInventoryItemRequestedLocationMenuModel, null, null);
+            }
+        } else {
+            SessionUtility.addErrorMessage("Error", "No current item.");
+        }
     }
 
     public void updateLocationForItem(LocatableItem item, ItemDomainLocation locationItem, String onSuccess) {
@@ -385,6 +529,8 @@ public class LocatableItemController implements Serializable {
             SessionUtility.addErrorMessage("Error", "Cannot use the same location as this item.");
             return;
         }
+
+        item.resetLocationVariables();
 
         item.setLocation(locationItem);
         updateLocationTreeForItem(item);
@@ -407,12 +553,56 @@ public class LocatableItemController implements Serializable {
         return null;
     }
 
-    protected void updateItemLocation(LocatableItem item) {
+    public List<LocationHistoryObject> getLocationHistoryObjectList(LocatableItem item) {
+        List<LocationHistoryObject> historyObjectList = new ArrayList<>();
+
+        List<ItemElementRelationshipHistory> historyList = getItemLocationRelationshipHistory(item);
+        if (historyList != null) {
+            for (ItemElementRelationshipHistory elementRelationshipHistory : historyList) {
+                LocationHistoryObject historyObject = new LocationHistoryObject(elementRelationshipHistory);
+                historyObjectList.add(historyObject);
+            }
+        }
+        List<ItemElementHistory> historyMemberList = new ArrayList();
+        historyMemberList.addAll(item.getHistoryMemberList());
+        historyMemberList.addAll(item.getHistoryMemberList2());
+
+        for (ItemElementHistory itemElementHistory : historyMemberList) {
+            Item locationItem = getLocationItemFromElementObject(itemElementHistory, item);
+            LocationHistoryObject historyObject = new LocationHistoryObject(itemElementHistory, locationItem);
+            historyObjectList.add(historyObject);
+        }
+
+        Collections.sort(historyObjectList);
+
+        return historyObjectList;
+    }
+
+    public static String generateLocationDetailsFromItem(Item item) {
+        return "Part of " + item.getDomain().getName();
+    }
+
+    public boolean locationEditable(Item item) {
+        if (item instanceof LocatableItem) {
+            LocatableItem locatableItem = (LocatableItem) item;
+            // Loads the location if needed. 
+            getLocation(locatableItem); 
+            
+            Item activeLocation = locatableItem.getActiveLocation();
+            if (activeLocation != null) {
+                return activeLocation.getDomain().getId() == ItemDomainName.LOCATION_ID;
+            } 
+            return true; 
+        }
+        return false; 
+    }
+
+    protected void updateItemLocation(LocatableItem item) throws InvalidRequest {
         if (item.getOriginalLocationLoaded() == false) {
             // Location was never loaded. 
-            return; 
+            return;
         }
-        
+
         // Determie updating of location relationship. 
         LocatableItem existingItem = null;
         ItemElementRelationship itemElementRelationship = null;
@@ -427,7 +617,7 @@ public class LocatableItemController implements Serializable {
         }
 
         Boolean newItemWithNewLocation = (existingItem == null
-                && (item.getLocation() != null || (item.getLocationDetails() != null && !item.getLocationDetails().isEmpty())));
+                && (item.getLocationItem() != null || (item.getLocationDetails() != null && !item.getLocationDetails().isEmpty())));
 
         Boolean locationDifferentOnCurrentItem = false;
 
@@ -443,15 +633,20 @@ public class LocatableItemController implements Serializable {
                 newLocationDetails = null;
             }
 
-            locationDifferentOnCurrentItem = ((!Objects.equals(existingItem.getLocation(), item.getLocation())
+            locationDifferentOnCurrentItem = ((!Objects.equals(existingItem.getLocationItem(), item.getLocationItem())
                     || !Objects.equals(existingLocationDetails, newLocationDetails)));
         }
 
-        if (newItemWithNewLocation || locationDifferentOnCurrentItem) {
+        if (newItemWithNewLocation || locationDifferentOnCurrentItem) {            
+            // Verify that the location can be changed. 
+            if ((existingItem != null) && (locationEditable(existingItem)) == false) {
+                Item location = existingItem.getActiveLocation();
+                throw new InvalidRequest("Error updating location. The item is currently part of a " + location.getDomain().getName() + " item.");
+            }
 
-            if (item.getLocation() != null) {
+            if (item.getLocationItem() != null) {
                 logger.debug("Updating location for Item " + item.toString()
-                        + " to: " + item.getLocation().getName());
+                        + " to: " + item.getLocationItem().getName());
             } else if (item.getLocationDetails() != null) {
                 logger.debug("Updating location details for Item " + item.toString()
                         + " to: " + item.getLocationDetails());
@@ -473,8 +668,8 @@ public class LocatableItemController implements Serializable {
 
             Integer locationIndex = itemElementRelationshipList.indexOf(itemElementRelationship);
 
-              if (item.getLocation() != null && item.getLocation().getSelfElement() != null) {
-                itemElementRelationshipList.get(locationIndex).setSecondItemElement(item.getLocation().getSelfElement());
+            if (item.getLocationItem() != null && item.getLocationItem().getSelfElement() != null) {
+                itemElementRelationshipList.get(locationIndex).setSecondItemElement(item.getLocationItem().getSelfElement());
             } else {
                 // No location is set. 
                 itemElementRelationshipList.get(locationIndex).setSecondItemElement(null);
@@ -484,14 +679,14 @@ public class LocatableItemController implements Serializable {
             // Add Item Element relationship history record. 
             ItemElementRelationship ier = itemElementRelationshipList.get(locationIndex);
             ItemElementRelationshipHistory ierh;
-            
+
             UserInfo updateUser;
             if (apiMode) {
-                updateUser = apiUser; 
+                updateUser = apiUser;
             } else {
-                updateUser = (UserInfo) SessionUtility.getUser(); 
+                updateUser = (UserInfo) SessionUtility.getUser();
             }
-            
+
             ierh = ItemElementRelationshipUtility.createItemElementHistoryRecord(
                     ier, updateUser, new Date());
             List<ItemElementRelationshipHistory> ierhList;

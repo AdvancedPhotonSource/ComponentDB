@@ -34,7 +34,7 @@ See LICENSE file.
         </f:facet>
 
         <f:facet name="input">
-            <p:selectCheckboxMenu label="Select Projects" value="#{itemObject.itemProjectList}" converter="itemProjectConverter"
+            <p:selectCheckboxMenu label="Select Projects" value="#{itemObject.itemProjectList}" converter="itemProjectConverter" multiple="true"
                                   filter="true" filterMatchMode="contains" >
                 <f:selectItems value="#{itemProjectController.availableItems}" /> 
 

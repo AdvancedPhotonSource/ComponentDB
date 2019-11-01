@@ -230,6 +230,14 @@ class PropertyValueHandler(CdbDbEntityHandler):
         session.flush()
         return dbPropertyValue
 
+    def getItemElementProperties(self, session, itemElementId, propertyTypeName = None):
+        query = session.query(ItemElementProperty).join(PropertyValue)
+        if propertyTypeName is not None:
+            query = query.join(PropertyType).filter(PropertyType.name == propertyTypeName)
+        query = query.filter(ItemElementProperty.item_element_id == itemElementId)
+        dbItemElementProperties = query.all()
+        return dbItemElementProperties
+
     def getPropertyValueListForItemElementId(self, session, itemElementId, propertyTypeName = None):
         entityDisplayName = self._getEntityDisplayName(PropertyValue)
         try:

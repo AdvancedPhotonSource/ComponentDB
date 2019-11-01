@@ -17,17 +17,17 @@ See LICENSE file.
               resizable="false"
               styleClass="viewTransparentBackgroundDialog">
         
-        <ui:param name="propertyValueObject" value="#{propertyValueController.current}"/>
+        <ui:param name="propertyValueBaseObject" value="#{propertyMetadataController.currentMetadataShown}"/>
 
-        <p:outputPanel rendered="#{propertyValueObject != null}">
+        <p:outputPanel rendered="#{propertyValueBaseObject != null}">
             <ui:param name="filterablePropertyValueMetadataList"
-                      value="#{facesUtility.displayFiltersForList(propertyValueObject.propertyMetadataList, 10)}" />
+                      value="#{facesUtility.displayFiltersForList(propertyValueBaseObject.propertyMetadataBaseList, 10)}" />
             
             <p:scrollPanel style="max-height: 550px"
                            mode="native"
-                           rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueObject)}">
+                           rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueBaseObject)}">
                 <p:dataTable id="#{entityTypeName}PropertyValueMetadataListDataTable"
-                             value="#{propertyValueObject.propertyMetadataList}"                     
+                             value="#{propertyValueBaseObject.propertyMetadataBaseList}"                     
                              var="metadata">
                     <p:column headerText="Key"
                               filterBy="#{metadata.metadataKey}"
@@ -49,7 +49,7 @@ See LICENSE file.
 
         <f:facet name="footer" class="dialog">
             <p:commandButton id="propertyValueMetadataDoneButton" value="Done" alt="Done" 
-                             onstart="PF('#{entityTypeName}PropertyValueMetadataListDialogWidget').hide()" 
+                             onstart="PF('propertyValueMetadataListDialogWidget').hide()" 
                              icon="fa fa-times"/>
             <p:tooltip for="propertyValueMetadataDoneButton" value="Close property value metadata display."/>
         </f:facet>

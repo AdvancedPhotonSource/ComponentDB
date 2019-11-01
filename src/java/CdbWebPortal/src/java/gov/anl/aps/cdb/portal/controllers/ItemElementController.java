@@ -106,6 +106,22 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     @Override
     protected void prepareEntityUpdate(ItemElement itemElement) throws CdbException {
         super.prepareEntityUpdate(itemElement);
+        
+        EntityInfo entityInfo = itemElement.getEntityInfo();
+        
+        if (apiMode) {
+            EntityInfoUtility.updateEntityInfo(entityInfo, apiUser);
+        } else {
+            EntityInfoUtility.updateEntityInfo(entityInfo);
+        }
+        
+        ItemElement originalItemElement = null; 
+        if (itemElement.getId() != null) {
+            originalItemElement = getEntityDbFacade().find(itemElement.getId());
+        }
+        
+        // Check if history needs to be added
+        ItemElementUtility.prepareItemElementHistory(originalItemElement, itemElement, entityInfo);        
 
         // Basic checks for updating an element must be verified with domain of item element. 
         Item parentItem = itemElement.getParentItem();

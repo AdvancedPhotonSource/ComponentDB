@@ -4,13 +4,18 @@ Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
-
-    <h:outputLink value="#{cdbPluginManager.getPluginManagerByName('edpLink').edpUrl}" target="EDP">
-        <h:outputText value="EDP"/>
-    </h:outputLink>
-
+    
+    <ui:param name="inputStyleClass"
+              value="#{inputStyleClass != null ? inputStyleClass : 'cellInput'}"/> 
+   
+    <h:inputText id="cost#{viewName}" value="#{itemSourceObject.cost}" styleClass="#{inputStyleClass}"/>
+    <p:tooltip for="cost#{viewName}" value="Cost is optional."/>
+    
 </ui:composition>
+
+

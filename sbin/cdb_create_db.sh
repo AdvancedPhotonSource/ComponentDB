@@ -219,6 +219,7 @@ CDB_DB_TABLES="\
     system_log \
     item \
     item_element \
+    item_element_history \
     item_element_log \
     item_element_list \
     item_category \
@@ -227,7 +228,7 @@ CDB_DB_TABLES="\
     item_item_type \
     item_category_item_type \
     item_project \
-    item_item_project \ 
+    item_item_project \
     item_entity_type \
     allowed_child_entity_type \
     source \
@@ -251,6 +252,7 @@ CDB_DB_TABLES="\
     property_value \
     property_metadata \
     property_value_history \
+    property_metadata_history \
     item_connector_property \
     item_element_relationship_property \
     item_element_property \

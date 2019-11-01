@@ -128,6 +128,11 @@ class ItemControllerImpl(CdbObjectManager):
 
         return propertyValueAdded
 
+    def deletePropertyValuesFromItemByItemId(self, itemId, propertyTypeName, enteredByUserId):
+        selfElement = self.itemDbApi.getSelfElementByItemId(itemId)
+        selfElementId = selfElement.data['id']
+        return self.itemDbApi.deleteItemElementProperties(selfElementId, propertyTypeName, enteredByUserId)
+
     def getParentItems(self, itemId):
         return self.itemDbApi.getParentItems(itemId)
 
