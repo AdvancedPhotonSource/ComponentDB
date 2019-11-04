@@ -68,6 +68,9 @@ public class ItemConnectorController extends CdbEntityController<ItemConnector, 
     }
 
     public String getConnectorGender(ItemConnector connector) {
+        if (connector == null) {            
+            return ""; 
+        }
         if (connector.getConnector().getIsMale()) {
             return "male";
         }
