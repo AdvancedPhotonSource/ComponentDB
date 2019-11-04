@@ -9,19 +9,25 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
 
-    <p:column headerText="Name">            
+    <p:column headerText="Name"
+              exportFunction="#{facesUtility.getToString(itemConnectorObject.connector.name)}">
         <ui:include src="../../connector/private/connectorNameObject.xhtml">
             <ui:param name="connector"
                       value="#{itemConnectorObject.connector}" />
         </ui:include>
     </p:column>
 
-    <p:column headerText="Type">
+    <p:column headerText="Type"
+              exportFunction="#{facesUtility.getToString(itemConnectorObject.connector.connectorType)}">
         #{itemConnectorObject.connector.connectorType}
     </p:column>
+    
+    <ui:param name="portGender"
+              value="#{itemConnectorController.getConnectorGender(itemConnectorObject)}" /> 
 
-    <p:column headerText="Port Gender">
-        #{itemConnectorController.getConnectorGender(itemConnectorObject)}
+    <p:column headerText="Port Gender"
+              exportFunction="#{facesUtility.getToString(portGender)}">
+        #{portGender}
     </p:column>
 
 
