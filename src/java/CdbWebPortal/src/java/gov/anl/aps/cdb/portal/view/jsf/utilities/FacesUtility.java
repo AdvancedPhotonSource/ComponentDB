@@ -125,4 +125,11 @@ public class FacesUtility {
             return ""; 
         }
     }
+    
+    public String getToString(Object object) {
+        if (object != null) {
+            return object.toString();
+        }
+        return ""; 
+    }
 }
