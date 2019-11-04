@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -188,6 +189,9 @@ public class ItemConnector extends CdbEntity implements Serializable {
         ItemConnector other = (ItemConnector) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
+        } else if (this.id == null && other.id == null) {
+            // New item check if connector is the same. 
+            return ObjectUtility.equals(this.connector, other.connector);             
         }
         return true;
     }
