@@ -8,12 +8,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
 
-    <p:menuitem value="Add Cable" icon="ui-icon-cable-design"
-                update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel"
-                disabled="#{disabledEditContextMenuItemForSelection}"
-                immediate="true"
-                action='#{entityController.prepareCableWizard()}'
-                oncomplete="resetCableWizard()"/>
+    <p:submenu icon="ui-icon-cable-design" label="Cable"
+               disabled="#{disabledEditContextMenuItemForSelection}">
+        <ui:include src="addCableContextMenuItem.xhtml" />
+        <ui:include src="performCableMappingContextMenuItem.xhtml"/>                
+    </p:submenu>
 
 </ui:composition>
 

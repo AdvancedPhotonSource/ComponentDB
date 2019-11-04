@@ -8,11 +8,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:fn="http://java.sun.com/jsp/jstl/functions"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
     <p:outputPanel styleClass="mainMenuBar">
         <p:menubar>
             <p:submenu label="Browse"
+                       icon="fa fa-search"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') 
                                      or fn:startsWith(view.viewId, '/views/itemDomainInventory/browse')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Browse By Function" 
@@ -30,6 +30,7 @@ See LICENSE file.
 
             </p:submenu>
             <p:submenu label="Catalog"
+                       icon="ui-icon-catalog"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/list') 
                                      or fn:startsWith(view.viewId, '/views/itemDomainCableCatalog/list')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Component"
@@ -43,6 +44,7 @@ See LICENSE file.
             </p:submenu>
             
             <p:submenu label="Inventory"
+                       icon="ui-icon-inventory"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainInventory/list') 
                                      or fn:startsWith(view.viewId, '/views/itemDomainCableInventory/list')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Component"
@@ -56,6 +58,7 @@ See LICENSE file.
             </p:submenu>
             
             <p:submenu label="Design"
+                       icon="ui-icon-design"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') 
                                      or fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Machine"
@@ -63,7 +66,7 @@ See LICENSE file.
                             url="#{request.contextPath}/views/itemDomainMachineDesign/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') ? 'activeMenuItem' : ''} "/>
                 <p:menuitem value="Cable"
-                            icon="ui-icon-machine-design"
+                            icon="ui-icon-cable-design"
                             url="#{request.contextPath}/views/itemDomainCableDesign/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list') ? 'activeMenuItem' : ''} "/>
             </p:submenu>
@@ -140,6 +143,7 @@ See LICENSE file.
                             
                             <p:menuitem value="Connector Types"
                                     rendered="#{loginController.loggedInAsAdmin and resources.EnabledConnectorAndConnectionsFunctionality}"
+                                    icon="ui-icon-connector"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/connectorType/') ? 'activeMenuItem' : ''} "
                                     action="#{connectorTypeController.prepareListFromViewPath('/views/connectorType')}"/>                        
                         </p:submenu>                                                                        
