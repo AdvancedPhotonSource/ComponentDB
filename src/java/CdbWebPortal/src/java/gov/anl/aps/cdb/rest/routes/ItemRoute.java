@@ -108,7 +108,7 @@ public class ItemRoute extends BaseRoute {
         return findById;
     }
     
-    public PropertyType getPropertytypeByName(String name) throws ObjectNotFound {
+    public PropertyType getPropertyTypeByName(String name) throws ObjectNotFound {
         PropertyType pt = propertyTypeFacade.findByName(name);
         if (pt == null) {
             ObjectNotFound ex = new ObjectNotFound("Could not find property type with name: " + name);
@@ -278,22 +278,16 @@ public class ItemRoute extends BaseRoute {
         Item dbItem = getItemById(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
         
+        if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to update property value for the item");
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        
         ItemController itemController = dbItem.getItemDomainController();
         PropertyValue dbPropertyValue = null;
         
         int propIdx = -1;
-        PropertyType propertyType = propertyValue.getPropertyType();
-        if(propertyType.getId() == null) {
-            //Find property type object by name
-            propertyType = getPropertytypeByName(propertyType.getName());
-            if (propertyType == null) {
-                InvalidArgument invalidArgument = new InvalidArgument("Property type name must be correct or give property type id");
-                LOGGER.error(invalidArgument);
-                throw invalidArgument; 
-            }
-        }
-        propertyValue.setPropertyType(propertyType);
-        
         if (propertyValue.getId() == null) {
             InvalidArgument invalidArgument = new InvalidArgument("Property value id must be present.");
             LOGGER.error(invalidArgument);
@@ -333,10 +327,7 @@ public class ItemRoute extends BaseRoute {
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
         if (propIdx >= 0) {
             dbPropertyValue = pvList.get(propIdx);
-        } else {
-            propIdx = pvList.size() - 1;
-            dbPropertyValue = pvList.get(propIdx);
-        }
+        } 
         
         return dbPropertyValue;
     }
@@ -351,6 +342,12 @@ public class ItemRoute extends BaseRoute {
         LOGGER.debug("Updating property metadata for item with id: " + itemId);
         Item dbItem = getItemById(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
+        
+        if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to upload property metadata for the item property");
+            LOGGER.error(ex);
+            throw ex; 
+        }
         
         ItemController itemController = dbItem.getItemDomainController();
         PropertyValue dbPropertyValue = null;
@@ -384,9 +381,6 @@ public class ItemRoute extends BaseRoute {
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
         if (propIdx >= 0) {
             dbPropertyValue = pvList.get(propIdx);
-        } else {
-            propIdx = pvList.size() - 1;
-            dbPropertyValue = pvList.get(propIdx);
         }
         
         return dbPropertyValue;
@@ -404,13 +398,19 @@ public class ItemRoute extends BaseRoute {
         Item dbItem = getItemById(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
         
+        if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to add property value for the item");
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        
         ItemController itemController = dbItem.getItemDomainController();
         PropertyValue dbPropertyValue = null;
         
         PropertyType propertyType = propertyValue.getPropertyType();
         if(propertyType.getId() == null) {
             //Find property type object by name
-            propertyType = getPropertytypeByName(propertyType.getName());
+            propertyType = getPropertyTypeByName(propertyType.getName());
             if (propertyType == null) {
                 InvalidArgument invalidArgument = new InvalidArgument("Property type name must be correct or give property type id");
                 LOGGER.error(invalidArgument);
