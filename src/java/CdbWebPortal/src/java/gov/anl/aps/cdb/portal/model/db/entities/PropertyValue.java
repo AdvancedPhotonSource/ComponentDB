@@ -335,7 +335,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
                         for (PropertyMetadata pm : this.getPropertyMetadataList()) {
                             String metadataKey = pm.getMetadataKey();
                             PropertyMetadata otherPm = other.getPropertyMetadataForKey(metadataKey); 
-                            if (!pm.getMetadataValue().equals(otherPm.getMetadataValue())) {
+                            if (ObjectUtility.equals(pm.getMetadataValue(), otherPm.getMetadataValue()) == false) {
                                 equal = false; 
                                 break; 
                             }
