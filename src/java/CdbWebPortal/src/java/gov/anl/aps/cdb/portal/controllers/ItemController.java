@@ -1097,7 +1097,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public void itemSourceObjectEditRowEvent(RowEditEvent event) {
         this.saveSourceList();
     }
-    
+
     public void verifySaveCurrentEditItemSource(String onSuccessCommand) {
         if (currentEditItemSource != null) {
             if (currentEditItemSource.getSource() == null) {
@@ -1114,7 +1114,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                     return;
                 }
             }
-            
+
             SessionUtility.executeRemoteCommand(onSuccessCommand);
         } else {
             SessionUtility.addErrorMessage("Error", "No item source to edit exists.");
@@ -1134,9 +1134,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         if (currentEditItemSource != null) {
             ItemDomainEntity current = getCurrent();
             List<ItemSource> itemSourceList = current.getItemSourceList();
-            
+
             itemSourceList.remove(currentEditItemSource);
-            currentEditItemSource = null; 
+            currentEditItemSource = null;
         }
     }
 
@@ -1226,24 +1226,42 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         ConnectorController connectorController = ConnectorController.getInstance();
         Connector connector = itemConnector.getConnector();
         if (connectorController.verifySafeRemovalOfConnector(connector)) {
-            List<ItemConnector> itemConnectorList = item.getItemConnectorList();
-            itemConnectorList.remove(itemConnector);
-            ItemConnectorController.getInstance().destroy(itemConnector);
+            completeDeleteItemConnector(itemConnector);
         } else {
             // Generate a userfull message
             String message = "";
             List<ItemConnector> itemConnectorList = connector.getItemConnectorList();
+            List<ItemConnector> connectorDeleteList = new ArrayList<>();
             for (ItemConnector ittrConnector : itemConnectorList) {
                 Item ittrItem = ittrConnector.getItem();
                 if (ittrItem.equals(item) == false) {
-                    if (ittrItem.getDomain().getName().equals(ItemDomainName.inventory.getValue())) {
-                        message = "Please check connections on inventory item: " + ittrItem.getName();
+                    if (ittrItem.getDomain().getName().equals(ItemDomainName.machineDesign.getValue())) {
+                        if (ittrConnector.getItemElementRelationshipList().size() == 0) {
+                            connectorDeleteList.add(ittrConnector);
+                        } else {
+                            message = "Please check connections on machine design item: " + ittrItem.toString();
+                            SessionUtility.addErrorMessage("Error", "Cannot remove connector, check if it is used for connections in machine design. " + message);
+                        }
                     }
+                } else {
+                    connectorDeleteList.add(ittrConnector);
                 }
             }
 
-            SessionUtility.addErrorMessage("Error", "Cannot remove connector, check if it is used for connections in inventory. " + message);
+            if (itemConnectorList.size() == connectorDeleteList.size()) {
+                // All save. 
+                for (ItemConnector relatedConnector : connectorDeleteList) {
+                    completeDeleteItemConnector(relatedConnector);
+                }
+            }
         }
+    }
+
+    private void completeDeleteItemConnector(ItemConnector itemConnector) {
+        Item item = getCurrent();
+        List<ItemConnector> itemConnectorList = item.getItemConnectorList();
+        itemConnectorList.remove(itemConnector);
+        ItemConnectorController.getInstance().destroy(itemConnector);
     }
 
     public void prepareAddItemConnector(Item item) {

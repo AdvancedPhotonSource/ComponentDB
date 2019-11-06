@@ -169,6 +169,10 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
             if (object == null) {
                 return null;
             }
+            if (object instanceof String) {
+                return (String) object;
+            }
+            
             if (object instanceof ItemProject) {
                 ItemProject o = (ItemProject) object;
                 return getStringKey(o.getId());

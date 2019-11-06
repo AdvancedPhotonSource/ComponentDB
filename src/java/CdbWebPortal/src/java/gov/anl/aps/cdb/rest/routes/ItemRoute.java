@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
@@ -29,6 +30,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueImageUploadBean;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
@@ -76,6 +78,9 @@ public class ItemRoute extends BaseRoute {
     ItemFacade itemFacade;
     
     @EJB
+    PropertyTypeFacade propertyTypeFacade;
+    
+    @EJB
     DomainFacade domainFacade;
     
     @EJB
@@ -103,6 +108,17 @@ public class ItemRoute extends BaseRoute {
         return findById;
     }
     
+    public PropertyType getPropertyTypeByName(String name) throws ObjectNotFound {
+        PropertyType pt = propertyTypeFacade.findByName(name);
+        if (pt == null) {
+            ObjectNotFound ex = new ObjectNotFound("Could not find property type with name: " + name);
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        return pt;
+    }
+    
+       
     @GET
     @Path("/ItemsDerivedFromItemByItemId/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -262,35 +278,37 @@ public class ItemRoute extends BaseRoute {
         Item dbItem = getItemById(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
         
+        if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to update property value for the item");
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        
         ItemController itemController = dbItem.getItemDomainController();
         PropertyValue dbPropertyValue = null;
         
         int propIdx = -1;
-        
         if (propertyValue.getId() == null) {
-            PropertyType propertyType = propertyValue.getPropertyType();
-            if (propertyType == null) {
-                InvalidArgument invalidArgument = new InvalidArgument("Property type must be assigned to new property value.");
-                LOGGER.error(invalidArgument);
-                throw invalidArgument; 
-            }
-            dbPropertyValue = itemController.preparePropertyTypeValueAdd(dbItem, propertyType, null, null, updatedByUser);
+            InvalidArgument invalidArgument = new InvalidArgument("Property value id must be present.");
+            LOGGER.error(invalidArgument);
+            throw invalidArgument;
         } else {
-            // Property already exists for the particular item.             
+            //find the property of this item with same property value id as in propertyValue.
             for (int i = 0; i < dbItem.getPropertyValueList().size(); i++) {
                 PropertyValue propertyValueIttr = dbItem.getPropertyValueList().get(i);
                 if (propertyValueIttr.getId().equals(propertyValue.getId())) {
                     dbPropertyValue = propertyValueIttr;
                     propIdx = i;
+                    LOGGER.debug("Property found, type name = " + dbPropertyValue.getPropertyType().getName());
                     break;
                 }
             }
         }
-        
+    
         if (dbPropertyValue == null) {
-            ObjectNotFound objectNotFound = new ObjectNotFound("There was an error trying to load the property value.");
+            ObjectNotFound objectNotFound = new ObjectNotFound("Property value id must be correct.");
             LOGGER.error(objectNotFound);
-            throw objectNotFound; 
+            throw objectNotFound;
         }
 
         // Set passed in property value to match db property value 
@@ -307,16 +325,123 @@ public class ItemRoute extends BaseRoute {
         dbItem = (Item) itemController.getCurrent();
         
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
-        if (propIdx > 0) {
+        if (propIdx >= 0) {
             dbPropertyValue = pvList.get(propIdx);
-        } else {
-            propIdx = pvList.size() - 1;
+        } 
+        
+        return dbPropertyValue;
+    }
+    
+    @POST
+    @Path("/UpdatePropertyMetadata/{itemId}/{propertyValueId}") //TODO propertyValueID instead of property type name
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public PropertyValue updateItemPropertyMetadata(@PathParam("itemId") int itemId, @PathParam("propertyValueId") int propertyValueId, PropertyMetadata propertyMetadata) throws InvalidArgument, ObjectNotFound, CdbException {
+        LOGGER.debug("Updating property metadata for item with id: " + itemId);
+        Item dbItem = getItemById(itemId);
+        UserInfo updatedByUser = getCurrentRequestUserInfo();
+        
+        if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to upload property metadata for the item property");
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        
+        ItemController itemController = dbItem.getItemDomainController();
+        PropertyValue dbPropertyValue = null;
+        
+        int propIdx = -1;
+        
+        //find the property value of this item with same property value id name as in propertyValueId.
+        for (int i = 0; i < dbItem.getPropertyValueList().size(); i++) {
+            PropertyValue propertyValueIttr = dbItem.getPropertyValueList().get(i);
+            if (propertyValueIttr.getId().equals(propertyValueId)) {
+                dbPropertyValue = propertyValueIttr;
+                propIdx = i;
+                LOGGER.debug("property_id = " + dbPropertyValue.getId());
+                break;
+            }
+        }
+        
+        if (dbPropertyValue == null) {
+            ObjectNotFound objectNotFound = new ObjectNotFound("Property value id must be correct.");
+            LOGGER.error(objectNotFound);
+            throw objectNotFound;
+        }
+        
+        // Set passed in property value to match db property value 
+        dbPropertyValue.setPropertyMetadataValue(propertyMetadata.getMetadataKey(), propertyMetadata.getMetadataValue());
+        
+        itemController.updateFromApi(dbItem, updatedByUser);
+        
+        dbItem = (Item) itemController.getCurrent();
+        
+        List<PropertyValue> pvList = dbItem.getPropertyValueList();
+        if (propIdx >= 0) {
             dbPropertyValue = pvList.get(propIdx);
         }
         
         return dbPropertyValue;
     }
     
+    
+    @POST
+    @Path("/AddProperty/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public PropertyValue addItemPropertyValue(@PathParam("itemId") int itemId, PropertyValue propertyValue) throws InvalidArgument, ObjectNotFound, CdbException {
+        LOGGER.debug("Adding property to item with id: " + itemId);
+        Item dbItem = getItemById(itemId);
+        UserInfo updatedByUser = getCurrentRequestUserInfo();
+        
+        if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to add property value for the item");
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        
+        ItemController itemController = dbItem.getItemDomainController();
+        PropertyValue dbPropertyValue = null;
+        
+        PropertyType propertyType = propertyValue.getPropertyType();
+        if(propertyType.getId() == null) {
+            //Find property type object by name
+            propertyType = getPropertyTypeByName(propertyType.getName());
+            if (propertyType == null) {
+                InvalidArgument invalidArgument = new InvalidArgument("Property type name must be correct or give property type id");
+                LOGGER.error(invalidArgument);
+                throw invalidArgument; 
+            }
+        }
+        propertyValue.setPropertyType(propertyType);
+        
+        LOGGER.debug("Creating new property.");
+        dbPropertyValue = itemController.preparePropertyTypeValueAdd(dbItem, propertyType, null, null, updatedByUser);
+
+        // Set passed in property value to match db property value 
+        dbPropertyValue.setValue(propertyValue.getValue());
+        dbPropertyValue.setDisplayValue(propertyValue.getDisplayValue());
+        dbPropertyValue.setTag(propertyValue.getTag());
+        dbPropertyValue.setDescription(propertyValue.getDescription());
+        dbPropertyValue.setUnits(propertyValue.getUnits());
+        dbPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
+        dbPropertyValue.setIsUserWriteable(propertyValue.getIsUserWriteable());
+        
+        itemController.updateFromApi(dbItem, updatedByUser);
+        
+        dbItem = (Item) itemController.getCurrent();
+        
+        List<PropertyValue> pvList = dbItem.getPropertyValueList();
+        int propIdx = pvList.size() - 1;
+        dbPropertyValue = pvList.get(propIdx);
+        
+        return dbPropertyValue;
+    }
+
     @POST
     @Path("/addLogEntry")
     @Produces(MediaType.APPLICATION_JSON)

@@ -40,9 +40,13 @@ See LICENSE file.
                     <p:tooltip for="endpoint1EditShowButton"
                                value="Edit Second Endpoint" />
                 </p:commandLink>
-                <h:outputText value="#{itemObject.getEndpoint1String()}" 
-                              title="Endpoint1" 
-                              styleClass="entityDataEmphasizedText" />
+                
+                <ui:include src="../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                    <ui:param name="viewName"
+                              value="endpoint1"/>
+                    <ui:param name="itemObject"
+                              value="#{itemObject.endpoint1}"/>
+                </ui:include>
             </p:outputPanel>
 
             <p:outputLabel value="Endpoint2" 
@@ -58,9 +62,12 @@ See LICENSE file.
                     <p:tooltip for="endpoint2EditShowButton"
                                value="Edit Second Endpoint" />
                 </p:commandLink>
-                <h:outputText value="#{itemObject.getEndpoint2String()}" 
-                              title="Endpoint2" 
-                              styleClass="entityDataEmphasizedText" />
+                <ui:include src="../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                    <ui:param name="viewName"
+                              value="endpoint2"/>
+                    <ui:param name="itemObject"
+                              value="#{itemObject.endpoint2}"/>
+                </ui:include>
             </p:outputPanel>
 
             <p:outputLabel value="Assigned Catalog Item" 

@@ -9,15 +9,20 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">        
 
     <p:outputPanel>
-        <ui:param name="renderNamedPort"
-                  value="#{connector.name != null and connector.name != ''}"/>
-        
-        <p:outputPanel rendered="#{renderNamedPort}">
-            #{connector.name}
+        <ui:param name="renderPort"
+                  value="#{connector != null}"/> 
+        <p:outputPanel rendered="#{renderPort}"> 
+            <ui:param name="renderNamedPort"
+                      value="#{connector.name != null and connector.name != ''}"/>
+
+            <p:outputPanel rendered="#{renderNamedPort}">
+                #{connector.name}
+            </p:outputPanel>
+            <p:outputPanel rendered="#{!renderNamedPort}">
+                Unnamed Port
+            </p:outputPanel>
         </p:outputPanel>
-        <p:outputPanel rendered="#{!renderNamedPort}">
-            Unnamed Port
-        </p:outputPanel>        
+        <p:outputPanel rendered="#{!renderedPort}"> </p:outputPanel>
     </p:outputPanel>
 
 </ui:composition>
