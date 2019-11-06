@@ -60,4 +60,9 @@ See LICENSE file.
     <ui:insert name="additionPanelGridContent"/>
     <ui:insert name="templateUseAdditionPanelGridContent"/>
     
+    <p:remoteCommand name="inlineSaveEntity"
+                     action="#{entityController.inlineUpdate()}"                         
+                     onstart="PF('loadingDialog').show()"
+                     oncomplete="PF('loadingDialog').hide()"/>
+
 </ui:composition>

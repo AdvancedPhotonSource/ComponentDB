@@ -7,9 +7,12 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
                 template="../item/private/templates/itemEditTemplate.xhtml">
     
     <ui:param name="entityController" value="#{itemDomainCableDesignController}" />    
+    <ui:param name="itemObject" value="#{entityController.current}" />    
+    <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}" />
     
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
@@ -19,6 +22,10 @@ See LICENSE file.
         <f:viewAction action="#{itemElementController.processPreRender()}"/>
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />        
     </f:metadata>
+
+    <ui:define name="additionPanelGridContent">
+        <ui:decorate template="private/templates/additionPanelGridContentTemplate.xhtml" />
+    </ui:define>
 
 </ui:composition>
 
