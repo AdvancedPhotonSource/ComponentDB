@@ -35,6 +35,7 @@ See LICENSE file.
                                 <ui:param name="valueModel" value="#{cableWizard.machineDesignTreeEndpoint1}" />
                                 <ui:param name="selectionModel" value="#{cableWizard.selectionEndpoint1}" /> 
                                 <ui:param name="rendered" value="#{selectEndpoint1}" />
+                                <ui:param name="scrollable" value="#{true}" />
 
                                 <ui:define name="treeTableEvents">
                                     <p:ajax event="select" 
@@ -57,6 +58,7 @@ See LICENSE file.
                                 <ui:param name="valueModel" value="#{cableWizard.machineDesignTreeEndpoint2}" />
                                 <ui:param name="selectionModel" value="#{cableWizard.selectionEndpoint2}" /> 
                                 <ui:param name="rendered" value="#{true}" />
+                                <ui:param name="scrollable" value="#{true}" />
 
                                 <ui:define name="treeTableEvents">
                                     <p:ajax event="select" 
