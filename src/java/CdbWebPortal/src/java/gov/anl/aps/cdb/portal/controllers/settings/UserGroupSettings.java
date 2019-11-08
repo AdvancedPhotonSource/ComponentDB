@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class UserGroupSettings extends SettingsBase<UserGroupController> {
+public class UserGroupSettings extends CdbEntitySettingsBase<UserGroupController> {
     
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserGroup.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "UserGroup.List.Display.Id";

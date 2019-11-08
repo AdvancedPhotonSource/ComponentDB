@@ -13,7 +13,7 @@ See LICENSE file.
                  value="#{userInfoController.searchResultList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 rows="#{searchController.displayNumberOfItemsPerPage}" 
+                 rows="#{searchController.searchSettings.displayNumberOfItemsPerPage}" 
                  emptyMessage="No users match.">
 
         <ui:include src="../../search/private/searchResultListObject.xhtml">

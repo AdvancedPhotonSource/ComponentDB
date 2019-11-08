@@ -14,7 +14,7 @@ import org.primefaces.component.datatable.DataTable;
  *
  * @author djarosz
  */
-public class PropertyValueHistorySettings extends SettingsBase<PropertyValueHistoryController> {
+public class PropertyValueHistorySettings extends CdbEntitySettingsBase<PropertyValueHistoryController> {
     
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyValueHistory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyValueHistory.List.Display.Id";

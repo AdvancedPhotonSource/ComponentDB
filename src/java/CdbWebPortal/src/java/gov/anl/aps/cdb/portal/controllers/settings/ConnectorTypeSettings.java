@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class ConnectorTypeSettings extends SettingsBase<ConnectorTypeController> {
+public class ConnectorTypeSettings extends CdbEntitySettingsBase<ConnectorTypeController> {
 
     public ConnectorTypeSettings(ConnectorTypeController parentController) {
         super(parentController);

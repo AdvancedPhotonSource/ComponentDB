@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class PropertyTypeHandlerSettings extends SettingsBase<PropertyTypeHandlerController> {
+public class PropertyTypeHandlerSettings extends CdbEntitySettingsBase<PropertyTypeHandlerController> {
     
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeHandler.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyTypeHandler.List.Display.Id";
