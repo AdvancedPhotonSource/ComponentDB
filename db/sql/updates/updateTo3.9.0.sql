@@ -10,6 +10,9 @@
 # Table definitions have been updated. 
 ### PLEASE REBUILD DB ###
 
+# Utilize the new search settigns for all users
+delete from user_group_setting where setting_type_id >= 15000 and setting_type_id < 16000;
+delete from user_setting where setting_type_id >= 15000 and setting_type_id < 16000;
 
 # Add history for the new item element History table
 
