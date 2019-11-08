@@ -77,5 +77,19 @@ public class ItemDomainMachineDesign extends LocatableItem {
         
         return currentItemElement; 
     }
+    
+    public ItemDomainMachineDesign getParentMachineDesign() {
+        List<ItemElement> itemElementMemberList = this.getItemElementMemberList();        
+        
+        for (ItemElement memberElement : itemElementMemberList) {
+            Item parentItem = memberElement.getParentItem();
+            if (parentItem instanceof ItemDomainMachineDesign) {
+                // Should only be one. 
+                return (ItemDomainMachineDesign) parentItem;                
+            }
+        }        
+       
+       return null;
+    }
 
 }

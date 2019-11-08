@@ -343,7 +343,7 @@ public class UserInfo extends SettingEntity implements Serializable {
 
     @Override
     public SearchResult search(Pattern searchPattern) {
-        SearchResult searchResult = new SearchResult(id, username);
+        SearchResult searchResult = new SearchResult(this, id, username);
         searchResult.doesValueContainPattern("username", username, searchPattern);
         searchResult.doesValueContainPattern("firstName", firstName, searchPattern);
         searchResult.doesValueContainPattern("middleName", middleName, searchPattern);
