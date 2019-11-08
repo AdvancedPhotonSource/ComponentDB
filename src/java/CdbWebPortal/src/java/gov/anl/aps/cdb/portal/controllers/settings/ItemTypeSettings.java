@@ -14,7 +14,7 @@ import org.primefaces.component.datatable.DataTable;
  *
  * @author djarosz
  */
-public class ItemTypeSettings extends SettingsBase<ItemTypeController> {
+public class ItemTypeSettings extends CdbEntitySettingsBase<ItemTypeController> {
     
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemType.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "ItemType.List.Display.Id";

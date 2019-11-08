@@ -1039,16 +1039,16 @@ public class Item extends CdbDomainEntity implements Serializable {
         SearchResult searchResult;
 
         if (name != null) {
-            searchResult = new SearchResult(id, name);
+            searchResult = new SearchResult(this, id, name);
             searchResult.doesValueContainPattern("name", name, searchPattern);
         } else if (derivedFromItem != null && derivedFromItem.getName() != null) {
             String title = "Derived from: " + derivedFromItem.getName();
             if (qrId != null) {
                 title += " (QRID: " + getQrIdDisplay() + ")";
             }
-            searchResult = new SearchResult(id, title);
+            searchResult = new SearchResult(this, id, title);
         } else {
-            searchResult = new SearchResult(id, "Item");
+            searchResult = new SearchResult(this, id, "Item");
         }
 
         if (derivedFromItem != null) {

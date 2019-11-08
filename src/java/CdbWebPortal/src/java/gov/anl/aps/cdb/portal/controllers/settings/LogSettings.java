@@ -14,7 +14,7 @@ import org.primefaces.component.datatable.DataTable;
  *
  * @author djarosz
  */
-public class LogSettings extends SettingsBase<LogController>{
+public class LogSettings extends CdbEntitySettingsBase<LogController>{
     
     private static final String DisplayAttachmentsSettingTypeKey = "Log.List.Display.Attachments";
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "Log.List.Display.NumberOfItemsPerPage";

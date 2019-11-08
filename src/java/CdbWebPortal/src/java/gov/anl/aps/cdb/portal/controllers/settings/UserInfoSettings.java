@@ -14,7 +14,7 @@ import org.primefaces.component.datatable.DataTable;
  *
  * @author djarosz
  */
-public class UserInfoSettings extends SettingsBase<UserInfoController> {
+public class UserInfoSettings extends CdbEntitySettingsBase<UserInfoController> {
     
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "UserInfo.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "UserInfo.List.Display.Id";

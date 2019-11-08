@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class PropertyMetadataSettings extends SettingsBase<PropertyMetadataController> {
+public class PropertyMetadataSettings extends CdbEntitySettingsBase<PropertyMetadataController> {
     
     public PropertyMetadataSettings(PropertyMetadataController pmc) {
         super(pmc);

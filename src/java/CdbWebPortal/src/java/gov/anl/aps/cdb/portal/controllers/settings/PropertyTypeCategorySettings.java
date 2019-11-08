@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class PropertyTypeCategorySettings extends SettingsBase<PropertyTypeCategoryController> {
+public class PropertyTypeCategorySettings extends CdbEntitySettingsBase<PropertyTypeCategoryController> {
     
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyTypeCategory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyTypeCategory.List.Display.Id";

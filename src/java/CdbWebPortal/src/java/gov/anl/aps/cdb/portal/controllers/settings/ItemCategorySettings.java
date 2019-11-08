@@ -9,7 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 
-public class ItemCategorySettings extends SettingsBase<ItemCategoryController> {
+public class ItemCategorySettings extends CdbEntitySettingsBase<ItemCategoryController> {
     
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemCategory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "ItemCategory.List.Display.Id";

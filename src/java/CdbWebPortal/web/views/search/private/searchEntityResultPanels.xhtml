@@ -7,9 +7,19 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-
+    
+    <ui:param name="entitySettingObject" value="#{searchController.searchSettings}" />
+   
+    <p:panel header="#{itemDomainMachineDesignController.displayEntityTypeName}s"
+             rendered="#{entitySettingObject.displayMachineDesignItems}"
+             collapsed="#{!itemDomainMachineDesignController.displaySearchResultList}"
+             toggleable="true">
+        <ui:include src="../../itemDomainMachineDesign/private/itemDomainMachineDesignSearchTreeTable.xhtml"/>
+        
+    </p:panel>
+    
     <p:panel header="#{itemDomainCatalogController.displayEntityTypeName}s"
-             rendered="#{searchController.displayCatalogItems}"
+             rendered="#{entitySettingObject.displayCatalogItems}"
              collapsed="#{!itemDomainCatalogController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../item/private/itemSearchDataTable.xhtml">
@@ -18,7 +28,7 @@ See LICENSE file.
     </p:panel>
 
     <p:panel header="#{itemDomainInventoryController.displayEntityTypeName}s"
-             rendered="#{searchController.displayInventoryItems}"
+             rendered="#{entitySettingObject.displayInventoryItems}"
              collapsed="#{!itemDomainInventoryController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../item/private/itemSearchDataTable.xhtml">
@@ -27,14 +37,14 @@ See LICENSE file.
     </p:panel>
 
     <p:panel header="Item Elements" 
-             rendered="#{searchController.displayItemElements}"
+             rendered="#{entitySettingObject.displayItemElements}"
              collapsed="#{!itemElementController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../itemElement/private/itemElementSearchDataTable.xhtml"/>
     </p:panel>
 
     <p:panel header="#{itemDomainLocationController.displayEntityTypeName}s"
-             rendered="#{searchController.displayLocationItems}"
+             rendered="#{entitySettingObject.displayLocationItems}"
              collapsed="#{!itemDomainLocationController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../item/private/itemSearchDataTable.xhtml">
@@ -43,14 +53,14 @@ See LICENSE file.
     </p:panel>
 
     <p:panel header="Item Categories" 
-             rendered="#{searchController.displayItemCategories}"
+             rendered="#{entitySettingObject.displayItemCategories}"
              collapsed="#{!itemCategoryController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../itemCategory/private/itemCategorySearchDataTable.xhtml"/>
     </p:panel> 
 
     <p:panel header="Item Types" 
-             rendered="#{searchController.displayItemTypes}"
+             rendered="#{entitySettingObject.displayItemTypes}"
              collapsed="#{!itemTypeController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../itemType/private/itemTypeSearchDataTable.xhtml"/>
@@ -58,28 +68,28 @@ See LICENSE file.
 
 
     <p:panel header="Property Types" 
-             rendered="#{searchController.displayPropertyTypes}"
+             rendered="#{entitySettingObject.displayPropertyTypes}"
              collapsed="#{!propertyTypeController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../propertyType/private/propertyTypeSearchDataTable.xhtml"/>
     </p:panel>   
 
     <p:panel header="Property Type Categories" 
-             rendered="#{searchController.displayPropertyTypeCategories}"
+             rendered="#{entitySettingObject.displayPropertyTypeCategories}"
              collapsed="#{!propertyTypeCategoryController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../propertyTypeCategory/private/propertyTypeCategorySearchDataTable.xhtml"/>
     </p:panel>  
 
     <p:panel header="Sources" 
-             rendered="#{searchController.displaySources}"
+             rendered="#{entitySettingObject.displaySources}"
              collapsed="#{!sourceController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../source/private/sourceSearchDataTable.xhtml"/>
     </p:panel>                              
 
     <p:panel header="Users" 
-             rendered="#{searchController.displayUsers}"
+             rendered="#{entitySettingObject.displayUsers}"
              collapsed="#{!userInfoController.displaySearchResultList}"
              toggleable="true"                                         
              >
@@ -87,7 +97,7 @@ See LICENSE file.
     </p:panel>
 
     <p:panel header="User Groups" 
-             rendered="#{searchController.displayUserGroups}"
+             rendered="#{entitySettingObject.displayUserGroups}"
              collapsed="#{!userGroupController.displaySearchResultList}"
              toggleable="true">
         <ui:include src="../../userGroup/private/userGroupSearchDataTable.xhtml"/>

@@ -6,21 +6,16 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui">  
 
-    <p:dataTable id="#{itemDomainController.entityTypeName}SearchDataTable" 
-                 var="searchResultObject" 
-                 value="#{itemDomainController.searchResultList}" 
-                 paginator="true" 
-                 paginatorAlwaysVisible="false" 
-                 rows="#{searchController.searchSettings.displayNumberOfItemsPerPage}" 
-                 emptyMessage="No items match.">
-
+    <p:treeTable value="#{itemDomainMachineDesignController.hierarchicalSearchResults}"
+                 var="searchResultObject"
+                 rowStyleClass="#{searchResultObject.rowStyle}">
         <ui:include src="../../search/private/searchResultListObject.xhtml">
             <ui:param name="entityName" value="item"/>
             <ui:param name="entityTitle" value="#{itemDomainController.displayEntityTypeName}"/>
         </ui:include>
-    </p:dataTable>
+    </p:treeTable>
 
 </ui:composition>
 

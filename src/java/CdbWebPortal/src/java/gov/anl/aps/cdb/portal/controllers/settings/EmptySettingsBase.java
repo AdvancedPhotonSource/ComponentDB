@@ -14,7 +14,7 @@ import org.primefaces.component.datatable.DataTable;
  */
 public abstract class EmptySettingsBase implements ICdbSettings {
     
-    private static final Logger logger = Logger.getLogger(SettingsBase.class.getName());
+    private static final Logger logger = Logger.getLogger(CdbEntitySettingsBase.class.getName());
 
     @Override
     public boolean updateSettings() {
