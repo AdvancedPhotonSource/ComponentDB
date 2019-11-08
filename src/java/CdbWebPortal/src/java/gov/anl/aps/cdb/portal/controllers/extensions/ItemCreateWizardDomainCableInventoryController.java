@@ -49,22 +49,6 @@ public class ItemCreateWizardDomainCableInventoryController extends ItemCreateWi
         return (ItemCreateWizardDomainCableInventoryController) SessionUtility.findBean(controllerNamed);
     }
     
-    public boolean isAllowedSetDerivedFromItemForCurrentItem() {
-        if (getCurrent() != null) {
-            return !getCurrent().isIsCloned();
-        }
-
-        return false;
-    }
-    
-//    public boolean isAllowedSetDerivedFromItemForCurrentItem() {
-//        if (getCurrent() != null) {
-//            return !getCurrent().isIsCloned();
-//        }
-//
-//        return false;
-//    }
-//
     @Override
     protected String getCreateItemWizardMenuItemValue(ItemCreateWizardSteps step) {
         switch (step) {
@@ -74,8 +58,6 @@ public class ItemCreateWizardDomainCableInventoryController extends ItemCreateWi
                 return null;
             case permissions:
                 return null;
-//            case reviewSave:
-//                return null;
             default:
                 break;
         }
@@ -83,32 +65,6 @@ public class ItemCreateWizardDomainCableInventoryController extends ItemCreateWi
         return super.getCreateItemWizardMenuItemValue(step);
     }
 
-//    @Override
-//    protected String getCreateItemWizardMenuItemCustomValue(String stepName) {
-//        if (stepName.equals(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP)) {
-//            return "Bill of Materials";
-//        }
-//
-//        return super.getCreateItemWizardMenuItemCustomValue(stepName);
-//    }
-//
-//    @Override
-//    public MenuModel getCreateItemWizardStepsMenuModel() {
-//        if (createItemWizardStepsMenuModel == null) {
-//            // Create all of the standard menu items.
-//            super.getCreateItemWizardStepsMenuModel();
-//
-//            DefaultMenuItem menuItem;
-//            String menuItemDisplayValue = getCreateItemWizardMenuItemCustomValue(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP);
-//            menuItem = createMenuItemForCreateWizardSteps(menuItemDisplayValue, ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP);
-//
-//            createItemWizardStepsMenuModel.addElement(menuItem);
-//
-//        }
-//
-//        return createItemWizardStepsMenuModel;
-//    }
-//
     @Override
     public String getNextStepForCreateItemWizard(FlowEvent event) {
         if (getCurrent().getDerivedFromItem() == null) {
@@ -130,4 +86,8 @@ public class ItemCreateWizardDomainCableInventoryController extends ItemCreateWi
         return ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP;
     }
             
+    public boolean isAllowedSetDerivedFromItemForCurrentItem() {
+        return false;
+    }
+
 }

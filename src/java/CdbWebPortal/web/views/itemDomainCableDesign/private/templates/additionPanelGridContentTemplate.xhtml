@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <p:panelGrid columns="2" styleClass="#{panelGridStyle}">
+
+        <p:outputLabel value="Endpoint1" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <p:commandLink id="endpoint1EditShowButton"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
+                           action='#{entityController.prepareDialogEndpoint1()}'
+                           rendered="#{isEntityWriteable}"
+                           update="dialogEndpoint">
+                <p:tooltip for="endpoint1EditShowButton"
+                           value="Edit First Endpoint" />
+            </p:commandLink>
+
+            <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="viewName"
+                          value="endpoint1"/>
+                <ui:param name="itemObject"
+                          value="#{itemObject.endpoint1}"/>
+            </ui:include>
+        </p:outputPanel>
+
+        <p:outputLabel value="Endpoint2" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <p:commandLink id="endpoint2EditShowButton"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
+                           action='#{entityController.prepareDialogEndpoint2()}'
+                           rendered="#{isEntityWriteable}"
+                           update="dialogEndpoint">
+                <p:tooltip for="endpoint2EditShowButton"
+                           value="Edit Second Endpoint" />
+            </p:commandLink>
+            <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="viewName"
+                          value="endpoint2"/>
+                <ui:param name="itemObject"
+                          value="#{itemObject.endpoint2}"/>
+            </ui:include>
+        </p:outputPanel>
+
+        <p:outputLabel value="Assigned Catalog Item" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <p:commandLink id="catalogEditShowButton"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();PF('catalogDialog').show();"
+                           action='#{entityController.prepareDialogCatalog()}'
+                           rendered="#{isEntityWriteable}"
+                           update="dialogCatalog">
+                <p:tooltip for="catalogEditShowButton"
+                           value="Edit Assigned Catalog Item" />
+            </p:commandLink>
+            <h:outputText value="#{itemObject.getCatalogItemString()}" 
+                          title="Assigned Catalog Item" 
+                          styleClass="entityDataEmphasizedText" />
+        </p:outputPanel>
+
+
+        <ui:include src="../endpointDialog.xhtml" >
+        </ui:include>
+
+        <ui:include src="../catalogDialog.xhtml" >
+        </ui:include>
+
+    </p:panelGrid>
+
+</ui:composition>
