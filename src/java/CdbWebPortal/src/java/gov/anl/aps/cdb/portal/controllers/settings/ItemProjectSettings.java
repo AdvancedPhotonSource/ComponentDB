@@ -15,7 +15,7 @@ import java.util.Objects;
  *
  * @author djarosz
  */
-public class ItemProjectSettings extends SettingsBase<ItemProjectController> {
+public class ItemProjectSettings extends CdbEntitySettingsBase<ItemProjectController> {
     
     private static final String SystemItemProjectIdSettingTypeKey = "ItemProject.System.ItemProjectId";
     

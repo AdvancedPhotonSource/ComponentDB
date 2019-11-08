@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class UserRoleSettings extends SettingsBase<UserRoleController> {
+public class UserRoleSettings extends CdbEntitySettingsBase<UserRoleController> {
 
     public UserRoleSettings(UserRoleController parentController) {
         super(parentController);
