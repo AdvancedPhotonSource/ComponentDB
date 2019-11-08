@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -20,11 +21,13 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import javax.ejb.EJB;
@@ -56,6 +59,8 @@ public class ItemDomainMachineDesignController
 
     private MachineDesignConnectorCableMapperItem mdccmi;
     private List<MachineDesignConnectorListObject> mdConnectorList; 
+    
+    private TreeNode searchResultsTreeNode; 
 
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private Boolean createCatalogElement = null;
@@ -1051,9 +1056,89 @@ public class ItemDomainMachineDesignController
         return newCatalogItemsInMachineDesignModel;
     }
 
+    @Override
+    public void resetSearchVariables() {
+        super.resetSearchVariables(); 
+        searchResultsTreeNode = null; 
+    }
+      
+    public TreeNode getHierarchicalSearchResults() {
+        if (searchResultsTreeNode != null) {
+            return searchResultsTreeNode;
+        }
+        LinkedList<SearchResult> searchResultList = getSearchResultList();
+        TreeNode rootTreeNode = new DefaultTreeNode(); 
+        if (searchResultList != null) {
+            for (SearchResult result : searchResultList) {
+                result.setRowStyle(SearchResult.SEARCH_RESULT_ROW_STYLE);
+                
+                ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) result.getCdbEntity();
+                                
+                ItemDomainMachineDesign parent = mdItem.getParentMachineDesign();
+                
+                TreeNode resultNode = new DefaultTreeNode(result);                
+                
+                List<ItemDomainMachineDesign> parents = new ArrayList<>();
+                
+                while (parent != null) {
+                    parents.add(parent);
+                    parent = parent.getParentMachineDesign();
+                }
+                                
+                TreeNode currentRoot = rootTreeNode; 
+                
+                // Combine common parents 
+                parentSearch: 
+                for (int i = parents.size() -1; i >= 0; i--) {
+                    ItemDomainMachineDesign currentParent = parents.get(i);
+                            
+                    for (TreeNode node : currentRoot.getChildren()) {
+                        Object data = node.getData();
+                        SearchResult searchResult = (SearchResult) data;
+                        CdbEntity cdbEntity = searchResult.getCdbEntity();
+                        ItemDomainMachineDesign itemResult = (ItemDomainMachineDesign) cdbEntity;
+                        
+                        if (itemResult.equals(currentParent)) {
+                            currentRoot = node; 
+                            continue parentSearch; 
+                        }
+                    }
+                    
+                    // Need to create parentNode
+                    SearchResult parentResult = new SearchResult(currentParent, currentParent.getId(), currentParent.getName());
+                    parentResult.addAttributeMatch("Reason", "Parent of Result");
+                    
+                    TreeNode newRoot = new DefaultTreeNode(parentResult);
+                    newRoot.setExpanded(true);
+                    currentRoot.getChildren().add(newRoot);
+                    currentRoot = newRoot;                     
+                } 
+                
+                currentRoot.getChildren().add(resultNode);
+                
+                List<ItemElement> childElements = mdItem.getItemElementDisplayList();
+                
+                for (ItemElement childElement : childElements) {
+                    Item mdChild = childElement.getContainedItem();
+                    SearchResult childResult = new SearchResult(mdChild, mdChild.getId(), mdChild.getName());
+                    childResult.addAttributeMatch("Reason", "Child of result");
+                    
+                    TreeNode resultChildNode = new DefaultTreeNode(childResult); 
+                    resultNode.getChildren().add(resultChildNode); 
+                }                                
+            }
+        }
+        searchResultsTreeNode = rootTreeNode;
+        return searchResultsTreeNode;
+    }
+
     private void syncMachineDesignConnectors(ItemDomainMachineDesign item) {
         List<ItemConnector> itemConnectorList = item.getItemConnectorList();
         List<ItemConnector> connectorsFromAssignedCatalogItem = getConnectorsFromAssignedCatalogItem(item);
+        
+        if (connectorsFromAssignedCatalogItem == null) {
+            return;
+        }
         
         if (itemConnectorList.size() == 0) {
             // Sync all connectors into machine design
