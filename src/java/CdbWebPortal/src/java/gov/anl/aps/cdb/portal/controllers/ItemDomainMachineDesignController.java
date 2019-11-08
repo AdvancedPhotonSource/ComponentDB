@@ -51,6 +51,8 @@ public class ItemDomainMachineDesignController
     private static final Logger LOGGER = Logger.getLogger(ItemDomainMachineDesignController.class.getName());
 
     public final static String controllerNamed = "itemDomainMachineDesignController";
+    private final static String cableWizardRedirectSuccess = 
+            "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
     private List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
 
@@ -1123,7 +1125,7 @@ public class ItemDomainMachineDesignController
 
         // create model for wizard
         ItemDomainCableDesignWizard addCableWizard = ItemDomainCableDesignWizard.getInstance();
-        addCableWizard.registerClient(this);
+        addCableWizard.registerClient(this, cableWizardRedirectSuccess);
         addCableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
 
         displayListConfigurationView = true;

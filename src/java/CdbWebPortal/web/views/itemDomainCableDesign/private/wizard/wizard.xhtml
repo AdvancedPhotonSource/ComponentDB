@@ -59,8 +59,8 @@ See LICENSE file.
                                 <ui:param name="selectionModel" value="#{cableWizard.selectionEndpoint2}" /> 
                                 <ui:param name="rendered" value="#{true}" />
                                 <ui:param name="scrollable" value="#{true}" />
-
-                                <ui:define name="treeTableEvents">
+ 
+                               <ui:define name="treeTableEvents">
                                     <p:ajax event="select" 
                                             listener="#{cableWizard.selectListenerEndpoint2}" 
                                             oncomplete="updateWizardButtons();" />
