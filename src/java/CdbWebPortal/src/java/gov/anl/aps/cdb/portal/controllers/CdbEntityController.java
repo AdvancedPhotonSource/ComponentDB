@@ -24,9 +24,7 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
-import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import java.io.IOException;
 
@@ -65,10 +63,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private static final Logger logger = Logger.getLogger(CdbEntityController.class.getName());
 
     @EJB
-    private LogTopicFacade logTopicFacade;
-
-    @EJB
-    private SettingTypeFacade settingTypeFacade;
+    private LogTopicFacade logTopicFacade;   
 
     protected SettingObject settingObject = null;
 
@@ -93,9 +88,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     private String searchString = null;
     private boolean caseInsensitive = true;
-    private LinkedList<SearchResult> searchResultList;
-
-    protected List<SettingType> settingTypeList;
+    private LinkedList<SearchResult> searchResultList;   
     
     protected String contextRootPermanentUrl; 
 
@@ -1515,7 +1508,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         // Start new search
         this.searchString = searchString;
         this.caseInsensitive = caseInsensitive;
-        searchResultList = new LinkedList<>(); 
+        resetSearchVariables();
         
         Pattern searchPattern;
         if (caseInsensitive) {
@@ -1537,6 +1530,10 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             }
 
         }
+    }
+    
+    public void resetSearchVariables() {
+       searchResultList = new LinkedList<>();  
     }
 
     public LinkedList<SearchResult> getSearchResultList() {
@@ -1593,21 +1590,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     public SettingObject getSettingObject() {
         return settingObject;
-    }
-
-    /**
-     * Get list of setting types.
-     *
-     * If not set, this list is retrieved from the database.
-     *
-     * @return setting type list
-     */
-    public List<SettingType> getSettingTypeList() {
-        if (settingTypeList == null) {
-            settingTypeList = settingTypeFacade.findAll();
-        }
-        return settingTypeList;
-    }
+    }    
 
     public Boolean getDisplayLoadPropertyValuesButton() {
         return false;
