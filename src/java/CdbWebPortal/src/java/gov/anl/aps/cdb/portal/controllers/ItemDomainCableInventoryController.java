@@ -5,6 +5,8 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCableInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableInventorySettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
@@ -48,7 +50,28 @@ public class ItemDomainCableInventoryController extends ItemController<ItemDomai
         }
     }        
 
+    @Override
+    protected ItemCreateWizardController getItemCreateWizardController() {
+        return ItemCreateWizardDomainCableInventoryController.getInstance();
+    }
+
+    @Override
+    public String prepareCreate() {
+        ItemController derivedItemController = getDefaultDomainDerivedFromDomainController();
+        if (derivedItemController != null) {
+            derivedItemController.getSelectedObjectAndResetDataModel();
+            derivedItemController.getSettingObject().clearListFilters();
+            derivedItemController.setFilteredObjectList(null);
+        }
+
+        String createResult = super.prepareCreate();
+
+        return createResult;
+    }
+
     public void setDefaultValuesForCurrentItem() {
+        
+        System.out.println("entering");
         // get cable catalog item for this cable inventory
         ItemDomainCableInventory cableInventoryItem = getCurrent();
         if (cableInventoryItem != null) {
@@ -77,12 +100,14 @@ public class ItemDomainCableInventoryController extends ItemController<ItemDomai
                         if (inventoryItemList.contains(cableInventoryItem)) {
                             // Remove since it is not yet existing. 
                             inventoryItemList.remove(cableInventoryItem);
+                            System.out.println("removing");
                         }
                     }
                     DataModel cableInventoryDataModel = 
                             new ListDataModel(inventoryItemList);
                     cableInventoryItem.setName("Unit: " + 
                             (cableInventoryDataModel.getRowCount() + 1) + "");
+                    System.out.println(cableInventoryDataModel.getRowCount() + 1);
                 }
             }
         }
@@ -179,6 +204,15 @@ public class ItemDomainCableInventoryController extends ItemController<ItemDomai
     @Override
     public boolean getEntityDisplayItemProject() {
         return false; 
+    }
+
+    @Override
+    public boolean isAllowedSetDerivedFromItemForCurrentItem() {
+        if (getCurrent() != null) {
+            return !getCurrent().isIsCloned();
+        }
+
+        return false;
     }
 
     @Override
