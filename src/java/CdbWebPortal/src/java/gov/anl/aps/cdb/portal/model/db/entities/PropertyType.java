@@ -346,7 +346,7 @@ public class PropertyType extends CdbEntity implements Serializable {
 
     @Override
     public SearchResult search(Pattern searchPattern) {
-        SearchResult searchResult = new SearchResult(id, name);
+        SearchResult searchResult = new SearchResult(this, id, name);
         searchResult.doesValueContainPattern("name", name, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
         return searchResult;

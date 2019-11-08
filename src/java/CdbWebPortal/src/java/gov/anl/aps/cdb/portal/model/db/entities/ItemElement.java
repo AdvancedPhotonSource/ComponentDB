@@ -523,7 +523,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
             identifier = "Child of: " + parentItem.getName();
         }
 
-        searchResult = new SearchResult(id, identifier);
+        searchResult = new SearchResult(this, id, identifier);
 
         searchResult.doesValueContainPattern("name", name, searchPattern);
         searchResult.doesValueContainPattern("description", description, searchPattern);
