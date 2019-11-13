@@ -8,20 +8,8 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../itemMultiEdit/private/templates/itemCreateMultipleTemplate.xhtml">
 
-    <ui:param name="entityController" value="#{itemMultiEditDomainCatalogController}" />
-    
-    <ui:define name="pluginOptionsAccordionPanelTabs">
-        <ui:include src="private/itemDomainCatalogPluginMultiEditConfigurationTabs.xhtml" />        
-    </ui:define>
-    
-    <ui:define name="pluginOptionsEditableListObject">
-        <ui:include src="../plugins/private/catalogMultiEditEditableListObjects.xhtml" />
-    </ui:define>    
-    
-    <ui:define name="pluginEditableListSupport">
-        <ui:include src="../plugins/private/catalogMultiEditEditableListSupports.xhtml" />
-    </ui:define>
-    
+    <ui:param name="entityController" value="#{itemMultiEditDomainCableCatalogController}" />
+
 </ui:composition>
 
 
