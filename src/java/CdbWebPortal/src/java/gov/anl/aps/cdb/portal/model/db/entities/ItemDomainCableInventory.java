@@ -14,7 +14,7 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_INVENTORY_ID + "")   
-public class ItemDomainCableInventory extends Item {
+public class ItemDomainCableInventory extends ItemDomainInventoryBase {
 
     @Override
     public Item createInstance() {

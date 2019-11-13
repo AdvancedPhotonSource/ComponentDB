@@ -18,14 +18,9 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CATALOG_ID + "")  
-public class ItemDomainCatalog extends Item {
+public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory> {
     
-    private transient String machineDesignPlaceholderName = null; 
-    
-    @JsonIgnore
-    public List<ItemDomainInventory> getInventoryItemList() {
-        return (List<ItemDomainInventory>)(List<?>) super.getDerivedFromItemList(); 
-    }        
+    private transient String machineDesignPlaceholderName = null;         
 
     @Override
     public Item createInstance() {
