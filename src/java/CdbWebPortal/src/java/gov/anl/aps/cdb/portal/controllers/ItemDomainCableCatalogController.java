@@ -5,9 +5,12 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableCatalogSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -18,12 +21,26 @@ import javax.inject.Named;
  */
 @Named(ItemDomainCableCatalogController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainCableCatalogController extends ItemController<ItemDomainCableCatalog, ItemDomainCableCatalogFacade, ItemDomainCableCatalogSettings> {
+public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseController<ItemDomainCableCatalog, ItemDomainCableCatalogFacade, ItemDomainCableCatalogSettings> {
     
     public static final String CONTROLLER_NAMED = "itemDomainCableCatalogController";
     
     @EJB
     ItemDomainCableCatalogFacade itemDomainCableCatalogFacade; 
+    
+    public static ItemDomainCableCatalogController getInstance() {
+        if (SessionUtility.runningFaces()) {
+            return (ItemDomainCableCatalogController) SessionUtility.findBean(ItemDomainCableCatalogController.CONTROLLER_NAMED);
+        } else {
+            // TODO add apiInstance
+            return null;
+        }
+    }
+    
+    @Override
+    public ItemMultiEditController getItemMultiEditController() {
+        return ItemMultiEditDomainCableCatalogController.getInstance();
+    } 
 
     @Override
     protected ItemDomainCableCatalog instenciateNewItemDomainEntity() {
