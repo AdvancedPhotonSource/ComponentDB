@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
@@ -39,6 +40,7 @@ import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.authentication.User;
 import gov.anl.aps.cdb.rest.entities.FileUploadObject;
 import gov.anl.aps.cdb.rest.entities.ItemDomainCatalogSearchResult;
+import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemLocationInformation;
 import gov.anl.aps.cdb.rest.entities.ItemSearchResults;
@@ -63,6 +65,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
+import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -662,13 +665,16 @@ public class ItemRoute extends BaseRoute {
         
         ItemDomainCatalogController catalogInstance = ItemDomainCatalogController.getApiInstance();
         ItemDomainInventoryController inventoryInstance = ItemDomainInventoryController.getApiInstance();
+        ItemDomainMachineDesignController mdInstance = ItemDomainMachineDesignController.getApiInstance(); 
         
         catalogInstance.performEntitySearch(searchText, true);        
         LinkedList<SearchResult> catalogResults = catalogInstance.getSearchResultList();
         inventoryInstance.performEntitySearch(searchText, true);
         LinkedList<SearchResult> inventoryResults = inventoryInstance.getSearchResultList();
+        mdInstance.performEntitySearch(searchText, true);
+        LinkedList<SearchResult> mdResults = mdInstance.getSearchResultList(); 
         
-        return new ItemSearchResults(catalogResults, inventoryResults);
+        return new ItemSearchResults(catalogResults, inventoryResults, mdResults);
     }
     
     @GET
@@ -690,6 +696,26 @@ public class ItemRoute extends BaseRoute {
         }
         
         return detailedSearchResults; 
+    }
+    
+    @GET
+    @Path("/DetailedMachineDesignSearch/{searchText}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainMdSearchResult> getDetailedMdSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
+        LOGGER.debug("Performing a detailed machine design item search for search query: " + searchText);
+        
+        ItemDomainMachineDesignController mdInstance = ItemDomainMachineDesignController.getApiInstance();
+        
+        TreeNode rootNode = mdInstance.getSearchResults(searchText, true);
+        
+        List<TreeNode> children = rootNode.getChildren();
+        List<ItemDomainMdSearchResult> itemHierarchy = new ArrayList<>(); 
+        for (TreeNode child: children) {
+            ItemDomainMdSearchResult hierarchy = new ItemDomainMdSearchResult(child);
+            itemHierarchy.add(hierarchy); 
+        }
+        
+        return itemHierarchy; 
     }
     
     private UserInfo getCurrentRequestUserInfo() {

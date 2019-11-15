@@ -10,7 +10,6 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainMachineDesignCreateOptions;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -63,6 +62,8 @@ public class ItemDomainMachineDesignController
     private List<MachineDesignConnectorListObject> mdConnectorList; 
     
     private TreeNode searchResultsTreeNode; 
+    
+    private static ItemDomainMachineDesignController apiInstance;
 
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private Boolean createCatalogElement = null;
@@ -109,13 +110,24 @@ public class ItemDomainMachineDesignController
 
     // </editor-fold>
     @EJB
-    ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
-
-    @EJB
-    RelationshipTypeFacade relationshipTypeFacade;
+    ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;   
 
     public static ItemDomainMachineDesignController getInstance() {
         return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
+    }
+    
+    public static synchronized ItemDomainMachineDesignController getApiInstance() {
+        if (apiInstance == null) {
+            apiInstance = new ItemDomainMachineDesignController();            
+            apiInstance.prepareApiInstance(); 
+        }
+        return apiInstance;
+    }
+
+    @Override
+    protected void loadEJBResourcesManually() {
+        super.loadEJBResourcesManually();
+        itemDomainMachineDesignFacade = ItemDomainMachineDesignFacade.getInstance();        
     }
 
     public boolean getCurrentHasInventoryItem() {
@@ -1063,7 +1075,12 @@ public class ItemDomainMachineDesignController
         super.resetSearchVariables(); 
         searchResultsTreeNode = null; 
     }
-      
+    
+    public synchronized TreeNode getSearchResults(String searchString, boolean caseInsensitive) {
+        this.performEntitySearch(searchString, caseInsensitive);
+        return getHierarchicalSearchResults();        
+    }
+    
     public TreeNode getHierarchicalSearchResults() {
         if (searchResultsTreeNode != null) {
             return searchResultsTreeNode;
