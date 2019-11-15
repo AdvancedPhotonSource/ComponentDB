@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.utilities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import java.util.HashMap;
 import java.util.regex.Pattern;
@@ -27,6 +28,14 @@ public class SearchResult {
         this.objectName = objectName;
     }
 
+    public SearchResult(SearchResult result) {
+        this.cdbEntity = result.cdbEntity;
+        this.objectId = result.objectId;
+        this.objectName = result.objectName; 
+        this.objectAttributeMatchMap = result.objectAttributeMatchMap; 
+    }
+
+    @JsonIgnore
     public CdbEntity getCdbEntity() {
         return cdbEntity;
     }
@@ -39,6 +48,7 @@ public class SearchResult {
         return objectName;
     }
 
+    @JsonIgnore
     public String getRowStyle() {
         return rowStyle;
     }
