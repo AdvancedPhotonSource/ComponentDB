@@ -10,8 +10,6 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesDomainCatalogController;
-import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
-import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
