@@ -6,7 +6,6 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
-import gov.anl.aps.cdb.portal.constants.ItemDomainMachineDesignCreateOptions;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
@@ -31,7 +30,6 @@ import java.util.List;
 import java.util.Stack;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.inject.Named;
@@ -53,16 +51,16 @@ public class ItemDomainMachineDesignController
     private static final Logger LOGGER = Logger.getLogger(ItemDomainMachineDesignController.class.getName());
 
     public final static String controllerNamed = "itemDomainMachineDesignController";
-    private final static String cableWizardRedirectSuccess = 
-            "/views/itemDomainMachineDesign/list?faces-redirect=true";
+    private final static String cableWizardRedirectSuccess
+            = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
     private List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
 
     private MachineDesignConnectorCableMapperItem mdccmi;
-    private List<MachineDesignConnectorListObject> mdConnectorList; 
-    
-    private TreeNode searchResultsTreeNode; 
-    
+    private List<MachineDesignConnectorListObject> mdConnectorList;
+
+    private TreeNode searchResultsTreeNode;
+
     private static ItemDomainMachineDesignController apiInstance;
 
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
@@ -93,8 +91,7 @@ public class ItemDomainMachineDesignController
     private boolean currentViewIsTemplate = false;
 
     private boolean displayListConfigurationView = false;
-    private boolean displayListViewItemDetailsView = false;
-    private boolean displayAddMachineDesignListConfigurationPanel = true;
+    private boolean displayListViewItemDetailsView = false;    
     private boolean displayAddMDPlaceholderListConfigurationPanel = true;
     private boolean displayAddMDFromTemplateConfigurationPanel = true;
     private boolean displayAddMDMoveExistingConfigurationPanel = true;
@@ -106,20 +103,20 @@ public class ItemDomainMachineDesignController
     private boolean displayAddCableListConfigurationPanel = true;
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
-    private TreeNode newCatalogItemsInMachineDesignModel = null;
+    private TreeNode newCatalogItemsInMachineDesignModel = null;    
 
     // </editor-fold>
     @EJB
-    ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;   
+    ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
 
     public static ItemDomainMachineDesignController getInstance() {
         return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
     }
-    
+
     public static synchronized ItemDomainMachineDesignController getApiInstance() {
         if (apiInstance == null) {
-            apiInstance = new ItemDomainMachineDesignController();            
-            apiInstance.prepareApiInstance(); 
+            apiInstance = new ItemDomainMachineDesignController();
+            apiInstance.prepareApiInstance();
         }
         return apiInstance;
     }
@@ -127,7 +124,7 @@ public class ItemDomainMachineDesignController
     @Override
     protected void loadEJBResourcesManually() {
         super.loadEJBResourcesManually();
-        itemDomainMachineDesignFacade = ItemDomainMachineDesignFacade.getInstance();        
+        itemDomainMachineDesignFacade = ItemDomainMachineDesignFacade.getInstance();
     }
 
     public boolean getCurrentHasInventoryItem() {
@@ -376,8 +373,7 @@ public class ItemDomainMachineDesignController
 
     public void resetListConfigurationVariables() {
         displayListConfigurationView = false;
-        displayListViewItemDetailsView = false;
-        displayAddMachineDesignListConfigurationPanel = false;
+        displayListViewItemDetailsView = false;        
         displayAddMDPlaceholderListConfigurationPanel = false;
         displayAddMDFromTemplateConfigurationPanel = false;
         displayAddMDMoveExistingConfigurationPanel = false;
@@ -390,20 +386,6 @@ public class ItemDomainMachineDesignController
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
-    }
-
-    public ItemDomainMachineDesignCreateOptions[] getItemDomainMachineDesignCreateOptions() {
-        if (currentViewIsTemplate) {
-            ItemDomainMachineDesignCreateOptions[] opts = new ItemDomainMachineDesignCreateOptions[3];
-
-            opts[0] = (ItemDomainMachineDesignCreateOptions.newMachineDesign);
-            opts[1] = (ItemDomainMachineDesignCreateOptions.catalog);
-            opts[2] = (ItemDomainMachineDesignCreateOptions.assignExisting);
-
-            return opts;
-        } else {
-            return ItemDomainMachineDesignCreateOptions.values();
-        }
     }
 
     public ItemDomainMachineDesign createEntityInstanceForDualTreeView() {
@@ -427,36 +409,29 @@ public class ItemDomainMachineDesignController
 
         return newInstance;
     }
+    
+    public void prepareAddPlaceholder() {
+        prepareAddNewMachineDesignListConfiguration();
+        
+        displayAddMDPlaceholderListConfigurationPanel = true;
+        ItemDomainMachineDesign newItem = createEntityInstanceForDualTreeView();
 
-    public void valueChanged(ValueChangeEvent event) {
-        String selectedOption = (String) event.getNewValue();
-
-        resetListConfigurationVariables();
-
-        displayListConfigurationView = true;
-
-        if (ItemDomainMachineDesignCreateOptions.catalog.getValue().equals(selectedOption)) {
-            displayAddCatalogItemListConfigurationPanel = true;
-        } else if (ItemDomainMachineDesignCreateOptions.newMachineDesign.getValue().equals(selectedOption)) {
-            displayAddMDPlaceholderListConfigurationPanel = true;
-            ItemDomainMachineDesign newItem = createEntityInstanceForDualTreeView();
-
-            currentEditItemElement.setContainedItem(newItem);
-        } else if (ItemDomainMachineDesignCreateOptions.template.getValue().equals(selectedOption)) {
-            displayAddMDFromTemplateConfigurationPanel = true;
-        } else if (ItemDomainMachineDesignCreateOptions.assignExisting.getValue().equals(selectedOption)) {
-            displayAddMDMoveExistingConfigurationPanel = true;
-        } else {
-            displayListConfigurationView = false;
-        }
+        currentEditItemElement.setContainedItem(newItem);
     }
-
-    public void setCreateMachineDesignViewOption(String option) {
-
+    
+    public void prepareAddMdFromPlaceholder() {
+        prepareAddNewMachineDesignListConfiguration();
+        displayAddMDFromTemplateConfigurationPanel = true;
     }
-
-    public String getCreateMachineDesignViewOption() {
-        return null;
+    
+    public void prepareAddMdFromCatalog() {
+        prepareAddNewMachineDesignListConfiguration();
+        displayAddCatalogItemListConfigurationPanel = true;
+    }
+    
+    public void prepareAddMoveExistingMd() {
+        prepareAddNewMachineDesignListConfiguration();
+        displayAddMDMoveExistingConfigurationPanel = true;
     }
 
     public boolean isDisplayListConfigurationView() {
@@ -465,10 +440,6 @@ public class ItemDomainMachineDesignController
 
     public boolean isDisplayListViewItemDetailsView() {
         return displayListViewItemDetailsView;
-    }
-
-    public boolean isDisplayAddMachineDesignListConfigurationPanel() {
-        return displayAddMachineDesignListConfigurationPanel;
     }
 
     public boolean isDisplayAddMDPlaceholderListConfigurationPanel() {
@@ -667,8 +638,7 @@ public class ItemDomainMachineDesignController
     public void prepareAddNewMachineDesignListConfiguration() {
         updateCurrentUsingSelectedItemInTreeTable();
 
-        displayListConfigurationView = true;
-        displayAddMachineDesignListConfigurationPanel = true;
+        displayListConfigurationView = true;        
 
         prepareCreateSingleItemElementSimpleDialog();
 
@@ -1072,79 +1042,79 @@ public class ItemDomainMachineDesignController
 
     @Override
     public void resetSearchVariables() {
-        super.resetSearchVariables(); 
-        searchResultsTreeNode = null; 
+        super.resetSearchVariables();
+        searchResultsTreeNode = null;
     }
-    
+
     public synchronized TreeNode getSearchResults(String searchString, boolean caseInsensitive) {
         this.performEntitySearch(searchString, caseInsensitive);
-        return getHierarchicalSearchResults();        
+        return getHierarchicalSearchResults();
     }
-    
+
     public TreeNode getHierarchicalSearchResults() {
         if (searchResultsTreeNode != null) {
             return searchResultsTreeNode;
         }
         LinkedList<SearchResult> searchResultList = getSearchResultList();
-        TreeNode rootTreeNode = new DefaultTreeNode(); 
+        TreeNode rootTreeNode = new DefaultTreeNode();
         if (searchResultList != null) {
             for (SearchResult result : searchResultList) {
                 result.setRowStyle(SearchResult.SEARCH_RESULT_ROW_STYLE);
-                
+
                 ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) result.getCdbEntity();
-                                
+
                 ItemDomainMachineDesign parent = mdItem.getParentMachineDesign();
-                
-                TreeNode resultNode = new DefaultTreeNode(result);                
-                
+
+                TreeNode resultNode = new DefaultTreeNode(result);
+
                 List<ItemDomainMachineDesign> parents = new ArrayList<>();
-                
+
                 while (parent != null) {
                     parents.add(parent);
                     parent = parent.getParentMachineDesign();
                 }
-                                
-                TreeNode currentRoot = rootTreeNode; 
-                
+
+                TreeNode currentRoot = rootTreeNode;
+
                 // Combine common parents 
-                parentSearch: 
-                for (int i = parents.size() -1; i >= 0; i--) {
+                parentSearch:
+                for (int i = parents.size() - 1; i >= 0; i--) {
                     ItemDomainMachineDesign currentParent = parents.get(i);
-                            
+
                     for (TreeNode node : currentRoot.getChildren()) {
                         Object data = node.getData();
                         SearchResult searchResult = (SearchResult) data;
                         CdbEntity cdbEntity = searchResult.getCdbEntity();
                         ItemDomainMachineDesign itemResult = (ItemDomainMachineDesign) cdbEntity;
-                        
+
                         if (itemResult.equals(currentParent)) {
-                            currentRoot = node; 
-                            continue parentSearch; 
+                            currentRoot = node;
+                            continue parentSearch;
                         }
                     }
-                    
+
                     // Need to create parentNode
                     SearchResult parentResult = new SearchResult(currentParent, currentParent.getId(), currentParent.getName());
                     parentResult.addAttributeMatch("Reason", "Parent of Result");
-                    
+
                     TreeNode newRoot = new DefaultTreeNode(parentResult);
                     newRoot.setExpanded(true);
                     currentRoot.getChildren().add(newRoot);
-                    currentRoot = newRoot;                     
-                } 
-                
+                    currentRoot = newRoot;
+                }
+
                 currentRoot.getChildren().add(resultNode);
-                
+
                 List<ItemElement> childElements = mdItem.getItemElementDisplayList();
-                
+
                 for (ItemElement childElement : childElements) {
                     Item mdChild = childElement.getContainedItem();
                     SearchResult childResult = new SearchResult(mdChild, mdChild.getId(), mdChild.getName());
                     childResult.addAttributeMatch("Reason", "Child of result");
-                    
-                    TreeNode resultChildNode = new DefaultTreeNode(childResult); 
-                    resultNode.getChildren().add(resultChildNode); 
-                }                                
+
+                    TreeNode resultChildNode = new DefaultTreeNode(childResult);
+                    resultNode.getChildren().add(resultChildNode);
+                }
             }
         }
         searchResultsTreeNode = rootTreeNode;
@@ -1154,11 +1124,11 @@ public class ItemDomainMachineDesignController
     private void syncMachineDesignConnectors(ItemDomainMachineDesign item) {
         List<ItemConnector> itemConnectorList = item.getItemConnectorList();
         List<ItemConnector> connectorsFromAssignedCatalogItem = getConnectorsFromAssignedCatalogItem(item);
-        
+
         if (connectorsFromAssignedCatalogItem == null) {
             return;
         }
-        
+
         if (itemConnectorList.size() == 0) {
             // Sync all connectors into machine design
             for (ItemConnector cconnector : connectorsFromAssignedCatalogItem) {
@@ -1169,7 +1139,7 @@ public class ItemDomainMachineDesignController
         } else {
             // Verify if any new connections were created on the catalog             
             if (connectorsFromAssignedCatalogItem != null) {
-                
+
                 catConnFor:
                 for (ItemConnector catalogItemConn : connectorsFromAssignedCatalogItem) {
                     for (ItemConnector mdItemConn : itemConnectorList) {
@@ -1196,16 +1166,16 @@ public class ItemDomainMachineDesignController
         return mdConnector;
     }
 
-    public void prepareCableMappingDialog() {        
+    public void prepareCableMappingDialog() {
         ItemDomainMachineDesign item = getItemFromSelectedItemInTreeTable();
         // Refresh item from DB
         item = findById(item.getId());
-        
+
         setCurrent(item);
         prepareCableMappingDialogForCurrent();
     }
-    
-    public void prepareCableMappingDialogForCurrent(){           
+
+    public void prepareCableMappingDialogForCurrent() {
         mdccmi = new MachineDesignConnectorCableMapperItem(getMdConnectorListForCurrent());
     }
 
@@ -1261,10 +1231,10 @@ public class ItemDomainMachineDesignController
         }
         return mdConnectorList;
     }
-    
+
     public boolean getDisplayMdConnectorList() {
-        return getMdConnectorListForCurrent().size() > 0; 
-    }   
+        return getMdConnectorListForCurrent().size() > 0;
+    }
 
     // </editor-fold>    
     public boolean verifyValidTemplateName(String templateName, boolean printMessage) {
@@ -1806,7 +1776,7 @@ public class ItemDomainMachineDesignController
 
         relatedMAARCRelationshipsForCurrent = null;
         mdccmi = null;
-        mdConnectorList = null; 
+        mdConnectorList = null;
 
         resetItemElementEditVariables();
     }
