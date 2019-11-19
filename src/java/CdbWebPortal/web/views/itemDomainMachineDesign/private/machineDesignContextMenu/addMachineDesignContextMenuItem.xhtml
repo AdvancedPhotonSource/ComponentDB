@@ -8,12 +8,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
 
-    <p:menuitem value="Add Item" icon="ui-icon-machine-design"
+    <p:menuitem value="#{value}" icon="#{icon}"
                 update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel"
                 disabled="#{disabledEditContextMenuItemForSelection}"
-                immediate="true"
-                oncomplete="updateMachineDesignAddOptions()"
-                action='#{entityController.prepareAddNewMachineDesignListConfiguration()}'/>
+                immediate="true"                
+                action='#{entityController[action]}'/>
 
 </ui:composition>
 
