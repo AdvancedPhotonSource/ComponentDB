@@ -15,10 +15,12 @@ public class ItemSearchResults {
     
     LinkedList<SearchResult> itemDomainCatalogResults;
     LinkedList<SearchResult> itemDomainInventoryResults;
+    LinkedList<SearchResult> itemDomainMachineDesignResults;
 
-    public ItemSearchResults(LinkedList<SearchResult> itemDomainCatalogResults, LinkedList<SearchResult> itemDomainInventoryResults) {
+    public ItemSearchResults(LinkedList<SearchResult> itemDomainCatalogResults, LinkedList<SearchResult> itemDomainInventoryResults, LinkedList<SearchResult> itemDomainMachineDesignResults) {
         this.itemDomainCatalogResults = itemDomainCatalogResults;
         this.itemDomainInventoryResults = itemDomainInventoryResults;
+        this.itemDomainMachineDesignResults = itemDomainMachineDesignResults; 
     }
 
     public LinkedList<SearchResult> getItemDomainCatalogResults() {
@@ -27,6 +29,10 @@ public class ItemSearchResults {
 
     public LinkedList<SearchResult> getItemDomainInventoryResults() {
         return itemDomainInventoryResults;
+    }
+
+    public LinkedList<SearchResult> getItemDomainMachineDesignResults() {
+        return itemDomainMachineDesignResults;
     }
     
 }

@@ -1286,3 +1286,7 @@ h2 {
 .searchResultRow {
     background-color: #D4FFDA; 
 }
+
+.ui-treetable-toggler.ui-icon-triangle-1-s, .ui-treetable-toggler.ui-icon-triangle-1-e {
+    transform: scale(1.5);
+}
