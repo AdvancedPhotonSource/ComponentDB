@@ -121,12 +121,6 @@ See LICENSE file.
                                           itemValue="placeholder" />
                             <f:selectItem itemLabel="Cable Catalog" 
                                           itemValue="catalog" />
-                            <f:selectItem itemLabel="Bundle" 
-                                          itemValue="bundle"
-                                          itemDisabled="true"/>
-                            <f:selectItem itemLabel="Virtual" 
-                                          itemValue="virtual"
-                                          itemDisabled="true" />
 
                             <p:ajax event="click"
                                     listener="#{cableWizard.clickListenerCableType}"
@@ -141,20 +135,6 @@ See LICENSE file.
 
                             <p:radioButton id="catalogRadio" for="cableTypeRadio" itemIndex="1" />
                             <p:outputLabel for="catalogRadio" value="catalog" />
-
-                            <p:radioButton id="bundleRadio" 
-                                           for="cableTypeRadio" 
-                                           itemIndex="2"
-                                           disabled="true" />
-                            <p:outputLabel for="bundleRadio" 
-                                           value="bundle" />
-
-                            <p:radioButton id="virtualRadio" 
-                                           for="cableTypeRadio" 
-                                           itemIndex="3" 
-                                           disabled="true" />
-                            <p:outputLabel for="virtualRadio" 
-                                           value="virtual" />
 
                         </p:panelGrid>
 

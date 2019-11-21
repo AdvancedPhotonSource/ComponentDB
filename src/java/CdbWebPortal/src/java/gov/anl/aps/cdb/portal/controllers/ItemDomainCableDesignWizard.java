@@ -209,8 +209,8 @@ public class ItemDomainCableDesignWizard implements Serializable {
     }
 
     /**
-     * Returns the logical cable type (e.g., placeholder, catalog, bundle,
-     * virtual), not to be confused with the cable catalog item for the cable
+     * Returns the logical cable type (e.g., placeholder or catalog), 
+     * not to be confused with the cable catalog item for the cable
      * design object that will be created by this wizard (in that case, the
      * cable type is "catalog"). This is the model for radio buttons on the
      * wizard's cable type tab.
