@@ -2226,6 +2226,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         setBreadcrumbRequestParams();
         Integer idParam = null;
         String paramValue = SessionUtility.getRequestParameterValue("id");
+        
+        String urlParams = "";
+        String mode = SessionUtility.getRequestParameterValue("mode");
+        if (mode != null) {
+            urlParams += "mode=" + mode + "&"; 
+        }
 
         try {
             if (paramValue != null) {
@@ -2239,8 +2245,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             if (item == null) {
                 throw new InvalidRequest("Item id " + idParam + " does not exist.");
             }
-
-            return performItemRedirection(item, "id=" + idParam, false);
+            
+            urlParams += "id=" + idParam;                        
+            return performItemRedirection(item, urlParams, false);
 
         } else {
             // Due to bug in primefaces, we cannot have more than one
@@ -2266,8 +2273,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                         }
                         return null;
                     }
-
-                    return performItemRedirection(item, "qrId=" + qrParam, false);
+                    
+                    urlParams += "qrId=" + qrParam;
+                    return performItemRedirection(item, urlParams, false);
                 } catch (NumberFormatException ex) {
                     throw new InvalidRequest("Invalid value supplied for QR id: " + paramValue);
                 }
