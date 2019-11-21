@@ -433,6 +433,15 @@ public class ItemDomainMachineDesignController
         prepareAddNewMachineDesignListConfiguration();
         displayAddMDMoveExistingConfigurationPanel = true;
     }
+    
+    public boolean isDisplayFollowInstructionOnRightOnBlockUI() {
+        return displayCreateMachineDesignForTemplateElementPlaceholder
+                || displayAddMDMoveExistingConfigurationPanel
+                || displayAddMDFromTemplateConfigurationPanel 
+                || displayAddMDPlaceholderListConfigurationPanel
+                || displayAssignCatalogItemListConfigurationPanel 
+                || displayAssignInventoryItemListConfigurationPanel; 
+    }
 
     public boolean isDisplayListConfigurationView() {
         return displayListConfigurationView;
