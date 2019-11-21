@@ -111,14 +111,14 @@ See LICENSE file.
             </p:tab>
 
             <p:tab id="cableTypeTab">
-                <p:panel header="Indicate cable type">
+                <p:panel header="Indicate whether to specify cable type">
                     <p:outputPanel id="cableTypePanel">
 
                         <p:selectOneRadio id="cableTypeRadio" 
                                           value="#{cableWizard.selectionCableType}" 
                                           layout="custom">
-                            <f:selectItem itemLabel="Placeholder" 
-                                          itemValue="placeholder" />
+                            <f:selectItem itemLabel="Unspecified" 
+                                          itemValue="unspecified" />
                             <f:selectItem itemLabel="Cable Catalog" 
                                           itemValue="catalog" />
 
@@ -130,11 +130,11 @@ See LICENSE file.
 
                         <p:panelGrid columns="2">
 
-                            <p:radioButton id="placeholderRadio" for="cableTypeRadio" itemIndex="0" />
-                            <p:outputLabel for="placeholderRadio" value="placeholder" />
+                            <p:radioButton id="unspecifiedRadio" for="cableTypeRadio" itemIndex="0" />
+                            <p:outputLabel for="unspecifiedRadio" value="unspecified" />
 
                             <p:radioButton id="catalogRadio" for="cableTypeRadio" itemIndex="1" />
-                            <p:outputLabel for="catalogRadio" value="catalog" />
+                            <p:outputLabel for="catalogRadio" value="select from list" />
 
                         </p:panelGrid>
 
@@ -144,13 +144,13 @@ See LICENSE file.
 
             <p:tab id="cableDetailsTab">
 
-                <p:panel id="cableDetailsPanelPlaceholder" 
-                         header="Edit placeholder cable details"
-                         rendered="#{cableWizard.isTypePlaceholder()}">                
+                <p:panel id="cableDetailsPanelUnspecifie" 
+                         header="Edit cable details"
+                         rendered="#{cableWizard.isTypeUnspecified()}">                
                 </p:panel>
 
                 <p:panel id="cableDetailsPanelCatalog" 
-                         header="Select cable catalog item and edit details"
+                         header="Select cable type from catalog listing"
                          rendered="#{cableWizard.isTypeCatalog()}">
 
                     <ui:decorate template="../../../itemDomainCableCatalog/private/templates/itemDomainCableCatalogDataTableTemplate.xhtml">
@@ -174,19 +174,19 @@ See LICENSE file.
 
             <p:tab id="cableReviewTab">
 
-                <p:panel id="cableReviewPanelPlaceholder" 
-                         header="Review and save placeholder cable"
-                         rendered="#{cableWizard.isTypePlaceholder()}">
+                <p:panel id="cableReviewPanelUnspecified" 
+                         header="Review and save cable"
+                         rendered="#{cableWizard.isTypeUnspecified()}">
 
                     <ui:decorate template="templates/reviewTabTemplate.xhtml" >                        
-                        <ui:param name="viewId" value="cableReviewPanelPlaceholder"/>
+                        <ui:param name="viewId" value="cableReviewPanelUnspecified"/>
                         <ui:define name="typeSpecificFields" />
                     </ui:decorate>
 
                 </p:panel>
 
                 <p:panel id="cableReviewPanelCatalog" 
-                         header="Review and save cable with catalog type"
+                         header="Review and save cable"
                          rendered="#{cableWizard.isTypeCatalog()}">
 
                     <ui:decorate template="templates/reviewTabTemplate.xhtml">

@@ -311,9 +311,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
 
     /**
-     * Creates a cable design object and sets the core variables, intended to be
-     * invoked for creating the various "subtypes" of cable design, e.g.,
-     * placeholder, catalog, bundle, etc.
+     * Creates a cable design object and sets the core variables.
      *
      * @param itemEndpoint1
      * @param itemEndpoint2
@@ -337,14 +335,15 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
 
     /**
-     * Creates placeholder cable design connecting the specified endpoints.
+     * Creates cable design connecting the specified endpoints, with
+     * unspecified cable catalog type.
      *
      * @param itemEndpoint1
      * @param itemEndpoint2
      * @param cableName
      * @return
      */
-    public boolean createCablePlaceholder(Item itemEndpoint1,
+    public boolean createCableUnspecified(Item itemEndpoint1,
             Item itemEndpoint2,
             String cableName,
             List<ItemProject> projectList) {
@@ -363,7 +362,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
 
     /**
-     * Creates placeholder cable design connecting the specified endpoints.
+     * Creates cable design of specified cable catalog type
+     * connecting the specified endpoints.
      *
      * @param itemEndpoint1
      * @param itemEndpoint2
