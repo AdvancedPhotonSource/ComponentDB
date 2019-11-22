@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
@@ -1196,7 +1197,7 @@ public class ItemDomainMachineDesignController
         currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
 
         // create model for wizard
-        ItemDomainCableDesignWizard addCableWizard = ItemDomainCableDesignWizard.getInstance();
+        CableWizard addCableWizard = CableWizard.getInstance();
         addCableWizard.registerClient(this, cableWizardRedirectSuccess);
         addCableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
 
@@ -1207,7 +1208,7 @@ public class ItemDomainMachineDesignController
     public void cleanupCableWizard() {
         resetListConfigurationVariables();
         resetListDataModel();
-        ItemDomainCableDesignWizard addCableWizard = ItemDomainCableDesignWizard.getInstance();
+        CableWizard addCableWizard = CableWizard.getInstance();
         setSelectedItemInListTreeTable(addCableWizard.getSelectionEndpoint1());
         expandToSelectedTreeNodeAndSelect();
         addCableWizard.unregisterClient(this);
