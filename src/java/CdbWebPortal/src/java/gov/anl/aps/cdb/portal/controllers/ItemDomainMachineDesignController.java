@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -1192,14 +1193,26 @@ public class ItemDomainMachineDesignController
         mdccmi = null;
     }
 
-    public void prepareCableWizard() {
+    public void prepareWizardCable() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
+
+        CableWizard cableWizard = CableWizard.getInstance();
+        cableWizard.registerClient(this, cableWizardRedirectSuccess);
+        cableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
+
+        displayListConfigurationView = true;
+        displayAddCableListConfigurationPanel = true;
+    }
+
+    public void prepareWizardCircuit() {
         updateCurrentUsingSelectedItemInTreeTable();
         currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
 
         // create model for wizard
-        CableWizard addCableWizard = CableWizard.getInstance();
-        addCableWizard.registerClient(this, cableWizardRedirectSuccess);
-        addCableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
+        CircuitWizard circuitWizard = CircuitWizard.getInstance();
+        circuitWizard.registerClient(this, cableWizardRedirectSuccess);
+        circuitWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
 
         displayListConfigurationView = true;
         displayAddCableListConfigurationPanel = true;
@@ -1208,10 +1221,10 @@ public class ItemDomainMachineDesignController
     public void cleanupCableWizard() {
         resetListConfigurationVariables();
         resetListDataModel();
-        CableWizard addCableWizard = CableWizard.getInstance();
-        setSelectedItemInListTreeTable(addCableWizard.getSelectionEndpoint1());
+//        CableWizard addCableWizard = CableWizard.getInstance();
+//        setSelectedItemInListTreeTable(addCableWizard.getSelectionEndpoint1());
         expandToSelectedTreeNodeAndSelect();
-        addCableWizard.unregisterClient(this);
+//        addCableWizard.unregisterClient(this);
     }
 
     private static List<ItemConnector> getConnectorsFromAssignedCatalogItem(ItemDomainMachineDesign item) {
