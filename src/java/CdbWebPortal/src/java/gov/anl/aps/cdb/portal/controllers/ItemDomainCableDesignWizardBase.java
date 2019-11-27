@@ -49,11 +49,7 @@ public abstract class ItemDomainCableDesignWizardBase {
     public void registerClient(ItemDomainCableDesignWizardClient client, String redirectSuccess) {
         this.client = client;
         this.redirectSuccess = redirectSuccess;
-    }
-
-    public void unregisterClient(ItemDomainCableDesignWizardClient client) {
-        this.client = null;
-        this.redirectSuccess = "";
+        reset();
     }
 
     /**
@@ -380,15 +376,21 @@ public abstract class ItemDomainCableDesignWizardBase {
         selectionProjectList = null;
         reset_();
     }
+    
+    protected void cleanupClient() {
+        if (client != null) {
+            client.cleanupCableWizard();
+        }
+        client = null;
+        redirectSuccess = "";
+    }
 
     /**
      * Implements the cancel operation, invoked by the wizard's "Cancel"
      * navigation button.
      */
     public String cancel() {
-        if (client != null) {
-            client.cleanupCableWizard();
-        }
+        cleanupClient();
         this.reset();
         cancel_();
         return "list";

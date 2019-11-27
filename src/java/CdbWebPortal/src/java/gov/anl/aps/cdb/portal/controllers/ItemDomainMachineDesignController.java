@@ -1221,10 +1221,7 @@ public class ItemDomainMachineDesignController
     public void cleanupCableWizard() {
         resetListConfigurationVariables();
         resetListDataModel();
-//        CableWizard addCableWizard = CableWizard.getInstance();
-//        setSelectedItemInListTreeTable(addCableWizard.getSelectionEndpoint1());
         expandToSelectedTreeNodeAndSelect();
-//        addCableWizard.unregisterClient(this);
     }
 
     private static List<ItemConnector> getConnectorsFromAssignedCatalogItem(ItemDomainMachineDesign item) {

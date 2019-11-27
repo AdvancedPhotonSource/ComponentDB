@@ -217,9 +217,7 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
                 redirect = getRedirectSuccess();
             }
             
-            if (client != null) {
-                client.cleanupCableWizard();
-            }
+            cleanupClient();
             
             this.reset();
             
