@@ -33,13 +33,13 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
     public static final String cableTypeUnspecified = "unspecified";
     public static final String cableTypeCatalog = "catalog";
     
-    private static final String tabType = "cableTypeTab";
-    private static final String tabDetails = "cableDetailsTab";
-
+    private static final String tabType = "CableTypeTab";
+    private static final String tabDetails = "CableDetailsTab";
+    
     public static CableWizard getInstance() {
         return (CableWizard) SessionUtility.findBean(CableWizard.CONTROLLER_NAMED);
     } 
-
+    
     /**
      * Returns whether to specify cable type (e.g., unspecified or catalog). 
      * This is the model for radio buttons on the wizard's cable type tab.
@@ -102,11 +102,11 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
         String nextTab = nextStep;
         
         // skip details tab for unspecified cable type
-        if ((nextStep.equals(tabDetails)) && (isTypeUnspecified())) {
-            if (currStep.equals(tabType)) {
-                nextTab = tabReview;
-            } else if (currStep.equals(tabReview)) {
-                nextTab = tabType;
+        if ((nextStep.endsWith(tabDetails)) && (isTypeUnspecified())) {
+            if (currStep.endsWith(tabType)) {
+                nextTab = CONTROLLER_NAMED+tabReview;
+            } else if (currStep.endsWith(tabReview)) {
+                nextTab = CONTROLLER_NAMED+tabType;
             }
         }
         
@@ -234,39 +234,33 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
      */
     protected void setEnablement_(String tab) {
         
-        switch (tab) {
-            
-            case "cableTypeTab":
-                disableButtonPrev = false;
-                disableButtonCancel = false;
-                disableButtonSave = true;
-                if (selectionCableType == null) {
-                    disableButtonNext = true;
-                } else {
+        if (tab.endsWith("CableTypeTab")) {
+            disableButtonPrev = false;
+            disableButtonCancel = false;
+            disableButtonSave = true;
+            if (selectionCableType == null) {
+                disableButtonNext = true;
+            } else {
+                disableButtonNext = false;
+            }
+        } else if (tab.endsWith("CableDetailsTab")) {
+            disableButtonPrev = false;
+            disableButtonCancel = false;
+            disableButtonSave = true;
+            switch (selectionCableType) {
+                case cableTypeUnspecified:
                     disableButtonNext = false;
-                }
-                break;
-                
-            case "cableDetailsTab":
-                disableButtonPrev = false;
-                disableButtonCancel = false;
-                disableButtonSave = true;
-                switch (selectionCableType) {
-                    case cableTypeUnspecified:
+                    break;
+                case cableTypeCatalog:
+                    if (selectionCableCatalogItem != null) {
                         disableButtonNext = false;
-                        break;
-                    case cableTypeCatalog:
-                        if (selectionCableCatalogItem != null) {
-                            disableButtonNext = false;
-                        } else {
-                            disableButtonNext = true;
-                        }
-                        break;
-                    default:
+                    } else {
                         disableButtonNext = true;
-                }
-                break;
-                
+                    }
+                    break;
+                default:
+                    disableButtonNext = true;
+            }
         }
     }
 }

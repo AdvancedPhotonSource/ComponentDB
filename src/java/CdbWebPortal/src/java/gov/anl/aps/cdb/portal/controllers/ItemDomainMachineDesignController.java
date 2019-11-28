@@ -102,7 +102,8 @@ public class ItemDomainMachineDesignController
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
     private boolean displayCreateMachineDesignForTemplateElementPlaceholder = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
-    private boolean displayAddCableListConfigurationPanel = true;
+    private boolean displayAddCablePanel = true;
+    private boolean displayAddCableCircuitPanel = true;
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
     private TreeNode newCatalogItemsInMachineDesignModel = null;    
@@ -384,7 +385,8 @@ public class ItemDomainMachineDesignController
         displayAssignInventoryItemListConfigurationPanel = false;
         displayCreateMachineDesignForTemplateElementPlaceholder = false;
         displayMachineDesignReorderOverlayPanel = false;
-        displayAddCableListConfigurationPanel = false;
+        displayAddCablePanel = false;
+        displayAddCableCircuitPanel = false;
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
@@ -476,8 +478,12 @@ public class ItemDomainMachineDesignController
         return displayMachineDesignReorderOverlayPanel;
     }
 
-    public boolean isDisplayAddCableListConfigurationPanel() {
-        return displayAddCableListConfigurationPanel;
+    public boolean isDisplayAddCablePanel() {
+        return displayAddCablePanel;
+    }
+
+    public boolean isDisplayAddCableCircuitPanel() {
+        return displayAddCableCircuitPanel;
     }
 
     private void updateCurrentUsingSelectedItemInTreeTable() {
@@ -1202,7 +1208,7 @@ public class ItemDomainMachineDesignController
         cableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
 
         displayListConfigurationView = true;
-        displayAddCableListConfigurationPanel = true;
+        displayAddCablePanel = true;
     }
 
     public void prepareWizardCircuit() {
@@ -1215,7 +1221,7 @@ public class ItemDomainMachineDesignController
         circuitWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
 
         displayListConfigurationView = true;
-        displayAddCableListConfigurationPanel = true;
+        displayAddCableCircuitPanel = true;
     }
 
     public void cleanupCableWizard() {

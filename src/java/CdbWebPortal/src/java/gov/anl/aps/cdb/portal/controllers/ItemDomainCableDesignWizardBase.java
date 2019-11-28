@@ -38,10 +38,10 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected String currentTab = tabEndpoint;
     protected String redirectSuccess = "";
     
-    protected static final String tabEndpoint = "endpointTab";
-    protected static final String tabBasics = "cableBasicsTab";
-    protected static final String tabReview = "cableReviewTab";
-
+    protected static final String tabEndpoint = "EndpointTab";
+    protected static final String tabBasics = "CableBasicsTab";
+    protected static final String tabReview = "CableReviewTab";
+    
     @HotSpotIntrinsicCandidate
     public ItemDomainCableDesignWizardBase() {
     }
@@ -306,41 +306,42 @@ public abstract class ItemDomainCableDesignWizardBase {
      * tab and input elements.
      */
     protected void setEnablement(String tab) {
-        switch (tab) {
-            case "endpointTab":
-                disableButtonPrev = true;
-                disableButtonCancel = false;
-                disableButtonSave = true;
-                if (selectionEndpoint2 != null) {
-                    disableButtonNext = false;
-                } else {
-                    disableButtonNext = true;
-                }
-                break;
-            case "cableBasicsTab":
-                disableButtonPrev = false;
-                disableButtonCancel = false;
-                disableButtonSave = true;
-                if ((inputValueName.isEmpty()) || (selectionProjectList.isEmpty())) {
-                    disableButtonNext = true;
-                } else {
-                    disableButtonNext = false;
-                }
-                break;
-            case "cableReviewTab":
-                disableButtonPrev = false;
-                disableButtonCancel = false;
-                disableButtonSave = false;
-                disableButtonNext = true;
-                break;
-            default:
-                disableButtonPrev = true;
-                disableButtonCancel = false;
-                disableButtonSave = true;
-                disableButtonNext = true;
-        }
         
-        setEnablement_(tab);
+        // default
+        disableButtonPrev = true;
+        disableButtonCancel = false;
+        disableButtonSave = true;
+        disableButtonNext = true;
+        
+        System.out.println("set enablement for: " + tab);
+
+        if (tab.endsWith("EndpointTab")) {
+            disableButtonPrev = true;
+            disableButtonCancel = false;
+            disableButtonSave = true;
+            if (selectionEndpoint2 != null) {
+                disableButtonNext = false;
+            } else {
+                disableButtonNext = true;
+            }
+        } else if (tab.endsWith("CableBasicsTab")) {
+            disableButtonPrev = false;
+            disableButtonCancel = false;
+            disableButtonSave = true;
+            if ((inputValueName.isEmpty()) || (selectionProjectList.isEmpty())) {
+                disableButtonNext = true;
+            } else {
+                disableButtonNext = false;
+            }
+        } else if (tab.endsWith("CableReviewTab")) {
+            disableButtonPrev = false;
+            disableButtonCancel = false;
+            disableButtonSave = false;
+            disableButtonNext = true;
+        } else {
+            // override in subclass
+            setEnablement_(tab);
+        }
     }
 
     /**
@@ -367,7 +368,7 @@ public abstract class ItemDomainCableDesignWizardBase {
      * Resets models for wizard components.
      */
     protected void reset() {
-        currentTab = "endpointTab";
+        currentTab = "EndpointTab";
         machineDesignTreeEndpoint1 = null;
         machineDesignTreeEndpoint2 = null;
         inputValueName = "";
