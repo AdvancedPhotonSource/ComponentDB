@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
@@ -104,6 +105,7 @@ public class ItemDomainMachineDesignController
     private boolean displayMachineDesignReorderOverlayPanel = true;
     private boolean displayAddCablePanel = true;
     private boolean displayAddCableCircuitPanel = true;
+    private boolean displayAddCableBundlePanel = true;
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
     private TreeNode newCatalogItemsInMachineDesignModel = null;    
@@ -387,6 +389,7 @@ public class ItemDomainMachineDesignController
         displayMachineDesignReorderOverlayPanel = false;
         displayAddCablePanel = false;
         displayAddCableCircuitPanel = false;
+        displayAddCableBundlePanel = false;
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
@@ -484,6 +487,10 @@ public class ItemDomainMachineDesignController
 
     public boolean isDisplayAddCableCircuitPanel() {
         return displayAddCableCircuitPanel;
+    }
+
+    public boolean isDisplayAddCableBundlePanel() {
+        return displayAddCableBundlePanel;
     }
 
     private void updateCurrentUsingSelectedItemInTreeTable() {
@@ -1222,6 +1229,19 @@ public class ItemDomainMachineDesignController
 
         displayListConfigurationView = true;
         displayAddCableCircuitPanel = true;
+    }
+
+    public void prepareWizardBundle() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
+
+        // create model for wizard
+        BundleWizard bundleWizard = BundleWizard.getInstance();
+        bundleWizard.registerClient(this, cableWizardRedirectSuccess);
+        bundleWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
+
+        displayListConfigurationView = true;
+        displayAddCableBundlePanel = true;
     }
 
     public void cleanupCableWizard() {

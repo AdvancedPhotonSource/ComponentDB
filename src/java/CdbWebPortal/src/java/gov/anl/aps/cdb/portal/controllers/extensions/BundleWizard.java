@@ -11,18 +11,18 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 
 /**
- * Controller for adding cable circuits.
+ * Controller for adding cable bundles.
  *
  * @author cmcchesney
  */
-@Named(CircuitWizard.CONTROLLER_NAMED)
+@Named(BundleWizard.CONTROLLER_NAMED)
 @SessionScoped
-public class CircuitWizard extends ItemDomainCableDesignWizardBase implements Serializable {
+public class BundleWizard extends ItemDomainCableDesignWizardBase implements Serializable {
 
-    public static final String CONTROLLER_NAMED = "circuitWizard";
+    public static final String CONTROLLER_NAMED = "bundleWizard";
     
-    public static CircuitWizard getInstance() {
-        return (CircuitWizard) SessionUtility.findBean(CircuitWizard.CONTROLLER_NAMED);
+    public static BundleWizard getInstance() {
+        return (BundleWizard) SessionUtility.findBean(BundleWizard.CONTROLLER_NAMED);
     } 
 
     /**
@@ -32,7 +32,7 @@ public class CircuitWizard extends ItemDomainCableDesignWizardBase implements Se
     public String save() {
 
         SessionUtility.addErrorMessage(
-                "Could not save cable circuit",
+                "Could not save cable bundle",
                 "Feature not yet implemented.");
         return "";
     }

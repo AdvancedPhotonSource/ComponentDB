@@ -12,7 +12,6 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.primefaces.event.FlowEvent;
 
 /**
  * This class is intended to be used by another controller class, e.g.,
