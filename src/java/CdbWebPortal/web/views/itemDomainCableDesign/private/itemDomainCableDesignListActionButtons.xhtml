@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="../../item/private/templates/itemListActionButtonsTemplate.xhtml"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:define name="listAddButton">
+        
+        <p:menuButton value="Add"
+                   icon="ui-icon-plus"
+                   styleClass="actionButtonLeft">
+            <p:menuitem value="Cable"
+                        icon="ui-icon-cable-design"
+                        url="#{request.contextPath}/views/itemDomainCableDesign/create"
+                        styleClass="actionButtonLeft">
+            </p:menuitem>
+            <p:menuitem value="Circuit"
+                        icon="ui-icon-cable-design"
+                        url="#{request.contextPath}/views/itemDomainCableDesign/createCircuit"
+                        styleClass="actionButtonLeft">
+            </p:menuitem>
+            <p:menuitem value="Bundle"
+                        icon="ui-icon-cable-design"
+                        url="#{request.contextPath}/views/itemDomainCableDesign/createBundle"
+                        styleClass="actionButtonLeft">
+            </p:menuitem>
+        </p:menuButton>
+        
+    </ui:define>           
+
+</ui:composition>
+
