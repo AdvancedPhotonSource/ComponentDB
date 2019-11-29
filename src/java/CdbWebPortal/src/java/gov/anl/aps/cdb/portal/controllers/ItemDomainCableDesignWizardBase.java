@@ -313,8 +313,6 @@ public abstract class ItemDomainCableDesignWizardBase {
         disableButtonSave = true;
         disableButtonNext = true;
         
-        System.out.println("set enablement for: " + tab);
-
         if (tab.endsWith("EndpointTab")) {
             disableButtonPrev = true;
             disableButtonCancel = false;

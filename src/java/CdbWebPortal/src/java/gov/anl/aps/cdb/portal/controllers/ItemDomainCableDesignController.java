@@ -414,6 +414,12 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         dialogEndpoint.reset();
         dialogEndpoint.setItemEndpoint(getCurrent().getEndpoint2());
     }
+    
+    /**
+     * Prepares import wizard.
+     */
+    public void prepareWizardImport() {        
+    }
 
     @Override
     protected ItemDomainCableDesign createEntityInstance() {
