@@ -231,6 +231,7 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
      * Sets enable/disable state for the navigation buttons based on the current
      * tab and input elements.
      */
+    @Override
     protected void setEnablement_(String tab) {
         
         if (tab.endsWith("CableTypeTab")) {

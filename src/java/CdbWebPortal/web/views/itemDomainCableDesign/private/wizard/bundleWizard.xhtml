@@ -11,7 +11,7 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">    
 
     <p:panel>
-        
+
         <ui:param name="rootViewId" value="bundleWizard" />
         <ui:param name="wizardController" value="#{bundleWizard}" />
 
@@ -20,7 +20,7 @@ See LICENSE file.
                   widgetVar="#{rootViewId}"
                   showStepStatus="false" 
                   showNavBar="false">
-            
+
             <ui:decorate template="templates/endpointTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />                
                 <ui:param name="wizardController" value="#{wizardController}" />
@@ -30,6 +30,28 @@ See LICENSE file.
                 <ui:param name="viewId" value="#{rootViewId}" />                
                 <ui:param name="wizardController" value="#{wizardController}" />
             </ui:decorate>
+
+            <p:tab id="#{rootViewId}BundleOptionsTab">
+                <p:panel header="Indicate options for creating cable bundle">
+                    <p:outputPanel id="bundleOptionsPanel">
+                        <p:panelGrid columns="1">
+
+                            <p:selectBooleanCheckbox itemLabel="Add existing cables to bundle"
+                                                     value="#{bundleWizard.addMembers}">
+                                <p:ajax update="#{rootViewId}CableWizardButtonPanel" 
+                                        listener="#{bundleWizard.selectListenerAddMembers}" />
+                            </p:selectBooleanCheckbox>
+                            
+                            <p:selectBooleanCheckbox itemLabel="Add spares to bundle"
+                                                     value="#{bundleWizard.createSpares}">
+                                <p:ajax update="#{rootViewId}CableWizardButtonPanel" 
+                                        listener="#{bundleWizard.selectListenerCreateSpares}" />
+                            </p:selectBooleanCheckbox>
+                            
+                        </p:panelGrid>
+                    </p:outputPanel>
+                </p:panel>
+            </p:tab>
 
             <ui:decorate template="templates/reviewTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />
