@@ -263,6 +263,13 @@ public abstract class ItemDomainCableDesignWizardBase {
         return members;
     }
 
+    /**
+     * Returns number of member cables.
+     */
+    public int getMemberCount() {
+        return members.size();
+    }
+
     protected void addMembers(List<Item> newMembers) {
 
         for (Item item : newMembers) {
