@@ -53,9 +53,22 @@ See LICENSE file.
                 </p:panel>
             </p:tab>
 
+            <ui:decorate template="templates/membersTabTemplate.xhtml">
+                <ui:param name="viewId" value="#{rootViewId}" />                
+                <ui:param name="wizardController" value="#{wizardController}" />
+                <ui:param name="panelHeader" value="Add existing cables to bundle" />
+                <ui:param name="entityTypeName" value="bundle" />
+            </ui:decorate>
+
             <ui:decorate template="templates/reviewTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />
                 <ui:param name="wizardController" value="#{wizardController}" />
+                <ui:define name="typeSpecificFields">
+                    <p:outputLabel value="Member Count" />
+                    <h:outputText value="#{wizardController.memberCount}"   
+                                  title="Number of member cables" 
+                                  styleClass="entityDataEmphasizedText" />
+                </ui:define>
             </ui:decorate>
 
         </p:wizard>

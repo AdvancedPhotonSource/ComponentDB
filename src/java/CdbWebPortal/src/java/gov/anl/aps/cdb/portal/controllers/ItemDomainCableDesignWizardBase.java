@@ -96,6 +96,11 @@ public abstract class ItemDomainCableDesignWizardBase {
     }
 
     protected static final String defaultRedirectSuccess = "/views/itemDomainCableDesign/view?faces-redirect=true";
+    protected static final String tabEndpoint = "EndpointTab";
+    protected static final String tabBasics = "CableBasicsTab";
+    protected static final String tabReview = "CableReviewTab";
+    protected static final String tabMembers = "MembersTab";
+
     protected ItemDomainCableDesignWizardClient client;
     protected TreeNode machineDesignTreeEndpoint1 = null;
     protected TreeNode machineDesignTreeEndpoint2 = null;
@@ -112,10 +117,6 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected String redirectSuccess = "";
 
     private MembersDialog dialogMembers = new MembersDialog();
-
-    protected static final String tabEndpoint = "EndpointTab";
-    protected static final String tabBasics = "CableBasicsTab";
-    protected static final String tabReview = "CableReviewTab";
 
     @HotSpotIntrinsicCandidate
     public ItemDomainCableDesignWizardBase() {

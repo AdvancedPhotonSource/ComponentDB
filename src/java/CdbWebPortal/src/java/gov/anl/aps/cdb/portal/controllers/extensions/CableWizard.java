@@ -92,6 +92,29 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
 
 
     /**
+     * Handles click events for the selectionCableType selectOneRadio component.
+     */
+    public void clickListenerCableType() {
+        setEnablementForCurrentTab();
+    }
+
+    /**
+     * Handles selection events for the cable catalog item datatable component.
+     */
+    public void selectListenerCableCatalogItem() {
+        setEnablementForCurrentTab();
+    }
+    
+    /**
+     * Resets models for wizard components.
+     */
+    @Override
+    protected void reset_() {
+        selectionCableType = null;
+        selectionCableCatalogItem = null;
+    }
+
+    /**
      * Returns custom tab navigation based on wizard state.  Subclass should
      * override for custom behavior.
      */
@@ -113,26 +136,40 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
     }
 
     /**
-     * Handles click events for the selectionCableType selectOneRadio component.
-     */
-    public void clickListenerCableType() {
-        setEnablementForCurrentTab();
-    }
-
-    /**
-     * Handles selection events for the cable catalog item datatable component.
-     */
-    public void selectListenerCableCatalogItem() {
-        setEnablementForCurrentTab();
-    }
-    
-    /**
-     * Resets models for wizard components.
+     * Sets enable/disable state for the navigation buttons based on the current
+     * tab and input elements.
      */
     @Override
-    protected void reset_() {
-        selectionCableType = null;
-        selectionCableCatalogItem = null;
+    protected void setEnablement_(String tab) {
+        
+        if (tab.endsWith("CableTypeTab")) {
+            disableButtonPrev = false;
+            disableButtonCancel = false;
+            disableButtonSave = true;
+            if (selectionCableType == null) {
+                disableButtonNext = true;
+            } else {
+                disableButtonNext = false;
+            }
+        } else if (tab.endsWith("CableDetailsTab")) {
+            disableButtonPrev = false;
+            disableButtonCancel = false;
+            disableButtonSave = true;
+            switch (selectionCableType) {
+                case cableTypeUnspecified:
+                    disableButtonNext = false;
+                    break;
+                case cableTypeCatalog:
+                    if (selectionCableCatalogItem != null) {
+                        disableButtonNext = false;
+                    } else {
+                        disableButtonNext = true;
+                    }
+                    break;
+                default:
+                    disableButtonNext = true;
+            }
+        }
     }
 
     /**
@@ -227,40 +264,4 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
         }
     }
     
-    /**
-     * Sets enable/disable state for the navigation buttons based on the current
-     * tab and input elements.
-     */
-    @Override
-    protected void setEnablement_(String tab) {
-        
-        if (tab.endsWith("CableTypeTab")) {
-            disableButtonPrev = false;
-            disableButtonCancel = false;
-            disableButtonSave = true;
-            if (selectionCableType == null) {
-                disableButtonNext = true;
-            } else {
-                disableButtonNext = false;
-            }
-        } else if (tab.endsWith("CableDetailsTab")) {
-            disableButtonPrev = false;
-            disableButtonCancel = false;
-            disableButtonSave = true;
-            switch (selectionCableType) {
-                case cableTypeUnspecified:
-                    disableButtonNext = false;
-                    break;
-                case cableTypeCatalog:
-                    if (selectionCableCatalogItem != null) {
-                        disableButtonNext = false;
-                    } else {
-                        disableButtonNext = true;
-                    }
-                    break;
-                default:
-                    disableButtonNext = true;
-            }
-        }
-    }
 }

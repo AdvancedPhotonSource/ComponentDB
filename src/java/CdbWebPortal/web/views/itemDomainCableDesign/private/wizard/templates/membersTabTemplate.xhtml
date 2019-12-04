@@ -50,10 +50,6 @@ See LICENSE file.
                                         oncomplete="PF('loadingDialog').hide();update#{rootViewId}WizardButtons();"
                                         update="@form:#{viewName}MembersPanel" 
                                         process="@form:#{viewName}MembersPanel">
-                            <ui:remove><p:collector value="#{member}" 
-                                                    removeFrom="#{wizardController.members}" 
-                                                    unique="true"/>
-                            </ui:remove>
                         </p:commandLink>
                     </p:column>
 
