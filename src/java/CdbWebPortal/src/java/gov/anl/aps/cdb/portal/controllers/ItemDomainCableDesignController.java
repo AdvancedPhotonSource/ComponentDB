@@ -5,6 +5,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
+import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
+import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -415,6 +418,30 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         dialogEndpoint.setItemEndpoint(getCurrent().getEndpoint2());
     }
     
+    /**
+     * Prepares cable wizard.
+     */
+    public String prepareWizardCable() { 
+        CableWizard.getInstance().reset();
+        return "/views/itemDomainCableDesign/create?faces-redirect=true";
+    }
+
+    /**
+     * Prepares import wizard.
+     */
+    public String prepareWizardCircuit() {
+        CircuitWizard.getInstance().reset();
+        return "/views/itemDomainCableDesign/createCircuit?faces-redirect=true";
+    }
+
+    /**
+     * Prepares import wizard.
+     */
+    public String prepareWizardBundle() {        
+        BundleWizard.getInstance().reset();
+        return "/views/itemDomainCableDesign/createBundle?faces-redirect=true";
+    }
+
     /**
      * Prepares import wizard.
      */

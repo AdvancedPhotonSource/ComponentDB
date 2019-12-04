@@ -9,35 +9,37 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 template="../../item/private/templates/itemListActionButtonsTemplate.xhtml"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
+
     <ui:define name="listAddButton">
-        
+
         <p:menuButton value="Add"
-                   icon="ui-icon-plus"
-                   styleClass="actionButtonLeft">
+                      icon="ui-icon-plus"
+                      styleClass="actionButtonLeft"
+                      rendered="#{loginController.loggedInAsAdmin}">
             <p:menuitem value="Cable"
+                        action="#{itemDomainCableDesignController.prepareWizardCable()}"
                         icon="ui-icon-cable-design"
-                        url="#{request.contextPath}/views/itemDomainCableDesign/create"
                         styleClass="actionButtonLeft">
             </p:menuitem>
             <p:menuitem value="Circuit"
+                        action="#{itemDomainCableDesignController.prepareWizardCircuit()}"
                         icon="ui-icon-cable-design"
-                        url="#{request.contextPath}/views/itemDomainCableDesign/createCircuit"
                         styleClass="actionButtonLeft">
             </p:menuitem>
             <p:menuitem value="Bundle"
+                        action="#{itemDomainCableDesignController.prepareWizardBundle()}"
                         icon="ui-icon-cable-design"
-                        url="#{request.contextPath}/views/itemDomainCableDesign/createBundle"
                         styleClass="actionButtonLeft">
             </p:menuitem>
         </p:menuButton>
-        
+
     </ui:define>    
-    
+
     <ui:define name ="additonalListButtons">
         <p:commandButton value="Import"
                          icon="ui-icon-plus"
-                         action="#{ItemDomainCableDesignController.prepareWizardImport()}"/> 
+                         action="#{itemDomainCableDesignController.prepareWizardImport()}"
+                         rendered="#{loginController.loggedInAsAdmin}"/> 
 
     </ui:define>
 

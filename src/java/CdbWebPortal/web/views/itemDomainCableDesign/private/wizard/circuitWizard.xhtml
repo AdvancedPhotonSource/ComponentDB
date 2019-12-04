@@ -31,6 +31,13 @@ See LICENSE file.
                 <ui:param name="wizardController" value="#{wizardController}" />
             </ui:decorate>
 
+            <ui:decorate template="templates/membersTabTemplate.xhtml">
+                <ui:param name="viewId" value="#{rootViewId}" />                
+                <ui:param name="wizardController" value="#{wizardController}" />
+                <ui:param name="panelHeader" value="Add existing cables to circuit" />
+                <ui:param name="entityTypeName" value="circuit" />
+            </ui:decorate>
+
             <ui:decorate template="templates/reviewTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />
                 <ui:param name="wizardController" value="#{wizardController}" />
