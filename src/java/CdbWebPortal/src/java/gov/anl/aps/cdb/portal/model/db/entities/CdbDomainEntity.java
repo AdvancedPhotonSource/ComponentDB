@@ -176,7 +176,7 @@ public abstract class CdbDomainEntity extends CdbEntity {
 
         private String filterValue;
         private List<PropertyValue> propertyValueList; 
-        private final String DELIMITER = " "; 
+        private final String DELIMITER = "\n"; 
 
         public PropertyValueInformation() {
             this.propertyValueList = new ArrayList<>(); 

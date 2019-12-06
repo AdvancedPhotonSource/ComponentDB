@@ -10,6 +10,40 @@
 # Table definitions have been updated. 
 ### PLEASE REBUILD DB ###
 
+--
+-- Table `item_element_history`
+--
+
+DROP TABLE IF EXISTS `item_element_history`;
+CREATE TABLE `item_element_history` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `snapshot_element_name` varchar(64) NULL,
+  `item_element_id` int(11) unsigned NULL,
+  `snapshot_parent_name` varchar(256) NULL,
+  `parent_item_id` int(11) unsigned NULL,
+  `snapshot_contained_item_1_name` varchar(256) NULL,
+  `contained_item_id1` int(11) unsigned DEFAULT NULL,
+  `snapshot_contained_item_2_name` varchar(256) NULL,
+  `contained_item_id2` int(11) unsigned DEFAULT NULL,
+  `derived_from_item_element_id` int(11) unsigned DEFAULT NULL,
+  `is_required` bool NULL DEFAULT 0,
+  `description` varchar(256) DEFAULT NULL,
+  `sort_order` float(10,2) unsigned DEFAULT NULL,
+  `entered_on_date_time` datetime NOT NULL,
+  `entered_by_user_id` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `item_element_history_k1` (`item_element_id`),
+  KEY `item_element_history_k2` (`parent_item_id`),
+  KEY `item_element_history_k3` (`contained_item_id1`),
+  KEY `item_element_history_k4` (`contained_item_id2`),
+  KEY `item_element_history_k5` (`derived_from_item_element_id`),
+  CONSTRAINT `item_element_history_fk1` FOREIGN KEY (`item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT `item_element_history_fk2` FOREIGN KEY (`parent_item_id`) REFERENCES `item` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT `item_element_history_fk3` FOREIGN KEY (`contained_item_id1`) REFERENCES `item` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT `item_element_history_fk4` FOREIGN KEY (`contained_item_id2`) REFERENCES `item` (`id`) ON UPDATE CASCADE ON DELETE SET NULL,
+  CONSTRAINT `item_element_history_fk5` FOREIGN KEY (`derived_from_item_element_id`) REFERENCES `item_element` (`id`) ON UPDATE CASCADE ON DELETE SET NULL 
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
 # Utilize the new search settigns for all users
 delete from user_group_setting where setting_type_id >= 15000 and setting_type_id < 16000;
 delete from user_setting where setting_type_id >= 15000 and setting_type_id < 16000;
@@ -63,3 +97,7 @@ LEFT OUTER JOIN item contained_item_2 on contained_item_2.id = ie.contained_item
 INNER JOIN entity_info ei on ei.id = ie.entity_info_id
 WHERE (ie.name is not null));
 
+# Prepopulate list of categories for cable catalog. 
+INSERT INTO `domain` VALUES
+(7,'Cable Catalog', 'Item domain for managing the cable catalog items', NULL, NULL, NULL, 'Technical System');
+INSERT INTO `item_category` (name, description, domain_id) (select name,description, 7 AS domain_id FROM item_category WHERE domain_id = 2);
