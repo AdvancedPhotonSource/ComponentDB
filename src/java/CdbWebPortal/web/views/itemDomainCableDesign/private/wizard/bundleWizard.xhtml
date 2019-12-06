@@ -60,6 +60,13 @@ See LICENSE file.
                 <ui:param name="entityTypeName" value="bundle" />
             </ui:decorate>
 
+            <ui:decorate template="templates/sparesTabTemplate.xhtml">
+                <ui:param name="viewId" value="#{rootViewId}" />                
+                <ui:param name="wizardController" value="#{wizardController}" />
+                <ui:param name="panelHeader" value="Specify cable type and quantity for spares" />
+                <ui:param name="entityTypeName" value="bundle" />
+            </ui:decorate>
+
             <ui:decorate template="templates/reviewTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />
                 <ui:param name="wizardController" value="#{wizardController}" />
@@ -67,6 +74,10 @@ See LICENSE file.
                     <p:outputLabel value="Member Count" />
                     <h:outputText value="#{wizardController.memberCount}"   
                                   title="Number of member cables" 
+                                  styleClass="entityDataEmphasizedText" />
+                    <p:outputLabel value="Spares Count" />
+                    <h:outputText value="#{wizardController.sparesCount}"   
+                                  title="Number of spares to create" 
                                   styleClass="entityDataEmphasizedText" />
                 </ui:define>
             </ui:decorate>

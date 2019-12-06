@@ -65,8 +65,7 @@ public abstract class ItemDomainCableDesignWizardBase {
         }
 
         /**
-         * Enables save button when a valid selection, different from the
-         * original catalog item, is made.
+         * Enables save button when a valid selection is made.
          */
         private void setEnablement() {
 
@@ -108,15 +107,14 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected List<ItemProject> selectionProjectList = new ArrayList<>();
     protected TreeNode selectionEndpoint1 = null;
     protected TreeNode selectionEndpoint2 = null;
-    private List<Item> members = new ArrayList<>();
+    protected List<Item> members = new ArrayList<>();
     protected Boolean disableButtonPrev = true;
     protected Boolean disableButtonNext = true;
     protected Boolean disableButtonSave = true;
     protected Boolean disableButtonCancel = false;
     protected String currentTab = tabEndpoint;
     protected String redirectSuccess = "";
-
-    private MembersDialog dialogMembers = new MembersDialog();
+    protected MembersDialog dialogMembers = new MembersDialog();
 
     @HotSpotIntrinsicCandidate
     public ItemDomainCableDesignWizardBase() {

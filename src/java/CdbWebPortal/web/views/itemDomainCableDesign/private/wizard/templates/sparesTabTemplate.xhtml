@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
+
+    <!-- Must provide params "viewId", "wizardController", "panelHeader", "entityTypeName"-->
+
+    <ui:param name="rootViewId" value="#{viewId}"/>
+    <ui:param name="viewName" value="#{rootViewId}SparesTab"/>
+
+    <p:tab id="#{viewName}">
+        <p:panel header="#{panelHeader}">
+            <p:outputPanel id="#{viewName}SparesPanel">
+
+                <div class="actionButton">
+                    <p:commandButton id="#{viewName}AddButton" 
+                                     action="#{wizardController.prepareDialogSpares()}" 
+                                     value="Add" 
+                                     alt="Add spares to #{entityTypeName}" 
+                                     onstart="PF('loadingDialog').show()"
+                                     oncomplete="PF('loadingDialog').hide();PF('sparesDialog').show();"
+                                     update="dialogSpares"
+                                     icon="fa fa-plus">
+                        <p:tooltip for="#{viewName}AddButton" 
+                                   value="Add spares to #{entityTypeName}."/>
+                    </p:commandButton>
+                </div>
+
+                <p:dataTable id="#{viewName}CableTypeDataTable" 
+                             var="cableTypeInfo" 
+                             value="#{wizardController.spares}"
+                             emptyMessage="No spares added.">
+
+                    <p:column headerText="Cable type">
+                        <h:outputText value="#{cableTypeInfo.name}" />
+                    </p:column>
+
+                    <p:column headerText="Quantity">
+                        <h:outputText value="#{cableTypeInfo.quantity}" />
+                    </p:column>
+
+                    <p:column headerText="Action">
+                        <p:commandLink  id="#{viewName}RemoveCommandLink" 
+                                        value="Remove" 
+                                        action="#{wizardController.removeCableType(cableTypeInfo)}"
+                                        onstart="PF('loadingDialog').show()"
+                                        oncomplete="PF('loadingDialog').hide();update#{rootViewId}WizardButtons();"
+                                        update="@form:#{viewName}SparesPanel" 
+                                        process="@form:#{viewName}SparesPanel">
+                        </p:commandLink>
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:outputPanel>
+            
+            <ui:include src="../sparesDialog.xhtml" >
+                <ui:param name="wizardController" value="#{wizardController}" />
+            </ui:include>
+
+        </p:panel>
+    </p:tab>
+
+</ui:composition>
