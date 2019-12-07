@@ -35,8 +35,9 @@ See LICENSE file.
         </p:outputPanel>
     </ui:define>
 
-    <ui:define name="additionalListSupport" >
+    <ui:define name="additionalListSupport" >       
         <ui:insert name="additionalSupport" />
+        <ui:include src="private/itemDomainMachineDesignAutoScrollTreeTable.xhtml"/>
         <ui:include src="private/itemDomainMachineDesignReorderOverlayPanel.xhtml"/>
         <ui:include src="private/itemDomainMachineDesignAssignedItemHistoryDialog.xhtml" />
         <ui:include src="private/itemDomainMachineDesignCableMappingDialog.xhtml"/> 

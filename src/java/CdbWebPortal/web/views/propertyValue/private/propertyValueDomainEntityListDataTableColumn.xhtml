@@ -12,6 +12,7 @@ See LICENSE file.
 
     <p:column headerText="Property: #{propertyTypeName}" 
               filterBy="#{propertyValueInformation.filterValue}" filterMatchMode="contains"
+              exportFunction="#{facesUtility.getFilterString(propertyValueInformation.filterValue)}"
               filterValue="#{prpoertyValueFilterValue}"
               rendered="#{propertyValueRendered}"
               filterable="#{propertyValueFilterable}"

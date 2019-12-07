@@ -369,7 +369,7 @@ public class ItemDomainMachineDesignController
 
         if (item != null) {
             setCurrent(item);
-            return viewForCurrentEntity();
+            return viewForCurrentEntity() + "&mode=detail";
         }
 
         SessionUtility.addErrorMessage("Error", "Cannot load details for a non machine design.");
@@ -439,6 +439,15 @@ public class ItemDomainMachineDesignController
     public void prepareAddMoveExistingMd() {
         prepareAddNewMachineDesignListConfiguration();
         displayAddMDMoveExistingConfigurationPanel = true;
+    }
+    
+    public boolean isDisplayFollowInstructionOnRightOnBlockUI() {
+        return displayCreateMachineDesignForTemplateElementPlaceholder
+                || displayAddMDMoveExistingConfigurationPanel
+                || displayAddMDFromTemplateConfigurationPanel 
+                || displayAddMDPlaceholderListConfigurationPanel
+                || displayAssignCatalogItemListConfigurationPanel 
+                || displayAssignInventoryItemListConfigurationPanel; 
     }
 
     public boolean isDisplayListConfigurationView() {
@@ -1748,6 +1757,17 @@ public class ItemDomainMachineDesignController
         super.processPreRenderList();
 
         resetListConfigurationVariables();
+                
+        String paramValue = SessionUtility.getRequestParameterValue("id");
+        if (paramValue != null) {
+            Integer idParam = Integer.parseInt(paramValue);
+            ItemDomainMachineDesign item = itemDomainMachineDesignFacade.findById(idParam); 
+            if (item != null) {
+                expandToSpecificMachineDesignItem(item);
+            } else {
+                SessionUtility.addErrorMessage("Error", "Machine design with id " + idParam + " couldn't be found."); 
+            }                        
+        }
 
         currentViewIsTemplate = false;
     }
@@ -1765,12 +1785,20 @@ public class ItemDomainMachineDesignController
 
         processPreRenderList();
 
-        displayListConfigurationView = true;
-        displayListViewItemDetailsView = true;
-
         currentViewIsTemplate = isItemMachineDesignAndTemplate(entity);
 
         expandToSpecificMachineDesignItem(getCurrent());
+        
+        String viewMode = SessionUtility.getRequestParameterValue("mode");
+        if (viewMode != null) {
+            if (viewMode.equals("detail")) {
+                displayListConfigurationView = true;
+                displayListViewItemDetailsView = true;
+                return;
+            }
+        }        
+        
+        SessionUtility.navigateTo("/views/" + getEntityViewsDirectory() + "/list.xhtml?faces-redirect=true");
     }
 
     @Override
