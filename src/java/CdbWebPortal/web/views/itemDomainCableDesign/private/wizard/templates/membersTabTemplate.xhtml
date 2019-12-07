@@ -26,7 +26,7 @@ See LICENSE file.
                                      alt="Add member to #{entityTypeName}" 
                                      onstart="PF('loadingDialog').show()"
                                      oncomplete="PF('loadingDialog').hide();PF('membersDialog').show();"
-                                     update="dialogMembers"
+                                     update="#{viewName}DialogMembers"
                                      icon="fa fa-plus">
                         <p:tooltip for="#{viewName}AddButton" 
                                    value="Add member to #{entityTypeName}."/>
@@ -57,8 +57,10 @@ See LICENSE file.
 
             </p:outputPanel>
 
-            <ui:include src="../membersDialog.xhtml" >
-            </ui:include>
+            <ui:decorate template="membersDialogTemplate.xhtml">
+                <ui:param name="viewId" value="#{viewName}" />                
+                <ui:param name="wizardController" value="#{wizardController}" />
+            </ui:decorate>
 
         </p:panel>
     </p:tab>

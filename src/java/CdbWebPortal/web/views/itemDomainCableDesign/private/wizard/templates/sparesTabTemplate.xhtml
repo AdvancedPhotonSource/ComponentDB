@@ -26,7 +26,7 @@ See LICENSE file.
                                      alt="Add spares to #{entityTypeName}" 
                                      onstart="PF('loadingDialog').show()"
                                      oncomplete="PF('loadingDialog').hide();PF('sparesDialog').show();"
-                                     update="dialogSpares"
+                                     update="#{viewName}DialogSpares"
                                      icon="fa fa-plus">
                         <p:tooltip for="#{viewName}AddButton" 
                                    value="Add spares to #{entityTypeName}."/>
@@ -61,9 +61,10 @@ See LICENSE file.
 
             </p:outputPanel>
             
-            <ui:include src="../sparesDialog.xhtml" >
+            <ui:decorate template="sparesDialogTemplate.xhtml">
+                <ui:param name="viewId" value="#{viewName}" />                
                 <ui:param name="wizardController" value="#{wizardController}" />
-            </ui:include>
+            </ui:decorate>
 
         </p:panel>
     </p:tab>

@@ -10,8 +10,13 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
 
+    <!-- Must provide params "viewId"-->
+
+    <ui:param name="rootViewId" value="#{viewId}"/>
+    <ui:param name="viewName" value="#{rootViewId}DialogSpares"/>
+
     <p:dialog header="Select cable type and enter quantity" 
-              id="dialogSpares"
+              id="#{viewName}"
               widgetVar="sparesDialog" 
               modal="true"
               closable="false">
@@ -19,8 +24,8 @@ See LICENSE file.
         <p:panelGrid columns="1">
             
             <p:panelGrid columns="2">
-                <p:outputLabel for="sparesDialogQuantityInputText" value="Quantity"/>
-                <p:inputText id="sparesDialogQuantityInputText" 
+                <p:outputLabel for="#{viewName}QuantityInputText" value="Quantity"/>
+                <p:inputText id="#{viewName}QuantityInputText" 
                              value="#{wizardController.dialogSpares.valueModelQuantity}"
                              required="true"
                              valueChangeListener="#{wizardController.dialogSpares.valueChangeListenerQuantity}">
@@ -30,11 +35,11 @@ See LICENSE file.
                 </p:inputText>
             </p:panelGrid>
 
-            <ui:decorate template="../../../itemDomainCableCatalog/private/templates/itemDomainCableCatalogDataTableTemplate.xhtml">
+            <ui:decorate template="../../../../itemDomainCableCatalog/private/templates/itemDomainCableCatalogDataTableTemplate.xhtml">
                 <ui:param name="cableCatalogDataTableSelectionModel" 
                           value="#{wizardController.dialogSpares.selectionModelCableType}" /> 
                 <ui:param name="viewId" 
-                          value="sparesDialog" />
+                          value="#{viewName}" />
                 <ui:define name="cableCatalogDataTableEvents">
                     <p:ajax event="rowSelectRadio"
                             listener="#{wizardController.dialogSpares.selectListenerCableType}"
@@ -46,20 +51,20 @@ See LICENSE file.
 
         <f:facet name="footer" class="dialog">
 
-            <p:outputPanel id="dialogSparesButtonPanel">
+            <p:outputPanel id="#{viewName}ButtonPanel">
 
                 <p:commandButton  action="#{wizardController.dialogSpares.select('selectCableTypeSuccess()')}"
-                                  id="sparesDialogSelectButton"
+                                  id="#{viewName}SelectButton"
                                   value="Select" 
                                   alt="Select" 
-                                  update="dialogSpares"
+                                  update="#{viewName}"
                                   disabled="#{wizardController.dialogSpares.disableButtonSelect}"
                                   icon="ui-icon-check"/>
 
                 <p:commandButton action="#{wizardController.dialogSpares.cancel()}" 
                                  immediate="true" 
                                  value="Cancel" alt="Cancel" 
-                                 update="dialogSpares"
+                                 update="#{viewName}"
                                  icon="ui-icon-cancel" />
 
                 <p:remoteCommand name="selectCableTypeSuccess"                             
@@ -71,7 +76,7 @@ See LICENSE file.
         </f:facet>
 
         <p:remoteCommand name="updateButtonsDialogSpares" 
-                         update="dialogSparesButtonPanel"/>
+                         update="#{viewName}ButtonPanel"/>
 
     </p:dialog>
 

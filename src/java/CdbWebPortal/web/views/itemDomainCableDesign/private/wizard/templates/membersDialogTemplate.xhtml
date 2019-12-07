@@ -9,19 +9,24 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
+    
+    <!-- Must provide params "viewId", "wizardController"-->
+
+    <ui:param name="rootViewId" value="#{viewId}"/>
+    <ui:param name="viewName" value="#{rootViewId}DialogMembers"/>
 
     <p:dialog header="Select member cable(s)" 
-              id="dialogMembers"
+              id="#{viewName}"
               widgetVar="membersDialog" 
               modal="true"
               closable="false">
 
-        <ui:decorate template="../templates/itemDomainCableDesignDataTableTemplate.xhtml">
+        <ui:decorate template="../../templates/itemDomainCableDesignDataTableTemplate.xhtml">
 
             <ui:param name="selectionModel" 
                       value="#{wizardController.dialogMembers.selectionModelCables}" /> 
             <ui:param name="viewId" 
-                      value="CableWizardMembersDialog" />
+                      value="#{viewName}" />
 
             <ui:define name="cableDesignDataTableEvents">
                 <p:ajax event="rowSelectCheckbox"
@@ -36,20 +41,20 @@ See LICENSE file.
 
         <f:facet name="footer" class="dialog">
 
-            <p:outputPanel id="dialogMembersButtonPanel">
+            <p:outputPanel id="#{viewName}ButtonPanel">
 
                 <p:commandButton  action="#{wizardController.dialogMembers.select('selectMembersSuccess()')}"
-                                  id="membersDialogSelectButton"
+                                  id="#{viewName}SelectButton"
                                   value="Select" 
                                   alt="Select" 
-                                  update="dialogMembers"
+                                  update="#{viewName}"
                                   disabled="#{wizardController.dialogMembers.disableButtonSelect}"
                                   icon="ui-icon-check"/>
 
                 <p:commandButton action="#{wizardController.dialogMembers.cancel()}" 
                                  immediate="true" 
                                  value="Cancel" alt="Cancel" 
-                                 update="dialogMembers"
+                                 update="#{viewName}"
                                  icon="ui-icon-cancel" />
 
                 <p:remoteCommand name="selectMembersSuccess"                             
@@ -61,7 +66,7 @@ See LICENSE file.
         </f:facet>
 
         <p:remoteCommand name="updateButtonsDialogMembers" 
-                         update="dialogMembersButtonPanel"/>
+                         update="#{viewName}ButtonPanel"/>
 
     </p:dialog>
 
