@@ -10,9 +10,9 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">    
 
-    <p:panel rendered="#{entityController.displayAddCablePanel}">
+    <p:panel rendered="#{entityController.displayAddCableBundlePanel}">
 
-        <ui:include src="../../itemDomainCableDesign/private/wizard/cableWizard.xhtml">
+        <ui:include src="../../itemDomainCableDesign/private/wizard/bundleWizard.xhtml">
             <ui:param name="selectEndpoint1" value="#{false}" />
         </ui:include>
 
