@@ -4,9 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
+import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -100,7 +103,9 @@ public class ItemDomainMachineDesignController
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
     private boolean displayCreateMachineDesignForTemplateElementPlaceholder = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
-    private boolean displayAddCableListConfigurationPanel = true;
+    private boolean displayAddCablePanel = true;
+    private boolean displayAddCableCircuitPanel = true;
+    private boolean displayAddCableBundlePanel = true;
 
     private List<ItemDomainCatalog> catalogItemsDraggedAsChildren = null;
     private TreeNode newCatalogItemsInMachineDesignModel = null;    
@@ -382,7 +387,9 @@ public class ItemDomainMachineDesignController
         displayAssignInventoryItemListConfigurationPanel = false;
         displayCreateMachineDesignForTemplateElementPlaceholder = false;
         displayMachineDesignReorderOverlayPanel = false;
-        displayAddCableListConfigurationPanel = false;
+        displayAddCablePanel = false;
+        displayAddCableCircuitPanel = false;
+        displayAddCableBundlePanel = false;
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
@@ -483,8 +490,16 @@ public class ItemDomainMachineDesignController
         return displayMachineDesignReorderOverlayPanel;
     }
 
-    public boolean isDisplayAddCableListConfigurationPanel() {
-        return displayAddCableListConfigurationPanel;
+    public boolean isDisplayAddCablePanel() {
+        return displayAddCablePanel;
+    }
+
+    public boolean isDisplayAddCableCircuitPanel() {
+        return displayAddCableCircuitPanel;
+    }
+
+    public boolean isDisplayAddCableBundlePanel() {
+        return displayAddCableBundlePanel;
     }
 
     private void updateCurrentUsingSelectedItemInTreeTable() {
@@ -1200,26 +1215,48 @@ public class ItemDomainMachineDesignController
         mdccmi = null;
     }
 
-    public void prepareCableWizard() {
+    public void prepareWizardCable() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
+
+        CableWizard cableWizard = CableWizard.getInstance();
+        cableWizard.registerClient(this, cableWizardRedirectSuccess);
+        cableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
+
+        displayListConfigurationView = true;
+        displayAddCablePanel = true;
+    }
+
+    public void prepareWizardCircuit() {
         updateCurrentUsingSelectedItemInTreeTable();
         currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
 
         // create model for wizard
-        ItemDomainCableDesignWizard addCableWizard = ItemDomainCableDesignWizard.getInstance();
-        addCableWizard.registerClient(this, cableWizardRedirectSuccess);
-        addCableWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
+        CircuitWizard circuitWizard = CircuitWizard.getInstance();
+        circuitWizard.registerClient(this, cableWizardRedirectSuccess);
+        circuitWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
 
         displayListConfigurationView = true;
-        displayAddCableListConfigurationPanel = true;
+        displayAddCableCircuitPanel = true;
+    }
+
+    public void prepareWizardBundle() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
+
+        // create model for wizard
+        BundleWizard bundleWizard = BundleWizard.getInstance();
+        bundleWizard.registerClient(this, cableWizardRedirectSuccess);
+        bundleWizard.setSelectionEndpoint1(selectedItemInListTreeTable);
+
+        displayListConfigurationView = true;
+        displayAddCableBundlePanel = true;
     }
 
     public void cleanupCableWizard() {
         resetListConfigurationVariables();
         resetListDataModel();
-        ItemDomainCableDesignWizard addCableWizard = ItemDomainCableDesignWizard.getInstance();
-        setSelectedItemInListTreeTable(addCableWizard.getSelectionEndpoint1());
         expandToSelectedTreeNodeAndSelect();
-        addCableWizard.unregisterClient(this);
     }
 
     private static List<ItemConnector> getConnectorsFromAssignedCatalogItem(ItemDomainMachineDesign item) {

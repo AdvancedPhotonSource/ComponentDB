@@ -21,13 +21,13 @@ See LICENSE file.
 
     <ui:define name="middleCenter">
 
-        <h:form id="addCableForm" rendered="#{loginController.loggedIn and pageRendered}">
+        <h:form id="addCircuitForm" rendered="#{loginController.loggedIn and pageRendered}">
 
             <div class="pageTitle">
-                <h1>Add Cable Design</h1>
+                <h1>Add Cable Circuit</h1>
             </div>
 
-            <ui:include src="private/wizard/cableWizard.xhtml">
+            <ui:include src="private/wizard/circuitWizard.xhtml">
                 <ui:param name="selectEndpoint1" value="#{true}" />
             </ui:include>
 

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui">   
+
+    <!-- Must provide params "viewId", "wizardController"-->
+    
+    <ui:param name="rootViewId" value="#{viewId}"/>
+    
+    <p:tab id="#{rootViewId}EndpointTab">
+        <p:panel header="#{selectEndpoint1 ? 'Select cable endpoints' : 'Select second endpoint for cable'}"
+                 id="#{rootViewId}CableEndpointPanel">
+
+            <p:panelGrid>
+                <p:column>
+
+                    <ui:decorate template="../../../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+
+                        <ui:param name="viewId" value="#{rootViewId}Endpoint1Tree" />
+                        <ui:param name="hideOptionalColumns" value="#{false}" /> 
+                        <ui:param name="valueModel" value="#{wizardController.machineDesignTreeEndpoint1}" />
+                        <ui:param name="selectionModel" value="#{wizardController.selectionEndpoint1}" /> 
+                        <ui:param name="rendered" value="#{selectEndpoint1}" />
+                        <ui:param name="scrollable" value="#{true}" />
+
+                        <ui:define name="treeTableEvents">
+                            <p:ajax event="select" 
+                                    listener="#{wizardController.selectListenerEndpoint1}" 
+                                    oncomplete="update#{rootViewId}WizardButtons();" />
+                            <p:ajax event="unselect" 
+                                    listener="#{wizardController.selectListenerEndpoint1}" 
+                                    oncomplete="update#{rootViewId}WizardButtons();" />
+                        </ui:define>
+
+                    </ui:decorate>
+                </p:column>
+
+                <p:column>
+
+                    <ui:decorate template="../../../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+
+                        <ui:param name="viewId" value="#{rootViewId}Endpoint2Tree" />
+                        <ui:param name="hideOptionalColumns" value="#{false}" /> 
+                        <ui:param name="valueModel" value="#{wizardController.machineDesignTreeEndpoint2}" />
+                        <ui:param name="selectionModel" value="#{wizardController.selectionEndpoint2}" /> 
+                        <ui:param name="rendered" value="#{true}" />
+                        <ui:param name="scrollable" value="#{true}" />
+
+                        <ui:define name="treeTableEvents">
+                            <p:ajax event="select" 
+                                    listener="#{wizardController.selectListenerEndpoint2}" 
+                                    oncomplete="update#{rootViewId}WizardButtons();" />
+                            <p:ajax event="unselect" 
+                                    listener="#{wizardController.unselectListenerEndpoint2}" 
+                                    oncomplete="update#{rootViewId}WizardButtons();" />
+                        </ui:define>
+
+                    </ui:decorate>
+                </p:column>
+
+            </p:panelGrid>
+
+        </p:panel>
+    </p:tab>
+
+</ui:composition>
