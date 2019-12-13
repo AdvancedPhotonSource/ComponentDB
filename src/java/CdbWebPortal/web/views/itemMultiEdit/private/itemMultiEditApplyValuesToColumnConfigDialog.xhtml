@@ -17,51 +17,8 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog">
         <f:ajax event="close"
                 listener="#{entityController.handleCloseInputValueDialog}" />
-        <p:outputPanel id="itemMultiEditApplyValuesToColumnConfigPanel">                       
-            <ui:param name="applyValuesToLink"
-                      value="#{facesUtility.returnValueIfTrue(entityController.renderItemProjectInputValue, 'applyValuesTo/itemProjectInput.xhtml')}"/>
-
-            <ui:param name="applyValuesToLink"
-                      value="#{applyValuesToLink == null 
-                               ? facesUtility.returnValueIfTrue(entityController.renderSimpleTextInputValue, 'applyValuesTo/simpleTextInput.xhtml')
-                               : applyValuesToLink}"/>
-
-            <ui:param name="applyValuesToLink"
-                      value="#{applyValuesToLink == null 
-                               ? facesUtility.returnValueIfTrue(entityController.renderLargeTextInput, 'applyValuesTo/itemLargeTextInput.xhtml')
-                               : applyValuesToLink}"/>                        
-
-            <ui:param name="applyValuesToLink"
-                      value="#{applyValuesToLink == null 
-                               ? facesUtility.returnValueIfTrue(entityController.renderNumberInput, 'applyValuesTo/numberInput.xhtml')
-                               : applyValuesToLink}"/>
-            
-            <ui:param name="applyValuesToLink"
-                      value="#{applyValuesToLink == null 
-                               ? facesUtility.returnValueIfTrue(entityController.renderOwnerUserInput, 'applyValuesTo/entityInfoOwnerUserInput.xhtml')
-                               : applyValuesToLink}"/>
-            
-            <ui:param name="applyValuesToLink"
-                      value="#{applyValuesToLink == null 
-                               ? facesUtility.returnValueIfTrue(entityController.renderOwnerGroupInput, 'applyValuesTo/entityInfoOwnerGroupInput.xhtml')
-                               : applyValuesToLink}"/>
-            
-            <ui:param name="applyValuesToLink"
-                      value="#{applyValuesToLink == null 
-                               ? facesUtility.returnValueIfTrue(entityController.renderGroupWriteableInput, 'applyValuesTo/entityInfoGroupWriteableInput.xhtml')
-                               : applyValuesToLink}"/>
-            <ui:param name="applyValuesToLink"
-                      value="#{applyValuesToLink == null 
-                               ? facesUtility.returnValueIfTrue(entityController.renderPropertyInputValue, 'applyValuesTo/propertyValueInput.xhtml')
-                               : applyValuesToLink}"/>
-
-            <ui:param name="applyValuesToLink"
-                      value="#{applyValuesToLink == null 
-                               ? '../../common/private/commonEmptyPage.xhtml' 
-                               : applyValuesToLink}" />
-
-            <ui:include src="#{applyValuesToLink}" />
-
+        <p:outputPanel id="itemMultiEditApplyValuesToColumnConfigPanel">
+            <ui:include src="#{entityController.applyValuesToEditLink}" />
         </p:outputPanel>
 
         <f:facet name="footer">
