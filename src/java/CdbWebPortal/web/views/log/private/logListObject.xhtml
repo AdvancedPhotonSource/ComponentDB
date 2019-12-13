@@ -76,8 +76,8 @@ See LICENSE file.
         <h:outputText value="#{logObject.enteredByUser.username}"/>
     </p:column>
 
-    <p:column sortBy="#{logObject.logTopic}" headerText="Topic" 
-              filterBy="#{logObject.logTopic}" filterMatchMode="exact"
+    <p:column sortBy="#{logObject.logTopic.name}" headerText="Topic" 
+              filterBy="#{logObject.logTopic.name}" filterMatchMode="exact"
               filterOptions="#{logTopicController.availableItemsForSelectOne}"
               filterValue="#{logSettingObject.filterByTopic}"
               filterStyle="width:40px"

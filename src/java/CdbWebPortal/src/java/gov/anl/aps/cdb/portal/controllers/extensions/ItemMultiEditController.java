@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
-import gov.anl.aps.cdb.common.constants.ItemDefaultColumnReferences;
+import gov.anl.aps.cdb.portal.constants.ItemDefaultColumnReferences;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
@@ -56,6 +56,8 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     protected final String EDIT_MULTIPLE_REDIRECT = "editMultiple?faces-redirect=true";
     protected final String CREATE_MULTIPLE_REDIRECT = "createMultiple?faces-redirect=true";
+    
+    protected final String REL_PATH_EMPTY_PAGE = "../../common/private/commonEmptyPage.xhtml";
 
     protected ListDataModel editableListDataModel;
 
@@ -297,7 +299,9 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         int successUpdateCounter = 0;
         int successCreateCounter = 0;
 
-        for (Item item : selectedItemsToEdit) {
+        for (int i = 0; i < selectedItemsToEdit.size(); i++) {
+            Item item = selectedItemsToEdit.get(i);
+            
             if (isItemExistInDb(item)) {
                 if (performSaveOperationsOnItem(item)) {
                     successUpdateCounter++;
@@ -305,6 +309,11 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
             } else if (performSaveOperationsOnItem(item)) {
                 successCreateCounter++;
             }
+            
+            // Reload the updated item. 
+            Item updatedItem = getCurrent();
+            selectedItemsToEdit.remove(i);
+            selectedItemsToEdit.add(i, updatedItem); 
         }
 
         // Summary message
@@ -879,7 +888,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         this.selectedPropertyTypesForEditing.remove(propertyType);
     }
 
-    private boolean getRenderSpecificInput(ItemDefaultColumnReferences idcr) {
+    protected boolean getRenderSpecificInput(ItemDefaultColumnReferences idcr) {
         if (this.currentApplyValuesToColumn != null) {
             return this.currentApplyValuesToColumn == idcr;
         }
@@ -985,8 +994,35 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                     }
                     break;
                 default:
+                    customApplyValuesForColumn(item, currentApplyValuesToColumn);
                     break;
             }
+        }
+    }
+    
+    protected void customApplyValuesForColumn(Item item, ItemDefaultColumnReferences columnReference) {
+        // Override this for additional domain specific values. 
+    }
+    
+    public String getApplyValuesToEditLink() {
+        if (getRenderItemProjectInputValue()) {
+            return "applyValuesTo/itemProjectInput.xhtml";
+        } else if (getRenderSimpleTextInputValue()) {
+            return "applyValuesTo/simpleTextInput.xhtml";
+        } else if (getRenderLargeTextInput()) {
+            return "applyValuesTo/itemLargeTextInput.xhtml"; 
+        } else if (getRenderNumberInput()) {
+            return "applyValuesTo/numberInput.xhtml"; 
+        } else if (getRenderOwnerUserInput()) {
+            return "applyValuesTo/entityInfoOwnerUserInput.xhtml";
+        } else if (getRenderOwnerGroupInput()) {
+            return "applyValuesTo/entityInfoOwnerGroupInput.xhtml";
+        } else if (getRenderGroupWriteableInput()) {
+            return "applyValuesTo/entityInfoGroupWriteableInput.xhtml"; 
+        } else if (getRenderPropertyInputValue()) {
+            return "applyValuesTo/propertyValueInput.xhtml";
+        } else {
+            return REL_PATH_EMPTY_PAGE; 
         }
     }
 

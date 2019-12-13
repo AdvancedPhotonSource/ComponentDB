@@ -59,17 +59,13 @@ See LICENSE file.
                                       styleClass="entityDataText"/> 
                     </p:outputPanel>
                 </f:facet>
-                <f:facet name="input">                       
-                    <p:selectOneMenu id="inventoryStatusInputSelectOneMenu"
-                                     value="#{currentObject.inventoryStatusValue}">
-                        <f:selectItem itemLabel="Select Status" itemValue=""/>
-                        <f:selectItems value="#{entityController.inventoryStatusPropertyType.allowedPropertyValueList}"
-                                       var='allowedValue'
-                                       itemLabel="#{allowedValue.value}"
-                                       itemValue="#{allowedValue.value}"/>
-                    </p:selectOneMenu>
-                </f:facet>            
-            </p:inplace>                                
+                <f:facet name="input">
+                    <ui:include src="templateDefaults/itemFieldEditValues/itemDomainInventoryStatus.xhtml">
+                        <ui:param name="inventoryStatusValue"
+                                  value="#{currentObject.inventoryStatusValue}"/>
+                    </ui:include>
+                </f:facet>
+            </p:inplace>
 
         </p:column>
 

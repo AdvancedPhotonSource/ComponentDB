@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
+import gov.anl.aps.cdb.portal.constants.ItemDefaultColumnReferences;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
@@ -28,6 +29,9 @@ import javax.inject.Named;
 public class ItemMultiEditDomainInventoryController extends ItemMultiEditController implements Serializable {
     
     public final static String controllerNamed = "itemMultiEditDomainInventoryController";
+    
+    private final String REL_PATH_ITEM_STATUS_INPUT = "../../itemDomainInventory/private/applyValuesTo/itemStatusInput.xhtml";
+    
     Integer unitCount = null; 
     
     protected boolean updateLocation = false;
@@ -185,6 +189,23 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
         }
                 
         this.updateInventoryStatus = updateInventoryStatus;
+    }
+
+    @Override
+    public String getApplyValuesToEditLink() {
+        if (getRenderSpecificInput(ItemDefaultColumnReferences.inventoryStatus)) {
+            return REL_PATH_ITEM_STATUS_INPUT; 
+        }
+        
+        return super.getApplyValuesToEditLink();
+    }
+
+    @Override
+    protected void customApplyValuesForColumn(Item item, ItemDefaultColumnReferences columnReference) {
+        if (columnReference == ItemDefaultColumnReferences.inventoryStatus) {
+            ItemDomainInventory inventoryItem = (ItemDomainInventory) item;
+            inventoryItem.setInventoryStatusValue((String) currentObjectValueToColumn);
+        }
     }
     
 }

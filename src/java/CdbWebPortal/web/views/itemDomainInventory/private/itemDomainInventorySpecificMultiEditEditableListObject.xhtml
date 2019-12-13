@@ -8,14 +8,18 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="http://xmlns.jcp.org/jsf/core">        
 
     <ui:include src="../../locatableItem/private/locatableItemSpecificMultiEditEditableListObject.xhtml" >
         <ui:param name="itemListObject" value="#{itemObject}" /> 
     </ui:include>
 
-    <p:column headerText="Status"
-              rendered="#{entityController.updateInventoryStatus}">                
+    <p:column rendered="#{entityController.updateInventoryStatus}">
+        <ui:include src="../../itemMultiEdit/private/itemMultiEditColumnHeaderFacet.xhtml">
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.inventoryStatus}"/>
+            <ui:param name="columnHeader" value="Status"/> 
+        </ui:include>
+        
         <p:selectOneMenu id="inventoryStatusMultiEditSelectOneMenu"
                          value="#{itemObject.inventoryStatusValue}">
             <f:selectItem itemLabel="Select Status" itemValue=""/>
