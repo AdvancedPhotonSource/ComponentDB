@@ -299,7 +299,9 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         int successUpdateCounter = 0;
         int successCreateCounter = 0;
 
-        for (Item item : selectedItemsToEdit) {
+        for (int i = 0; i < selectedItemsToEdit.size(); i++) {
+            Item item = selectedItemsToEdit.get(i);
+            
             if (isItemExistInDb(item)) {
                 if (performSaveOperationsOnItem(item)) {
                     successUpdateCounter++;
@@ -307,6 +309,11 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
             } else if (performSaveOperationsOnItem(item)) {
                 successCreateCounter++;
             }
+            
+            // Reload the updated item. 
+            Item updatedItem = getCurrent();
+            selectedItemsToEdit.remove(i);
+            selectedItemsToEdit.add(i, updatedItem); 
         }
 
         // Summary message
