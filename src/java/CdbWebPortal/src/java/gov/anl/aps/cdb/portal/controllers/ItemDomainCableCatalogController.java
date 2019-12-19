@@ -37,6 +37,12 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         }
     }
     
+    /**
+     * Prepares import wizard.
+     */
+    public void prepareWizardImport() {        
+    }
+
     @Override
     public ItemMultiEditController getItemMultiEditController() {
         return ItemMultiEditDomainCableCatalogController.getInstance();
