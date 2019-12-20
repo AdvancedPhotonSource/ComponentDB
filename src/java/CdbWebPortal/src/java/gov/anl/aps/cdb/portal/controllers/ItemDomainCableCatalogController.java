@@ -40,7 +40,9 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     /**
      * Prepares import wizard.
      */
-    public void prepareWizardImport() {        
+    public String prepareWizardImport() {        
+        ItemDomainImportWizard.getInstance().reset();
+        return "/views/itemDomainCableCatalog/import?faces-redirect=true";
     }
 
     @Override
