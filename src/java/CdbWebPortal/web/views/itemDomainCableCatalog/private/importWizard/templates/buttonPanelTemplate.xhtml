@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui">   
+
+    <!-- Must provide params "viewId", "wizardController", "cancelAction", "finishAction".-->
+
+    <ui:param name="rootViewId" value="#{viewId}"/>
+    
+    <p:outputPanel id="#{rootViewId}ImportWizardButtonPanel">
+        <div style="float: left">
+
+            <p:commandButton value="Previous Step" 
+                             process="@this"
+                             update="@this"
+                             onstart="PF('loadingDialog').show();PF('#{rootViewId}').back();"
+                             oncomplete="PF('loadingDialog').hide(); update#{rootViewId}WizardButtons();"
+                             disabled="#{wizardController.disableButtonPrev}"
+                             icon="ui-icon-arrowthick-1-w"/>
+
+            <p:commandButton id="#{rootViewId}CancelButton"
+                             value="Cancel"
+                             alt="Cancel"
+                             action="#{wizardController[cancelAction]()}"
+                             icon="fa fa-times-circle-o"
+                             rendered="true"
+                             immediate="true"
+                             oncomplete="update#{rootViewId}WizardButtons();"
+                             disabled="#{wizardController.disableButtonCancel}"
+                             process="@this"
+                             update="@this"> 
+                <p:tooltip for="#{rootViewId}CancelButton" 
+                           value="Cancel and close wizard."/>
+            </p:commandButton>
+
+        </div>
+        <div style="float: right">
+
+            <p:commandButton id="#{rootViewId}FinishButton"
+                             value="Finish"
+                             alt="Finish"
+                             action="#{wizardController[finishAction]()}"
+                             icon="ui-icon-check"
+                             rendered="true"
+                             immediate="false"
+                             oncomplete="update#{rootViewId}WizardButtons();"
+                             disabled="#{wizardController.disableButtonFinish}"
+                             process="importWizard"
+                             update="importWizard"> 
+                <p:tooltip for="#{rootViewId}FinishButton" 
+                           value="Finish and close wizard."/>
+            </p:commandButton>
+
+            <p:commandButton value="Next Step"
+                             process="@this"
+                             update="@this"
+                             onstart="PF('loadingDialog').show();PF('#{rootViewId}').next();"
+                             oncomplete="PF('loadingDialog').hide(); update#{rootViewId}WizardButtons();"
+                             disabled="#{wizardController.disableButtonNext}"
+                             icon="ui-icon-arrowthick-1-e"
+                             iconPos="right"/>
+
+        </div>
+
+    </p:outputPanel>
+
+</ui:composition>

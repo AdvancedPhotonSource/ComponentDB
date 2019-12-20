@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+
+    <p:panel>
+
+        <ui:param name="rootViewId" value="importWizard" />
+        <ui:param name="wizardController" value="#{importWizard}" />
+
+        <p:wizard id="importWizard"
+                  flowListener="#{wizardController.onFlowProcess}" 
+                  widgetVar="#{rootViewId}"
+                  showStepStatus="false" 
+                  showNavBar="false">
+
+            <ui:decorate template="templates/selectFileTabTemplate.xhtml">
+                <ui:param name="viewId" value="#{rootViewId}" />                
+                <ui:param name="wizardController" value="#{wizardController}" />
+            </ui:decorate>
+
+        </p:wizard>
+
+        <ui:decorate template="templates/buttonPanelTemplate.xhtml">
+            <ui:param name="viewId" value="#{rootViewId}" />                
+            <ui:param name="wizardController" value="#{wizardController}" />
+            <ui:param name="cancelAction" value="cancel" />     
+            <ui:param name="finishAction" value="finish" />     
+        </ui:decorate>
+
+        <p:remoteCommand name="update#{rootViewId}WizardButtons" 
+                         update="#{rootViewId}ImportWizardButtonPanel"/>
+
+    </p:panel>
+
+</ui:composition>
