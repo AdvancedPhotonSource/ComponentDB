@@ -17,6 +17,8 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
@@ -133,6 +135,43 @@ public class ItemDomainImportWizard implements Serializable {
         return true;
     }
     
+    protected boolean readXlsxFileData(UploadedFile f) {
+
+        InputStream inputStream;
+        XSSFWorkbook workbook = null;
+        try {
+            inputStream = f.getInputstream();
+            workbook = new XSSFWorkbook(inputStream);
+        } catch (IOException e) {
+            return false;
+        }
+        
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        
+        Iterator<Row> rowIterator = sheet.iterator();
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            
+            CellType celltype;
+        
+            Iterator<Cell> cellIterator = row.cellIterator();
+            while (cellIterator.hasNext()) {
+                Cell cell = cellIterator.next();
+                switch (cell.getCellType()) {
+                    case NUMERIC:
+                        System.out.print(cell.getNumericCellValue() + "\t\t");
+                        break;
+                    case STRING:
+                        System.out.print(cell.getStringCellValue() + "\t\t");
+                        break;
+                }
+            }
+            System.out.println();
+        }
+        
+        return true;
+    }
+    
     public void fileUploadListenerData(FileUploadEvent event) {
         
         uploadfileData = event.getFile();
@@ -140,7 +179,7 @@ public class ItemDomainImportWizard implements Serializable {
         String contentType = uploadfileData.getContentType();
         System.out.println("uploaded: " + fileName + " type: " + contentType);
         
-        if (!readXlsFileData(uploadfileData)) {
+        if (!readXlsxFileData(uploadfileData)) {
             
         } else {
             
