@@ -5,10 +5,18 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Iterator;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.ValueChangeEvent;
 import javax.inject.Named;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
@@ -88,6 +96,43 @@ public class ItemDomainImportWizard implements Serializable {
         }
     }
     
+    protected boolean readXlsFileData(UploadedFile f) {
+
+        InputStream inputStream;
+        HSSFWorkbook workbook = null;
+        try {
+            inputStream = f.getInputstream();
+            workbook = new HSSFWorkbook(inputStream);
+        } catch (IOException e) {
+            return false;
+        }
+        
+        HSSFSheet sheet = workbook.getSheetAt(0);
+        
+        Iterator<Row> rowIterator = sheet.iterator();
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            
+            CellType celltype;
+        
+            Iterator<Cell> cellIterator = row.cellIterator();
+            while (cellIterator.hasNext()) {
+                Cell cell = cellIterator.next();
+                switch (cell.getCellType()) {
+                    case NUMERIC:
+                        System.out.print(cell.getNumericCellValue() + "\t\t");
+                        break;
+                    case STRING:
+                        System.out.print(cell.getStringCellValue() + "\t\t");
+                        break;
+                }
+            }
+            System.out.println();
+        }
+        
+        return true;
+    }
+    
     public void fileUploadListenerData(FileUploadEvent event) {
         
         uploadfileData = event.getFile();
@@ -95,9 +140,12 @@ public class ItemDomainImportWizard implements Serializable {
         String contentType = uploadfileData.getContentType();
         System.out.println("uploaded: " + fileName + " type: " + contentType);
         
-//        byte[] contents = uploadedFile.getContents(); // Or getInputStream()
-//        // ... Save it, now!
-
+        if (!readXlsFileData(uploadfileData)) {
+            
+        } else {
+            
+        }
+        
         setEnablementForCurrentTab();
     }
         
