@@ -35,14 +35,17 @@ See LICENSE file.
                     </ui:remove>
                     
                     <p:panelGrid columns="2">
-                        <p:outputLabel value="Uploaded file" 
+                        <p:outputLabel value="Successfully uploaded file:" 
                                        styleClass="entityDataEmphasizedLabel"
                                        rendered="#{wizardController.renderOutputData}"/>
                         <h:outputText value="#{wizardController.getUploadfileDataString()}" 
                                       title="Uploaded file" 
                                       styleClass="entityDataEmphasizedText" />
                     </p:panelGrid>
-
+                    
+                    <p:outputLabel value="Click next to continue." 
+                                   styleClass="entityDataEmphasizedLabel"
+                                   rendered="#{wizardController.renderOutputData}"/>
 
                 </p:panelGrid>
             </p:outputPanel>
