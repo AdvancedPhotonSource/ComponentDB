@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.Iterator;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.event.ValueChangeEvent;
 import javax.inject.Named;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -34,6 +33,8 @@ public class ItemDomainImportWizard implements Serializable {
     
     protected static final String tabSelectFile = "SelectFileTab";    
     
+    protected ImportHelperBase importHelper = null;
+    
     protected String currentTab = tabSelectFile;
     
     private Boolean disableButtonPrev = true;
@@ -48,6 +49,11 @@ public class ItemDomainImportWizard implements Serializable {
     public static ItemDomainImportWizard getInstance() {
         return (ItemDomainImportWizard) SessionUtility.findBean(
                 ItemDomainImportWizard.CONTROLLER_NAMED);
+    }
+    
+    public void registerHelper(ImportHelperBase helper) {
+        reset();
+        importHelper = helper;
     }
 
     public Boolean getDisableButtonPrev() {
@@ -112,25 +118,8 @@ public class ItemDomainImportWizard implements Serializable {
         HSSFSheet sheet = workbook.getSheetAt(0);
         
         Iterator<Row> rowIterator = sheet.iterator();
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
-            
-            CellType celltype;
         
-            Iterator<Cell> cellIterator = row.cellIterator();
-            while (cellIterator.hasNext()) {
-                Cell cell = cellIterator.next();
-                switch (cell.getCellType()) {
-                    case NUMERIC:
-                        System.out.print(cell.getNumericCellValue() + "\t\t");
-                        break;
-                    case STRING:
-                        System.out.print(cell.getStringCellValue() + "\t\t");
-                        break;
-                }
-            }
-            System.out.println();
-        }
+        parseSheet(rowIterator);
         
         return true;
     }
@@ -149,27 +138,30 @@ public class ItemDomainImportWizard implements Serializable {
         XSSFSheet sheet = workbook.getSheetAt(0);
         
         Iterator<Row> rowIterator = sheet.iterator();
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
-            
-            CellType celltype;
         
-            Iterator<Cell> cellIterator = row.cellIterator();
-            while (cellIterator.hasNext()) {
-                Cell cell = cellIterator.next();
-                switch (cell.getCellType()) {
-                    case NUMERIC:
-                        System.out.print(cell.getNumericCellValue() + "\t\t");
-                        break;
-                    case STRING:
-                        System.out.print(cell.getStringCellValue() + "\t\t");
-                        break;
-                }
-            }
-            System.out.println();
-        }
+        parseSheet(rowIterator);
         
         return true;
+    }
+    
+    protected void parseSheet(Iterator<Row> rowIterator) {
+        
+        int rowCount = -1;
+        while (rowIterator.hasNext()) {
+            
+            rowCount = rowCount + 1;
+            
+            Row row = rowIterator.next();
+            
+            // skip header rows
+            if (rowCount < importHelper.getDataStartRow()) {
+                continue;
+            }
+
+            CellType celltype;
+
+            importHelper.parseRow(row);
+        }
     }
     
     public void fileUploadListenerData(FileUploadEvent event) {
@@ -196,6 +188,8 @@ public class ItemDomainImportWizard implements Serializable {
         currentTab = tabSelectFile;
         
         uploadfileData = null;
+        
+        importHelper = null;
         
         // allow subclass to customize
         // reset_();
