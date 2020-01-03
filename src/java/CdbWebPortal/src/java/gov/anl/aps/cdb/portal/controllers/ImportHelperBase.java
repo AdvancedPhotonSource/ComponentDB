@@ -67,7 +67,7 @@ public abstract class ImportHelperBase {
     protected static String validStringProperty = "validString";
     
     protected List<RowModel> rows = new ArrayList<>();
-    protected static List<ColumnModel> columns = new ArrayList<>();
+    protected List<ColumnModel> columns = new ArrayList<>();
     
     public abstract int getDataStartRow();
 
@@ -81,7 +81,7 @@ public abstract class ImportHelperBase {
         return rows;
     }
     
-    public static List<ColumnModel> getColumns() {
+    public List<ColumnModel> getColumns() {
         return columns;
     }
     
