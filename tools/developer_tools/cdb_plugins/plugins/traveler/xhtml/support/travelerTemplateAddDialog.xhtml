@@ -8,7 +8,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">   
-    
+
     <ui:param name="travelerSuccessUpdateTarget"
               value="#{travelerSuccessUpdateTarget != null ? travelerSuccessUpdateTarget : 'travelerTemplateListDataTable'}" />
 
@@ -18,12 +18,15 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               modal="true"
               resizable="false">
-        
-        <ui:include src="travelerTemplateCreateConfigurationPanelGrid.xhtml"/>
 
-        <p:remoteCommand name="successTravelerTemplateAddDialog"
-                         update="#{travelerSuccessUpdateTarget}"
-                         oncomplete="PF('travelerTemplateAddDialogWidget').hide();" />        
+        <p:outputPanel rendered="#{itemTravelerDomainCatalogController.renderTravelerTemplateAddDialog}">
+
+            <ui:include src="travelerTemplateCreateConfigurationPanelGrid.xhtml"/>
+
+            <p:remoteCommand name="successTravelerTemplateAddDialog"
+                             update="#{travelerSuccessUpdateTarget}"
+                             oncomplete="PF('travelerTemplateAddDialogWidget').hide();" />        
+        </p:outputPanel>
 
         <f:facet name="footer">
             <p:commandButton value="Create Traveler Template"                              

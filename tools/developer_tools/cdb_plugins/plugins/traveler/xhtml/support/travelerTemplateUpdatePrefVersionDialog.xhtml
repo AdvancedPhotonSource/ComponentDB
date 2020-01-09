@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
+
+    <ui:param name="travelerSuccessUpdateTarget"
+              value="#{travelerSuccessUpdateTarget != null ? travelerSuccessUpdateTarget : 'travelerTemplateListDataTable'}" />
+
+    <p:dialog id="travelerTemplateUpdatePrefVersionDialog" 
+              widgetVar="travelerTemplateUpdatePrefVersionDialogWidget" 
+              header="Update Template Preferred Version"
+              styleClass="viewTransparentBackgroundDialog"
+              modal="true"
+              resizable="false">
+
+        <p:outputPanel id='travelerTemplateUpdatePrefVersionDialogContents'>        
+            <p:outputPanel rendered="#{itemTravelerDomainCatalogController.renderTravelerTemplateUpdatePrefVersionDialog}">
+                <ui:include src="travelerTemplateReleasedVersionSelectionDataTable.xhtml"> 
+                    <ui:param name="selectedTemplate"
+                              value="#{itemTravelerDomainCatalogController.selectedTemplate}"/> 
+                    <ui:param name="viewName"
+                              value="PrefVersionSelection"/>
+                </ui:include>
+            </p:outputPanel>
+        </p:outputPanel>
+
+
+        <f:facet name="footer">           
+            <p:commandButton value="Update"                             
+                             action="#{itemTravelerDomainCatalogController.saveSelectedTemplatePropertyValue('successUpodatePrefVersion()')}"
+                             onclick="PF('loadingDialog').show()"
+                             icon="fa fa-save"
+                             oncomplete="PF('loadingDialog').hide();"/>
+
+            <p:remoteCommand name="successUpodatePrefVersion"
+                             onstart="PF('loadingDialog').show()"
+                             update="#{travelerSuccessUpdateTarget}"
+                             oncomplete="PF('loadingDialog').hide();
+                             PF('travelerTemplateUpdatePrefVersionDialogWidget').hide()"/> 
+        </f:facet>
+    </p:dialog>
+
+    <p:remoteCommand name="showTravelerTemplateUpdatePrefVersionDialog"
+                     update="travelerTemplateUpdatePrefVersionDialogContents"                     
+                     oncomplete="PF('travelerTemplateUpdatePrefVersionDialogWidget').show();" />
+
+</ui:composition>
+
