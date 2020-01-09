@@ -10,11 +10,13 @@ import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
 import gov.anl.aps.cdb.portal.controllers.ICdbDomainEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
+import gov.anl.aps.cdb.portal.controllers.PropertyValueController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 
@@ -27,12 +29,16 @@ import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Binder;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.BinderTraveler;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.BinderWorksReference;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Form;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.FormContent;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Forms;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForm;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForms;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Traveler;
 import javax.faces.model.SelectItem;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,10 +51,15 @@ import org.apache.log4j.Logger;
 
 public abstract class ItemTravelerController extends ItemControllerExtensionHelper {
 
-    protected TravelerApi travelerApi;
-    private static final Logger logger = Logger.getLogger(ItemTravelerController.class.getName());
+    protected TravelerApi travelerApi;    
+    private static final Logger logger = Logger.getLogger(ItemTravelerController.class.getName());        
 
-    protected static final int FORM_ARCHIVED_STATUS = 2;
+    protected static final double FORM_ARCHIVED_STATUS = 2;
+    protected static final String FORM_TYPE_DISCREPANCY = "discrepancy"; 
+    protected static final String TEMPLATE_PREFERRED_VERSION_ID_KEY = "preferredVer";
+    protected static final String TEMPLATE_PREFERRED_CACHE_VER_KEY = "preferredVerStringCache";
+    
+    protected PropertyValueController propertyValueController; 
 
     protected PropertyValue propertyValue;
     private Traveler currentTravelerInstance;
@@ -63,10 +74,15 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     private boolean renderAddTravelerToBinderDialog;
     private boolean renderAddNewTravelerToBinderDialog;
+    private boolean renderTravelerTemplateLinkDialog;
+    private boolean renderTravelerTemplateAddDialog;
+    private boolean renderTravelerTemplateUpdatePrefVersionDialog;
     private boolean renderAddNewTravelerDialog;
 
     private Form selectedTemplate;
     private Form selectedTravelerInstanceTemplate;
+    //private ReleasedForms releasedFormsForSelectedTravelerInstanceTemplate;
+    //private ReleasedForm selectedReleasedTemplateForTravelerInstance;
 
     private String travelerTemplateTitle;
     private Forms activeTravelerTemplates;
@@ -181,6 +197,9 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         renderAddTravelerToBinderDialog = false;
         renderAddNewTravelerToBinderDialog = false;
         renderAddNewTravelerDialog = false;
+        renderTravelerTemplateAddDialog = false;
+        renderTravelerTemplateLinkDialog = false;
+        renderTravelerTemplateUpdatePrefVersionDialog = false;
     }
 
     @Override
@@ -198,6 +217,12 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             newBinder = new Binder();
             newBinderTemplateSelection = new ArrayList<>();
             loadEntityAvailableTemplateList(getCurrent());
+
+            // Load the released list
+            for (Form availableTemplate : availableTemplates) {
+                loadReleasedTemplatesForTemplate(availableTemplate, true);
+            }
+
             SessionUtility.executeRemoteCommand(onSuccess);
         } else {
             SessionUtility.addErrorMessage("Traveler binder property type not found ",
@@ -328,11 +353,29 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             newBinder = travelerApi.createBinder(newBinderTitle,
                     newBinder.getDescription(), username);
 
+            boolean failedValidation = false;
+
+            for (int i = 0; i < newBinderTemplateSelection.size(); i++) {
+                Form selectedTemplate = newBinderTemplateSelection.get(i);
+
+                ReleasedForm releasedForm = selectedTemplate.getSelectedReleasedForm();
+                if (releasedForm == null) {
+                    failedValidation = true;
+                    SessionUtility.addWarningMessage("No Released Version specified",
+                            "Please specify released version for: " + selectedTemplate.getTitle());
+                }
+            }
+
+            if (failedValidation) {
+                return null;
+            }
+
             String[] travelerIds = new String[newBinderTemplateSelection.size()];
 
             for (int i = 0; i < newBinderTemplateSelection.size(); i++) {
                 Form selectedTemplate = newBinderTemplateSelection.get(i);
-                String templateId = selectedTemplate.getId();
+                String templateId = selectedTemplate.getSelectedReleasedForm().getId();
+
                 String travelerName = selectedTemplate.getTravelerInstanceName();
                 Traveler newTraveler = createActiveTraveler(templateId, travelerName);
                 travelerIds[i] = newTraveler.getId();
@@ -473,6 +516,10 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     }
 
     public void addTravelerTemplateToCurrent(String onSuccess) {
+        resetRenderBooleans();
+        renderTravelerTemplateAddDialog = true;
+        renderTravelerTemplateLinkDialog = true;
+
         PropertyType travelerTemplatePropertyType = getTravelerTemplatePropertyType();
 
         if (travelerTemplatePropertyType != null) {
@@ -596,7 +643,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             loadPropertyTravelerTemplateList(getCurrent().getPropertyValueInternalList(), allTemplatesForCurrent);
 
             for (Form form : allTemplatesForCurrent) {
-                int status = form.getStatus();
+                double status = form.getStatus();
                 if (status == FORM_ARCHIVED_STATUS) {
                     archivedTemplatesForCurrent.add(form);
                 } else {
@@ -642,6 +689,18 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     public boolean isRenderAddNewTravelerDialog() {
         return renderAddNewTravelerDialog;
+    }
+
+    public boolean isRenderTravelerTemplateLinkDialog() {
+        return renderTravelerTemplateLinkDialog;
+    }
+
+    public boolean isRenderTravelerTemplateAddDialog() {
+        return renderTravelerTemplateAddDialog;
+    }
+
+    public boolean isRenderTravelerTemplateUpdatePrefVersionDialog() {
+        return renderTravelerTemplateUpdatePrefVersionDialog;
     }
 
     public List<BinderTraveler> getTravelersForCurrent() {
@@ -804,13 +863,35 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     public void linkTravelerTemplate(String onSuccessCommand) {
         if (checkPropertyValue()) {
             if (checkSelectedTemplate(selectedTemplate)) {
-                propertyValue.setValue(selectedTemplate.getId());
-                if (getCurrent().getId() != null) {
-                    savePropertyList();
-                }
-                SessionUtility.executeRemoteCommand(onSuccessCommand);
+                saveSelectedTemplatePropertyValue(onSuccessCommand);
             }
         }
+    }
+
+    public void saveSelectedTemplatePropertyValue(String onSuccessCommand) {
+        propertyValue.setValue(selectedTemplate.getId());
+
+        ReleasedForm selectedReleasedForm = selectedTemplate.getSelectedReleasedForm();
+        if (selectedReleasedForm != null) {
+            if (!selectedReleasedForm.isItemFake()) {
+                // Valid form selected 
+                propertyValue.setPropertyMetadataValue(TEMPLATE_PREFERRED_VERSION_ID_KEY, selectedReleasedForm.getId());
+                propertyValue.setPropertyMetadataValue(TEMPLATE_PREFERRED_CACHE_VER_KEY, selectedReleasedForm.getVer());
+            } else {
+                PropertyMetadata md1 = propertyValue.getPropertyMetadataForKey(TEMPLATE_PREFERRED_VERSION_ID_KEY);
+                PropertyMetadata md2 = propertyValue.getPropertyMetadataForKey(TEMPLATE_PREFERRED_CACHE_VER_KEY);
+                
+                PropertyValueController propertyValueController = getPropertyValueController();
+                String removeMessage = "Preference Removed. Will automatically fetch latest."; 
+                propertyValueController.removePropertyMetadata(md1, removeMessage);
+                propertyValueController.removePropertyMetadata(md2, null);
+            }
+        }
+
+        if (getCurrent().getId() != null) {
+            savePropertyList();
+        }
+        SessionUtility.executeRemoteCommand(onSuccessCommand);
     }
 
     /**
@@ -1025,16 +1106,36 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * to the user.
      */
     private void loadPropertyTravelerTemplateList(List<PropertyValue> propertyValues, List<Form> formList) {
+        propertyValues = getTemplatePropertyValueList(propertyValues);
         if (propertyValues != null) {
+            for (PropertyValue curPropertyValue : propertyValues) {
+                addFormFromPropertyValue(curPropertyValue.getValue(), formList, curPropertyValue);
+            }
+        }
+    }
+
+    private List<PropertyValue> getTemplatePropertyValueListForCurrent() {
+        return getTemplatePropertyValueList(getCurrent().getPropertyValueInternalList());
+    }
+
+    private List<PropertyValue> getTemplatePropertyValueList(List<PropertyValue> propertyValues) {
+        if (propertyValues != null) {
+            List<PropertyValue> pvList = new ArrayList<>();
             for (PropertyValue curPropertyValue : propertyValues) {
                 // Check that they use the traveler template handler. 
                 if (curPropertyValue.getPropertyType().getPropertyTypeHandler() != null) {
                     if (curPropertyValue.getPropertyType().getPropertyTypeHandler().getName().equals(TravelerTemplatePropertyTypeHandler.HANDLER_NAME)) {
-                        addFormFromPropertyValue(curPropertyValue.getValue(), formList);
+                        pvList.add(curPropertyValue);
                     }
                 }
             }
+            return pvList;
         }
+        return null;
+    }
+
+    private void addFormFromPropertyValue(String formId, List<Form> formList) {
+        addFormFromPropertyValue(formId, formList, null);
     }
 
     /**
@@ -1045,12 +1146,19 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * @param formList List of (traveler templates)/forms that will be displayed
      * to the user.
      */
-    private void addFormFromPropertyValue(String formId, List<Form> formList) {
+    private void addFormFromPropertyValue(String formId, List<Form> formList, PropertyValue pv) {
         if (formId == null || formId.equals("")) {
             return;
         }
         try {
-            formList.add(travelerApi.getForm(formId));
+            Form form = travelerApi.getForm(formId);
+            if (pv != null) {
+                String verId = pv.getPropertyMetadataValueForKey(TEMPLATE_PREFERRED_VERSION_ID_KEY);
+                String verCache = pv.getPropertyMetadataValueForKey(TEMPLATE_PREFERRED_CACHE_VER_KEY);
+                form.setPreferredReleasedId(verId);
+                form.setPreferredReleasedVerCache(verCache);
+            }
+            formList.add(form);
         } catch (CdbException ex) {
             Form form = new Form(formId);
             form.setTitle("Error fetching id: " + formId);
@@ -1183,6 +1291,17 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             if (checkSelectedTemplate(selectedTravelerInstanceTemplate)) {
                 if (!travelerInstanceTitle.equals("") || travelerInstanceTitle != null) {
                     try {
+                        ReleasedForm selectedReleasedForm = selectedTravelerInstanceTemplate.getSelectedReleasedForm();
+                        if (selectedReleasedForm != null) {
+                            FormContent formContent = selectedReleasedForm.getBase();
+                            String id = formContent.getId();
+                            if (!id.equals(selectedTravelerInstanceTemplate.getId())) {
+                                selectedReleasedForm = null;
+                            }
+                        }
+                        if (selectedReleasedForm == null) {
+                            throw new CdbException("Invalid released template selected.");
+                        }
 
                         Traveler travelerInstance = createTravelerInstance();
 
@@ -1213,7 +1332,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     private Traveler createTravelerInstance() throws CdbException {
         if (checkSelectedTemplate(selectedTravelerInstanceTemplate)) {
             if (!travelerInstanceTitle.equals("") || travelerInstanceTitle != null) {
-                return createActiveTraveler(selectedTravelerInstanceTemplate.getId(),
+                ReleasedForm selectedReleasedForm = selectedTravelerInstanceTemplate.getSelectedReleasedForm();
+                return createActiveTraveler(selectedReleasedForm.getId(),
                         travelerInstanceTitle);
             } else {
                 throw new CdbException("Traveler instance title has not been specified");
@@ -1277,9 +1397,13 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             activeTravelerTemplates.setForms(activeForms);
 
             for (Form template : allForms.getForms()) {
-                if (template.getStatus() != FORM_ARCHIVED_STATUS) {
-                    activeForms.add(template);
+                if (template.getStatus() == FORM_ARCHIVED_STATUS) {
+                    continue;
                 }
+                if (template.getFormType().equals(FORM_TYPE_DISCREPANCY)) {
+                    continue;
+                }
+                activeForms.add(template);
             }
 
             if (onSuccessCommand != null) {
@@ -1370,6 +1494,12 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         this.selectedTemplate = selectedTemplate;
     }
 
+    public void loadReleasedTemplatesForSelectedTemplate() {
+        if (selectedTemplate != null) {
+            loadReleasedTemplatesForTemplate(selectedTemplate, false, true);
+        }
+    }
+
     public Form getSelectedTemplate() {
         return selectedTemplate;
     }
@@ -1417,18 +1547,129 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     public String getTravelerInstanceTitle() {
         return travelerInstanceTitle;
     }
-
+    
     public void setSelectedTravelerInstanceTemplate(Form selectedTravelerInstanceTemplate) {
         if (selectedTravelerInstanceTemplate != null) {
             if (this.selectedTravelerInstanceTemplate == null
                     || !this.selectedTravelerInstanceTemplate.getId().equals(selectedTravelerInstanceTemplate.getId())) {
-                travelerInstanceTitle = selectedTravelerInstanceTemplate.getTitle();
+                try {
+                    travelerInstanceTitle = selectedTravelerInstanceTemplate.getTitle();
+
+                    loadReleasedTemplatesForTemplate(selectedTravelerInstanceTemplate, false);
+                } catch (Exception ex) {
+                    SessionUtility.addErrorMessage("Error", ex.getMessage());
+                }
+
             }
         } else {
             travelerInstanceTitle = "";
         }
         this.selectedTravelerInstanceTemplate = selectedTravelerInstanceTemplate;
+    }
 
+    public void prepareUpdatePreferredVersionForTemplate(Form template, String onSuccessCommand) {
+        resetRenderBooleans();
+        renderTravelerTemplateUpdatePrefVersionDialog = true;
+
+        List<PropertyValue> templatePropertyValueListForCurrent = getTemplatePropertyValueListForCurrent();
+        String templateId = template.getId();
+        propertyValue = null;
+        for (PropertyValue pv : templatePropertyValueListForCurrent) {
+            if (pv.getValue().equals(templateId)) {
+                propertyValue = pv;
+                break;
+            }
+        }
+        if (propertyValue == null) {
+            SessionUtility.addErrorMessage("Error", "An error occurred finding the template requested.");
+            return;
+        }
+
+        setSelectedTemplate(template);
+        loadReleasedTemplatesForSelectedTemplate();
+
+        SessionUtility.executeRemoteCommand(onSuccessCommand);
+
+    }
+
+    private void loadReleasedTemplatesForTemplate(Form template, boolean quiet) {
+        loadReleasedTemplatesForTemplate(template, quiet, false);
+    }
+
+    private void loadReleasedTemplatesForTemplate(Form template, boolean quiet, boolean includeSelectLatestDefault) {
+
+        template.setSelectedReleasedForm(null);
+
+        ReleasedForms releasedFormsForSelectedTravelerInstanceTemplate;
+
+        try {
+            releasedFormsForSelectedTravelerInstanceTemplate = travelerApi.getReleasedFormsCreatedFromForm(template.getId());
+            template.setReleasedForms(releasedFormsForSelectedTravelerInstanceTemplate);
+        } catch (Exception ex) {
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+            return;
+        }
+
+        LinkedList<ReleasedForm> releasedForms = releasedFormsForSelectedTravelerInstanceTemplate.getReleasedForms();
+
+        long prevInstant = 0;
+
+        String preferredReleasedId = template.getPreferredReleasedId();
+        ReleasedForm latestForm = null;
+        ReleasedForm noPrefForm = null;
+        if (includeSelectLatestDefault) {
+            noPrefForm = ReleasedForm.createCustomAlwaysSelectLatest();
+            releasedForms.add(0, noPrefForm);
+            latestForm = noPrefForm;
+        }
+
+        for (int i = 0; i < releasedForms.size(); i++) {
+            ReleasedForm releasedForm = releasedForms.get(i);
+
+            int status = releasedForm.getStatus();
+            if (status == FORM_ARCHIVED_STATUS) {
+                releasedForms.remove(i);
+                i--;
+                continue;
+            }
+
+            // Find latest form
+            if (noPrefForm == null) {
+                Instant instant = Instant.parse(releasedForm.getReleasedOn());
+                if (instant.getEpochSecond() > prevInstant) {
+                    latestForm = releasedForm;
+                    prevInstant = instant.getEpochSecond();
+                }
+            }
+
+            if (preferredReleasedId != null) {
+                if (releasedForm.getId().equals(preferredReleasedId)) {
+                    // Select preferred version
+                    template.setSelectedReleasedForm(releasedForm);
+                }
+            }
+        }
+
+        if (template.getSelectedReleasedForm() == null) {
+            if (preferredReleasedId != null) {
+                String errMessage = "The preferred version: "
+                        + template.getPreferredReleasedVerCache()
+                        + " could not be found.";
+                if (!includeSelectLatestDefault) {
+                    errMessage += " Latest automatically selected.";
+                }
+                SessionUtility.addWarningMessage("Preferred version not selected",
+                        errMessage);
+            }
+            template.setSelectedReleasedForm(latestForm);
+        }
+
+        int releasedFormsSize = releasedForms.size();
+
+        if (releasedFormsSize == 0 && quiet == false) {
+            SessionUtility.addInfoMessage("No Released Templates",
+                    "No templates were released for this template. Please create a released version of this template before proceeding.");
+        }
     }
 
     public Form getSelectedTravelerInstanceTemplate() {
@@ -1518,4 +1759,12 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     public void setCurrentTravelerEditDescription(String currentTravelerEditDescription) {
         this.currentTravelerEditDescription = currentTravelerEditDescription;
     }
+
+    private PropertyValueController getPropertyValueController() {
+        if (propertyValueController == null) {
+            propertyValueController = PropertyValueController.getInstance();
+        }
+        return propertyValueController;
+    }
+
 }
