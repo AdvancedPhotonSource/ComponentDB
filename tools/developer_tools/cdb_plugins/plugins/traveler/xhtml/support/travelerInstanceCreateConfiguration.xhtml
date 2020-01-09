@@ -26,12 +26,27 @@ See LICENSE file.
             <ui:param name="travelerSelectedValue" value="#{itemTravelerDomainInventoryController.selectedTravelerInstanceTemplate}" /> 
             <ui:param name="rowSelectEvent" value="updateConfigurationPanel();" />
             <ui:param name="rowUnselectEvent" value="updateConfigurationPanel();" />
-            <ui:param name="dataTableId" value="#{viewName}TravelerInstanceDataTable" />
+            <ui:param name="dataTableId" value="#{viewName}TravelerInstanceDataTable" />    
             <ui:param name="additonalTravelerTemplateEmptyMessage"
                       value="#{additonalTravelerTemplateEmptyMessage}" /> 
         </ui:include>
 
+
+
         <p:panelGrid styleClass="centeredContent">
+            <p:row>
+                <p:column>
+                    <p:outputLabel value="Select Released Version" styleClass="entityDataLabel" />
+                </p:column>
+                <p:column>                    
+                    <p:outputPanel>
+                        <ui:include src="travelerTemplateReleasedVersionSelectionDataTable.xhtml">
+                            <ui:param name="selectedTemplate"
+                                      value="#{itemTravelerDomainInventoryController.selectedTravelerInstanceTemplate}"/>                     
+                        </ui:include>
+                    </p:outputPanel>
+                </p:column>
+            </p:row>
             <p:row>
                 <p:column>
                     <p:outputLabel value="Traveler Instance Title" styleClass="entityDataLabel" />
