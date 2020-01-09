@@ -26,12 +26,8 @@ See LICENSE file.
                      paginatorAlwaysVisible="false">
 
             <ui:include src="travelerTemplateListObject.xhtml" >
-                <ui:param name="renderedArchivedOn"
-                          value="#{true}"/>
-                <ui:param name="renderedEstimatedProgress"
-                          value="#{false}"/> 
-                <ui:param name="renderedDescription"
-                          value="#{false}"/> 
+                <ui:param name="preferredVerRendered"
+                          value="#{false}"/>
             </ui:include>         
 
         </p:dataTable>
