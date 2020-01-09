@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:outputPanel rendered="#{selectedTemplate != null}">        
+        <ui:param name="releasedFormsObject"
+                  value="#{selectedTemplate.releasedForms}" /> 
+
+        <p:dataTable id="travelerTemplateReleasedVersionSelectionDataTable#{viewName}"
+                     rows="5"
+                     emptyMessage="No released templates were found."
+                     value="#{releasedFormsObject.releasedForms}"
+                     selection="#{selectedTemplate.selectedReleasedForm}"
+                     rowKey="#{releasedForm.id}"
+                     rendered="#{releasedFormsObject != null}"
+                     selectionMode="single"
+                     var="releasedForm">
+
+            <p:column headerText="Version">
+                #{releasedForm.ver}
+            </p:column>
+            <p:column headerText="Date Released">
+                #{releasedForm.releasedOn}
+            </p:column>
+            <p:column headerText="Released By">
+                #{releasedForm.releasedBy}
+            </p:column>
+
+        </p:dataTable>
+    </p:outputPanel>
+
+</ui:composition>
+

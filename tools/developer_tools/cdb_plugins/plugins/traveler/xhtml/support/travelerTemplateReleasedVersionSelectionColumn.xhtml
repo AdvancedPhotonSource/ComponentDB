@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <p:column headerText="Released Version">
+        <p:outputPanel rendered="#{selectedTemplateObject}">
+            <p:selectOneMenu value="#{travelerTemplateObject.selectedReleasedForm}"
+                             converter="genericSelectOneMenuObjectConverter">
+                <f:selectItem itemLabel="Select" noSelectionOption="true"/>
+                <f:selectItems value="#{travelerTemplateObject.releasedForms.releasedForms}"
+                               var="releasedForm" itemLabel="#{releasedForm.ver}"
+                               itemValue="#{releasedForm}"/> 
+            </p:selectOneMenu>
+        </p:outputPanel>
+        <p:outputPanel rendered="#{!selectedTemplateObject}">
+            Please select the traveler template to version.
+        </p:outputPanel>
+    </p:column>
+
+</ui:composition>
+
