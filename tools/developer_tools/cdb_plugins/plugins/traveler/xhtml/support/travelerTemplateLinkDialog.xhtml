@@ -8,7 +8,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
+
     <ui:param name="travelerSuccessUpdateTarget"
               value="#{travelerSuccessUpdateTarget != null ? travelerSuccessUpdateTarget : 'travelerTemplateListDataTable'}" />
 
@@ -18,12 +18,30 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               modal="true"
               resizable="false">
-        <ui:include src="travelerTemplateDataTable.xhtml">
-            <ui:param name="travelerTemplateList" value="#{itemTravelerDomainCatalogController.activeTravelerTemplates}" />
-            <ui:param name="travelerSelectedValue" value="#{itemTravelerDomainCatalogController.selectedTemplate}" />
-            <ui:param name="dataTableId" value="travelerTemplatesDataTable" />
-            <ui:param name="travelerTemplateDoubleClickSelectionEvent" value="linkSelectedTravelerTemplate()" />
-        </ui:include> 
+        <p:outputPanel rendered="#{itemTravelerDomainCatalogController.renderTravelerTemplateLinkDialog}">
+            <ui:include src="travelerTemplateDataTable.xhtml">
+                <ui:param name="travelerTemplateList" value="#{itemTravelerDomainCatalogController.activeTravelerTemplates}" />
+                <ui:param name="travelerSelectedValue" value="#{itemTravelerDomainCatalogController.selectedTemplate}" />
+                <ui:param name="dataTableId" value="travelerTemplatesDataTable" />
+                <ui:param name="travelerTemplateDoubleClickSelectionEvent" value="linkSelectedTravelerTemplate()" />
+                <ui:param name="rowSelectEvent" value="selectedTravelerTemplateChanged()" />
+            </ui:include> 
+                        
+            <p:outputPanel id="travelerTemplateReleasedVersionSelectionOutputPanel">
+                <ui:param name="selectedTemplate"
+                              value="#{itemTravelerDomainCatalogController.selectedTemplate}"/> 
+                <p:outputPanel rendered="#{selectedTemplate != null}">
+                    <h3>Preferred Version:</h3>
+                    <ui:include src="travelerTemplateReleasedVersionSelectionDataTable.xhtml"/>                
+                </p:outputPanel>
+            </p:outputPanel>
+
+            <p:remoteCommand name="selectedTravelerTemplateChanged"
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             action="#{itemTravelerDomainCatalogController.loadReleasedTemplatesForSelectedTemplate()}"
+                             update="travelerTemplateReleasedVersionSelectionOutputPanel"/>
+        </p:outputPanel>
 
         <f:facet name="footer">
             <p:remoteCommand name="linkSelectedTravelerTemplate"
@@ -37,6 +55,7 @@ See LICENSE file.
                              onstart="linkSelectedTravelerTemplate()"
                              />            
         </f:facet>
+
         <p:remoteCommand name="showTravelerTemplateLinkDialog" 
                          update="travelerTemplateLinkDialog"
                          oncomplete="PF('travelerTemplateLinkDialogWidget').initPosition();
