@@ -309,7 +309,7 @@ public class ItemRoute extends BaseRoute {
         }
     
         if (dbPropertyValue == null) {
-            ObjectNotFound objectNotFound = new ObjectNotFound("Property value id must be correct.");
+            ObjectNotFound objectNotFound = new ObjectNotFound("Property value could not be found.");
             LOGGER.error(objectNotFound);
             throw objectNotFound;
         }
