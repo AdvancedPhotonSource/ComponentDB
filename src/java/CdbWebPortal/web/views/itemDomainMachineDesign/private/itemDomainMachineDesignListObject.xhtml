@@ -14,7 +14,7 @@ See LICENSE file.
               value="#{hideOptionalColumns != null 
                        ? hideOptionalColumns 
                        : false}" />
-    
+
     <!-- Requires the dialog to be included to function properly. Disabled by default -->
     <ui:param name="renderedShowElementHistory"
               value="#{renderedShowElementHistory != null ? renderedShowElementHistory : false}" /> 
@@ -151,6 +151,20 @@ See LICENSE file.
         <ui:param name="entityInfoObjectFilterable" value="true" />
         <ui:param name="rendered" value="#{hideOptionalColumns}" /> 
     </ui:include>
+
+    <p:column styleClass="narrowColumn">
+        <f:facet name="header">
+            <span class="favorite" />
+        </f:facet>
+
+        <ui:include src="../../common/private/reusedParts/listActionLinksFavoritesLink.xhtml" >
+            <ui:param name="renderFavorites" value="#{settingController.userHaveUpdateFavoritesPermission}" />
+            <ui:param name="toggleFavoritesAction" value="toggleItemInFavoritesList" />
+            <ui:param name="toggleFavoritesParameter" value="#{itemListObject}" />
+            <ui:param name="currentFavoritesIconStyle" value="#{entityController.getItemFavoritesIconStyle(itemListObject)}" />
+        </ui:include>
+
+    </p:column>
 
 </ui:composition>
 
