@@ -506,8 +506,12 @@ select {
     width: 300px;
 }
 
-.narrowColumn { 
-    width: 5px; 
+.narrowColumn {
+    width: 26px;    
+}
+
+th.narrowColumn {
+    padding: 2px 5px !important;
 }
 
 .logTimestampColumn {
@@ -1111,6 +1115,13 @@ h2 {
     text-align: left;
 }
 
+.favorite {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(../images/star_no.png) no-repeat;        
+}
+
 .favoriteOff {
     display: inline-block;
     width: 16px;
@@ -1122,7 +1133,6 @@ h2 {
 .favoriteOff:hover {
     opacity: 1.0;
 }
-
 
 .favoriteOn {
     display: inline-block;
