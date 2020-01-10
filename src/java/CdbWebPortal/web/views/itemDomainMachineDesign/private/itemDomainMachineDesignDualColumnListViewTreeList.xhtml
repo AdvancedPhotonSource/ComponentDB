@@ -22,10 +22,8 @@ See LICENSE file.
         <ui:param name="scrollable" value="#{dualConfigurationViewEnabled}" />
 
         <ui:define name="treeTableEvents">
-            <p:ajax event="select"
-                    onstart="PF('loadingDialog').show()"
-                    oncomplete="PF('loadingDialog').hide();
-                    showLastContextMenu()"
+            <p:ajax event="select"                    
+                    oncomplete="showLastContextMenu()"
                     update="@form:machineDesignDualViewContextMenuPermissions" />
 
             <!--Saves the collapse status for tree nodes. Seems its a bug in primefaces that this is needed.-->

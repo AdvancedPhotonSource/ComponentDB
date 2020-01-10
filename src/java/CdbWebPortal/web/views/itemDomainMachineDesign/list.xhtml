@@ -17,6 +17,18 @@ See LICENSE file.
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainMachineDesignController.processPreRenderList()}" />
     </f:metadata>
+    
+    <ui:define name="itemListPageEmphasizedContentBelowTitle">
+        <p:selectBooleanButton onLabel="Favorites Enabled" offLabel="Favorites Disabled"
+                               onIcon="fa fa-star" offIcon="fa fa-star-o"
+                               value="#{itemDomainMachineDesignController.favoritesShown}"
+                               onchange="onChangeFavoritesEnabled()"
+                               rendered="#{loginController.loggedIn}">
+            <p:remoteCommand name="onChangeFavoritesEnabled"                         
+                             action="#{itemDomainMachineDesignController.list()}"
+                             onstart="PF('loadingDialog').show()"/> 
+        </p:selectBooleanButton>
+    </ui:define>
 
     <ui:define name="customizeDisplayDialog">
         <ui:include src="private/itemDomainMachineDesignListCustomizeDisplayDialog.xhtml"/>

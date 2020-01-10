@@ -65,7 +65,12 @@ public class ItemDomainMachineDesignController
     private TreeNode searchResultsTreeNode;
 
     private static ItemDomainMachineDesignController apiInstance;
-
+    
+    // <editor-fold defaultstate="collapsed" desc="Favorites toggle variables">
+    private boolean favoritesShown = false; 
+    private TreeNode favoriteMachineDesignTreeRootTreeNode; 
+    // </editor-fold>   
+    
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private Boolean createCatalogElement = null;
     private Boolean machineDesignItemCreateFromTemplate = null;
@@ -111,6 +116,8 @@ public class ItemDomainMachineDesignController
     private TreeNode newCatalogItemsInMachineDesignModel = null;    
 
     // </editor-fold>
+    
+    // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">
     @EJB
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
 
@@ -175,6 +182,7 @@ public class ItemDomainMachineDesignController
         machineDesignTemplateRootTreeNode = null;
         machineDesignTreeRootTreeNode = null;
     }
+    // </editor-fold>   
 
     // <editor-fold defaultstate="collapsed" desc="Dual list view configuration implementation ">
     private void setTreeNodeTypeMachineDesignTreeList(TreeNode treeNode) {
@@ -243,7 +251,11 @@ public class ItemDomainMachineDesignController
             if (currentViewIsTemplate) {
                 currentMachineDesignListRootTreeNode = getMachineDesignTemplateRootTreeNode();
             } else {
-                currentMachineDesignListRootTreeNode = getMachineDesignTreeRootTreeNode();
+                if (favoritesShown) {
+                    currentMachineDesignListRootTreeNode = getFavoriteMachineDesignTreeRootTreeNode();
+                } else {
+                    currentMachineDesignListRootTreeNode = getMachineDesignTreeRootTreeNode();                    
+                }
             }
         }
         return currentMachineDesignListRootTreeNode;
@@ -1144,7 +1156,7 @@ public class ItemDomainMachineDesignController
         searchResultsTreeNode = rootTreeNode;
         return searchResultsTreeNode;
     }
-
+    
     private void syncMachineDesignConnectors(ItemDomainMachineDesign item) {
         List<ItemConnector> itemConnectorList = item.getItemConnectorList();
         List<ItemConnector> connectorsFromAssignedCatalogItem = getConnectorsFromAssignedCatalogItem(item);
@@ -1283,6 +1295,8 @@ public class ItemDomainMachineDesignController
     }
 
     // </editor-fold>    
+    
+    // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">
     public boolean verifyValidTemplateName(String templateName, boolean printMessage) {
         boolean validTitle = false;
         if (templateName.contains("{")) {
@@ -1317,7 +1331,54 @@ public class ItemDomainMachineDesignController
 
         return createRedirect;
 
+    } 
+    // </editor-fold>   
+    
+    // <editor-fold defaultstate="collapsed" desc="Favorites toggle impl">
+    
+    public TreeNode getFavoriteMachineDesignTreeRootTreeNode() {
+        
+        List<ItemDomainMachineDesign> favoriteItems = getFavoriteItems();
+        favoriteMachineDesignTreeRootTreeNode = new DefaultTreeNode();
+        
+        for (ItemDomainMachineDesign item : favoriteItems) {
+            
+            ItemDomainMachineDesign parentMachineDesign = item.getParentMachineDesign();
+            boolean parentFound = parentMachineDesign != null; 
+            while (parentMachineDesign != null) {
+                ItemDomainMachineDesign ittrParent = parentMachineDesign.getParentMachineDesign();
+                if (ittrParent == null) {
+                    item = parentMachineDesign; 
+                }
+                parentMachineDesign = parentMachineDesign.getParentMachineDesign();
+            } 
+            if (parentFound) {
+                if (favoriteItems.contains(item)) {
+                    continue;
+                }                
+            }
+            
+            ItemElement element = new ItemElement();
+            element.setContainedItem(item);            
+            
+            TreeNode parent = new DefaultTreeNode(element);
+            favoriteMachineDesignTreeRootTreeNode.getChildren().add(parent);            
+            parent.setParent(favoriteMachineDesignTreeRootTreeNode);            
+            setTreeNodeTypeMachineDesignTreeList(parent);
+            expandTreeChildren(parent);
+        }        
+        
+        return favoriteMachineDesignTreeRootTreeNode; 
+    }    
+    
+    public boolean isFavoritesShown() {
+        return favoritesShown;
     }
+
+    public void setFavoritesShown(boolean favoritesShown) {
+        this.favoritesShown = favoritesShown;
+    }
+    // </editor-fold>   
 
     // <editor-fold defaultstate="collapsed" desc="Element creation implementation ">   
     // <editor-fold defaultstate="collapsed" desc="Functionality">
