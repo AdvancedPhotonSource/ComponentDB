@@ -126,7 +126,7 @@ import org.primefaces.model.TreeNode;
             + "AND fiel.name is NULL "
             + "AND fiel.listList = :list "),
     @NamedQuery(name = "Item.findItemsInListExcludeEntityType",
-            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel JOIN i.entityTypeList etl "
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel LEFT JOIN i.entityTypeList etl "
             + "WHERE i.domain.name = :domainName "
             + "AND (etl.name != :entityTypeName or etl.name is null) "
             + "AND fiel.derivedFromItemElement is NULL "
