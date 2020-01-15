@@ -2363,8 +2363,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected String getItemCreatedFromTemplateRelationshipName() {
         return ItemElementRelationshipTypeNames.template.getValue();
     }
-
+    
     public void addCreatedFromTemplateRelationshipToItem(ItemDomainEntity item) {
+        addCreatedFromTemplateRelationshipToItem(item, templateToCreateNewItem);
+    }
+
+    public void addCreatedFromTemplateRelationshipToItem(ItemDomainEntity item, ItemDomainEntity templateToCreateNewItem) {
         RelationshipType templateRelationship
                 = relationshipTypeFacade.findByName(getItemCreatedFromTemplateRelationshipName());
 
