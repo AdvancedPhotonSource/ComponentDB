@@ -74,6 +74,10 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     @Basic(optional = false)    
     @Column(name = "is_user_writeable")
     private boolean isUserWriteable;
+    @Column(name = "effective_from_date_time")    
+    private Date effectiveFromDateTime;
+    @Column(name = "effective_to_date_time")    
+    private Date effectiveToDateTime;
     @Basic(optional = false)    
     @Column(name = "is_dynamic")
     private boolean isDynamic;
@@ -197,6 +201,25 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
 
     public void setEnteredOnDateTime(Date enteredOnDateTime) {
         this.enteredOnDateTime = enteredOnDateTime;
+    }
+    
+    public Date getEffectiveFromDateTime() {
+        if (effectiveFromDateTime == null) {
+            return enteredOnDateTime;
+        }
+        return effectiveFromDateTime;
+    }
+
+    public void setEffectiveFromDateTime(Date effectiveFromDateTime) {
+        this.effectiveFromDateTime = effectiveFromDateTime;
+    }
+
+    public Date getEffectiveToDateTime() {
+        return effectiveToDateTime;
+    }
+
+    public void setEffectiveToDateTime(Date effectiveToDateTime) {
+        this.effectiveToDateTime = effectiveToDateTime;
     }
 
     public boolean getIsUserWriteable() {
