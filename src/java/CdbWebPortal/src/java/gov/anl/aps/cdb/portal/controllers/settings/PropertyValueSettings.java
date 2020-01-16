@@ -26,6 +26,8 @@ public class PropertyValueSettings extends CdbEntitySettingsBase<PropertyValueCo
     private static final String DisplayTagSettingTypeKey = "PropertyValue.List.Display.Tag";
     private static final String DisplayTypeCategorySettingTypeKey = "PropertyValue.List.Display.TypeCategory";
     private static final String DisplayUnitsSettingTypeKey = "PropertyValue.List.Display.Units";
+    private static final String DisplayEffectiveFromDateTimeSettingTypeKey = "PropertyValue.List.Display.EffectiveFromDateTime"; 
+    private static final String DisplayEffectiveToDateTimeSettingTypeKey = "PropertyValue.List.Display.EffectiveToDateTime"; 
     private static final String FilterByDescriptionSettingTypeKey = "PropertyValue.List.FilterBy.Description";
     private static final String FilterByEnteredByUserSettingTypeKey = "PropertyValue.List.FilterBy.EnteredByUser";
     private static final String FilterByEnteredOnDateTimeSettingTypeKey = "PropertyValue.List.FilterBy.EnteredOnDateTime";
@@ -44,6 +46,8 @@ public class PropertyValueSettings extends CdbEntitySettingsBase<PropertyValueCo
     private Boolean displayTag = null;
     private Boolean displayTypeCategory = null;
     private Boolean displayUnits = null;
+    private Boolean displayEffectiveFromDateTime = null;
+    private Boolean displayEffectiveToDateTime = null;
 
     private String filterByEnteredByUser = null;
     private String filterByEnteredOnDateTime = null;
@@ -71,6 +75,8 @@ public class PropertyValueSettings extends CdbEntitySettingsBase<PropertyValueCo
         displayTag = Boolean.parseBoolean(settingTypeMap.get(DisplayTagSettingTypeKey).getDefaultValue());
         displayTypeCategory = Boolean.parseBoolean(settingTypeMap.get(DisplayTypeCategorySettingTypeKey).getDefaultValue());
         displayUnits = Boolean.parseBoolean(settingTypeMap.get(DisplayUnitsSettingTypeKey).getDefaultValue());
+        displayEffectiveFromDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEffectiveFromDateTimeSettingTypeKey).getDefaultValue());
+        displayEffectiveToDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEffectiveToDateTimeSettingTypeKey).getDefaultValue());
 
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByEnteredByUser = settingTypeMap.get(FilterByEnteredByUserSettingTypeKey).getDefaultValue();
@@ -96,7 +102,9 @@ public class PropertyValueSettings extends CdbEntitySettingsBase<PropertyValueCo
         displayTag = settingEntity.getSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);
         displayTypeCategory = settingEntity.getSettingValueAsBoolean(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
         displayUnits = settingEntity.getSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
-
+        displayEffectiveFromDateTime = settingEntity.getSettingValueAsBoolean(DisplayEffectiveFromDateTimeSettingTypeKey, displayEffectiveFromDateTime);
+        displayEffectiveToDateTime = settingEntity.getSettingValueAsBoolean(DisplayEffectiveToDateTimeSettingTypeKey, displayEffectiveToDateTime);
+        
         filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByEnteredByUser = settingEntity.getSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
         filterByEnteredOnDateTime = settingEntity.getSettingValueAsString(FilterByEnteredOnDateTimeSettingTypeKey, filterByEnteredOnDateTime);
@@ -121,6 +129,8 @@ public class PropertyValueSettings extends CdbEntitySettingsBase<PropertyValueCo
         settingEntity.setSettingValue(DisplayTagSettingTypeKey, displayTag);
         settingEntity.setSettingValue(DisplayTypeCategorySettingTypeKey, displayTypeCategory);
         settingEntity.setSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
+        settingEntity.setSettingValue(DisplayEffectiveFromDateTimeSettingTypeKey, displayEffectiveFromDateTime);
+        settingEntity.setSettingValue(DisplayEffectiveToDateTimeSettingTypeKey, displayEffectiveToDateTime);
 
         settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
         settingEntity.setSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
@@ -164,6 +174,22 @@ public class PropertyValueSettings extends CdbEntitySettingsBase<PropertyValueCo
         filterByTypeCategory = (String) filters.get("typeCategory");
         filterByUnits = (String) filters.get("units");
         filterByValue = (String) filters.get("value");
+    }
+
+    public Boolean getDisplayEffectiveFromDateTime() {
+        return displayEffectiveFromDateTime;
+    }
+
+    public void setDisplayEffectiveFromDateTime(Boolean displayEffectiveFromDateTime) {
+        this.displayEffectiveFromDateTime = displayEffectiveFromDateTime;
+    }
+
+    public Boolean getDisplayEffectiveToDateTime() {
+        return displayEffectiveToDateTime;
+    }
+
+    public void setDisplayEffectiveToDateTime(Boolean displayEffectiveToDateTime) {
+        this.displayEffectiveToDateTime = displayEffectiveToDateTime;
     }
     
     public Boolean getDisplayEnteredByUser() {
