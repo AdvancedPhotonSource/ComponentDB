@@ -242,6 +242,16 @@ public class ItemDomainImportWizard implements Serializable {
     }
 
     /**
+     * Implements the finish operation, invoked by the wizard's "Finish"
+     * navigation button.
+     */
+    public String finish() {
+        String completionUrl = importHelper.getCompletionUrl();
+        this.reset();
+        return completionUrl;
+    }
+
+    /**
      * Sets enable/disable state for the navigation buttons based on the current
      * tab and input elements.
      */
