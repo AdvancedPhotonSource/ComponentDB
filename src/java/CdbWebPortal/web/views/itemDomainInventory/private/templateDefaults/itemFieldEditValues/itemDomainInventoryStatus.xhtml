@@ -8,15 +8,23 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
-    <p:selectOneMenu id="inventoryStatusInputSelectOneMenu"
-                     value="#{inventoryStatusValue}">
-        <f:selectItem itemLabel="Select Status" itemValue=""/>
-        <f:selectItems value="#{entityController.inventoryStatusPropertyType.allowedPropertyValueList}"
-                       var='allowedValue'
-                       itemLabel="#{allowedValue.value}"
-                       itemValue="#{allowedValue.value}"/>
-    </p:selectOneMenu>
+            
+    <p:outputPanel>     
+        <ui:param name="inventoryStatusValue"
+                  value="#{inventoryStatusValue != null ? inventoryStatusValue : inventoryStatusPropertyValue.value}" /> 
+        <p:selectOneMenu id="inventoryStatusInputSelectOneMenu"
+                         value="#{inventoryStatusValue}">
+            <f:selectItem itemLabel="Select Status" itemValue=""/>
+            <f:selectItems value="#{itemDomainInventoryController.inventoryStatusPropertyType.allowedPropertyValueList}"
+                           var='allowedValue'
+                           itemLabel="#{allowedValue.value}"
+                           itemValue="#{allowedValue.value}"/>
+        </p:selectOneMenu>
+        <p:outputPanel rendered="#{inventoryStatusPropertyValue != null}">
+        Effective Date:
+        <p:datePicker value="#{inventoryStatusPropertyValue.effectiveFromDateTime}"/> 
+        </p:outputPanel>
+    </p:outputPanel>
 </ui:composition>
 
 
