@@ -19,6 +19,8 @@ import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Binder;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Binders;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Form;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Forms;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForm;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForms;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.TravelerData;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.TravelerDatum;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.TravelerNotes;
@@ -96,6 +98,23 @@ public class TravelerApi extends TravelerRestApi  {
         return form; 
     }
     
+    public ReleasedForms getReleasedFormsCreatedFromForm(String formId) throws InvalidArgument, ObjectNotFound, ExternalServiceError, CdbException {
+        ArgumentUtility.verifyNonEmptyString("Form ID", formId);
+        String requestUrl = "/apis/forms/"+formId+"/released/"; 
+        String jsonString = invokeGetRequest(requestUrl);
+        jsonString = "{\"releasedForms\": " + jsonString + "}";
+        ReleasedForms form = (ReleasedForms) TravelerObjectFactory.createObject(jsonString, ReleasedForms.class); 
+        return form; 
+    }
+    
+    public ReleasedForms getReleasedForms() throws ObjectNotFound, ExternalServiceError, CdbException {        
+        String requestUrl = "/apis/releasedForms/"; 
+        String jsonString = invokeGetRequest(requestUrl);
+        jsonString = "{\"releasedForms\": " + jsonString + "}";
+        ReleasedForms form = (ReleasedForms) TravelerObjectFactory.createObject(jsonString, ReleasedForms.class); 
+        return form; 
+    }
+    
     public Binders getBinders() throws ExternalServiceError, CdbException {
         String requestUrl = "/apis/binders/";
         String jsonString = invokeGetRequest(requestUrl);
@@ -170,8 +189,8 @@ public class TravelerApi extends TravelerRestApi  {
         return form; 
     }
     
-    public Traveler createTraveler(String formId, String userName, String title, String devices) throws InvalidArgument, ExternalServiceError, ObjectNotFound, CdbException{
-        ArgumentUtility.verifyNonEmptyString("Form Name", formId);
+    public Traveler createTraveler(String releasedFormId, String userName, String title, String devices) throws InvalidArgument, ExternalServiceError, ObjectNotFound, CdbException{
+        ArgumentUtility.verifyNonEmptyString("Form Name", releasedFormId);
         ArgumentUtility.verifyNonEmptyString("User Name", userName);
         ArgumentUtility.verifyNonEmptyString("title", title);
         ArgumentUtility.verifyNonEmptyString("devices", devices);
@@ -179,7 +198,7 @@ public class TravelerApi extends TravelerRestApi  {
         String requestUrl = "/apis/create/traveler/"; 
         Map data = new HashMap();  
         
-        data.put("formId", formId); 
+        data.put("formId", releasedFormId); 
         data.put("title", title);
         data.put("userName", userName);
         data.put("devices", devices);
@@ -246,7 +265,7 @@ public class TravelerApi extends TravelerRestApi  {
         String testHost = TravelerPluginManager.getTravelerWebServiceUrl();
                 
         try {
-            TravelerApi apiClient = new TravelerApi(testHost, testUser, testPass); 
+            TravelerApi apiClient = new TravelerApi(testHost, testUser, testPass);                        
             
             Binders binders = apiClient.getBinders();
             

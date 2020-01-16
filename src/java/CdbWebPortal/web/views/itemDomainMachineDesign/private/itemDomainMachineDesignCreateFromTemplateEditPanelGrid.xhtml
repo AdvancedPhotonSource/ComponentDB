@@ -17,6 +17,19 @@ See LICENSE file.
     <p:panelGrid id="itemDomainMachineDesignCreateFromTEmplatePanelGrid#{viewName}"
                  columns="2"
                  rendered="#{rendered}">
+        
+        <h:outputText value="Create all of template hierarchy"/>
+        <p:outputPanel>
+            <p:selectBooleanCheckbox value="#{itemDomainMachineDesignController.machineDesignTemplateCreateAll}"
+                                     onchange="createAllTemplateHierarchy()"/>
+
+            <p:remoteCommand name="createAllTemplateHierarchy"
+                             update="itemDomainMachineDesignCreateFromTEmplatePanelGrid#{viewName}"
+                             action="#{itemDomainMachineDesignController.generateTemplateForElementMachineDesignNameVars()}"
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"/>
+        </p:outputPanel>                                 
+        
         <c:forEach items="#{itemDomainMachineDesignController.machineDesignNameList}"
                    var="replacementName">
             <h:outputText value="#{replacementName.key}"/>

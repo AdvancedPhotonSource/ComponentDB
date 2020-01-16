@@ -23,7 +23,6 @@ import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -264,16 +263,29 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     public void setCurrentPropertyMetadata(PropertyValueMetadata currentPropertyMetadata) {
         this.currentPropertyMetadata = currentPropertyMetadata;
     }
-
+    
     public void removeCurrentPropertyMetadata() {
         PropertyMetadata propertyMetadata = currentPropertyMetadata.getPropertyMetadata();
+        removePropertyMetadata(propertyMetadata);
+    }
+    
+    public void removePropertyMetadata(PropertyMetadata propertyMetadata) {
+        removePropertyMetadata(propertyMetadata, "Property metadata has been removed.");
+    }
+
+    public void removePropertyMetadata(PropertyMetadata propertyMetadata, String removedMessage) {
+        if (propertyMetadata == null) {
+            return;
+        }
         if (propertyMetadata.getId() != null) {
-            propertyMetadataFacade.remove(currentPropertyMetadata.getPropertyMetadata());
-            SessionUtility.addInfoMessage("Removed", "Property metadata has been removed.");
+            propertyMetadataFacade.remove(propertyMetadata);
+            if (removedMessage != null) {
+                SessionUtility.addInfoMessage("Removed", removedMessage);
+            }
         }
 
-        PropertyValue propertyValue = currentPropertyMetadata.getPropertyValue();
-        propertyValue.removePropertyMetadataKey(currentPropertyMetadata);
+        PropertyValue propertyValue = propertyMetadata.getPropertyValue();
+        propertyValue.removePropertyMetadataKey(propertyMetadata.getMetadataKey());
     }
 
     /**

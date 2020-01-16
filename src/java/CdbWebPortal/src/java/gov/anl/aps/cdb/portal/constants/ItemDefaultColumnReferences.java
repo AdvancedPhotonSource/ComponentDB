@@ -2,7 +2,7 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
-package gov.anl.aps.cdb.common.constants;
+package gov.anl.aps.cdb.portal.constants;
 
 public enum ItemDefaultColumnReferences {
     name("name"),
@@ -15,7 +15,10 @@ public enum ItemDefaultColumnReferences {
     ownerUser("ownerUser"),
     ownerGroup("ownerGroup"),
     groupWriteable("groupWriteable"),
-    property("property");
+    property("property"),
+    
+    //Inventory Specific
+    inventoryStatus("status");
 
     private String value;
 
