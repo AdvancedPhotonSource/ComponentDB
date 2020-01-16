@@ -101,3 +101,10 @@ WHERE (ie.name is not null));
 INSERT INTO `domain` VALUES
 (7,'Cable Catalog', 'Item domain for managing the cable catalog items', NULL, NULL, NULL, 'Technical System');
 INSERT INTO `item_category` (name, description, domain_id) (select name,description, 7 AS domain_id FROM item_category WHERE domain_id = 2);
+
+
+# Add effective date for properties.
+ALTER TABLE property_value ADD `effective_from_date_time` datetime NULL AFTER `entered_by_user_id`;
+ALTER TABLE property_value ADD `effective_to_date_time` datetime NULL AFTER `effective_from_date_time`;
+ALTER TABLE property_value_history ADD `effective_from_date_time` datetime NULL AFTER `entered_by_user_id`;
+ALTER TABLE property_value_history ADD `effective_to_date_time` datetime NULL AFTER `effective_from_date_time`;
