@@ -274,7 +274,11 @@ public class ItemDomainImportWizard implements Serializable {
         } else if (tab.endsWith(tabValidate)) {
             disableButtonPrev = false;
             disableButtonCancel = false;
-            disableButtonFinish = true;
+            if (importHelper.isValidationOnly()) {
+                disableButtonFinish = false;
+            } else {
+                disableButtonFinish = true;
+            }
         }
     }
 }

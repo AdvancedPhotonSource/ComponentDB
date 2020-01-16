@@ -75,6 +75,8 @@ public abstract class ImportHelperBase {
     
     protected abstract String getCompletionUrlValue();
     
+    protected abstract boolean isValidationOnly();
+    
     public String getCompletionUrl() {
         return getCompletionUrlValue();
     }

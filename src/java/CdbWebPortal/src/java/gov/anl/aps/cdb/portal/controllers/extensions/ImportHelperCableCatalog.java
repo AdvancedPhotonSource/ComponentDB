@@ -96,6 +96,11 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     }
     
     @Override
+    protected boolean isValidationOnly() {
+        return false;
+    }
+    
+    @Override
     protected void createColumnModels_() {
         columns.add(new ColumnModel(cableTypeHeader, cableTypeProperty));
         columns.add(new ColumnModel(weightHeader, weightProperty));
