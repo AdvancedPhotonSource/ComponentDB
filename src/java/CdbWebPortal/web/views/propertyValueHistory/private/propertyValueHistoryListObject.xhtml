@@ -111,6 +111,12 @@ See LICENSE file.
               rendered="#{propertyValueHistorySettingObject.displayEnteredOnDateTime}">
         <h:outputText value="#{propertyValueHistoryObject.enteredOnDateTime}"/>
     </p:column>
+    
+    <p:column sortBy="#{propertyValueHistoryObject.effectiveFromDateTime}" headerText="Effective Date"
+              filterBy="#{propertyValueHistoryObject.effectiveFromDateTime}"              
+              rendered="#{propertyValueHistorySettingObject.displayEffectiveFromDateTime}">
+        <h:outputText value="#{propertyValueHistoryObject.effectiveFromDateTime}"/>
+    </p:column>
 
 </ui:composition>
 
