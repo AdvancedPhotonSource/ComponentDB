@@ -47,11 +47,11 @@ See LICENSE file.
                              action="#{wizardController[finishAction]()}"
                              icon="ui-icon-check"
                              rendered="true"
-                             immediate="false"
+                             immediate="true"
                              oncomplete="update#{rootViewId}WizardButtons();"
                              disabled="#{wizardController.disableButtonFinish}"
-                             process="importWizard"
-                             update="importWizard"> 
+                             process="@this"
+                             update="@this"> 
                 <p:tooltip for="#{rootViewId}FinishButton" 
                            value="Finish and close wizard."/>
             </p:commandButton>
