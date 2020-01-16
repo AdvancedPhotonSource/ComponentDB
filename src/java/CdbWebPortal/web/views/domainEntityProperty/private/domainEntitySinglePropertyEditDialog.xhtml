@@ -88,6 +88,15 @@ See LICENSE file.
                                      collapsed="true"
                                      header="Additional Attributes">
                                 <p:panelGrid>
+                                     <p:row>
+                                        <p:column>
+                                            <h:outputLabel for="effectiveFromDateUserInput" value="Effective Date" styleClass="entityDataEmphasizedLabel"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:datePicker id="effectiveFromDateUserInput" value="#{propertyValueObject.effectiveFromDateTime}" />
+                                        </p:column>                                        
+                                    </p:row>
+
                                     <p:row>
                                         <p:column>
                                             <h:outputLabel for="propertyValueTag" value="Tag" styleClass="entityDataEmphasizedLabel"/>
@@ -114,7 +123,7 @@ See LICENSE file.
                                             <h:inputText id="propertyValueUnits" value="#{propertyValueObject.units}" />
                                         </p:column>
                                     </p:row>
-
+                                                                       
                                     <p:row>
                                         <p:column>
                                             <h:outputLabel for="propertyValueDynamic" value="Dynamic" styleClass="entityDataEmphasizedLabel"/>
@@ -131,7 +140,7 @@ See LICENSE file.
                                         <p:column>
                                             <p:selectBooleanCheckbox id="propertyValueUserWritable" value="#{propertyValueObject.isUserWriteable}"/>
                                         </p:column>
-                                    </p:row>
+                                    </p:row>                                    
                                 </p:panelGrid>
                             </p:panel>
                         </p:column>
