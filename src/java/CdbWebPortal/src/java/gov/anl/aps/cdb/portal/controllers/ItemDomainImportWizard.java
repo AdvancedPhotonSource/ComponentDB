@@ -236,8 +236,9 @@ public class ItemDomainImportWizard implements Serializable {
      * navigation button.
      */
     public String cancel() {
+        String completionUrl = importHelper.getCompletionUrl();
         this.reset();
-        return "/views/itemDomainCableCatalog/list?faces-redirect=true";
+        return completionUrl;
     }
 
     /**

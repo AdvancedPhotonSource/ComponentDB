@@ -87,7 +87,11 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     protected static String sourceProperty = "source";
     protected static String urlHeader = "URL";
     protected static String urlProperty = "url";
-
+    
+    public ImportHelperCableCatalog() {
+        completionUrl = "/views/itemDomainCableCatalog/list?faces-redirect=true";
+    }
+    
     @Override
     protected void createColumnModels_() {
         columns.add(new ColumnModel(cableTypeHeader, cableTypeProperty));
