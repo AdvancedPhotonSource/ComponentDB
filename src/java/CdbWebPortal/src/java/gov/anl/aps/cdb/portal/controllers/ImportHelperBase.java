@@ -69,14 +69,14 @@ public abstract class ImportHelperBase {
     protected List<RowModel> rows = new ArrayList<>();
     protected List<ColumnModel> columns = new ArrayList<>();
     
-    protected String completionUrl = "";
-    
     public abstract int getDataStartRow();
 
     public abstract void parseRow(Row row);
     
+    protected abstract String getCompletionUrlValue();
+    
     public String getCompletionUrl() {
-        return completionUrl;
+        return getCompletionUrlValue();
     }
     
     public ImportHelperBase() {

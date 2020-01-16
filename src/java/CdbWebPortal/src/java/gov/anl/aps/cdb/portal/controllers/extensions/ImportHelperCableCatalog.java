@@ -88,8 +88,11 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     protected static String urlHeader = "URL";
     protected static String urlProperty = "url";
     
-    public ImportHelperCableCatalog() {
-        completionUrl = "/views/itemDomainCableCatalog/list?faces-redirect=true";
+    protected static String completionUrlValue = "/views/itemDomainCableCatalog/list?faces-redirect=true";
+    
+    @Override
+    protected String getCompletionUrlValue() {
+        return completionUrlValue;
     }
     
     @Override
