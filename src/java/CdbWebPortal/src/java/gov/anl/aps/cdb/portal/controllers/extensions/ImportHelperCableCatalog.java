@@ -186,6 +186,9 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
 
         CableCatalogImportInfo info = new CableCatalogImportInfo(cableType, weight, diameter, source, url, isValid, validString);
         rows.add(info);
+        if (!isValid) {
+            validInput = false;
+        }
     }
 
 }

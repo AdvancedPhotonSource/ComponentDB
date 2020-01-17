@@ -68,18 +68,7 @@ public abstract class ImportHelperBase {
     
     protected List<RowModel> rows = new ArrayList<>();
     protected List<ColumnModel> columns = new ArrayList<>();
-    
-    public abstract int getDataStartRow();
-
-    public abstract void parseRow(Row row);
-    
-    protected abstract String getCompletionUrlValue();
-    
-    protected abstract boolean isValidationOnly();
-    
-    public String getCompletionUrl() {
-        return getCompletionUrlValue();
-    }
+    protected boolean validInput = true;
     
     public ImportHelperBase() {
         createColumnModels();
@@ -93,7 +82,13 @@ public abstract class ImportHelperBase {
         return columns;
     }
     
-    protected abstract void createColumnModels_();
+    public boolean isValidInput() {
+        return validInput;
+    }
+    
+    public String getCompletionUrl() {
+        return getCompletionUrlValue();
+    }
     
     protected void createColumnModels() {
         
@@ -114,5 +109,15 @@ public abstract class ImportHelperBase {
         // allow subclass to reset
         reset_();
     }
+    
+    protected abstract void createColumnModels_();
+    
+    public abstract int getDataStartRow();
+
+    public abstract void parseRow(Row row);
+    
+    protected abstract String getCompletionUrlValue();
+    
+    protected abstract boolean isValidationOnly();
     
 }

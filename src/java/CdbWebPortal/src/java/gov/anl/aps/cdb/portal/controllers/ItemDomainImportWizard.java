@@ -288,6 +288,9 @@ public class ItemDomainImportWizard implements Serializable {
                 disableButtonFinish = false;
             } else {
                 disableButtonFinish = true;
+                if (importHelper.isValidInput()) {
+                    disableButtonNext = false;
+                }
             }
         }
     }
