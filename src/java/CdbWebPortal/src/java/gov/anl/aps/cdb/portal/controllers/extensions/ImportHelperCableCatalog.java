@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -189,6 +190,14 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         if (!isValid) {
             validInput = false;
         }
+    }
+    
+    @Override
+    public void importData() {
+        System.out.println("importing " + rows.size() + " rows");
+        SessionUtility.addErrorMessage(
+                "Cable types not saved",
+                "Feature not yet implemented.");
     }
 
 }

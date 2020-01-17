@@ -120,4 +120,6 @@ public abstract class ImportHelperBase {
     
     protected abstract boolean isValidationOnly();
     
+    public abstract void importData();
+    
 }

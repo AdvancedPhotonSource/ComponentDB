@@ -38,6 +38,7 @@ public class ItemDomainImportWizard implements Serializable {
     
     protected static final String tabSelectFile = "SelectFileTab";    
     protected static final String tabValidate = "ValidateTab";
+    protected static final String tabResults = "ResultsTab";
     
     protected ImportHelperBase importHelper = null;
     
@@ -210,6 +211,12 @@ public class ItemDomainImportWizard implements Serializable {
 
         String nextStep = event.getNewStep();
         String currStep = event.getOldStep();
+        
+        // trigger import process if moving from validate tab to results tab
+        if ((currStep.endsWith(tabValidate))
+                && (nextStep.endsWith(tabResults))) {
+            importHelper.importData();
+        }
 
         setEnablement(nextStep);
 
@@ -292,6 +299,11 @@ public class ItemDomainImportWizard implements Serializable {
                     disableButtonNext = false;
                 }
             }
+        } else if (tab.endsWith(tabResults)) {
+            disableButtonPrev = true;
+            disableButtonCancel = true;
+            disableButtonFinish = false;
+            disableButtonNext = true;
         }
     }
 }
