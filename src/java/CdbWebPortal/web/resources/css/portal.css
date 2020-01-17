@@ -1300,3 +1300,12 @@ h2 {
 .ui-treetable-toggler.ui-icon-triangle-1-s, .ui-treetable-toggler.ui-icon-triangle-1-e {
     transform: scale(1.5);
 }
+
+.ui-datepicker-calendar .ui-state-active {
+    background-color:#4e80b6 !important;
+    color:white !important;
+}
+
+.ui-datatable .ui-datepicker {
+    width: auto;
+}

@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -204,8 +205,23 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
     protected void customApplyValuesForColumn(Item item, ItemDefaultColumnReferences columnReference) {
         if (columnReference == ItemDefaultColumnReferences.inventoryStatus) {
             ItemDomainInventory inventoryItem = (ItemDomainInventory) item;
-            inventoryItem.setInventoryStatusValue((String) currentObjectValueToColumn);
+            
+            PropertyValue inventoryStatusPropertyValue = inventoryItem.getInventoryStatusPropertyValue();
+            PropertyValue mockStatusPV = (PropertyValue) currentObjectValueToColumn;
+            inventoryStatusPropertyValue.setValue(mockStatusPV.getValue());
+            inventoryStatusPropertyValue.setEffectiveFromDateTime(mockStatusPV.getEffectiveFromDateTime());
         }
     }
+
+    @Override
+    public void setCurrentApplyValuesToColumn(ItemDefaultColumnReferences currentApplyValuesToColumn) {
+        super.setCurrentApplyValuesToColumn(currentApplyValuesToColumn);
+        
+        if (currentApplyValuesToColumn == currentApplyValuesToColumn.inventoryStatus) {
+            // Mock property value will hold value and effective date.
+            this.currentObjectValueToColumn = new PropertyValue(); 
+        }
+    }
+
     
 }
