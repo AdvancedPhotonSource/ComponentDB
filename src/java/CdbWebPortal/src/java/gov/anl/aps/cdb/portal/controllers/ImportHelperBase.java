@@ -61,6 +61,25 @@ public abstract class ImportHelperBase {
         }
     }
     
+    static public class ImportInfo {
+        
+        protected boolean importSuccessful = true;
+        protected String message = "";
+        
+        public ImportInfo(boolean s, String m) {
+            importSuccessful = s;
+            message = m;
+        }
+        
+        public boolean isImportSuccessful() {
+            return importSuccessful;
+        }
+        
+        public String getMessage() {
+            return message;
+        }
+    }
+    
     protected static String isValidHeader = "Is Valid";
     protected static String isValidProperty = "isValid";
     protected static String validStringHeader = "Valid String";
@@ -68,7 +87,6 @@ public abstract class ImportHelperBase {
     
     protected List<RowModel> rows = new ArrayList<>();
     protected List<ColumnModel> columns = new ArrayList<>();
-    protected boolean validInput = true;
     
     public ImportHelperBase() {
         createColumnModels();
@@ -80,10 +98,6 @@ public abstract class ImportHelperBase {
     
     public List<ColumnModel> getColumns() {
         return columns;
-    }
-    
-    public boolean isValidInput() {
-        return validInput;
     }
     
     public String getCompletionUrl() {
@@ -114,12 +128,12 @@ public abstract class ImportHelperBase {
     
     public abstract int getDataStartRow();
 
-    public abstract void parseRow(Row row);
+    public abstract boolean parseRow(Row row);
     
     protected abstract String getCompletionUrlValue();
     
     protected abstract boolean isValidationOnly();
     
-    public abstract void importData();
+    public abstract ImportInfo importData();
     
 }

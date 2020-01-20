@@ -17,6 +17,11 @@ See LICENSE file.
     <p:tab id="#{rootViewId}ResultsTab">
         <p:panel header="Review results and click Finish to close wizard.">
             <p:outputPanel id="#{rootViewId}ResultsPanel">
+                
+                <h:outputText value="#{wizardController.getImportResultString()}" 
+                              title="Import result" 
+                              styleClass="entityDataEmphasizedText" />
+
             </p:outputPanel>
         </p:panel>
     </p:tab>

@@ -116,7 +116,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     }
 
     @Override
-    public void parseRow(Row row) {
+    public boolean parseRow(Row row) {
 
         String cableType = "";
         double weight = 0;
@@ -187,17 +187,13 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
 
         CableCatalogImportInfo info = new CableCatalogImportInfo(cableType, weight, diameter, source, url, isValid, validString);
         rows.add(info);
-        if (!isValid) {
-            validInput = false;
-        }
+        return isValid;
     }
     
     @Override
-    public void importData() {
+    public ImportInfo importData() {
         System.out.println("importing " + rows.size() + " rows");
-        SessionUtility.addErrorMessage(
-                "Cable types not saved",
-                "Feature not yet implemented.");
+        return new ImportInfo(false, "Import Failed. Feature not yet implemented.");
     }
 
 }

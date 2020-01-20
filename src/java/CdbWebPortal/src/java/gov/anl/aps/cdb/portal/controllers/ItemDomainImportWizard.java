@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ColumnModel;
+import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ImportInfo;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.RowModel;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.IOException;
@@ -52,6 +53,10 @@ public class ItemDomainImportWizard implements Serializable {
     // models for select file tab
     private Boolean disableButtonUpload = true;
     protected UploadedFile uploadfileData = null;
+    
+    protected boolean validInput = true;
+    protected boolean importSuccessful = true;
+    protected String importResult = "";
     
     public static ItemDomainImportWizard getInstance() {
         return (ItemDomainImportWizard) SessionUtility.findBean(
@@ -109,6 +114,10 @@ public class ItemDomainImportWizard implements Serializable {
         } else {
             return uploadfileData.getFileName();
         }
+    }
+    
+    public String getImportResultString() {
+        return importResult;
     }
     
     public List<RowModel> getRows() {
@@ -183,7 +192,10 @@ public class ItemDomainImportWizard implements Serializable {
 
             CellType celltype;
 
-            importHelper.parseRow(row);
+            boolean result = importHelper.parseRow(row);
+            if (!result) {
+                validInput = false;
+            }
         }
     }
     
@@ -215,7 +227,7 @@ public class ItemDomainImportWizard implements Serializable {
         // trigger import process if moving from validate tab to results tab
         if ((currStep.endsWith(tabValidate))
                 && (nextStep.endsWith(tabResults))) {
-            importHelper.importData();
+            triggerImport();
         }
 
         setEnablement(nextStep);
@@ -224,18 +236,30 @@ public class ItemDomainImportWizard implements Serializable {
 
         return nextStep;
     }
+    
+    protected void triggerImport() {
+        
+        ImportInfo info = importHelper.importData();
+        if (!info.isImportSuccessful()) {
+            SessionUtility.addErrorMessage(
+                    "Cable types not saved",
+                    info.getMessage());
+        }
+        
+        importSuccessful = info.isImportSuccessful();
+        importResult = info.getMessage();
+    }
 
     /**
      * Resets models for wizard components.
      */
     protected void reset() {
-        
         currentTab = tabSelectFile;
-        
         uploadfileData = null;
-        
         importHelper = null;
-        
+        validInput = true;
+        importSuccessful = true;
+        importResult = "";
     }
 
     /**
@@ -295,7 +319,7 @@ public class ItemDomainImportWizard implements Serializable {
                 disableButtonFinish = false;
             } else {
                 disableButtonFinish = true;
-                if (importHelper.isValidInput()) {
+                if (validInput) {
                     disableButtonNext = false;
                 }
             }
