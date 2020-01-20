@@ -19,6 +19,12 @@ See LICENSE file.
     </f:metadata>
     
     <ui:define name="itemListPageEmphasizedContentBelowTitle">
+        <p:commandButton id="itemDomainMachineDesignKeyboardShortcutButton"
+                         icon="fa fa-question"
+                         onclick="PF('itemDomainMachineDesignKeyboardShortcutDialogWidget').show()" >
+            <p:tooltip for="itemDomainMachineDesignKeyboardShortcutButton"
+                       value="Show keybaord shortcuts for machine design list."/> 
+        </p:commandButton>
         <p:selectBooleanButton onLabel="Favorites Enabled" offLabel="Favorites Disabled"
                                onIcon="fa fa-star" offIcon="fa fa-star-o"
                                value="#{itemDomainMachineDesignController.favoritesShown}"
@@ -53,6 +59,7 @@ See LICENSE file.
         <ui:include src="private/itemDomainMachineDesignReorderOverlayPanel.xhtml"/>
         <ui:include src="private/itemDomainMachineDesignAssignedItemHistoryDialog.xhtml" />
         <ui:include src="private/itemDomainMachineDesignCableMappingDialog.xhtml"/> 
+        <ui:include src="private/itemDomainMachineDesignKeyboardShortcutDialog.xhtml" />
     </ui:define>
 
 

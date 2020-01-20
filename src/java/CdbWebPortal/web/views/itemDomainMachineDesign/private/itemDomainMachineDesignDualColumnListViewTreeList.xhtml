@@ -12,6 +12,12 @@ See LICENSE file.
               value="#{entityController.displayListConfigurationView}"/>
     
     <ui:param name="settingObject" value="#{itemDomainMachineDesignController.settingObject}" /> 
+    
+    <p:hotkey bind="ctrl+e" action="#{itemDomainMachineDesignController.expandSelectedTreeNode()}"
+              rendered="#{!dualConfigurationViewEnabled}"
+              onstart="PF('loadingDialog').show();"
+              oncomplete="PF('loadingDialog').hide()"
+              update="itemMachineDesignListDataTable#{viewId}"/>
 
     <ui:decorate template="templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
 

@@ -116,7 +116,6 @@ public class ItemDomainMachineDesignController
     private TreeNode newCatalogItemsInMachineDesignModel = null;
 
     // </editor-fold>
-    
     // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">
     @EJB
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
@@ -333,6 +332,27 @@ public class ItemDomainMachineDesignController
                     newTreeNode.setType("Blank");
                 }
 
+            }
+        }
+    }
+
+    public void expandSelectedTreeNode() {
+        TreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
+        if (selectedItemInListTreeTable != null) {
+            boolean expanded = !selectedItemInListTreeTable.isExpanded();
+            expandAllChildren(selectedItemInListTreeTable, expanded);
+        } else {
+            SessionUtility.addInfoMessage("No tree node is selected", "Select a tree node and try again.");
+        }
+    }
+
+    private void expandAllChildren(TreeNode treeNode, boolean expanded) {
+        treeNode.setExpanded(expanded);
+              
+        List<TreeNode> children = treeNode.getChildren();
+        if (children != null) {
+            for (TreeNode child : children) {
+                expandAllChildren(child, expanded);
             }
         }
     }
@@ -1735,20 +1755,20 @@ public class ItemDomainMachineDesignController
             createMachineDesignFromTemplateHierachically(currentEditItemElement);
         }
     }
-    
+
     private void createMachineDesignFromTemplateHierachically(ItemElement itemElement) throws CdbException, CloneNotSupportedException {
         Item containedItem = itemElement.getContainedItem();
         ItemDomainMachineDesign subTemplate = (ItemDomainMachineDesign) containedItem;
-        
+
         List<ItemElement> itemElementDisplayList = subTemplate.getItemElementDisplayList();
         for (ItemElement ie : itemElementDisplayList) {
             Item containedItem2 = ie.getContainedItem();
             ItemDomainMachineDesign templateItem = (ItemDomainMachineDesign) containedItem2;
-            
+
             createMachineDesignFromTemplate(ie, templateItem);
             createMachineDesignFromTemplateHierachically(ie);
         }
-        
+
     }
 
     private void createMachineDesignFromTemplate(ItemElement itemElement, ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
