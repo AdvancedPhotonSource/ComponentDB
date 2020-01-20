@@ -11,7 +11,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
-import jdk.internal.HotSpotIntrinsicCandidate;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
@@ -115,8 +114,7 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected String currentTab = tabEndpoint;
     protected String redirectSuccess = "";
     protected MembersDialog dialogMembers = new MembersDialog();
-
-    @HotSpotIntrinsicCandidate
+    
     public ItemDomainCableDesignWizardBase() {
     }
 

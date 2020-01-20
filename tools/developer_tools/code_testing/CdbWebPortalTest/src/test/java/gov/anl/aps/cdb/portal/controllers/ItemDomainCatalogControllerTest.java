@@ -2,6 +2,8 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
+
+/*
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
@@ -189,10 +191,14 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
         return true; 
     }
 
+*/
+
     /**
      * Testable controller class that sets all of the necessary database
      * connections in Preparation for testing.
      */
+
+/*
     public class ItemDomainCatalogControllerTestable extends ItemDomainCatalogController {
 
         public ItemDomainCatalogControllerTestable(CdbDBTest cdbTest) {
@@ -213,3 +219,4 @@ public class ItemDomainCatalogControllerTest extends CdbDBTest {
     }
 
 }
+*/
