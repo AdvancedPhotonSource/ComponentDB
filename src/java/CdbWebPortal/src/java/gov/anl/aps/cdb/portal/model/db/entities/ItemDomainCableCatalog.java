@@ -16,6 +16,12 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_CATALOG_ID + "")   
 public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCableInventory> {
+    
+    private transient String cableType = null;
+    private transient double weight = 0;
+    private transient double diameter = 0;
+    private transient String source = null;
+    private transient String url = null;
 
     @Override
     public Item createInstance() {
@@ -26,4 +32,31 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
     }
     
+    public void setCableProperties(String t, double w, double d, String s, String u) {
+        cableType = t;
+        weight = w;
+        diameter = d;
+        source = s;
+        url = u;
+    }
+    
+    public String getCableType() {
+        return cableType;
+    }
+    
+    public double getWeight() {
+        return weight;
+    }
+    
+    public double getDiameter() {
+        return diameter;
+    }
+    
+    public String getSource() {
+        return source;
+    }
+    
+    public String getUrl() {
+        return url;
+    }
 }

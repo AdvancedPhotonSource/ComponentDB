@@ -32,53 +32,28 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         private String source = "";
         private String url = "";
 
-        public CableCatalogRowModel(String type, double w, double d, String src, String u, boolean v, String vs) {
-            super(v, vs);
-            cableType = type;
-            weight = w;
-            diameter = d;
-            source = src;
-            url = u;
+        public CableCatalogRowModel(ItemDomainCableCatalog c, boolean v, String vs) {
+            super(c, v, vs);
         }
 
         public String getCableType() {
-            return cableType;
-        }
-
-        public void setCableType(String cableType) {
-            this.cableType = cableType;
+            return ((ItemDomainCableCatalog)getEntity()).getCableType();
         }
 
         public double getWeight() {
-            return weight;
-        }
-
-        public void setWeight(double weight) {
-            this.weight = weight;
+            return ((ItemDomainCableCatalog)getEntity()).getWeight();
         }
 
         public double getDiameter() {
-            return diameter;
-        }
-
-        public void setDiameter(double diameter) {
-            this.diameter = diameter;
+            return ((ItemDomainCableCatalog)getEntity()).getDiameter();
         }
 
         public String getSource() {
-            return source;
-        }
-
-        public void setSource(String source) {
-            this.source = source;
+            return ((ItemDomainCableCatalog)getEntity()).getSource();
         }
 
         public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
+            return ((ItemDomainCableCatalog)getEntity()).getCableType();
         }
     }
 
@@ -188,8 +163,10 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         } else {
             url = row.getCell(4).getStringCellValue();
         }
-
-        CableCatalogRowModel info = new CableCatalogRowModel(cableType, weight, diameter, source, url, isValid, validString);
+        
+        ItemDomainCableCatalog newType = ItemDomainCableCatalogController.getInstance().newEntityInstance();
+        newType.setCableProperties(cableType, weight, diameter, source, url);
+        CableCatalogRowModel info = new CableCatalogRowModel(newType, isValid, validString);
         rows.add(info);
 //        if rows.contains(info) {
 //            rows.add(info);
