@@ -668,6 +668,7 @@ public class ItemRoute extends BaseRoute {
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemProject> getItemProjectList() {
         return itemProjectFacade.findAll();
+    }
 
     @Path("/Search/{searchText}")
     @Produces(MediaType.APPLICATION_JSON)
