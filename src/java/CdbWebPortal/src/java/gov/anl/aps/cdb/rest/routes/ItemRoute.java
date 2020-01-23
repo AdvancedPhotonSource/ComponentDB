@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
@@ -23,6 +24,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -78,6 +80,9 @@ public class ItemRoute extends BaseRoute {
     
     @EJB
     UserInfoFacade userInfoFacade;    
+    
+    @EJB
+    ItemProjectFacade itemProjectFacade;
     
     @GET
     @Path("/ById/{id}")
@@ -522,6 +527,13 @@ public class ItemRoute extends BaseRoute {
         }
         
         return childLocations;        
+    }
+    
+    @GET
+    @Path("/Projects")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemProject> getItemProjectList() {
+        return itemProjectFacade.findAll();
     }
     
     private UserInfo getCurrentRequestUserInfo() {
