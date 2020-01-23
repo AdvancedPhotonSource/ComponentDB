@@ -17,6 +17,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
@@ -26,6 +27,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -91,6 +93,9 @@ public class ItemRoute extends BaseRoute {
     
     @EJB
     UserInfoFacade userInfoFacade;    
+    
+    @EJB
+    ItemProjectFacade itemProjectFacade;
     
     @GET
     @Path("/ById/{id}")
@@ -658,6 +663,12 @@ public class ItemRoute extends BaseRoute {
     }
     
     @GET
+
+    @Path("/Projects")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemProject> getItemProjectList() {
+        return itemProjectFacade.findAll();
+
     @Path("/Search/{searchText}")
     @Produces(MediaType.APPLICATION_JSON)
     public ItemSearchResults getSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
