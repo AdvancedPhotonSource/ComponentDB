@@ -79,10 +79,10 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
     @JoinColumn(name = "entered_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private UserInfo enteredByUser;    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValueHistory")
-    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValueHistory")    
     private List<PropertyMetadataHistory> propertyMetadataHistoryList;
     
+    @JsonIgnore
     private transient String infoActionCommand; 
 
     public PropertyValueHistory() {
@@ -162,6 +162,7 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
         this.targetValue = targetValue;
     }
 
+    @JsonIgnore
     public PropertyValue getPropertyValue() {
         return propertyValue;
     }
@@ -179,11 +180,13 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyMetadataHistory> getPropertyMetadataHistoryList() {
         return propertyMetadataHistoryList;
     }
     
     @Override
+    @JsonIgnore
     public List<PropertyMetadataBase> getPropertyMetadataBaseList() {
         return (List<PropertyMetadataBase>) (List<?>) getPropertyMetadataHistoryList();
     }
