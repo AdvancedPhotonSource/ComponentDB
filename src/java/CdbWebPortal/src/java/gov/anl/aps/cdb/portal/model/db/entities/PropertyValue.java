@@ -103,8 +103,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     private UserInfo enteredByUser;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")
     private List<PropertyValueHistory> propertyValueHistoryList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")
-    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValue")    
     private List<PropertyMetadata> propertyMetadataList;
 
     public static final transient SimpleDateFormat InputDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
@@ -119,6 +118,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     @JsonIgnore
     private transient boolean handlerInfoSet;
 
+    @JsonIgnore
     private transient List<PropertyValueMetadata> propertyValueMetadataList;    
     @JsonIgnore
     private transient Boolean isHasPropertyMetadata = null;
@@ -230,6 +230,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         this.isUserWriteable = isUserWriteable;
     }
 
+    @JsonIgnore
     public String getIsUserWriteableString() {
         return String.valueOf(isUserWriteable);
     }
@@ -242,6 +243,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
         this.isDynamic = isDynamic;
     }
 
+    @JsonIgnore
     public String getIsDynamicString() {
         return String.valueOf(isDynamic);
     }
@@ -306,6 +308,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyValueHistory> getPropertyValueHistoryList() {
         return propertyValueHistoryList;
     }
@@ -315,11 +318,13 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyMetadata> getPropertyMetadataList() {
         return propertyMetadataList;
     }
     
     @Override
+    @JsonIgnore
     public List<PropertyMetadataBase> getPropertyMetadataBaseList() {
         return (List<PropertyMetadataBase>) (List<?>) getPropertyMetadataList();
     }
@@ -396,6 +401,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     }
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @JsonIgnore
     public Date getDateValue() {
         if (dateValue == null && value != null && !value.isEmpty()) {
             try {
