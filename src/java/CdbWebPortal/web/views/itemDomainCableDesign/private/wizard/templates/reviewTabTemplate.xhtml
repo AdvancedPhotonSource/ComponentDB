@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+
+    <ui:param name="rootViewId" value="#{viewId}"/>
+    
+    <p:tab id="#{rootViewId}CableReviewTab">
+        <p:panel header="Review and save cable">
+            <p:panelGrid columns="2">
+
+                <p:outputLabel for="cableReviewName#{rootViewId}" value="Name" />
+                <p:inputText id="cableReviewName#{rootViewId}"
+                             value="#{wizardController.inputValueName}" />
+
+                <p:outputLabel value="Project" />
+                <h:outputText value="#{wizardController.getProjectsString()}" 
+                              title="Item Project" 
+                              styleClass="entityDataEmphasizedText" />
+
+                <p:outputLabel value="Endpoint1" />
+                <h:outputText value="#{wizardController.getEndpoint1String()}"  
+                              title="First Endpoint" 
+                              styleClass="entityDataEmphasizedText" />
+
+                <p:outputLabel value="Endpoint2" />
+                <h:outputText value="#{wizardController.getEndpoint2String()}"  
+                              title="Second Endpoint" 
+                              styleClass="entityDataEmphasizedText" />
+
+                <ui:insert name="typeSpecificFields" />
+
+            </p:panelGrid>
+        </p:panel>
+
+    </p:tab>
+
+
+
+
+
+
+
+</ui:composition>

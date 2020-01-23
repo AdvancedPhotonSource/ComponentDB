@@ -8,7 +8,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <ui:include src="../../../../common/private/commonChildListActionButtons.xhtml">
+    <ui:include src="travelerTemplateSectionCommonChildListActionButtons.xhtml">
         <ui:param name="childEntityTypeName" value="travelerTemplate"/>
         <ui:param name="customizableListDataTable" value="#{false}"/> 
         <ui:param name="onCompleteAddButtonCommand" value="addTravelerTemplate()" />
@@ -22,9 +22,11 @@ See LICENSE file.
 
 
     <ui:include src="travelerTemplateListDataTable.xhtml"/>
+    <ui:include src="travelerTemplateArchiveListDialog.xhtml" /> 
     
     <ui:include src="travelerTemplateAddDialog.xhtml" />
     <ui:include src="travelerTemplateLinkDialog.xhtml" />
+    <ui:include src="travelerTemplateUpdatePrefVersionDialog.xhtml"/>
 
 </ui:composition>
 

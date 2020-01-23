@@ -48,7 +48,7 @@ import org.primefaces.model.TreeNode;
                 )
             }
     ),})
-public class ItemDomainInventory extends LocatableItem {
+public class ItemDomainInventory extends ItemDomainInventoryBase {
 
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare";

@@ -24,7 +24,7 @@ public class ItemLocationInformation {
     public ItemLocationInformation(LocatableItem locatableItem) {
         this.locatableItem = locatableItem;
         
-        locationItem = locatableItem.getLocation();        
+        locationItem = locatableItem.getLocationItem();        
         locationDetails = locatableItem.getLocationDetails();
 
         if (locationItem != null) {

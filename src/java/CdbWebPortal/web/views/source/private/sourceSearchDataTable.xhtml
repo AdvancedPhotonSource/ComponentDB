@@ -14,7 +14,7 @@ See LICENSE file.
                  value="#{sourceController.searchResultList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 rows="#{searchSettingObject.displayNumberOfItemsPerPage}" 
+                 rows="#{searchController.searchSettings.displayNumberOfItemsPerPage}" 
                  emptyMessage="No sources match.">
 
         <ui:include src="../../search/private/searchResultListObject.xhtml">

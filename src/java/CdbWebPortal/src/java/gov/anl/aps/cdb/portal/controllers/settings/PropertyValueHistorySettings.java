@@ -14,7 +14,7 @@ import org.primefaces.component.datatable.DataTable;
  *
  * @author djarosz
  */
-public class PropertyValueHistorySettings extends SettingsBase<PropertyValueHistoryController> {
+public class PropertyValueHistorySettings extends CdbEntitySettingsBase<PropertyValueHistoryController> {
     
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "PropertyValueHistory.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "PropertyValueHistory.List.Display.Id";
@@ -23,6 +23,8 @@ public class PropertyValueHistorySettings extends SettingsBase<PropertyValueHist
     private static final String DisplayEnteredOnDateTimeSettingTypeKey = "PropertyValueHistory.List.Display.EnteredOnDateTime";
     private static final String DisplayTagSettingTypeKey = "PropertyValueHistory.List.Display.Tag";
     private static final String DisplayUnitsSettingTypeKey = "PropertyValueHistory.List.Display.Units";
+    private static final String DisplayEffectiveFromDateTimeSettingTypeKey = "PropertyValueHistory.List.Display.EffectiveFromDateTime"; 
+    private static final String DisplayEffectiveToDateTimeSettingTypeKey = "PropertyValueHistory.List.Display.EffectiveToDateTime"; 
     private static final String FilterByDescriptionSettingTypeKey = "PropertyValueHistory.List.FilterBy.Description";
     private static final String FilterByEnteredByUserSettingTypeKey = "PropertyValueHistory.List.FilterBy.EnteredByUser";
     private static final String FilterByEnteredOnDateTimeSettingTypeKey = "PropertyValueHistory.List.FilterBy.EnteredOnDateTime";
@@ -34,6 +36,8 @@ public class PropertyValueHistorySettings extends SettingsBase<PropertyValueHist
     private Boolean displayEnteredOnDateTime = null;
     private Boolean displayTag = null;
     private Boolean displayUnits = null;
+    private Boolean displayEffectiveFromDateTime = null;
+    private Boolean displayEffectiveToDateTime = null;
 
     private String filterByEnteredByUser = null;
     private String filterByEnteredOnDateTime = null;
@@ -54,6 +58,8 @@ public class PropertyValueHistorySettings extends SettingsBase<PropertyValueHist
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayTag = Boolean.parseBoolean(settingTypeMap.get(DisplayTagSettingTypeKey).getDefaultValue());
         displayUnits = Boolean.parseBoolean(settingTypeMap.get(DisplayUnitsSettingTypeKey).getDefaultValue());
+        displayEffectiveFromDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEffectiveFromDateTimeSettingTypeKey).getDefaultValue());
+        displayEffectiveToDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayEffectiveToDateTimeSettingTypeKey).getDefaultValue());
 
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByEnteredByUser = settingTypeMap.get(FilterByEnteredByUserSettingTypeKey).getDefaultValue();
@@ -72,6 +78,8 @@ public class PropertyValueHistorySettings extends SettingsBase<PropertyValueHist
         displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayTag = settingEntity.getSettingValueAsBoolean(DisplayTagSettingTypeKey, displayTag);
         displayUnits = settingEntity.getSettingValueAsBoolean(DisplayUnitsSettingTypeKey, displayUnits);
+        displayEffectiveFromDateTime = settingEntity.getSettingValueAsBoolean(DisplayEffectiveFromDateTimeSettingTypeKey, displayEffectiveFromDateTime);
+        displayEffectiveToDateTime = settingEntity.getSettingValueAsBoolean(DisplayEffectiveToDateTimeSettingTypeKey, displayEffectiveToDateTime);
 
         filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByEnteredByUser = settingEntity.getSettingValueAsString(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
@@ -90,6 +98,8 @@ public class PropertyValueHistorySettings extends SettingsBase<PropertyValueHist
         settingEntity.setSettingValue(DisplayEnteredOnDateTimeSettingTypeKey, displayEnteredOnDateTime);
         settingEntity.setSettingValue(DisplayTagSettingTypeKey, displayTag);
         settingEntity.setSettingValue(DisplayUnitsSettingTypeKey, displayUnits);
+        settingEntity.setSettingValue(DisplayEffectiveFromDateTimeSettingTypeKey, displayEffectiveFromDateTime);
+        settingEntity.setSettingValue(DisplayEffectiveToDateTimeSettingTypeKey, displayEffectiveToDateTime);
 
         settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
         settingEntity.setSettingValue(FilterByEnteredByUserSettingTypeKey, filterByEnteredByUser);
@@ -121,6 +131,22 @@ public class PropertyValueHistorySettings extends SettingsBase<PropertyValueHist
         filterByTag = (String) filters.get("tag");
         filterByUnits = (String) filters.get("units");
         filterByValue = (String) filters.get("value");
+    }
+
+    public Boolean getDisplayEffectiveFromDateTime() {
+        return displayEffectiveFromDateTime;
+    }
+
+    public void setDisplayEffectiveFromDateTime(Boolean displayEffectiveFromDateTime) {
+        this.displayEffectiveFromDateTime = displayEffectiveFromDateTime;
+    }
+
+    public Boolean getDisplayEffectiveToDateTime() {
+        return displayEffectiveToDateTime;
+    }
+
+    public void setDisplayEffectiveToDateTime(Boolean displayEffectiveToDateTime) {
+        this.displayEffectiveToDateTime = displayEffectiveToDateTime;
     }
     
     public Boolean getDisplayEnteredByUser() {

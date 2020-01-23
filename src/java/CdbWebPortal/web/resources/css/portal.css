@@ -506,8 +506,12 @@ select {
     width: 300px;
 }
 
-.narrowColumn { 
-    width: 5px; 
+.narrowColumn {
+    width: 26px;    
+}
+
+th.narrowColumn {
+    padding: 2px 5px !important;
 }
 
 .logTimestampColumn {
@@ -746,7 +750,6 @@ h2 {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain; 
-    padding-right: 5px;
     fill: currentColor; 
     filter: grayscale(100%) brightness(500%) brightness(10%);
 }
@@ -757,17 +760,46 @@ h2 {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain; 
-    padding-right: 5px;
     filter: grayscale(100%) brightness(500%) brightness(10%);
 }
 
-.ui-icon-machine-design {
-    /* Credit: https://thenounproject.com/icon/990509/ */
+.ui-icon-cable-design {
+    /* Credit: https://www.iconfinder.com/icons/4632224/cable_cord_data_jack_plug_usb_icon */
+    background-image: url(../../resources/images/cable.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;     
+}
+
+.ui-icon-connector {
+    /* Credit: https://www.iconfinder.com/icons/4801292/connector_electrical_in_plug_power_icon */
+    background-image: url(../../resources/images/connector.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;     
+}
+
+.ui-icon-item-connector {
+    /* Credit: https://www.iconfinder.com/icons/998309/clinch_cord_electric_plug_socket_switch_switchboard_icon */
+    background-image: url(../../resources/images/item-connector.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;     
+}
+
+.ui-icon-design {
+    /* Credit: https://www.iconfinder.com/icons/4230531/design_development_engineering_icon */
+    background-image: url(../../resources/images/design.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;     
+}
+
+.ui-icon-machine-design {    
     background-image: url(../../resources/images/aps-icon.svg) !important;
     background-repeat: no-repeat;
     background-position: center;
-    background-size: contain; 
-    padding-right: 5px;
+    background-size: contain;     
 }
 
 .ui-icon-maarc {
@@ -776,7 +808,6 @@ h2 {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain; 
-    padding-right: 5px;
 }
 
 .ui-icon-template {
@@ -785,7 +816,6 @@ h2 {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain; 
-    padding-right: 5px;
 }
 
 .custom-icon-blue {
@@ -812,12 +842,6 @@ h2 {
 
 .ui-icon-component {
     background-image: url(../../resources/images/component.ico) !important;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-
-.ui-icon-design {
-    background-image: url(../../resources/images/design.ico) !important;
     background-repeat: no-repeat;
     background-position: center;
 }
@@ -1091,6 +1115,13 @@ h2 {
     text-align: left;
 }
 
+.favorite {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(../images/star_no.png) no-repeat;        
+}
+
 .favoriteOff {
     display: inline-block;
     width: 16px;
@@ -1102,7 +1133,6 @@ h2 {
 .favoriteOff:hover {
     opacity: 1.0;
 }
-
 
 .favoriteOn {
     display: inline-block;
@@ -1257,4 +1287,25 @@ h2 {
 .quickLinksDiv > a {
     display: table; 
     padding: 4px 10px;
+}
+
+.ui-row-editor {
+    display: inline-block; 
+}
+
+.searchResultRow {
+    background-color: #D4FFDA; 
+}
+
+.ui-treetable-toggler.ui-icon-triangle-1-s, .ui-treetable-toggler.ui-icon-triangle-1-e {
+    transform: scale(1.5);
+}
+
+.ui-datepicker-calendar .ui-state-active {
+    background-color:#4e80b6 !important;
+    color:white !important;
+}
+
+.ui-datatable .ui-datepicker {
+    width: auto;
 }

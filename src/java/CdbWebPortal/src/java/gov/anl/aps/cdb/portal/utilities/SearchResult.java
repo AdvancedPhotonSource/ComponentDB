@@ -4,6 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.utilities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -12,13 +14,30 @@ import java.util.regex.Pattern;
  */
 public class SearchResult {
 
+    public static final String SEARCH_RESULT_ROW_STYLE = "searchResultRow"; 
+    
+    private final CdbEntity cdbEntity;
     private final Integer objectId;
     private final String objectName;
+    private String rowStyle; 
     private HashMap<String, String> objectAttributeMatchMap = new HashMap();
 
-    public SearchResult(Integer objectId, String objectName) {
+    public SearchResult(CdbEntity cdbEntity, Integer objectId, String objectName) {
+        this.cdbEntity = cdbEntity; 
         this.objectId = objectId;
         this.objectName = objectName;
+    }
+
+    public SearchResult(SearchResult result) {
+        this.cdbEntity = result.cdbEntity;
+        this.objectId = result.objectId;
+        this.objectName = result.objectName; 
+        this.objectAttributeMatchMap = result.objectAttributeMatchMap; 
+    }
+
+    @JsonIgnore
+    public CdbEntity getCdbEntity() {
+        return cdbEntity;
     }
 
     public Integer getObjectId() {
@@ -27,6 +46,15 @@ public class SearchResult {
 
     public String getObjectName() {
         return objectName;
+    }
+
+    @JsonIgnore
+    public String getRowStyle() {
+        return rowStyle;
+    }
+
+    public void setRowStyle(String rowStyle) {
+        this.rowStyle = rowStyle;
     }
 
     public void addAttributeMatch(String key, String value) {

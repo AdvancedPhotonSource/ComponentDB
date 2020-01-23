@@ -33,18 +33,28 @@ See LICENSE file.
                   value="#{locataionMenuModelObjectParam != null 
                            ? locataionMenuModelObjectParam 
                            : itemObject}" />
+        
+        <ui:param name="locationEditable"
+                  value="#{locatableItemController.locationEditable(itemObject)}"/> 
 
         <p:inplace id="locationViewOutputEditable"
                    widgetVar="locationViewOutputEditableWidget"
                    toggleable="false">                               
             <f:facet name="output">
                 <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="locationViewFakeEditShowButton"
+                                   styleClass="fa-link-icon fa-icon-warning fa fa-pencil"                                   
+                                   rendered="#{isEntityWriteable and !locationEditable}">
+                        <p:tooltip for="locationViewFakeEditShowButton"
+                                   value="Item is part of another item, location cannot be updated." />
+                    </p:commandLink>
+                                   
                     <p:commandLink id="locationViewOutputEditShowButton"
                                    styleClass="fa-link-icon fa-icon fa fa-pencil"
                                    oncomplete="PF('locationViewOutputEditableWidget').show();
                                                PF('locationDetailsViewOutputEditableWidget').show();"
                                    update="locationViewOutputEditable"
-                                   rendered="#{isEntityWriteable}">
+                                   rendered="#{isEntityWriteable and locationEditable}">
                         <p:tooltip for="locationViewOutputEditShowButton"
                                    value="Edit Location" />
                         <f:setPropertyActionListener value="#{true}"
@@ -76,7 +86,7 @@ See LICENSE file.
                 <p:commandLink id="locationDetailsViewOutputEditShowButton"
                                styleClass="fa-link-icon fa-icon fa fa-pencil"
                                onclick="PF('locationDetailsViewOutputEditableWidget').show();"
-                               rendered="#{isEntityWriteable}">
+                               rendered="#{isEntityWriteable and locationEditable}">
                     <p:tooltip for="locationDetailsViewOutputEditShowButton"
                                value="Edit Location Details" />
                 </p:commandLink>

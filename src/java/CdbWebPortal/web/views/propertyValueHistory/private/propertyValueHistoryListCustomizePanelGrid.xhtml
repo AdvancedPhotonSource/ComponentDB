@@ -32,6 +32,9 @@ See LICENSE file.
 
         <p:selectBooleanCheckbox id="propertyValueHistoryListDisplayUnits" value="#{propertyValueHistorySettingObject.displayUnits}"/>  
         <h:outputLabel for="propertyValueHistoryListDisplayUnits" value="Display Units" styleClass="dialogDataLabel"/>
+        
+        <p:selectBooleanCheckbox id="#{childEntityTypeName}propertyValueHistoryListDisplayEffectiveFromDateTime" value="#{propertyValueHistorySettingObject.displayEffectiveFromDateTime}"/>  
+        <h:outputLabel for="#{childEntityTypeName}propertyValueHistoryListDisplayEffectiveFromDateTime" value="Display Effective Date" styleClass="dialogDataLabel"/>
     </p:panelGrid>
 
 </ui:composition>

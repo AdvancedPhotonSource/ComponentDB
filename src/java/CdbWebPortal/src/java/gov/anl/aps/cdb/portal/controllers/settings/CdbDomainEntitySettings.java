@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
  */
 
 
-public abstract class CdbDomainEntitySettings<DomainEntityController extends CdbDomainEntityController> extends SettingsBase<DomainEntityController> {
+public abstract class CdbDomainEntitySettings<DomainEntityController extends CdbDomainEntityController> extends CdbEntitySettingsBase<DomainEntityController> {
     
     private static final String DisplayGalleryViewableDocumentsSettingTypeKey = "DomainEntity.Detail.Display.GalleryViewableDocuments";
     private static final Logger logger = Logger.getLogger(CdbDomainEntitySettings.class.getName());

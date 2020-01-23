@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class ItemElementRelationshipSettings extends SettingsBase<ItemElementRelationshipController> {
+public class ItemElementRelationshipSettings extends CdbEntitySettingsBase<ItemElementRelationshipController> {
 
     public ItemElementRelationshipSettings(ItemElementRelationshipController parentController) {
         super(parentController);

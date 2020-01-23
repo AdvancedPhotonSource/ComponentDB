@@ -19,9 +19,17 @@ public class Form extends TravelerObject {
     private LinkedList<SharedWith> sharedWith; 
     private String updatedBy; 
     private String updatedOn; 
+    private double status; 
+    private String formType;
+    
     
     // Calculated cache or temporary variables 
-    private String travelerInstanceName; 
+    private transient String travelerInstanceName; 
+    private transient ReleasedForms releasedForms;
+    private transient ReleasedForm selectedReleasedForm; 
+    
+    private transient String preferredReleasedId;
+    private transient String preferredReleasedVerCache; 
     
     public Form() {
         super();
@@ -67,6 +75,14 @@ public class Form extends TravelerObject {
         return updatedOn;
     }
 
+    public double getStatus() {
+        return status;
+    }
+
+    public String getFormType() {
+        return formType;
+    }
+
     public String getTravelerInstanceName() {
         if (travelerInstanceName == null) {
             travelerInstanceName = title; 
@@ -76,6 +92,41 @@ public class Form extends TravelerObject {
 
     public void setTravelerInstanceName(String travelerInstanceName) {
         this.travelerInstanceName = travelerInstanceName;
+    }
+
+    public ReleasedForms getReleasedForms() {
+        return releasedForms;
+    }
+
+    public void setReleasedForms(ReleasedForms releasedForms) {
+        this.releasedForms = releasedForms;
+    }
+
+    public ReleasedForm getSelectedReleasedForm() {
+        return selectedReleasedForm;
+    }
+
+    public void setSelectedReleasedForm(ReleasedForm selectedReleasedForm) {
+        this.selectedReleasedForm = selectedReleasedForm;
+    }
+
+    public String getPreferredReleasedId() {
+        return preferredReleasedId;
+    }
+
+    public void setPreferredReleasedId(String preferredReleasedId) {
+        this.preferredReleasedId = preferredReleasedId;
+    }
+
+    public String getPreferredReleasedVerCache() {
+        if (preferredReleasedVerCache == null) {
+            return "latest"; 
+        }
+        return preferredReleasedVerCache;
+    }
+
+    public void setPreferredReleasedVerCache(String preferredReleasedVerCache) {
+        this.preferredReleasedVerCache = preferredReleasedVerCache;
     }
     
     

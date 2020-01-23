@@ -8,12 +8,27 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
+    
+    <ui:param name="preferredVerRendered"
+              value="#{preferredVerRendered != null ? preferredVerRendered : true}" />
 
     <p:column headerText="Title">                
         <h:outputLink value="#{itemTravelerDomainCatalogController.getTravelerTemplateURL(templateObject.id)}"
                       target="_blank">
             <h:outputText value="#{templateObject.title}" />
         </h:outputLink>
+    </p:column>
+
+    <p:column headerText="Preferred Version" rendered="#{preferredVerRendered}">
+        <p:commandLink id="#{entityTypeName}UpdateTemplatePreferredVersion"
+                       styleClass="fa-link-icon fa fa-pencil" title="Update Preferred Version"
+                       onclick="PF('loadingDialog').show()"
+                       action="#{itemTravelerDomainCatalogController.prepareUpdatePreferredVersionForTemplate(templateObject, 'showTravelerTemplateUpdatePrefVersionDialog()')}"
+                       oncomplete="PF('loadingDialog').hide()"
+                       rendered="#{isEntityWriteable}">
+            <p:tooltip for="#{entityTypeName}UpdateTemplatePreferredVersion" value="Allows user to set preferred version for template entry."/>
+        </p:commandLink>
+        <h:outputText value="#{templateObject.preferredReleasedVerCache}"/>
     </p:column>
 
     <p:column headerText="Created By">

@@ -32,9 +32,91 @@ public class ItemUtility {
         return filteredItemList;
     }
 
+    /**
+     * Function generates a treebranch for a specific hierarchy (single item on
+     * each branch)
+     *
+     * @param itemHierarchyList
+     * @return root of tree branch that has item passed at lowest level of
+     * branch.
+     */
+    public static TreeNode generateHierarchyNodeTreeBranch(List<Item> itemHierarchyList) {
+        TreeNode rootTreeNode = new DefaultTreeNode(null, null);
+        TreeNode prevNode = rootTreeNode;
+
+        for (Item item : itemHierarchyList) {
+            prevNode = createNewTreeNode(item, prevNode);
+        }
+
+        return rootTreeNode;
+    }
+
+    /**
+     * Function generates a string for a specific hierarchy (single item on each
+     * branch)
+     *
+     * @param itemHierarchyList
+     * @return string representation of the hierarchy
+     */
+    public static String generateHierarchyNodeString(List<Item> itemHierarchyList) {
+        String result = "";
+        for (Item item : itemHierarchyList) {
+            result += item.getName();
+            // Still more items to load.
+            if (itemHierarchyList.indexOf(item) != itemHierarchyList.size() - 1) {
+                result += " ➜ ";
+            }
+        }
+        return result;
+    }
+
     public static TreeNode createNewTreeNode(Item item, TreeNode parentTreeNode) {
         String treeNodeType = item.getDomain().getName();
         return new DefaultTreeNode(treeNodeType, item, parentTreeNode);
+    }
+
+    public static void expandTreeBranch(TreeNode childNode) {
+        TreeNode parentNode = childNode.getParent();
+        if (parentNode != null) {
+            parentNode.setExpanded(true);
+            expandTreeBranch(parentNode);
+        }
+    }
+
+    public static void setExpandedSelectedOnAllChildren(TreeNode node, Boolean expanded, Boolean selected) {
+        if (expanded != null) {
+            node.setExpanded(expanded);
+        }
+        if (selected != null) {
+            node.setSelected(selected);
+        }
+        for (TreeNode childNode : node.getChildren()) {
+            setExpandedSelectedOnAllChildren(childNode, expanded, selected);
+        }
+    }
+    
+    /** 
+     * Find a tree node containing a specified item and return the TreeNode from the hierarchy, 
+     * 
+     * @param item
+     * @param nodeRoot
+     * @return 
+     */
+    public static TreeNode findTreeNodeWithItem(Item item, TreeNode nodeRoot) {
+        Item nodeItem = (Item) nodeRoot.getData();
+
+        if (nodeItem != null && nodeItem.equals(item)) {
+            return nodeRoot;
+        }
+
+        for (TreeNode childNode : nodeRoot.getChildren()) {
+            TreeNode foundNode = findTreeNodeWithItem(item, childNode);
+            if (foundNode != null) {
+                return foundNode;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -68,28 +150,28 @@ public class ItemUtility {
      */
     public static List<ItemElementRelationship> getItemRelationshipList(Item item, String relationshipTypeName, boolean itemFirstInRelationship) {
         ItemElement selfElement = item.getSelfElement();
-        
-        List<ItemElementRelationship> ierList = new ArrayList<>(); 
-        List<ItemElementRelationship> ierListToLookAt = null; 
+
+        List<ItemElementRelationship> ierList = new ArrayList<>();
+        List<ItemElementRelationship> ierListToLookAt = null;
 
         if (itemFirstInRelationship) {
             ierListToLookAt = selfElement.getItemElementRelationshipList();
         } else {
             ierListToLookAt = selfElement.getItemElementRelationshipList1();
         }
-        
+
         if (ierListToLookAt != null) {
             for (ItemElementRelationship ier : ierListToLookAt) {
                 RelationshipType relationshipType = ier.getRelationshipType();
                 if (relationshipType != null) {
                     if (relationshipType.getName().equals(relationshipTypeName)) {
-                        ierList.add(ier); 
+                        ierList.add(ier);
                     }
                 }
-            }              
+            }
         }
-        
-        return ierList; 
+
+        return ierList;
     }
 
     /**

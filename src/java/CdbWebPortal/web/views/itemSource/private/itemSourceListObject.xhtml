@@ -9,7 +9,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
+
     <ui:param name="filterable" value="#{filterable != null ? filterable : false}" />
     <ui:param name="itemSourceSettingObject" value="#{itemSourceController.settingObject}" />
 
@@ -25,24 +25,46 @@ See LICENSE file.
               filterable="#{filterable}"
               headerText="Name"
               exportFunction="#{itemSourceObject.source.getName()}">
-        <h:outputLink value="../source/view.xhtml?id=#{itemSourceObject.source.id}&amp;breadcrumb=#{breadcrumb}" title="View design details">
-            <h:outputText value="#{itemSourceObject.source.name}"/>
-        </h:outputLink>  
+        <p:cellEditor>
+            <f:facet name="output">
+                <h:outputLink value="../source/view.xhtml?id=#{itemSourceObject.source.id}&amp;breadcrumb=#{breadcrumb}" title="View design details">
+                    <h:outputText value="#{itemSourceObject.source.name}"/>
+                </h:outputLink>  
+            </f:facet>
+            <f:facet name="input">
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceName.xhtml"/> 
+            </f:facet>
+        </p:cellEditor>
     </p:column>
 
     <p:column sortBy="#{itemSourceObject.partNumber}" 
               filterBy="#{itemSourceObject.partNumber}" 
               filterable="#{filterable}"
               headerText="Part Number"
-              rendered="#{itemSourceSettingObject.displayPartNumber}">
-        <h:outputText value="#{itemSourceObject.partNumber}"/>
+              rendered="#{itemSourceSettingObject.displayPartNumber}">                
+        <p:cellEditor>
+            <f:facet name="output">
+                <h:outputText value="#{itemSourceObject.partNumber}"/>
+            </f:facet>
+            <f:facet name="input">
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourcePartNumber.xhtml"/> 
+            </f:facet>
+        </p:cellEditor>
+
     </p:column>
 
     <p:column sortBy="#{itemSourceObject.cost}" 
               filterBy="#{itemSourceObject.cost}" headerText="Cost [$]"
               filterable="#{filterable}"
-              rendered="#{itemSourceSettingObject.displayCost}">
-        <h:outputText value="#{itemSourceObject.cost}"/>
+              rendered="#{itemSourceSettingObject.displayCost}">        
+        <p:cellEditor>
+            <f:facet name="output">                
+                <h:outputText value="#{itemSourceObject.cost}"/>
+            </f:facet>
+            <f:facet name="input">
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceCost.xhtml"/> 
+            </f:facet>
+        </p:cellEditor>
     </p:column>
 
     <p:column sortBy="#{itemSourceObject.description}" 
@@ -50,14 +72,28 @@ See LICENSE file.
               filterable="#{filterable}"
               headerText="Description"
               rendered="#{itemSourceSettingObject.displayDescription}">
-        <h:outputText value="#{itemSourceObject.description}"/>
+        <p:cellEditor>
+            <f:facet name="output">
+               <h:outputText value="#{itemSourceObject.description}"/>
+            </f:facet>
+            <f:facet name="input">
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceDescription.xhtml"/> 
+            </f:facet>
+        </p:cellEditor>
     </p:column>    
 
     <p:column sortBy="#{itemSourceObject.contactInfo}" headerText="Contact Info"
               filterBy="#{itemSourceObject.contactInfo}" 
               filterable="#{filterable}"
               rendered="#{itemSourceSettingObject.displayContactInfo}">
-        <h:outputText value="#{itemSourceObject.contactInfo}"/>
+        <p:cellEditor>
+            <f:facet name="output">
+                <h:outputText value="#{itemSourceObject.contactInfo}"/>       
+            </f:facet>
+            <f:facet name="input">
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceContactInfo.xhtml"/> 
+            </f:facet>
+        </p:cellEditor>
     </p:column>    
 
     <p:column sortBy="#{itemSourceObject.url}" 
@@ -65,9 +101,16 @@ See LICENSE file.
               filterable="#{filterable}"
               headerText="URL"
               rendered="#{itemSourceSettingObject.displayUrl}">
-        <h:outputLink value="#{itemSourceObject.targetUrl}" target="_page_#{itemSourceObject.url}">
-            <h:outputText value="#{itemSourceObject.displayUrl}"/>
-        </h:outputLink>
+        <p:cellEditor>
+            <f:facet name="output">
+                <h:outputLink value="#{itemSourceObject.targetUrl}" target="_page_#{itemSourceObject.url}">
+                    <h:outputText value="#{itemSourceObject.displayUrl}"/>
+                </h:outputLink>
+            </f:facet>
+            <f:facet name="input">
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceURL.xhtml"/> 
+            </f:facet>
+        </p:cellEditor>
     </p:column>         
 
     <p:column sortBy="#{itemSourceObject.isManufacturer}" 
@@ -75,20 +118,34 @@ See LICENSE file.
               rendered="#{itemSourceSettingObject.displayIsManufacturer}"
               exportFunction="#{itemSourceObject.getIsManufacturerString()}">
         <f:attribute name="exportValue" value="#{itemSourceObject.isManufacturer}"/>
-        <div class="dataTableCheckbox">
-            <h:outputText value="" styleClass="ui-icon ui-icon-check" 
-                          rendered="#{itemSourceObject.isManufacturer}"/>
-        </div>
+        <p:cellEditor>
+            <f:facet name="output">
+                <div class="dataTableCheckbox">
+                    <h:outputText value="" styleClass="ui-icon ui-icon-check" 
+                                  rendered="#{itemSourceObject.isManufacturer}"/>
+                </div>
+            </f:facet>
+            <f:facet name="input">
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceManufacturer.xhtml"/> 
+            </f:facet>
+        </p:cellEditor>
     </p:column>   
 
     <p:column sortBy="#{itemSourceObject.isVendor}" headerText="Vendor"
               rendered="#{itemSourceSettingObject.displayIsVendor}"
               exportFunction="#{itemSourceObject.getIsVendorString()}">
         <f:attribute name="exportValue" value="#{itemSourceObject.isVendor}"/>
-        <div class="dataTableCheckbox">
-            <h:outputText value="" styleClass="ui-icon ui-icon-check"
-                          rendered="#{itemSourceObject.isVendor}"/>
-        </div>
+        <p:cellEditor>
+            <f:facet name="output">
+                <div class="dataTableCheckbox">
+                    <h:outputText value="" styleClass="ui-icon ui-icon-check"
+                                  rendered="#{itemSourceObject.isVendor}"/>
+                </div>
+            </f:facet>
+            <f:facet name="input">
+                <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceVendor.xhtml"/> 
+            </f:facet>
+        </p:cellEditor>
     </p:column> 
 
 </ui:composition>

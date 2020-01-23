@@ -14,7 +14,7 @@ import org.primefaces.component.datatable.DataTable;
  *
  * @author djarosz
  */
-public class AllowedPropertyValueSettings extends SettingsBase<AllowedPropertyValueController> {
+public class AllowedPropertyValueSettings extends CdbEntitySettingsBase<AllowedPropertyValueController> {
     
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "AllowedPropertyValue.List.Display.NumberOfItemsPerPage";
     private static final String DisplayIdSettingTypeKey = "AllowedPropertyValue.List.Display.Id";

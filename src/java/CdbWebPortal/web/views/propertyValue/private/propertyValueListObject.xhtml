@@ -74,6 +74,13 @@ See LICENSE file.
               rendered="#{propertyValueSettingObject.displayEnteredOnDateTime}">
         <h:outputText value="#{propertyValueObject.enteredOnDateTime}"/>
     </p:column>
+    
+    <p:column sortBy="#{propertyValueObject.effectiveFromDateTime}" headerText="Effective Date"
+              filterBy="#{propertyValueObject.effectiveFromDateTime}"
+              filterable="#{filterable}"
+              rendered="#{propertyValueSettingObject.displayEffectiveFromDateTime}">
+        <h:outputText value="#{propertyValueObject.effectiveFromDateTime}"/>
+    </p:column>
 
     <p:column sortBy="#{propertyValueObject.isDynamic}" headerText="Dynamic"
               rendered="#{propertyValueSettingObject.displayIsDynamic}"

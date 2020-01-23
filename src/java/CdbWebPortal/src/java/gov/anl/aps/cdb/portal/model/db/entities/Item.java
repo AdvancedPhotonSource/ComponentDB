@@ -126,7 +126,7 @@ import org.primefaces.model.TreeNode;
             + "AND fiel.name is NULL "
             + "AND fiel.listList = :list "),
     @NamedQuery(name = "Item.findItemsInListExcludeEntityType",
-            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel JOIN i.entityTypeList etl "
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel LEFT JOIN i.entityTypeList etl "
             + "WHERE i.domain.name = :domainName "
             + "AND (etl.name != :entityTypeName or etl.name is null) "
             + "AND fiel.derivedFromItemElement is NULL "
@@ -216,7 +216,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Basic(optional = false)
     private Integer id;
     @Basic(optional = false)
-    @Size(max = 64)
+    @Size(max = 128)
     private String name;
     @Size(max = 32)
     @Column(name = "item_identifier1")
@@ -271,7 +271,11 @@ public class Item extends CdbDomainEntity implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")    
     private List<ItemSource> itemSourceList;    
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")    
-    private List<ItemResource> itemResourceList;
+    private List<ItemResource> itemResourceList;    
+    @OneToMany(mappedBy = "containedItem1")        
+    private List<ItemElementHistory> historyMemberList; 
+    @OneToMany(mappedBy = "containedItem2")        
+    private List<ItemElementHistory> historyMemberList2; 
 
     // Item element representing self 
     private transient ItemElement selfItemElement = null;
@@ -777,6 +781,16 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    public List<ItemElementHistory> getHistoryMemberList() {
+        return historyMemberList;
+    }
+
+    @XmlTransient
+    public List<ItemElementHistory> getHistoryMemberList2() {
+        return historyMemberList2;
+    }
+
+    @XmlTransient
     public List<Item> getDerivedFromItemList() {
         return derivedFromItemList;
     }
@@ -1025,16 +1039,16 @@ public class Item extends CdbDomainEntity implements Serializable {
         SearchResult searchResult;
 
         if (name != null) {
-            searchResult = new SearchResult(id, name);
+            searchResult = new SearchResult(this, id, name);
             searchResult.doesValueContainPattern("name", name, searchPattern);
         } else if (derivedFromItem != null && derivedFromItem.getName() != null) {
             String title = "Derived from: " + derivedFromItem.getName();
             if (qrId != null) {
                 title += " (QRID: " + getQrIdDisplay() + ")";
             }
-            searchResult = new SearchResult(id, title);
+            searchResult = new SearchResult(this, id, title);
         } else {
-            searchResult = new SearchResult(id, "Item");
+            searchResult = new SearchResult(this, id, "Item");
         }
 
         if (derivedFromItem != null) {
@@ -1043,7 +1057,9 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         searchResult.doesValueContainPattern("created by", getEntityInfo().getCreatedByUser().getUsername(), searchPattern);
         searchResult.doesValueContainPattern("last modified by", getEntityInfo().getLastModifiedByUser().getUsername(), searchPattern);
-        searchResult.doesValueContainPattern("owned by", getEntityInfo().getOwnerUser().getUsername(), searchPattern);
+        if (getEntityInfo().getOwnerUser() != null) {
+            searchResult.doesValueContainPattern("owned by", getEntityInfo().getOwnerUser().getUsername(), searchPattern);
+        }
         searchResult.doesValueContainPattern("description", getDescription(), searchPattern);
         return searchResult;
     }

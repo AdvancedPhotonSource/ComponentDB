@@ -22,7 +22,7 @@ See LICENSE file.
                        id="machineDesignDualViewTemplateContextMenu"
                        widgetVar="machineDesignDualViewTemplateContextMenuWidget"
                        event="select contextmenu">
-            <ui:include src="machineDesignContextMenu/addMachineDesignTemplateContextMenuItem.xhtml" />            
+            <ui:include src="machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />            
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/destroyMachineDesignContextMenuItem.xhtml" /> 
             <ui:include src="machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
@@ -33,7 +33,7 @@ See LICENSE file.
                        id="machineDesignDualViewTemplateMemberContextMenu"
                        widgetVar="machineDesignDualViewTemplateMemberContextMenuWidget"
                        event="select contextmenu">
-            <ui:include src="machineDesignContextMenu/addMachineDesignTemplateContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />
             <ui:include src="machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />                        
             <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" /> 
@@ -45,7 +45,7 @@ See LICENSE file.
                        id="machineDesignDualViewTemplateMemberCatalogContextMenu"
                        widgetVar="machineDesignDualViewTemplateMemberCatalogContextMenuWidget"
                        event="select contextmenu">
-            <ui:include src="machineDesignContextMenu/addMachineDesignTemplateContextMenuItem.xhtml" />            
+            <ui:include src="machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />            
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />                        
             <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" /> 
             <ui:include src="machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" /> 
@@ -67,7 +67,7 @@ See LICENSE file.
                        id="machineDesignDualViewMachineDesignContextMenu"
                        widgetVar="machineDesignDualViewMachineDesignContextMenuWidget"
                        event="select contextmenu">
-            <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />                        
+            <ui:include src="machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />                        
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/destroyMachineDesignContextMenuItem.xhtml" /> 
             <ui:include src="machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
@@ -78,8 +78,9 @@ See LICENSE file.
                        id="machineDesignDualViewMachineDesignMemberContextMenu"
                        widgetVar="machineDesignDualViewMachineDesignMemberContextMenuWidget"
                        event="select contextmenu">
-            <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />
-            <ui:include src="machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml" />            
+            <ui:include src="machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />
+            <ui:include src="machineDesignContextMenu/assignCatalogItemContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/cableSubMenu.xhtml"/>
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/reorderChildrenContextMenuItem.xhtml" />
@@ -90,8 +91,9 @@ See LICENSE file.
                        id="machineDesignDualViewMachineDesignMemberCatalogContextMenu"
                        widgetVar="machineDesignDualViewMachineDesignMemberCatalogContextMenuWidget"
                        event="select contextmenu">
-            <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />
-            <ui:include src="machineDesignContextMenu/assignInventoryItemContextMenuItem.xhtml" />                    
+            <ui:include src="machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />
+            <ui:include src="machineDesignContextMenu/assignInventoryItemContextMenuItem.xhtml" />
+            <ui:include src="machineDesignContextMenu/cableSubMenu.xhtml"/>
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />     
             <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/unlinkContainedItem2ContextMenuItem.xhtml" />     
@@ -102,7 +104,8 @@ See LICENSE file.
                        nodeType="MachineDesignMemberInventory"
                        id="machineDesignDualViewMachineDesignMemberInventoryContextMenu"
                        widgetVar="machineDesignDualViewMachineDesignMemberInventoryContextMenuWidget">
-            <ui:include src="machineDesignContextMenu/addMachineDesignContextMenuItem.xhtml" />            
+            <ui:include src="machineDesignContextMenu/addMachineDesignSubMenu.xhtml" />
+            <ui:include src="machineDesignContextMenu/cableSubMenu.xhtml"/>
             <ui:include src="machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" />    
             <ui:include src="machineDesignContextMenu/detachFromHierarchyContextMenuItem.xhtml" />
             <ui:include src="machineDesignContextMenu/unlinkContainedItem2ToDerivedItemContextMenuItem.xhtml" />

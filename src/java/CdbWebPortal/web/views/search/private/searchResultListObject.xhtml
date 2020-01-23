@@ -9,10 +9,6 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:column sortBy="#{searchResultObject.objectId}" headerText="Id">
-        <h:outputText value="#{searchResultObject.objectId}"/>
-    </p:column>
-
     <p:column sortBy="#{searchResultObject.objectName}" headerText="Name">
         <h:outputLink value="../#{entityName}/view.xhtml?id=#{searchResultObject.objectId}&amp;breadcrumb=#{breadcrumb}" title="#{entityTitle}: #{searchResultObject.objectName}">
             <h:outputText value="#{searchResultObject.objectName}"/>
@@ -23,6 +19,10 @@ See LICENSE file.
         <h:outputText value="#{searchResultObject.display}"/>
     </p:column>
 
+    <p:column sortBy="#{searchResultObject.objectId}" headerText="Id">
+        <h:outputText value="#{searchResultObject.objectId}"/>
+    </p:column>
+    
 </ui:composition>
 
 

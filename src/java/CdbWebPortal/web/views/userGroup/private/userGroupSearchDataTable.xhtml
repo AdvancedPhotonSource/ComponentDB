@@ -13,7 +13,7 @@ See LICENSE file.
                  value="#{userGroupController.searchResultList}" 
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
-                 rows="#{searchController.displayNumberOfItemsPerPage}" 
+                 rows="#{searchController.searchSettings.displayNumberOfItemsPerPage}" 
                  emptyMessage="No user groups match.">
 
         <ui:include src="../../search/private/searchResultListObject.xhtml">

@@ -10,12 +10,31 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui">
 
-    <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />        
+    <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+    <ui:param name="renderedShowElementHistory" value="#{true}" />
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainMachineDesignController.processPreRenderList()}" />
     </f:metadata>
+    
+    <ui:define name="itemListPageEmphasizedContentBelowTitle">
+        <p:commandButton id="itemDomainMachineDesignKeyboardShortcutButton"
+                         icon="fa fa-question"
+                         onclick="PF('itemDomainMachineDesignKeyboardShortcutDialogWidget').show()" >
+            <p:tooltip for="itemDomainMachineDesignKeyboardShortcutButton"
+                       value="Show keybaord shortcuts for machine design list."/> 
+        </p:commandButton>
+        <p:selectBooleanButton onLabel="Favorites Enabled" offLabel="Favorites Disabled"
+                               onIcon="fa fa-star" offIcon="fa fa-star-o"
+                               value="#{itemDomainMachineDesignController.favoritesShown}"
+                               onchange="onChangeFavoritesEnabled()"
+                               rendered="#{loginController.loggedIn}">
+            <p:remoteCommand name="onChangeFavoritesEnabled"                         
+                             action="#{itemDomainMachineDesignController.list()}"
+                             onstart="PF('loadingDialog').show()"/> 
+        </p:selectBooleanButton>
+    </ui:define>
 
     <ui:define name="customizeDisplayDialog">
         <ui:include src="private/itemDomainMachineDesignListCustomizeDisplayDialog.xhtml"/>
@@ -34,9 +53,13 @@ See LICENSE file.
         </p:outputPanel>
     </ui:define>
 
-    <ui:define name="additionalListSupport" >
+    <ui:define name="additionalListSupport" >       
         <ui:insert name="additionalSupport" />
-        <ui:include src="private/itemDomainMachineDesignReorderOverlayPanel.xhtml" /> 
+        <ui:include src="private/itemDomainMachineDesignAutoScrollTreeTable.xhtml"/>
+        <ui:include src="private/itemDomainMachineDesignReorderOverlayPanel.xhtml"/>
+        <ui:include src="private/itemDomainMachineDesignAssignedItemHistoryDialog.xhtml" />
+        <ui:include src="private/itemDomainMachineDesignCableMappingDialog.xhtml"/> 
+        <ui:include src="private/itemDomainMachineDesignKeyboardShortcutDialog.xhtml" />
     </ui:define>
 
 

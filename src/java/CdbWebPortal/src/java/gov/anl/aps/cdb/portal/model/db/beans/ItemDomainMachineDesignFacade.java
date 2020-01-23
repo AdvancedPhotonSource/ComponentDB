@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.ejb.Stateless;
 
@@ -26,6 +27,10 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
                 ItemDomainName.machineDesign.getValue(),
                 EntityTypeName.template.getValue()
         ); 
+    }
+    
+    public static ItemDomainMachineDesignFacade getInstance() {
+        return (ItemDomainMachineDesignFacade) SessionUtility.findFacade(ItemDomainMachineDesignFacade.class.getSimpleName()); 
     }
     
 }

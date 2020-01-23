@@ -39,25 +39,28 @@ See LICENSE file.
                              rowKey="#{travelerTemplateObject.id}"
                              var="travelerTemplateObject">
                     <p:ajax event="rowSelect"
-                            update="travelerBinderTemplateSelectionListDataTable" />
+                            onstart="updateTravelerBinderTemplateSelectionListDataTable()"/>
                     <p:ajax event="rowUnselect"
-                            update="travelerBinderTemplateSelectionListDataTable" />
+                            onstart="updateTravelerBinderTemplateSelectionListDataTable()"/>
                     <p:ajax event="rowSelectCheckbox"
-                            update="travelerBinderTemplateSelectionListDataTable" />
+                            onstart="updateTravelerBinderTemplateSelectionListDataTable()"/>
                     <p:ajax event="toggleSelect"
-                            update="travelerBinderTemplateSelectionListDataTable"/>
+                            onstart="updateTravelerBinderTemplateSelectionListDataTable()"/>
                     <p:ajax event="rowUnselectCheckbox"
-                            update="travelerBinderTemplateSelectionListDataTable"/>
+                            onstart="updateTravelerBinderTemplateSelectionListDataTable()"/>
 
-                    <p:column selectionMode="multiple"/>
+                    <p:column selectionMode="multiple" />
 
                     <p:column sortBy="#{travelerTemplateObject.title}"
                               headerText="Template Title" >
                         <h:outputText value="#{travelerTemplateObject.title}" />
                     </p:column>
+
+
+                    <ui:param name="selectedTemplateObject"
+                              value="#{itemTravelerDomainInventoryController.isSelectedNewBinderTemplate(travelerTemplateObject)}" />                   
+
                     <p:column headerText="New Traveler Instance Title">
-                        <ui:param name="selectedTemplateObject"
-                                  value="#{itemTravelerDomainInventoryController.isSelectedNewBinderTemplate(travelerTemplateObject)}" />
 
                         <p:outputPanel rendered="#{selectedTemplateObject}">
                             <h:inputText value="#{travelerTemplateObject.travelerInstanceName}"/>
@@ -66,16 +69,24 @@ See LICENSE file.
                             Please select the traveler template to specify title.
                         </p:outputPanel>
                     </p:column>
+
+                    <ui:include src="travelerTemplateReleasedVersionSelectionColumn.xhtml"/> 
                 </p:dataTable>
 
             </p:panelGrid>
-        </p:outputPanel>                
+        </p:outputPanel>       
+        
+        <p:remoteCommand name="updateTravelerBinderTemplateSelectionListDataTable"
+                         onstart="PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide()"
+                         update="travelerBinderTemplateSelectionListDataTable"
+                         immediate="true" />
 
         <f:facet name="footer">
             <p:commandButton value="Create Binder"
                              icon="fa fa-floppy-o"
                              action="#{itemTravelerDomainInventoryController.createBinder()}"/>
-            
+
             <p:commandButton value="Close"
                              icon="fa fa-close"
                              onclick="PF('travelerBinderAddDialogWidget').hide()"/>                             
