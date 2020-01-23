@@ -48,6 +48,17 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         ItemDomainImportWizard.getInstance().registerHelper(importHelper);
         return "/views/itemDomainCableCatalog/import?faces-redirect=true";
     }
+    
+    /**
+     * Creates new instance but doesn't set current (for operations from
+     * outside controller).
+     */
+    public ItemDomainCableCatalog newEntityInstance() {
+        ItemDomainCableCatalog item = super.createEntityInstance();
+        return item;
+    }
+
+
 
     @Override
     public ItemMultiEditController getItemMultiEditController() {

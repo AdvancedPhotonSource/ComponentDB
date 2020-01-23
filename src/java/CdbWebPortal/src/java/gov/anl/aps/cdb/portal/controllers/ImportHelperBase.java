@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +16,11 @@ import org.apache.poi.ss.usermodel.Row;
  */
 public abstract class ImportHelperBase {
     
-    public class RowModel {
+    public class RowModel <EntityType extends CdbEntity> {
 
         private boolean isValid = false;
         private String validString = "";
+        private EntityType entity;
         
         public RowModel(boolean v, String vs) {
             isValid = v;
@@ -40,9 +42,27 @@ public abstract class ImportHelperBase {
         public void setValidString(String validString) {
             this.validString = validString;
         }
+        
+        public EntityType getEntity() {
+            return entity;
+        }
+        
+        public void setEntity(EntityType e) {
+            entity = e;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof RowModel) {
+                return this.entity.equals(((RowModel)obj).getEntity());
+            } else {
+                return false;
+            }
+        }
+        
     }
 
-    static public class ColumnModel implements Serializable {
+    public class ColumnModel implements Serializable {
 
         private final String header;
         private final String property;

@@ -240,11 +240,6 @@ public class ItemDomainImportWizard implements Serializable {
     protected void triggerImport() {
         
         ImportInfo info = importHelper.importData();
-        if (!info.isImportSuccessful()) {
-            SessionUtility.addErrorMessage(
-                    "Cable types not saved",
-                    info.getMessage());
-        }
         
         importSuccessful = info.isImportSuccessful();
         importResult = info.getMessage();

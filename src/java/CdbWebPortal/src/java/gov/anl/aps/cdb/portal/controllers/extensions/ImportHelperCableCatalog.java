@@ -4,11 +4,15 @@
  */
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import static org.apache.poi.ss.usermodel.CellType.STRING;
@@ -20,7 +24,7 @@ import org.apache.poi.ss.usermodel.Row;
  */
 public class ImportHelperCableCatalog extends ImportHelperBase {
 
-    public class CableCatalogImportInfo extends RowModel {
+    public class CableCatalogRowModel extends RowModel {
 
         private String cableType = "";
         private double weight = 0;
@@ -28,7 +32,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         private String source = "";
         private String url = "";
 
-        public CableCatalogImportInfo(String type, double w, double d, String src, String u, boolean v, String vs) {
+        public CableCatalogRowModel(String type, double w, double d, String src, String u, boolean v, String vs) {
             super(v, vs);
             cableType = type;
             weight = w;
@@ -185,15 +189,47 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
             url = row.getCell(4).getStringCellValue();
         }
 
-        CableCatalogImportInfo info = new CableCatalogImportInfo(cableType, weight, diameter, source, url, isValid, validString);
+        CableCatalogRowModel info = new CableCatalogRowModel(cableType, weight, diameter, source, url, isValid, validString);
         rows.add(info);
+//        if rows.contains(info) {
+//            rows.add(info);
         return isValid;
     }
     
     @Override
     public ImportInfo importData() {
+        
         System.out.println("importing " + rows.size() + " rows");
-        return new ImportInfo(false, "Import Failed. Feature not yet implemented.");
+        
+        ItemDomainCableCatalogController controller = ItemDomainCableCatalogController.getInstance();
+        
+        String message = "";
+        List<ItemDomainCableCatalog> newCableTypes = new ArrayList<>();
+        for (RowModel row : rows) {
+            
+            CableCatalogRowModel catalogRow = (CableCatalogRowModel) row;
+            
+            ItemDomainCableCatalog newType = controller.newEntityInstance();
+            newType.setName(catalogRow.getCableType());
+            newCableTypes.add(newType);
+//            newCable.setName(cableName);
+//            newCable.setItemProjectList(projectList);
+//
+//            // set endpoints
+//            newCable.setEndpoint1(itemEndpoint1);
+//            newCable.setEndpoint2(itemEndpoint2);
+
+        }
+        
+        try {
+            controller.createList(newCableTypes);
+            return new ImportInfo(true, "Import succeeded.  Created " + rows.size() + " instances.");
+        } catch (CdbException ex) {
+            return new ImportInfo(false, "Import failed. " + ex.getMessage() + ".");
+        } catch (RuntimeException ex) {
+            Throwable t = ExceptionUtils.getRootCause(ex);
+            return new ImportInfo(false, "Import failed. " + ex.getMessage() + ": " + t.getMessage() + ".");
+        }
     }
 
 }

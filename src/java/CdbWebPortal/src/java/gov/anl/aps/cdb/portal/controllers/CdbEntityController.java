@@ -959,6 +959,67 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             throw ex;
         }
     }
+    
+    public void performListCreateOperations(List<EntityType> entities, boolean skipSystemLog) throws CdbException, RuntimeException {
+        try {
+            for (EntityType entity : entities) {
+                prepareEntityInsert(entity);
+            }
+            getEntityDbFacade().create(entities);
+            resetListDataModel();
+            resetSelectDataModel();
+
+            if (!skipSystemLog) {
+                addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Created " + entities.size() + " entities.");
+            }
+            setPersistenceErrorMessageForList(entities, null);
+
+        } catch (CdbException ex) {
+            setPersistenceErrorMessageForList(entities, ex.getMessage());
+            throw ex;
+        } catch (RuntimeException ex) {
+            setPersistenceErrorMessageForList(entities, ex.getMessage());
+            throw ex;
+        }
+    }
+    
+    protected void setPersistenceErrorMessageForList(List<EntityType> entities, String msg) {
+        for (EntityType entity : entities) {
+            entity.setPersitanceErrorMessage(msg);
+        }
+    }
+    
+    public void createList(List<EntityType> entities) throws CdbException, RuntimeException {
+        createList(entities, false, false);
+    }
+    
+    public void createList(List<EntityType> entities, boolean skipSystemLog, boolean silent) throws CdbException, RuntimeException {
+        try {
+            performListCreateOperations(entities, skipSystemLog);
+            if (!silent) {
+                SessionUtility.addInfoMessage("Success", "Created " + entities.size() + " " + getDisplayEntityTypeName() + " instances.");
+            }
+        } catch (CdbException ex) {
+            logger.error("Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            if (!silent) {
+                SessionUtility.addErrorMessage("Error", "Could not create list of " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            }
+            if (!skipSystemLog) {
+                addCdbEntityWarningSystemLog("Failed to create list of " + getDisplayEntityTypeName(), ex, current);
+            }
+            throw ex;
+        } catch (RuntimeException ex) {
+            Throwable t = ExceptionUtils.getRootCause(ex);
+            logger.error("Could not create list of " + getDisplayEntityTypeName() + ": " + t.getMessage());
+            if (!silent) {
+                SessionUtility.addErrorMessage("Error", "Could not create list of " + getDisplayEntityTypeName() + ": " + t.getMessage());
+            }
+            if (!skipSystemLog) {
+                addCdbEntityWarningSystemLog("Failed to create list of " + getDisplayEntityTypeName(), ex, current);
+            }
+            throw ex;
+        }
+    }
 
     /**
      * Prepare entity instance edit.
