@@ -143,17 +143,6 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
             cell.setCellType(CellType.STRING);
             partNumber = cell.getStringCellValue();
         }
-//        if (cell == null) {
-//            partNumber = "";
-//        } else if (cell.getCellType() == CellType.STRING){
-//            partNumber = cell.getStringCellValue();
-//        } else if (cell.getCellType() == CellType.NUMERIC) {
-//            partNumber = Double.toString(cell.getNumericCellValue());
-//        } else {
-//            partNumber = "";
-//            isValid = false;
-//            validString = "unexpected part number column format";
-//        }
 
         cell = row.getCell(weightColumn);
         if (cell == null) {

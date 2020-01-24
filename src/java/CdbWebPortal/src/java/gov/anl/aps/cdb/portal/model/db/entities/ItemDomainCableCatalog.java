@@ -17,8 +17,6 @@ import javax.persistence.Entity;
 @DiscriminatorValue(value = ItemDomainName.CABLE_CATALOG_ID + "")   
 public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCableInventory> {
     
-    private transient String cableType = null;
-    private transient String partNumber = null;
     private transient double weight = 0;
     private transient double diameter = 0;
     private transient String source = null;
@@ -34,19 +32,19 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
     
     public String getCableType() {
-        return cableType;
+        return this.getName();
     }
     
     public void setCableType(String t) {
-        cableType = t;
+        this.setName(t);
     }
     
     public String getPartNumber() {
-        return partNumber;
+        return this.getItemIdentifier1();
     }
     
     public void setPartNumber(String n) {
-        partNumber = n;
+        this.setItemIdentifier1(n);
     }
     
     public double getWeight() {
