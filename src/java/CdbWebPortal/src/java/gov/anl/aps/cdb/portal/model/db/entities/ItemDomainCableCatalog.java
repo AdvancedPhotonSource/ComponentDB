@@ -18,6 +18,7 @@ import javax.persistence.Entity;
 public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCableInventory> {
     
     private transient String cableType = null;
+    private transient String partNumber = null;
     private transient double weight = 0;
     private transient double diameter = 0;
     private transient String source = null;
@@ -32,31 +33,51 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
     }
     
-    public void setCableProperties(String t, double w, double d, String s, String u) {
-        cableType = t;
-        weight = w;
-        diameter = d;
-        source = s;
-        url = u;
-    }
-    
     public String getCableType() {
         return cableType;
+    }
+    
+    public void setCableType(String t) {
+        cableType = t;
+    }
+    
+    public String getPartNumber() {
+        return partNumber;
+    }
+    
+    public void setPartNumber(String n) {
+        partNumber = n;
     }
     
     public double getWeight() {
         return weight;
     }
     
+    public void setWeight(double w) {
+        weight = w;
+    }
+    
     public double getDiameter() {
         return diameter;
+    }
+    
+    public void setDiameter(double d) {
+        diameter = d;
     }
     
     public String getSource() {
         return source;
     }
     
+    public void setSource(String s) {
+        source = s;
+    }
+    
     public String getUrl() {
         return url;
+    }
+    
+    public void setUrl(String u) {
+        url = u;
     }
 }

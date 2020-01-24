@@ -39,6 +39,10 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         public String getCableType() {
             return ((ItemDomainCableCatalog)getEntity()).getCableType();
         }
+        
+        public String getPartNumber() {
+            return ((ItemDomainCableCatalog)getEntity()).getPartNumber();
+        }
 
         public double getWeight() {
             return ((ItemDomainCableCatalog)getEntity()).getWeight();
@@ -59,14 +63,22 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
 
     protected static String cableTypeHeader = "Cable Type";
     protected static String cableTypeProperty = "cableType";
+    protected static int cableTypeColumn = 0;
+    protected static String partNumberHeader = "Part Number";
+    protected static String partNumberProperty = "partNumber";
+    protected static int partNumberColumn = 1;
     protected static String weightHeader = "Weight";
     protected static String weightProperty = "weight";
+    protected static int weightColumn = 2;
     protected static String diameterHeader = "Diameter";
     protected static String diameterProperty = "diameter";
+    protected static int diameterColumn = 3;
     protected static String sourceHeader = "Source";
     protected static String sourceProperty = "source";
+    protected static int sourceColumn = 4;
     protected static String urlHeader = "URL";
     protected static String urlProperty = "url";
+    protected static int urlColumn = 5;
     
     protected static String completionUrlValue = "/views/itemDomainCableCatalog/list?faces-redirect=true";
     
@@ -83,6 +95,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     @Override
     protected void createColumnModels_() {
         columns.add(new ColumnModel(cableTypeHeader, cableTypeProperty));
+        columns.add(new ColumnModel(partNumberHeader, partNumberProperty));
         columns.add(new ColumnModel(weightHeader, weightProperty));
         columns.add(new ColumnModel(diameterHeader, diameterProperty));
         columns.add(new ColumnModel(sourceHeader, sourceProperty));
@@ -98,6 +111,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     public boolean parseRow(Row row) {
 
         String cableType = "";
+        String partNumber = "";
         double weight = 0;
         double diameter = 0;
         String source = "";
@@ -107,20 +121,41 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
 
         Cell cell;
 
-        cell = row.getCell(0);
+        cell = row.getCell(cableTypeColumn);
         if (cell == null) {
             cableType = "";
             isValid = false;
             validString = "unspecified cableType";
-        } else if (cell.getCellType() != CellType.STRING) {
-            cableType = "";
-            isValid = false;
-            validString = "cellType is not a string";
         } else {
+            cell.setCellType(CellType.STRING);
             cableType = cell.getStringCellValue();
+            if (cableType.equals("")) {
+                cableType = "";
+                isValid = false;
+                validString = "unspecified cableType";
+            }
         }
 
-        cell = row.getCell(1);
+        cell = row.getCell(partNumberColumn);
+        if (cell == null) {
+            partNumber = "";
+        } else {
+            cell.setCellType(CellType.STRING);
+            partNumber = cell.getStringCellValue();
+        }
+//        if (cell == null) {
+//            partNumber = "";
+//        } else if (cell.getCellType() == CellType.STRING){
+//            partNumber = cell.getStringCellValue();
+//        } else if (cell.getCellType() == CellType.NUMERIC) {
+//            partNumber = Double.toString(cell.getNumericCellValue());
+//        } else {
+//            partNumber = "";
+//            isValid = false;
+//            validString = "unexpected part number column format";
+//        }
+
+        cell = row.getCell(weightColumn);
         if (cell == null) {
             weight = 0;
         } else if (cell.getCellType() != CellType.NUMERIC) {
@@ -131,7 +166,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
             weight = cell.getNumericCellValue();
         }
 
-        cell = row.getCell(2);
+        cell = row.getCell(diameterColumn);
         if (cell == null) {
             diameter = 0;
         } else if (cell.getCellType() != CellType.NUMERIC) {
@@ -142,30 +177,29 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
             diameter = cell.getNumericCellValue();
         }
 
-        cell = row.getCell(3);
+        cell = row.getCell(sourceColumn);
         if (cell == null) {
             source = "";
-        } else if (cell.getCellType() != CellType.STRING) {
-            source = "";
-            isValid = false;
-            validString = "source is not a string";
         } else {
+            cell.setCellType(CellType.STRING);
             source = cell.getStringCellValue();
         }
 
-        cell = row.getCell(4);
+        cell = row.getCell(urlColumn);
         if (cell == null) {
             url = "";
-        } else if (cell.getCellType() != CellType.STRING) {
-            url = "";
-            isValid = false;
-            validString = "url is not a string";
         } else {
-            url = row.getCell(4).getStringCellValue();
+            cell.setCellType(CellType.STRING);
+            url = cell.getStringCellValue();
         }
         
         ItemDomainCableCatalog newType = ItemDomainCableCatalogController.getInstance().newEntityInstance();
-        newType.setCableProperties(cableType, weight, diameter, source, url);
+        newType.setCableType(cableType);
+        newType.setPartNumber(partNumber);
+        newType.setWeight(weight);
+        newType.setDiameter(diameter);
+        newType.setSource(source);
+        newType.setUrl(url);
         CableCatalogRowModel info = new CableCatalogRowModel(newType, isValid, validString);
         rows.add(info);
 //        if rows.contains(info) {
