@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
@@ -32,8 +33,8 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         private String source = "";
         private String url = "";
 
-        public CableCatalogRowModel(ItemDomainCableCatalog c, boolean v, String vs) {
-            super(c, v, vs);
+        public CableCatalogRowModel(ItemDomainCableCatalog c) {
+            super(c);
         }
 
         public String getCableType() {
@@ -182,17 +183,35 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
             url = cell.getStringCellValue();
         }
         
-        ItemDomainCableCatalog newType = ItemDomainCableCatalogController.getInstance().newEntityInstance();
+        ItemDomainCableCatalogController controller = ItemDomainCableCatalogController.getInstance();
+        
+        ItemDomainCableCatalog newType = controller.newEntityInstance();
         newType.setCableType(cableType);
         newType.setPartNumber(partNumber);
         newType.setWeight(weight);
         newType.setDiameter(diameter);
         newType.setSource(source);
         newType.setUrl(url);
-        CableCatalogRowModel info = new CableCatalogRowModel(newType, isValid, validString);
+        
+        CableCatalogRowModel info = new CableCatalogRowModel(newType);
+        
+        if (rows.contains(info)) {
+            isValid = false;
+            validString = "duplicate row using cable type and part number as unique ids";
+        } else {
+            try {
+                controller.checkItemUniqueness(newType);
+            } catch (CdbException ex) {
+                isValid = false;
+                validString = "duplicate found in database using cable type and part number as unique ids";
+            }
+        }
+        
+        info.setIsValid(isValid);
+        info.setValidString(validString);
+        
         rows.add(info);
-//        if rows.contains(info) {
-//            rows.add(info);
+
         return isValid;
     }
     

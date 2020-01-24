@@ -22,9 +22,7 @@ public abstract class ImportHelperBase {
         private String validString = "";
         private EntityType entity;
         
-        public RowModel(EntityType e, boolean v, String vs) {
-            isValid = v;
-            validString = vs;
+        public RowModel(EntityType e) {
             entity = e;
         }
         
