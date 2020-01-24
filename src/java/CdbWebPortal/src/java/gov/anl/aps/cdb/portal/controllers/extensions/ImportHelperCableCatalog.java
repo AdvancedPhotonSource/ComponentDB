@@ -225,19 +225,9 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         String message = "";
         List<ItemDomainCableCatalog> newCableTypes = new ArrayList<>();
         for (RowModel row : rows) {
-            
             CableCatalogRowModel catalogRow = (CableCatalogRowModel) row;
             
-            ItemDomainCableCatalog newType = controller.newEntityInstance();
-            newType.setName(catalogRow.getCableType());
-            newCableTypes.add(newType);
-//            newCable.setName(cableName);
-//            newCable.setItemProjectList(projectList);
-//
-//            // set endpoints
-//            newCable.setEndpoint1(itemEndpoint1);
-//            newCable.setEndpoint2(itemEndpoint2);
-
+            newCableTypes.add((ItemDomainCableCatalog)catalogRow.getEntity());
         }
         
         try {
