@@ -10,14 +10,21 @@ See LICENSE file.
 
     <ui:param name="dualConfigurationViewEnabled"
               value="#{entityController.displayListConfigurationView}"/>
-    
+
     <ui:param name="settingObject" value="#{itemDomainMachineDesignController.settingObject}" /> 
-    
+
     <p:hotkey bind="ctrl+e" action="#{itemDomainMachineDesignController.expandSelectedTreeNode()}"
               rendered="#{!dualConfigurationViewEnabled}"
               onstart="PF('loadingDialog').show();"
               oncomplete="PF('loadingDialog').hide()"
               update="itemMachineDesignListDataTable#{viewId}"/>
+
+    <p:hotkey bind="alt+n"
+              action="#{itemDomainMachineDesignController.selectNextResult()}"
+              update="itemMachineDesignListDataTable#{viewId}"
+              onstart="PF('loadingDialog').show();"
+              oncomplete="PF('loadingDialog').hide();
+                          scrollToSelectedNode();"/>
 
     <ui:decorate template="templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
 
