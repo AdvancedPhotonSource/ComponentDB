@@ -10,16 +10,20 @@ See LICENSE file.
 
     <ui:param name="dualConfigurationViewEnabled"
               value="#{entityController.displayListConfigurationView}"/>
-
+    
     <div id="dualConfigurationViewEnabled" style="display: none;">#{dualConfigurationViewEnabled}</div>
     <script type="text/javascript">
         continueWithScroll = document.getElementById('dualConfigurationViewEnabled').innerHTML == 'false';
         if (continueWithScroll) {
+            scrollToSelectedNode(); 
+        }
+        
+        function scrollToSelectedNode() {
             selectedRows = document.getElementsByClassName('ui-state-highlight ui-selected ui-treetable-selectable-node');
             if (selectedRows.length > 0) {
                 row = selectedRows[0];
                 row.scrollIntoView({'behavior': 'smooth', 'block': 'center'});
-            }
+            } 
         }
     </script>
 
