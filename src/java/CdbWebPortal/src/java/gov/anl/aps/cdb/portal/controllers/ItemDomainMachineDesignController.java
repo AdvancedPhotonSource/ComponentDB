@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.DataModel;
@@ -117,6 +118,9 @@ public class ItemDomainMachineDesignController
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">
+    private String mdSearchString;
+    private List<TreeNode> searchResultsList;
+
     @EJB
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
 
@@ -336,6 +340,83 @@ public class ItemDomainMachineDesignController
         }
     }
 
+    public void searchMachineDesign() {        
+        Pattern searchPattern = Pattern.compile(Pattern.quote(mdSearchString), Pattern.CASE_INSENSITIVE);
+
+        TreeNode mdRoot = getCurrentMachineDesignListRootTreeNode();
+
+        searchResultsList = new ArrayList();
+
+        searchMachineDesign(mdRoot, searchPattern, searchResultsList);
+
+        if (searchResultsList.size() > 0) {
+            for (TreeNode node : searchResultsList) {
+                TreeNode parent = node.getParent();
+                while (parent != null) {
+                    parent.setExpanded(true);
+                    parent = parent.getParent();
+                }
+            }
+
+            selectItemInTreeTable(searchResultsList.get(0));
+        }
+
+    }
+
+    private void searchMachineDesign(TreeNode parentNode, Pattern searchPattern, List<TreeNode> results) {
+        Object data = parentNode.getData();
+        parentNode.setExpanded(false);
+        if (data != null) {
+            ItemElement ie = (ItemElement) data;
+            Item parentItem = ie.getContainedItem();
+            if (parentItem != null) {
+                SearchResult search = parentItem.search(searchPattern);
+                if (search.getObjectAttributeMatchMap().size() > 0) {
+                    results.add(parentNode);
+                    ie.setRowStyle(SearchResult.SEARCH_RESULT_ROW_STYLE);
+                } else {
+                    ie.setRowStyle(null);
+                }
+            }
+        }
+
+        for (TreeNode node : parentNode.getChildren()) {
+            searchMachineDesign(node, searchPattern, results);
+        }
+    }
+
+    public void selectNextResult() {
+        if (searchResultsList != null && searchResultsList.size() > 0) {
+            TreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
+            int indx = 0;
+            if (selectedItemInListTreeTable != null) {
+                for (int i = 0; i < searchResultsList.size(); i++) {
+                    TreeNode node = searchResultsList.get(i);
+                    if (node.equals(selectedItemInListTreeTable)) {
+                        indx = i+1; 
+                        break; 
+                    }
+                }
+                
+                // Last index
+                if (indx == searchResultsList.size() - 1) {
+                    indx = 0; 
+                }
+            }
+            
+            TreeNode result = searchResultsList.get(indx);            
+            selectItemInTreeTable(result); 
+        }
+    }
+
+    public String getMdSearchString() {
+        return mdSearchString;
+    }
+
+    public void setMdSearchString(String mdSearchString) {
+        this.mdSearchString = mdSearchString;
+    }
+
     public void expandSelectedTreeNode() {
         TreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
         if (selectedItemInListTreeTable != null) {
@@ -348,7 +429,7 @@ public class ItemDomainMachineDesignController
 
     private void expandAllChildren(TreeNode treeNode, boolean expanded) {
         treeNode.setExpanded(expanded);
-              
+
         List<TreeNode> children = treeNode.getChildren();
         if (children != null) {
             for (TreeNode child : children) {
@@ -365,6 +446,16 @@ public class ItemDomainMachineDesignController
         this.selectedItemInListTreeTable = selectedItemInListTreeTable;
     }
 
+    private void selectItemInTreeTable(TreeNode newSelection) {
+        TreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
+        if (selectedItemInListTreeTable != null) {
+            selectedItemInListTreeTable.setSelected(false);
+        }
+
+        newSelection.setSelected(true);
+        setSelectedItemInListTreeTable(newSelection);
+    }
+
     public boolean isSelectedItemInListReorderable() {
         if (isSelectedItemInListTreeViewWriteable()) {
             ItemDomainMachineDesign selectedItem = getItemFromSelectedItemInTreeTable();
@@ -377,9 +468,10 @@ public class ItemDomainMachineDesignController
     public boolean isSelectedItemInListTreeViewWriteable() {
         if (selectedItemInListTreeTable != null) {
             ItemDomainMachineDesign selectedItem = getItemFromSelectedItemInTreeTable();
-            LoginController instance = LoginController.getInstance();
-            return instance.isEntityWriteable(selectedItem.getEntityInfo());
-
+            if (selectedItem != null) {
+                LoginController instance = LoginController.getInstance();
+                return instance.isEntityWriteable(selectedItem.getEntityInfo());
+            }
         }
         return false;
     }
