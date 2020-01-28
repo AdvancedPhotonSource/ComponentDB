@@ -14,11 +14,13 @@ See LICENSE file.
               value="#{scrollable ? '65vh' : ''}" />
     
     <p:treeTable id='itemMachineDesignListDataTable#{viewId}'
+                 widgetVar="itemMachineDesignListDataTable#{viewId}Widget"
                  rendered="#{rendered}"
                  styleClass="machineDesignListTreeTable"
                  scrollable="#{scrollable}"
                  scrollHeight="#{scrollHeight}"
                  value="#{valueModel}"
+                 rowStyleClass="#{itemElementTreeListObject.rowStyle}"
                  selectionMode="single"
                  selection="#{selectionModel}"
                  var="itemElementTreeListObject">

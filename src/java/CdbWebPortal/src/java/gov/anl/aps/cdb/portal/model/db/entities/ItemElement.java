@@ -147,6 +147,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private transient String machineDesignDisplayString; 
     private transient boolean loadedCatalogInventoryMachineDesignItem = false;
     private transient boolean itemCanHaveInventoryItem = false; 
+    private transient String rowStyle; 
     // </editor-fold>
 
     // Helper variable used to ensure proper procedure is executed if the attribute changes. 
@@ -504,6 +505,14 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public String getMachineDesignDisplayString() {
         loadCatalogInventoryMachineDesignItems();
         return machineDesignDisplayString;
+    }
+
+    public String getRowStyle() {
+        return rowStyle;
+    }
+
+    public void setRowStyle(String rowStyle) {
+        this.rowStyle = rowStyle;
     }
     
     // </editor-fold>

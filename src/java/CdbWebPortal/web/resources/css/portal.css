@@ -1309,3 +1309,7 @@ h2 {
 .ui-datatable .ui-datepicker {
     width: auto;
 }
+
+.noPaddingPanel .ui-panel-content {
+    padding: 0; 
+}
