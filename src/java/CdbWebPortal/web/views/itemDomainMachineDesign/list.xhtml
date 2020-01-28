@@ -17,7 +17,7 @@ See LICENSE file.
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainMachineDesignController.processPreRenderList()}" />
     </f:metadata>
-    
+
     <ui:define name="itemListPageEmphasizedContentBelowTitle">
         <p:commandButton id="itemDomainMachineDesignKeyboardShortcutButton"
                          icon="fa fa-question"
@@ -34,6 +34,27 @@ See LICENSE file.
                              action="#{itemDomainMachineDesignController.list()}"
                              onstart="PF('loadingDialog').show()"/> 
         </p:selectBooleanButton>
+
+        <p:hotkey bind="alt+s" 
+                  onstart="PF('machineDesignSearchBarPanelWidget').toggle()" /> 
+                
+        <p:panel widgetVar="machineDesignSearchBarPanelWidget" 
+                 styleClass="noPaddingPanel"
+                 collapsed="true"
+                 toggleable="true">
+            <p:inputText id="menuBarSearchInput" placeholder="Search"
+                         autocomplete="off"
+                         styleClass="expandingInputText entityDataText menuBarInputText" 
+                         value="#{itemDomainMachineDesignController.mdSearchString}" 
+                         title="Search String"/>
+            <p:defaultCommand target="mdSearchInputCommand" />
+            <p:commandButton id="mdSearchInputCommand" 
+                             style="display: none" 
+                             onstart="PF('loadingDialog').show()"                             
+                             oncomplete="PF('loadingDialog').hide(); scrollToSelectedNode();"
+                             update="@form" 
+                             action="#{itemDomainMachineDesignController.searchMachineDesign()}"/>
+        </p:panel>
     </ui:define>
 
     <ui:define name="customizeDisplayDialog">
