@@ -947,10 +947,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     @Override
     public String getItemFavoritesIconStyle(Item item) {
-        ListTbl favoritesList = getFavoritesList();
-        if (favoritesList != null) {
-            if (favoritesList.getItemElementList().contains(item.getSelfElement())) {
-                return PortalStyles.favoritesOn.getValue();
+        if (item != null) {
+            ListTbl favoritesList = getFavoritesList();
+            if (favoritesList != null) {
+                if (favoritesList.getItemElementList().contains(item.getSelfElement())) {
+                    return PortalStyles.favoritesOn.getValue();
+                }
             }
         }
 
@@ -2226,11 +2228,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         setBreadcrumbRequestParams();
         Integer idParam = null;
         String paramValue = SessionUtility.getRequestParameterValue("id");
-        
+
         String urlParams = "";
         String mode = SessionUtility.getRequestParameterValue("mode");
         if (mode != null) {
-            urlParams += "mode=" + mode + "&"; 
+            urlParams += "mode=" + mode + "&";
         }
 
         try {
@@ -2245,8 +2247,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             if (item == null) {
                 throw new InvalidRequest("Item id " + idParam + " does not exist.");
             }
-            
-            urlParams += "id=" + idParam;                        
+
+            urlParams += "id=" + idParam;
             return performItemRedirection(item, urlParams, false);
 
         } else {
@@ -2273,7 +2275,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                         }
                         return null;
                     }
-                    
+
                     urlParams += "qrId=" + qrParam;
                     return performItemRedirection(item, urlParams, false);
                 } catch (NumberFormatException ex) {
@@ -2363,7 +2365,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected String getItemCreatedFromTemplateRelationshipName() {
         return ItemElementRelationshipTypeNames.template.getValue();
     }
-    
+
     public void addCreatedFromTemplateRelationshipToItem(ItemDomainEntity item) {
         addCreatedFromTemplateRelationshipToItem(item, templateToCreateNewItem);
     }
