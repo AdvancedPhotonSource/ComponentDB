@@ -71,12 +71,6 @@ See LICENSE file.
     <ui:param name="assignedItem"
               value="#{itemElementListObject.containedItem2}"/> 
 
-    <ui:param name="isAssignedItemInventory"
-              value="#{itemDomainMachineDesignController.isItemInventory(assignedItem)}" />
-
-    <ui:param name="isAssignedItemCatalog"
-              value="#{itemDomainMachineDesignController.isItemCatalog(assignedItem)}" /> 
-
     <p:column headerText="Assigned Catalog &#38; Inventory Item" >
         <ui:fragment rendered="#{!topLevelItem}">            
             <p:commandLink id="#{entityTypeName}AssignedItemHistory" 
@@ -92,34 +86,8 @@ See LICENSE file.
                 <p:tooltip for="#{entityTypeName}AssignedItemHistory" value="View assigned item history."/>
             </p:commandLink>            
         </ui:fragment>
-        <ui:fragment rendered="#{isAssignedItemInventory}">
-            <div class="actionLink">
-                <p:commandLink id="#{entityTypeName}CatalogLink" 
-                               onclick="PF('loadingDialog').show()"
-                               action="#{entityController.prepareView(assignedItem.derivedFromItem)}" 
-                               styleClass="ui-icon ui-icon-catalog custom-icon-blue" 
-                               title="View Catalog Item"/>
-                <p:commandLink id="#{entityTypeName}InventoryLink" 
-                               onclick="PF('loadingDialog').show()"
-                               action="#{entityController.prepareView(assignedItem)}" 
-                               styleClass="ui-icon ui-icon-inventory custom-icon-blue" 
-                               title="View Inventory Item"/>
-            </div>
-        </ui:fragment>            
 
-        <ui:fragment rendered="#{isAssignedItemCatalog}">
-            <div class="actionLink">
-                <p:commandLink id="#{entityTypeName}CatalogLink2" 
-                               onclick="PF('loadingDialog').show()"
-                               action="#{entityController.prepareView(assignedItem)}" 
-                               styleClass="ui-icon ui-icon-catalog custom-icon-blue" 
-                               title="View Catalog Item"/>
-            </div>
-        </ui:fragment>
-
-        <h:outputLabel value="#{topLevelItem
-                                ? 'N/A Top Level'
-                                : assignedItem}"/>            
+        <ui:include src="itemDomainMachineDesignAssignedItemFragment.xhtml"/>
     </p:column>
 
     <ui:param name="locationObjectSrc"
