@@ -597,7 +597,7 @@ public class LocatableItemController implements Serializable {
             partOf = domain.getName(); 
         }
         
-        return "Part of " + partOf; 
+        return "Assigned to " + partOf; 
     }
 
     public boolean locationEditable(Item item) {
