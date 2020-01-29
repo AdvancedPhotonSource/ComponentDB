@@ -1244,11 +1244,10 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     @Override
-    public void prepareEntityUpdate(ItemDomainInventory item) throws CdbException {
-        super.prepareEntityUpdate(item);
-        checkNewItemsToAdd();
-
-        addItemElementsFromBillOfMaterials(item);
+    public void prepareEntityUpdate(ItemDomainInventory item) throws CdbException {        
+        checkNewItemsToAdd();       
+        addItemElementsFromBillOfMaterials(item);        
+        super.prepareEntityUpdate(item);        
     }        
 
     @Override
