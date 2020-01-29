@@ -22,6 +22,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
@@ -148,6 +149,15 @@ public class ItemRoute extends BaseRoute {
         }
         
         return null;
+    }
+    
+    @GET
+    @Path("/ById/{id}/EntityInfo")
+    @Produces(MediaType.APPLICATION_JSON)
+    public EntityInfo getItemEntityInfo(@PathParam("id") int id) throws ObjectNotFound {
+        Item itemById = getItemById(id);
+        
+        return itemById.getEntityInfo(); 
     }
     
     @GET
