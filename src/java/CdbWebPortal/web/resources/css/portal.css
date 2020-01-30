@@ -1313,3 +1313,8 @@ h2 {
 .noPaddingPanel .ui-panel-content {
     padding: 0; 
 }
+
+.draggableTreeTableDataCell {
+    overflow: visible !important; 
+    white-space: normal !important;
+}

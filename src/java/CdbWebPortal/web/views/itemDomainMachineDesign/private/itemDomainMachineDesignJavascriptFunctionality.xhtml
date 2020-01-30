@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui">   
+
+    <ui:param name="dualConfigurationViewEnabled"
+              value="#{entityController.displayListConfigurationView}"/>
+
+    <div id="dualConfigurationViewEnabled" style="display: none;">#{dualConfigurationViewEnabled}</div>
+    <script type="text/javascript">
+        continueWithScroll = document.getElementById('dualConfigurationViewEnabled').innerHTML == 'false';
+        if (continueWithScroll) {
+            scrollToSelectedNode();
+        }
+
+        function scrollToSelectedNode() {
+            selectedRows = document.getElementsByClassName('ui-state-highlight ui-selected ui-treetable-selectable-node');
+            if (selectedRows.length > 0) {
+                row = selectedRows[0];
+                row.scrollIntoView({'behavior': 'smooth', 'block': 'center'});
+            }
+        }
+        
+        function getMachineDesignId(dragDropId) {
+            var index = dragDropId.lastIndexOf(":");
+            
+            var baseId = dragDropId.substring(0, index) + ":draggableMachineDesign";
+            
+            var rowItem = document.getElementById(baseId);
+            idItem = rowItem.getElementsByClassName("mdId")[0];
+            
+            return idItem.innerHTML;
+        }
+
+
+        function handleDrop(event, ui) {
+            debugger;
+            var draggable = ui.draggable[0];
+            
+            var draggableId = draggable.id;
+            var droppableId = this.id; 
+            
+            var sourceId = getMachineDesignId(draggableId);
+            var destinationId = getMachineDesignId(droppableId);
+            
+            machineDesignDropEventTrigger([{name: 'sourceId', value: sourceId}, {name: 'destinationId', value: destinationId}]); 
+        }
+    </script>
+    
+    <p:remoteCommand name="machineDesignDropEventTrigger"
+                     action="#{itemDomainMachineDesignController.onDropFromJS}"
+                     onstart="PF('loadingDialog').show();"
+                     oncomplete="PF('loadingDialog').hide();"
+                     update="@form"/> 
+                     
+
+</ui:composition>
+
+
