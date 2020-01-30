@@ -10,9 +10,8 @@ See LICENSE file.
 
     <p:menuitem value="Detach from hierarchy"
                 icon="fa fa-minus"
-                action="#{entityController.detachSelectedItemFromHierarchyInDualView()}"
-                disabled="#{disabledEditContextMenuItemForSelectionParent}"
-                update="@form"/>
+                onclick="PF('detachMachineDesignWidget').show()"
+                disabled="#{disabledEditContextMenuItemForSelectionParent}"/>
 
 </ui:composition>
 

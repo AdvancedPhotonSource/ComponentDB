@@ -7,19 +7,41 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">      
+                xmlns:f="http://xmlns.jcp.org/jsf/core">      
 
-    <p:confirmDialog message="All the machine design children will become top level machine design items. 
-                     Proceed with removal of selected Machine Design?"
-                     header="Destroy selected machine design" severity="alert"
+    <p:confirmDialog header="Destroy selected machine design" severity="alert"
                      widgetVar="destroyMachineDesignWidget"
                      styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+        <f:facet name="message">
+            All the machine design children will become top level machine design items. 
+            children will lose assigned item information and their histories.
+            <br/><b>Proceed with removal of selected Machine Design?</b>
+        </f:facet>
         <p:commandButton value="Yes" 
                          actionListener="#{entityController.deleteSelectedMachineDesignItemFromDualView}"
+                         onclick="PF('loadingDialog').show()"                         
                          update="@form"
-                         oncomplete="PF('destroyMachineDesignWidget').hide()"/>
+                         oncomplete="PF('loadingDialog').hide();
+                                     PF('destroyMachineDesignWidget').hide()"/>
         <p:commandButton value="No" 
                          onclick="PF('destroyMachineDesignWidget').hide();"/>
+    </p:confirmDialog>    
+
+    <p:confirmDialog header="Detach machine design from hierarchy?" severity="alert"
+                     widgetVar="detachMachineDesignWidget"
+                     styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+        <f:facet name="message">
+            When detaching machine design from hierarchy the assigned item information and its history is lost.           
+            <br/><b>Proceed with Detaching?</b>
+        </f:facet>
+        <p:commandButton value="Yes" 
+                         onclick="PF('loadingDialog').show()"                         
+                         actionListener="#{entityController.detachSelectedItemFromHierarchyInDualView}"
+                         update="@form"
+                         oncomplete="PF('loadingDialog').hide();
+                                     PF('detachMachineDesignWidget').hide()"/>
+        <p:commandButton value="No, try drag + drop of machine design name instead." 
+                         onclick="PF('detachMachineDesignWidget').hide();"/>
     </p:confirmDialog>    
 
 </ui:composition>
