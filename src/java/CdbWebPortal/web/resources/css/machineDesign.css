@@ -126,3 +126,31 @@ h1 {
 .wiringDiagram .ui-diagram-element:hover {
     background-color: #C7C6C4;
 }
+
+.machineDesignDropableDestination {
+    background-color: #D4E9FF;
+    animation: transition-machinDesignColor 1s;
+}
+
+.machineDesignDropableDestinationHover {    
+    background-color: #55A8FF;
+    animation: transition-machinDesignColorHover 1s;
+}
+
+@keyframes transition-machinDesignColor {
+    0% {
+        background-color: #55A8FF;    
+    }
+    100% {
+        background-color: #D4E9FF;
+    }
+}
+
+@keyframes transition-machinDesignColorHover {
+    0% {
+        background-color: #D4E9FF;
+    }
+    100% {
+        background-color: #55A8FF;
+    }
+}
