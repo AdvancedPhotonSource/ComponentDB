@@ -48,6 +48,15 @@ See LICENSE file.
                         <h:outputText value="Deleted Item: #{snapshotName}" /> 
                     </ui:fragment>
                 </p:column>
+                
+                <p:column headerText="Parent Item">
+                    <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">                        
+                        <ui:param name="itemObject" 
+                                  value="#{historyItem.parentItem}"/>
+                        <ui:param name="viewName"
+                                  value="parentHistory" /> 
+                    </ui:include>
+                </p:column>
 
                 <p:column headerText="Entered By">
                     <h:outputText value="#{historyItem.enteredByUser.username}" />
