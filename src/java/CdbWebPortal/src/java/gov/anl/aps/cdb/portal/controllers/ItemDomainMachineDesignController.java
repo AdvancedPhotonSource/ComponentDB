@@ -117,6 +117,59 @@ public class ItemDomainMachineDesignController
     private TreeNode newCatalogItemsInMachineDesignModel = null;
 
     // </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop variables">
+    private static final String JS_SOURCE_MD_ID_PASSED_KEY = "sourceId";
+    private static final String JS_DESTINATION_MD_ID_PASSED_KEY = "destinationId";
+    // </editor-fold>   
+
+    // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
+    public void onDropFromJS() {    
+        LoginController loginController = LoginController.getInstance();
+        if (loginController.isLoggedIn() == false) {
+            SessionUtility.addInfoMessage("Cannot complete move.", "Please login and try again.");
+            return;
+        }        
+
+        String sourceIdStr = SessionUtility.getRequestParameterValue(JS_SOURCE_MD_ID_PASSED_KEY);
+        String destinationIdStr = SessionUtility.getRequestParameterValue(JS_DESTINATION_MD_ID_PASSED_KEY);        
+        int sourceId = Integer.parseInt(sourceIdStr);
+        int destId = Integer.parseInt(destinationIdStr);
+        
+        ItemDomainMachineDesign parent = findById(destId);                
+        ItemDomainMachineDesign child = findById(sourceId);
+        
+        // Permission check
+        if (loginController.isEntityWriteable(parent.getEntityInfo()) == false) {
+            SessionUtility.addErrorMessage("Insufficient privilages", "The user doesn't have permissions to item: " + parent.toString());
+            return;
+        }        
+        if (loginController.isEntityWriteable(child.getEntityInfo()) == false) {
+            SessionUtility.addErrorMessage("Insufficient privilages", "The user doesn't have permissions to item: " + child.toString());
+            return;
+        }
+        
+        // Continue to reassignment of parent.
+        setCurrent(parent);
+        ItemElement currentItemElement = child.getCurrentItemElement();        
+        if(currentItemElement.getId() != null) {
+            String uniqueName = generateUniqueElementNameForItem(parent);
+            currentItemElement.setName(uniqueName);            
+            currentItemElement.setParentItem(parent);
+        } else {
+            // Dragging in top level
+            currentItemElement = createItemElement(parent);                        
+            currentItemElement.setContainedItem(child);
+        }
+        
+        prepareAddItemElement(parent, currentItemElement);
+        
+        update(); 
+        
+        child = findById(sourceId);
+        expandToSpecificMachineDesignItem(child);
+    }
+
+    // </editor-fold>   
     // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">
     private String mdSearchString;
     private List<TreeNode> searchResultsList;
@@ -340,7 +393,7 @@ public class ItemDomainMachineDesignController
         }
     }
 
-    public void searchMachineDesign() {        
+    public void searchMachineDesign() {
         Pattern searchPattern = Pattern.compile(Pattern.quote(mdSearchString), Pattern.CASE_INSENSITIVE);
 
         TreeNode mdRoot = getCurrentMachineDesignListRootTreeNode();
@@ -393,19 +446,19 @@ public class ItemDomainMachineDesignController
                 for (int i = 0; i < searchResultsList.size(); i++) {
                     TreeNode node = searchResultsList.get(i);
                     if (node.equals(selectedItemInListTreeTable)) {
-                        indx = i+1; 
-                        break; 
+                        indx = i + 1;
+                        break;
                     }
                 }
-                
+
                 // Last index
                 if (indx == searchResultsList.size() - 1) {
-                    indx = 0; 
+                    indx = 0;
                 }
             }
-            
-            TreeNode result = searchResultsList.get(indx);            
-            selectItemInTreeTable(result); 
+
+            TreeNode result = searchResultsList.get(indx);
+            selectItemInTreeTable(result);
         }
     }
 
@@ -2263,5 +2316,5 @@ public class ItemDomainMachineDesignController
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    // </editor-fold>
+    // </editor-fold>       
 }
