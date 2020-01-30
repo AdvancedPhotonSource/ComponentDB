@@ -80,7 +80,7 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
 
     @Override
     public int compareTo(LocationHistoryObject o) {
-        return getEnteredOnDateTime().compareTo(o.getEnteredOnDateTime());
+        return o.getEnteredOnDateTime().compareTo(getEnteredOnDateTime());
     }
 
 }

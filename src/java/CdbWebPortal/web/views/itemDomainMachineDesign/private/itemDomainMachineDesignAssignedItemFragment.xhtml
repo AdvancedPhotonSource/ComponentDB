@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">  
+
+
+    <ui:fragment>
+        <ui:param name="isAssignedItemInventory"
+                  value="#{itemDomainMachineDesignController.isItemInventory(assignedItem)}" />
+
+        <ui:param name="isAssignedItemCatalog"
+                  value="#{itemDomainMachineDesignController.isItemCatalog(assignedItem)}" /> 
+        <ui:fragment rendered="#{isAssignedItemInventory}">
+            <div class="actionLink">
+                <p:commandLink id="#{entityTypeName}CatalogLink#{viewName}" 
+                               onclick="PF('loadingDialog').show()"
+                               action="#{entityController.prepareView(assignedItem.derivedFromItem)}" 
+                               styleClass="ui-icon ui-icon-catalog custom-icon-blue" 
+                               title="View Catalog Item"/>
+                <p:commandLink id="#{entityTypeName}InventoryLink#{viewName}" 
+                               onclick="PF('loadingDialog').show()"
+                               action="#{entityController.prepareView(assignedItem)}" 
+                               styleClass="ui-icon ui-icon-inventory custom-icon-blue" 
+                               title="View Inventory Item"/>
+            </div>
+        </ui:fragment>            
+
+        <ui:fragment rendered="#{isAssignedItemCatalog}">
+            <div class="actionLink">
+                <p:commandLink id="#{entityTypeName}CatalogLink2#{viewName}" 
+                               onclick="PF('loadingDialog').show()"
+                               action="#{entityController.prepareView(assignedItem)}" 
+                               styleClass="ui-icon ui-icon-catalog custom-icon-blue" 
+                               title="View Catalog Item"/>
+            </div>
+        </ui:fragment>
+
+        <h:outputLabel value="#{topLevelItem
+                                ? 'N/A Top Level'
+                                : assignedItem}"/>  
+    </ui:fragment>
+
+</ui:composition>
+
+
