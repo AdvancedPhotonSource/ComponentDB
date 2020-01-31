@@ -305,7 +305,7 @@ public class ItemRoute extends BaseRoute {
             throw new InvalidRequest("Property type is classified as internal. Could only be updated using specialized functionality.");
         }
     }
-    
+        
     @POST
     @Path("/UpdateStatus/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -340,6 +340,17 @@ public class ItemRoute extends BaseRoute {
         
         ic.updateFromApi(inventoryItem, currentUser);        
         return inventoryItem.getInventoryStatusPropertyValue(); 
+    }
+    
+    private void updateDbPropertyValueWithPassedInDate(PropertyValue dbPropertyValue, PropertyValue userPassedValue) {
+        dbPropertyValue.setValue(userPassedValue.getValue());
+        dbPropertyValue.setDisplayValue(userPassedValue.getDisplayValue());
+        dbPropertyValue.setTag(userPassedValue.getTag());
+        dbPropertyValue.setDescription(userPassedValue.getDescription());
+        dbPropertyValue.setUnits(userPassedValue.getUnits());
+        dbPropertyValue.setIsDynamic(userPassedValue.getIsDynamic());
+        dbPropertyValue.setIsUserWriteable(userPassedValue.getIsUserWriteable());
+        dbPropertyValue.setEffectiveFromDateTime(userPassedValue.getEffectiveFromDateTime());
     }
     
     @POST
@@ -389,13 +400,7 @@ public class ItemRoute extends BaseRoute {
         propertyValueInternalCheck(dbPropertyValue);
 
         // Set passed in property value to match db property value 
-        dbPropertyValue.setValue(propertyValue.getValue());
-        dbPropertyValue.setDisplayValue(propertyValue.getDisplayValue());
-        dbPropertyValue.setTag(propertyValue.getTag());
-        dbPropertyValue.setDescription(propertyValue.getDescription());
-        dbPropertyValue.setUnits(propertyValue.getUnits());
-        dbPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
-        dbPropertyValue.setIsUserWriteable(propertyValue.getIsUserWriteable());
+        updateDbPropertyValueWithPassedInDate(dbPropertyValue, propertyValue);
         
         itemController.updateFromApi(dbItem, updatedByUser);
         
@@ -504,13 +509,7 @@ public class ItemRoute extends BaseRoute {
         dbPropertyValue = itemController.preparePropertyTypeValueAdd(dbItem, propertyType, null, null, updatedByUser);
 
         // Set passed in property value to match db property value 
-        dbPropertyValue.setValue(propertyValue.getValue());
-        dbPropertyValue.setDisplayValue(propertyValue.getDisplayValue());
-        dbPropertyValue.setTag(propertyValue.getTag());
-        dbPropertyValue.setDescription(propertyValue.getDescription());
-        dbPropertyValue.setUnits(propertyValue.getUnits());
-        dbPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
-        dbPropertyValue.setIsUserWriteable(propertyValue.getIsUserWriteable());
+        updateDbPropertyValueWithPassedInDate(dbPropertyValue, propertyValue);
         
         itemController.updateFromApi(dbItem, updatedByUser);
         
