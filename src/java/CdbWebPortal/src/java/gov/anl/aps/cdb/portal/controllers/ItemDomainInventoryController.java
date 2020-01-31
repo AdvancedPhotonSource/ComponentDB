@@ -170,7 +170,12 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             PropertyValue preparePropertyTypeValueAdd = preparePropertyTypeValueAdd(getInventoryStatusPropertyType()); 
             getCurrent().setInventoryStatusPropertyValue(preparePropertyTypeValueAdd);
         }
-    }        
+    }
+    
+    public synchronized void prepareEditInventoryStatusFromApi(ItemDomainInventory item) {
+        setCurrent(item);
+        prepareEditInventoryStatus();
+    }
     
     public boolean getRenderedHistoryButton() {
         return getCurrentStatusPropertyValue() != null; 
