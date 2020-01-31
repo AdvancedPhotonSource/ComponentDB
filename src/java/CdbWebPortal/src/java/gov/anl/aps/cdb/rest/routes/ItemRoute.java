@@ -40,6 +40,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueImageUploadBean;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.view.objects.LocationHistoryObject;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.authentication.User;
 import gov.anl.aps.cdb.rest.entities.FileUploadObject;
@@ -177,6 +178,32 @@ public class ItemRoute extends BaseRoute {
             
             return new ItemLocationInformation(locatableItem);
             
+        } else {
+            InvalidArgument ex = new InvalidArgument("Item requested cannot have a location specified. Item Id: " + id);
+            LOGGER.error(ex);
+            throw ex; 
+        }
+    }
+    
+    @GET
+    @Path("/ById/{id}/LocationHistory")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<LocationHistoryObject> getItemLocationHistory(@PathParam("id") int id) throws ObjectNotFound, InvalidArgument {
+        LOGGER.debug("Fetching location history for item with id: " + id);
+        Item itemById = getItemById(id);
+        
+        if (itemById instanceof LocatableItem) {
+            LocatableItem locatableItem = (LocatableItem) itemById;
+            LocatableItemController controller = LocatableItemController.getApiInstance();
+                                                
+            List<LocationHistoryObject> histories = controller.getLocationHistoryObjectList(locatableItem); 
+            
+            // When trees are loaded than the ItemHierarchy nodes can be loaded. 
+            for (LocationHistoryObject hist : histories) {
+                controller.getLocationTreeForLocationHistoryObject(hist);                 
+            }
+            
+            return histories;             
         } else {
             InvalidArgument ex = new InvalidArgument("Item requested cannot have a location specified. Item Id: " + id);
             LOGGER.error(ex);
@@ -698,14 +725,14 @@ public class ItemRoute extends BaseRoute {
         LOGGER.debug("Fetching location hierarchy");
         List<ItemDomainLocation> locationsTopLevel = getLocationsTopLevel();
         
-        List<ItemHierarchy> result = new ArrayList<>();        
+        List<ItemHierarchy> result = new ArrayList<>();
         
         for (ItemDomainLocation location : locationsTopLevel) {
-            ItemHierarchy locationHierarchy = new ItemHierarchy(location, true);            
+            ItemHierarchy locationHierarchy = new ItemHierarchy(location, true);
             result.add(locationHierarchy);
         }
         
-        return result;        
+        return result;
     }
     
     @GET
@@ -745,7 +772,6 @@ public class ItemRoute extends BaseRoute {
     }
     
     @GET
-
     @Path("/Projects")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemProject> getItemProjectList() {

@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.rest.entities;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import org.primefaces.model.TreeNode;
 
@@ -16,7 +15,7 @@ import org.primefaces.model.TreeNode;
 public class ItemLocationInformation {
 
     private LocatableItem locatableItem;
-    private ItemDomainLocation locationItem;
+    private Item locationItem;
     private String locationString;
     private String locationDetails;
     private ItemHierarchy locationSingleNodeHierarchy;
@@ -24,7 +23,7 @@ public class ItemLocationInformation {
     public ItemLocationInformation(LocatableItem locatableItem) {
         this.locatableItem = locatableItem;
         
-        locationItem = locatableItem.getLocationItem();        
+        locationItem = locatableItem.getActiveLocation();        
         locationDetails = locatableItem.getLocationDetails();
 
         if (locationItem != null) {
@@ -32,27 +31,7 @@ public class ItemLocationInformation {
             
             // Set location hierarchy
             TreeNode locationTree = locatableItem.getLocationTree();
-            TreeNode parentNode = locationTree.getChildren().get(0);
-            ItemHierarchy parentHierarchy = null;
-
-            while (parentNode != null) {
-                Item parent = (Item) parentNode.getData();
-
-                if (locationSingleNodeHierarchy == null) {
-                    locationSingleNodeHierarchy = new ItemHierarchy(parent, false);
-                    parentHierarchy = locationSingleNodeHierarchy;
-                } else {
-                    ItemHierarchy child = new ItemHierarchy(parent, false);
-                    parentHierarchy.addChildItem(child);
-                    parentHierarchy = child;
-                }
-                if (parentNode.getChildren().size() > 0) {                    
-                    parentNode = parentNode.getChildren().get(0);
-                } else {
-                    parentNode = null;
-                }
-            }
-            
+            locationSingleNodeHierarchy = ItemHierarchy.createSingleNodeHierarchyFromTreeNode(locationTree);             
         }
     }
 
@@ -64,11 +43,11 @@ public class ItemLocationInformation {
         this.locatableItem = locatableItem;
     }
 
-    public ItemDomainLocation getLocationItem() {
+    public Item getLocationItem() {
         return locationItem;
     }
 
-    public void setLocationItem(ItemDomainLocation locationItem) {
+    public void setLocationItem(Item locationItem) {
         this.locationItem = locationItem;
     }
 
