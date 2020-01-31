@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
         return new ItemDomainMachineDesign();
     }   
 
+    @JsonIgnore
     public List<ItemElement> getCombinedItemElementList(ItemElement element) {
         if (combinedItemElementListParentElement != null) {
             if (!element.equals(combinedItemElementListParentElement)) {
@@ -58,6 +60,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
      * @param item
      * @return 
      */
+    @JsonIgnore
     public ItemElement getCurrentItemElement() {
         if (currentItemElement == null) {
             List<ItemElement> itemElementMemberList = getItemElementMemberList();
@@ -78,6 +81,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
         return currentItemElement; 
     }
     
+    @JsonIgnore
     public ItemDomainMachineDesign getParentMachineDesign() {
         List<ItemElement> itemElementMemberList = this.getItemElementMemberList();        
         

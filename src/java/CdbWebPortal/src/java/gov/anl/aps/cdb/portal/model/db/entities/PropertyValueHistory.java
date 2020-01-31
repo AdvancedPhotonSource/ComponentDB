@@ -150,6 +150,7 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
         this.enteredOnDateTime = enteredOnDateTime;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getEffectiveFromDateTime() {        
         if (effectiveFromDateTime == null) {
             return enteredOnDateTime;
@@ -161,6 +162,7 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
         this.effectiveFromDateTime = effectiveFromDateTime;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getEffectiveToDateTime() {
         return effectiveToDateTime;
     }
