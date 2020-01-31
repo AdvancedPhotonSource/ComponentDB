@@ -17,8 +17,8 @@ import javax.persistence.Entity;
 @DiscriminatorValue(value = ItemDomainName.CABLE_CATALOG_ID + "")   
 public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCableInventory> {
     
-    private transient double weight = 0;
-    private transient double diameter = 0;
+    private transient String weight = null;
+    private transient String diameter = null;
     private transient String source = null;
     private transient String url = null;
     
@@ -61,35 +61,47 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         this.setItemIdentifier1(n);
     }
     
-    public double getWeight() {
+    public String getWeight() {
+        if (weight == null) {
+            PropertyValue propertyValue = getInternalCablePropertyValue();
+            if (propertyValue == null) {
+                weight = "";
+            } else {
+                weight = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_WEIGHT_KEY);
+            }
+        }
         return weight;
     }
     
-    public void setWeight(double w) {
+    public void setWeight(String w) {
         weight = w;
         
-        if (w != 0) {   
-            PropertyValue propertyValue = getInternalCablePropertyValue();
+        PropertyValue propertyValue = getInternalCablePropertyValue();
 
-            if (propertyValue != null) {
-                propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_WEIGHT_KEY, w + "");
-            }
+        if (propertyValue != null) {
+            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_WEIGHT_KEY, w);
         }
     }
     
-    public double getDiameter() {
+    public String getDiameter() {
+        if (diameter == null) {
+            PropertyValue propertyValue = getInternalCablePropertyValue();
+            if (propertyValue == null) {
+                diameter = "";
+            } else {
+                diameter = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_DIAMETER_KEY);
+            }
+        }
         return diameter;
     }
     
-    public void setDiameter(double d) {
+    public void setDiameter(String d) {
         diameter = d;
         
-        if (d != 0) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
+        PropertyValue propertyValue = getInternalCablePropertyValue();
 
-            if (propertyValue != null) {
-                propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_DIAMETER_KEY, d + "");
-            }
+        if (propertyValue != null) {
+            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_DIAMETER_KEY, d + "");
         }
     }
     

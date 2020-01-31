@@ -28,8 +28,8 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     public class CableCatalogRowModel extends RowModel {
 
         private String cableType = "";
-        private double weight = 0;
-        private double diameter = 0;
+        private String weight = "";
+        private String diameter = "";
         private String source = "";
         private String url = "";
 
@@ -45,11 +45,11 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
             return ((ItemDomainCableCatalog)getEntity()).getPartNumber();
         }
 
-        public double getWeight() {
+        public String getWeight() {
             return ((ItemDomainCableCatalog)getEntity()).getWeight();
         }
 
-        public double getDiameter() {
+        public String getDiameter() {
             return ((ItemDomainCableCatalog)getEntity()).getDiameter();
         }
 
@@ -113,8 +113,8 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
 
         String cableType = "";
         String partNumber = "";
-        double weight = 0;
-        double diameter = 0;
+        String weight = "";
+        String diameter = "";
         String source = "";
         String url = "";
         boolean isValid = true;
@@ -147,24 +147,24 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
 
         cell = row.getCell(weightColumn);
         if (cell == null) {
-            weight = 0;
+            weight = "";
         } else if (cell.getCellType() != CellType.NUMERIC) {
-            weight = 0;
+            weight = "";
             isValid = false;
             validString = "weight is not a number";
         } else {
-            weight = cell.getNumericCellValue();
+            weight = String.valueOf(cell.getNumericCellValue());
         }
 
         cell = row.getCell(diameterColumn);
         if (cell == null) {
-            diameter = 0;
+            diameter = "";
         } else if (cell.getCellType() != CellType.NUMERIC) {
-            diameter = 0;
+            diameter = "";
             isValid = false;
             validString = "diameter is not a number";
         } else {
-            diameter = cell.getNumericCellValue();
+            diameter = String.valueOf(cell.getNumericCellValue());
         }
 
         cell = row.getCell(sourceColumn);
