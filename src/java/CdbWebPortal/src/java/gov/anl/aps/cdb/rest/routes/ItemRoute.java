@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.DbError;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
+import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
@@ -285,6 +286,13 @@ public class ItemRoute extends BaseRoute {
         return dbItem;
     }
     
+    private void propertyValueInternalCheck(PropertyValue dbPropertyValue) throws InvalidRequest {
+        PropertyType propertyType = dbPropertyValue.getPropertyType();
+        if (propertyType.getIsInternal()) {
+            throw new InvalidRequest("Property type is classified as internal. Could only be updated using specialized functionality.");
+        }
+    }
+    
     @POST
     @Path("/UpdateProperty/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -328,6 +336,8 @@ public class ItemRoute extends BaseRoute {
             LOGGER.error(objectNotFound);
             throw objectNotFound;
         }
+        
+        propertyValueInternalCheck(dbPropertyValue);
 
         // Set passed in property value to match db property value 
         dbPropertyValue.setValue(propertyValue.getValue());
@@ -348,7 +358,7 @@ public class ItemRoute extends BaseRoute {
         } 
         
         return dbPropertyValue;
-    }
+    }        
     
     @POST
     @Path("/UpdatePropertyMetadata/{itemId}/{propertyValueId}") //TODO propertyValueID instead of property type name
@@ -388,6 +398,8 @@ public class ItemRoute extends BaseRoute {
             LOGGER.error(objectNotFound);
             throw objectNotFound;
         }
+        
+        propertyValueInternalCheck(dbPropertyValue);
         
         // Set passed in property value to match db property value 
         dbPropertyValue.setPropertyMetadataValue(propertyMetadata.getMetadataKey(), propertyMetadata.getMetadataValue());
@@ -436,6 +448,8 @@ public class ItemRoute extends BaseRoute {
             }
         }
         propertyValue.setPropertyType(propertyType);
+        
+        propertyValueInternalCheck(propertyValue);
         
         LOGGER.debug("Creating new property.");
         dbPropertyValue = itemController.preparePropertyTypeValueAdd(dbItem, propertyType, null, null, updatedByUser);
