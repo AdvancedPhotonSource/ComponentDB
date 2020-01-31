@@ -48,6 +48,7 @@ import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemLocationInformation;
 import gov.anl.aps.cdb.rest.entities.ItemSearchResults;
+import gov.anl.aps.cdb.rest.entities.ItemStatusBasicObject;
 import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
 import gov.anl.aps.cdb.rest.entities.LogEntryEditInformation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -199,6 +200,18 @@ public class ItemRoute extends BaseRoute {
         return false;
     }
     
+    private UserInfo verifyCurrentUserPermissionForItem(Item item) throws AuthorizationError {
+        UserInfo updatedByUser = getCurrentRequestUserInfo();
+        
+        if (!verifyUserPermissionForItem(updatedByUser, item)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to update property value for the item");
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        
+        return updatedByUser; 
+    }
+    
     private boolean verifyUserPermissionForItem(UserInfo user, Item item) {        
         if (user != null) {
             if (isUserAdmin(user)) {
@@ -291,6 +304,42 @@ public class ItemRoute extends BaseRoute {
         if (propertyType.getIsInternal()) {
             throw new InvalidRequest("Property type is classified as internal. Could only be updated using specialized functionality.");
         }
+    }
+    
+    @POST
+    @Path("/UpdateStatus/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public PropertyValue updateItemStatus(@PathParam("itemId") int itemId, ItemStatusBasicObject status) throws InvalidArgument, ObjectNotFound, CdbException {
+        Item itemById = getItemById(itemId);      
+        
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(itemById);
+        
+        ItemDomainInventory inventoryItem = null;
+        
+        if (itemById instanceof ItemDomainInventory) {
+            inventoryItem = (ItemDomainInventory) itemById;
+        } else {
+            throw new InvalidArgument("The item id provided is not for an inventory item");
+        }
+        
+        ItemDomainInventoryController ic = (ItemDomainInventoryController) inventoryItem.getItemDomainController();
+        ic.prepareEditInventoryStatusFromApi(inventoryItem);
+        
+        inventoryItem.setInventoryStatusValue(status.getStatus());             
+        
+        // Verify if user provided a valid allowed value.
+        PropertyValue inventoryStatusPropertyValue = inventoryItem.getInventoryStatusPropertyValue();
+        if (PropertyValueUtility.verifyValidValueForPropertyValue(inventoryStatusPropertyValue) == false) {
+            throw new InvalidArgument("The value: '" + status.getStatus() + "' is not valid for inventory status.");
+        }
+                
+        inventoryStatusPropertyValue.setEffectiveFromDateTime(status.getEffectiveFromDate());
+        
+        ic.updateFromApi(inventoryItem, currentUser);        
+        return inventoryItem.getInventoryStatusPropertyValue(); 
     }
     
     @POST

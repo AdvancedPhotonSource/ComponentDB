@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.portal.constants.DisplayType;
+import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -24,6 +25,26 @@ import org.apache.log4j.Logger;
 public class PropertyValueUtility {
 
     private static final Logger logger = Logger.getLogger(PropertyValueUtility.class.getName());
+    
+    public static boolean verifyValidValueForPropertyValue(PropertyValue value) {
+        PropertyType propertyType = value.getPropertyType();
+        String textValue = value.getValue();
+        
+        if (propertyType != null) {
+            List<AllowedPropertyValue> allowedPropertyValueList = propertyType.getAllowedPropertyValueList();
+            if (allowedPropertyValueList != null && allowedPropertyValueList.size() > 0) {
+                for (AllowedPropertyValue allowedPValue : allowedPropertyValueList) {
+                    String textAllowedValue = allowedPValue.getValue();
+                    if (textValue.equals(textAllowedValue)) {
+                        return true;
+                    }
+                }
+                return false; 
+            }            
+        }        
+        
+        return true;        
+    }
     
     public static List<PropertyValue> prepareImagePropertyValueList(List<PropertyValue> propertyValueList) {
         return prepareImagePropertyValueList(propertyValueList, false); 
