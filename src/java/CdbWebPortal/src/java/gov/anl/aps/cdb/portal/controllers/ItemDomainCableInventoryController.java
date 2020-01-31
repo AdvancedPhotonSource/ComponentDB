@@ -71,7 +71,6 @@ public class ItemDomainCableInventoryController extends ItemController<ItemDomai
 
     public void setDefaultValuesForCurrentItem() {
         
-        System.out.println("entering");
         // get cable catalog item for this cable inventory
         ItemDomainCableInventory cableInventoryItem = getCurrent();
         if (cableInventoryItem != null) {
@@ -100,14 +99,12 @@ public class ItemDomainCableInventoryController extends ItemController<ItemDomai
                         if (inventoryItemList.contains(cableInventoryItem)) {
                             // Remove since it is not yet existing. 
                             inventoryItemList.remove(cableInventoryItem);
-                            System.out.println("removing");
                         }
                     }
                     DataModel cableInventoryDataModel = 
                             new ListDataModel(inventoryItemList);
                     cableInventoryItem.setName("Unit: " + 
                             (cableInventoryDataModel.getRowCount() + 1) + "");
-                    System.out.println(cableInventoryDataModel.getRowCount() + 1);
                 }
             }
         }
