@@ -353,6 +353,12 @@ public class ItemRoute extends BaseRoute {
         dbPropertyValue.setEffectiveFromDateTime(userPassedValue.getEffectiveFromDateTime());
     }
     
+    private void propertyValueAllowedValueCheck(PropertyValue dbPropertyValue) throws InvalidArgument {        
+        if (PropertyValueUtility.verifyValidValueForPropertyValue(dbPropertyValue) == false) {
+            throw new InvalidArgument("The value: '" + dbPropertyValue.getValue() + "' is not allowed for the property value.");
+        }
+    }
+    
     @POST
     @Path("/UpdateProperty/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -401,6 +407,8 @@ public class ItemRoute extends BaseRoute {
 
         // Set passed in property value to match db property value 
         updateDbPropertyValueWithPassedInDate(dbPropertyValue, propertyValue);
+        
+        propertyValueAllowedValueCheck(dbPropertyValue);
         
         itemController.updateFromApi(dbItem, updatedByUser);
         
@@ -457,6 +465,8 @@ public class ItemRoute extends BaseRoute {
         
         // Set passed in property value to match db property value 
         dbPropertyValue.setPropertyMetadataValue(propertyMetadata.getMetadataKey(), propertyMetadata.getMetadataValue());
+        
+        propertyValueAllowedValueCheck(dbPropertyValue);
         
         itemController.updateFromApi(dbItem, updatedByUser);
         
