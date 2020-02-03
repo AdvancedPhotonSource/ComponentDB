@@ -13,6 +13,8 @@ import java.util.LinkedList;
 public class ReleasedForm extends TravelerObject {
     
     private static final String FAKE_ITEM_CHOICE_ID="NULL";
+    
+    private static final String AUTOMATICALLY_SELECT_LATEST_NO_VER = "Automatically select latest";
         
     private String title;
     private String description;
@@ -31,7 +33,7 @@ public class ReleasedForm extends TravelerObject {
     public static ReleasedForm createCustomAlwaysSelectLatest() {
         ReleasedForm releasedForm = new ReleasedForm(); 
         releasedForm.ver = "N/A"; 
-        releasedForm.releasedOn = "Automatically select latest";
+        releasedForm.releasedOn = AUTOMATICALLY_SELECT_LATEST_NO_VER;
         releasedForm.releasedBy = "N/A";
         releasedForm._id = FAKE_ITEM_CHOICE_ID;
         return releasedForm; 
@@ -56,6 +58,13 @@ public class ReleasedForm extends TravelerObject {
     public String getReleasedOn() {
         return releasedOn;
     }
+    
+    public String getLocalReleasedOn() {
+        if (releasedOn.equals(AUTOMATICALLY_SELECT_LATEST_NO_VER)) {
+            return releasedOn; 
+        }
+        return getLocalTime(releasedOn);
+    }
 
     public LinkedList<String> getTags() {
         return tags;
@@ -71,6 +80,10 @@ public class ReleasedForm extends TravelerObject {
 
     public String getArchivedOn() {
         return archivedOn;
+    }
+    
+    public String getLocalArchivedOn() {
+        return getLocalTime(archivedOn);
     }
 
     public String getArchivedBy() {

@@ -43,6 +43,10 @@ public abstract class BinderTraveler extends TravelerObject {
     public void setCreatedOn(String createdOn) {
         this.createdOn = createdOn;
     }
+    
+    public String getLocalCreatedOn() {
+        return getLocalTime(createdOn); 
+    }
 
     public String getDescription() {
         return description;
@@ -66,6 +70,10 @@ public abstract class BinderTraveler extends TravelerObject {
 
     public void setUpdatedOn(String updatedOn) {
         this.updatedOn = updatedOn;
+    }
+    
+    public String getLocalUpdatedOn() {
+        return getLocalTime(updatedOn); 
     }
     
     public Integer getProgress() {
