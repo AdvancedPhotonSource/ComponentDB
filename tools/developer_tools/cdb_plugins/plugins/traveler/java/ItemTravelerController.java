@@ -139,7 +139,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         String initalized = "Initialized";
         String active = "Active";
         String submitted = "Submitted";
-        String completed = "Complted";
+        String completed = "Completed";
         String frozen = "Frozen";
 
         statusNames.put(0.0, initalized);
@@ -1670,7 +1670,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             SessionUtility.addInfoMessage("No Released Templates",
                     "No templates were released for this template. Please create a released version of this template before proceeding.");
         }
-    }
+    }        
 
     public Form getSelectedTravelerInstanceTemplate() {
         return selectedTravelerInstanceTemplate;
