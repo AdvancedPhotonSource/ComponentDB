@@ -222,6 +222,13 @@ public class ItemTravelerDomainInventoryController extends ItemTravelerControlle
         return false; 
     }
     
+    public String getTravelerInstanceProgressLabel(BinderTraveler traveler) {
+        Double finish = traveler.getProgressFinished();
+        Double total = traveler.getProgressTotal();
+                
+        return String.format("%.2f/%.2f", finish, total); 
+    }
+    
     public void prepareShowArchivedTravelerListDialog() {
         renderArchivedTravelerListDialog = true; 
     }
