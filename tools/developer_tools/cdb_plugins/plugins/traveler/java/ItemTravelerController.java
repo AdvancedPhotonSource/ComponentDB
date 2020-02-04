@@ -30,6 +30,7 @@ import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.BinderTraveler;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.BinderWorksReference;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Form;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.FormContent;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.FormRef;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Forms;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForm;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForms;
@@ -735,7 +736,16 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             if (binderTraveler instanceof Traveler) {
                 Traveler traveler = (Traveler) binderTraveler;
                 try {
-                    Form form = travelerApi.getForm(traveler.getReferenceForm());
+                    // Legacy traveler 
+                    String referenceId = traveler.getReferenceForm(); 
+                    if (referenceId == null) {
+                        // New traveler with released forms
+                        LinkedList<FormRef> forms = traveler.getForms();
+                        if (forms.size() > 0) {
+                            referenceId = forms.get(0).getId();
+                        }
+                    }
+                    Form form = travelerApi.getForm(referenceId);
                     traveler.setFormName(form.getTitle());
                 } catch (Exception ex) {
                     traveler.setFormName(traveler.getReferenceForm());
