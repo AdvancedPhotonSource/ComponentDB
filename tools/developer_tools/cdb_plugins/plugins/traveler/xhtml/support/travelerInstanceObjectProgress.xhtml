@@ -9,7 +9,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
     
     <ui:param name="travelerInstanceProgressLabel"
-                              value="#{travelerObject.progressFinished}/#{travelerObject.progressTotal}"/>           
+              value="#{itemTravelerDomainInventoryController.getTravelerInstanceProgressLabel(travelerObject)}"/>           
     
     <ui:param name="travelerCompleted"
               value="#{itemTravelerDomainInventoryController.isTravelerCompleted(travelerObject)}" />
@@ -17,7 +17,7 @@ See LICENSE file.
     <p:progressBar value="#{travelerObject.progress}" 
                    rendered="#{travelerCompleted == false}"
                    labelTemplate="${travelerInstanceProgressLabel}" 
-                   displayOnly="true" />   
+                   displayOnly="true" />    
     
     <ui:fragment rendered="#{travelerCompleted}" >
         <span class="completeProgressBar" />

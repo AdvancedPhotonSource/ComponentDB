@@ -30,6 +30,7 @@ import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.BinderTraveler;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.BinderWorksReference;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Form;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.FormContent;
+import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.FormRef;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Forms;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForm;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.ReleasedForms;
@@ -430,7 +431,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     public void addTravelerTemplateToNewCurrentItem(Item currentItem) {
         setCurrent(currentItem);
-        addTravelerTemplateToCurrent(null);
+        addTravelerTemplateToCurrent();
     }
 
     public void prepareMultiEditAppplyInstanceToAllItems() {
@@ -515,7 +516,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         addTravelerInstanceToCurrent(null);
     }
 
-    public void addTravelerTemplateToCurrent(String onSuccess) {
+    private PropertyValue addTravelerTemplateToCurrent() {
         resetRenderBooleans();
         renderTravelerTemplateAddDialog = true;
         renderTravelerTemplateLinkDialog = true;
@@ -524,12 +525,11 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
         if (travelerTemplatePropertyType != null) {
             propertyValue = getItemController().preparePropertyTypeValueAdd(travelerTemplatePropertyType);
-            if (onSuccess != null) {
-                SessionUtility.executeRemoteCommand(onSuccess);
-            }
+            return propertyValue; 
         } else {
             SessionUtility.addErrorMessage("Traveler template property type not found ",
                     " Please contact your admin to add a property type with traveler template handler");
+            return null; 
         }
     }
 
@@ -735,7 +735,16 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             if (binderTraveler instanceof Traveler) {
                 Traveler traveler = (Traveler) binderTraveler;
                 try {
-                    Form form = travelerApi.getForm(traveler.getReferenceForm());
+                    // Legacy traveler 
+                    String referenceId = traveler.getReferenceForm(); 
+                    if (referenceId == null) {
+                        // New traveler with released forms
+                        LinkedList<FormRef> forms = traveler.getForms();
+                        if (forms.size() > 0) {
+                            referenceId = forms.get(0).getId();
+                        }
+                    }
+                    Form form = travelerApi.getForm(referenceId);
                     traveler.setFormName(form.getTitle());
                 } catch (Exception ex) {
                     traveler.setFormName(traveler.getReferenceForm());
@@ -1388,7 +1397,13 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * @param onSuccessCommand Remote command to execute only on successful
      * completion
      */
-    public void loadActiveTravelerTemplates(String onSuccessCommand) {
+    public void prepareAddTemplateAndLoadActiveTravelerTemplates(String onSuccessCommand) {
+        PropertyValue addTravelerTemplateToCurrent = addTravelerTemplateToCurrent();
+        if (addTravelerTemplateToCurrent == null) {
+            // Something went wrong. Error message displayed by previous call.
+            return;
+        }
+        
         try {
             Forms allForms = travelerApi.getForms();
 
