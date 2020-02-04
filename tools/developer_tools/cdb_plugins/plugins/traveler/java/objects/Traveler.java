@@ -58,6 +58,10 @@ public class Traveler extends BinderTraveler {
     public String getCreatedOn() {
         return createdOn;
     }
+    
+    public String getLocalCreatedOn() {
+        return getLocalTime(createdOn); 
+    }
 
     public String getReferenceForm() {
         return referenceForm;
@@ -78,6 +82,10 @@ public class Traveler extends BinderTraveler {
     public String getUpdatedOn() {
         return updatedOn;
     }
+    
+    public String getLocalUpdatedOn() {
+        return getLocalTime(updatedOn); 
+    }
 
     public boolean isArchived() {
         return archived;
@@ -85,6 +93,10 @@ public class Traveler extends BinderTraveler {
 
     public String getArchivedOn() {
         return archivedOn;
+    }
+    
+    public String getLocalArchivedOn() {
+        return getLocalTime(archivedOn);
     }
 
     public LinkedList<String> getNotes() {
