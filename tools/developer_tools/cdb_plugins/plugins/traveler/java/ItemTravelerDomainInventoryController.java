@@ -32,6 +32,8 @@ public class ItemTravelerDomainInventoryController extends ItemTravelerControlle
     public final static String controllerNamed = "itemTravelerDomainInventoryController";
     private static final Logger logger = Logger.getLogger(ItemTravelerDomainInventoryController.class.getName());
     
+    public static final double TRAVELER_COMPLETED_STATUS = 2.0; 
+    
     private boolean isDisplayMultiEditTravelerInstance = false; 
     private boolean renderArchivedTravelerListDialog;
     
@@ -208,6 +210,13 @@ public class ItemTravelerDomainInventoryController extends ItemTravelerControlle
             }
         }
         return archivedTravelersForCurrent;
+    }
+    
+    public boolean isTravelerCompleted(BinderTraveler traveler) {
+        if (traveler instanceof Traveler) {
+            return ((Traveler) traveler).getStatus() == TRAVELER_COMPLETED_STATUS; 
+        }
+        return false; 
     }
     
     public void prepareShowArchivedTravelerListDialog() {
