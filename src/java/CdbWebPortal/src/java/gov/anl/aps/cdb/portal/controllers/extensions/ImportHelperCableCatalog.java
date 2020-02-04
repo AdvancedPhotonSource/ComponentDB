@@ -41,6 +41,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         private String fireLoad = "";
         private String heatLimit = "";
         private String bendRadius = "";
+        private String team = "";
 
         public CableCatalogRowModel(ItemDomainCableCatalog c) {
             super(c);
@@ -106,6 +107,10 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
             return ((ItemDomainCableCatalog)getEntity()).getBendRadius();
         }
 
+        public String getTeam() {
+            return ((ItemDomainCableCatalog)getEntity()).getTeam();
+        }
+
     }
 
     protected static String cableTypeHeader = "Cable Type";
@@ -168,6 +173,10 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     protected static String bendRadiusProperty = "bendRadius";
     protected static int bendRadiusColumn = 14;
     
+    protected static String teamHeader = "Team";
+    protected static String teamProperty = "team";
+    protected static int teamColumn = 15;
+    
     protected static String completionUrlValue = "/views/itemDomainCableCatalog/list?faces-redirect=true";
     
     @Override
@@ -197,6 +206,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         columns.add(new ColumnModel(fireLoadHeader, fireLoadProperty));
         columns.add(new ColumnModel(heatLimitHeader, heatLimitProperty));
         columns.add(new ColumnModel(bendRadiusHeader, bendRadiusProperty));
+        columns.add(new ColumnModel(teamHeader, teamProperty));
     }
     
     @Override
@@ -222,6 +232,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         String fireLoad = "";
         String heatLimit = "";
         String bendRadius = "";
+        String team = "";
         
         boolean isValid = true;
         String validString = "";
@@ -385,6 +396,18 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
             bendRadius = String.valueOf(cell.getNumericCellValue());
         }
 
+        cell = row.getCell(teamColumn);
+        if (cell == null) {
+            team = "";
+        } else if (cell.getCellType() != CellType.NUMERIC) {
+            team = "";
+            isValid = false;
+            validString = "team is not a number";
+        } else {
+            cell.setCellType(CellType.STRING);
+            team = cell.getStringCellValue();
+        }
+
         ItemDomainCableCatalogController controller = ItemDomainCableCatalogController.getInstance();
         
         ItemDomainCableCatalog newType = controller.newEntityInstance();
@@ -403,6 +426,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         newType.setFireLoad(fireLoad);
         newType.setHeatLimit(heatLimit);
         newType.setBendRadius(bendRadius);
+        newType.setTeam(team);
         
         CableCatalogRowModel info = new CableCatalogRowModel(newType);
         

@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemCategorySettings;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.List;
@@ -19,10 +20,12 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 
-@Named("itemCategoryController")
+@Named(ItemCategoryController.CONTROLLER_NAMED)
 @SessionScoped
 public class ItemCategoryController extends ItemTypeCategoryController<ItemCategory, ItemCategoryFacade, ItemCategorySettings> implements Serializable {
 
+    public static final String CONTROLLER_NAMED = "itemCategoryController";
+        
     @EJB
     ItemCategoryFacade itemCategoryFacade;             
     
@@ -31,6 +34,15 @@ public class ItemCategoryController extends ItemTypeCategoryController<ItemCateg
     public ItemCategoryController() {
         super();        
     }
+
+    public static ItemCategoryController getInstance() {
+        if (SessionUtility.runningFaces()) {
+            return (ItemCategoryController) SessionUtility.findBean(ItemCategoryController.CONTROLLER_NAMED);
+        } else {
+            // TODO add apiInstance
+            return null;
+        }
+    }        
 
     @Override
     protected ItemCategoryFacade getEntityDbFacade() {

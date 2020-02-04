@@ -5,6 +5,8 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -29,6 +31,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient String fireLoad = null;
     private transient String heatLimit = null;
     private transient String bendRadius = null;
+    private transient String team = null;
     
     private final static String CABLE_INTERNAL_PROPERTY_TYPE = "cable_internal_property_type"; 
     private final static String CABLE_PROPERTY_URL_KEY = "url"; 
@@ -340,6 +343,23 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
 
         if (propertyValue != null) {
             propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_BEND_RADIUS_KEY, w);
+        }
+    }
+    
+    public String getTeam() {
+        if (team == null) {
+            team = this.getItemCategoryString();
+        }
+        return team;
+    }
+    
+    public void setTeam(String categoryId) {
+        ItemCategory category = ItemCategoryController.getInstance().findById(Integer.valueOf(categoryId));
+        if (category != null) {
+            List<ItemCategory> categoryList = new ArrayList<>();
+            categoryList.add(category);
+            this.setItemCategoryList(categoryList);
+            team = this.getItemCategoryString();
         }
     }
     
