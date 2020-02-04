@@ -453,8 +453,6 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     @Override
     public ImportInfo importData() {
         
-        System.out.println("importing " + rows.size() + " rows");
-        
         ItemDomainCableCatalogController controller = ItemDomainCableCatalogController.getInstance();
         
         String message = "";

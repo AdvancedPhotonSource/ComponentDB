@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import java.util.ArrayList;
@@ -20,7 +21,9 @@ import javax.persistence.Entity;
 public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCableInventory> {
     
     private transient String url = null;
+    private transient String urlDisplay = null;
     private transient String imageUrl = null;
+    private transient String imageUrlDisplay = null;
     private transient String manufacturer = null;
     private transient String weight = null;
     private transient String diameter = null;
@@ -96,6 +99,13 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
     }
     
+    public String getUrlDisplay() {
+        if (urlDisplay == null && this.getUrl() != null) {
+            urlDisplay = HttpLinkUtility.prepareHttpLinkDisplayValue(this.getUrl());
+        }
+        return urlDisplay;
+    }
+
     public String getImageUrl() {
         if (imageUrl == null) {
             PropertyValue propertyValue = getInternalCablePropertyValue();
@@ -118,6 +128,13 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
     }
     
+    public String getImageUrlDisplay() {
+        if (imageUrlDisplay == null && this.getImageUrl() != null) {
+            imageUrlDisplay = HttpLinkUtility.prepareHttpLinkDisplayValue(this.getImageUrl());
+        }
+        return imageUrlDisplay;
+    }
+
     public String getManufacturer() {
         if (manufacturer == null) {
             PropertyValue propertyValue = getInternalCablePropertyValue();
