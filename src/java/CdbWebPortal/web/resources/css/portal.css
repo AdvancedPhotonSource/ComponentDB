@@ -800,6 +800,16 @@ h2 {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;     
+    animation: transition-ui-icon-machine-design 0.25s;
+}
+
+@keyframes transition-ui-icon-machine-design {
+    0% {        
+        transform:rotate(0deg);  
+    }
+    100% {
+        transform:rotate(360deg);
+    }
 }
 
 .ui-icon-maarc {
