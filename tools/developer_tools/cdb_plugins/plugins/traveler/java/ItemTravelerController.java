@@ -1404,6 +1404,15 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             return;
         }
         
+        loadActiveTravelerTemplates(onSuccessCommand);
+
+    }
+    
+    public void loadActiveTravelerTemplates() {
+        loadActiveTravelerTemplates(null);
+    }
+    
+    public void loadActiveTravelerTemplates(String onSuccessCommand) {
         try {
             Forms allForms = travelerApi.getForms();
 
@@ -1428,7 +1437,6 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             logger.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getMessage());
         }
-
     }
 
     /**

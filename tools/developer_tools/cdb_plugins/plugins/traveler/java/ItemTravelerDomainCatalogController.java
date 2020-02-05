@@ -61,7 +61,7 @@ public class ItemTravelerDomainCatalogController extends ItemTravelerController 
     public void prepareMultiEditAppplyTempalteToAllItems() {        
         applyAllCreateNew = null;          
         multiEditSelectedTemplate = null;         
-        loadActiveTravelerTemplates(null);
+        loadActiveTravelerTemplates();
     }
     
 }
