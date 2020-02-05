@@ -128,13 +128,13 @@ public class ItemTravelerDomainInventoryController extends ItemTravelerControlle
                             break; 
                         }                        
                     }
-                    if (!travelerRemovedFromBinder) {
-                        SessionUtility.addErrorMessage("Error", "Couldn't find traveler reference in binder.");
-                        logger.error("Couldn't find traveler reference in binder.");
-                        return;
-                    }
                 }
             }            
+            if (!travelerRemovedFromBinder) {
+                SessionUtility.addErrorMessage("Error", "Couldn't find traveler reference in binder.");
+                logger.error("Couldn't find traveler reference in binder.");
+                return;
+            }
         }
         
         try {
