@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
+
+    <!-- Must provide params "viewId", "wizardController"-->
+    
+    <ui:param name="rootViewId" value="#{viewId}"/>
+    
+    <p:tab id="#{rootViewId}SelectFileTab">
+        <p:panel header="Choose file to import, then click Next Step to review.">
+            <p:outputPanel id="#{rootViewId}SelectFilePanel">
+                <p:panelGrid columns="2">
+                
+                    <p:fileUpload fileUploadListener="#{wizardController.fileUploadListenerData}" 
+                                  auto="true" 
+                                  allowTypes="/(\.|\/)([xX][lL][sS][xX]?)$/"
+                                  rendered="#{wizardController.renderFileuploadData}"
+                                  update="#{rootViewId}SelectFilePanel"
+                                  oncomplete="update#{rootViewId}WizardButtons();"/>
+                    
+                    <ui:remove><p:fileUpload value="#{wizardController.uploadfileData}"
+                                  mode="simple" 
+                                  allowTypes="/(\.|\/)([xX][lL][sS][xX]?)$/"/>
+                    <p:commandButton value="Upload" 
+                                     ajax="false"
+                                     action="#{wizardController.upload}"/>
+                    </ui:remove>
+                    
+                    <p:panelGrid columns="2">
+                        <p:outputLabel value="Successfully uploaded file:" 
+                                       styleClass="entityDataEmphasizedLabel"
+                                       rendered="#{wizardController.renderOutputData}"/>
+                        <h:outputText value="#{wizardController.getUploadfileDataString()}" 
+                                      title="Uploaded file" 
+                                      styleClass="entityDataEmphasizedText" />
+                    </p:panelGrid>
+                    
+                    <p:outputLabel value="Click next to continue." 
+                                   styleClass="entityDataEmphasizedLabel"
+                                   rendered="#{wizardController.renderOutputData}"/>
+
+                </p:panelGrid>
+            </p:outputPanel>
+        </p:panel>
+    </p:tab>
+
+</ui:composition>

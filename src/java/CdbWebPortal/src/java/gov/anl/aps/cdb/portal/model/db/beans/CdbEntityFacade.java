@@ -25,6 +25,12 @@ public abstract class CdbEntityFacade<T> {
         getEntityManager().persist(entity);
     }
 
+    public void create(List<T> entities) {
+        for (T entity : entities) {
+            create(entity);
+        }
+    }
+
     public T edit(T entity) {
         return getEntityManager().merge(entity);
     }

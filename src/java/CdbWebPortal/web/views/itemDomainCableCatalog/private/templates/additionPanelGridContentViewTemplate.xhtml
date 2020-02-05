@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <!-- Must provide params "viewId" -->
+    
+    <p:panelGrid columns="2" styleClass="#{panelGridStyle}">
+        
+        <h:outputLabel for="url#{viewid}" 
+                       value="Url" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="url#{viewId}" 
+                   widgetVar="url#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="urlEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('url#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="urlEditShowButton#{viewId}"
+                                   value="Edit Url" />
+                    </p:commandLink>
+                    <h:outputLink value="#{itemObject.url}" 
+                                  target="_page_#{itemObject.url}">
+                        <h:outputText value="#{itemObject.urlDisplay}"/>
+                    </h:outputLink>
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.url}" 
+                             title="Url" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+        <h:outputLabel for="imageUrl#{viewid}" 
+                       value="Image Url" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="imageUrl#{viewId}" 
+                   widgetVar="imageUrl#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="imageUrlEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('imageUrl#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="imageUrlEditShowButton#{viewId}"
+                                   value="Edit Image Url" />
+                    </p:commandLink>
+                    <h:outputLink value="#{itemObject.imageUrl}" 
+                                  target="_page_#{itemObject.imageUrl}">
+                        <h:outputText value="#{itemObject.imageUrlDisplay}"/>
+                    </h:outputLink>
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.imageUrl}" 
+                             title="Image Url" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+        <h:outputLabel for="manufacturer#{viewid}" 
+                       value="Manufacturer" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="manufacturer#{viewId}" 
+                   widgetVar="manufacturer#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="manufacturerEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('manufacturer#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="manufacturerEditShowButton#{viewId}"
+                                   value="Edit Manufacturer" />
+                    </p:commandLink>
+                    <h:outputText value="#{itemObject.manufacturer}" 
+                                  title="Manufacturer" 
+                                  styleClass="entityDataText" />
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.manufacturer}" 
+                             title="Manufacturer" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+        <h:outputLabel for="diameter#{viewid}" 
+                       value="Diameter" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="diameter#{viewId}" 
+                   widgetVar="diameter#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="diameterEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('diameter#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="diameterEditShowButton#{viewId}"
+                                   value="Edit Diameter" />
+                    </p:commandLink>
+                    <h:outputText value="#{itemObject.diameter}" 
+                                  title="Diameter" 
+                                  styleClass="entityDataText" />
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.diameter}" 
+                             title="Diameter" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+        <h:outputLabel for="weight#{viewid}" 
+                       value="Weight" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="weight#{viewId}" 
+                   widgetVar="weight#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="weightEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('weight#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="weightEditShowButton#{viewId}"
+                                   value="Edit Weight" />
+                    </p:commandLink>
+                    <h:outputText value="#{itemObject.weight}" 
+                                  title="Weight" 
+                                  styleClass="entityDataText" />
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.weight}" 
+                             title="Weight" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+        <h:outputLabel for="conductors#{viewid}" 
+                       value="Conductors" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="conductors#{viewId}" 
+                   widgetVar="conductors#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="conductorsEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('conductors#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="conductorsEditShowButton#{viewId}"
+                                   value="Edit Conductors" />
+                    </p:commandLink>
+                    <h:outputText value="#{itemObject.conductors}" 
+                                  title="Conductors" 
+                                  styleClass="entityDataText" />
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.conductors}" 
+                             title="Conductors" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+        <h:outputLabel for="insulation#{viewid}" 
+                       value="Insulation" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="insulation#{viewId}" 
+                   widgetVar="insulation#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="insulationEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('insulation#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="insulationEditShowButton#{viewId}"
+                                   value="Edit Insulation" />
+                    </p:commandLink>
+                    <h:outputText value="#{itemObject.insulation}" 
+                                  title="Insulation" 
+                                  styleClass="entityDataText" />
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.insulation}" 
+                             title="Insulation" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+        <h:outputLabel for="jacketColor#{viewid}" 
+                       value="Jacket Color" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="jacketColor#{viewId}" 
+                   widgetVar="jacketColor#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="jacketColorEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('jacketColor#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="jacketColorEditShowButton#{viewId}"
+                                   value="Edit Jacket Color" />
+                    </p:commandLink>
+                    <h:outputText value="#{itemObject.jacketColor}" 
+                                  title="Jacket Color" 
+                                  styleClass="entityDataText" />
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.jacketColor}" 
+                             title="Jacket Color" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+        <h:outputLabel for="voltageRating#{viewid}" 
+                       value="Voltage Rating" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="voltageRating#{viewId}" 
+                   widgetVar="voltageRating#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="voltageRatingEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('voltageRating#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="voltageRatingEditShowButton#{viewId}"
+                                   value="Edit Voltage Rating" />
+                    </p:commandLink>
+                    <h:outputText value="#{itemObject.voltageRating}" 
+                                  title="Voltage Rating" 
+                                  styleClass="entityDataText" />
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.voltageRating}" 
+                             title="Voltage Rating" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+        <h:outputLabel for="fireLoad#{viewid}" 
+                       value="Fire Load" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="fireLoad#{viewId}" 
+                   widgetVar="fireLoad#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="fireLoadEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('fireLoad#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="fireLoadEditShowButton#{viewId}"
+                                   value="Edit Fire Load" />
+                    </p:commandLink>
+                    <h:outputText value="#{itemObject.fireLoad}" 
+                                  title="Fire Load" 
+                                  styleClass="entityDataText" />
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.fireLoad}" 
+                             title="Fire Load" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+        <h:outputLabel for="heatLimit#{viewid}" 
+                       value="Heat Limit" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="heatLimit#{viewId}" 
+                   widgetVar="heatLimit#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="heatLimitEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('heatLimit#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="heatLimitEditShowButton#{viewId}"
+                                   value="Edit Heat Limit" />
+                    </p:commandLink>
+                    <h:outputText value="#{itemObject.heatLimit}" 
+                                  title="Heat Limit" 
+                                  styleClass="entityDataText" />
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.heatLimit}" 
+                             title="Heat Limit" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+        <h:outputLabel for="bendRadius#{viewid}" 
+                       value="Bend Radius" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="bendRadius#{viewId}" 
+                   widgetVar="bendRadius#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="bendRadiusEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('bendRadius#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="bendRadiusEditShowButton#{viewId}"
+                                   value="Edit Bend Radius" />
+                    </p:commandLink>
+                    <h:outputText value="#{itemObject.bendRadius}" 
+                                  title="Bend Radius" 
+                                  styleClass="entityDataText" />
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.bendRadius}" 
+                             title="Bend Radius" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
+    </p:panelGrid>
+
+</ui:composition>

@@ -88,7 +88,21 @@ public class LdapUtility {
             dn = ldapDnString.replace("%s", username);
         } else {
             // Lookup dn
-            DirContext bind = bindToLdap(ldapLookupDn, ldapLookupDnBindPassword);            
+            DirContext bind = null;
+            if (ldapLookupDnBindPassword == null || ldapLookupDnBindPassword.equals("")) {
+                // No bind necessary
+                Hashtable env = new Hashtable();
+                env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+                env.put(Context.PROVIDER_URL, ldapUrl);
+                try {
+                    bind = new InitialDirContext(env);
+                } catch (NamingException ex) {
+                    logger.error(ex);                
+                }
+            } else {
+                bind = bindToLdap(ldapLookupDn, ldapLookupDnBindPassword);            
+            }
+
             String filter = ldapLookupDnUsernamefilter.replace("%s", username);
 
             SearchControls search = new SearchControls();

@@ -445,7 +445,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     /**
      * Prepares import wizard.
      */
-    public void prepareWizardImport() {        
+    public String prepareWizardImport() {  
+        return "";
     }
 
     @Override
