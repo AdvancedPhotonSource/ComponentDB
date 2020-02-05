@@ -170,7 +170,12 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             PropertyValue preparePropertyTypeValueAdd = preparePropertyTypeValueAdd(getInventoryStatusPropertyType()); 
             getCurrent().setInventoryStatusPropertyValue(preparePropertyTypeValueAdd);
         }
-    }        
+    }
+    
+    public synchronized void prepareEditInventoryStatusFromApi(ItemDomainInventory item) {
+        setCurrent(item);
+        prepareEditInventoryStatus();
+    }
     
     public boolean getRenderedHistoryButton() {
         return getCurrentStatusPropertyValue() != null; 
@@ -1244,11 +1249,10 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     @Override
-    public void prepareEntityUpdate(ItemDomainInventory item) throws CdbException {
-        super.prepareEntityUpdate(item);
-        checkNewItemsToAdd();
-
-        addItemElementsFromBillOfMaterials(item);
+    public void prepareEntityUpdate(ItemDomainInventory item) throws CdbException {        
+        checkNewItemsToAdd();       
+        addItemElementsFromBillOfMaterials(item);        
+        super.prepareEntityUpdate(item);        
     }        
 
     @Override

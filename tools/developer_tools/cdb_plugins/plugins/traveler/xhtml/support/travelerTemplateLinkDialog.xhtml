@@ -16,6 +16,7 @@ See LICENSE file.
               widgetVar="travelerTemplateLinkDialogWidget" 
               header="Link to Existing Traveler Template" 
               styleClass="viewTransparentBackgroundDialog"
+              onShow="PF('travelerTemplateLinkDialogWidget').initPosition();"
               modal="true"
               resizable="false">
         <p:outputPanel rendered="#{itemTravelerDomainCatalogController.renderTravelerTemplateLinkDialog}">
@@ -38,7 +39,8 @@ See LICENSE file.
 
             <p:remoteCommand name="selectedTravelerTemplateChanged"
                              onstart="PF('loadingDialog').show()"
-                             oncomplete="PF('loadingDialog').hide()"
+                             oncomplete="PF('loadingDialog').hide();
+                                         PF('travelerTemplateLinkDialogWidget').initPosition();"
                              action="#{itemTravelerDomainCatalogController.loadReleasedTemplatesForSelectedTemplate()}"
                              update="travelerTemplateReleasedVersionSelectionOutputPanel"/>
         </p:outputPanel>
@@ -52,14 +54,25 @@ See LICENSE file.
                              />
 
             <p:commandButton value='Link to selected template' 
-                             onstart="linkSelectedTravelerTemplate()"
-                             />            
+                             onclick="linkSelectedTravelerTemplate()"
+                             icon="fa fa-save"
+                             />
+                                         
+            
+            <p:commandButton value='Close' 
+                             onclick="PF('travelerTemplateLinkDialogWidget').hide();"
+                             icon="fa fa-close"
+                             />
+            
+            <p:commandButton value="Create new traveler template"
+                             onclick="PF('travelerTemplateAddDialogWidget').show();"
+                             icon="fa fa-plus-square" />
+            
         </f:facet>
 
         <p:remoteCommand name="showTravelerTemplateLinkDialog" 
                          update="travelerTemplateLinkDialog"
-                         oncomplete="PF('travelerTemplateLinkDialogWidget').initPosition();
-                         PF('travelerTemplateLinkDialogWidget').show();
+                         oncomplete="PF('travelerTemplateLinkDialogWidget').show();
                          PF('travelerTemplatesDataTableWidget').filter()"/>
         <p:remoteCommand name="successTravelerTemplateLinkDialog"
                          update="#{travelerSuccessUpdateTarget}"

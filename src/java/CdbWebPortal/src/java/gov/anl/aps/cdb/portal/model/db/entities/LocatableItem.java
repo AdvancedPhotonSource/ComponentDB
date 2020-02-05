@@ -49,6 +49,7 @@ public abstract class LocatableItem extends Item {
         this.locationTree = locationTree;
     }
 
+    @JsonIgnore
     public List<Item> getCachedLocationHierarchy() {
         return cachedLocationHierarchy;
     }
@@ -107,6 +108,7 @@ public abstract class LocatableItem extends Item {
         return location; 
     }
 
+    @JsonIgnore
     public Item getMembershipLocation() {
         return membershipLocation;
     }

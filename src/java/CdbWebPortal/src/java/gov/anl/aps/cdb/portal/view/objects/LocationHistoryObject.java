@@ -4,12 +4,15 @@
  */
 package gov.anl.aps.cdb.portal.view.objects;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationshipHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import java.util.Date;
 import org.primefaces.model.TreeNode;
 
@@ -22,6 +25,9 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
     private ItemElementRelationshipHistory itemElementRelationshipHistory;
     
     private Item locationItem = null; 
+    
+    // API only data
+    private ItemHierarchy locationSingleNodeHierarchy;
 
     public LocationHistoryObject(ItemElementHistory itemElementHistory, Item locationItem) {
         this.itemElementHistory = itemElementHistory;
@@ -44,6 +50,7 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
         return locationItem;
     }
 
+    @JsonIgnore
     public TreeNode getLocationTree() {
         return locationTree;
     }
@@ -59,7 +66,8 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
     public void setLocationDetails(String locationDetails) {
         this.locationDetails = locationDetails;
     }
-
+    
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getEnteredOnDateTime() {
         if (itemElementHistory != null) {
             return itemElementHistory.getEnteredOnDateTime();
@@ -78,9 +86,18 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
         return null; 
     }
 
+    public ItemHierarchy getLocationSingleNodeHierarchy() {
+        if (locationSingleNodeHierarchy == null) {
+            if (getLocationTree() != null) {
+                locationSingleNodeHierarchy = ItemHierarchy.createSingleNodeHierarchyFromTreeNode(getLocationTree());
+            } 
+        }
+        return locationSingleNodeHierarchy;
+    }
+
     @Override
     public int compareTo(LocationHistoryObject o) {
-        return getEnteredOnDateTime().compareTo(o.getEnteredOnDateTime());
+        return o.getEnteredOnDateTime().compareTo(getEnteredOnDateTime());
     }
 
 }

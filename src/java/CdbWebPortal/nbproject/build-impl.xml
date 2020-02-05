@@ -184,7 +184,7 @@
         <property name="excludes" value=""/>
         <property name="runmain.jvmargs" value=""/>
         <path id="endorsed.classpath.path" path="${endorsed.classpath}"/>
-        <condition else="" property="endorsed.classpath.cmd.line.arg" value="-Xbootclasspath/p:'${toString:endorsed.classpath.path}'">
+        <condition else="" property="endorsed.classpath.cmd.line.arg" value="-Xbootclasspath/a:'${toString:endorsed.classpath.path}'">
             <and>
                 <isset property="endorsed.classpath"/>
                 <length length="0" string="${endorsed.classpath}" when="greater"/>

@@ -814,9 +814,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setDerivedFromItem(Item derivedFromItem) {
         this.derivedFromItem = derivedFromItem;
-    }
-
+    }        
+    
     @Override
+    @JsonIgnore
     public EntityInfo getEntityInfo() {
         return getSelfElement().getEntityInfo();
     }

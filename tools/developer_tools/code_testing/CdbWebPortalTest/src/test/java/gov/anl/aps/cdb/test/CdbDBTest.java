@@ -2,6 +2,8 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
+
+/*
 package gov.anl.aps.cdb.test;
 
 import gov.anl.aps.cdb.portal.model.db.beans.*;
@@ -156,7 +158,7 @@ public class CdbDBTest {
     UserRoleFacade userRoleFacade;
     
     @EJB
-    UserSettingFacade userSettingFacade; 
+    UserSettingFacade userSettingFacade;         
     
     @PersistenceContext
     EntityManager em;
@@ -201,7 +203,7 @@ public class CdbDBTest {
         // Perform a clean insert of the dataset. 
         DatabaseOperation.CLEAN_INSERT.execute(dbunitConnection, dataset);
         
-        //Commit the changes made in preperation for next test. 
+        //Commit the changes made in preperation for next test.         
         utx.commit();        
     }
     
@@ -370,3 +372,4 @@ public class CdbDBTest {
         return userSettingFacade;
     }   
 }
+*/

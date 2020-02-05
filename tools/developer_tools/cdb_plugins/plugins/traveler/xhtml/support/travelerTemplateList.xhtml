@@ -18,7 +18,7 @@ See LICENSE file.
                      onstart="PF('loadingDialog').show()"
                      update="travelerTemplateAddDialog"
                      oncomplete="PF('loadingDialog').hide()"
-                     action="#{itemTravelerDomainCatalogController.addTravelerTemplateToCurrent('PF(\'travelerTemplateAddDialogWidget\').show()')}" />
+                     action="#{itemTravelerDomainCatalogController.prepareAddTemplateAndLoadActiveTravelerTemplates('showTravelerTemplateLinkDialog()')}" />
 
 
     <ui:include src="travelerTemplateListDataTable.xhtml"/>

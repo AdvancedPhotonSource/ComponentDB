@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.DbError;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
+import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
@@ -17,15 +18,18 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -36,6 +40,7 @@ import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueImageUploadBean;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.view.objects.LocationHistoryObject;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.authentication.User;
 import gov.anl.aps.cdb.rest.entities.FileUploadObject;
@@ -44,6 +49,7 @@ import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemLocationInformation;
 import gov.anl.aps.cdb.rest.entities.ItemSearchResults;
+import gov.anl.aps.cdb.rest.entities.ItemStatusBasicObject;
 import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
 import gov.anl.aps.cdb.rest.entities.LogEntryEditInformation;
 import io.swagger.v3.oas.annotations.Operation;
@@ -91,6 +97,9 @@ public class ItemRoute extends BaseRoute {
     
     @EJB
     UserInfoFacade userInfoFacade;    
+    
+    @EJB
+    ItemProjectFacade itemProjectFacade;
     
     @GET
     @Path("/ById/{id}")
@@ -146,6 +155,15 @@ public class ItemRoute extends BaseRoute {
     }
     
     @GET
+    @Path("/ById/{id}/EntityInfo")
+    @Produces(MediaType.APPLICATION_JSON)
+    public EntityInfo getItemEntityInfo(@PathParam("id") int id) throws ObjectNotFound {
+        Item itemById = getItemById(id);
+        
+        return itemById.getEntityInfo(); 
+    }
+    
+    @GET
     @Path("/ById/{id}/Location")
     @Produces(MediaType.APPLICATION_JSON)
     public ItemLocationInformation getItemLocation(@PathParam("id") int id) throws ObjectNotFound, InvalidArgument {
@@ -168,6 +186,32 @@ public class ItemRoute extends BaseRoute {
     }
     
     @GET
+    @Path("/ById/{id}/LocationHistory")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<LocationHistoryObject> getItemLocationHistory(@PathParam("id") int id) throws ObjectNotFound, InvalidArgument {
+        LOGGER.debug("Fetching location history for item with id: " + id);
+        Item itemById = getItemById(id);
+        
+        if (itemById instanceof LocatableItem) {
+            LocatableItem locatableItem = (LocatableItem) itemById;
+            LocatableItemController controller = LocatableItemController.getApiInstance();
+                                                
+            List<LocationHistoryObject> histories = controller.getLocationHistoryObjectList(locatableItem); 
+            
+            // When trees are loaded than the ItemHierarchy nodes can be loaded. 
+            for (LocationHistoryObject hist : histories) {
+                controller.getLocationTreeForLocationHistoryObject(hist);                 
+            }
+            
+            return histories;             
+        } else {
+            InvalidArgument ex = new InvalidArgument("Item requested cannot have a location specified. Item Id: " + id);
+            LOGGER.error(ex);
+            throw ex; 
+        }
+    }
+    
+    @GET
     @Path("/ById/{id}/Permission")
     @Produces(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
@@ -181,6 +225,18 @@ public class ItemRoute extends BaseRoute {
             return verifyUserPermissionForItem(user, itemById);
         }
         return false;
+    }
+    
+    private UserInfo verifyCurrentUserPermissionForItem(Item item) throws AuthorizationError {
+        UserInfo updatedByUser = getCurrentRequestUserInfo();
+        
+        if (!verifyUserPermissionForItem(updatedByUser, item)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to update property value for the item");
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        
+        return updatedByUser; 
     }
     
     private boolean verifyUserPermissionForItem(UserInfo user, Item item) {        
@@ -270,6 +326,66 @@ public class ItemRoute extends BaseRoute {
         return dbItem;
     }
     
+    private void propertyValueInternalCheck(PropertyValue dbPropertyValue) throws InvalidRequest {
+        PropertyType propertyType = dbPropertyValue.getPropertyType();
+        if (propertyType.getIsInternal()) {
+            throw new InvalidRequest("Property type is classified as internal. Could only be updated using specialized functionality.");
+        }
+    }
+        
+    @POST
+    @Path("/UpdateStatus/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public PropertyValue updateItemStatus(@PathParam("itemId") int itemId, ItemStatusBasicObject status) throws InvalidArgument, ObjectNotFound, CdbException {
+        Item itemById = getItemById(itemId);      
+        
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(itemById);
+        
+        ItemDomainInventory inventoryItem = null;
+        
+        if (itemById instanceof ItemDomainInventory) {
+            inventoryItem = (ItemDomainInventory) itemById;
+        } else {
+            throw new InvalidArgument("The item id provided is not for an inventory item");
+        }
+        
+        ItemDomainInventoryController ic = (ItemDomainInventoryController) inventoryItem.getItemDomainController();
+        ic.prepareEditInventoryStatusFromApi(inventoryItem);
+        
+        inventoryItem.setInventoryStatusValue(status.getStatus());             
+        
+        // Verify if user provided a valid allowed value.
+        PropertyValue inventoryStatusPropertyValue = inventoryItem.getInventoryStatusPropertyValue();
+        if (PropertyValueUtility.verifyValidValueForPropertyValue(inventoryStatusPropertyValue) == false) {
+            throw new InvalidArgument("The value: '" + status.getStatus() + "' is not valid for inventory status.");
+        }
+                
+        inventoryStatusPropertyValue.setEffectiveFromDateTime(status.getEffectiveFromDate());
+        
+        ic.updateFromApi(inventoryItem, currentUser);        
+        return inventoryItem.getInventoryStatusPropertyValue(); 
+    }
+    
+    private void updateDbPropertyValueWithPassedInDate(PropertyValue dbPropertyValue, PropertyValue userPassedValue) {
+        dbPropertyValue.setValue(userPassedValue.getValue());
+        dbPropertyValue.setDisplayValue(userPassedValue.getDisplayValue());
+        dbPropertyValue.setTag(userPassedValue.getTag());
+        dbPropertyValue.setDescription(userPassedValue.getDescription());
+        dbPropertyValue.setUnits(userPassedValue.getUnits());
+        dbPropertyValue.setIsDynamic(userPassedValue.getIsDynamic());
+        dbPropertyValue.setIsUserWriteable(userPassedValue.getIsUserWriteable());
+        dbPropertyValue.setEffectiveFromDateTime(userPassedValue.getEffectiveFromDateTime());
+    }
+    
+    private void propertyValueAllowedValueCheck(PropertyValue dbPropertyValue) throws InvalidArgument {        
+        if (PropertyValueUtility.verifyValidValueForPropertyValue(dbPropertyValue) == false) {
+            throw new InvalidArgument("The value: '" + dbPropertyValue.getValue() + "' is not allowed for the property value.");
+        }
+    }
+    
     @POST
     @Path("/UpdateProperty/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -313,15 +429,13 @@ public class ItemRoute extends BaseRoute {
             LOGGER.error(objectNotFound);
             throw objectNotFound;
         }
+        
+        propertyValueInternalCheck(dbPropertyValue);
 
         // Set passed in property value to match db property value 
-        dbPropertyValue.setValue(propertyValue.getValue());
-        dbPropertyValue.setDisplayValue(propertyValue.getDisplayValue());
-        dbPropertyValue.setTag(propertyValue.getTag());
-        dbPropertyValue.setDescription(propertyValue.getDescription());
-        dbPropertyValue.setUnits(propertyValue.getUnits());
-        dbPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
-        dbPropertyValue.setIsUserWriteable(propertyValue.getIsUserWriteable());
+        updateDbPropertyValueWithPassedInDate(dbPropertyValue, propertyValue);
+        
+        propertyValueAllowedValueCheck(dbPropertyValue);
         
         itemController.updateFromApi(dbItem, updatedByUser);
         
@@ -333,7 +447,7 @@ public class ItemRoute extends BaseRoute {
         } 
         
         return dbPropertyValue;
-    }
+    }        
     
     @POST
     @Path("/UpdatePropertyMetadata/{itemId}/{propertyValueId}") //TODO propertyValueID instead of property type name
@@ -374,8 +488,12 @@ public class ItemRoute extends BaseRoute {
             throw objectNotFound;
         }
         
+        propertyValueInternalCheck(dbPropertyValue);
+        
         // Set passed in property value to match db property value 
         dbPropertyValue.setPropertyMetadataValue(propertyMetadata.getMetadataKey(), propertyMetadata.getMetadataValue());
+        
+        propertyValueAllowedValueCheck(dbPropertyValue);
         
         itemController.updateFromApi(dbItem, updatedByUser);
         
@@ -422,17 +540,13 @@ public class ItemRoute extends BaseRoute {
         }
         propertyValue.setPropertyType(propertyType);
         
+        propertyValueInternalCheck(propertyValue);
+        
         LOGGER.debug("Creating new property.");
         dbPropertyValue = itemController.preparePropertyTypeValueAdd(dbItem, propertyType, null, null, updatedByUser);
 
         // Set passed in property value to match db property value 
-        dbPropertyValue.setValue(propertyValue.getValue());
-        dbPropertyValue.setDisplayValue(propertyValue.getDisplayValue());
-        dbPropertyValue.setTag(propertyValue.getTag());
-        dbPropertyValue.setDescription(propertyValue.getDescription());
-        dbPropertyValue.setUnits(propertyValue.getUnits());
-        dbPropertyValue.setIsDynamic(propertyValue.getIsDynamic());
-        dbPropertyValue.setIsUserWriteable(propertyValue.getIsUserWriteable());
+        updateDbPropertyValueWithPassedInDate(dbPropertyValue, propertyValue);
         
         itemController.updateFromApi(dbItem, updatedByUser);
         
@@ -611,14 +725,14 @@ public class ItemRoute extends BaseRoute {
         LOGGER.debug("Fetching location hierarchy");
         List<ItemDomainLocation> locationsTopLevel = getLocationsTopLevel();
         
-        List<ItemHierarchy> result = new ArrayList<>();        
+        List<ItemHierarchy> result = new ArrayList<>();
         
         for (ItemDomainLocation location : locationsTopLevel) {
-            ItemHierarchy locationHierarchy = new ItemHierarchy(location, true);            
+            ItemHierarchy locationHierarchy = new ItemHierarchy(location, true);
             result.add(locationHierarchy);
         }
         
-        return result;        
+        return result;
     }
     
     @GET
@@ -658,6 +772,12 @@ public class ItemRoute extends BaseRoute {
     }
     
     @GET
+    @Path("/Projects")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemProject> getItemProjectList() {
+        return itemProjectFacade.findAll();
+    }
+
     @Path("/Search/{searchText}")
     @Produces(MediaType.APPLICATION_JSON)
     public ItemSearchResults getSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {

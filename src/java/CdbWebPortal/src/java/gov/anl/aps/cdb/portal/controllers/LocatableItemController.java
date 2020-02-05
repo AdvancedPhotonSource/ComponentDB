@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -321,12 +322,22 @@ public class LocatableItemController implements Serializable {
      */
     public void updateLocationStringForItem(LocatableItem item) {
         if (item != null) {
-            List<Item> locationHierarchyListForItem = getLocationHierarchyListForItem(item);
-            if (locationHierarchyListForItem != null) {
-                String locationString = ItemUtility.generateHierarchyNodeString(locationHierarchyListForItem);
-                item.setLocationString(locationString);
+            Item activeLocation = item.getActiveLocation(); 
+            if (activeLocation == null) {
+                return;
             }
-
+            Domain domain = activeLocation.getDomain();           
+            
+            if (domain.getId() == ItemDomainName.LOCATION_ID) {
+                List<Item> locationHierarchyListForItem = getLocationHierarchyListForItem(item);
+                if (locationHierarchyListForItem != null) {
+                    String locationString = ItemUtility.generateHierarchyNodeString(locationHierarchyListForItem);
+                    item.setLocationString(locationString);
+                }                
+            } else {
+                String locationString = "Assigned to " + domain.getName() + ": " + activeLocation.toString(); 
+                item.setLocationString(locationString);
+            }           
         }
     }
 
@@ -579,7 +590,14 @@ public class LocatableItemController implements Serializable {
     }
 
     public static String generateLocationDetailsFromItem(Item item) {
-        return "Part of " + item.getDomain().getName();
+        String partOf = "assembly"; 
+        Domain domain = item.getDomain();
+        
+        if (domain.getId() != ItemDomainName.INVENTORY_ID) {
+            partOf = domain.getName(); 
+        }
+        
+        return "Assigned to " + partOf; 
     }
 
     public boolean locationEditable(Item item) {

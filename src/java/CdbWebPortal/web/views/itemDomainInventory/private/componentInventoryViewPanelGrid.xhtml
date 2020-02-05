@@ -49,6 +49,7 @@ See LICENSE file.
                         <p:commandLink id="statusViewOutputEditShowButton"
                                        styleClass="fa-link-icon fa-icon fa fa-pencil"
                                        action="#{entityController.prepareEditInventoryStatus()}"
+                                       update="statusViewOutputEditable"
                                        oncomplete="PF('statusViewOutputEditableWidget').show()"
                                        rendered="#{isEntityWriteable}">
                             <p:tooltip for="statusViewOutputEditShowButton"
@@ -61,8 +62,8 @@ See LICENSE file.
                 </f:facet>
                 <f:facet name="input">
                     <ui:include src="templateDefaults/itemFieldEditValues/itemDomainInventoryStatus.xhtml">
-                        <ui:param name="inventoryStatusValue"
-                                  value="#{currentObject.inventoryStatusValue}"/>
+                        <ui:param name="inventoryStatusPropertyValue"
+                                  value="#{currentObject.inventoryStatusPropertyValue}"/>
                     </ui:include>
                 </f:facet>
             </p:inplace>

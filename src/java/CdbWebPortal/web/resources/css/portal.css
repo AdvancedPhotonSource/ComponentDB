@@ -800,6 +800,16 @@ h2 {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;     
+    animation: transition-ui-icon-machine-design 0.25s;
+}
+
+@keyframes transition-ui-icon-machine-design {
+    0% {        
+        transform:rotate(0deg);  
+    }
+    100% {
+        transform:rotate(360deg);
+    }
 }
 
 .ui-icon-maarc {
@@ -1299,4 +1309,49 @@ h2 {
 
 .ui-treetable-toggler.ui-icon-triangle-1-s, .ui-treetable-toggler.ui-icon-triangle-1-e {
     transform: scale(1.5);
+}
+
+.ui-datepicker-calendar .ui-state-active {
+    background-color:#4e80b6 !important;
+    color:white !important;
+}
+
+.ui-datatable .ui-datepicker {
+    width: auto;
+}
+
+.noPaddingPanel .ui-panel-content {
+    padding: 0; 
+}
+
+.draggableTreeTableDataCell {
+    overflow: visible !important; 
+    white-space: normal !important;
+}
+
+.completeProgressBar {
+    width: 100%;
+    background: lightgreen;
+    height: 1.2em;
+    display: block;
+    border-radius: 10px;
+    border: 1px solid #a8a8a8;
+    text-align: center;
+    font-weight: bold;
+    animation: transition-completeProgressBar 1s;
+}
+
+.completeProgressBar:before {
+    content: "100%";
+}
+
+@keyframes transition-completeProgressBar {
+    0% {
+        width: 0%;
+        background-color: transparent;    
+    }
+    100% {
+        width: 100%;
+        background-color: lightgreen;
+    }
 }

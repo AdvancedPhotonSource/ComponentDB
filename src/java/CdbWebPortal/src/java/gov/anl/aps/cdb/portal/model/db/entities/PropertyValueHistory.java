@@ -67,6 +67,10 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
     @Column(name = "entered_on_date_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date enteredOnDateTime;
+    @Column(name = "effective_from_date_time")    
+    private Date effectiveFromDateTime;
+    @Column(name = "effective_to_date_time")    
+    private Date effectiveToDateTime;
     @Size(max = 256)
     @Column(name = "display_value")
     private String displayValue;
@@ -79,10 +83,10 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
     @JoinColumn(name = "entered_by_user_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
     private UserInfo enteredByUser;    
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValueHistory")
-    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyValueHistory")    
     private List<PropertyMetadataHistory> propertyMetadataHistoryList;
     
+    @JsonIgnore
     private transient String infoActionCommand; 
 
     public PropertyValueHistory() {
@@ -146,6 +150,27 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
         this.enteredOnDateTime = enteredOnDateTime;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    public Date getEffectiveFromDateTime() {        
+        if (effectiveFromDateTime == null) {
+            return enteredOnDateTime;
+        }
+        return effectiveFromDateTime;
+    }
+
+    public void setEffectiveFromDateTime(Date effectiveFromDateTime) {
+        this.effectiveFromDateTime = effectiveFromDateTime;
+    }
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    public Date getEffectiveToDateTime() {
+        return effectiveToDateTime;
+    }
+
+    public void setEffectiveToDateTime(Date effectiveToDateTime) {
+        this.effectiveToDateTime = effectiveToDateTime;
+    }
+
     public String getDisplayValue() {
         return displayValue;
     }
@@ -162,6 +187,7 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
         this.targetValue = targetValue;
     }
 
+    @JsonIgnore
     public PropertyValue getPropertyValue() {
         return propertyValue;
     }
@@ -179,11 +205,13 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyMetadataHistory> getPropertyMetadataHistoryList() {
         return propertyMetadataHistoryList;
     }
     
     @Override
+    @JsonIgnore
     public List<PropertyMetadataBase> getPropertyMetadataBaseList() {
         return (List<PropertyMetadataBase>) (List<?>) getPropertyMetadataHistoryList();
     }
@@ -200,6 +228,8 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
         this.description = propertyValue.getDescription();
         this.enteredByUser = propertyValue.getEnteredByUser();
         this.enteredOnDateTime = propertyValue.getEnteredOnDateTime();
+        this.effectiveFromDateTime = propertyValue.getEffectiveFromDateTime();
+        this.effectiveToDateTime = propertyValue.getEffectiveToDateTime(); 
         
         if (propertyValue.getIsHasPropertyMetadata()) {
             List<PropertyMetadataHistory> propertyMetadataHistoryList = new ArrayList<>(); 

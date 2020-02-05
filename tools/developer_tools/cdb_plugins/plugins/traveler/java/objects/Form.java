@@ -58,6 +58,10 @@ public class Form extends TravelerObject {
     public String getCreatedOn() {
         return createdOn;
     }
+    
+    public String getLocalCreatedOn() {
+        return getLocalTime(createdOn); 
+    }
 
     public LinkedList<SharedGroup> getSharedGroup() {
         return sharedGroup;
@@ -75,6 +79,10 @@ public class Form extends TravelerObject {
         return updatedOn;
     }
 
+    public String getLocalUpdatedOn() {
+        return getLocalTime(updatedOn); 
+    }
+    
     public double getStatus() {
         return status;
     }

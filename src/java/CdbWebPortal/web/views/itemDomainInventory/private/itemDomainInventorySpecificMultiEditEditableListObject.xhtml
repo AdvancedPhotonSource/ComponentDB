@@ -20,14 +20,10 @@ See LICENSE file.
             <ui:param name="columnHeader" value="Status"/> 
         </ui:include>
         
-        <p:selectOneMenu id="inventoryStatusMultiEditSelectOneMenu"
-                         value="#{itemObject.inventoryStatusValue}">
-            <f:selectItem itemLabel="Select Status" itemValue=""/>
-            <f:selectItems value="#{itemDomainInventoryController.inventoryStatusPropertyType.allowedPropertyValueList}"
-                           var='allowedValue'
-                           itemLabel="#{allowedValue.value}"
-                           itemValue="#{allowedValue.value}"/>
-        </p:selectOneMenu>        
+        <ui:include src="templateDefaults/itemFieldEditValues/itemDomainInventoryStatus.xhtml">
+            <ui:param name="inventoryStatusPropertyValue"
+                      value="#{itemObject.inventoryStatusPropertyValue}"/> 
+        </ui:include>
     </p:column>
 
 </ui:composition>
