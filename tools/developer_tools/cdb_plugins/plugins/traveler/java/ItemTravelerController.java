@@ -52,15 +52,15 @@ import org.apache.log4j.Logger;
 
 public abstract class ItemTravelerController extends ItemControllerExtensionHelper {
 
-    protected TravelerApi travelerApi;    
-    private static final Logger logger = Logger.getLogger(ItemTravelerController.class.getName());        
+    protected TravelerApi travelerApi;
+    private static final Logger logger = Logger.getLogger(ItemTravelerController.class.getName());
 
     protected static final double FORM_ARCHIVED_STATUS = 2;
-    protected static final String FORM_TYPE_DISCREPANCY = "discrepancy"; 
+    protected static final String FORM_TYPE_DISCREPANCY = "discrepancy";
     protected static final String TEMPLATE_PREFERRED_VERSION_ID_KEY = "preferredVer";
     protected static final String TEMPLATE_PREFERRED_CACHE_VER_KEY = "preferredVerStringCache";
-    
-    protected PropertyValueController propertyValueController; 
+
+    protected PropertyValueController propertyValueController;
 
     protected PropertyValue propertyValue;
     private Traveler currentTravelerInstance;
@@ -525,11 +525,11 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
         if (travelerTemplatePropertyType != null) {
             propertyValue = getItemController().preparePropertyTypeValueAdd(travelerTemplatePropertyType);
-            return propertyValue; 
+            return propertyValue;
         } else {
             SessionUtility.addErrorMessage("Traveler template property type not found ",
                     " Please contact your admin to add a property type with traveler template handler");
-            return null; 
+            return null;
         }
     }
 
@@ -730,20 +730,27 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         }
     }
 
+    protected String getReferenceFormId(Traveler traveler) {
+        // Legacy traveler 
+        String referenceId = traveler.getReferenceForm();
+        if (referenceId == null) {
+            // New traveler with released forms
+            LinkedList<FormRef> forms = traveler.getForms();
+            if (forms != null) {
+                if (forms.size() > 0) {
+                    referenceId = forms.get(0).getId();
+                }                
+            }
+        }
+        return referenceId; 
+    }
+
     public String getFormName(BinderTraveler binderTraveler) {
         if (binderTraveler.getFormName() == null) {
             if (binderTraveler instanceof Traveler) {
                 Traveler traveler = (Traveler) binderTraveler;
                 try {
-                    // Legacy traveler 
-                    String referenceId = traveler.getReferenceForm(); 
-                    if (referenceId == null) {
-                        // New traveler with released forms
-                        LinkedList<FormRef> forms = traveler.getForms();
-                        if (forms.size() > 0) {
-                            referenceId = forms.get(0).getId();
-                        }
-                    }
+                    String referenceId = getReferenceFormId(traveler);
                     Form form = travelerApi.getForm(referenceId);
                     traveler.setFormName(form.getTitle());
                 } catch (Exception ex) {
@@ -889,9 +896,9 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             } else {
                 PropertyMetadata md1 = propertyValue.getPropertyMetadataForKey(TEMPLATE_PREFERRED_VERSION_ID_KEY);
                 PropertyMetadata md2 = propertyValue.getPropertyMetadataForKey(TEMPLATE_PREFERRED_CACHE_VER_KEY);
-                
+
                 PropertyValueController propertyValueController = getPropertyValueController();
-                String removeMessage = "Preference Removed. Will automatically fetch latest."; 
+                String removeMessage = "Preference Removed. Will automatically fetch latest.";
                 propertyValueController.removePropertyMetadata(md1, removeMessage);
                 propertyValueController.removePropertyMetadata(md2, null);
             }
@@ -1185,7 +1192,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * @param travelerList List of (traveler templates)/forms that will be
      * displayed to the user.
      */
-    private void loadPropertyTravelerInstanceList(List<PropertyValue> propertyValues, List<Traveler> travelerList) {
+    protected void loadPropertyTravelerInstanceList(List<PropertyValue> propertyValues, List<Traveler> travelerList) {
         List<PropertyValue> travelerInstanceTypePropertyValueList = getTravelerInstanceTypePropertyValueList(propertyValues);
         for (PropertyValue pv : travelerInstanceTypePropertyValueList) {
             addTravelerFromTravelerId(pv.getValue(), travelerList);
@@ -1221,7 +1228,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         return propertyValueList;
     }
 
-    private void loadPropertyTravelerBinderList(List<PropertyValue> propertyValues, List<Binder> binderList) {
+    protected void loadPropertyTravelerBinderList(List<PropertyValue> propertyValues, List<Binder> binderList) {
         List<PropertyValue> propertyValueList = getBinderPropertyValueList(propertyValues);
 
         for (PropertyValue curPropertyValue : propertyValueList) {
@@ -1403,15 +1410,15 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             // Something went wrong. Error message displayed by previous call.
             return;
         }
-        
+
         loadActiveTravelerTemplates(onSuccessCommand);
 
     }
-    
+
     public void loadActiveTravelerTemplates() {
         loadActiveTravelerTemplates(null);
     }
-    
+
     public void loadActiveTravelerTemplates(String onSuccessCommand) {
         try {
             Forms allForms = travelerApi.getForms();
@@ -1570,7 +1577,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     public String getTravelerInstanceTitle() {
         return travelerInstanceTitle;
     }
-    
+
     public void setSelectedTravelerInstanceTemplate(Form selectedTravelerInstanceTemplate) {
         if (selectedTravelerInstanceTemplate != null) {
             if (this.selectedTravelerInstanceTemplate == null
@@ -1693,7 +1700,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             SessionUtility.addInfoMessage("No Released Templates",
                     "No templates were released for this template. Please create a released version of this template before proceeding.");
         }
-    }        
+    }
 
     public Form getSelectedTravelerInstanceTemplate() {
         return selectedTravelerInstanceTemplate;
