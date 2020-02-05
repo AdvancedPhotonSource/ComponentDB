@@ -10,7 +10,7 @@ See LICENSE file.
 
     <p:menuitem value="#{value}" icon="#{icon}"
                 update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel"
-                disabled="#{disabledEditContextMenuItemForSelection}"
+                disabled="#{disabledEditContextMenuItemForSelection or disabled}"
                 immediate="true"                
                 action='#{entityController[action]}'/>
     

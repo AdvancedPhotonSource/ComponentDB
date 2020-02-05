@@ -5,12 +5,16 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCableCatalog;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableCatalogSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -25,8 +29,15 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     
     public static final String CONTROLLER_NAMED = "itemDomainCableCatalogController";
     
+    private final static String CABLE_INTERNAL_PROPERTY_TYPE = "cable_internal_property_type"; 
+    
+    protected ImportHelperCableCatalog importHelper = new ImportHelperCableCatalog();
+    
     @EJB
-    ItemDomainCableCatalogFacade itemDomainCableCatalogFacade; 
+    ItemDomainCableCatalogFacade itemDomainCableCatalogFacade;
+    
+    @EJB
+    private PropertyTypeFacade propertyTypeFacade;
     
     public static ItemDomainCableCatalogController getInstance() {
         if (SessionUtility.runningFaces()) {
@@ -37,6 +48,46 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         }
     }
     
+    /**
+     * Prepares import wizard.
+     */
+    public String prepareWizardImport() {   
+        importHelper.reset();
+        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
+        return "/views/itemDomainCableCatalog/import?faces-redirect=true";
+    }
+    
+    /**
+     * Creates new instance but doesn't set current (for operations from
+     * outside controller).
+     */
+    public ItemDomainCableCatalog newEntityInstance() {
+        
+        ItemDomainCableCatalog item = super.createEntityInstance();
+        
+        // Add cable internal property type
+        PropertyType propertyType = propertyTypeFacade.findByName(CABLE_INTERNAL_PROPERTY_TYPE);
+        
+        if (propertyType == null) {
+            propertyType = createInternalCablePropertyType();
+        }
+
+        item.setPropertyValueList(new ArrayList<>());
+        preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
+        
+        return item;
+    }
+    
+    private PropertyType createInternalCablePropertyType() {
+        PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
+        PropertyType propertyType = propertyTypeController.createEntityInstance();
+        propertyType.setIsInternal(true);
+        propertyType.setName(CABLE_INTERNAL_PROPERTY_TYPE);
+        propertyTypeController.setCurrent(propertyType);
+        propertyTypeController.create(true, false); 
+        return propertyType; 
+    }    
+
     @Override
     public ItemMultiEditController getItemMultiEditController() {
         return ItemMultiEditDomainCableCatalogController.getInstance();

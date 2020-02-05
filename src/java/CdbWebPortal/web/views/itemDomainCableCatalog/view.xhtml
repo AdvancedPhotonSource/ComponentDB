@@ -8,9 +8,10 @@ See LICENSE file.
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../item/private/templates/itemViewTemplate.xhtml">
-    
-    <ui:param name="entityController" value="#{itemDomainCableCatalogController}" />        
-    
+
+    <ui:param name="entityController" value="#{itemDomainCableCatalogController}" /> 
+    <ui:param name="rootViewId" value="cableCatalogView" />
+
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainCableCatalogController.processViewRequestParams}"/>
@@ -19,6 +20,12 @@ See LICENSE file.
         <f:viewAction action="#{itemElementController.processPreRender()}"/>
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
+
+    <ui:define name="additionPanelGridContent">
+        <ui:decorate template="private/templates/additionPanelGridContentViewTemplate.xhtml">
+            <ui:param name="viewId" value="#{rootViewId}" />                
+        </ui:decorate>
+    </ui:define>
 
 </ui:composition>
 

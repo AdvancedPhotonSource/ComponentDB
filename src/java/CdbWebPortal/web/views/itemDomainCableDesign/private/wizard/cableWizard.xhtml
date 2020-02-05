@@ -32,15 +32,15 @@ See LICENSE file.
             </ui:decorate>
 
             <p:tab id="#{rootViewId}CableTypeTab">
-                <p:panel header="Indicate whether to specify cable type">
+                <p:panel header="Indicate if cable is placeholder or spcecific type in cable catalog.">
                     <p:outputPanel id="cableTypePanel">
 
                         <p:selectOneRadio id="cableTypeRadio" 
                                           value="#{cableWizard.selectionCableType}" 
                                           layout="custom">
-                            <f:selectItem itemLabel="Unspecified" 
+                            <f:selectItem itemLabel="Placeholder" 
                                           itemValue="unspecified" />
-                            <f:selectItem itemLabel="Cable Catalog" 
+                            <f:selectItem itemLabel="Select from Cable Type Catalog" 
                                           itemValue="catalog" />
 
                             <p:ajax event="click"
@@ -51,11 +51,17 @@ See LICENSE file.
 
                         <p:panelGrid columns="2">
 
-                            <p:radioButton id="unspecifiedRadio" for="cableTypeRadio" itemIndex="0" />
-                            <p:outputLabel for="unspecifiedRadio" value="unspecified" />
+                            <p:radioButton id="unspecifiedRadio" 
+                                           for="cableTypeRadio" 
+                                           itemIndex="0" />
+                            <p:outputLabel for="unspecifiedRadio" 
+                                           value="placeholder" />
 
-                            <p:radioButton id="catalogRadio" for="cableTypeRadio" itemIndex="1" />
-                            <p:outputLabel for="catalogRadio" value="select from list" />
+                            <p:radioButton id="catalogRadio" 
+                                           for="cableTypeRadio" 
+                                           itemIndex="1" />
+                            <p:outputLabel for="catalogRadio" 
+                                           value="select from cable type catalog" />
 
                         </p:panelGrid>
 
