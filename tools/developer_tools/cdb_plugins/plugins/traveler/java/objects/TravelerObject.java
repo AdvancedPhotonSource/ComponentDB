@@ -43,6 +43,9 @@ public class TravelerObject implements Serializable{
     }
     
     public String getLocalTime(String travelerAppTime) {
+        if (travelerAppTime == null) {
+            return null;
+        }
         Instant parse = Instant.parse(travelerAppTime);      
         ZoneId systemTimezone = ZoneOffset.systemDefault();
         DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT);        

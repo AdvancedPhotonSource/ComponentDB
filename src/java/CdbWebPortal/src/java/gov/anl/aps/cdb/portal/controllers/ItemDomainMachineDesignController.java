@@ -178,7 +178,11 @@ public class ItemDomainMachineDesignController
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
 
     public static ItemDomainMachineDesignController getInstance() {
-        return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
+        if (SessionUtility.runningFaces()) {            
+            return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
+        } else {
+            return getApiInstance();
+        }
     }
 
     public static synchronized ItemDomainMachineDesignController getApiInstance() {
