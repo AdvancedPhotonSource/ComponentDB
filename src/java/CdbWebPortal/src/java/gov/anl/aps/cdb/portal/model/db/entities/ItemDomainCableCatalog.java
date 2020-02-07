@@ -35,6 +35,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient String fireLoad = null;
     private transient String heatLimit = null;
     private transient String bendRadius = null;
+    private transient String radTolerance = null;
     private transient String team = null;
     
     private final static String CABLE_INTERNAL_PROPERTY_TYPE = "cable_internal_property_type"; 
@@ -50,6 +51,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private final static String CABLE_PROPERTY_FIRE_LOAD_KEY = "fireLoad"; 
     private final static String CABLE_PROPERTY_HEAT_LIMIT_KEY = "heatLimit"; 
     private final static String CABLE_PROPERTY_BEND_RADIUS_KEY = "bendRadius"; 
+    private final static String CABLE_PROPERTY_RAD_TOLERANCE_KEY = "radTolerance"; 
 
     @Override
     public Item createInstance() {
@@ -313,6 +315,23 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     public void setBendRadius(String w) {
         bendRadius = w;
         setInternalCablePropertyFieldValue(CABLE_PROPERTY_BEND_RADIUS_KEY, w);
+    }
+    
+    public String getRadTolerance() {
+        if (radTolerance == null) {
+            PropertyValue propertyValue = getInternalCablePropertyValue();
+            if (propertyValue == null) {
+                radTolerance = "";
+            } else {
+                radTolerance = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_RAD_TOLERANCE_KEY);
+            }
+        }
+        return radTolerance;
+    }
+    
+    public void setRadTolerance(String w) {
+        radTolerance = w;
+        setInternalCablePropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY, w);
     }
     
     public String getTeam() {
