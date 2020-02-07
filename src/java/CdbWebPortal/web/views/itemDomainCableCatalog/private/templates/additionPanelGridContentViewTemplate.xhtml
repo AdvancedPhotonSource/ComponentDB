@@ -376,6 +376,36 @@ See LICENSE file.
             </f:facet>
         </p:inplace>
 
+        <h:outputLabel for="radTolerance#{viewid}" 
+                       value="Rad Tolerance" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:inplace id="radTolerance#{viewId}" 
+                   widgetVar="radTolerance#{viewId}Widget"
+                   editor="#{isEntityWriteable}"                
+                   toggleable="false"
+                   styleClass="entityDataEmphasizedText">
+            <p:ajax event="save" update="@this" oncomplete="inlineSaveEntity()" />
+            <f:facet name="output">
+                <p:outputPanel styleClass="inlineFlexOutputPanel">
+                    <p:commandLink id="radToleranceEditShowButton#{viewId}"
+                                   styleClass="fa-link-icon fa-icon fa fa-pencil"
+                                   onclick="PF('radTolerance#{viewId}Widget').show();"
+                                   rendered="#{isEntityWriteable}">
+                        <p:tooltip for="radToleranceEditShowButton#{viewId}"
+                                   value="Edit Rad Tolerance" />
+                    </p:commandLink>
+                    <h:outputText value="#{itemObject.radTolerance}" 
+                                  title="Rad Tolerance" 
+                                  styleClass="entityDataText" />
+                </p:outputPanel>
+            </f:facet>
+            <f:facet name="input">
+                <p:inputText value="#{itemObject.radTolerance}" 
+                             title="Rad Tolerance" 
+                             styleClass="entityDataEmphasizedText"/>
+            </f:facet>
+        </p:inplace>
+
     </p:panelGrid>
 
 </ui:composition>

@@ -41,6 +41,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         private String fireLoad = "";
         private String heatLimit = "";
         private String bendRadius = "";
+        private String radTolerance = "";
         private String team = "";
 
         public CableCatalogRowModel(ItemDomainCableCatalog c) {
@@ -105,6 +106,10 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
 
         public String getBendRadius() {
             return ((ItemDomainCableCatalog)getEntity()).getBendRadius();
+        }
+
+        public String getRadTolerance() {
+            return ((ItemDomainCableCatalog)getEntity()).getRadTolerance();
         }
 
         public String getTeam() {
@@ -173,9 +178,13 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     protected static String bendRadiusProperty = "bendRadius";
     protected static int bendRadiusColumn = 14;
     
+    protected static String radToleranceHeader = "Voltage Rating";
+    protected static String radToleranceProperty = "radTolerance";
+    protected static int radToleranceColumn = 15;
+    
     protected static String teamHeader = "Team";
     protected static String teamProperty = "team";
-    protected static int teamColumn = 15;
+    protected static int teamColumn = 16;
     
     protected static String completionUrlValue = "/views/itemDomainCableCatalog/list?faces-redirect=true";
     
@@ -206,6 +215,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         columns.add(new ColumnModel(fireLoadHeader, fireLoadProperty));
         columns.add(new ColumnModel(heatLimitHeader, heatLimitProperty));
         columns.add(new ColumnModel(bendRadiusHeader, bendRadiusProperty));
+        columns.add(new ColumnModel(radToleranceHeader, radToleranceProperty));
         columns.add(new ColumnModel(teamHeader, teamProperty));
     }
     
@@ -232,6 +242,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         String fireLoad = "";
         String heatLimit = "";
         String bendRadius = "";
+        String radTolerance = "";
         String team = "";
         
         boolean isValid = true;
@@ -396,6 +407,17 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
             bendRadius = String.valueOf(cell.getNumericCellValue());
         }
 
+        cell = row.getCell(radToleranceColumn);
+        if (cell == null) {
+            radTolerance = "";
+        } else if (cell.getCellType() != CellType.NUMERIC) {
+            radTolerance = "";
+            isValid = false;
+            validString = "radTolerance is not a number";
+        } else {
+            radTolerance = String.valueOf(cell.getNumericCellValue());
+        }
+
         cell = row.getCell(teamColumn);
         if (cell == null) {
             team = "";
@@ -426,6 +448,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         newType.setFireLoad(fireLoad);
         newType.setHeatLimit(heatLimit);
         newType.setBendRadius(bendRadius);
+        newType.setRadTolerance(radTolerance);
         newType.setTeam(team);
         
         CableCatalogRowModel info = new CableCatalogRowModel(newType);
