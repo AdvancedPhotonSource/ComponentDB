@@ -253,7 +253,9 @@ public class LocatableItemController implements Serializable {
         allMembershipList.addAll(item.getItemElementMemberList2());
 
         if (allMembershipList.size() > 1) {
-            SessionUtility.addWarningMessage("Error loading location", "More then one membership for item: " + item.getId());
+            if (SessionUtility.runningFaces()) {                
+                SessionUtility.addWarningMessage("Error loading location", "More then one membership for item: " + item.getId());
+            }
         } else if (allMembershipList.size() == 1) {
             ItemElement element = allMembershipList.get(0);
 
