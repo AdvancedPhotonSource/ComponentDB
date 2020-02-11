@@ -57,11 +57,11 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         }
         
         public String getUrl() {
-            return ((ItemDomainCableCatalog)getEntity()).getUrl();
+            return ((ItemDomainCableCatalog)getEntity()).getUrlDisplay();
         }
         
         public String getImageUrl() {
-            return ((ItemDomainCableCatalog)getEntity()).getImageUrl();
+            return ((ItemDomainCableCatalog)getEntity()).getImageUrlDisplay();
         }
         
         public String getManufacturer() {
