@@ -49,9 +49,11 @@ See LICENSE file.
                                      and itemDomainMachineDesignController.isItemInventory(itemElementParentItem)}">                
                 <span>#{itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementListObject)}</span>
             </ui:fragment>
-            <p:draggable scope="organizeMachineDesign" revert="true" />
+            <p:draggable scope="organizeMachineDesign" revert="true"
+                         rendered="#{itemDomainMachineDesignController.currentViewIsTemplate == false}"/>
             <p:droppable scope="organizeMachineDesign" onDrop="handleDrop" 
                          activeStyleClass="machineDesignDropableDestination"
+                         rendered="#{itemDomainMachineDesignController.currentViewIsTemplate == false}"
                          hoverStyleClass="machineDesignDropableDestinationHover"/>
         </p:outputPanel>
         

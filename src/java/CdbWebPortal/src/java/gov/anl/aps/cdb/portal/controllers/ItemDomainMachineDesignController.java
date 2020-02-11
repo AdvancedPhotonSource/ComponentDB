@@ -1516,6 +1516,12 @@ public class ItemDomainMachineDesignController
 
         List<ItemDomainMachineDesign> favoriteItems = getFavoriteItems();
         favoriteMachineDesignTreeRootTreeNode = new DefaultTreeNode();
+        
+        if (favoriteItems == null) {
+            return favoriteMachineDesignTreeRootTreeNode; 
+        }
+        
+        List<Item> parentFavorites = new ArrayList<>(); 
 
         for (ItemDomainMachineDesign item : favoriteItems) {
 
@@ -1526,9 +1532,17 @@ public class ItemDomainMachineDesignController
                 if (ittrParent == null) {
                     item = parentMachineDesign;
                 }
-                parentMachineDesign = parentMachineDesign.getParentMachineDesign();
+                parentMachineDesign = ittrParent;
             }
             if (parentFound) {
+                // Ensure mutliple top levels aren't added. 
+                if (parentFavorites.contains(item)) {
+                    continue;
+                } else {
+                    parentFavorites.add(item); 
+                }
+                
+                // Ensure multiple top levels aren't added when a child of a favorite is also a favorite. 
                 if (favoriteItems.contains(item)) {
                     continue;
                 }
