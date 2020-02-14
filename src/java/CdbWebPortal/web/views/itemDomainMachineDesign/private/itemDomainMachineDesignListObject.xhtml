@@ -14,6 +14,9 @@ See LICENSE file.
               value="#{hideOptionalColumns != null 
                        ? hideOptionalColumns 
                        : false}" />
+    
+    <ui:param name="enableDragDropToMoveMD"
+              value="#{enableDragDropToMoveMD == null ? false : enableDragDropToMoveMD}" />
 
     <!-- Requires the dialog to be included to function properly. Disabled by default -->
     <ui:param name="renderedShowElementHistory"
@@ -50,10 +53,10 @@ See LICENSE file.
                 <span>#{itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementListObject)}</span>
             </ui:fragment>
             <p:draggable scope="organizeMachineDesign" revert="true"
-                         rendered="#{itemDomainMachineDesignController.currentViewIsTemplate == false}"/>
+                         rendered="#{enableDragDropToMoveMD}"/>
             <p:droppable scope="organizeMachineDesign" onDrop="handleDrop" 
                          activeStyleClass="machineDesignDropableDestination"
-                         rendered="#{itemDomainMachineDesignController.currentViewIsTemplate == false}"
+                         rendered="#{enableDragDropToMoveMD}"
                          hoverStyleClass="machineDesignDropableDestinationHover"/>
         </p:outputPanel>
         
