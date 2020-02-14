@@ -173,6 +173,7 @@ public class ItemDomainMachineDesignController
     // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">
     private String mdSearchString;
     private List<TreeNode> searchResultsList;
+    private boolean searchCollapsed; 
 
     @EJB
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
@@ -417,7 +418,7 @@ public class ItemDomainMachineDesignController
 
             selectItemInTreeTable(searchResultsList.get(0));
         }
-
+        searchCollapsed = true; 
     }
 
     private void searchMachineDesign(TreeNode parentNode, Pattern searchPattern, List<TreeNode> results) {
@@ -472,6 +473,14 @@ public class ItemDomainMachineDesignController
 
     public void setMdSearchString(String mdSearchString) {
         this.mdSearchString = mdSearchString;
+    }
+
+    public boolean isSearchCollapsed() {
+        return searchCollapsed;
+    }
+
+    public void setSearchCollapsed(boolean searchCollapsed) {
+        this.searchCollapsed = searchCollapsed;
     }
 
     public void expandSelectedTreeNode() {
@@ -558,6 +567,7 @@ public class ItemDomainMachineDesignController
     }
 
     public void resetListConfigurationVariables() {
+        searchCollapsed = true; 
         displayListConfigurationView = false;
         displayListViewItemDetailsView = false;
         displayAddMDPlaceholderListConfigurationPanel = false;
@@ -635,7 +645,7 @@ public class ItemDomainMachineDesignController
     public boolean isDisplayListConfigurationView() {
         return displayListConfigurationView;
     }
-
+    
     public boolean isDisplayListViewItemDetailsView() {
         return displayListViewItemDetailsView;
     }

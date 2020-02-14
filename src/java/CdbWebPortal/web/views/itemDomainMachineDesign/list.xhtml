@@ -19,42 +19,50 @@ See LICENSE file.
     </f:metadata>
 
     <ui:define name="itemListPageEmphasizedContentBelowTitle">
-        <p:commandButton id="itemDomainMachineDesignKeyboardShortcutButton"
-                         icon="fa fa-question"
-                         onclick="PF('itemDomainMachineDesignKeyboardShortcutDialogWidget').show()" >
-            <p:tooltip for="itemDomainMachineDesignKeyboardShortcutButton"
-                       value="Show keyboard shortcuts for machine design list."/> 
-        </p:commandButton>
-        <p:selectBooleanButton onLabel="Favorites Enabled" offLabel="Favorites Disabled"
-                               onIcon="fa fa-star" offIcon="fa fa-star-o"
-                               value="#{itemDomainMachineDesignController.favoritesShown}"
-                               onchange="onChangeFavoritesEnabled()"
-                               rendered="#{loginController.loggedIn}">
-            <p:remoteCommand name="onChangeFavoritesEnabled"                         
-                             action="#{itemDomainMachineDesignController.list()}"
-                             onstart="PF('loadingDialog').show()"/> 
-        </p:selectBooleanButton>
+        <p:outputPanel id="emphasizedContentBelowTitleOutputPanel">
+            <p:commandButton id="itemDomainMachineDesignKeyboardShortcutButton"
+                             icon="fa fa-question"
+                             rendered="#{!itemDomainMachineDesignController.displayListConfigurationView}"
+                             onclick="PF('itemDomainMachineDesignKeyboardShortcutDialogWidget').show()" >
+                <p:tooltip for="itemDomainMachineDesignKeyboardShortcutButton"
+                           value="Show keyboard shortcuts for machine design list."/> 
+            </p:commandButton>
+            <p:selectBooleanButton onLabel="Favorites Enabled" offLabel="Favorites Disabled"
+                                   onIcon="fa fa-star" offIcon="fa fa-star-o"
+                                   value="#{itemDomainMachineDesignController.favoritesShown}"
+                                   onchange="onChangeFavoritesEnabled()"
+                                   rendered="#{!itemDomainMachineDesignController.displayListConfigurationView and loginController.loggedIn}">
+                <p:remoteCommand name="onChangeFavoritesEnabled"                         
+                                 action="#{itemDomainMachineDesignController.list()}"
+                                 onstart="PF('loadingDialog').show()"/> 
+            </p:selectBooleanButton>
 
-        <p:hotkey bind="alt+s" 
-                  onstart="PF('machineDesignSearchBarPanelWidget').toggle()" /> 
-                
-        <p:panel widgetVar="machineDesignSearchBarPanelWidget" 
-                 styleClass="noPaddingPanel"
-                 collapsed="true"
-                 toggleable="true">
-            <p:inputText id="menuBarSearchInput" placeholder="Search"
-                         autocomplete="off"
-                         styleClass="expandingInputText entityDataText menuBarInputText" 
-                         value="#{itemDomainMachineDesignController.mdSearchString}" 
-                         title="Search String"/>
-            <p:defaultCommand target="mdSearchInputCommand" />
-            <p:commandButton id="mdSearchInputCommand" 
-                             style="display: none" 
-                             onstart="PF('loadingDialog').show()"                             
-                             oncomplete="PF('loadingDialog').hide(); scrollToSelectedNode();"
-                             update="@form" 
-                             action="#{itemDomainMachineDesignController.searchMachineDesign()}"/>
-        </p:panel>
+            <p:panel widgetVar="machineDesignSearchBarPanelWidget" 
+                     styleClass="noPaddingPanel"
+                     collapsed="#{itemDomainMachineDesignController.searchCollapsed}"
+                     rendered="#{!itemDomainMachineDesignController.displayListConfigurationView}"
+                     toggleable="true">
+
+                <p:hotkey bind="alt+s" 
+                          onstart="PF('machineDesignSearchBarPanelWidget').toggle()" /> 
+
+                <p:inputText id="menuBarSearchInput" placeholder="Search"
+                             autocomplete="off"
+                             styleClass="expandingInputText entityDataText menuBarInputText" 
+                             value="#{itemDomainMachineDesignController.mdSearchString}" 
+                             title="Search String"/>
+                <p:defaultCommand target="mdSearchInputCommand"
+                                  scope="menuBarSearchInput"/>
+                <p:commandButton id="mdSearchInputCommand" 
+                                 style="display: none" 
+                                 onstart="PF('loadingDialog').show()"                             
+                                 oncomplete="PF('loadingDialog').hide(); scrollToSelectedNode();"
+                                 ajax="false"
+                                 update="menuBarSearchInput" 
+                                 action="#{itemDomainMachineDesignController.searchMachineDesign()}"/>            
+                <br/>
+            </p:panel>
+        </p:outputPanel>
     </ui:define>
 
     <ui:define name="customizeDisplayDialog">
