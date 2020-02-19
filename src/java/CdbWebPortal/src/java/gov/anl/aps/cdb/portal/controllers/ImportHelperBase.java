@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -357,6 +358,29 @@ public abstract class ImportHelperBase {
         rows.add(newEntity);
         return isValid;
     }
+    
+    public ImportInfo importData() {
+        
+        ItemController controller = this.getEntityController();
+        
+        String message = "";
+        List<Item> newItems = new ArrayList<>();
+        for (Item row : rows) {
+            newItems.add(row);
+        }
+        
+        try {
+            controller.createList(newItems);
+            return new ImportInfo(true, "Import succeeded.  Created " + rows.size() + " instances.");
+        } catch (CdbException ex) {
+            return new ImportInfo(false, "Import failed. " + ex.getMessage() + ".");
+        } catch (RuntimeException ex) {
+            Throwable t = ExceptionUtils.getRootCause(ex);
+            return new ImportInfo(false, "Import failed. " + ex.getMessage() + ": " + t.getMessage() + ".");
+        }
+    }
+
+
 
     protected abstract void createColumnModels_();
 
@@ -365,8 +389,6 @@ public abstract class ImportHelperBase {
     protected abstract String getCompletionUrlValue();
 
     protected abstract boolean isValidationOnly();
-
-    public abstract ImportInfo importData();
 
     public abstract ItemController getEntityController();
 }

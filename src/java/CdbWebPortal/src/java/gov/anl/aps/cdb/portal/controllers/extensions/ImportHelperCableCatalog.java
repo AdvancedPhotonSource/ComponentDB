@@ -4,15 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  *
@@ -62,27 +56,4 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     public ItemController getEntityController() {
         return ItemDomainCableCatalogController.getInstance();
     }
-    
-    @Override
-    public ImportInfo importData() {
-        
-        ItemDomainCableCatalogController controller = ItemDomainCableCatalogController.getInstance();
-        
-        String message = "";
-        List<ItemDomainCableCatalog> newCableTypes = new ArrayList<>();
-        for (CdbEntity row : rows) {
-            newCableTypes.add((ItemDomainCableCatalog)row);
-        }
-        
-        try {
-            controller.createList(newCableTypes);
-            return new ImportInfo(true, "Import succeeded.  Created " + rows.size() + " instances.");
-        } catch (CdbException ex) {
-            return new ImportInfo(false, "Import failed. " + ex.getMessage() + ".");
-        } catch (RuntimeException ex) {
-            Throwable t = ExceptionUtils.getRootCause(ex);
-            return new ImportInfo(false, "Import failed. " + ex.getMessage() + ": " + t.getMessage() + ".");
-        }
-    }
-
 }
