@@ -37,6 +37,8 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient String bendRadius = null;
     private transient String radTolerance = null;
     private transient String team = null;
+    private transient boolean isValid = false;
+    private transient String validString = null;
     
     private final static String CABLE_INTERNAL_PROPERTY_TYPE = "cable_internal_property_type"; 
     private final static String CABLE_PROPERTY_URL_KEY = "url"; 
@@ -351,4 +353,20 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
     }
     
+    public boolean isIsValid() {
+        return isValid;
+    }
+
+    public void setIsValid(boolean isValid) {
+        this.isValid = isValid;
+    }
+
+    public String getValidString() {
+        return validString;
+    }
+
+    public void setValidString(String validString) {
+        this.validString = validString;
+    }
+        
 }

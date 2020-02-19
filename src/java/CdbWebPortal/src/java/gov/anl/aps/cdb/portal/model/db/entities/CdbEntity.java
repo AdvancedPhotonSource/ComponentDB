@@ -60,7 +60,7 @@ public class CdbEntity implements Serializable, Cloneable {
     public void setPersitanceErrorMessage(String persitanceErrorMessage) {
         this.persitanceErrorMessage = persitanceErrorMessage;
     }
-    
+
     @JsonAnySetter
     public void addJsonProperty(String key, String value) {
         if (apiProperties == null) {

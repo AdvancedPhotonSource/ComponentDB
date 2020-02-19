@@ -6,7 +6,8 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ColumnModel;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ImportInfo;
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.RowModel;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +19,6 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -121,7 +121,7 @@ public class ItemDomainImportWizard implements Serializable {
         return importResult;
     }
     
-    public List<RowModel> getRows() {
+    public List<Item> getRows() {
         if (importHelper != null) {
             return importHelper.getRows();
         } else {
