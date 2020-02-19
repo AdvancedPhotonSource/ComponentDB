@@ -49,16 +49,12 @@ public abstract class ImportHelperBase {
         private String setterMethod;
         private String sampleValue;
 
-        public ColumnModel(String h, String p, ColType t, String s, String v) {
+        public ColumnModel(String h, String p, ColType t, String s, boolean r, String v) {
             this.header = h;
             this.property = p;
             this.colType = t;
             this.setterMethod = s;
             this.sampleValue = v;
-        }
-
-        public ColumnModel(String h, String p, ColType t, String s, boolean r, String v) {
-            this(h, p, t, s, v);
             this.required = r;
         }
 
@@ -212,8 +208,8 @@ public abstract class ImportHelperBase {
         // allow subclass to create column models
         createColumnModels_();
 
-        columns.add(new ColumnModel(isValidHeader, isValidProperty, ColType.STRING, "isValidImport", ""));
-        columns.add(new ColumnModel(validStringHeader, validStringProperty, ColType.STRING, "setValidStringImport", ""));
+        columns.add(new ColumnModel(isValidHeader, isValidProperty, ColType.STRING, "isValidImport", false, ""));
+        columns.add(new ColumnModel(validStringHeader, validStringProperty, ColType.STRING, "setValidStringImport", false, ""));
     }
 
     protected void reset_() {
