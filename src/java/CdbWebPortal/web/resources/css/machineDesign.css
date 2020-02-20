@@ -154,3 +154,8 @@ h1 {
         background-color: #55A8FF;
     }
 }
+
+.mdReorderScrollBox {
+    width: 650px; 
+    height: 700px;
+}

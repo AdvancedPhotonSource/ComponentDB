@@ -14,6 +14,59 @@ See LICENSE file.
 
     <div id="dualConfigurationViewEnabled" style="display: none;">#{dualConfigurationViewEnabled}</div>
     <script type="text/javascript">
+
+        var timer = null;
+
+        function handleMousemove(event) {                        
+            var scrollPanel = document.getElementById('itemMachineDesignListForm:itemDomainMachineDesignReorderScrollPanel');             
+            if (scrollPanel !== null) {                
+                var browserHeight = document.documentElement.clientHeight;
+                var panelHeight = scrollPanel.clientHeight;
+
+                var paddingSize = (browserHeight - panelHeight) / 2;
+
+                var lowerLimit = panelHeight + paddingSize;
+                var upperLimit = paddingSize;
+                                
+                (function checkForWindowScroll() {
+
+                    clearTimeout(timer);
+
+                    if (adjustWindowScroll()) {
+
+                        timer = setTimeout(checkForWindowScroll, 30);
+
+                    }
+
+                })();
+
+                function adjustWindowScroll() {
+                    var newScroll = null;
+                    var clientY = event.clientY;
+                    var curScroll = scrollPanel.scrollTop;
+                    if (clientY > lowerLimit) {
+                        newScroll = curScroll + (clientY - lowerLimit) / 4;                        
+                    } else if (upperLimit > clientY) {
+                        newScroll = curScroll - (upperLimit - clientY) / 4; 
+                    }
+                    
+                    if (newScroll != null) {
+                        scrollPanel.scrollTo(0, newScroll);
+                        return true; 
+                    }
+                    return false;
+                }
+            }
+        }
+
+        function scrollReorderConfigureListender(apply) {
+            if (apply) {
+                window.addEventListener( "mousemove", handleMousemove);
+            } else {
+                window.removeEventListener( "mousemove", handleMousemove);
+            }
+        }
+
         continueWithScroll = document.getElementById('dualConfigurationViewEnabled').innerHTML == 'false';
         if (continueWithScroll) {
             scrollToSelectedNode();
@@ -26,63 +79,63 @@ See LICENSE file.
                 row.scrollIntoView({'behavior': 'smooth', 'block': 'center'});
             }
         }
-        
+
         function getMachineDesignId(dragDropId) {
             var index = dragDropId.lastIndexOf(":");
-            
+
             var baseId = dragDropId.substring(0, index) + ":draggableMachineDesign";
-            
+
             var rowItem = document.getElementById(baseId);
             idItem = rowItem.getElementsByClassName("mdId")[0];
             nameItem = rowItem.getElementsByClassName("mdName")[0];
-            
+
             return [idItem.innerHTML, nameItem.innerHTML];
         }
 
 
-        function handleDrop(event, ui) {            
+        function handleDrop(event, ui) {
             var draggable = ui.draggable[0];
-            
+
             var draggableId = draggable.id;
-            var droppableId = this.id; 
-            
+            var droppableId = this.id;
+
             var source = getMachineDesignId(draggableId);
             var destination = getMachineDesignId(droppableId);
-            
+
             window.sourceDDId = source[0];
             window.destinationDDId = destination[0];
             var sourceName = source[1];
             var destinationName = destination[1];
-                        
-            var message = "Would you like to move <b>" + sourceName + "</b> into <b>" + destinationName + "</b>?"; 
+
+            var message = "Would you like to move <b>" + sourceName + "</b> into <b>" + destinationName + "</b>?";
             document.getElementById('machineDesignDropConfirmDialogMessage').innerHTML = message;
-            
-            PF('machineDesignDropConfirmDialogWidget').show();                        
+
+            PF('machineDesignDropConfirmDialogWidget').show();
         }
-        
-        function finishDrop() {            
+
+        function finishDrop() {
             machineDesignDropEventTrigger([
-                {name: 'sourceId', value: window.sourceDDId}, 
+                {name: 'sourceId', value: window.sourceDDId},
                 {name: 'destinationId', value: window.destinationDDId}
-            ]); 
+            ]);
         }
-        
+
         // TODO verify if fix is needed after Primefaces 6.2
         // https://forum.primefaces.org/viewtopic.php?t=26813
-                
-        var lastOpenedWidget; 
+
+        var lastOpenedWidget;
         var currentEvent;
-        
+
         function showLastContextMenu() {
             if (lastOpenedWidget != null) {
-                PF(lastOpenedWidget).show(currentEvent); 
-            }            
+                PF(lastOpenedWidget).show(currentEvent);
+            }
             lastOpenedWidget = null;
-            currentEvent = null; 
+            currentEvent = null;
         }
 
         $(document).ready(function () {
-            PrimeFaces.widget.ContextMenu.prototype.show = function (e) {                
+            PrimeFaces.widget.ContextMenu.prototype.show = function (e) {
                 //hide other contextmenus if any
                 $(document.body).children('.ui-contextmenu:visible').hide();
 
@@ -107,12 +160,12 @@ See LICENSE file.
                 if (this.cfg.beforeShow) {
                     this.cfg.beforeShow.call(this);
                 }
-                                
+
                 lastOpenedWidget = this.jq[0].id;
-                lastOpenedWidget = lastOpenedWidget.split(":"); 
-                lastOpenedWidget = lastOpenedWidget[lastOpenedWidget.length -1];
-                lastOpenedWidget = lastOpenedWidget + "Widget";                 
-                
+                lastOpenedWidget = lastOpenedWidget.split(":");
+                lastOpenedWidget = lastOpenedWidget[lastOpenedWidget.length - 1];
+                lastOpenedWidget = lastOpenedWidget + "Widget";
+
                 this.jq.css({
                     'left': left,
                     'top': top,
@@ -123,7 +176,7 @@ See LICENSE file.
             };
         });
     </script>
-    
+
     <p:confirmDialog widgetVar="machineDesignDropConfirmDialogWidget"
                      styleClass="viewTransparentBackgroundDialog"
                      header="Confirm moving Machine Design?">
@@ -138,14 +191,14 @@ See LICENSE file.
                          onclick="PF('machineDesignDropConfirmDialogWidget').hide()"
                          oncomplete="PF('loadingDialog').hide()"/>
     </p:confirmDialog>
-                     
-    
+
+
     <p:remoteCommand name="machineDesignDropEventTrigger"
                      action="#{itemDomainMachineDesignController.onDropFromJS}"
                      onstart="PF('loadingDialog').show();"
                      oncomplete="PF('loadingDialog').hide();"
                      update="@form"/> 
-                     
+
 
 </ui:composition>
 
