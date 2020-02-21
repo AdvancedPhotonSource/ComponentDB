@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:param name="travelerSuccessUpdateTarget"
+              value="#{travelerSuccessUpdateTarget != null ? travelerSuccessUpdateTarget : 'travelerTemplateListDataTable'}" />
+
+    <p:dialog id="travelerTemplateTravelerListDialog" 
+              widgetVar="travelerTemplateTravelerListDialogWidget" 
+              header="List of Travelers for Selected Template" 
+              styleClass="viewTransparentBackgroundDialog"              
+              onShow="onShowtravelerTemplateTravelerListDialog()"
+              modal="false"
+              resizable="false">
+        <ui:param name="travelersCreatedFromTemplate"
+                  value="#{itemTravelerDomainCatalogController.travelersCreatedFromTemplate}"/>
+
+        <p:outputPanel id="travelerTemplateTravelerListDialogPanel">            
+            <p:dataTable value="#{travelersCreatedFromTemplate}"
+                         var="createdFromTemplateObj"
+                         emptyMessage="No travelers have been created yet."
+                         paginator="true" 
+                         paginatorPosition="bottom"
+                         rows="#{resources.DialogDataTableNumberOfRows}">
+
+                <ui:param name="travelerObject"
+                          value="#{createdFromTemplateObj.traveler}"/>
+                <ui:param name="inventoryItem"
+                          value="#{createdFromTemplateObj.assignedToItem}"/>
+
+                <p:column headerText="Inventory"
+                          groupRow="True">
+                    #{inventoryItem}
+                </p:column>
+
+                <ui:include src="travelerInstanceListObject.xhtml" >
+                    <ui:param name="renderedCreatedFromTemplate"
+                              value="#{false}"/>
+                    <ui:param name="renderedDescription"
+                              value="#{false}"/>
+                </ui:include>
+
+            </p:dataTable>
+        </p:outputPanel>
+
+        <f:facet name="footer">                                                                 
+            <p:commandButton value='Close' 
+                             onclick="PF('travelerTemplateTravelerListDialogWidget').hide();"
+                             icon="fa fa-close" />               
+        </f:facet>
+    </p:dialog>  
+
+    <p:remoteCommand name="onShowtravelerTemplateTravelerListDialog"
+                     update="travelerTemplateTravelerListDialogPanel"
+                     onstart="PF('loadingDialog').show()"
+                     oncomplete="PF('travelerTemplateTravelerListDialogWidget').initPosition();
+                     PF('loadingDialog').hide();" />
+
+</ui:composition>
+

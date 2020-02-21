@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,6 +95,11 @@ public class ItemDomainMachineDesign extends LocatableItem {
         }        
        
        return null;
+    }
+
+    @Override
+    public ItemController getItemDomainController() {
+        return ItemDomainMachineDesignController.getInstance();
     }
 
 }

@@ -6,7 +6,8 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
-                xmlns:p="http://primefaces.org/ui">   
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
 
     <ui:param name="dualConfigurationViewEnabled"
               value="#{entityController.displayListConfigurationView}"/>
@@ -33,22 +34,37 @@ See LICENSE file.
             
             var rowItem = document.getElementById(baseId);
             idItem = rowItem.getElementsByClassName("mdId")[0];
+            nameItem = rowItem.getElementsByClassName("mdName")[0];
             
-            return idItem.innerHTML;
+            return [idItem.innerHTML, nameItem.innerHTML];
         }
 
 
-        function handleDrop(event, ui) {
-            debugger;
+        function handleDrop(event, ui) {            
             var draggable = ui.draggable[0];
             
             var draggableId = draggable.id;
             var droppableId = this.id; 
             
-            var sourceId = getMachineDesignId(draggableId);
-            var destinationId = getMachineDesignId(droppableId);
+            var source = getMachineDesignId(draggableId);
+            var destination = getMachineDesignId(droppableId);
             
-            machineDesignDropEventTrigger([{name: 'sourceId', value: sourceId}, {name: 'destinationId', value: destinationId}]); 
+            window.sourceDDId = source[0];
+            window.destinationDDId = destination[0];
+            var sourceName = source[1];
+            var destinationName = destination[1];
+                        
+            var message = "Would you like to move <b>" + sourceName + "</b> into <b>" + destinationName + "</b>?"; 
+            document.getElementById('machineDesignDropConfirmDialogMessage').innerHTML = message;
+            
+            PF('machineDesignDropConfirmDialogWidget').show();                        
+        }
+        
+        function finishDrop() {            
+            machineDesignDropEventTrigger([
+                {name: 'sourceId', value: window.sourceDDId}, 
+                {name: 'destinationId', value: window.destinationDDId}
+            ]); 
         }
         
         // TODO verify if fix is needed after Primefaces 6.2
@@ -107,6 +123,22 @@ See LICENSE file.
             };
         });
     </script>
+    
+    <p:confirmDialog widgetVar="machineDesignDropConfirmDialogWidget"
+                     styleClass="viewTransparentBackgroundDialog"
+                     header="Confirm moving Machine Design?">
+        <f:facet name="message">
+            <div id="machineDesignDropConfirmDialogMessage"></div>
+        </f:facet>
+        <p:commandButton value="Yes"
+                         onclick="finishDrop()"/>
+        <p:commandButton value="No"
+                         update="@form"
+                         onstart="PF('loadingDialog').show()"
+                         onclick="PF('machineDesignDropConfirmDialogWidget').hide()"
+                         oncomplete="PF('loadingDialog').hide()"/>
+    </p:confirmDialog>
+                     
     
     <p:remoteCommand name="machineDesignDropEventTrigger"
                      action="#{itemDomainMachineDesignController.onDropFromJS}"

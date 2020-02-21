@@ -173,12 +173,17 @@ public class ItemDomainMachineDesignController
     // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">
     private String mdSearchString;
     private List<TreeNode> searchResultsList;
+    private boolean searchCollapsed; 
 
     @EJB
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
 
     public static ItemDomainMachineDesignController getInstance() {
-        return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
+        if (SessionUtility.runningFaces()) {            
+            return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
+        } else {
+            return getApiInstance();
+        }
     }
 
     public static synchronized ItemDomainMachineDesignController getApiInstance() {
@@ -413,7 +418,7 @@ public class ItemDomainMachineDesignController
 
             selectItemInTreeTable(searchResultsList.get(0));
         }
-
+        searchCollapsed = true; 
     }
 
     private void searchMachineDesign(TreeNode parentNode, Pattern searchPattern, List<TreeNode> results) {
@@ -468,6 +473,14 @@ public class ItemDomainMachineDesignController
 
     public void setMdSearchString(String mdSearchString) {
         this.mdSearchString = mdSearchString;
+    }
+
+    public boolean isSearchCollapsed() {
+        return searchCollapsed;
+    }
+
+    public void setSearchCollapsed(boolean searchCollapsed) {
+        this.searchCollapsed = searchCollapsed;
     }
 
     public void expandSelectedTreeNode() {
@@ -554,6 +567,7 @@ public class ItemDomainMachineDesignController
     }
 
     public void resetListConfigurationVariables() {
+        searchCollapsed = true; 
         displayListConfigurationView = false;
         displayListViewItemDetailsView = false;
         displayAddMDPlaceholderListConfigurationPanel = false;
@@ -631,7 +645,7 @@ public class ItemDomainMachineDesignController
     public boolean isDisplayListConfigurationView() {
         return displayListConfigurationView;
     }
-
+    
     public boolean isDisplayListViewItemDetailsView() {
         return displayListViewItemDetailsView;
     }
@@ -1512,6 +1526,12 @@ public class ItemDomainMachineDesignController
 
         List<ItemDomainMachineDesign> favoriteItems = getFavoriteItems();
         favoriteMachineDesignTreeRootTreeNode = new DefaultTreeNode();
+        
+        if (favoriteItems == null) {
+            return favoriteMachineDesignTreeRootTreeNode; 
+        }
+        
+        List<Item> parentFavorites = new ArrayList<>(); 
 
         for (ItemDomainMachineDesign item : favoriteItems) {
 
@@ -1522,9 +1542,17 @@ public class ItemDomainMachineDesignController
                 if (ittrParent == null) {
                     item = parentMachineDesign;
                 }
-                parentMachineDesign = parentMachineDesign.getParentMachineDesign();
+                parentMachineDesign = ittrParent;
             }
             if (parentFound) {
+                // Ensure mutliple top levels aren't added. 
+                if (parentFavorites.contains(item)) {
+                    continue;
+                } else {
+                    parentFavorites.add(item); 
+                }
+                
+                // Ensure multiple top levels aren't added when a child of a favorite is also a favorite. 
                 if (favoriteItems.contains(item)) {
                     continue;
                 }
