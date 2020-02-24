@@ -15,7 +15,7 @@ See LICENSE file.
     <div id="dualConfigurationViewEnabled" style="display: none;">#{dualConfigurationViewEnabled}</div>
     <script type="text/javascript">
 
-        var timer = null;
+        var scrollCheckTimer = null;
 
         function handleMousemove(event) {                        
             var scrollPanel = document.getElementById('itemMachineDesignListForm:itemDomainMachineDesignReorderScrollPanel');             
@@ -30,11 +30,11 @@ See LICENSE file.
                                 
                 (function checkForWindowScroll() {
 
-                    clearTimeout(timer);
+                    clearTimeout(scrollCheckTimer);
 
                     if (adjustWindowScroll()) {
 
-                        timer = setTimeout(checkForWindowScroll, 30);
+                        scrollCheckTimer = setTimeout(checkForWindowScroll, 30);
 
                     }
 
