@@ -429,7 +429,7 @@ public class LocatableItemController implements Serializable {
     }
 
     public ItemDomainLocation getLocation(LocatableItem inventoryItem) {
-        if (inventoryItem.getLocationItem() == null) {
+        if (inventoryItem.getOriginalLocationLoaded() == false) {
             setItemLocationInfo(inventoryItem);
         }
         return inventoryItem.getLocationItem();
@@ -544,8 +544,10 @@ public class LocatableItemController implements Serializable {
             SessionUtility.addErrorMessage("Error", "Cannot use the same location as this item.");
             return;
         }
-
+        
+        Boolean originalLocationLoaded = item.getOriginalLocationLoaded();
         item.resetLocationVariables();
+        item.setOriginalLocationLoaded(originalLocationLoaded);
 
         item.setLocation(locationItem);
         updateLocationTreeForItem(item);
