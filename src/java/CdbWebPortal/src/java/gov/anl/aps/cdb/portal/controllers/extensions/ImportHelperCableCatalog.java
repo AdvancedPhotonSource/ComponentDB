@@ -13,8 +13,6 @@ import java.util.List;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Hyperlink;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFHyperlink;
 
@@ -57,11 +55,11 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         }
         
         public String getUrl() {
-            return ((ItemDomainCableCatalog)getEntity()).getUrl();
+            return ((ItemDomainCableCatalog)getEntity()).getUrlDisplay();
         }
         
         public String getImageUrl() {
-            return ((ItemDomainCableCatalog)getEntity()).getImageUrl();
+            return ((ItemDomainCableCatalog)getEntity()).getImageUrlDisplay();
         }
         
         public String getManufacturer() {
@@ -118,72 +116,22 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
 
     }
 
-    protected static String cableTypeHeader = "Cable Type";
-    protected static String cableTypeProperty = "cableType";
     protected static int cableTypeColumn = 0;
-    
-    protected static String descriptionHeader = "Description";
-    protected static String descriptionProperty = "description";
     protected static int descriptionColumn = 1;
-    
-    protected static String urlHeader = "Link URL";
-    protected static String urlProperty = "url";
     protected static int urlColumn = 2;
-    
-    protected static String imageUrlHeader = "Image URL";
-    protected static String imageUrlProperty = "imageUrl";
     protected static int imageUrlColumn = 3;
-
-    protected static String manufacturerHeader = "Manufacturer";
-    protected static String manufacturerProperty = "manufacturer";
     protected static int manufacturerColumn = 4;
-    
-    protected static String partNumberHeader = "Part Number";
-    protected static String partNumberProperty = "partNumber";
     protected static int partNumberColumn = 5;
-    
-    protected static String diameterHeader = "Diameter";
-    protected static String diameterProperty = "diameter";
     protected static int diameterColumn = 6;
-
-    protected static String weightHeader = "Weight";
-    protected static String weightProperty = "weight";
     protected static int weightColumn = 7;
-    
-    protected static String conductorsHeader = "Conductors";
-    protected static String conductorsProperty = "conductors";
     protected static int conductorsColumn = 8;
-    
-    protected static String insulationHeader = "Insulation";
-    protected static String insulationProperty = "insulation";
     protected static int insulationColumn = 9;
-    
-    protected static String jacketColorHeader = "Jacket Color";
-    protected static String jacketColorProperty = "jacketColor";
     protected static int jacketColorColumn = 10;
-    
-    protected static String voltageRatingHeader = "Voltage Rating";
-    protected static String voltageRatingProperty = "voltageRating";
     protected static int voltageRatingColumn = 11;
-    
-    protected static String fireLoadHeader = "Fire Load";
-    protected static String fireLoadProperty = "fireLoad";
-    protected static int fireLoadColumn = 12;
-    
-    protected static String heatLimitHeader = "Heat Limit";
-    protected static String heatLimitProperty = "heatLimit";
-    protected static int heatLimitColumn = 13;
-    
-    protected static String bendRadiusHeader = "Voltage Rating";
-    protected static String bendRadiusProperty = "bendRadius";
-    protected static int bendRadiusColumn = 14;
-    
-    protected static String radToleranceHeader = "Voltage Rating";
-    protected static String radToleranceProperty = "radTolerance";
-    protected static int radToleranceColumn = 15;
-    
-    protected static String teamHeader = "Team";
-    protected static String teamProperty = "team";
+    protected static int fireLoadColumn = 12;    
+    protected static int heatLimitColumn = 13;    
+    protected static int bendRadiusColumn = 14;    
+    protected static int radToleranceColumn = 15;    
     protected static int teamColumn = 16;
     
     protected static String completionUrlValue = "/views/itemDomainCableCatalog/list?faces-redirect=true";
@@ -200,23 +148,23 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     
     @Override
     protected void createColumnModels_() {
-        columns.add(new ColumnModel(cableTypeHeader, cableTypeProperty));
-        columns.add(new ColumnModel(descriptionHeader, descriptionProperty));
-        columns.add(new ColumnModel(urlHeader, urlProperty));
-        columns.add(new ColumnModel(imageUrlHeader, imageUrlProperty));
-        columns.add(new ColumnModel(manufacturerHeader, manufacturerProperty));
-        columns.add(new ColumnModel(partNumberHeader, partNumberProperty));
-        columns.add(new ColumnModel(diameterHeader, diameterProperty));
-        columns.add(new ColumnModel(weightHeader, weightProperty));
-        columns.add(new ColumnModel(conductorsHeader, conductorsProperty));
-        columns.add(new ColumnModel(insulationHeader, insulationProperty));
-        columns.add(new ColumnModel(jacketColorHeader, jacketColorProperty));
-        columns.add(new ColumnModel(voltageRatingHeader, voltageRatingProperty));
-        columns.add(new ColumnModel(fireLoadHeader, fireLoadProperty));
-        columns.add(new ColumnModel(heatLimitHeader, heatLimitProperty));
-        columns.add(new ColumnModel(bendRadiusHeader, bendRadiusProperty));
-        columns.add(new ColumnModel(radToleranceHeader, radToleranceProperty));
-        columns.add(new ColumnModel(teamHeader, teamProperty));
+        columns.add(new ColumnModel("Cable Type", "cableType", ColType.STRING, "M 24"));
+        columns.add(new ColumnModel("Description", "description", ColType.STRING, "24 fiber single-unit"));
+        columns.add(new ColumnModel("Link URL", "url", ColType.STRING, "http://www.example.com/example"));
+        columns.add(new ColumnModel("Image URL", "imageUrl", ColType.STRING, "http://www.example.com/example"));
+        columns.add(new ColumnModel("Manufacturer", "manufacturer", ColType.STRING, "CommScope"));
+        columns.add(new ColumnModel("Part Number", "partNumber", ColType.STRING, "R-024-DS-5K-FSUBR"));
+        columns.add(new ColumnModel("Diameter", "diameter", ColType.NUMERIC, "0.4"));
+        columns.add(new ColumnModel("Weight", "weight", ColType.NUMERIC, "75.2"));
+        columns.add(new ColumnModel("Conductors", "conductors", ColType.NUMERIC, "24"));
+        columns.add(new ColumnModel("Insulation", "insulation", ColType.STRING, "PVC"));
+        columns.add(new ColumnModel("Jacket Color", "jacketColor", ColType.STRING, "brown"));
+        columns.add(new ColumnModel("Voltage Rating", "voltageRating", ColType.NUMERIC, "123.45"));
+        columns.add(new ColumnModel("Fire Load", "fireLoad", ColType.NUMERIC, "123.45"));
+        columns.add(new ColumnModel("Heat Limit", "heatLimit", ColType.NUMERIC, "123.45"));
+        columns.add(new ColumnModel("Bend Radius", "bendRadius", ColType.NUMERIC, "4.9"));
+        columns.add(new ColumnModel("Rad Tolerance", "radTolerance", ColType.NUMERIC, "123.45"));
+        columns.add(new ColumnModel("Category Id", "team", ColType.NUMERIC, "26"));
     }
     
     @Override
@@ -342,11 +290,14 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
         cell = row.getCell(conductorsColumn);
         if (cell == null) {
             conductors = "";
+        } else if (cell.getCellType() != CellType.NUMERIC) {
+            conductors = "";
+            isValid = false;
+            validString = "conductors is not a number";
         } else {
-            cell.setCellType(CellType.STRING);
-            conductors = cell.getStringCellValue();
+            conductors = String.valueOf(cell.getNumericCellValue());
         }
-        
+
         cell = row.getCell(insulationColumn);
         if (cell == null) {
             insulation = "";

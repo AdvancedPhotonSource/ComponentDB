@@ -25,6 +25,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.UploadedFile;
 
 /**
@@ -134,6 +135,10 @@ public class ItemDomainImportWizard implements Serializable {
         } else {
             return new ArrayList<>();
         }        
+    }
+    
+    public StreamedContent getTemplateExcelFile() {
+        return importHelper.getTemplateExcelFile();
     }
     
     protected boolean readXlsFileData(UploadedFile f) {
