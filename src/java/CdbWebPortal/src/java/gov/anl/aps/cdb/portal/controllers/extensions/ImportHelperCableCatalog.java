@@ -4,17 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFHyperlink;
 
 /**
  *
@@ -22,119 +14,29 @@ import org.apache.poi.xssf.usermodel.XSSFHyperlink;
  */
 public class ImportHelperCableCatalog extends ImportHelperBase {
 
-    public class CableCatalogRowModel extends RowModel {
 
-        private String cableType = "";
-        private String description = "";
-        private String url = "";
-        private String imageUrl = "";
-        private String manufacturer = "";
-        private String partNumber = "";
-        private String diameter = "";
-        private String weight = "";
-        private String conductors = "";
-        private String insulation = "";
-        private String jacketColor = "";
-        private String voltageRating = "";
-        private String fireLoad = "";
-        private String heatLimit = "";
-        private String bendRadius = "";
-        private String radTolerance = "";
-        private String team = "";
-
-        public CableCatalogRowModel(ItemDomainCableCatalog c) {
-            super(c);
-        }
-
-        public String getCableType() {
-            return ((ItemDomainCableCatalog)getEntity()).getCableType();
-        }
-        
-        public String getDescription() {
-            return ((ItemDomainCableCatalog)getEntity()).getDescription();
-        }
-        
-        public String getUrl() {
-            return ((ItemDomainCableCatalog)getEntity()).getUrlDisplay();
-        }
-        
-        public String getImageUrl() {
-            return ((ItemDomainCableCatalog)getEntity()).getImageUrlDisplay();
-        }
-        
-        public String getManufacturer() {
-            return ((ItemDomainCableCatalog)getEntity()).getManufacturer();
-        }
-
-        public String getPartNumber() {
-            return ((ItemDomainCableCatalog)getEntity()).getPartNumber();
-        }
-
-        public String getDiameter() {
-            return ((ItemDomainCableCatalog)getEntity()).getDiameter();
-        }
-
-        public String getWeight() {
-            return ((ItemDomainCableCatalog)getEntity()).getWeight();
-        }
-
-        public String getConductors() {
-            return ((ItemDomainCableCatalog)getEntity()).getConductors();
-        }
-
-        public String getInsulation() {
-            return ((ItemDomainCableCatalog)getEntity()).getInsulation();
-        }
-
-        public String getJacketColor() {
-            return ((ItemDomainCableCatalog)getEntity()).getJacketColor();
-        }
-
-        public String getVoltageRating() {
-            return ((ItemDomainCableCatalog)getEntity()).getVoltageRating();
-        }
-
-        public String getFireLoad() {
-            return ((ItemDomainCableCatalog)getEntity()).getFireLoad();
-        }
-
-        public String getHeatLimit() {
-            return ((ItemDomainCableCatalog)getEntity()).getHeatLimit();
-        }
-
-        public String getBendRadius() {
-            return ((ItemDomainCableCatalog)getEntity()).getBendRadius();
-        }
-
-        public String getRadTolerance() {
-            return ((ItemDomainCableCatalog)getEntity()).getRadTolerance();
-        }
-
-        public String getTeam() {
-            return ((ItemDomainCableCatalog)getEntity()).getTeam();
-        }
-
-    }
-
-    protected static int cableTypeColumn = 0;
-    protected static int descriptionColumn = 1;
-    protected static int urlColumn = 2;
-    protected static int imageUrlColumn = 3;
-    protected static int manufacturerColumn = 4;
-    protected static int partNumberColumn = 5;
-    protected static int diameterColumn = 6;
-    protected static int weightColumn = 7;
-    protected static int conductorsColumn = 8;
-    protected static int insulationColumn = 9;
-    protected static int jacketColorColumn = 10;
-    protected static int voltageRatingColumn = 11;
-    protected static int fireLoadColumn = 12;    
-    protected static int heatLimitColumn = 13;    
-    protected static int bendRadiusColumn = 14;    
-    protected static int radToleranceColumn = 15;    
-    protected static int teamColumn = 16;
-    
     protected static String completionUrlValue = "/views/itemDomainCableCatalog/list?faces-redirect=true";
+    
+    @Override
+    protected void createColumnModels_() {
+        columns.add(new ColumnModel("Cable Type", "cableType", ColType.STRING, "setCableType", true, "M 24"));
+        columns.add(new ColumnModel("Description", "description", ColType.STRING, "setDescription", false, "24 fiber single-unit"));
+        columns.add(new ColumnModel("Link URL", "urlDisplay", ColType.URL, "setUrl", false, "http://www.example.com/example"));
+        columns.add(new ColumnModel("Image URL", "imageUrlDisplay", ColType.URL, "setImageUrl", false, "http://www.example.com/example"));
+        columns.add(new ColumnModel("Manufacturer", "manufacturer", ColType.STRING, "setManufacturer", false, "CommScope"));
+        columns.add(new ColumnModel("Part Number", "partNumber", ColType.STRING, "setPartNumber", false, "R-024-DS-5K-FSUBR"));
+        columns.add(new ColumnModel("Diameter", "diameter", ColType.NUMERIC, "setDiameter", false, "0.4"));
+        columns.add(new ColumnModel("Weight", "weight", ColType.NUMERIC, "setWeight", false, "75.2"));
+        columns.add(new ColumnModel("Conductors", "conductors", ColType.NUMERIC, "setConductors", false, "24"));
+        columns.add(new ColumnModel("Insulation", "insulation", ColType.STRING, "setInsulation", false, "PVC"));
+        columns.add(new ColumnModel("Jacket Color", "jacketColor", ColType.STRING, "setJacketColor", false, "brown"));
+        columns.add(new ColumnModel("Voltage Rating", "voltageRating", ColType.NUMERIC, "setVoltageRating", false, "123.45"));
+        columns.add(new ColumnModel("Fire Load", "fireLoad", ColType.NUMERIC, "setFireLoad", false, "123.45"));
+        columns.add(new ColumnModel("Heat Limit", "heatLimit", ColType.NUMERIC, "setHeatLimit", false, "123.45"));
+        columns.add(new ColumnModel("Bend Radius", "bendRadius", ColType.NUMERIC, "setBendRadius", false, "4.9"));
+        columns.add(new ColumnModel("Rad Tolerance", "radTolerance", ColType.NUMERIC, "setRadTolerance", false, "123.45"));
+        columns.add(new ColumnModel("Category Id", "team", ColType.STRING, "setTeam", true, "26"));
+    }
     
     @Override
     protected String getCompletionUrlValue() {
@@ -147,305 +49,13 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     }
     
     @Override
-    protected void createColumnModels_() {
-        columns.add(new ColumnModel("Cable Type", "cableType", ColType.STRING, "M 24"));
-        columns.add(new ColumnModel("Description", "description", ColType.STRING, "24 fiber single-unit"));
-        columns.add(new ColumnModel("Link URL", "url", ColType.STRING, "http://www.example.com/example"));
-        columns.add(new ColumnModel("Image URL", "imageUrl", ColType.STRING, "http://www.example.com/example"));
-        columns.add(new ColumnModel("Manufacturer", "manufacturer", ColType.STRING, "CommScope"));
-        columns.add(new ColumnModel("Part Number", "partNumber", ColType.STRING, "R-024-DS-5K-FSUBR"));
-        columns.add(new ColumnModel("Diameter", "diameter", ColType.NUMERIC, "0.4"));
-        columns.add(new ColumnModel("Weight", "weight", ColType.NUMERIC, "75.2"));
-        columns.add(new ColumnModel("Conductors", "conductors", ColType.NUMERIC, "24"));
-        columns.add(new ColumnModel("Insulation", "insulation", ColType.STRING, "PVC"));
-        columns.add(new ColumnModel("Jacket Color", "jacketColor", ColType.STRING, "brown"));
-        columns.add(new ColumnModel("Voltage Rating", "voltageRating", ColType.NUMERIC, "123.45"));
-        columns.add(new ColumnModel("Fire Load", "fireLoad", ColType.NUMERIC, "123.45"));
-        columns.add(new ColumnModel("Heat Limit", "heatLimit", ColType.NUMERIC, "123.45"));
-        columns.add(new ColumnModel("Bend Radius", "bendRadius", ColType.NUMERIC, "4.9"));
-        columns.add(new ColumnModel("Rad Tolerance", "radTolerance", ColType.NUMERIC, "123.45"));
-        columns.add(new ColumnModel("Category Id", "team", ColType.NUMERIC, "26"));
-    }
-    
-    @Override
     public int getDataStartRow() {
         return 1;
     }
 
-    @Override
-    public boolean parseRow(Row row) {
-
-        String cableType = "";
-        String description = "";
-        String url = "";
-        String imageUrl = "";
-        String manufacturer = "";
-        String partNumber = "";
-        String diameter = "";
-        String weight = "";
-        String conductors = "";
-        String insulation = "";
-        String jacketColor = "";
-        String voltageRating = "";
-        String fireLoad = "";
-        String heatLimit = "";
-        String bendRadius = "";
-        String radTolerance = "";
-        String team = "";
-        
-        boolean isValid = true;
-        String validString = "";
-
-        Cell cell;
-
-        cell = row.getCell(cableTypeColumn);
-        if (cell == null) {
-            cableType = "";
-            isValid = false;
-            validString = "unspecified cableType";
-        } else {
-            cell.setCellType(CellType.STRING);
-            cableType = cell.getStringCellValue();
-            if (cableType.equals("")) {
-                cableType = "";
-                isValid = false;
-                validString = "unspecified cableType";
-            }
-        }
-
-        cell = row.getCell(descriptionColumn);
-        if (cell == null) {
-            description = "";
-        } else {
-            cell.setCellType(CellType.STRING);
-            description = cell.getStringCellValue();
-        }
-
-        cell = row.getCell(urlColumn);
-        if (cell == null) {
-            url = "";
-        } else {
-            XSSFHyperlink urlLink = (XSSFHyperlink)cell.getHyperlink();
-            if (urlLink != null) {
-                url = urlLink.getAddress();
-                if (url.length() > 256) {
-                    isValid = false;
-                    validString = "url length exceeds 256 characters";
-                }
-            }
-        }
-        
-        cell = row.getCell(imageUrlColumn);
-        if (cell == null) {
-            imageUrl = "";
-        } else {
-            XSSFHyperlink imageLink = (XSSFHyperlink)cell.getHyperlink();
-            if (imageLink != null) {
-                imageUrl = imageLink.getAddress();
-                if (imageUrl.length() > 256) {
-                    isValid = false;
-                    validString = "imageUrl length exceeds 256 characters";
-                }
-            }
-        }
-        
-        cell = row.getCell(manufacturerColumn);
-        if (cell == null) {
-            manufacturer = "";
-        } else {
-            cell.setCellType(CellType.STRING);
-            manufacturer = cell.getStringCellValue();
-        }
-
-        cell = row.getCell(partNumberColumn);
-        if (cell == null) {
-            partNumber = "";
-        } else {
-            cell.setCellType(CellType.STRING);
-            partNumber = cell.getStringCellValue();
-        }
-
-        cell = row.getCell(diameterColumn);
-        if (cell == null) {
-            diameter = "";
-        } else if (cell.getCellType() != CellType.NUMERIC) {
-            diameter = "";
-            isValid = false;
-            validString = "diameter is not a number";
-        } else {
-            diameter = String.valueOf(cell.getNumericCellValue());
-        }
-
-        cell = row.getCell(weightColumn);
-        if (cell == null) {
-            weight = "";
-        } else if (cell.getCellType() != CellType.NUMERIC) {
-            weight = "";
-            isValid = false;
-            validString = "weight is not a number";
-        } else {
-            weight = String.valueOf(cell.getNumericCellValue());
-        }
-
-        cell = row.getCell(conductorsColumn);
-        if (cell == null) {
-            conductors = "";
-        } else if (cell.getCellType() != CellType.NUMERIC) {
-            conductors = "";
-            isValid = false;
-            validString = "conductors is not a number";
-        } else {
-            conductors = String.valueOf(cell.getNumericCellValue());
-        }
-
-        cell = row.getCell(insulationColumn);
-        if (cell == null) {
-            insulation = "";
-        } else {
-            cell.setCellType(CellType.STRING);
-            insulation = cell.getStringCellValue();
-        }
-        
-        cell = row.getCell(jacketColorColumn);
-        if (cell == null) {
-            jacketColor = "";
-        } else {
-            cell.setCellType(CellType.STRING);
-            jacketColor = cell.getStringCellValue();
-        }
-        
-        cell = row.getCell(voltageRatingColumn);
-        if (cell == null) {
-            voltageRating = "";
-        } else if (cell.getCellType() != CellType.NUMERIC) {
-            voltageRating = "";
-            isValid = false;
-            validString = "voltageRating is not a number";
-        } else {
-            voltageRating = String.valueOf(cell.getNumericCellValue());
-        }
-
-        cell = row.getCell(fireLoadColumn);
-        if (cell == null) {
-            fireLoad = "";
-        } else if (cell.getCellType() != CellType.NUMERIC) {
-            fireLoad = "";
-            isValid = false;
-            validString = "fireLoad is not a number";
-        } else {
-            fireLoad = String.valueOf(cell.getNumericCellValue());
-        }
-
-        cell = row.getCell(heatLimitColumn);
-        if (cell == null) {
-            heatLimit = "";
-        } else if (cell.getCellType() != CellType.NUMERIC) {
-            heatLimit = "";
-            isValid = false;
-            validString = "heatLimit is not a number";
-        } else {
-            heatLimit = String.valueOf(cell.getNumericCellValue());
-        }
-
-        cell = row.getCell(bendRadiusColumn);
-        if (cell == null) {
-            bendRadius = "";
-        } else if (cell.getCellType() != CellType.NUMERIC) {
-            bendRadius = "";
-            isValid = false;
-            validString = "bendRadius is not a number";
-        } else {
-            bendRadius = String.valueOf(cell.getNumericCellValue());
-        }
-
-        cell = row.getCell(radToleranceColumn);
-        if (cell == null) {
-            radTolerance = "";
-        } else if (cell.getCellType() != CellType.NUMERIC) {
-            radTolerance = "";
-            isValid = false;
-            validString = "radTolerance is not a number";
-        } else {
-            radTolerance = String.valueOf(cell.getNumericCellValue());
-        }
-
-        cell = row.getCell(teamColumn);
-        if (cell == null) {
-            team = "";
-        } else if (cell.getCellType() != CellType.NUMERIC) {
-            team = "";
-            isValid = false;
-            validString = "team is not a number";
-        } else {
-            cell.setCellType(CellType.STRING);
-            team = cell.getStringCellValue();
-        }
-
-        ItemDomainCableCatalogController controller = ItemDomainCableCatalogController.getInstance();
-        
-        ItemDomainCableCatalog newType = controller.newEntityInstance();
-        newType.setCableType(cableType);
-        newType.setDescription(description);
-        newType.setUrl(url);
-        newType.setImageUrl(imageUrl);
-        newType.setManufacturer(manufacturer);
-        newType.setPartNumber(partNumber);
-        newType.setDiameter(diameter);
-        newType.setWeight(weight);
-        newType.setConductors(conductors);
-        newType.setInsulation(insulation);
-        newType.setJacketColor(jacketColor);
-        newType.setVoltageRating(voltageRating);
-        newType.setFireLoad(fireLoad);
-        newType.setHeatLimit(heatLimit);
-        newType.setBendRadius(bendRadius);
-        newType.setRadTolerance(radTolerance);
-        newType.setTeam(team);
-        
-        CableCatalogRowModel info = new CableCatalogRowModel(newType);
-        
-        if (rows.contains(info)) {
-            isValid = false;
-            validString = "duplicate row using cable type and part number as unique ids";
-        } else {
-            try {
-                controller.checkItemUniqueness(newType);
-            } catch (CdbException ex) {
-                isValid = false;
-                validString = "duplicate found in database using cable type and part number as unique ids";
-            }
-        }
-        
-        info.setIsValid(isValid);
-        info.setValidString(validString);
-        
-        rows.add(info);
-
-        return isValid;
-    }
     
     @Override
-    public ImportInfo importData() {
-        
-        ItemDomainCableCatalogController controller = ItemDomainCableCatalogController.getInstance();
-        
-        String message = "";
-        List<ItemDomainCableCatalog> newCableTypes = new ArrayList<>();
-        for (RowModel row : rows) {
-            CableCatalogRowModel catalogRow = (CableCatalogRowModel) row;
-            
-            newCableTypes.add((ItemDomainCableCatalog)catalogRow.getEntity());
-        }
-        
-        try {
-            controller.createList(newCableTypes);
-            return new ImportInfo(true, "Import succeeded.  Created " + rows.size() + " instances.");
-        } catch (CdbException ex) {
-            return new ImportInfo(false, "Import failed. " + ex.getMessage() + ".");
-        } catch (RuntimeException ex) {
-            Throwable t = ExceptionUtils.getRootCause(ex);
-            return new ImportInfo(false, "Import failed. " + ex.getMessage() + ": " + t.getMessage() + ".");
-        }
+    public ItemController getEntityController() {
+        return ItemDomainCableCatalogController.getInstance();
     }
-
 }
