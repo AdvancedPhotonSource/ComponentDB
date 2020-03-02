@@ -117,14 +117,6 @@ public abstract class ImportHelperBase {
         public void setValidString(String s) {
             validString = s;
         }
-        
-        public ColType getColType() {
-            return colType;
-        }
-        
-        public String getSampleValue() {
-            return sampleValue;
-        }
     }
 
     static public class ImportInfo {
@@ -284,6 +276,15 @@ public abstract class ImportHelperBase {
         return result;
     }
 
+    private String appendToValidString(String validString, String s) {
+        String result = "";
+        if (!validString.isEmpty()) {
+            result = validString + ". ";
+        }
+        result = result + s;
+        return result;
+    }
+    
     public boolean parseRow(Row row) {
 
         Item newEntity = getEntityController().createEntityInstance();
@@ -319,10 +320,7 @@ public abstract class ImportHelperBase {
             }
 
             if (!result.isValid()) {
-                if (!validString.isEmpty()) {
-                    validString = validString + ". ";
-                }
-                validString = validString + result.getValidString();
+                validString = appendToValidString(validString, result.getValidString());
                 isValid = false;
             }
 
@@ -331,29 +329,22 @@ public abstract class ImportHelperBase {
                 Method setterMethod;
                 setterMethod = newEntity.getClass().getMethod(setterMethodName, String.class);
                 setterMethod.invoke(newEntity, result.getValue());
-            } catch (NoSuchMethodException ex) {
-                Logger.getLogger(ImportHelperBase.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
-                Logger.getLogger(ImportHelperBase.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(ImportHelperBase.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(ImportHelperBase.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InvocationTargetException ex) {
-                Logger.getLogger(ImportHelperBase.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                validString = appendToValidString(validString, "Unable to invoke setter method: " + setterMethodName + " for column: " + colName);
+                isValid = false;
             }
 
         }
 
         if (rows.contains(newEntity)) {
+            validString = appendToValidString(validString, "Duplicate rows found in spreadsheet");
             isValid = false;
-            validString = "duplicate rows found in spreadsheet";
         } else {
             try {
                 getEntityController().checkItemUniqueness(newEntity);
             } catch (CdbException ex) {
+                validString = appendToValidString(validString, "Duplicate found in database");
                 isValid = false;
-                validString = "duplicate found in database";
             }
         }
         
