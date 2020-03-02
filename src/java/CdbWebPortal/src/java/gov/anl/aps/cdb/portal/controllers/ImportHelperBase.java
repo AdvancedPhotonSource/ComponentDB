@@ -117,6 +117,14 @@ public abstract class ImportHelperBase {
         public void setValidString(String s) {
             validString = s;
         }
+        
+        public ColType getColType() {
+            return colType;
+        }
+        
+        public String getSampleValue() {
+            return sampleValue;
+        }
     }
 
     static public class ImportInfo {
@@ -146,6 +154,7 @@ public abstract class ImportHelperBase {
     protected List<Item> rows = new ArrayList<>();
     protected List<ColumnModel> columns = new ArrayList<>();
     protected byte[] templateExcelFile = null;
+
 
     public ImportHelperBase() {
         createColumnModels();

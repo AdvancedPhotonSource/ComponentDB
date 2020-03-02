@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
  */
 public class ImportHelperCableCatalog extends ImportHelperBase {
 
+
     protected static String completionUrlValue = "/views/itemDomainCableCatalog/list?faces-redirect=true";
     
     @Override
@@ -51,6 +52,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     public int getDataStartRow() {
         return 1;
     }
+
     
     @Override
     public ItemController getEntityController() {
