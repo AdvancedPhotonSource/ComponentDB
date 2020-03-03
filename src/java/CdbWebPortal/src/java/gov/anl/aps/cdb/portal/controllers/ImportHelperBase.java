@@ -34,25 +34,17 @@ import org.primefaces.model.StreamedContent;
  */
 public abstract class ImportHelperBase {
 
-    public enum ColType {
-        STRING,
-        NUMERIC,
-        URL
-    }
+    public abstract class ColumnModel implements Serializable {
 
-    public class ColumnModel implements Serializable {
+        protected String header;
+        protected String property;
+        protected boolean required = false;
+        protected String setterMethod;
+        protected String sampleValue;
 
-        private String header;
-        private String property;
-        private ColType colType;
-        private boolean required = false;
-        private String setterMethod;
-        private String sampleValue;
-
-        public ColumnModel(String h, String p, ColType t, String s, boolean r, String v) {
+        public ColumnModel(String h, String p, String s, boolean r, String v) {
             this.header = h;
             this.property = p;
-            this.colType = t;
             this.setterMethod = s;
             this.sampleValue = v;
             this.required = r;
@@ -66,10 +58,6 @@ public abstract class ImportHelperBase {
             return property;
         }
 
-        public ColType getColType() {
-            return colType;
-        }
-
         public String getSetterMethod() {
             return setterMethod;
         }
@@ -81,6 +69,109 @@ public abstract class ImportHelperBase {
         public String getSampleValue() {
             return sampleValue;
         }
+
+        public abstract void setTemplateCell(Cell dataCell);
+
+        public abstract ParseInfo parseCell(Cell cell);
+
+        protected ParseInfo parseStringCell(Cell cell) {
+
+            String parsedValue = "";
+            boolean isValid = true;
+            String validString = "";
+
+            if (cell == null) {
+                parsedValue = "";
+            } else {
+                cell.setCellType(CellType.STRING);
+                parsedValue = cell.getStringCellValue();
+            }
+
+            if (required && parsedValue.equals("")) {
+                isValid = false;
+                validString = "required value missing for " + property;
+            }
+
+            return new ParseInfo(parsedValue, isValid, validString);
+        }
+    }
+
+    public class StringColumnModel extends ColumnModel {
+
+        public StringColumnModel(String h, String p, String s, boolean r, String v) {
+            super(h, p, s, r, v);
+        }
+
+        @Override
+        public void setTemplateCell(Cell dataCell) {
+            dataCell.setCellType(CellType.STRING);
+            dataCell.setCellValue(getSampleValue());
+        }
+
+        @Override
+        public ParseInfo parseCell(Cell cell) {
+            return parseStringCell(cell);
+        }
+    }
+
+    public class NumericColumnModel extends ColumnModel {
+
+        public NumericColumnModel(String h, String p, String s, boolean r, String v) {
+            super(h, p, s, r, v);
+        }
+
+        @Override
+        public void setTemplateCell(Cell dataCell) {
+            dataCell.setCellType(CellType.NUMERIC);
+            dataCell.setCellValue(Double.valueOf(getSampleValue()));
+        }
+
+        @Override
+        public ParseInfo parseCell(Cell cell) {
+            String parsedValue = "";
+            boolean isValid = true;
+            String validString = "";
+
+            if (cell == null) {
+                parsedValue = "";
+            } else if (cell.getCellType() != CellType.NUMERIC) {
+                parsedValue = "";
+                isValid = false;
+                validString = property + " is not a number";
+            } else {
+                parsedValue = String.valueOf(cell.getNumericCellValue());
+            }
+
+            return new ParseInfo(parsedValue, isValid, validString);
+        }
+
+    }
+
+    public class UrlColumnModel extends ColumnModel {
+
+        public UrlColumnModel(String h, String p, String s, boolean r, String v) {
+            super(h, p, s, r, v);
+        }
+
+        @Override
+        public void setTemplateCell(Cell dataCell) {
+            dataCell.setCellType(CellType.STRING);
+            dataCell.setCellValue(getSampleValue());
+        }
+
+        @Override
+        public ParseInfo parseCell(Cell cell) {
+            ParseInfo result = parseStringCell(cell);
+            if (result.isValid) {
+                if (result.getValue().length() > 256) {
+                    result.isValid(false);
+                    result.setValidString("URL length exceeds 256 characters for " + property);
+                }
+            }
+
+            return result;
+        }
+
     }
 
     static public class ParseInfo {
@@ -105,7 +196,7 @@ public abstract class ImportHelperBase {
         public boolean isValid() {
             return isValid;
         }
-        
+
         public void isValid(boolean b) {
             isValid = b;
         }
@@ -113,7 +204,7 @@ public abstract class ImportHelperBase {
         public String getValidString() {
             return validString;
         }
-        
+
         public void setValidString(String s) {
             validString = s;
         }
@@ -146,7 +237,6 @@ public abstract class ImportHelperBase {
     protected List<Item> rows = new ArrayList<>();
     protected List<ColumnModel> columns = new ArrayList<>();
     protected byte[] templateExcelFile = null;
-
 
     public ImportHelperBase() {
         createColumnModels();
@@ -183,13 +273,7 @@ public abstract class ImportHelperBase {
 
             Cell dataCell = dataRow.createCell(i);
 
-            if (col.getColType() == ColType.STRING) {
-                dataCell.setCellType(CellType.STRING);
-                dataCell.setCellValue(col.getSampleValue());
-            } else if (col.getColType() == ColType.NUMERIC) {
-                dataCell.setCellType(CellType.NUMERIC);
-                dataCell.setCellValue(Double.valueOf(col.getSampleValue()));
-            }
+            col.setTemplateCell(dataCell);
         }
 
         try (ByteArrayOutputStream outStream = new ByteArrayOutputStream()) {
@@ -209,8 +293,8 @@ public abstract class ImportHelperBase {
         // allow subclass to create column models
         createColumnModels_();
 
-        columns.add(new ColumnModel(isValidHeader, isValidProperty, ColType.STRING, "isValidImport", false, ""));
-        columns.add(new ColumnModel(validStringHeader, validStringProperty, ColType.STRING, "setValidStringImport", false, ""));
+        columns.add(new StringColumnModel(isValidHeader, isValidProperty, "isValidImport", false, ""));
+        columns.add(new StringColumnModel(validStringHeader, validStringProperty, "setValidStringImport", false, ""));
     }
 
     protected void reset_() {
@@ -224,58 +308,6 @@ public abstract class ImportHelperBase {
         reset_();
     }
 
-    private ParseInfo parseStringCell(Cell cell, String colName, boolean required) {
-
-        String parsedValue = "";
-        boolean isValid = true;
-        String validString = "";
-
-        if (cell == null) {
-            parsedValue = "";
-        } else {
-            cell.setCellType(CellType.STRING);
-            parsedValue = cell.getStringCellValue();
-        }
-
-        if (required && parsedValue.equals("")) {
-            isValid = false;
-            validString = "required value missing for " + colName;
-        }
-
-        return new ParseInfo(parsedValue, isValid, validString);
-    }
-
-    private ParseInfo parseNumericCell(Cell cell, String colName, boolean required) {
-        
-        String parsedValue = "";
-        boolean isValid = true;
-        String validString = "";
-
-        if (cell == null) {
-            parsedValue = "";
-        } else if (cell.getCellType() != CellType.NUMERIC) {
-            parsedValue = "";
-            isValid = false;
-            validString = colName + " is not a number";
-        } else {
-            parsedValue = String.valueOf(cell.getNumericCellValue());
-        }
-        
-        return new ParseInfo(parsedValue, isValid, validString);
-    }
-
-    private ParseInfo parseUrlCell(Cell cell, String colName, boolean required) {
-        ParseInfo result = parseStringCell(cell, colName, required);
-        if (result.isValid) {
-            if (result.getValue().length() > 256) {
-                result.isValid(false);
-                result.setValidString("URL length exceeds 256 characters for " + colName);
-            }
-        }
-        
-        return result;
-    }
-
     private String appendToValidString(String validString, String s) {
         String result = "";
         if (!validString.isEmpty()) {
@@ -284,7 +316,7 @@ public abstract class ImportHelperBase {
         result = result + s;
         return result;
     }
-    
+
     public boolean parseRow(Row row) {
 
         Item newEntity = getEntityController().createEntityInstance();
@@ -295,29 +327,13 @@ public abstract class ImportHelperBase {
 
             ColumnModel col = columns.get(i);
             String colName = col.getProperty();
-            ColType colType = col.getColType();
             boolean required = col.isRequired();
             String setterMethodName = col.getSetterMethod();
 
             Cell cell;
             cell = row.getCell(i);
 
-            ParseInfo result = new ParseInfo();
-
-            switch (colType) {
-
-                case STRING:
-                    result = parseStringCell(cell, colName, required);
-                    break;
-
-                case NUMERIC:
-                    result = parseNumericCell(cell, colName, required);
-                    break;
-
-                case URL:
-                    result = parseUrlCell(cell, colName, required);
-                    break;
-            }
+            ParseInfo result = col.parseCell(cell);
 
             if (!result.isValid()) {
                 validString = appendToValidString(validString, result.getValidString());
@@ -347,24 +363,24 @@ public abstract class ImportHelperBase {
                 isValid = false;
             }
         }
-        
+
         newEntity.setIsValidImport(isValid);
         newEntity.setValidStringImport(validString);
-        
+
         rows.add(newEntity);
         return isValid;
     }
-    
+
     public ImportInfo importData() {
-        
+
         ItemController controller = this.getEntityController();
-        
+
         String message = "";
         List<Item> newItems = new ArrayList<>();
         for (Item row : rows) {
             newItems.add(row);
         }
-        
+
         try {
             controller.createList(newItems);
             return new ImportInfo(true, "Import succeeded.  Created " + rows.size() + " instances.");
@@ -375,8 +391,6 @@ public abstract class ImportHelperBase {
             return new ImportInfo(false, "Import failed. " + ex.getMessage() + ": " + t.getMessage() + ".");
         }
     }
-
-
 
     protected abstract void createColumnModels_();
 
