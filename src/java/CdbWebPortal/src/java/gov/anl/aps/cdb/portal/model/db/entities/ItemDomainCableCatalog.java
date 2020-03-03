@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
+import gov.anl.aps.cdb.portal.controllers.SourceController;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
@@ -153,9 +154,20 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return manufacturer;
     }
     
-    public void setManufacturer(String w) {
-        manufacturer = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_MANUFACTURER_KEY, w);
+    public void setManufacturer(String sourceId) {
+        
+        Source source = SourceController.getInstance().findById(Integer.valueOf(sourceId));
+        if (source != null) {
+            
+            List<ItemSource> sourceList = new ArrayList<>();
+            ItemSource itemSource = new ItemSource();
+            itemSource.setItem(this);
+            itemSource.setSource(source);
+            sourceList.add(itemSource);
+            this.setItemSourceList(sourceList);
+            
+            manufacturer = source.getName();
+        }
     }
     
     public String getPartNumber() {

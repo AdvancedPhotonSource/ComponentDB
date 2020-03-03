@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.controllers.settings.SourceSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.ejb.EJB;
@@ -19,16 +20,21 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import org.apache.log4j.Logger;
 
-@Named("sourceController")
+@Named(SourceController.CONTROLLER_NAMED)
 @SessionScoped
 public class SourceController extends CdbEntityController<Source, SourceFacade, SourceSettings> implements Serializable {    
 
+    public static final String CONTROLLER_NAMED = "sourceController";
     private static final Logger logger = Logger.getLogger(SourceController.class.getName());   
 
     @EJB
     private SourceFacade sourceFacade;
 
     public SourceController() {
+    }
+    
+    public static SourceController getInstance() {
+        return (SourceController) SessionUtility.findBean(SourceController.CONTROLLER_NAMED);
     }
 
     @Override
