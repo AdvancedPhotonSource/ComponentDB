@@ -89,7 +89,7 @@ public abstract class ImportHelperBase {
 
             if (required && parsedValue.equals("")) {
                 isValid = false;
-                validString = "required value missing for " + property;
+                validString = "Required value missing for " + header;
             }
 
             return new ParseInfo(parsedValue, isValid, validString);
@@ -137,14 +137,13 @@ public abstract class ImportHelperBase {
             } else if (cell.getCellType() != CellType.NUMERIC) {
                 parsedValue = "";
                 isValid = false;
-                validString = property + " is not a number";
+                validString = header + " is not a number";
             } else {
                 parsedValue = String.valueOf(cell.getNumericCellValue());
             }
 
             return new ParseInfo(parsedValue, isValid, validString);
         }
-
     }
 
     public class UrlColumnModel extends ColumnModel {
@@ -165,13 +164,40 @@ public abstract class ImportHelperBase {
             if (result.isValid) {
                 if (result.getValue().length() > 256) {
                     result.isValid(false);
-                    result.setValidString("URL length exceeds 256 characters for " + property);
+                    result.setValidString("URL length exceeds 256 characters for " + header);
                 }
             }
 
             return result;
         }
+    }
 
+    public class IdRefColumnModel extends ColumnModel {
+        
+        private CdbEntityController controller;
+
+        public IdRefColumnModel(String h, String p, String s, boolean r, String v, CdbEntityController c) {
+            super(h, p, s, r, v);
+            controller = c;
+        }
+
+        @Override
+        public void setTemplateCell(Cell dataCell) {
+            dataCell.setCellType(CellType.STRING);
+            dataCell.setCellValue(getSampleValue());
+        }
+
+        @Override
+        public ParseInfo parseCell(Cell cell) {
+            ParseInfo result = parseStringCell(cell);
+            if ((result.isValid) && (result.getValue().length() > 0)) {
+                if (controller.findById(Integer.valueOf(result.getValue())) == null) {
+                    result.isValid(false);
+                    result.setValidString("Unable to find object for: " + header + " with id: " + result.getValue());
+                }
+            }
+            return result;
+        }
     }
 
     static public class ParseInfo {
