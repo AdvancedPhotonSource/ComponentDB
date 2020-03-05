@@ -345,7 +345,7 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * @param entity
      * @throws CdbException 
      */
-    public void checkItemUniqueness(CdbEntity entity) throws CdbException;        
+    public void checkItemUniqueness(ItemDomainEntity entity) throws CdbException;        
     
     /**
      * determines if item project is required.

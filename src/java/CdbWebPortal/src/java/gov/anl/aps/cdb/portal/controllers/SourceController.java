@@ -170,12 +170,7 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
     }
 
     @Override
-    public void checkItemUniqueness(CdbEntity e) throws CdbException {
-        Source item = (Source)e;
-        if (item == null) {
-            throw new CdbException("Invalid object passed to uniqueness check: " + e.getClass().getName());
-        }
-        
+    public void checkItemUniqueness(Source item) throws CdbException {
         String name = item.getName();
 
         if (name != null && name.isEmpty()) {

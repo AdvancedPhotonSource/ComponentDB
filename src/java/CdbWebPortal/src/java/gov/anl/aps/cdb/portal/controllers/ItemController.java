@@ -2680,13 +2680,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
-    public void checkItemUniqueness(CdbEntity entity) throws CdbException {
+    public void checkItemUniqueness(ItemDomainEntity item) throws CdbException {
         
-        Item item = (Item)entity;
-        if (item == null) {
-            throw new CdbException("Invalid object passed to uniqueness check: " + entity.getClass().getName());
-        }
-
         String name = item.getName();
         Integer qrId = item.getQrId();
 

@@ -255,7 +255,7 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     }
     
     @Override
-    public void checkItemUniqueness(CdbEntity entity) throws CdbException {
+    public void checkItemUniqueness(Item entity) throws CdbException {
         getItemController().checkItemUniqueness(entity);
     } 
     

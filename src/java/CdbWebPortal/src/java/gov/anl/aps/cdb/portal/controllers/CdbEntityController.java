@@ -1707,7 +1707,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * @param item
      * @throws CdbException
      */
-    public void checkItemUniqueness(CdbEntity entity) throws CdbException {
+    public void checkItemUniqueness(EntityType entity) throws CdbException {
         throw new CdbException("Uniqueness check not implemented by controller: " + this.getClass().getName());
     }
 
