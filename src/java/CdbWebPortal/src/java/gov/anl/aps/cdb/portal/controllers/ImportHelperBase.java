@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -260,7 +261,7 @@ public abstract class ImportHelperBase {
     protected static String validStringHeader = "Valid String";
     protected static String validStringProperty = "validStringImport";
 
-    protected List<Item> rows = new ArrayList<>();
+    protected List<CdbEntity> rows = new ArrayList<>();
     protected List<ColumnModel> columns = new ArrayList<>();
     protected byte[] templateExcelFile = null;
 
@@ -268,7 +269,7 @@ public abstract class ImportHelperBase {
         createColumnModels();
     }
 
-    public List<Item> getRows() {
+    public List<CdbEntity> getRows() {
         return rows;
     }
 
@@ -345,7 +346,7 @@ public abstract class ImportHelperBase {
 
     public boolean parseRow(Row row) {
 
-        Item newEntity = getEntityController().createEntityInstance();
+        CdbEntity newEntity = getEntityController().createEntityInstance();
         boolean isValid = true;
         String validString = "";
 
@@ -385,7 +386,7 @@ public abstract class ImportHelperBase {
             try {
                 getEntityController().checkItemUniqueness(newEntity);
             } catch (CdbException ex) {
-                validString = appendToValidString(validString, "Duplicate found in database");
+                validString = appendToValidString(validString, ex.getMessage());
                 isValid = false;
             }
         }
@@ -399,11 +400,11 @@ public abstract class ImportHelperBase {
 
     public ImportInfo importData() {
 
-        ItemController controller = this.getEntityController();
+        CdbEntityController controller = this.getEntityController();
 
         String message = "";
-        List<Item> newItems = new ArrayList<>();
-        for (Item row : rows) {
+        List<CdbEntity> newItems = new ArrayList<>();
+        for (CdbEntity row : rows) {
             newItems.add(row);
         }
 
@@ -426,5 +427,5 @@ public abstract class ImportHelperBase {
 
     protected abstract boolean isValidationOnly();
 
-    public abstract ItemController getEntityController();
+    public abstract CdbEntityController getEntityController();
 }

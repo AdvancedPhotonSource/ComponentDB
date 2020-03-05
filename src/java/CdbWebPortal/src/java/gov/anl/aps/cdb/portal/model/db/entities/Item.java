@@ -315,10 +315,6 @@ public class Item extends CdbDomainEntity implements Serializable {
     // API generation variables    
     private transient String descriptionFromAPI;
     
-    // import wizard variables
-    private transient boolean isValidImport = true;
-    private transient String validStringImport = "";
-    
     public Item() {
     }        
 
@@ -1039,22 +1035,6 @@ public class Item extends CdbDomainEntity implements Serializable {
         return null; 
     }
 
-    public boolean getIsValidImport() {
-        return isValidImport;
-    }
-    
-    public void setIsValidImport(boolean b) {
-        isValidImport = b;
-    }
-    
-    public String getValidStringImport() {
-        return validStringImport;
-    }
-    
-    public void setValidStringImport(String s) {
-        validStringImport = s;
-    }
-    
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult searchResult;

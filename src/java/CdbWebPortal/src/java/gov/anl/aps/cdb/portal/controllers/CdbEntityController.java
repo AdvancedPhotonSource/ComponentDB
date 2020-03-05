@@ -63,7 +63,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private static final Logger logger = Logger.getLogger(CdbEntityController.class.getName());
 
     @EJB
-    private LogTopicFacade logTopicFacade;   
+    private LogTopicFacade logTopicFacade;
 
     protected SettingObject settingObject = null;
 
@@ -88,17 +88,17 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     private String searchString = null;
     private boolean caseInsensitive = true;
-    private LinkedList<SearchResult> searchResultList;   
-    
-    protected String contextRootPermanentUrl; 
+    private LinkedList<SearchResult> searchResultList;
+
+    protected String contextRootPermanentUrl;
 
     // TODO create a base cdbentitycontrollerextension helper. 
     private Set<ItemControllerExtensionHelper> subscribedResetForCurrentControllerHelpers;
     private Set<ItemControllerExtensionHelper> subscribePrepareInsertForCurrentControllerHelpers;
-       
+
     protected boolean apiMode = false;
     protected UserInfo apiUser;
-    
+
     /**
      * Default constructor.
      */
@@ -106,8 +106,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         settingObject = createNewSettingObject();
         subscribedResetForCurrentControllerHelpers = new HashSet<>();
         subscribePrepareInsertForCurrentControllerHelpers = new HashSet<>();
-        contextRootPermanentUrl = ConfigurationUtility.getPortalProperty(CdbProperty.PERMANENT_CONTEXT_ROOT_URL_PROPERTY_NAME); 
-    }        
+        contextRootPermanentUrl = ConfigurationUtility.getPortalProperty(CdbProperty.PERMANENT_CONTEXT_ROOT_URL_PROPERTY_NAME);
+    }
 
     /**
      * Initialize controller and update its settings.
@@ -116,16 +116,16 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void initialize() {
         settingObject.updateSettings();
     }
-    
+
     protected void prepareApiInstance() {
-        apiMode = true; 
+        apiMode = true;
         loadEJBResourcesManually();
     }
-    
+
     protected void loadEJBResourcesManually() {
         // Will be abstract --- testing now. 
     }
-        
+
     public void registerSearchable() {
         SearchController searchController = SearchController.getInstance();
         searchController.registerSearchableController(this);
@@ -738,7 +738,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public String viewForCurrentEntity() {
         return "view?id=" + current.getId() + "&faces-redirect=true";
     }
-    
+
     /**
      * Return entity list page.
      *
@@ -793,16 +793,16 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public String getEntityApplicationViewPath() {
         return "/views/" + getEntityViewsDirectory();
     }
-    
+
     public final String getCurrentEntityPermalink() {
         if (current != null) {
-            String viewPath = contextRootPermanentUrl; 
+            String viewPath = contextRootPermanentUrl;
             viewPath += getCurrentEntityRelativePermalink();
             return viewPath;
         }
         return null;
     }
-    
+
     public String getCurrentEntityRelativePermalink() {
         return getEntityApplicationViewPath() + "/view?id=" + current.getId();
     }
@@ -846,18 +846,18 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private void addCdbEntitySystemLog(String logLevel, String message) {
         UserInfo sessionUser;
         if (apiMode) {
-            sessionUser = apiUser;            
+            sessionUser = apiUser;
         } else {
             sessionUser = (UserInfo) SessionUtility.getUser();
         }
         if (sessionUser != null) {
             String username = sessionUser.getUsername();
             message = "User: " + username + " | " + message;
-            
+
             if (apiMode) {
-                message += " | REST API"; 
+                message += " | REST API";
             }
-        }        
+        }
         LogUtility.addSystemLog(logLevel, message);
     }
 
@@ -925,7 +925,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void performCreateOperations(EntityType entity) throws CdbException, RuntimeException {
         performCreateOperations(entity, false);
     }
-    
+
     public void performCreateOperations(EntityType entity, boolean skipSystemLog) throws CdbException, RuntimeException {
         performCreateOperations(entity, skipSystemLog, false);
     }
@@ -959,7 +959,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             throw ex;
         }
     }
-    
+
     public void performListCreateOperations(List<EntityType> entities, boolean skipSystemLog) throws CdbException, RuntimeException {
         try {
             for (EntityType entity : entities) {
@@ -982,17 +982,17 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             throw ex;
         }
     }
-    
+
     protected void setPersistenceErrorMessageForList(List<EntityType> entities, String msg) {
         for (EntityType entity : entities) {
             entity.setPersitanceErrorMessage(msg);
         }
     }
-    
+
     public void createList(List<EntityType> entities) throws CdbException, RuntimeException {
         createList(entities, false, false);
     }
-    
+
     public void createList(List<EntityType> entities, boolean skipSystemLog, boolean silent) throws CdbException, RuntimeException {
         try {
             performListCreateOperations(entities, skipSystemLog);
@@ -1065,7 +1065,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public void updateWithoutRedirect() {
         update();
     }
-    
+
     public synchronized void updateFromApi(EntityType entity, UserInfo updateUser) throws CdbException {
         setApiUser(updateUser);
         setCurrent(entity);
@@ -1103,7 +1103,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             setCurrent(entity);
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityUpdate(entity);
-            EntityType updatedEntity = getEntityDbFacade().edit(entity);            
+            EntityType updatedEntity = getEntityDbFacade().edit(entity);
             addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Updated: " + entity.toString());
             resetListDataModel();
             resetSelectDataModel();
@@ -1570,7 +1570,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         this.searchString = searchString;
         this.caseInsensitive = caseInsensitive;
         resetSearchVariables();
-        
+
         Pattern searchPattern;
         if (caseInsensitive) {
             searchPattern = Pattern.compile(Pattern.quote(searchString), Pattern.CASE_INSENSITIVE);
@@ -1592,9 +1592,9 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
         }
     }
-    
+
     public void resetSearchVariables() {
-       searchResultList = new LinkedList<>();  
+        searchResultList = new LinkedList<>();
     }
 
     public LinkedList<SearchResult> getSearchResultList() {
@@ -1651,7 +1651,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     public SettingObject getSettingObject() {
         return settingObject;
-    }    
+    }
 
     public Boolean getDisplayLoadPropertyValuesButton() {
         return false;
@@ -1700,4 +1700,15 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private void setApiUser(UserInfo apiUser) {
         this.apiUser = apiUser;
     }
+
+    /**
+     * Throws an exception when item does not pass uniqueness check.
+     *
+     * @param item
+     * @throws CdbException
+     */
+    public void checkItemUniqueness(CdbEntity entity) throws CdbException {
+        throw new CdbException("Uniqueness check not implemented by controller: " + this.getClass().getName());
+    }
+
 }

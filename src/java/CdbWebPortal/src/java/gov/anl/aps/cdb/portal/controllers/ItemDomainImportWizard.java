@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ColumnModel;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ImportInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,7 +120,7 @@ public class ItemDomainImportWizard implements Serializable {
         return importResult;
     }
     
-    public List<Item> getRows() {
+    public List<CdbEntity> getRows() {
         if (importHelper != null) {
             return importHelper.getRows();
         } else {

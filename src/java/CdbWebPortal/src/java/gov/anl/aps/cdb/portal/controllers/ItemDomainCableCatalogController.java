@@ -32,13 +32,13 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     
     private final static String CABLE_INTERNAL_PROPERTY_TYPE = "cable_internal_property_type"; 
     
-    protected ImportHelperCableCatalog importHelper = new ImportHelperCableCatalog();
-    
     @EJB
     ItemDomainCableCatalogFacade itemDomainCableCatalogFacade;
     
     @EJB
     private PropertyTypeFacade propertyTypeFacade;
+    
+    protected ImportHelperCableCatalog importHelper = new ImportHelperCableCatalog();
     
     public static ItemDomainCableCatalogController getInstance() {
         if (SessionUtility.runningFaces()) {
@@ -47,15 +47,6 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
             // TODO add apiInstance
             return null;
         }
-    }
-    
-    /**
-     * Prepares import wizard.
-     */
-    public String prepareWizardImport() {   
-        importHelper.reset();
-        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
-        return "/views/itemDomainCableCatalog/import?faces-redirect=true";
     }
     
     private void initializeNewInstance(ItemDomainCableCatalog item) {
@@ -228,5 +219,14 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     public String getDefaultDomainDerivedToDomainName() {
         return ItemDomainName.cableInventory.getValue(); 
     } 
+    
+    /**
+     * Prepares import wizard.
+     */
+    public String prepareWizardImport() {   
+        importHelper.reset();
+        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
+        return "/views/itemDomainCableCatalog/import?faces-redirect=true";
+    }
     
 }

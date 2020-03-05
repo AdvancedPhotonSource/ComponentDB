@@ -26,6 +26,10 @@ public class CdbEntity implements Serializable, Cloneable {
     
     private transient Map<String, String> apiProperties;
     
+    // import wizard variables
+    private transient boolean isValidImport = true;
+    private transient String validStringImport = "";
+    
     protected static final long serialVersionUID = 1L;
     @Override
     public Object clone() throws CloneNotSupportedException {
@@ -67,6 +71,22 @@ public class CdbEntity implements Serializable, Cloneable {
             apiProperties = new HashMap<>(); 
         }
         apiProperties.put(key, value);
+    }
+    
+    public boolean getIsValidImport() {
+        return isValidImport;
+    }
+    
+    public void setIsValidImport(boolean b) {
+        isValidImport = b;
+    }
+    
+    public String getValidStringImport() {
+        return validStringImport;
+    }
+    
+    public void setValidStringImport(String s) {
+        validStringImport = s;
     }
     
 }
