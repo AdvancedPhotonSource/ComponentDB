@@ -154,20 +154,28 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return manufacturer;
     }
     
-    public void setManufacturer(String sourceId) {
-        
+    public void setManufacturer(String sourceName) {        
+        Source source = SourceController.getInstance().findByName(sourceName);
+        if (source != null) {
+            this.setManufacturerSource(source);
+        }
+    }
+    
+    public void setManufacturerId(String sourceId) {  
         Source source = SourceController.getInstance().findById(Integer.valueOf(sourceId));
         if (source != null) {
-            
-            List<ItemSource> sourceList = new ArrayList<>();
-            ItemSource itemSource = new ItemSource();
-            itemSource.setItem(this);
-            itemSource.setSource(source);
-            sourceList.add(itemSource);
-            this.setItemSourceList(sourceList);
-            
-            manufacturer = source.getName();
+            this.setManufacturerSource(source);
         }
+    }
+    
+    private void setManufacturerSource(Source source) {           
+        List<ItemSource> sourceList = new ArrayList<>();
+        ItemSource itemSource = new ItemSource();
+        itemSource.setItem(this);
+        itemSource.setSource(source);
+        sourceList.add(itemSource);
+        this.setItemSourceList(sourceList);
+        manufacturer = source.getName();
     }
     
     public String getPartNumber() {
@@ -355,7 +363,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return team;
     }
     
-    public void setTeam(String categoryId) {
+    public void setTeamId(String categoryId) {
         ItemCategory category = ItemCategoryController.getInstance().findById(Integer.valueOf(categoryId));
         if (category != null) {
             List<ItemCategory> categoryList = new ArrayList<>();

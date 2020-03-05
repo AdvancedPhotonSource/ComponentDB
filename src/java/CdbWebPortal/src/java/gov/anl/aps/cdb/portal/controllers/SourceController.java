@@ -71,6 +71,10 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
     public Source findById(Integer id) {
         return sourceFacade.findById(id);
     }
+    
+    public Source findByName(String name) {
+        return getEntityDbFacade().findByName(name);
+    }
 
     @Override
     public List<Source> getAvailableItems() {
