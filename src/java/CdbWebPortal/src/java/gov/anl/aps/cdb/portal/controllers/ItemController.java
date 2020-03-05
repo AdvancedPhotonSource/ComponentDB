@@ -30,6 +30,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -2679,7 +2680,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
-    public void checkItemUniqueness(Item item) throws CdbException {
+    public void checkItemUniqueness(CdbEntity entity) throws CdbException {
+        
+        Item item = (Item)entity;
+        if (item == null) {
+            throw new CdbException("Invalid object passed to uniqueness check: " + entity.getClass().getName());
+        }
+
         String name = item.getName();
         Integer qrId = item.getQrId();
 

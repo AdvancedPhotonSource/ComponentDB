@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCable;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -87,7 +88,7 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
     }
 
     @Override
-    public void checkItemUniqueness(Item item) throws CdbException {        
+    public void checkItemUniqueness(CdbEntity entity) throws CdbException {        
         // Cables are only unique by primary key (id). 
     }
     

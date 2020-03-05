@@ -342,10 +342,10 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
     /**
      * Throws an exception when item does not pass uniqueness check.
      * 
-     * @param item
+     * @param entity
      * @throws CdbException 
      */
-    public void checkItemUniqueness(Item item) throws CdbException;        
+    public void checkItemUniqueness(CdbEntity entity) throws CdbException;        
     
     /**
      * determines if item project is required.
