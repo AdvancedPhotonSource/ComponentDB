@@ -123,48 +123,48 @@ public class ItemDomainMachineDesignController
     // </editor-fold>   
 
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
-    public void onDropFromJS() {    
+    public void onDropFromJS() {
         LoginController loginController = LoginController.getInstance();
         if (loginController.isLoggedIn() == false) {
             SessionUtility.addInfoMessage("Cannot complete move.", "Please login and try again.");
             return;
-        }        
+        }
 
         String sourceIdStr = SessionUtility.getRequestParameterValue(JS_SOURCE_MD_ID_PASSED_KEY);
-        String destinationIdStr = SessionUtility.getRequestParameterValue(JS_DESTINATION_MD_ID_PASSED_KEY);        
+        String destinationIdStr = SessionUtility.getRequestParameterValue(JS_DESTINATION_MD_ID_PASSED_KEY);
         int sourceId = Integer.parseInt(sourceIdStr);
         int destId = Integer.parseInt(destinationIdStr);
-        
-        ItemDomainMachineDesign parent = findById(destId);                
+
+        ItemDomainMachineDesign parent = findById(destId);
         ItemDomainMachineDesign child = findById(sourceId);
-        
+
         // Permission check
         if (loginController.isEntityWriteable(parent.getEntityInfo()) == false) {
             SessionUtility.addErrorMessage("Insufficient privilages", "The user doesn't have permissions to item: " + parent.toString());
             return;
-        }        
+        }
         if (loginController.isEntityWriteable(child.getEntityInfo()) == false) {
             SessionUtility.addErrorMessage("Insufficient privilages", "The user doesn't have permissions to item: " + child.toString());
             return;
         }
-        
+
         // Continue to reassignment of parent.
         setCurrent(parent);
-        ItemElement currentItemElement = child.getCurrentItemElement();        
-        if(currentItemElement.getId() != null) {
+        ItemElement currentItemElement = child.getCurrentItemElement();
+        if (currentItemElement.getId() != null) {
             String uniqueName = generateUniqueElementNameForItem(parent);
-            currentItemElement.setName(uniqueName);            
+            currentItemElement.setName(uniqueName);
             currentItemElement.setParentItem(parent);
         } else {
             // Dragging in top level
-            currentItemElement = createItemElement(parent);                        
+            currentItemElement = createItemElement(parent);
             currentItemElement.setContainedItem(child);
         }
-        
+
         prepareAddItemElement(parent, currentItemElement);
-        
-        update(); 
-        
+
+        update();
+
         child = findById(sourceId);
         expandToSpecificMachineDesignItem(child);
     }
@@ -173,13 +173,13 @@ public class ItemDomainMachineDesignController
     // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">
     private String mdSearchString;
     private List<TreeNode> searchResultsList;
-    private boolean searchCollapsed; 
+    private boolean searchCollapsed;
 
     @EJB
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
 
     public static ItemDomainMachineDesignController getInstance() {
-        if (SessionUtility.runningFaces()) {            
+        if (SessionUtility.runningFaces()) {
             return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
         } else {
             return getApiInstance();
@@ -418,7 +418,7 @@ public class ItemDomainMachineDesignController
 
             selectItemInTreeTable(searchResultsList.get(0));
         }
-        searchCollapsed = true; 
+        searchCollapsed = true;
     }
 
     private void searchMachineDesign(TreeNode parentNode, Pattern searchPattern, List<TreeNode> results) {
@@ -567,7 +567,7 @@ public class ItemDomainMachineDesignController
     }
 
     public void resetListConfigurationVariables() {
-        searchCollapsed = true; 
+        searchCollapsed = true;
         displayListConfigurationView = false;
         displayListViewItemDetailsView = false;
         displayAddMDPlaceholderListConfigurationPanel = false;
@@ -645,7 +645,7 @@ public class ItemDomainMachineDesignController
     public boolean isDisplayListConfigurationView() {
         return displayListConfigurationView;
     }
-    
+
     public boolean isDisplayListViewItemDetailsView() {
         return displayListViewItemDetailsView;
     }
@@ -1526,12 +1526,12 @@ public class ItemDomainMachineDesignController
 
         List<ItemDomainMachineDesign> favoriteItems = getFavoriteItems();
         favoriteMachineDesignTreeRootTreeNode = new DefaultTreeNode();
-        
+
         if (favoriteItems == null) {
-            return favoriteMachineDesignTreeRootTreeNode; 
+            return favoriteMachineDesignTreeRootTreeNode;
         }
-        
-        List<Item> parentFavorites = new ArrayList<>(); 
+
+        List<Item> parentFavorites = new ArrayList<>();
 
         for (ItemDomainMachineDesign item : favoriteItems) {
 
@@ -1549,9 +1549,9 @@ public class ItemDomainMachineDesignController
                 if (parentFavorites.contains(item)) {
                     continue;
                 } else {
-                    parentFavorites.add(item); 
+                    parentFavorites.add(item);
                 }
-                
+
                 // Ensure multiple top levels aren't added when a child of a favorite is also a favorite. 
                 if (favoriteItems.contains(item)) {
                     continue;
@@ -2087,6 +2087,10 @@ public class ItemDomainMachineDesignController
         processPreRenderList();
 
         currentViewIsTemplate = isItemMachineDesignAndTemplate(entity);
+        // Cannot only show favorites when specific node is selected by id.
+        favoritesShown = false;
+        // Need to grab the correct list for expanding. 
+        currentMachineDesignListRootTreeNode = null; 
 
         expandToSpecificMachineDesignItem(getCurrent());
 
@@ -2098,8 +2102,12 @@ public class ItemDomainMachineDesignController
                 return;
             }
         }
-
-        SessionUtility.navigateTo("/views/" + getEntityViewsDirectory() + "/list.xhtml?faces-redirect=true");
+        
+        String redirect = "/list"; 
+        if (currentViewIsTemplate) {
+            redirect = "/templateList"; 
+        } 
+        SessionUtility.navigateTo("/views/" + getEntityViewsDirectory() + redirect + ".xhtml?faces-redirect=true");
     }
 
     @Override
