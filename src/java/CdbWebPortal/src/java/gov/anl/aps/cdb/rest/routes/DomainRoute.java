@@ -57,6 +57,14 @@ public class DomainRoute extends BaseRoute {
     }
     
     @GET
+    @Path("/ByName/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Domain getDomainByName(@PathParam("name") String name) {
+        LOGGER.debug("Fetching domain with name: " + name);
+        return domainFacade.findByName(name);
+    }
+    
+    @GET
     @Path("/ById/{id}/Categories")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemCategory> getDomainCategoryList(@PathParam("id") int id) {

@@ -60,20 +60,7 @@ public class UserInfoFacade extends CdbEntityFacade<UserInfo> {
 
     public boolean checkIfUsernameExists(String username) {
         return findByUsername(username) != null;
-    }
-
-    public boolean isUserMemberOfUserGroup(String username, String groupName) {
-        UserInfo user = findByUsername(username);
-        if (user == null) {
-            return false;
-        }
-        for (UserGroup userGroup : user.getUserGroupList()) {
-            if (userGroup.getName().equals(groupName)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    }   
     
     public static UserInfoFacade getInstance() {
         return (UserInfoFacade) SessionUtility.findFacade(UserInfoFacade.class.getSimpleName()); 

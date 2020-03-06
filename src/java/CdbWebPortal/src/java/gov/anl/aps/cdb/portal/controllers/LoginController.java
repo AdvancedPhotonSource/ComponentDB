@@ -112,10 +112,9 @@ public class LoginController implements Serializable {
     }
     
     public static boolean isAdmin(String username, UserInfoFacade userFacade)  {
-        for (String adminGroupName : adminGroupNameList) {
-            if (userFacade.isUserMemberOfUserGroup(username, adminGroupName)) {
-                return true;
-            }
+        UserInfo findByUsername = userFacade.findByUsername(username);
+        if (findByUsername != null) {
+            return findByUsername.isUserAdmin();
         }
         return false;
     }
@@ -334,5 +333,9 @@ public class LoginController implements Serializable {
     
     public boolean isRegisteredSession() {
         return registeredSession;
+    }   
+
+    public static List<String> getAdminGroupNameList() {
+        return adminGroupNameList;
     }
 }

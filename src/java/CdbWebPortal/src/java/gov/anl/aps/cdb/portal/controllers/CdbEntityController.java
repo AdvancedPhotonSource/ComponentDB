@@ -880,6 +880,12 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         addCdbEntitySystemLog(CDB_ENTITY_WARNING_LOG_LEVEL, warningMessage);
 
     }
+    
+    public synchronized void createFromApi(EntityType entity, UserInfo updateUser) throws CdbException {
+        setApiUser(updateUser);
+        setCurrent(entity);
+        performCreateOperations(current);
+    }
 
     public String create() {
         return create(false, false);
