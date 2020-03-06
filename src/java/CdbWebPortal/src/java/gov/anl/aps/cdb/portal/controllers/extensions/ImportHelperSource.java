@@ -46,4 +46,9 @@ public class ImportHelperSource extends ImportHelperBase {
     public CdbEntityController getEntityController() {
         return SourceController.getInstance();
     }
+
+    @Override
+    public String getTemplateFilename() {
+        return "Source Template";
+    }
 }

@@ -8,15 +8,20 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCableDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -290,9 +295,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     @EJB
     ItemDomainCableDesignFacade itemDomainCableDesignFacade;
 
+    @EJB
+    private PropertyTypeFacade propertyTypeFacade;
+    
     private CatalogDialog dialogCatalog = new CatalogDialog();
     private EndpointDialog dialogEndpoint = new EndpointDialog();
 
+    protected ImportHelperCableDesign importHelper = new ImportHelperCableDesign();
+    
     public CatalogDialog getDialogCatalog() {
         return dialogCatalog;
     }
@@ -446,12 +456,42 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * Prepares import wizard.
      */
     public String prepareWizardImport() {  
-        return "";
+        importHelper.reset();
+        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
+        return "/views/itemDomainCableDesign/import?faces-redirect=true";
+    }
+    
+    private PropertyType createInternalCableDesignPropertyType() {
+        PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
+        PropertyType propertyType = propertyTypeController.createEntityInstance();
+        propertyType.setIsInternal(true);
+        propertyType.setName(ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE);
+        propertyTypeController.setCurrent(propertyType);
+        propertyTypeController.create(true, false); 
+        return propertyType; 
+    }    
+
+    public PropertyValue prepareInternalCableDesignPropertyValue(ItemDomainCableDesign item) {
+
+        // Add cable internal property type
+        PropertyType propertyType = propertyTypeFacade.findByName(ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE);
+
+        if (propertyType == null) {
+            propertyType = createInternalCableDesignPropertyType();
+        }
+
+        return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
     }
 
+    private void initializeNewInstance(ItemDomainCableDesign item) {
+        item.setPropertyValueList(new ArrayList<>());
+        prepareInternalCableDesignPropertyValue(item);
+    }
+    
     @Override
     protected ItemDomainCableDesign createEntityInstance() {
         ItemDomainCableDesign item = super.createEntityInstance();
+        initializeNewInstance(item);
         setCurrent(item);
         return item;
     }

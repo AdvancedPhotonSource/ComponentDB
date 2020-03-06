@@ -54,10 +54,14 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     public int getDataStartRow() {
         return 1;
     }
-
     
     @Override
     public ItemController getEntityController() {
         return ItemDomainCableCatalogController.getInstance();
+    }
+
+    @Override
+    public String getTemplateFilename() {
+        return "Cable Type Catalog Template";
     }
 }

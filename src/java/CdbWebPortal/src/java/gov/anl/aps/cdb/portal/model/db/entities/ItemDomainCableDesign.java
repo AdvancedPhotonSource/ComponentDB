@@ -6,6 +6,10 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.RelationshipTypeController;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import java.util.ArrayList;
@@ -21,6 +25,14 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_DESIGN_ID + "")
 public class ItemDomainCableDesign extends Item {
+    
+    private transient String laying = null;
+    private transient String voltage = null;
+    private transient String team = null;
+
+    public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type"; 
+    private final static String CABLE_DESIGN_PROPERTY_LAYING_KEY = "laying"; 
+    private final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage"; 
 
     private static final String endpointsSeparator = " | ";
 
@@ -116,8 +128,22 @@ public class ItemDomainCableDesign extends Item {
         this.addCableRelationship(itemEndpoint1);
     }
     
+    public void setEndpoint1Id(String id) {
+        Item itemEndpoint1 = ItemDomainMachineDesignController.getInstance().findById(Integer.valueOf(id));
+        if (itemEndpoint1 != null) {
+            setEndpoint1(itemEndpoint1);
+        }
+    }
+    
     public void setEndpoint2(Item itemEndpoint2) {
         this.addCableRelationship(itemEndpoint2);
+    }
+    
+    public void setEndpoint2Id(String id) {
+        Item itemEndpoint2 = ItemDomainMachineDesignController.getInstance().findById(Integer.valueOf(id));
+        if (itemEndpoint2 != null) {
+            setEndpoint2(itemEndpoint2);
+        }
     }
     
     /**
@@ -215,6 +241,13 @@ public class ItemDomainCableDesign extends Item {
         selfElement.setContainedItem2(itemCableCatalog);
     }
     
+    public void setCatalogItemId(String catalogItemId) {
+        Item catalogItem = ItemDomainCableCatalogController.getInstance().findById(Integer.valueOf(catalogItemId));
+        if (catalogItem != null) {
+            setCatalogItem(catalogItem);
+        }
+    }
+    
     public Item getCatalogItem() {
         ItemElement selfElementCable = this.getSelfElement();
         return selfElementCable.getContainedItem2();       
@@ -228,5 +261,77 @@ public class ItemDomainCableDesign extends Item {
             return "";
         }
     }
+    
+    private PropertyValue getInternalCableDesignPropertyValue() {
+        List<PropertyValue> propertyValueList = getPropertyValueList(); 
+        for (PropertyValue propertyValue: propertyValueList) {
+            if (propertyValue.getPropertyType().getName().equals(CABLE_DESIGN_INTERNAL_PROPERTY_TYPE)) {
+                return propertyValue; 
+            }
+        }
+        return null; 
+    }
+    
+    private void setInternalCableDesignPropertyFieldValue(String key, String value) {
+        
+        PropertyValue propertyValue = getInternalCableDesignPropertyValue();
 
+        if (propertyValue == null) {
+            propertyValue = ItemDomainCableDesignController.getInstance().prepareInternalCableDesignPropertyValue(this);
+        } 
+            
+        propertyValue.setPropertyMetadataValue(key, value);
+    }
+    
+    public String getLaying() {
+        if (laying == null) {
+            PropertyValue propertyValue = getInternalCableDesignPropertyValue();
+            if (propertyValue == null) {
+                laying = "";
+            } else {
+                laying = propertyValue.getPropertyMetadataValueForKey(CABLE_DESIGN_PROPERTY_LAYING_KEY);
+            }
+        }
+        return laying;
+    }
+
+    public void setLaying(String l) {
+        laying = l;
+        setInternalCableDesignPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY, l);
+    }
+
+    public String getVoltage() {
+        if (voltage == null) {
+            PropertyValue propertyValue = getInternalCableDesignPropertyValue();
+            if (propertyValue == null) {
+                voltage = "";
+            } else {
+                voltage = propertyValue.getPropertyMetadataValueForKey(CABLE_DESIGN_PROPERTY_LAYING_KEY);
+            }
+        }
+        return voltage;
+    }
+
+    public void setVoltage(String v) {
+        voltage = v;
+        setInternalCableDesignPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY, v);
+    }
+
+    public String getTeam() {
+        if (team == null) {
+            team = this.getItemCategoryString();
+        }
+        return team;
+    }
+    
+    public void setTeamId(String categoryId) {
+        ItemCategory category = ItemCategoryController.getInstance().findById(Integer.valueOf(categoryId));
+        if (category != null) {
+            List<ItemCategory> categoryList = new ArrayList<>();
+            categoryList.add(category);
+            this.setItemCategoryList(categoryList);
+            team = this.getItemCategoryString();
+        }
+    }
+    
 }

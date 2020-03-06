@@ -282,14 +282,14 @@ public abstract class ImportHelperBase {
             buildTemplateExcelFile();
         }
         InputStream inStream = new ByteArrayInputStream(templateExcelFile);
-        return new DefaultStreamedContent(inStream, "xls", "cableCatalogTemplate.xls");
+        return new DefaultStreamedContent(inStream, "xls", getTemplateFilename() + ".xls");
     }
 
     private void buildTemplateExcelFile() {
 
         Workbook wb = new XSSFWorkbook();
         CreationHelper createHelper = wb.getCreationHelper();
-        Sheet sheet = wb.createSheet("cable type specs");
+        Sheet sheet = wb.createSheet("template");
         Row headerRow = sheet.createRow(0);
         Row dataRow = sheet.createRow(1);
         for (int i = 0; i < columns.size() - 2; i++) {
@@ -374,6 +374,9 @@ public abstract class ImportHelperBase {
                 setterMethod.invoke(newEntity, result.getValue());
             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 validString = appendToValidString(validString, "Unable to invoke setter method: " + setterMethodName + " for column: " + colName);
+                System.out.println(ex.getCause());
+                System.out.println(ex.getClass().getName());
+                System.out.println(ex.getMessage());
                 isValid = false;
             }
 
@@ -428,4 +431,6 @@ public abstract class ImportHelperBase {
     protected abstract boolean isValidationOnly();
 
     public abstract CdbEntityController getEntityController();
+    
+    public abstract String getTemplateFilename();
 }
