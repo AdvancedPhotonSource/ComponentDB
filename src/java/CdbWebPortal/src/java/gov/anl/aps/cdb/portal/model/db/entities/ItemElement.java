@@ -156,12 +156,14 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public ItemElement() {
     }
     
-    public void init(Item parentItem, ItemElement derivedFromItemElement) {
-        EntityInfo newEntityInfo = EntityInfoUtility.createEntityInfo();        
-        init(parentItem, derivedFromItemElement, newEntityInfo);        
+    public void init(Item parentItem, ItemElement derivedFromItemElement) {        
+        init(parentItem, derivedFromItemElement, null);        
     }
 
-    public void init(Item parentItem, ItemElement derivedFromItemElement, EntityInfo entityInfo) {        
+    public void init(Item parentItem, ItemElement derivedFromItemElement, EntityInfo entityInfo) {
+        if (entityInfo == null) {
+            entityInfo = EntityInfoUtility.createEntityInfo();
+        }
         this.setEntityInfo(entityInfo);
         this.setParentItem(parentItem);
         this.setDerivedFromItemElement(derivedFromItemElement);
