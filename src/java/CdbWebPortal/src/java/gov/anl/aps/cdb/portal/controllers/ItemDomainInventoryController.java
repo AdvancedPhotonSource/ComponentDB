@@ -46,7 +46,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.ListDataModel;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.component.selectonelistbox.SelectOneListbox;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
@@ -70,7 +71,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     // Inventory status variables
     private PropertyType inventoryStatusPropertyType; 
 
-    private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemDomainInventoryController.class.getName());
 
     private List<PropertyValue> filteredPropertyValueList = null;
 

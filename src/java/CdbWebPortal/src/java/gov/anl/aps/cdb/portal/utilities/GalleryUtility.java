@@ -17,7 +17,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.faces.context.FacesContext;
 import javax.imageio.ImageIO;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
@@ -26,7 +27,7 @@ import org.apache.pdfbox.rendering.PDFRenderer;
  */
 public class GalleryUtility {
 
-    private static final Logger logger = Logger.getLogger(GalleryUtility.class.getName());
+    private static final Logger logger = LogManager.getLogger(GalleryUtility.class.getName());
     
     protected static boolean utilMode = false; 
 

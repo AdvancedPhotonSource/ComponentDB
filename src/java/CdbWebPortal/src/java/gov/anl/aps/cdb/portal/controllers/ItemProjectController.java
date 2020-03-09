@@ -20,7 +20,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Named("itemProjectController")
 @SessionScoped
@@ -29,7 +30,7 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
     @EJB
     ItemProjectFacade itemProjectFacade; 
     
-    private static final Logger logger = Logger.getLogger(ItemProjectController.class.getName());        
+    private static final Logger logger = LogManager.getLogger(ItemProjectController.class.getName());        
     
     private Set<IItemController> itemProjectChangeListeners = null;  
     

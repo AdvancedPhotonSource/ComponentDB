@@ -13,7 +13,8 @@ import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * SSL socket factory that does not verify server credentials.
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
  */
 public class NoServerVerificationSSLSocketFactory extends SSLSocketFactory {
 
-    private static final Logger logger = Logger.getLogger(NoServerVerificationSSLSocketFactory.class.getName());
+    private static final Logger logger = LogManager.getLogger(NoServerVerificationSSLSocketFactory.class.getName());
 
     private SSLSocketFactory factory;
 

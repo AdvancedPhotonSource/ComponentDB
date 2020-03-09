@@ -20,13 +20,14 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @SessionScoped
 @Named("docManagamentBean")
@@ -51,7 +52,7 @@ public class DocManagamentBean implements Serializable {
 
     private LoginController loginController;
 
-    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DocManagamentBean.class.getName());
+    private static final Logger logger = LogManager.getLogger(DocManagamentBean.class.getName());
 
     @PostConstruct
     public void init() {
@@ -243,7 +244,7 @@ public class DocManagamentBean implements Serializable {
                 BasicContainer[] allPublicContainers = documentManagamentApi.getAllPublicContainers();
                 containerList = Arrays.asList(allPublicContainers);
             } catch (CdbException ex) {
-                Logger.getLogger(DocManagamentBean.class.getName()).log(Level.SEVERE, null, ex);
+                LogManager.getLogger(DocManagamentBean.class.getName()).log(Level.ERROR, "", ex);
             }
         }
         return containerList;

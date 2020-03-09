@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -30,7 +31,7 @@ import org.apache.log4j.Logger;
 public class ItemTravelerDomainInventoryController extends ItemTravelerController implements Serializable {
     
     public final static String controllerNamed = "itemTravelerDomainInventoryController";
-    private static final Logger logger = Logger.getLogger(ItemTravelerDomainInventoryController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemTravelerDomainInventoryController.class.getName());
     
     public static final double TRAVELER_COMPLETED_STATUS = 2.0; 
     

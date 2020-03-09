@@ -43,7 +43,8 @@ import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
 /**
@@ -60,7 +61,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     private final String CDB_ENTITY_INFO_LOG_LEVEL = "cdbEntityInfo";
     private final String CDB_ENTITY_WARNING_LOG_LEVEL = "cdbEntityWarning";
 
-    private static final Logger logger = Logger.getLogger(CdbEntityController.class.getName());
+    private static final Logger logger = LogManager.getLogger(CdbEntityController.class.getName());
 
     @EJB
     private LogTopicFacade logTopicFacade;   

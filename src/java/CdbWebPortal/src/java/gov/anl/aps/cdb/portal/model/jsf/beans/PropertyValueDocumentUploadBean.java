@@ -19,7 +19,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.model.UploadedFile;
@@ -31,7 +32,7 @@ import org.primefaces.model.UploadedFile;
 @SessionScoped
 public class PropertyValueDocumentUploadBean implements Serializable{
 
-    private static final Logger logger = Logger.getLogger(PropertyValueDocumentUploadBean.class.getName());
+    private static final Logger logger = LogManager.getLogger(PropertyValueDocumentUploadBean.class.getName());
 
     private UploadedFile uploadedFile;
     private PropertyValue propertyValue;

@@ -6,7 +6,8 @@ package gov.anl.aps.cdb.portal.plugins.support.traveler;
 
 import gov.anl.aps.cdb.portal.plugins.PluginManagerBase;
 import java.util.Properties;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -14,7 +15,7 @@ import org.apache.log4j.Logger;
  */
 public class TravelerPluginManager extends PluginManagerBase {
     
-    private static final Logger logger = Logger.getLogger(TravelerPluginManager.class.getName());
+    private static final Logger logger = LogManager.getLogger(TravelerPluginManager.class.getName());
     
     private static final Properties TRAVELER_PROPERTIES = getDefaultPropertiesForPlugin("traveler"); 
     

@@ -37,7 +37,8 @@ import java.util.Objects;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuModel;
 
@@ -51,7 +52,7 @@ public class LocatableItemController implements Serializable {
 
     public final static String controllerNamed = "locatableItemController";
 
-    private static final Logger logger = Logger.getLogger(LocatableItemController.class.getName());
+    private static final Logger logger = LogManager.getLogger(LocatableItemController.class.getName());
 
     private LocatableItem lastInventoryItemRequestedLocationMenuModel = null;
 

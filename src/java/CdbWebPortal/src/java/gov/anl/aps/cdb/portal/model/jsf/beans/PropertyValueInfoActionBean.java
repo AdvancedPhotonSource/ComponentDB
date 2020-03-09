@@ -10,7 +10,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.plugins.CdbPluginManager;
 import javax.enterprise.context.SessionScoped;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -23,7 +24,7 @@ public class PropertyValueInfoActionBean implements Serializable {
     private PropertyValue propertyValue = null;
     private String value;
 
-    private static final Logger logger = Logger.getLogger(PropertyValueInfoActionBean.class.getName());
+    private static final Logger logger = LogManager.getLogger(PropertyValueInfoActionBean.class.getName());
 
     private CdbPluginManager cdbPluginManager; 
 

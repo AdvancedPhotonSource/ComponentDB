@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import javax.faces.model.ListDataModel;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -29,7 +30,7 @@ import org.primefaces.model.TreeNode;
  */
 public abstract class ItemFilterViewController extends ItemControllerExtensionHelper implements Serializable {
     
-    private static final Logger logger = Logger.getLogger(ItemFilterViewController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemFilterViewController.class.getName());
     
     protected List<ItemCategory> filterViewItemCategorySelectionList = null;
 
