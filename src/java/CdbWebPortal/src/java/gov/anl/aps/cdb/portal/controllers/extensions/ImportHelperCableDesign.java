@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 
 /**
  *
@@ -26,6 +27,7 @@ public class ImportHelperCableDesign extends ImportHelperBase {
         columns.add(new ImportHelperBase.StringColumnModel("Laying", "laying", "setLaying", false, "S"));
         columns.add(new ImportHelperBase.StringColumnModel("Voltage", "voltage", "setVoltage", false, "COM"));
         columns.add(new ImportHelperBase.IdRefColumnModel("Owner", "team", "setTeamId", true, "1234", ItemCategoryController.getInstance()));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Project", "itemProjectString", "setProjectId", true, "1234", ItemProjectController.getInstance()));
         columns.add(new ImportHelperBase.IdRefColumnModel("Type", "catalogItemString", "setCatalogItemId", true, "1234", ItemDomainCableCatalogController.getInstance()));
         columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint1", "endpoint1String", "setEndpoint1Id", true, "1234", ItemDomainMachineDesignController.getInstance()));
         columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint2", "endpoint2String", "setEndpoint2Id", true, "1234", ItemDomainMachineDesignController.getInstance()));

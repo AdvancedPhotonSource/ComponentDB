@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.RelationshipTypeController;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import java.util.ArrayList;
@@ -331,6 +332,15 @@ public class ItemDomainCableDesign extends Item {
             categoryList.add(category);
             this.setItemCategoryList(categoryList);
             team = this.getItemCategoryString();
+        }
+    }
+    
+    public void setProjectId(String projectId) {
+        ItemProject project = ItemProjectController.getInstance().findById(Integer.valueOf(projectId));
+        if (project != null) {
+            List<ItemProject> projectList = new ArrayList<>();
+            projectList.add(project);
+            this.setItemProjectList(projectList);
         }
     }
     
