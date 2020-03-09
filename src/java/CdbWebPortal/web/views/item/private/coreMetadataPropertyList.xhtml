@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <p:scrollPanel style="max-height: 550px"
+                   mode="native">
+        <p:dataTable id="#{entityTypeName}CoreMetadataPropertyListDataTable"
+                     value="#{itemObject.coreMetadataPropertyValue.propertyMetadataBaseList}"                     
+                     var="metadata">
+            <p:column headerText="Key"
+                      filterBy="#{metadata.metadataKey}"
+                      filterable="#{filterablePropertyValueMetadataList}"
+                      sortable="true"
+                      filterMatchMode="contains">
+                <h:outputText value="#{metadata.metadataKey}"/>
+            </p:column>
+            <p:column headerText="Value"
+                      filterBy="#{metadata.metadataValue}"
+                      filterable="#{filterablePropertyValueMetadataList}"
+                      sortable="true"
+                      filterMatchMode="contains">
+                <h:outputText value="#{metadata.metadataValue}" />
+            </p:column>
+        </p:dataTable>
+    </p:scrollPanel>
+
+</ui:composition>
