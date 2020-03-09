@@ -2,7 +2,7 @@
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
-from cdbApi import ApiException
+from cdbApi import ApiException, DomainApi
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
 from cdbApi.api.property_api import PropertyApi
@@ -23,11 +23,15 @@ class CdbApiFactory:
 		self.downloadsApi = DownloadsApi(api_client=self.apiClient)
 		self.propertyApi = PropertyApi(api_client=self.apiClient)
 		self.usersApi = UsersApi(api_client=self.apiClient)
+		self.domainApi = DomainApi(api_client=self.apiClient)
 
 		self.authApi = AuthenticationApi(api_client=self.apiClient)
 
 	def getItemApi(self):
 		return self.itemApi
+
+	def getDomainApi(self):
+		return self.domainApi
 
 	def getDownloadApi(self):
 		return self.downloadsApi
@@ -63,7 +67,7 @@ if __name__ == '__main__':
 	catalogId = catalogItem.get('id')
 
 	# Single items seem to be appropriate type
-	catalogFetchedById = itemApi.get_item_by_id_from_api(catalogId)
+	catalogFetchedById = itemApi.get_item_by_id(catalogId)
 	print(catalogFetchedById.name)
 
 	inventoryItemPerCatalog = itemApi.get_items_derived_from_item_by_item_id(catalogId)
