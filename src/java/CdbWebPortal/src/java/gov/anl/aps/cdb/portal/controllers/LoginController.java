@@ -20,7 +20,8 @@ import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Login controller.
@@ -52,7 +53,7 @@ public class LoginController implements Serializable {
 
     private static final String AdminGroupListPropertyName = "cdb.portal.adminGroupList";
     private static final List<String> adminGroupNameList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
-    private static final Logger logger = Logger.getLogger(LoginController.class.getName());
+    private static final Logger logger = LogManager.getLogger(LoginController.class.getName());
 
     public LoginController() {
     }

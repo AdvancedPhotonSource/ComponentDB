@@ -76,7 +76,8 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -85,7 +86,7 @@ import org.primefaces.model.Visibility;
 
 public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity, ItemSettingsObject> {
 
-    private static final Logger LOGGER = Logger.getLogger(ItemController.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());
     protected final String FAVORITES_LIST_NAME = "Favorites";
     protected static final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";
 

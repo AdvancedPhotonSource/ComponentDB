@@ -13,7 +13,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -23,7 +24,7 @@ import org.apache.log4j.Logger;
 @Tag(name = "Downloads")
 public class DownloadRoute extends BaseRoute {   
     
-    private static final Logger LOGGER = Logger.getLogger(DownloadRoute.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(DownloadRoute.class.getName());
     
     @GET
     @Path("/PropertyValue/Image/{imageName}/{scaling}")       

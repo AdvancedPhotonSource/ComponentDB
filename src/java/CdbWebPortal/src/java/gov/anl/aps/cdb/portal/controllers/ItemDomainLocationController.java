@@ -23,7 +23,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
 
 @Named("itemDomainLocationController")
@@ -34,7 +35,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     private final String DOMAIN_TYPE_NAME = ItemDomainName.location.getValue();
     private static final String DOMAIN_NAME = "Location";    
 
-    private static final Logger logger = Logger.getLogger(ItemDomainLocationController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemDomainLocationController.class.getName());
 
     private TreeNode locationsWithInventoryItemsRootNode;
 

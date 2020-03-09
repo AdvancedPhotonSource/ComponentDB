@@ -23,7 +23,8 @@ import gov.anl.aps.cdb.portal.view.objects.CatalogItemElementConstraintInformati
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -34,7 +35,7 @@ public abstract class ItemDomainCatalogBaseController<ItemCatalogBaseDomainEntit
     private final String DOMAIN_TYPE_NAME = ItemDomainName.catalog.getValue();
     private final String DERIVED_DOMAIN_NAME = "Inventory";        
     
-    private static final Logger logger = Logger.getLogger(ItemDomainCatalogBaseController.class.getName());                                
+    private static final Logger logger = LogManager.getLogger(ItemDomainCatalogBaseController.class.getName());                                
 
     @Override
     public List<ItemCatalogBaseDomainEntity> getItemList() {

@@ -9,7 +9,8 @@ import gov.anl.aps.cdb.portal.controllers.SettingController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Date;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
 /**
@@ -18,7 +19,7 @@ import org.primefaces.component.datatable.DataTable;
  */
 public abstract class CdbEntitySettingsBase<EntityController extends CdbEntityController> extends SettingBase<EntityController> {
     
-    private static final Logger logger = Logger.getLogger(CdbEntitySettingsBase.class.getName());
+    private static final Logger logger = LogManager.getLogger(CdbEntitySettingsBase.class.getName());
         
     protected Boolean displayId = null;
     protected Boolean displayDescription = null;
