@@ -2826,5 +2826,20 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
 
     }
+    
+    @Override
+    public String getCoreMetadataPropertyTitle() {
+        return "Core Metadata Property";
+    }
+    
+    @Override
+    public boolean getRenderCoreMetadataPropertyList() {
+        return false;
+    }
+
+    @Override
+    public boolean getDisplayCoreMetadataPropertyList() {
+        return false;
+    }
 
 }

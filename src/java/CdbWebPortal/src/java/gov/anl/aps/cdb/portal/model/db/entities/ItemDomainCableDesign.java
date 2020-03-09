@@ -273,6 +273,13 @@ public class ItemDomainCableDesign extends Item {
         return null; 
     }
     
+    /**
+     * Returns property value for core metadata property.
+     */
+    public PropertyValue getCoreMetadataPropertyValue() {
+        return getInternalCableDesignPropertyValue();
+    }
+    
     private void setInternalCableDesignPropertyFieldValue(String key, String value) {
         
         PropertyValue propertyValue = getInternalCableDesignPropertyValue();
@@ -315,7 +322,7 @@ public class ItemDomainCableDesign extends Item {
 
     public void setVoltage(String v) {
         voltage = v;
-        setInternalCableDesignPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY, v);
+        setInternalCableDesignPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, v);
     }
 
     public String getTeam() {

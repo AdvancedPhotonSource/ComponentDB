@@ -60,6 +60,10 @@ See LICENSE file.
         <ui:include src="../../../domainEntityProperty/private/domainEntityPropertyListDialogs.xhtml" />
     </ui:define>
     
+    <ui:define name="coreMetadataProperty">
+        <ui:include src="../coreMetadataPropertyList.xhtml"/>
+    </ui:define>
+    
     <ui:define name="itemElements">
         <ui:include src="../../../itemElement/private/itemElementList.xhtml">
             <ui:param name="parentItem" value="#{domainEntityObject}" />

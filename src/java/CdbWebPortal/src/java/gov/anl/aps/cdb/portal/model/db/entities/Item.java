@@ -1159,4 +1159,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         return assemblyRootTreeNode;
     }      
 
+    /**
+     * Returns property value for core metadata property.
+     */
+    public PropertyValue getCoreMetadataPropertyValue() {
+        return null;
+    }
+    
 }

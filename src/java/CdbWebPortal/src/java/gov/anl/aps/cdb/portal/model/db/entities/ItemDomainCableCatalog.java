@@ -75,6 +75,13 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return null; 
     }
     
+    /**
+     * Returns property value for core metadata property.
+     */
+    public PropertyValue getCoreMetadataPropertyValue() {
+        return getInternalCablePropertyValue();
+    }
+    
     private void setInternalCablePropertyFieldValue(String key, String value) {
         
         PropertyValue propertyValue = getInternalCablePropertyValue();

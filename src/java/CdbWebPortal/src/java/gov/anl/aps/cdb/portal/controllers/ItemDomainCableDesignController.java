@@ -621,4 +621,19 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public String getCoreMetadataPropertyTitle() {
+        return "Cable Design Properties";
+    }
+
+    @Override
+    public boolean getRenderCoreMetadataPropertyList() {
+        return true;
+    }
+
+    @Override
+    public boolean getDisplayCoreMetadataPropertyList() {
+        return true;
+    }
+
 }

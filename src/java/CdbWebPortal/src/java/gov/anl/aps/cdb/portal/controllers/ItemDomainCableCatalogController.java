@@ -49,6 +49,15 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         }
     }
     
+    /**
+     * Prepares import wizard.
+     */
+    public String prepareWizardImport() {   
+        importHelper.reset();
+        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
+        return "/views/itemDomainCableCatalog/import?faces-redirect=true";
+    }
+    
     private void initializeNewInstance(ItemDomainCableCatalog item) {
         item.setPropertyValueList(new ArrayList<>());
         prepareInternalCablePropertyValue(item);
@@ -220,13 +229,19 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         return ItemDomainName.cableInventory.getValue(); 
     } 
     
-    /**
-     * Prepares import wizard.
-     */
-    public String prepareWizardImport() {   
-        importHelper.reset();
-        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
-        return "/views/itemDomainCableCatalog/import?faces-redirect=true";
+    @Override
+    public String getCoreMetadataPropertyTitle() {
+        return "Cable Type Properties";
     }
-    
+
+    @Override
+    public boolean getRenderCoreMetadataPropertyList() {
+        return true;
+    }
+
+    @Override
+    public boolean getDisplayCoreMetadataPropertyList() {
+        return true;
+    }
+
 }
