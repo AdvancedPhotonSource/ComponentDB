@@ -2841,5 +2841,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public boolean getDisplayCoreMetadataPropertyList() {
         return false;
     }
+    
+    public void updateEditCoreMetadataProperty() {
+        
+    }
+    
+    public void restoreOriginalCoreMetadataPropertyValue() {
+        
+    }
 
 }

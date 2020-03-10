@@ -9,7 +9,27 @@ See LICENSE file.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
-    
+
+    <p:outputPanel id='#{entityTypeName}CoreMetadataPropertyButtonsOutputpanel'>
+        <div class="actionButton">
+
+            <p:commandButton id="#{entityTypeName}CoreMetadataPropertyEditButton" 
+                             action="#{entityController.setCurrentEditPropertyValue(itemObject.coreMetadataPropertyValue)}" 
+                             rendered="#{isEntityWriteable and loginController.loggedIn}" 
+                             value="Edit" 
+                             alt="Edit" 
+                             update="@form"
+                             onstart="PF('loadingDialog').show();"
+                             onerror="PF('loadingDialog').hide();"
+                             oncomplete="PF('loadingDialog').hide(); PF('coreMetadataPropertyDialog').show()"
+                             icon="fa fa-pencil">
+                <p:tooltip for="#{entityTypeName}CoreMetadataPropertyEditButton" 
+                           value="Edit #{entityController.coreMetadataPropertyTitle}."/>
+            </p:commandButton>
+
+        </div>
+    </p:outputPanel>
+
     <p:scrollPanel style="max-height: 550px"
                    mode="native">
         <p:dataTable id="#{entityTypeName}CoreMetadataPropertyListDataTable"
@@ -31,5 +51,7 @@ See LICENSE file.
             </p:column>
         </p:dataTable>
     </p:scrollPanel>
+
+    <ui:include src="./coreMetadataPropertyEditDialog.xhtml"/>
 
 </ui:composition>
