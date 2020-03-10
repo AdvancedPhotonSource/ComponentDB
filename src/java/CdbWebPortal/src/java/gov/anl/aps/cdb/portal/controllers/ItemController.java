@@ -2842,12 +2842,4 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return false;
     }
     
-    public void updateEditCoreMetadataProperty() {
-        
-    }
-    
-    public void restoreOriginalCoreMetadataPropertyValue() {
-        
-    }
-
 }
