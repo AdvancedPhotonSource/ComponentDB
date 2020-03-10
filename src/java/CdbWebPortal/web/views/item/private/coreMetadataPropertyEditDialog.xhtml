@@ -39,16 +39,13 @@ See LICENSE file.
                                  value="Cancel" 
                                  alt="Cancel" 
                                  onstart="PF('loadingDialog').show()"
-                                 oncomplete="PF('loadingDialog').hide(); PF('coreMetadataPropertyDialog').hide(); updateCoreMetadataPropertyPanel();"
+                                 oncomplete="PF('loadingDialog').hide(); PF('coreMetadataPropertyDialog').hide()"
                                  ajax="true"
                                  icon="ui-icon-cancel" />
 
             </p:outputPanel>
         </f:facet>
 
-        <p:remoteCommand name="updateCoreMetadataPropertyPanel" 
-                         update="#{entityTypeName}ViewCoreMetadataPropertyPanel"/>
-        
     </p:dialog>
 
 
