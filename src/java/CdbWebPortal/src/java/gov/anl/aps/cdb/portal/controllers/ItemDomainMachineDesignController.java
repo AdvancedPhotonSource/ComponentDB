@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
@@ -223,6 +224,14 @@ public class ItemDomainMachineDesignController
         }
 
         return false;
+    }
+    
+    public String getItemRepIcon(Item item) {
+        if (isItemMachineDesignAndTemplate(item)) {
+            return PortalStyles.machineDesingTemplateIcon.getValue(); 
+        } else {
+            return item.getDomain().getDomainRepIcon(); 
+        }
     }
 
     public boolean isCollapsedRelatedMAARCItemsForCurrent() {
@@ -1585,7 +1594,7 @@ public class ItemDomainMachineDesignController
     // <editor-fold defaultstate="collapsed" desc="Functionality">
     public void newMachineDesignElementContainedItemValueChanged() {
         String name = currentEditItemElement.getContainedItem().getName();
-        if (!name.equals("")) {
+        if (!name.equals("")) {            
             if (isCurrentItemTemplate()) {
                 if (!verifyValidTemplateName(name, true)) {
                     currentEditItemElementSaveButtonEnabled = false;

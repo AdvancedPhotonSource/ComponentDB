@@ -812,6 +812,23 @@ h2 {
     }
 }
 
+.ui-icon-machine-design-template {    
+    background-image: url(../../resources/images/aps-icon-template.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    animation: transition-ui-icon-machine-design 0.25s;
+}
+
+@keyframes transition-ui-icon-machine-design-template {
+    0% {
+        transform:rotate(0deg);
+    }
+    100% {
+        transform:rotate(360deg);
+    }
+}
+
 .ui-icon-maarc {
     /* Credit: https://thenounproject.com/icon/566019/ */
     background-image: url(../../resources/images/maarc.svg) !important;
