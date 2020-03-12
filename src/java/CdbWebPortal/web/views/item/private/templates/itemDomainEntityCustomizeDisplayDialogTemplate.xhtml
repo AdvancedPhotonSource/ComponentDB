@@ -66,13 +66,18 @@ See LICENSE file.
     <ui:define name="coreMetadataPropertyValueCustomizeOptionsTab">
         <p:tab title="#{entityController.coreMetadataPropertyTitle}"
                rendered="#{entitySettingObject.coreMetadataPropertyType != null}">
-            <p:panelGrid columns="2">
+            <p:panelGrid columns="2"
+                         rendered="#{entitySettingObject.coreMetadataPropertyType != null}">
                 <c:forEach items="#{entitySettingObject.coreMetadataPropertyType.propertyTypeMetadataList}"
                            var="propertyTypeMetadataObject">  
 
-                    <p:selectBooleanCheckbox id="#{propertyTypeMetadataObject.metadataKey}"/>  
-                    <h:outputLabel for="#{propertyTypeMetadataObject.metadataKey}" 
-                                   value="#{propertyTypeMetadataObject.metadataKey}" 
+                    <ui:param name="metadataKey" value="#{propertyTypeMetadataObject.metadataKey}"/>
+                    <ui:param name="propertyName" value="#{metadataKey}Display"/>
+
+                    <p:selectBooleanCheckbox id="#{metadataKey}"
+                                             value="#{entitySettingObject[propertyName]}"/>  
+                    <h:outputLabel for="#{metadataKey}" 
+                                   value="#{metadataKey}" 
                                    styleClass="dialogDataLabel"/>
 
                 </c:forEach>

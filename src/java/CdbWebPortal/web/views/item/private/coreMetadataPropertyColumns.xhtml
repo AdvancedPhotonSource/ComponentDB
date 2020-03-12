@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:param name="rendered" value="#{rendered != null ? rendered : true}" />
+    
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
+
+    <c:forEach items="#{entitySettingObject.coreMetadataPropertyType.propertyTypeMetadataList}"
+               var="propertyTypeMetadataObject">  
+
+        <ui:param name="metadataKey" value="#{propertyTypeMetadataObject.metadataKey}"/>
+        <ui:param name="propertyName" value="#{metadataKey}Display"/>
+
+        <p:column headerText="#{metadataKey}"
+                  rendered="#{rendered and entitySettingObject[propertyName]}">
+            <h:outputText value="#{itemListObject[metadataKey]}"/>
+        </p:column>
+
+
+    </c:forEach>
+
+</ui:composition>
+
+

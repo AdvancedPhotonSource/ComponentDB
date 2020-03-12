@@ -623,7 +623,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     @Override
     public String getCoreMetadataPropertyTitle() {
-        return "Cable Design Properties";
+        return "Cable Design Metadata";
     }
 
     @Override

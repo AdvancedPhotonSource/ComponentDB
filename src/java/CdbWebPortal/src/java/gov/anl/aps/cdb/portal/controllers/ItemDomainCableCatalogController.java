@@ -229,7 +229,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     
     @Override
     public String getCoreMetadataPropertyTitle() {
-        return "Cable Type Properties";
+        return "Cable Type Metadata";
     }
 
     @Override
