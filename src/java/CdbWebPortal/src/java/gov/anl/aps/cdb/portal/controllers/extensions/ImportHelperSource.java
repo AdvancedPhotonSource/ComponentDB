@@ -32,11 +32,6 @@ public class ImportHelperSource extends ImportHelperBase {
     }
     
     @Override
-    protected boolean isValidationOnly() {
-        return false;
-    }
-    
-    @Override
     public int getDataStartRow() {
         return 1;
     }

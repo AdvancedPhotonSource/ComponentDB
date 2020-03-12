@@ -21,7 +21,7 @@ See LICENSE file.
                              update="@form"
                              onstart="PF('loadingDialog').show();"
                              onerror="PF('loadingDialog').hide();"
-                             oncomplete="PF('loadingDialog').hide(); PF('coreMetadataPropertyDialog').show()"
+                             oncomplete="PF('loadingDialog').hide(); PF('#{entityTypeName}coreMetadataPropertyDialog').show()"
                              icon="fa fa-pencil">
                 <p:tooltip for="#{entityTypeName}CoreMetadataPropertyEditButton" 
                            value="Edit #{entityController.coreMetadataPropertyTitle}."/>

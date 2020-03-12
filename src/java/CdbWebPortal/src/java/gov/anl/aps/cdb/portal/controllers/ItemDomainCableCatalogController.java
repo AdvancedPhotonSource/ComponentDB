@@ -30,8 +30,6 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     
     public static final String CONTROLLER_NAMED = "itemDomainCableCatalogController";
     
-    private final static String CABLE_INTERNAL_PROPERTY_TYPE = "cable_internal_property_type"; 
-    
     @EJB
     ItemDomainCableCatalogFacade itemDomainCableCatalogFacade;
     
@@ -66,10 +64,10 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     public PropertyValue prepareInternalCablePropertyValue(ItemDomainCableCatalog item) {
         
         // Add cable internal property type
-        PropertyType propertyType = propertyTypeFacade.findByName(CABLE_INTERNAL_PROPERTY_TYPE);
+        PropertyType propertyType = propertyTypeFacade.findByName(ItemDomainCableCatalog.CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
 
         if (propertyType == null) {
-            propertyType = createInternalCablePropertyType();
+            propertyType = createInternalCableCatalogPropertyType();
         }
         
         return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
@@ -93,11 +91,11 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         return item;
     }
     
-    private PropertyType createInternalCablePropertyType() {
+    private PropertyType createInternalCableCatalogPropertyType() {
         PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
         PropertyType propertyType = propertyTypeController.createEntityInstance();
         propertyType.setIsInternal(true);
-        propertyType.setName(CABLE_INTERNAL_PROPERTY_TYPE);
+        propertyType.setName(ItemDomainCableCatalog.CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
         propertyTypeController.setCurrent(propertyType);
         propertyTypeController.create(true, false); 
         return propertyType; 

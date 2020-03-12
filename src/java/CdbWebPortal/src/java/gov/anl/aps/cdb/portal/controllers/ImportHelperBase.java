@@ -428,8 +428,6 @@ public abstract class ImportHelperBase {
 
     protected abstract String getCompletionUrlValue();
 
-    protected abstract boolean isValidationOnly();
-
     public abstract CdbEntityController getEntityController();
     
     public abstract String getTemplateFilename();

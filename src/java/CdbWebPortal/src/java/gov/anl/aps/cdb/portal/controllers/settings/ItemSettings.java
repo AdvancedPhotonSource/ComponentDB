@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemElementController;
 import gov.anl.aps.cdb.portal.controllers.SettingController;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
@@ -529,6 +530,10 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
 
     public Boolean getAutoLoadListFilterValues() {
         return autoLoadListFilterValues;
+    }
+    
+    public PropertyType getCoreMetadataPropertyType() {
+        return null;
     }
      
 }

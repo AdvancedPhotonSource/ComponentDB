@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueBase;
@@ -195,6 +196,11 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
                 currentEditPropertyValue.setUnits(originalValue.getUnits());
                 currentEditPropertyValue.setIsDynamic(originalValue.getIsDynamic());
                 currentEditPropertyValue.setIsUserWriteable(originalValue.getIsUserWriteable());
+                if (currentEditPropertyValue.getIsHasPropertyMetadata()) {
+                    for (PropertyMetadata m : currentEditPropertyValue.getPropertyMetadataList()) {
+                        m.setMetadataValue(originalValue.getPropertyMetadataValueForKey(m.getMetadataKey()));
+                    }
+                }
             }
             currentEditPropertyValue = null;
         }

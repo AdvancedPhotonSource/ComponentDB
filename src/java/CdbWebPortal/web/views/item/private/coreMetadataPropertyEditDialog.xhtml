@@ -11,22 +11,21 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
     
     <p:dialog header="Edit #{entityController.coreMetadataPropertyTitle}" 
-              id="dialogCoreMetadataProperty"
-              widgetVar="coreMetadataPropertyDialog" 
+              id="#{entityTypeName}dialogCoreMetadataProperty"
+              widgetVar="#{entityTypeName}coreMetadataPropertyDialog" 
               modal="true"
               closable="false">
 
         <ui:include src="../../propertyMetadata/private/propertyValueMetadataEditPanelGrid.xhtml">  
             <ui:param name="propertyValueObject" value="#{itemObject.coreMetadataPropertyValue}" /> 
-            <ui:param name="noRemoveLink" value="#{true}" /> 
             <ui:param name="viewId" value="coreMetadataPropertyDialog"/>
         </ui:include>
 
         <f:facet name="footer" class="dialog">
-            <p:outputPanel id="dialogCoreMetadataPropertyButtonPanel">
+            <p:outputPanel id="#{entityTypeName}dialogCoreMetadataPropertyButtonPanel">
 
                 <p:commandButton  action="#{entityController.update()}"
-                                  id="catalogDialogSaveButton"
+                                  id="#{entityTypeName}dialogCoreMetadataPropertySaveButton"
                                   value="Save" 
                                   alt="Save" 
                                   onstart="PF('loadingDialog').show()"
@@ -35,13 +34,15 @@ See LICENSE file.
                                   ajax="true"
                                   icon="ui-icon-check"/>
 
-                <p:commandButton action="#{entityController.restoreCurrentEditPropertyValueToOriginalState()}" 
-                                 value="Cancel" 
-                                 alt="Cancel" 
+                <p:commandButton value="Close" 
                                  onstart="PF('loadingDialog').show()"
-                                 oncomplete="PF('loadingDialog').hide(); PF('coreMetadataPropertyDialog').hide()"
+                                 oncomplete="PF('loadingDialog').hide(); 
+                                 PF('#{entityTypeName}coreMetadataPropertyDialog').hide();"
+                                 id="#{entityTypeName}dialogCoreMetadataPropertyCloseButton"
+                                 icon="fa fa-window-close-o"
+                                 update="#{entityTypeName}dialogCoreMetadataProperty"
                                  ajax="true"
-                                 icon="ui-icon-cancel" />
+                                 action="#{entityController.restoreCurrentEditPropertyValueToOriginalState()}"/>
 
             </p:outputPanel>
         </f:facet>

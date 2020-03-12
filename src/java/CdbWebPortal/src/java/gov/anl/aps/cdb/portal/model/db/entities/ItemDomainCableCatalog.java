@@ -41,10 +41,9 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient boolean isValid = false;
     private transient String validString = null;
     
-    private final static String CABLE_INTERNAL_PROPERTY_TYPE = "cable_internal_property_type"; 
+    public final static String CABLE_CATALOG_INTERNAL_PROPERTY_TYPE = "cable_catalog_internal_property_type"; 
     private final static String CABLE_PROPERTY_URL_KEY = "url"; 
     private final static String CABLE_PROPERTY_IMAGE_URL_KEY = "imageUrl"; 
-    private final static String CABLE_PROPERTY_MANUFACTURER_KEY = "manufacturer"; 
     private final static String CABLE_PROPERTY_WEIGHT_KEY = "weight"; 
     private final static String CABLE_PROPERTY_DIAMETER_KEY = "diameter"; 
     private final static String CABLE_PROPERTY_CONDUCTORS_KEY = "conductors"; 
@@ -68,7 +67,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private PropertyValue getInternalCablePropertyValue() {
         List<PropertyValue> propertyValueList = getPropertyValueList(); 
         for (PropertyValue propertyValue: propertyValueList) {
-            if (propertyValue.getPropertyType().getName().equals(CABLE_INTERNAL_PROPERTY_TYPE)) {
+            if (propertyValue.getPropertyType().getName().equals(CABLE_CATALOG_INTERNAL_PROPERTY_TYPE)) {
                 return propertyValue; 
             }
         }
@@ -91,14 +90,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         } 
             
         propertyValue.setPropertyMetadataValue(key, value);
-    }
-    
-    public String getCableType() {
-        return this.getName();
-    }
-    
-    public void setCableType(String t) {
-        this.setName(t);
     }
     
     public String getUrl() {
@@ -150,14 +141,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
 
     public String getManufacturer() {
-        if (manufacturer == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                manufacturer = "";
-            } else {
-                manufacturer = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_MANUFACTURER_KEY);
-            }
-        }
         return manufacturer;
     }
     

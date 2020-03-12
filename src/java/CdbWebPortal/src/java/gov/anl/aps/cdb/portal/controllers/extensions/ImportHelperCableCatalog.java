@@ -21,7 +21,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     
     @Override
     protected void createColumnModels_() {
-        columns.add(new StringColumnModel("Cable Type", "cableType", "setCableType", true, "M 24"));
+        columns.add(new StringColumnModel("Name", "name", "setName", true, "M 24"));
         columns.add(new StringColumnModel("Description", "description", "setDescription", false, "24 fiber single-unit"));
         columns.add(new UrlColumnModel("Link URL", "urlDisplay", "setUrl", false, "http://www.example.com/example"));
         columns.add(new UrlColumnModel("Image URL", "imageUrlDisplay", "setImageUrl", false, "http://www.example.com/example"));
@@ -43,11 +43,6 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     @Override
     protected String getCompletionUrlValue() {
         return completionUrlValue;
-    }
-    
-    @Override
-    protected boolean isValidationOnly() {
-        return false;
     }
     
     @Override

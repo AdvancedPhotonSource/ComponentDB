@@ -11,18 +11,18 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <!--Use viewId parameter from caller to make component ids unique.-->
     <p:panelGrid columns="2">
         <c:forEach items="#{propertyValueObject.propertyValueMetadataList}"
                    var="propertyValueMetadataObject">       
             <p:outputPanel>
                 <ui:param name="propertyTypeMetadata" value="#{propertyValueMetadataObject.propertyTypeMetadata}"/>
                 <ui:param name="propertyMetadata" value="#{propertyValueMetadataObject.propertyMetadata}"/>
-                <ui:param name="renderRemoveLink" value="#{noRemoveLink ? false: propertyValueMetadataObject.isTrashFunctionalityAvaiable}"/>
 
                 <h:outputLabel value="#{propertyValueMetadataObject.propertyMetadata.metadataKey}" styleClass="entityDataEmphasizedLabel"/>
                 <p:commandLink id="#{viewId}propertyMetadataKeyRemoveCommandLink#{propertyMetadata.viewUUID}"
                                styleClass="fa fa-link-icon fa-trash"
-                               rendered="#{renderRemoveLink}"
+                               rendered="#{propertyValueMetadataObject.isTrashFunctionalityAvaiable}"
                                onclick="PF('propertyMetadataDestoryConfirmWidget').show()">
                     <f:setPropertyActionListener target="#{propertyValueController.currentPropertyMetadata}"
                                                  value="#{propertyValueMetadataObject}" />                                
