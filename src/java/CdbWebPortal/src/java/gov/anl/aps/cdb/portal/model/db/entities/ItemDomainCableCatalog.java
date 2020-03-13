@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
@@ -54,6 +55,11 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private final static String CABLE_PROPERTY_HEAT_LIMIT_KEY = "heatLimit"; 
     private final static String CABLE_PROPERTY_BEND_RADIUS_KEY = "bendRadius"; 
     private final static String CABLE_PROPERTY_RAD_TOLERANCE_KEY = "radTolerance"; 
+    
+    static {
+        ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Type Metadata", CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
+        registerCoreMetadataPropertyInfo(ItemDomainCableCatalog.class, info);
+    }
 
     @Override
     public Item createInstance() {
@@ -64,49 +70,16 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
     }
     
-    private PropertyValue getInternalCablePropertyValue() {
-        List<PropertyValue> propertyValueList = getPropertyValueList(); 
-        for (PropertyValue propertyValue: propertyValueList) {
-            if (propertyValue.getPropertyType().getName().equals(CABLE_CATALOG_INTERNAL_PROPERTY_TYPE)) {
-                return propertyValue; 
-            }
-        }
-        return null; 
-    }
-    
-    /**
-     * Returns property value for core metadata property.
-     */
-    public PropertyValue getCoreMetadataPropertyValue() {
-        return getInternalCablePropertyValue();
-    }
-    
-    private void setInternalCablePropertyFieldValue(String key, String value) {
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue == null) {
-            propertyValue = ItemDomainCableCatalogController.getInstance().prepareInternalCablePropertyValue(this);
-        } 
-            
-        propertyValue.setPropertyMetadataValue(key, value);
-    }
-    
     public String getUrl() {
         if (url == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                url = "";
-            } else {
-                url = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_URL_KEY);
-            }
+            url = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY);
         }
         return url;
     }
     
     public void setUrl(String w) {
         url = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_URL_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY, w);
     }
     
     public String getUrlDisplay() {
@@ -118,19 +91,14 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
 
     public String getImageUrl() {
         if (imageUrl == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                imageUrl = "";
-            } else {
-                imageUrl = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_IMAGE_URL_KEY);
-            }
+            imageUrl = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY);
         }
         return imageUrl;
     }
     
     public void setImageUrl(String w) {
         imageUrl = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY, w);
     }
     
     public String getImageUrlDisplay() {
@@ -178,172 +146,122 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     
     public String getWeight() {
         if (weight == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                weight = "";
-            } else {
-                weight = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_WEIGHT_KEY);
-            }
+            weight = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_WEIGHT_KEY);
         }
         return weight;
     }
     
     public void setWeight(String w) {
         weight = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_WEIGHT_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_WEIGHT_KEY, w);
     }
     
     public String getDiameter() {
         if (diameter == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                diameter = "";
-            } else {
-                diameter = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_DIAMETER_KEY);
-            }
+            diameter = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_DIAMETER_KEY);
         }
         return diameter;
     }
     
     public void setDiameter(String d) {
         diameter = d;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_DIAMETER_KEY, d);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_DIAMETER_KEY, d);
     }
     
     public String getConductors() {
         if (conductors == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                conductors = "";
-            } else {
-                conductors = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_CONDUCTORS_KEY);
-            }
+            conductors = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_CONDUCTORS_KEY);
         }
         return conductors;
     }
     
     public void setConductors(String w) {
         conductors = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_CONDUCTORS_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_CONDUCTORS_KEY, w);
     }
     
     public String getInsulation() {
         if (insulation == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                insulation = "";
-            } else {
-                insulation = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_INSULATION_KEY);
-            }
+            insulation = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_INSULATION_KEY);
         }
         return insulation;
     }
     
     public void setInsulation(String w) {
         insulation = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_INSULATION_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_INSULATION_KEY, w);
     }
     
     public String getJacketColor() {
         if (jacketColor == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                jacketColor = "";
-            } else {
-                jacketColor = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_JACKET_COLOR_KEY);
-            }
+            jacketColor = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_JACKET_COLOR_KEY);
         }
         return jacketColor;
     }
     
     public void setJacketColor(String w) {
         jacketColor = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_JACKET_COLOR_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_JACKET_COLOR_KEY, w);
     }
     
     public String getVoltageRating() {
         if (voltageRating == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                voltageRating = "";
-            } else {
-                voltageRating = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_VOLTAGE_RATING_KEY);
-            }
+            voltageRating = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_VOLTAGE_RATING_KEY);
         }
         return voltageRating;
     }
     
     public void setVoltageRating(String w) {
         voltageRating = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_VOLTAGE_RATING_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_VOLTAGE_RATING_KEY, w);
     }
     
     public String getFireLoad() {
         if (fireLoad == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                fireLoad = "";
-            } else {
-                fireLoad = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_FIRE_LOAD_KEY);
-            }
+            fireLoad = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_FIRE_LOAD_KEY);
         }
         return fireLoad;
     }
     
     public void setFireLoad(String w) {
         fireLoad = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_FIRE_LOAD_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_FIRE_LOAD_KEY, w);
     }
     
     public String getHeatLimit() {
         if (heatLimit == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                heatLimit = "";
-            } else {
-                heatLimit = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_HEAT_LIMIT_KEY);
-            }
+            heatLimit = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_HEAT_LIMIT_KEY);
         }
         return heatLimit;
     }
     
     public void setHeatLimit(String w) {
         heatLimit = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_HEAT_LIMIT_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_HEAT_LIMIT_KEY, w);
     }
     
     public String getBendRadius() {
         if (bendRadius == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                bendRadius = "";
-            } else {
-                bendRadius = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_BEND_RADIUS_KEY);
-            }
+            bendRadius = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_BEND_RADIUS_KEY);
         }
         return bendRadius;
     }
     
     public void setBendRadius(String w) {
         bendRadius = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_BEND_RADIUS_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_BEND_RADIUS_KEY, w);
     }
     
     public String getRadTolerance() {
         if (radTolerance == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                radTolerance = "";
-            } else {
-                radTolerance = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_RAD_TOLERANCE_KEY);
-            }
+            radTolerance = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY);
         }
         return radTolerance;
     }
     
     public void setRadTolerance(String w) {
         radTolerance = w;
-        setInternalCablePropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY, w);
     }
     
     public String getTeam() {

@@ -14,11 +14,15 @@ import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -314,6 +318,9 @@ public class Item extends CdbDomainEntity implements Serializable {
         
     // API generation variables    
     private transient String descriptionFromAPI;
+    
+    protected static Map<Class, ItemCoreMetadataPropertyInfo> coreMetadataPropertyInfoMap = new HashMap<>();
+    protected transient PropertyValue coreMetadataPropertyValue = null;
     
     public Item() {
     }        
@@ -1157,13 +1164,70 @@ public class Item extends CdbDomainEntity implements Serializable {
             }
         }
         return assemblyRootTreeNode;
-    }      
+    }   
+    
+    protected static void registerCoreMetadataPropertyInfo(Class c, ItemCoreMetadataPropertyInfo info) {
+        coreMetadataPropertyInfoMap.put(c, info);
+    }
 
-    /**
-     * Returns property value for core metadata property.
-     */
     public PropertyValue getCoreMetadataPropertyValue() {
+        
+        ItemCoreMetadataPropertyInfo info = coreMetadataPropertyInfoMap.get(this.getClass());
+        
+        if (info != null) {
+            if (coreMetadataPropertyValue == null) {
+                List<PropertyValue> propertyValueList = getPropertyValueList();
+                for (PropertyValue propertyValue : propertyValueList) {
+                    if (propertyValue.getPropertyType().getName().equals(info.getPropertyName())) {
+                        coreMetadataPropertyValue = propertyValue;
+                    }
+                }
+            }
+            return coreMetadataPropertyValue;
+        }
+        
         return null;
+    }
+    
+    protected void setCoreMetadataPropertyFieldValue(String key, String value) {
+        
+        PropertyValue propertyValue = getCoreMetadataPropertyValue();
+
+        if (propertyValue == null) {
+            propertyValue = getItemDomainController().prepareCoreMetadataPropertyValue(this);
+        } 
+            
+        propertyValue.setPropertyMetadataValue(key, value);
+    }
+    
+    protected String getCoreMetadataPropertyFieldValue(String key) {
+        PropertyValue propertyValue = getCoreMetadataPropertyValue();
+        if (propertyValue != null) {
+            return propertyValue.getPropertyMetadataValueForKey(key);
+        } else {
+            return "";
+        }
+    }
+    
+    public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
+        return coreMetadataPropertyInfoMap.get(this.getClass());
+    }
+
+    public String getCoreMetadataPropertyTitle() {
+        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        if (info == null) {
+            return "";
+        } else {
+            return info.getDisplayName();
+        }
+    }
+    
+    public boolean getRenderCoreMetadataPropertyList() {
+        return (getCoreMetadataPropertyInfo() != null);
+    }
+
+    public boolean getDisplayCoreMetadataPropertyList() {
+        return (getCoreMetadataPropertyInfo() != null);
     }
     
 }

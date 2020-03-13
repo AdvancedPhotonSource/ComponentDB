@@ -27,6 +27,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
@@ -37,6 +38,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -62,6 +64,7 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 
 import java.util.ArrayList;
@@ -120,6 +123,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     @EJB
     private ItemElementRelationshipFacade itemElementRelationshipFacade;
 
+    @EJB
+    private PropertyTypeFacade propertyTypeFacade;
+    
     private List<ItemElementRelationship> locationRelationshipCache;
 
     private List<Item> parentItemList;
@@ -179,7 +185,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected Boolean hasElementReorderChangesForCurrent = false;
 
     protected List<String> expandedRowUUIDs = null;
-
+    
     public ItemController() {
     }
 
@@ -2206,6 +2212,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             item.setQrId(qrIdViewParam);
             qrIdViewParam = null;
         }
+        
+        initializeCoreMetadataProperty(item);
 
         return item;
     }
@@ -2827,19 +2835,33 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     }
     
-    @Override
-    public String getCoreMetadataPropertyTitle() {
-        return "Core Metadata Property";
+    protected void initializeCoreMetadataProperty(ItemDomainEntity item) {
+        if (item.getCoreMetadataPropertyInfo() != null) {
+            item.setPropertyValueList(new ArrayList<>());
+            prepareCoreMetadataPropertyValue(item);
+        }
     }
     
-    @Override
-    public boolean getRenderCoreMetadataPropertyList() {
-        return false;
-    }
+    public PropertyValue prepareCoreMetadataPropertyValue(ItemDomainEntity item) {
+        
+        // Add cable internal property type
+        PropertyType propertyType = propertyTypeFacade.findByName(item.getCoreMetadataPropertyInfo().getPropertyName());
 
-    @Override
-    public boolean getDisplayCoreMetadataPropertyList() {
-        return false;
+        if (propertyType == null) {
+            propertyType = createCoreMetadataPropertyType(item);
+        }
+        
+        return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
     }
     
+    protected PropertyType createCoreMetadataPropertyType(ItemDomainEntity item) {
+        PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
+        PropertyType propertyType = propertyTypeController.createEntityInstance();
+        propertyType.setIsInternal(true);
+        propertyType.setName(item.getCoreMetadataPropertyInfo().getPropertyName());
+        propertyTypeController.setCurrent(propertyType);
+        propertyTypeController.create(true, false); 
+        return propertyType; 
+    }    
+
 }

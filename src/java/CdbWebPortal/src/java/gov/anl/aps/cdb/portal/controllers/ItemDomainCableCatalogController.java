@@ -10,12 +10,8 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableCatalogSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import java.util.ArrayList;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -32,9 +28,6 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     
     @EJB
     ItemDomainCableCatalogFacade itemDomainCableCatalogFacade;
-    
-    @EJB
-    private PropertyTypeFacade propertyTypeFacade;
     
     protected ImportHelperCableCatalog importHelper = new ImportHelperCableCatalog();
     
@@ -56,51 +49,13 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         return "/views/itemDomainCableCatalog/import?faces-redirect=true";
     }
     
-    private void initializeNewInstance(ItemDomainCableCatalog item) {
-        item.setPropertyValueList(new ArrayList<>());
-        prepareInternalCablePropertyValue(item);
-    }
-    
-    public PropertyValue prepareInternalCablePropertyValue(ItemDomainCableCatalog item) {
-        
-        // Add cable internal property type
-        PropertyType propertyType = propertyTypeFacade.findByName(ItemDomainCableCatalog.CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
-
-        if (propertyType == null) {
-            propertyType = createInternalCableCatalogPropertyType();
-        }
-        
-        return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
-    }
-    
     @Override
     protected ItemDomainCableCatalog createEntityInstance() {
         ItemDomainCableCatalog item = super.createEntityInstance();
-        initializeNewInstance(item);
         setCurrent(item);
         return item;
     }
     
-    /**
-     * Creates new instance but doesn't set current (for operations from
-     * outside controller).
-     */
-    public ItemDomainCableCatalog newEntityInstance() {
-        ItemDomainCableCatalog item = super.createEntityInstance();
-        this.initializeNewInstance(item);
-        return item;
-    }
-    
-    private PropertyType createInternalCableCatalogPropertyType() {
-        PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
-        PropertyType propertyType = propertyTypeController.createEntityInstance();
-        propertyType.setIsInternal(true);
-        propertyType.setName(ItemDomainCableCatalog.CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
-        propertyTypeController.setCurrent(propertyType);
-        propertyTypeController.create(true, false); 
-        return propertyType; 
-    }    
-
     @Override
     public ItemMultiEditController getItemMultiEditController() {
         return ItemMultiEditDomainCableCatalogController.getInstance();

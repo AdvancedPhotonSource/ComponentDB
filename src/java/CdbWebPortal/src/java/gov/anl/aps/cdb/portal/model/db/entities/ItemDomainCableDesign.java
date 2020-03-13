@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.RelationshipTypeController;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +37,11 @@ public class ItemDomainCableDesign extends Item {
     private final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage"; 
 
     private static final String endpointsSeparator = " | ";
+    
+    static {
+        ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Design Metadata", CABLE_DESIGN_INTERNAL_PROPERTY_TYPE);
+        registerCoreMetadataPropertyInfo(ItemDomainCableDesign.class, info);
+    }
 
     @Override
     public Item createInstance() {
@@ -273,56 +279,28 @@ public class ItemDomainCableDesign extends Item {
         return null; 
     }
     
-    /**
-     * Returns property value for core metadata property.
-     */
-    public PropertyValue getCoreMetadataPropertyValue() {
-        return getInternalCableDesignPropertyValue();
-    }
-    
-    private void setInternalCableDesignPropertyFieldValue(String key, String value) {
-        
-        PropertyValue propertyValue = getInternalCableDesignPropertyValue();
-
-        if (propertyValue == null) {
-            propertyValue = ItemDomainCableDesignController.getInstance().prepareInternalCableDesignPropertyValue(this);
-        } 
-            
-        propertyValue.setPropertyMetadataValue(key, value);
-    }
-    
     public String getLaying() {
         if (laying == null) {
-            PropertyValue propertyValue = getInternalCableDesignPropertyValue();
-            if (propertyValue == null) {
-                laying = "";
-            } else {
-                laying = propertyValue.getPropertyMetadataValueForKey(CABLE_DESIGN_PROPERTY_LAYING_KEY);
-            }
+            laying = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY);
         }
         return laying;
     }
 
     public void setLaying(String l) {
         laying = l;
-        setInternalCableDesignPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY, l);
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY, l);
     }
 
     public String getVoltage() {
         if (voltage == null) {
-            PropertyValue propertyValue = getInternalCableDesignPropertyValue();
-            if (propertyValue == null) {
-                voltage = "";
-            } else {
-                voltage = propertyValue.getPropertyMetadataValueForKey(CABLE_DESIGN_PROPERTY_LAYING_KEY);
-            }
+            voltage = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY);
         }
         return voltage;
     }
 
     public void setVoltage(String v) {
         voltage = v;
-        setInternalCableDesignPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, v);
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, v);
     }
 
     public String getTeam() {
