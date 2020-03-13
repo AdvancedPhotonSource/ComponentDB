@@ -1595,12 +1595,6 @@ public class ItemDomainMachineDesignController
     public void newMachineDesignElementContainedItemValueChanged() {
         String name = currentEditItemElement.getContainedItem().getName();
         if (!name.equals("")) {            
-            if (isCurrentItemTemplate()) {
-                if (!verifyValidTemplateName(name, true)) {
-                    currentEditItemElementSaveButtonEnabled = false;
-                    return;
-                }
-            }
             currentEditItemElementSaveButtonEnabled = true;
         } else {
             currentEditItemElementSaveButtonEnabled = false;
@@ -1927,6 +1921,17 @@ public class ItemDomainMachineDesignController
             }
 
             ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) currentEditItemElement.getContainedItem();
+            
+            List<ItemElement> itemElementMemberList = containedItem.getItemElementMemberList();
+            if (itemElementMemberList == null) {
+                containedItem.setItemElementMemberList(new ArrayList<>());
+                itemElementMemberList = containedItem.getItemElementMemberList();
+            }
+            
+            if (itemElementMemberList.contains(currentEditItemElement) == false) {
+                containedItem.getItemElementMemberList().add(currentEditItemElement);                             
+            }
+            
             checkItem(containedItem);
         }
     }
@@ -1971,6 +1976,10 @@ public class ItemDomainMachineDesignController
         String machineDesignName = generateMachineDesignNameForTemplateItem(templateItem);
         clone.setName(machineDesignName);
         clone.setItemIdentifier1(machineDesignAlternateName);
+        
+        // ensure uniqueness of template creation.
+        String viewUUID = clone.getViewUUID();
+        clone.setItemIdentifier2(viewUUID);
 
         addCreatedFromTemplateRelationshipToItem(clone, templateItem);
 
@@ -2134,8 +2143,12 @@ public class ItemDomainMachineDesignController
         super.checkItem(item);
 
         if (item.getIsItemTemplate()) {
-            if (!verifyValidTemplateName(item.getName(), false)) {
-                throw new CdbException("Place parements within {} in template name. Example: 'templateName {paramName}'");
+            List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
+            if (itemElementMemberList == null || itemElementMemberList.isEmpty()) {
+                // Item is not a child of another item. 
+                if (!verifyValidTemplateName(item.getName(), false)) {
+                    throw new CdbException("Place parements within {} in template name. Example: 'templateName {paramName}'");
+                }
             }
         }
     }
