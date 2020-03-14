@@ -575,20 +575,4 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     public void deleteProperty(PropertyValue cdbDomainEntityProperty) {
         getItemController().deleteProperty(cdbDomainEntityProperty);
     }
-
-    @Override
-    public String getCoreMetadataPropertyTitle() {
-        return getItemController().getCoreMetadataPropertyTitle();
-    }
-
-    @Override
-    public boolean getRenderCoreMetadataPropertyList() {
-        return getItemController().getRenderCoreMetadataPropertyList();
-    }
-
-    @Override
-    public boolean getDisplayCoreMetadataPropertyList() {
-        return getItemController().getDisplayCoreMetadataPropertyList();
-    }
-
 }

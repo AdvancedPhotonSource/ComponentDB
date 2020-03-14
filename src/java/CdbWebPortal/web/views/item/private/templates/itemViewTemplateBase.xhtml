@@ -92,9 +92,9 @@ See LICENSE file.
 
                 <p:panel header="#{entityController.coreMetadataPropertyTitle}" 
                          id="#{entityTypeName}ViewCoreMetadataPropertyPanel"
-                         rendered="#{entityController.renderCoreMetadataPropertyList}"
+                         rendered="#{entityObject.renderCoreMetadataPropertyList}"
                          toggleable="true" 
-                         collapsed="#{!entityController.displayCoreMetadataPropertyList}">
+                         collapsed="#{!entityObject.displayCoreMetadataPropertyList}">
                     <ui:insert name="coreMetadataProperty" />
                 </p:panel>           
 

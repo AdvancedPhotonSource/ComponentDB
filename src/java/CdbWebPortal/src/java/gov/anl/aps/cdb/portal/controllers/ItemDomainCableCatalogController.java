@@ -181,20 +181,4 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     public String getDefaultDomainDerivedToDomainName() {
         return ItemDomainName.cableInventory.getValue(); 
     } 
-    
-    @Override
-    public String getCoreMetadataPropertyTitle() {
-        return "Cable Type Metadata";
-    }
-
-    @Override
-    public boolean getRenderCoreMetadataPropertyList() {
-        return true;
-    }
-
-    @Override
-    public boolean getDisplayCoreMetadataPropertyList() {
-        return true;
-    }
-
 }

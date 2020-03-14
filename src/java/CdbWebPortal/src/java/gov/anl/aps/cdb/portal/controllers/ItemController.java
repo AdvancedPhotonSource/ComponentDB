@@ -31,14 +31,12 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -50,6 +48,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
@@ -2857,8 +2856,27 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected PropertyType createCoreMetadataPropertyType(ItemDomainEntity item) {
         PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
         PropertyType propertyType = propertyTypeController.createEntityInstance();
+        
+        ItemCoreMetadataPropertyInfo propInfo = item.getCoreMetadataPropertyInfo();
+        
         propertyType.setIsInternal(true);
-        propertyType.setName(item.getCoreMetadataPropertyInfo().getPropertyName());
+        propertyType.setName(propInfo.getPropertyName());
+        propertyType.setDescription(propInfo.getDisplayName());
+        
+        List<Domain> allowedDomainList = new ArrayList<>();
+        allowedDomainList.add(getDefaultDomain());
+        propertyType.setAllowedDomainList(allowedDomainList);
+        
+        List<PropertyTypeMetadata> ptmList = new ArrayList<>();
+        for (ItemCoreMetadataPropertyInfo.FieldInfo fieldInfo : propInfo.getFields()) {
+            PropertyTypeMetadata ptm = new PropertyTypeMetadata();
+            ptm.setMetadataKey(fieldInfo.getKey());
+            ptm.setDescription(fieldInfo.getDescription());
+            ptm.setPropertyType(propertyType);
+            ptmList.add(ptm);
+        }
+        propertyType.setPropertyTypeMetadataList(ptmList);
+        
         propertyTypeController.setCurrent(propertyType);
         propertyTypeController.create(true, false); 
         return propertyType; 

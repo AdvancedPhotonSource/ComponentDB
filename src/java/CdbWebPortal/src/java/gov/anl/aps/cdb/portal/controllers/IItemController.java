@@ -613,20 +613,4 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * @return 
      */
     public ItemEnforcedPropertiesController getItemEnforcedPropertiesController();
-    
-    /**
-     * Get title for "core metadata property" section of UI.
-     */
-    public String getCoreMetadataPropertyTitle();
-
-    /**
-     * Returns true if the core metadata property section should be rendered.
-     */
-    public boolean getRenderCoreMetadataPropertyList();
-    
-    /**
-     * Returns true if the core metadata property section should be displayed expanded.
-     */
-    public boolean getDisplayCoreMetadataPropertyList();
-    
 }

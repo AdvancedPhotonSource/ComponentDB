@@ -40,6 +40,8 @@ public class ItemDomainCableDesign extends Item {
     
     static {
         ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Design Metadata", CABLE_DESIGN_INTERNAL_PROPERTY_TYPE);
+        info.addField(CABLE_DESIGN_PROPERTY_LAYING_KEY, "Laying", "Laying", ItemCoreMetadataPropertyInfo.FieldType.STRING, "");
+        info.addField(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, "Voltage", "Voltage", ItemCoreMetadataPropertyInfo.FieldType.STRING, "");
         registerCoreMetadataPropertyInfo(ItemDomainCableDesign.class, info);
     }
 
