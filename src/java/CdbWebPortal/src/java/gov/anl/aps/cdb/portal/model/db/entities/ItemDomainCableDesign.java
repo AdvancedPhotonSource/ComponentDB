@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -41,8 +42,8 @@ public class ItemDomainCableDesign extends Item {
     
     static {
         ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Design Metadata", CABLE_DESIGN_INTERNAL_PROPERTY_TYPE);
-        info.addField(CABLE_DESIGN_PROPERTY_LAYING_KEY, "Laying", "Laying", ItemCoreMetadataPropertyInfo.FieldType.STRING, "");
-        info.addField(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, "Voltage", "Voltage", ItemCoreMetadataPropertyInfo.FieldType.STRING, "");
+        info.addField(CABLE_DESIGN_PROPERTY_LAYING_KEY, "Laying", "Laying", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, "Voltage", "Voltage", ItemCoreMetadataFieldType.STRING, "");
         registerCoreMetadataPropertyInfo(ItemDomainCableDesign.class, info);
     }
 

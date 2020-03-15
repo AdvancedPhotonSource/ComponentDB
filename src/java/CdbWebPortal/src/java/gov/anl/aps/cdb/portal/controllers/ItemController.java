@@ -63,6 +63,7 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 
@@ -2868,7 +2869,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         propertyType.setAllowedDomainList(allowedDomainList);
         
         List<PropertyTypeMetadata> ptmList = new ArrayList<>();
-        for (ItemCoreMetadataPropertyInfo.FieldInfo fieldInfo : propInfo.getFields()) {
+        for (ItemCoreMetadataFieldInfo fieldInfo : propInfo.getFields()) {
             PropertyTypeMetadata ptm = new PropertyTypeMetadata();
             ptm.setMetadataKey(fieldInfo.getKey());
             ptm.setDescription(fieldInfo.getDescription());
