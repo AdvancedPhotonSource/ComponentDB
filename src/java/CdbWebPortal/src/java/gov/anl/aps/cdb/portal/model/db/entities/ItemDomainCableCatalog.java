@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
@@ -82,38 +83,38 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
     }
     
-    public String getUrl() {
+    public String getUrl() throws CdbException {
         if (url == null) {
             url = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY);
         }
         return url;
     }
     
-    public void setUrl(String w) {
+    public void setUrl(String w) throws CdbException {
         url = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY, w);
     }
     
-    public String getUrlDisplay() {
+    public String getUrlDisplay() throws CdbException {
         if (urlDisplay == null && this.getUrl() != null) {
             urlDisplay = HttpLinkUtility.prepareHttpLinkDisplayValue(this.getUrl());
         }
         return urlDisplay;
     }
 
-    public String getImageUrl() {
+    public String getImageUrl() throws CdbException {
         if (imageUrl == null) {
             imageUrl = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY);
         }
         return imageUrl;
     }
     
-    public void setImageUrl(String w) {
+    public void setImageUrl(String w) throws CdbException {
         imageUrl = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY, w);
     }
     
-    public String getImageUrlDisplay() {
+    public String getImageUrlDisplay() throws CdbException {
         if (imageUrlDisplay == null && this.getImageUrl() != null) {
             imageUrlDisplay = HttpLinkUtility.prepareHttpLinkDisplayValue(this.getImageUrl());
         }
@@ -156,122 +157,122 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         this.setItemIdentifier1(n);
     }
     
-    public String getWeight() {
+    public String getWeight() throws CdbException {
         if (weight == null) {
             weight = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_WEIGHT_KEY);
         }
         return weight;
     }
     
-    public void setWeight(String w) {
+    public void setWeight(String w) throws CdbException {
         weight = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_WEIGHT_KEY, w);
     }
     
-    public String getDiameter() {
+    public String getDiameter() throws CdbException {
         if (diameter == null) {
             diameter = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_DIAMETER_KEY);
         }
         return diameter;
     }
     
-    public void setDiameter(String d) {
+    public void setDiameter(String d) throws CdbException {
         diameter = d;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_DIAMETER_KEY, d);
     }
     
-    public String getConductors() {
+    public String getConductors() throws CdbException {
         if (conductors == null) {
             conductors = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_CONDUCTORS_KEY);
         }
         return conductors;
     }
     
-    public void setConductors(String w) {
+    public void setConductors(String w) throws CdbException {
         conductors = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_CONDUCTORS_KEY, w);
     }
     
-    public String getInsulation() {
+    public String getInsulation() throws CdbException {
         if (insulation == null) {
             insulation = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_INSULATION_KEY);
         }
         return insulation;
     }
     
-    public void setInsulation(String w) {
+    public void setInsulation(String w) throws CdbException {
         insulation = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_INSULATION_KEY, w);
     }
     
-    public String getJacketColor() {
+    public String getJacketColor() throws CdbException {
         if (jacketColor == null) {
             jacketColor = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_JACKET_COLOR_KEY);
         }
         return jacketColor;
     }
     
-    public void setJacketColor(String w) {
+    public void setJacketColor(String w) throws CdbException {
         jacketColor = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_JACKET_COLOR_KEY, w);
     }
     
-    public String getVoltageRating() {
+    public String getVoltageRating() throws CdbException {
         if (voltageRating == null) {
             voltageRating = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_VOLTAGE_RATING_KEY);
         }
         return voltageRating;
     }
     
-    public void setVoltageRating(String w) {
+    public void setVoltageRating(String w) throws CdbException {
         voltageRating = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_VOLTAGE_RATING_KEY, w);
     }
     
-    public String getFireLoad() {
+    public String getFireLoad() throws CdbException {
         if (fireLoad == null) {
             fireLoad = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_FIRE_LOAD_KEY);
         }
         return fireLoad;
     }
     
-    public void setFireLoad(String w) {
+    public void setFireLoad(String w) throws CdbException {
         fireLoad = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_FIRE_LOAD_KEY, w);
     }
     
-    public String getHeatLimit() {
+    public String getHeatLimit() throws CdbException {
         if (heatLimit == null) {
             heatLimit = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_HEAT_LIMIT_KEY);
         }
         return heatLimit;
     }
     
-    public void setHeatLimit(String w) {
+    public void setHeatLimit(String w) throws CdbException {
         heatLimit = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_HEAT_LIMIT_KEY, w);
     }
     
-    public String getBendRadius() {
+    public String getBendRadius() throws CdbException {
         if (bendRadius == null) {
             bendRadius = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_BEND_RADIUS_KEY);
         }
         return bendRadius;
     }
     
-    public void setBendRadius(String w) {
+    public void setBendRadius(String w) throws CdbException {
         bendRadius = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_BEND_RADIUS_KEY, w);
     }
     
-    public String getRadTolerance() {
+    public String getRadTolerance() throws CdbException {
         if (radTolerance == null) {
             radTolerance = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY);
         }
         return radTolerance;
     }
     
-    public void setRadTolerance(String w) {
+    public void setRadTolerance(String w) throws CdbException {
         radTolerance = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY, w);
     }

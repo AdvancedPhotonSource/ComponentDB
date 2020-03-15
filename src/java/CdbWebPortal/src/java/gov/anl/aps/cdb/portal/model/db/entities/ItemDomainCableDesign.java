@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
@@ -281,26 +282,26 @@ public class ItemDomainCableDesign extends Item {
         return null; 
     }
     
-    public String getLaying() {
+    public String getLaying() throws CdbException {
         if (laying == null) {
             laying = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY);
         }
         return laying;
     }
 
-    public void setLaying(String l) {
+    public void setLaying(String l) throws CdbException {
         laying = l;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY, l);
     }
 
-    public String getVoltage() {
+    public String getVoltage() throws CdbException {
         if (voltage == null) {
             voltage = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY);
         }
         return voltage;
     }
 
-    public void setVoltage(String v) {
+    public void setVoltage(String v) throws CdbException {
         voltage = v;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, v);
     }
