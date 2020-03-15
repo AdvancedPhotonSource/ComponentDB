@@ -24,7 +24,7 @@ See LICENSE file.
                              oncomplete="PF('loadingDialog').hide(); PF('#{entityTypeName}coreMetadataPropertyDialog').show()"
                              icon="fa fa-pencil">
                 <p:tooltip for="#{entityTypeName}CoreMetadataPropertyEditButton" 
-                           value="Edit #{entityController.coreMetadataPropertyTitle}."/>
+                           value="Edit #{domainEntityObject.coreMetadataPropertyTitle}."/>
             </p:commandButton>
 
         </div>
@@ -35,14 +35,14 @@ See LICENSE file.
         <p:dataTable id="#{entityTypeName}CoreMetadataPropertyListDataTable"
                      value="#{itemObject.coreMetadataPropertyValue.propertyMetadataBaseList}"                     
                      var="metadata">
-            <p:column headerText="Key"
+            <p:column headerText=""
                       filterBy="#{metadata.metadataKey}"
                       filterable="#{filterablePropertyValueMetadataList}"
                       sortable="true"
                       filterMatchMode="contains">
                 <h:outputText value="#{metadata.metadataKey}"/>
             </p:column>
-            <p:column headerText="Value"
+            <p:column headerText=""
                       filterBy="#{metadata.metadataValue}"
                       filterable="#{filterablePropertyValueMetadataList}"
                       sortable="true"
