@@ -397,4 +397,8 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
         return null;
     }
          
+    public PropertyType getCoreMetadataPropertyInfo() {
+        return null;
+    }
+         
 }
