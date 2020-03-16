@@ -53,6 +53,10 @@ public class ItemCoreMetadataFieldInfo {
     public ItemCoreMetadataFieldType getType() {
         return type;
     }
+    
+    public String getTypeString() {
+        return type.toString();
+    }
 
     public void setType(ItemCoreMetadataFieldType type) {
         this.type = type;

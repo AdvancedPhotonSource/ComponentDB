@@ -19,6 +19,9 @@ See LICENSE file.
 
             <ui:param name="metadataKey" value="#{metadataField.key}"/>
             <ui:param name="metadataLabel" value="#{metadataField.label}"/>
+            <ui:param name="metadataType" value="#{metadataField.typeString}"/>
+            <ui:param name="fieldProperty" value="#{metadataType != 'url' ? metaDataKey : metadataKey.concat('Display')}"/>
+                      
 
             <h:outputLabel for="#{metadataKey}#{viewName}" 
                            value="#{metadataLabel}" 
@@ -41,7 +44,11 @@ See LICENSE file.
                         </p:commandLink>
                         <h:outputText value="#{itemObject[metadataKey]}" 
                                       title="#{metadataLabel}" 
+                                      rendered="#{metadataType != 'url'}"
                                       styleClass="entityDataText" />
+                        <h:outputLink value="#{itemObject[metadataKey]}"
+                                      target="_blank"
+                                      rendered="#{metadataType == 'url'}">"#{itemObject[fieldProperty]}"</h:outputLink>
                     </p:outputPanel>
                 </f:facet>
                 <f:facet name="input">
