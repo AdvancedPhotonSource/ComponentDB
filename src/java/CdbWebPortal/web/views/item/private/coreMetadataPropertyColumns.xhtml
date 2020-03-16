@@ -14,13 +14,14 @@ See LICENSE file.
     
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
 
-    <c:forEach items="#{entitySettingObject.coreMetadataPropertyType.propertyTypeMetadataList}"
-               var="propertyTypeMetadataObject">  
+    <c:forEach items="#{entitySettingObject.coreMetadataPropertyInfo.fields}"
+               var="metadataField">  
 
-        <ui:param name="metadataKey" value="#{propertyTypeMetadataObject.metadataKey}"/>
+        <ui:param name="metadataKey" value="#{metadataField.key}"/>
+        <ui:param name="metadataLabel" value="#{metadataField.label}"/>
         <ui:param name="propertyName" value="#{metadataKey}Display"/>
 
-        <p:column headerText="#{metadataKey}"
+        <p:column headerText="#{metadataLabel}"
                   rendered="#{rendered and entitySettingObject[propertyName]}">
             <h:outputText value="#{itemListObject[metadataKey]}"/>
         </p:column>

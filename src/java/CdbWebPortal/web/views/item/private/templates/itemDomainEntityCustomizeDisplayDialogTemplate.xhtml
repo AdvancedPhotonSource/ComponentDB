@@ -64,20 +64,21 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="coreMetadataPropertyValueCustomizeOptionsTab">
-        <p:tab title="#{entitySettingObject.coreMetadataPropertyType.description}"
-               rendered="#{entitySettingObject.coreMetadataPropertyType != null}">
+        <p:tab title="#{entitySettingObject.coreMetadataPropertyInfo.displayName}"
+               rendered="#{entitySettingObject.coreMetadataPropertyInfo != null}">
             <p:panelGrid columns="2"
-                         rendered="#{entitySettingObject.coreMetadataPropertyType != null}">
-                <c:forEach items="#{entitySettingObject.coreMetadataPropertyType.propertyTypeMetadataList}"
-                           var="propertyTypeMetadataObject">  
+                         rendered="#{entitySettingObject.coreMetadataPropertyInfo != null}">
+                <c:forEach items="#{entitySettingObject.coreMetadataPropertyInfo.fields}"
+                           var="metadataField">  
 
-                    <ui:param name="metadataKey" value="#{propertyTypeMetadataObject.metadataKey}"/>
+                    <ui:param name="metadataKey" value="#{metadataField.key}"/>
+                    <ui:param name="metadataLabel" value="#{metadataField.label}"/>
                     <ui:param name="propertyName" value="#{metadataKey}Display"/>
 
                     <p:selectBooleanCheckbox id="#{metadataKey}"
                                              value="#{entitySettingObject[propertyName]}"/>  
                     <h:outputLabel for="#{metadataKey}" 
-                                   value="#{metadataKey}" 
+                                   value="#{metadataLabel}" 
                                    styleClass="dialogDataLabel"/>
 
                 </c:forEach>
