@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
@@ -14,10 +15,12 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -314,6 +317,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     public static ItemDomainCableDesignController getInstance() {
         return (ItemDomainCableDesignController) SessionUtility.findBean(ItemDomainCableDesignController.CONTROLLER_NAMED);
+    }
+    
+    @Override
+    protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
+        ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Design Metadata", CABLE_DESIGN_INTERNAL_PROPERTY_TYPE);
+        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_LAYING_KEY, "Laying", "Laying", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, "Voltage", "Voltage", ItemCoreMetadataFieldType.STRING, "");
+        return info;
     }
 
     /**

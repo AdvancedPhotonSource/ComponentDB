@@ -45,41 +45,24 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient String validString = null;
     
     public final static String CABLE_CATALOG_INTERNAL_PROPERTY_TYPE = "cable_catalog_internal_property_type"; 
-    private final static String CABLE_PROPERTY_URL_KEY = "url"; 
-    private final static String CABLE_PROPERTY_IMAGE_URL_KEY = "imageUrl"; 
-    private final static String CABLE_PROPERTY_WEIGHT_KEY = "weight"; 
-    private final static String CABLE_PROPERTY_DIAMETER_KEY = "diameter"; 
-    private final static String CABLE_PROPERTY_CONDUCTORS_KEY = "conductors"; 
-    private final static String CABLE_PROPERTY_INSULATION_KEY = "insulation"; 
-    private final static String CABLE_PROPERTY_JACKET_COLOR_KEY = "jacketColor"; 
-    private final static String CABLE_PROPERTY_VOLTAGE_RATING_KEY = "voltageRating"; 
-    private final static String CABLE_PROPERTY_FIRE_LOAD_KEY = "fireLoad"; 
-    private final static String CABLE_PROPERTY_HEAT_LIMIT_KEY = "heatLimit"; 
-    private final static String CABLE_PROPERTY_BEND_RADIUS_KEY = "bendRadius"; 
-    private final static String CABLE_PROPERTY_RAD_TOLERANCE_KEY = "radTolerance"; 
+    public final static String CABLE_PROPERTY_URL_KEY = "url"; 
+    public final static String CABLE_PROPERTY_IMAGE_URL_KEY = "imageUrl"; 
+    public final static String CABLE_PROPERTY_WEIGHT_KEY = "weight"; 
+    public final static String CABLE_PROPERTY_DIAMETER_KEY = "diameter"; 
+    public final static String CABLE_PROPERTY_CONDUCTORS_KEY = "conductors"; 
+    public final static String CABLE_PROPERTY_INSULATION_KEY = "insulation"; 
+    public final static String CABLE_PROPERTY_JACKET_COLOR_KEY = "jacketColor"; 
+    public final static String CABLE_PROPERTY_VOLTAGE_RATING_KEY = "voltageRating"; 
+    public final static String CABLE_PROPERTY_FIRE_LOAD_KEY = "fireLoad"; 
+    public final static String CABLE_PROPERTY_HEAT_LIMIT_KEY = "heatLimit"; 
+    public final static String CABLE_PROPERTY_BEND_RADIUS_KEY = "bendRadius"; 
+    public final static String CABLE_PROPERTY_RAD_TOLERANCE_KEY = "radTolerance"; 
     
-    static {
-        ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Type Metadata", CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
-        info.addField(CABLE_PROPERTY_URL_KEY, "Documentation URL", "Documentation URL", ItemCoreMetadataFieldType.URL, "");
-        info.addField(CABLE_PROPERTY_IMAGE_URL_KEY, "Image URL", "Image URL", ItemCoreMetadataFieldType.URL, "");
-        info.addField(CABLE_PROPERTY_WEIGHT_KEY, "Weight", "Nominal weight", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(CABLE_PROPERTY_DIAMETER_KEY, "Diameter", "Nominal diameter", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(CABLE_PROPERTY_CONDUCTORS_KEY, "Conductors", "Number of conductors", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(CABLE_PROPERTY_INSULATION_KEY, "Insulation", "Insulation type", ItemCoreMetadataFieldType.STRING, "");
-        info.addField(CABLE_PROPERTY_JACKET_COLOR_KEY, "Jacket Color", "Jacket color", ItemCoreMetadataFieldType.STRING, "");
-        info.addField(CABLE_PROPERTY_VOLTAGE_RATING_KEY, "Voltage Rating", "Voltage rating", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(CABLE_PROPERTY_FIRE_LOAD_KEY, "Fire Load", "Fire load", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(CABLE_PROPERTY_HEAT_LIMIT_KEY, "Heat Limit", "Heat limit", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(CABLE_PROPERTY_BEND_RADIUS_KEY, "Bend Radius", "Bend radius", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(CABLE_PROPERTY_RAD_TOLERANCE_KEY, "Radiation Tolearance", "Radiation tolerance", ItemCoreMetadataFieldType.NUMERIC, "");
-        registerCoreMetadataPropertyInfo(ItemDomainCableCatalog.class, info);
-    }
-
     @Override
     public Item createInstance() {
         return new ItemDomainCableCatalog(); 
     }
-
+    
     public List<ItemDomainCableInventory> getCableInventoryItemList() {
         return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
     }

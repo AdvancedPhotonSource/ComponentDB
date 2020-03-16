@@ -186,6 +186,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     protected List<String> expandedRowUUIDs = null;
     
+    protected ItemCoreMetadataPropertyInfo coreMetadataPropertyInfo = null;
+    protected PropertyType coreMetadataPropertyType = null;
+    
     public ItemController() {
     }
 
@@ -2213,7 +2216,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             qrIdViewParam = null;
         }
         
-        initializeCoreMetadataProperty(item);
+        initializeCoreMetadataPropertyValue(item);
 
         return item;
     }
@@ -2835,7 +2838,33 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     }
     
-    protected void initializeCoreMetadataProperty(ItemDomainEntity item) {
+    public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
+        if (coreMetadataPropertyInfo == null) {
+            coreMetadataPropertyInfo = initializeCoreMetadataPropertyInfo();
+        }
+        return coreMetadataPropertyInfo;
+    }
+    
+    public PropertyType getCoreMetadataPropertyType() {
+        if (coreMetadataPropertyType == null) {
+            initializeCoreMetadataPropertyType();
+        }
+        return coreMetadataPropertyType;
+    }
+    
+    protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
+        // do nothing by default, subclasses with core metadata to override
+        return null;
+    }
+    
+    protected void initializeCoreMetadataPropertyType() {
+        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        if (info != null) {
+            coreMetadataPropertyType = PropertyTypeFacade.getInstance().findByName(info.getPropertyName());
+        }
+    }
+
+    protected void initializeCoreMetadataPropertyValue(ItemDomainEntity item) {
         if (item.getCoreMetadataPropertyInfo() != null) {
             item.setPropertyValueList(new ArrayList<>());
             prepareCoreMetadataPropertyValue(item);
@@ -2848,13 +2877,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         PropertyType propertyType = propertyTypeFacade.findByName(item.getCoreMetadataPropertyInfo().getPropertyName());
 
         if (propertyType == null) {
-            propertyType = createCoreMetadataPropertyType(item);
+            propertyType = prepareCoreMetadataPropertyType(item);
         }
         
         return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
     }
     
-    protected PropertyType createCoreMetadataPropertyType(ItemDomainEntity item) {
+    protected PropertyType prepareCoreMetadataPropertyType(ItemDomainEntity item) {
         PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
         PropertyType propertyType = propertyTypeController.createEntityInstance();
         
@@ -2883,4 +2912,21 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return propertyType; 
     }    
 
+    public String getCoreMetadataPropertyTitle() {
+        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        if (info == null) {
+            return "";
+        } else {
+            return info.getDisplayName();
+        }
+    }
+    
+    public boolean getRenderCoreMetadataProperty() {
+        return (getCoreMetadataPropertyInfo() != null);
+    }
+
+    public boolean getDisplayCoreMetadataProperty() {
+        return (getCoreMetadataPropertyInfo() != null);
+    }
+    
 }

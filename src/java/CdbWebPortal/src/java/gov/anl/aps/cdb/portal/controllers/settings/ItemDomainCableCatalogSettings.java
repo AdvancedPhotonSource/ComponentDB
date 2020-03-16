@@ -32,12 +32,6 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         super(parentController);
     }
     
-    @Override
-    public PropertyType getCoreMetadataPropertyType() {
-        PropertyType propertyType = PropertyTypeFacade.getInstance().findByName(ItemDomainCableCatalog.CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
-        return propertyType;
-    }
-
     public boolean isHeatLimitDisplay() {
         return heatLimitDisplay;
     }

@@ -35,18 +35,11 @@ public class ItemDomainCableDesign extends Item {
     private transient String team = null;
 
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type"; 
-    private final static String CABLE_DESIGN_PROPERTY_LAYING_KEY = "laying"; 
-    private final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage"; 
+    public final static String CABLE_DESIGN_PROPERTY_LAYING_KEY = "laying"; 
+    public final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage"; 
 
     private static final String endpointsSeparator = " | ";
     
-    static {
-        ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Design Metadata", CABLE_DESIGN_INTERNAL_PROPERTY_TYPE);
-        info.addField(CABLE_DESIGN_PROPERTY_LAYING_KEY, "Laying", "Laying", ItemCoreMetadataFieldType.STRING, "");
-        info.addField(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, "Voltage", "Voltage", ItemCoreMetadataFieldType.STRING, "");
-        registerCoreMetadataPropertyInfo(ItemDomainCableDesign.class, info);
-    }
-
     @Override
     public Item createInstance() {
         return new ItemDomainCableDesign();

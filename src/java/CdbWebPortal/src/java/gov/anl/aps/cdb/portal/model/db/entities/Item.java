@@ -319,7 +319,6 @@ public class Item extends CdbDomainEntity implements Serializable {
     // API generation variables    
     private transient String descriptionFromAPI;
     
-    protected static Map<Class, ItemCoreMetadataPropertyInfo> coreMetadataPropertyInfoMap = new HashMap<>();
     protected transient PropertyValue coreMetadataPropertyValue = null;
     
     public Item() {
@@ -1166,13 +1165,9 @@ public class Item extends CdbDomainEntity implements Serializable {
         return assemblyRootTreeNode;
     }   
     
-    protected static void registerCoreMetadataPropertyInfo(Class c, ItemCoreMetadataPropertyInfo info) {
-        coreMetadataPropertyInfoMap.put(c, info);
-    }
-
     public PropertyValue getCoreMetadataPropertyValue() {
         
-        ItemCoreMetadataPropertyInfo info = coreMetadataPropertyInfoMap.get(this.getClass());
+        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
         
         if (info != null) {
             if (coreMetadataPropertyValue == null) {
@@ -1222,24 +1217,6 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
-        return coreMetadataPropertyInfoMap.get(this.getClass());
+        return getItemDomainController().getCoreMetadataPropertyInfo();
     }
-
-    public String getCoreMetadataPropertyTitle() {
-        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
-        if (info == null) {
-            return "";
-        } else {
-            return info.getDisplayName();
-        }
-    }
-    
-    public boolean getRenderCoreMetadataPropertyList() {
-        return (getCoreMetadataPropertyInfo() != null);
-    }
-
-    public boolean getDisplayCoreMetadataPropertyList() {
-        return (getCoreMetadataPropertyInfo() != null);
-    }
-    
 }

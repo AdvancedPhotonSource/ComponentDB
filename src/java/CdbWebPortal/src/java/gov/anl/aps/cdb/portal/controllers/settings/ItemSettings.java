@@ -533,7 +533,6 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
     }
     
     public PropertyType getCoreMetadataPropertyType() {
-        return null;
+        return parentController.getCoreMetadataPropertyType();
     }
-     
 }

@@ -90,11 +90,11 @@ See LICENSE file.
                 </p:panel>
                 <ui:insert name="itemPropertiesSupport" />
 
-                <p:panel header="#{domainEntityObject.coreMetadataPropertyTitle}" 
+                <p:panel header="#{entityController.coreMetadataPropertyTitle}" 
                          id="#{entityTypeName}ViewCoreMetadataPropertyPanel"
-                         rendered="#{domainEntityObject.renderCoreMetadataPropertyList}"
+                         rendered="#{entityController.renderCoreMetadataProperty}"
                          toggleable="true" 
-                         collapsed="#{!domainEntityObject.displayCoreMetadataPropertyList}">
+                         collapsed="#{!entityController.displayCoreMetadataProperty}">
                     <ui:insert name="coreMetadataProperty" />
                 </p:panel>           
 

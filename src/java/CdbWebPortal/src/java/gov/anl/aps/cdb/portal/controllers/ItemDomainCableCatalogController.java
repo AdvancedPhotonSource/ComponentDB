@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCableCatalog;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
@@ -11,7 +12,9 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCableCat
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableCatalogSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
+import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog.CABLE_CATALOG_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -38,6 +41,24 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
             // TODO add apiInstance
             return null;
         }
+    }
+    
+    @Override
+    protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
+        ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Type Metadata", CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_URL_KEY, "Documentation URL", "Documentation URL", ItemCoreMetadataFieldType.URL, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_IMAGE_URL_KEY, "Image URL", "Image URL", ItemCoreMetadataFieldType.URL, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_WEIGHT_KEY, "Weight", "Nominal weight", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_DIAMETER_KEY, "Diameter", "Nominal diameter", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_CONDUCTORS_KEY, "Conductors", "Number of conductors", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_INSULATION_KEY, "Insulation", "Insulation type", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_JACKET_COLOR_KEY, "Jacket Color", "Jacket color", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_VOLTAGE_RATING_KEY, "Voltage Rating", "Voltage rating", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_FIRE_LOAD_KEY, "Fire Load", "Fire load", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_HEAT_LIMIT_KEY, "Heat Limit", "Heat limit", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_BEND_RADIUS_KEY, "Bend Radius", "Bend radius", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_RAD_TOLERANCE_KEY, "Radiation Tolearance", "Radiation tolerance", ItemCoreMetadataFieldType.NUMERIC, "");
+        return info;
     }
     
     /**
