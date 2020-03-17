@@ -20,9 +20,14 @@ See LICENSE file.
         <ui:param name="metadataKey" value="#{metadataField.key}"/>
         <ui:param name="metadataLabel" value="#{metadataField.label}"/>
         <ui:param name="propertyName" value="#{metadataKey}Display"/>
+        <ui:param name="filterValue" value="#{metadataKey}Filter"/>
 
         <p:column headerText="#{metadataLabel}"
-                  rendered="#{rendered and entitySettingObject[propertyName]}">
+                  rendered="#{rendered and entitySettingObject[propertyName]}"
+                  sortBy="#{itemListObject[metadataKey]}"
+                  filterBy="#{itemListObject[metadataKey]}"
+                  filterMatchMode="contains"
+                  filterValue="#{entitySettingObject[filterValue]}">
             <h:outputText value="#{itemListObject[metadataKey]}"/>
         </p:column>
 

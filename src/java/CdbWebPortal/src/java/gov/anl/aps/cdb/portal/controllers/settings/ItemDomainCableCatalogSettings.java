@@ -25,6 +25,19 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
     protected boolean fireLoadDisplay;
     protected boolean voltageRatingDisplay;
     
+    protected String heatLimitFilter;
+    protected String insulationFilter;
+    protected String jacketColorFilter;
+    protected String weightFilter;
+    protected String diameterFilter;
+    protected String urlFilter;
+    protected String bendRadiusFilter;
+    protected String radToleranceFilter;
+    protected String conductorsFilter;
+    protected String imageUrlFilter;
+    protected String fireLoadFilter;
+    protected String voltageRatingFilter;
+    
     public ItemDomainCableCatalogSettings(ItemDomainCableCatalogController parentController) {
         super(parentController);
     }
@@ -123,6 +136,102 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
 
     public void setVoltageRatingDisplay(boolean voltageRatingDisplay) {
         this.voltageRatingDisplay = voltageRatingDisplay;
+    }
+
+    public String getHeatLimitFilter() {
+        return heatLimitFilter;
+    }
+
+    public void setHeatLimitFilter(String heatLimitFilter) {
+        this.heatLimitFilter = heatLimitFilter;
+    }
+
+    public String getInsulationFilter() {
+        return insulationFilter;
+    }
+
+    public void setInsulationFilter(String insulationFilter) {
+        this.insulationFilter = insulationFilter;
+    }
+
+    public String getJacketColorFilter() {
+        return jacketColorFilter;
+    }
+
+    public void setJacketColorFilter(String jacketColorFilter) {
+        this.jacketColorFilter = jacketColorFilter;
+    }
+
+    public String getWeightFilter() {
+        return weightFilter;
+    }
+
+    public void setWeightFilter(String weightFilter) {
+        this.weightFilter = weightFilter;
+    }
+
+    public String getDiameterFilter() {
+        return diameterFilter;
+    }
+
+    public void setDiameterFilter(String diameterFilter) {
+        this.diameterFilter = diameterFilter;
+    }
+
+    public String getUrlFilter() {
+        return urlFilter;
+    }
+
+    public void setUrlFilter(String urlFilter) {
+        this.urlFilter = urlFilter;
+    }
+
+    public String getBendRadiusFilter() {
+        return bendRadiusFilter;
+    }
+
+    public void setBendRadiusFilter(String bendRadiusFilter) {
+        this.bendRadiusFilter = bendRadiusFilter;
+    }
+
+    public String getRadToleranceFilter() {
+        return radToleranceFilter;
+    }
+
+    public void setRadToleranceFilter(String radToleranceFilter) {
+        this.radToleranceFilter = radToleranceFilter;
+    }
+
+    public String getConductorsFilter() {
+        return conductorsFilter;
+    }
+
+    public void setConductorsFilter(String conductorsFilter) {
+        this.conductorsFilter = conductorsFilter;
+    }
+
+    public String getImageUrlFilter() {
+        return imageUrlFilter;
+    }
+
+    public void setImageUrlFilter(String imageUrlFilter) {
+        this.imageUrlFilter = imageUrlFilter;
+    }
+
+    public String getFireLoadFilter() {
+        return fireLoadFilter;
+    }
+
+    public void setFireLoadFilter(String fireLoadFilter) {
+        this.fireLoadFilter = fireLoadFilter;
+    }
+
+    public String getVoltageRatingFilter() {
+        return voltageRatingFilter;
+    }
+
+    public void setVoltageRatingFilter(String voltageRatingFilter) {
+        this.voltageRatingFilter = voltageRatingFilter;
     }
      
 }

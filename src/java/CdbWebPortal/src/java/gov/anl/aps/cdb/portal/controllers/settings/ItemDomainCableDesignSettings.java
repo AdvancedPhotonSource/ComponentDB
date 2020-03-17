@@ -15,6 +15,9 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     protected boolean voltageDisplay;
     protected boolean layingDisplay;
     
+    protected String voltageFilter;
+    protected String layingFilter;
+    
     public ItemDomainCableDesignSettings(ItemDomainCableDesignController parentController) {
         super(parentController);
     }
@@ -33,6 +36,22 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
     public void setLayingDisplay(boolean layingDisplay) {
         this.layingDisplay = layingDisplay;
+    }
+
+    public String getVoltageFilter() {
+        return voltageFilter;
+    }
+
+    public void setVoltageFilter(String voltageFilter) {
+        this.voltageFilter = voltageFilter;
+    }
+
+    public String getLayingFilter() {
+        return layingFilter;
+    }
+
+    public void setLayingFilter(String layingFilter) {
+        this.layingFilter = layingFilter;
     }
 
 }
