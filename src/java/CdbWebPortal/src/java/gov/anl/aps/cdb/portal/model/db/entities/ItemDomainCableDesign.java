@@ -323,4 +323,7 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
+    public void setTechnicalSystemList(List<ItemCategory> technicalSystemList) {
+        setItemCategoryList(technicalSystemList);
+    }   
 }

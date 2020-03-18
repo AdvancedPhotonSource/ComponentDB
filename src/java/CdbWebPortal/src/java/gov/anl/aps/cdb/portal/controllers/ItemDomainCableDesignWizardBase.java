@@ -5,7 +5,9 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -104,6 +106,7 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected TreeNode machineDesignTreeEndpoint2 = null;
     protected String inputValueName = "";
     protected List<ItemProject> selectionProjectList = new ArrayList<>();
+    protected List<ItemCategory> selectionTechnicalSystemList = new ArrayList<>();
     protected TreeNode selectionEndpoint1 = null;
     protected TreeNode selectionEndpoint2 = null;
     protected List<Item> members = new ArrayList<>();
@@ -114,6 +117,7 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected String currentTab = tabEndpoint;
     protected String redirectSuccess = "";
     protected MembersDialog dialogMembers = new MembersDialog();
+    protected List<ItemCategory> availableTechnicalSystems = null;
     
     public ItemDomainCableDesignWizardBase() {
     }
@@ -185,17 +189,39 @@ public abstract class ItemDomainCableDesignWizardBase {
     }
 
     /**
+     * @link ItemDomainCableDesignWizard#getSelectionProjectList
+     */
+    public void setSelectionProjectList(List<ItemProject> projectList) {
+        this.selectionProjectList = projectList;
+    }
+
+    /**
      * Returns project list as String for display.
      */
     public String getProjectsString() {
         return StringUtility.getStringifyCdbList(selectionProjectList);
     }
 
+    public List<ItemCategory> getSelectionTechnicalSystemList() {
+        return selectionTechnicalSystemList;
+    }
+
+    public void setSelectionTechnicalSystemList(List<ItemCategory> selectionTechnicalSystemList) {
+        this.selectionTechnicalSystemList = selectionTechnicalSystemList;
+    }
+
     /**
-     * @link ItemDomainCableDesignWizard#getSelectionProjectList
+     * Returns technical system list as String for display.
      */
-    public void setSelectionProjectList(List<ItemProject> projectList) {
-        this.selectionProjectList = projectList;
+    public String getTechnicalSystemsString() {
+        return StringUtility.getStringifyCdbList(selectionTechnicalSystemList);
+    }
+    
+    public List<ItemCategory> getAvailableTechnicalSystems() {
+        if (availableTechnicalSystems == null) {
+            availableTechnicalSystems = ItemCategoryController.getInstance().getItemTypeCategoryEntityListByDomainName(getDomain().getName());
+        }
+        return availableTechnicalSystems;
     }
 
     /**
@@ -398,6 +424,13 @@ public abstract class ItemDomainCableDesignWizardBase {
     }
 
     /**
+     * Handles select event on the p:selectCheckboxMenu for selecting project.
+     */
+    public void selectListenerTechnicalSystemList() {
+        setEnablementForCurrentTab();
+    }
+
+    /**
      * Handles keyup events for the inputValueName inputText component.
      */
     public void keyupListenerName() {
@@ -441,7 +474,7 @@ public abstract class ItemDomainCableDesignWizardBase {
             disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonSave = true;
-            if ((inputValueName.isEmpty()) || (selectionProjectList.isEmpty())) {
+            if ((inputValueName.isEmpty()) || (selectionProjectList.isEmpty()) || (selectionTechnicalSystemList.isEmpty())) {
                 disableButtonNext = true;
             } else {
                 disableButtonNext = false;
@@ -497,6 +530,7 @@ public abstract class ItemDomainCableDesignWizardBase {
         selectionEndpoint1 = null;
         selectionEndpoint2 = null;
         selectionProjectList = null;
+        selectionTechnicalSystemList = null;
         members.clear();
         reset_();
     }
@@ -519,7 +553,11 @@ public abstract class ItemDomainCableDesignWizardBase {
         cancel_();
         return "list";
     }
-
+        
+    protected Domain getDomain() {
+        return ItemDomainCableDesignController.getInstance().getDefaultDomain();
+    }
+    
     /**
      * Allows custom enablement behavior, called on tab change. Subclasses
      * should override for custom behavior. Default implementation does nothing.

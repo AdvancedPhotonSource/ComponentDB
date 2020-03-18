@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCableDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE;
@@ -338,11 +339,13 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     private ItemDomainCableDesign createCableCommon(Item itemEndpoint1,
             Item itemEndpoint2,
             String cableName,
-            List<ItemProject> projectList) {
+            List<ItemProject> projectList,
+            List<ItemCategory> technicalSystemList) {
 
         ItemDomainCableDesign newCable = this.createEntityInstance();
         newCable.setName(cableName);
         newCable.setItemProjectList(projectList);
+        newCable.setTechnicalSystemList(technicalSystemList);
 
         // set endpoints
         newCable.setEndpoint1(itemEndpoint1);
@@ -363,12 +366,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public boolean createCableUnspecified(Item itemEndpoint1,
             Item itemEndpoint2,
             String cableName,
-            List<ItemProject> projectList) {
+            List<ItemProject> projectList,
+            List<ItemCategory> technicalSystemList) {
 
         ItemDomainCableDesign newCable = this.createCableCommon(itemEndpoint1,
                 itemEndpoint2,
                 cableName,
-                projectList);
+                projectList,
+                technicalSystemList);
 
         if (this.create() == null) {
             return false;
@@ -391,12 +396,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             Item itemEndpoint2,
             String cableName,
             List<ItemProject> projectList,
+            List<ItemCategory> technicalSystemList,
             Item itemCableCatalog) {
 
         ItemDomainCableDesign newCable = this.createCableCommon(itemEndpoint1,
                 itemEndpoint2,
                 cableName,
-                projectList);
+                projectList,
+                technicalSystemList);
 
         newCable.setCatalogItem(itemCableCatalog);
 
