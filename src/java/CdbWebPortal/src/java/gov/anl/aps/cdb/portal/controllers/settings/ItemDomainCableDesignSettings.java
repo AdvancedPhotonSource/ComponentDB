@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableDesignController> {
     
-    private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainCableDesign.List.Display.AlternateName";
+    private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainCableDesign.List.Display.ItemIdentifier1";
     private static final String DisplayDesignDescriptionSettingTypeKey = "ItemDomainCableDesign.List.Display.Description";
     private static final String DisplayLocationSettingTypeKey = "ItemDomainCableDesign.List.Display.Location";
     private static final String DisplayLocationDetailsSettingTypeKey = "ItemDomainCableDesign.List.Display.LocationDetails";
@@ -42,7 +42,6 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
     protected Boolean displayEndpoints = null;
     protected Boolean displayCatalogItem = null;
-    protected Boolean displayAlternateName = null; 
     protected Boolean displayLocation = null;
     protected Boolean displayLocationDetails = null;
     
@@ -76,14 +75,6 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
     public void setDisplayCatalogItem(Boolean displayCatalogItem) {
         this.displayCatalogItem = displayCatalogItem;
-    }
-
-    public Boolean getDisplayAlternateName() {
-        return displayAlternateName;
-    }
-
-    public void setDisplayAlternateName(Boolean displayAlternateName) {
-        this.displayAlternateName = displayAlternateName;
     }
 
     public Boolean getDisplayLocation() {
@@ -153,7 +144,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     @Override
     protected void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
-        setDisplayAlternateName((Boolean) Boolean.parseBoolean(settingTypeMap.get(DisplayAlternateNameSettingTypeKey).getDefaultValue()));
+        displayItemIdentifier1 = Boolean.parseBoolean(settingTypeMap.get(DisplayAlternateNameSettingTypeKey).getDefaultValue());
         displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDesignDescriptionSettingTypeKey).getDefaultValue());
         displayItemProject = Boolean.parseBoolean(settingTypeMap.get(DisplayProjectSettingTypeKey).getDefaultValue());
         setDisplayLocation((Boolean) Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue()));
@@ -183,7 +174,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     @Override
     protected void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
         super.updateSettingsFromSessionSettingEntity(settingEntity);
-        displayAlternateName = settingEntity.getSettingValueAsBoolean(DisplayAlternateNameSettingTypeKey, displayAlternateName); 
+        displayItemIdentifier1 = settingEntity.getSettingValueAsBoolean(DisplayAlternateNameSettingTypeKey, displayItemIdentifier1); 
         displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDesignDescriptionSettingTypeKey, displayDescription);
         displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayProjectSettingTypeKey, displayItemProject);
         displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
@@ -213,7 +204,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     @Override
     protected void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
         super.saveSettingsForSessionSettingEntity(settingEntity);
-        settingEntity.setSettingValue(DisplayAlternateNameSettingTypeKey, displayAlternateName);
+        settingEntity.setSettingValue(DisplayAlternateNameSettingTypeKey, displayItemIdentifier1);
         settingEntity.setSettingValue(DisplayDesignDescriptionSettingTypeKey, displayDescription);
         settingEntity.setSettingValue(DisplayProjectSettingTypeKey, displayItemProject);
         settingEntity.setSettingValue(DisplayLocationSettingTypeKey, displayLocation);
