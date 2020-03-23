@@ -48,6 +48,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Type Metadata", CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
         info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_URL_KEY, "Documentation URL", "Documentation URL", ItemCoreMetadataFieldType.URL, "");
         info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_IMAGE_URL_KEY, "Image URL", "Image URL", ItemCoreMetadataFieldType.URL, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_ALT_PART_NUM_KEY, "Alt Part Num", "Alternate Mfr. part number", ItemCoreMetadataFieldType.STRING, "");
         info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_WEIGHT_KEY, "Weight", "Nominal weight", ItemCoreMetadataFieldType.NUMERIC, "");
         info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_DIAMETER_KEY, "Diameter", "Nominal diameter", ItemCoreMetadataFieldType.NUMERIC, "");
         info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_CONDUCTORS_KEY, "Conductors", "Number of conductors", ItemCoreMetadataFieldType.NUMERIC, "");

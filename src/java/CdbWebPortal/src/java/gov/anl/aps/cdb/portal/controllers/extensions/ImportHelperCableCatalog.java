@@ -23,10 +23,11 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     protected void createColumnModels_() {
         columns.add(new StringColumnModel("Name", "name", "setName", true, "M 24"));
         columns.add(new StringColumnModel("Description", "description", "setDescription", false, "24 fiber single-unit"));
-        columns.add(new UrlColumnModel("Link URL", "urlDisplay", "setUrl", false, "http://www.example.com/example"));
+        columns.add(new UrlColumnModel("Documentation URL", "urlDisplay", "setUrl", false, "http://www.example.com/example"));
         columns.add(new UrlColumnModel("Image URL", "imageUrlDisplay", "setImageUrl", false, "http://www.example.com/example"));
         columns.add(new IdRefColumnModel("Manufacturer", "manufacturer", "setManufacturerId", false, "CommScope", SourceController.getInstance()));
         columns.add(new StringColumnModel("Part Number", "partNumber", "setPartNumber", false, "R-024-DS-5K-FSUBR"));
+        columns.add(new StringColumnModel("Alt Part Num", "altPartNumber", "setAltPartNumber", false, "760152413"));
         columns.add(new NumericColumnModel("Diameter", "diameter", "setDiameter", false, "0.4"));
         columns.add(new NumericColumnModel("Weight", "weight", "setWeight", false, "75.2"));
         columns.add(new NumericColumnModel("Conductors", "conductors", "setConductors", false, "24"));

@@ -69,6 +69,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
     private static final String DisplayImageUrlSettingTypeKey = "ItemDomainCableCatalog.List.Display.ImageUrl";
     private static final String DisplayFireLoadSettingTypeKey = "ItemDomainCableCatalog.List.Display.FireLoad";
     private static final String DisplayVoltageRatingSettingTypeKey = "ItemDomainCableCatalog.List.Display.VoltageRating";
+    private static final String DisplayAltPartNumberSettingTypeKey = "ItemDomainCableCatalog.List.Display.AltPartNumber";
 
     private static final String FilterByHeatLimitSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.HeatLimit";
     private static final String FilterByInsulationSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.Insulation";
@@ -82,6 +83,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
     private static final String FilterByImageUrlSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.ImageUrl";
     private static final String FilterByFireLoadSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.FireLoad";
     private static final String FilterByVoltageRatingSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.VoltageRating";
+    private static final String FilterByAltPartNumberSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.AltPartNumber";
 
     protected boolean heatLimitDisplay;
     protected boolean insulationDisplay;
@@ -95,6 +97,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
     protected boolean imageUrlDisplay;
     protected boolean fireLoadDisplay;
     protected boolean voltageRatingDisplay;
+    protected boolean altPartNumberDisplay;
     
     protected String heatLimitFilter;
     protected String insulationFilter;
@@ -108,6 +111,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
     protected String imageUrlFilter;
     protected String fireLoadFilter;
     protected String voltageRatingFilter;
+    protected String altPartNumberFilter;
     
     protected String filterByTechnicalSystem = null;
     
@@ -211,6 +215,14 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         this.voltageRatingDisplay = voltageRatingDisplay;
     }
 
+    public boolean isAltPartNumberDisplay() {
+        return altPartNumberDisplay;
+    }
+
+    public void setAltPartNumberDisplay(boolean altPartNumberDisplay) {
+        this.altPartNumberDisplay = altPartNumberDisplay;
+    }
+
     public String getHeatLimitFilter() {
         return heatLimitFilter;
     }
@@ -307,6 +319,14 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         this.voltageRatingFilter = voltageRatingFilter;
     }
      
+    public String getAltPartNumberFilter() {
+        return altPartNumberFilter;
+    }
+
+    public void setAltPartNumberFilter(String altPartNumberFilter) {
+        this.altPartNumberFilter = altPartNumberFilter;
+    }
+     
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);        
@@ -343,6 +363,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         imageUrlDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayImageUrlSettingTypeKey).getDefaultValue());
         fireLoadDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayFireLoadSettingTypeKey).getDefaultValue());
         voltageRatingDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayVoltageRatingSettingTypeKey).getDefaultValue());
+        altPartNumberDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayAltPartNumberSettingTypeKey).getDefaultValue());
 
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
@@ -374,6 +395,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         imageUrlFilter = settingTypeMap.get(FilterByImageUrlSettingTypeKey).getDefaultValue();
         fireLoadFilter = settingTypeMap.get(FilterByFireLoadSettingTypeKey).getDefaultValue();
         voltageRatingFilter = settingTypeMap.get(FilterByVoltageRatingSettingTypeKey).getDefaultValue();
+        altPartNumberFilter = settingTypeMap.get(FilterByAltPartNumberSettingTypeKey).getDefaultValue();
 
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
 
@@ -416,6 +438,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         imageUrlDisplay = settingEntity.getSettingValueAsBoolean(DisplayImageUrlSettingTypeKey, imageUrlDisplay);
         fireLoadDisplay = settingEntity.getSettingValueAsBoolean(DisplayFireLoadSettingTypeKey, fireLoadDisplay);
         voltageRatingDisplay = settingEntity.getSettingValueAsBoolean(DisplayVoltageRatingSettingTypeKey, voltageRatingDisplay);
+        altPartNumberDisplay = settingEntity.getSettingValueAsBoolean(DisplayAltPartNumberSettingTypeKey, altPartNumberDisplay);
 
         filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
         filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
@@ -447,6 +470,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         imageUrlFilter = settingEntity.getSettingValueAsString(FilterByImageUrlSettingTypeKey, imageUrlFilter);
         fireLoadFilter = settingEntity.getSettingValueAsString(FilterByFireLoadSettingTypeKey, fireLoadFilter);
         voltageRatingFilter = settingEntity.getSettingValueAsString(FilterByVoltageRatingSettingTypeKey, voltageRatingFilter);
+        altPartNumberFilter = settingEntity.getSettingValueAsString(FilterByAltPartNumberSettingTypeKey, altPartNumberFilter);
         
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues); 
 
@@ -489,6 +513,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         settingEntity.setSettingValue(DisplayImageUrlSettingTypeKey, imageUrlDisplay);
         settingEntity.setSettingValue(DisplayFireLoadSettingTypeKey, fireLoadDisplay);
         settingEntity.setSettingValue(DisplayVoltageRatingSettingTypeKey, voltageRatingDisplay);
+        settingEntity.setSettingValue(DisplayAltPartNumberSettingTypeKey, altPartNumberDisplay);
 
         settingEntity.setSettingValue(FilterByNameSettingTypeKey, filterByName);
         settingEntity.setSettingValue(FilterByDescriptionSettingTypeKey, filterByDescription);
@@ -521,6 +546,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         settingEntity.setSettingValue(FilterByImageUrlSettingTypeKey, imageUrlFilter);
         settingEntity.setSettingValue(FilterByFireLoadSettingTypeKey, fireLoadFilter);
         settingEntity.setSettingValue(FilterByVoltageRatingSettingTypeKey, voltageRatingFilter);
+        settingEntity.setSettingValue(FilterByAltPartNumberSettingTypeKey, altPartNumberFilter);
 
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
 

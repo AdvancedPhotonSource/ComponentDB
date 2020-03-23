@@ -27,11 +27,13 @@ import javax.persistence.Entity;
 @DiscriminatorValue(value = ItemDomainName.CABLE_DESIGN_ID + "")
 public class ItemDomainCableDesign extends Item {
     
+    private transient String kabelName = null;
     private transient String laying = null;
     private transient String voltage = null;
     private transient String team = null;
 
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type"; 
+    public final static String CABLE_DESIGN_PROPERTY_KABEL_NAME_KEY = "kabelName"; 
     public final static String CABLE_DESIGN_PROPERTY_LAYING_KEY = "laying"; 
     public final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage"; 
 
@@ -273,6 +275,18 @@ public class ItemDomainCableDesign extends Item {
         return null; 
     }
     
+    public String getKabelName() throws CdbException {
+        if (kabelName == null) {
+            kabelName = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_KABEL_NAME_KEY);
+        }
+        return kabelName;
+    }
+
+    public void setKabelName(String n) throws CdbException {
+        kabelName = n;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_KABEL_NAME_KEY, n);
+    }
+
     public String getLaying() throws CdbException {
         if (laying == null) {
             laying = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY);

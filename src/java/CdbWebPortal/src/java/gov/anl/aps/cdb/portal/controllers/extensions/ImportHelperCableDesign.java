@@ -23,7 +23,8 @@ public class ImportHelperCableDesign extends ImportHelperBase {
     
     @Override
     protected void createColumnModels_() {
-        columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "CCG cable 1"));
+        columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "RR8G:02-00:01"));
+        columns.add(new ImportHelperBase.StringColumnModel("Kabel Name", "kabelName", "setKabelName", true, "SR_R_401_D1109_RR8G[low] | SR_M_A02_C61_64_02-00[high]"));
         columns.add(new ImportHelperBase.StringColumnModel("Laying", "laying", "setLaying", false, "S"));
         columns.add(new ImportHelperBase.StringColumnModel("Voltage", "voltage", "setVoltage", false, "COM"));
         columns.add(new ImportHelperBase.IdRefColumnModel("Owner", "team", "setTeamId", true, "1234", ItemCategoryController.getInstance()));

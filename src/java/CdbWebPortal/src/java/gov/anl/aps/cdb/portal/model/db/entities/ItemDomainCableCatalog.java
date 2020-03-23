@@ -27,6 +27,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient String imageUrl = null;
     private transient String imageUrlDisplay = null;
     private transient String manufacturer = null;
+    private transient String altPartNumber = null;
     private transient String weight = null;
     private transient String diameter = null;
     private transient String conductors = null;
@@ -43,6 +44,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     
     public final static String CABLE_CATALOG_INTERNAL_PROPERTY_TYPE = "cable_catalog_internal_property_type"; 
     public final static String CABLE_PROPERTY_URL_KEY = "url"; 
+    public final static String CABLE_PROPERTY_ALT_PART_NUM_KEY = "altPartNumber"; 
     public final static String CABLE_PROPERTY_IMAGE_URL_KEY = "imageUrl"; 
     public final static String CABLE_PROPERTY_WEIGHT_KEY = "weight"; 
     public final static String CABLE_PROPERTY_DIAMETER_KEY = "diameter"; 
@@ -128,6 +130,18 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         sourceList.add(itemSource);
         this.setItemSourceList(sourceList);
         manufacturer = source.getName();
+    }
+    
+    public String getAltPartNumber() throws CdbException {
+        if (altPartNumber == null) {
+            altPartNumber = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_ALT_PART_NUM_KEY);
+        }
+        return altPartNumber;
+    }
+    
+    public void setAltPartNumber(String n) throws CdbException {
+        altPartNumber = n;
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_ALT_PART_NUM_KEY, n);
     }
     
     public String getPartNumber() {
