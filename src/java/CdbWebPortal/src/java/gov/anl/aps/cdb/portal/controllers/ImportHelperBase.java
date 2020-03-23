@@ -21,7 +21,11 @@ import java.util.logging.Logger;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.ClientAnchor;
+import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Drawing;
+import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -41,13 +45,13 @@ public abstract class ImportHelperBase {
         protected String property;
         protected boolean required = false;
         protected String setterMethod;
-        protected String sampleValue;
+        protected String description;
 
-        public ColumnModel(String h, String p, String s, boolean r, String v) {
+        public ColumnModel(String h, String p, String s, boolean r, String d) {
             this.header = h;
             this.property = p;
             this.setterMethod = s;
-            this.sampleValue = v;
+            this.description = d;
             this.required = r;
         }
 
@@ -67,11 +71,9 @@ public abstract class ImportHelperBase {
             return this.required;
         }
 
-        public String getSampleValue() {
-            return sampleValue;
+        public String getDescription() {
+            return description;
         }
-
-        public abstract void setTemplateCell(Cell dataCell);
 
         public abstract ParseInfo parseCell(Cell cell);
 
@@ -104,12 +106,6 @@ public abstract class ImportHelperBase {
         }
 
         @Override
-        public void setTemplateCell(Cell dataCell) {
-            dataCell.setCellType(CellType.STRING);
-            dataCell.setCellValue(getSampleValue());
-        }
-
-        @Override
         public ParseInfo parseCell(Cell cell) {
             return parseStringCell(cell);
         }
@@ -119,12 +115,6 @@ public abstract class ImportHelperBase {
 
         public NumericColumnModel(String h, String p, String s, boolean r, String v) {
             super(h, p, s, r, v);
-        }
-
-        @Override
-        public void setTemplateCell(Cell dataCell) {
-            dataCell.setCellType(CellType.NUMERIC);
-            dataCell.setCellValue(Double.valueOf(getSampleValue()));
         }
 
         @Override
@@ -154,12 +144,6 @@ public abstract class ImportHelperBase {
         }
 
         @Override
-        public void setTemplateCell(Cell dataCell) {
-            dataCell.setCellType(CellType.STRING);
-            dataCell.setCellValue(getSampleValue());
-        }
-
-        @Override
         public ParseInfo parseCell(Cell cell) {
             ParseInfo result = parseStringCell(cell);
             if (result.isValid) {
@@ -180,12 +164,6 @@ public abstract class ImportHelperBase {
         public IdRefColumnModel(String h, String p, String s, boolean r, String v, CdbEntityController c) {
             super(h, p, s, r, v);
             controller = c;
-        }
-
-        @Override
-        public void setTemplateCell(Cell dataCell) {
-            dataCell.setCellType(CellType.STRING);
-            dataCell.setCellValue(getSampleValue());
         }
 
         @Override
@@ -290,17 +268,24 @@ public abstract class ImportHelperBase {
         Workbook wb = new XSSFWorkbook();
         CreationHelper createHelper = wb.getCreationHelper();
         Sheet sheet = wb.createSheet("template");
+        Drawing drawing = sheet.createDrawingPatriarch();
         Row headerRow = sheet.createRow(0);
-        Row dataRow = sheet.createRow(1);
         for (int i = 0; i < columns.size() - 2; i++) {
             ColumnModel col = columns.get(i);
 
             Cell headerCell = headerRow.createCell(i);
             headerCell.setCellValue(col.getHeader());
-
-            Cell dataCell = dataRow.createCell(i);
-
-            col.setTemplateCell(dataCell);
+            
+            ClientAnchor anchor = createHelper.createClientAnchor();
+            anchor.setCol1(headerCell.getColumnIndex());
+            anchor.setCol2(headerCell.getColumnIndex() + 2);
+            anchor.setRow1(headerRow.getRowNum());
+            anchor.setRow2(headerRow.getRowNum() + 3);
+            
+            Comment headerComment = drawing.createCellComment(anchor);
+            RichTextString str = createHelper.createRichTextString(col.getDescription());
+            headerComment.setString(str);
+            headerCell.setCellComment(headerComment);
         }
 
         try (ByteArrayOutputStream outStream = new ByteArrayOutputStream()) {
