@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
@@ -223,6 +224,14 @@ public class ItemDomainMachineDesignController
         }
 
         return false;
+    }
+    
+    public String getItemRepIcon(Item item) {
+        if (isItemMachineDesignAndTemplate(item)) {
+            return PortalStyles.machineDesingTemplateIcon.getValue(); 
+        } else {
+            return item.getDomain().getDomainRepIcon(); 
+        }
     }
 
     public boolean isCollapsedRelatedMAARCItemsForCurrent() {
@@ -1585,13 +1594,7 @@ public class ItemDomainMachineDesignController
     // <editor-fold defaultstate="collapsed" desc="Functionality">
     public void newMachineDesignElementContainedItemValueChanged() {
         String name = currentEditItemElement.getContainedItem().getName();
-        if (!name.equals("")) {
-            if (isCurrentItemTemplate()) {
-                if (!verifyValidTemplateName(name, true)) {
-                    currentEditItemElementSaveButtonEnabled = false;
-                    return;
-                }
-            }
+        if (!name.equals("")) {            
             currentEditItemElementSaveButtonEnabled = true;
         } else {
             currentEditItemElementSaveButtonEnabled = false;
@@ -1918,6 +1921,17 @@ public class ItemDomainMachineDesignController
             }
 
             ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) currentEditItemElement.getContainedItem();
+            
+            List<ItemElement> itemElementMemberList = containedItem.getItemElementMemberList();
+            if (itemElementMemberList == null) {
+                containedItem.setItemElementMemberList(new ArrayList<>());
+                itemElementMemberList = containedItem.getItemElementMemberList();
+            }
+            
+            if (itemElementMemberList.contains(currentEditItemElement) == false) {
+                containedItem.getItemElementMemberList().add(currentEditItemElement);                             
+            }
+            
             checkItem(containedItem);
         }
     }
@@ -1962,6 +1976,10 @@ public class ItemDomainMachineDesignController
         String machineDesignName = generateMachineDesignNameForTemplateItem(templateItem);
         clone.setName(machineDesignName);
         clone.setItemIdentifier1(machineDesignAlternateName);
+        
+        // ensure uniqueness of template creation.
+        String viewUUID = clone.getViewUUID();
+        clone.setItemIdentifier2(viewUUID);
 
         addCreatedFromTemplateRelationshipToItem(clone, templateItem);
 
@@ -2125,8 +2143,12 @@ public class ItemDomainMachineDesignController
         super.checkItem(item);
 
         if (item.getIsItemTemplate()) {
-            if (!verifyValidTemplateName(item.getName(), false)) {
-                throw new CdbException("Place parements within {} in template name. Example: 'templateName {paramName}'");
+            List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
+            if (itemElementMemberList == null || itemElementMemberList.isEmpty()) {
+                // Item is not a child of another item. 
+                if (!verifyValidTemplateName(item.getName(), false)) {
+                    throw new CdbException("Place parements within {} in template name. Example: 'templateName {paramName}'");
+                }
             }
         }
     }

@@ -11,6 +11,7 @@ public enum PortalStyles {
     rowStyleErrorInEntity("errorItemInRow"), 
     rowStyleNewEntity("newItemInRow"),
     
+    machineDesingTemplateIcon("ui-icon-machine-design-template"),
     machineDesignIcon("ui-icon-machine-design"),
     catalogIcon("ui-icon-catalog"),
     inventoryIcon("ui-icon-inventory"),
