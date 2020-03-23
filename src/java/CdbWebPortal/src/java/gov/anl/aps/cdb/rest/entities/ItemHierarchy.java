@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.rest.entities;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +18,14 @@ import org.primefaces.model.TreeNode;
 public class ItemHierarchy {
 
     private Item parentItem;
+    private Item derivedItem;
     private List<ItemHierarchy> childItems;
+    private Integer elementId;
 
+    private ItemHierarchy() {
+        
+    }
+    
     public ItemHierarchy(Item parentItem, boolean autocreateHierarchy) {
         this.parentItem = parentItem;
         childItems = new ArrayList<>();
@@ -26,9 +33,27 @@ public class ItemHierarchy {
         if (autocreateHierarchy) {
             for (ItemElement element : parentItem.getItemElementDisplayList()) {
                 Item containedItem = element.getContainedItem();
+               
+                ItemElement derivedFromItemElement = element.getDerivedFromItemElement();
+                Item derivedItem = derivedFromItemElement.getContainedItem();                
+                
+                ItemHierarchy child = null; 
                 if (containedItem != null) {
-                    ItemHierarchy child = new ItemHierarchy(containedItem, true);
-                    addChildItem(child);
+                    child = new ItemHierarchy(containedItem, true);
+                }
+                
+                if (derivedItem != null) {
+                    if (child == null) {
+                        child = new ItemHierarchy();
+                    }
+                    
+                    child.derivedItem = derivedItem; 
+                }
+                
+                
+                if (child != null) {
+                    child.elementId = element.getId(); 
+                    addChildItem(child);                    
                 }
             }
         }
@@ -73,6 +98,22 @@ public class ItemHierarchy {
 
     public void setChildItems(List<ItemHierarchy> childItems) {
         this.childItems = childItems;
+    }
+
+    public Integer getElementId() {
+        return elementId;
+    }
+
+    public void setElementId(Integer elementId) {
+        this.elementId = elementId;
+    }
+
+    public Item getDerivedItem() {
+        return derivedItem;
+    }
+
+    public void setDerivedItem(Item derivedItem) {
+        this.derivedItem = derivedItem;
     }
 
     public void addChildItem(ItemHierarchy item) {
