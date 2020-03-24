@@ -29,10 +29,8 @@ See LICENSE file.
                              action="#{wizardController[cancelAction]()}"
                              icon="fa fa-times-circle-o"
                              rendered="true"
-                             ajax="true"
-                             immediate="false"
-                             onstart="PF('loadingDialog').show();"
-                             oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
+                             ajax="false"
+                             immediate="true"
                              disabled="#{wizardController.disableButtonCancel}"
                              process="@this"
                              update="@form"> 
