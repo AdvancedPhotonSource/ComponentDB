@@ -18,8 +18,8 @@ See LICENSE file.
             <p:commandButton value="Previous Step" 
                              process="@this"
                              update="@this"
-                             onstart="PF('loadingDialog').show();PF('#{rootViewId}').back();"
-                             oncomplete="PF('loadingDialog').hide(); update#{rootViewId}WizardButtons();"
+                             onstart="PF('loadingDialog').show(); PF('#{rootViewId}').back();"
+                             oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
                              disabled="#{wizardController.disableButtonPrev}"
                              icon="ui-icon-arrowthick-1-w"/>
 
@@ -29,12 +29,13 @@ See LICENSE file.
                              action="#{wizardController[cancelAction]()}"
                              icon="fa fa-times-circle-o"
                              rendered="true"
-                             ajax="false"
-                             immediate="true"
-                             oncomplete="update#{rootViewId}WizardButtons();"
+                             ajax="true"
+                             immediate="false"
+                             onstart="PF('loadingDialog').show();"
+                             oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
                              disabled="#{wizardController.disableButtonCancel}"
                              process="@this"
-                             update="@this"> 
+                             update="@form"> 
                 <p:tooltip for="#{rootViewId}CancelButton" 
                            value="Cancel add cable operation and close wizard."/>
             </p:commandButton>
@@ -50,9 +51,8 @@ See LICENSE file.
                              rendered="true"
                              ajax="false"
                              immediate="false"
-                             oncomplete="update#{rootViewId}WizardButtons();"
                              disabled="#{wizardController.disableButtonSave}"
-                             process="addCableWizard"
+                             process="addCableWizard @this"
                              update="addCableWizard"> 
                 <p:tooltip for="#{rootViewId}SaveButton" 
                            value="Save cable data and close wizard."/>
@@ -62,7 +62,7 @@ See LICENSE file.
                              process="@this"
                              update="@this"
                              onstart="PF('loadingDialog').show();PF('#{rootViewId}').next();"
-                             oncomplete="PF('loadingDialog').hide(); update#{rootViewId}WizardButtons();"
+                             oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
                              disabled="#{wizardController.disableButtonNext}"
                              icon="ui-icon-arrowthick-1-e"
                              iconPos="right"/>

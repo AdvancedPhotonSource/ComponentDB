@@ -19,19 +19,25 @@ See LICENSE file.
             <p:menuitem value="Cable"
                         action="#{itemDomainCableDesignController.prepareWizardCable()}"
                         icon="ui-icon-cable-design"
-                        styleClass="actionButtonLeft">
+                        styleClass="actionButtonLeft"
+                        onstart="PF('loadingDialog').show();"
+                        oncomplete="PF('loadingDialog').hide();">
             </p:menuitem>
             <p:menuitem value="Circuit"
                         action="#{itemDomainCableDesignController.prepareWizardCircuit()}"
                         icon="ui-icon-cable-design"
                         styleClass="actionButtonLeft"
-                        disabled="true">
+                        disabled="true"
+                        onstart="PF('loadingDialog').show();"
+                        oncomplete="PF('loadingDialog').hide();">
             </p:menuitem>
             <p:menuitem value="Bundle"
                         action="#{itemDomainCableDesignController.prepareWizardBundle()}"
                         icon="ui-icon-cable-design"
                         styleClass="actionButtonLeft"
-                        disabled="true">
+                        disabled="true"
+                        onstart="PF('loadingDialog').show();"
+                        oncomplete="PF('loadingDialog').hide();">
             </p:menuitem>
         </p:menuButton>
 
@@ -41,7 +47,9 @@ See LICENSE file.
         <p:commandButton value="Import"
                          icon="ui-icon-plus"
                          action="#{itemDomainCableDesignController.prepareWizardImport()}"
-                         rendered="#{loginController.loggedInAsAdmin}"/> 
+                         rendered="#{loginController.loggedInAsAdmin}"
+                         onstart="PF('loadingDialog').show();"
+                         oncomplete="PF('loadingDialog').hide();"/> 
 
     </ui:define>
 
