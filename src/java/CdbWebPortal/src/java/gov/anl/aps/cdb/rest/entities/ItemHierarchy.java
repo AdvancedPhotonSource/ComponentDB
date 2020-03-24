@@ -21,6 +21,7 @@ public class ItemHierarchy {
     private List<ItemHierarchy> childItems;
     private Integer elementId;
     private String elementName; 
+    private String derivedElementName; 
 
     private ItemHierarchy() {
         
@@ -35,19 +36,19 @@ public class ItemHierarchy {
                 Item containedItem = element.getContainedItem();
                
                 ItemElement derivedFromItemElement = element.getDerivedFromItemElement();
-                Item derivedItem = derivedFromItemElement.getContainedItem();                
                 
                 ItemHierarchy child = null; 
                 if (containedItem != null) {
                     child = new ItemHierarchy(containedItem, true);
                 }
                 
-                if (derivedItem != null) {
+                if (derivedFromItemElement != null) {
                     if (child == null) {
                         child = new ItemHierarchy();
                     }
                     
-                    child.derivedItem = derivedItem; 
+                    child.derivedItem = derivedFromItemElement.getContainedItem(); 
+                    child.derivedElementName = derivedFromItemElement.getName(); 
                 }
                 
                 
@@ -115,6 +116,14 @@ public class ItemHierarchy {
 
     public void setElementName(String elementName) {
         this.elementName = elementName;
+    }
+
+    public String getDerivedElementName() {
+        return derivedElementName;
+    }
+
+    public void setDerivedElementName(String derivedElementName) {
+        this.derivedElementName = derivedElementName;
     }
 
     public Item getDerivedItem() {
