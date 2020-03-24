@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.rest.entities;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +20,7 @@ public class ItemHierarchy {
     private Item derivedItem;
     private List<ItemHierarchy> childItems;
     private Integer elementId;
+    private String elementName; 
 
     private ItemHierarchy() {
         
@@ -53,6 +53,7 @@ public class ItemHierarchy {
                 
                 if (child != null) {
                     child.elementId = element.getId(); 
+                    child.elementName = element.getName();
                     addChildItem(child);                    
                 }
             }
@@ -106,6 +107,14 @@ public class ItemHierarchy {
 
     public void setElementId(Integer elementId) {
         this.elementId = elementId;
+    }
+
+    public String getElementName() {
+        return elementName;
+    }
+
+    public void setElementName(String elementName) {
+        this.elementName = elementName;
     }
 
     public Item getDerivedItem() {
