@@ -12,7 +12,7 @@ tools/developer_tools/portal_testing/CdbFunctionalTester/nbproject/private/
 /tools/developer_tools/python-client/*
 !/tools/developer_tools/python-client/generatePyClient.sh
 !/tools/developer_tools/python-client/CdbApiFactory.py
-
+!/tools/developer_tools/python-client/ClientApiConfig.yml
 
 # Generated deployment specific config files 
 src/java/CdbWebPortal/nbproject/private/private.xml
