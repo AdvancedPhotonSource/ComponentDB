@@ -25,6 +25,7 @@ public class ImportHelperCableDesign extends ImportHelperBase {
     protected void createColumnModels_() {
         columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "Cable name, uniquely identifies cable."));
         columns.add(new ImportHelperBase.StringColumnModel("Ext Cable ID", "externalCableId", "setExternalCableId", true, "Cable identifier in external system e.g., SR_R_401_D1109_RR8G[low] | SR_M_A02_C61_64_02-00[high]"));
+        columns.add(new ImportHelperBase.StringColumnModel("Description", "description", "setDescription", true, "Description of cable."));
         columns.add(new ImportHelperBase.StringColumnModel("Laying", "laying", "setLaying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle"));
         columns.add(new ImportHelperBase.StringColumnModel("Voltage", "voltage", "setVoltage", false, "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage"));
         columns.add(new ImportHelperBase.IdRefColumnModel("Owner", "team", "setTeamId", true, "Numeric ID of CDB technical system.", ItemCategoryController.getInstance()));
