@@ -29,14 +29,18 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ItemDomainCableDesign.List.Display.LastModifiedOnDateTime";
     private static final String DisplayEndpointsSettingTypeKey = "ItemDomainCableDesign.List.Display.Endpoints";
     private static final String DisplayCatalogItemSettingTypeKey = "ItemDomainCableDesign.List.Display.CatalogItem";
-    private static final String DisplayExternalCableIdSettingTypeKey = "ItemDomainCableDesign.List.Display.ExternalCableId";
+    private static final String DisplayExternalCableNameSettingTypeKey = "ItemDomainCableDesign.List.Display.ExternalCableName";
+    private static final String DisplayImportCableIdSettingTypeKey = "ItemDomainCableDesign.List.Display.ImportCableId";
+    private static final String DisplayAlternateCableIdSettingTypeKey = "ItemDomainCableDesign.List.Display.AlternateCableId";
     private static final String DisplayVoltageSettingTypeKey = "ItemDomainCableDesign.List.Display.Voltage";
     private static final String DisplayLayingSettingTypeKey = "ItemDomainCableDesign.List.Display.Laying";
     private static final String DisplayTechnicalSystemSettingTypeKey = "ItemDomainCableDesign.List.Display.ItemCategory";
 
     private static final String FilterEndpointsSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Endpoints";
     private static final String FilterCatalogItemSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.CatalogItem";
-    private static final String FilterExternalCableIdSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.ExternalCableId";
+    private static final String FilterExternalCableNameSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.ExternalCableName";
+    private static final String FilterImportCableIdSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.ImportCableId";
+    private static final String FilterAlternateCableIdSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.AlternateCableId";
     private static final String FilterVoltageSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Voltage";
     private static final String FilterLayingSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Laying";
 
@@ -50,7 +54,9 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     // metadata fields
     protected Boolean voltageDisplay = null;
     protected Boolean layingDisplay = null;
-    protected Boolean externalCableIdDisplay = null;
+    protected Boolean externalCableNameDisplay = null;
+    protected Boolean importCableIdDisplay = null;
+    protected Boolean alternateCableIdDisplay = null;
     
     protected String filterEndpoints = null;
     protected String filterCatalogItem = null;
@@ -58,7 +64,9 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     // metadata fields
     protected String voltageFilter = null;
     protected String layingFilter = null;
-    protected String externalCableIdFilter = null;
+    protected String externalCableNameFilter = null;
+    protected String importCableIdFilter = null;
+    protected String alternateCableIdFilter = null;
 
     public ItemDomainCableDesignSettings(ItemDomainCableDesignController parentController) {
         super(parentController);
@@ -112,12 +120,28 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         this.layingDisplay = layingDisplay;
     }
 
-    public boolean isExternalCableIdDisplay() {
-        return externalCableIdDisplay;
+    public boolean isExternalCableNameDisplay() {
+        return externalCableNameDisplay;
     }
 
-    public void setExternalCableIdDisplay(boolean externalCableIdDisplay) {
-        this.externalCableIdDisplay = externalCableIdDisplay;
+    public void setExternalCableNameDisplay(boolean externalCableNameDisplay) {
+        this.externalCableNameDisplay = externalCableNameDisplay;
+    }
+
+    public boolean isImportCableIdDisplay() {
+        return importCableIdDisplay;
+    }
+
+    public void setImportCableIdDisplay(boolean importCableIdDisplay) {
+        this.importCableIdDisplay = importCableIdDisplay;
+    }
+
+    public boolean isAlternateCableIdDisplay() {
+        return alternateCableIdDisplay;
+    }
+
+    public void setAlternateCableIdDisplay(boolean alternateCableIdDisplay) {
+        this.alternateCableIdDisplay = alternateCableIdDisplay;
     }
 
     public String getFilterEndpoints() {
@@ -152,12 +176,28 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         this.layingFilter = layingFilter;
     }
 
-    public String getExternalCableIdFilter() {
-        return externalCableIdFilter;
+    public String getExternalCableNameFilter() {
+        return externalCableNameFilter;
     }
 
-    public void setExternalCableIdFilter(String externalCableIdFilter) {
-        this.externalCableIdFilter = externalCableIdFilter;
+    public void setExternalCableNameFilter(String externalCableNameFilter) {
+        this.externalCableNameFilter = externalCableNameFilter;
+    }
+
+    public String getImportCableIdFilter() {
+        return importCableIdFilter;
+    }
+
+    public void setImportCableIdFilter(String importCableIdFilter) {
+        this.importCableIdFilter = importCableIdFilter;
+    }
+
+    public String getAlternateCableIdFilter() {
+        return alternateCableIdFilter;
+    }
+
+    public void setAlternateCableIdFilter(String alternateCableIdFilter) {
+        this.alternateCableIdFilter = alternateCableIdFilter;
     }
 
     @Override
@@ -181,13 +221,17 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         displayCatalogItem = Boolean.parseBoolean(settingTypeMap.get(DisplayCatalogItemSettingTypeKey).getDefaultValue());
         layingDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayLayingSettingTypeKey).getDefaultValue());
         voltageDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayVoltageSettingTypeKey).getDefaultValue());
-        externalCableIdDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayExternalCableIdSettingTypeKey).getDefaultValue());
+        externalCableNameDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayExternalCableNameSettingTypeKey).getDefaultValue());
+        importCableIdDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayImportCableIdSettingTypeKey).getDefaultValue());
+        alternateCableIdDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayAlternateCableIdSettingTypeKey).getDefaultValue());
 
         filterEndpoints = settingTypeMap.get(FilterEndpointsSettingTypeKey).getDefaultValue();
         filterCatalogItem = settingTypeMap.get(FilterCatalogItemSettingTypeKey).getDefaultValue();
         layingFilter = settingTypeMap.get(FilterLayingSettingTypeKey).getDefaultValue();
         voltageFilter = settingTypeMap.get(FilterVoltageSettingTypeKey).getDefaultValue();
-        externalCableIdFilter = settingTypeMap.get(FilterExternalCableIdSettingTypeKey).getDefaultValue();
+        externalCableNameFilter = settingTypeMap.get(FilterExternalCableNameSettingTypeKey).getDefaultValue();
+        importCableIdFilter = settingTypeMap.get(FilterImportCableIdSettingTypeKey).getDefaultValue();
+        alternateCableIdFilter = settingTypeMap.get(FilterAlternateCableIdSettingTypeKey).getDefaultValue();
 
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
     }
@@ -213,13 +257,17 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         displayCatalogItem = settingEntity.getSettingValueAsBoolean(DisplayCatalogItemSettingTypeKey, displayCatalogItem);
         layingDisplay = settingEntity.getSettingValueAsBoolean(DisplayLayingSettingTypeKey, layingDisplay);
         voltageDisplay = settingEntity.getSettingValueAsBoolean(DisplayVoltageSettingTypeKey, voltageDisplay);
-        externalCableIdDisplay = settingEntity.getSettingValueAsBoolean(DisplayExternalCableIdSettingTypeKey, externalCableIdDisplay);
+        externalCableNameDisplay = settingEntity.getSettingValueAsBoolean(DisplayExternalCableNameSettingTypeKey, externalCableNameDisplay);
+        importCableIdDisplay = settingEntity.getSettingValueAsBoolean(DisplayImportCableIdSettingTypeKey, importCableIdDisplay);
+        alternateCableIdDisplay = settingEntity.getSettingValueAsBoolean(DisplayAlternateCableIdSettingTypeKey, alternateCableIdDisplay);
 
         filterEndpoints = settingEntity.getSettingValueAsString(FilterEndpointsSettingTypeKey, filterEndpoints);
         filterCatalogItem = settingEntity.getSettingValueAsString(FilterCatalogItemSettingTypeKey, filterCatalogItem);
         layingFilter = settingEntity.getSettingValueAsString(FilterLayingSettingTypeKey, layingFilter);
         voltageFilter = settingEntity.getSettingValueAsString(FilterVoltageSettingTypeKey, voltageFilter);
-        externalCableIdFilter = settingEntity.getSettingValueAsString(FilterExternalCableIdSettingTypeKey, externalCableIdFilter);
+        externalCableNameFilter = settingEntity.getSettingValueAsString(FilterExternalCableNameSettingTypeKey, externalCableNameFilter);
+        importCableIdFilter = settingEntity.getSettingValueAsString(FilterImportCableIdSettingTypeKey, importCableIdFilter);
+        alternateCableIdFilter = settingEntity.getSettingValueAsString(FilterAlternateCableIdSettingTypeKey, alternateCableIdFilter);
 
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues); 
     }
@@ -245,13 +293,17 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         settingEntity.setSettingValue(DisplayCatalogItemSettingTypeKey, displayCatalogItem);
         settingEntity.setSettingValue(DisplayLayingSettingTypeKey, layingDisplay);
         settingEntity.setSettingValue(DisplayVoltageSettingTypeKey, voltageDisplay);
-        settingEntity.setSettingValue(DisplayExternalCableIdSettingTypeKey, externalCableIdDisplay);
+        settingEntity.setSettingValue(DisplayExternalCableNameSettingTypeKey, externalCableNameDisplay);
+        settingEntity.setSettingValue(DisplayImportCableIdSettingTypeKey, importCableIdDisplay);
+        settingEntity.setSettingValue(DisplayAlternateCableIdSettingTypeKey, alternateCableIdDisplay);
 
         settingEntity.setSettingValue(FilterEndpointsSettingTypeKey, filterEndpoints);
         settingEntity.setSettingValue(FilterCatalogItemSettingTypeKey, filterCatalogItem);
         settingEntity.setSettingValue(FilterLayingSettingTypeKey, layingFilter);
         settingEntity.setSettingValue(FilterVoltageSettingTypeKey, voltageFilter);
-        settingEntity.setSettingValue(FilterExternalCableIdSettingTypeKey, externalCableIdFilter);
+        settingEntity.setSettingValue(FilterExternalCableNameSettingTypeKey, externalCableNameFilter);
+        settingEntity.setSettingValue(FilterImportCableIdSettingTypeKey, importCableIdFilter);
+        settingEntity.setSettingValue(FilterAlternateCableIdSettingTypeKey, alternateCableIdFilter);
 
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
     }

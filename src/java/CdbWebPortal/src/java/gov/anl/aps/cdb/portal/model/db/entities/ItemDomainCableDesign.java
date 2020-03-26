@@ -27,13 +27,17 @@ import javax.persistence.Entity;
 @DiscriminatorValue(value = ItemDomainName.CABLE_DESIGN_ID + "")
 public class ItemDomainCableDesign extends Item {
     
-    private transient String externalCableId = null;
+    private transient String externalCableName = null;
+    private transient String importCableId = null;
+    private transient String alternateCableId = null;
     private transient String laying = null;
     private transient String voltage = null;
     private transient String team = null;
 
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type"; 
-    public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_ID_KEY = "externalCableId"; 
+    public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName"; 
+    public final static String CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY = "importCableId"; 
+    public final static String CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY = "alternateCableId"; 
     public final static String CABLE_DESIGN_PROPERTY_LAYING_KEY = "laying"; 
     public final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage"; 
 
@@ -275,16 +279,48 @@ public class ItemDomainCableDesign extends Item {
         return null; 
     }
     
-    public String getExternalCableId() throws CdbException {
-        if (externalCableId == null) {
-            externalCableId = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_ID_KEY);
+    public String getAlternateName() {
+        return getItemIdentifier1();
+    }
+    
+    public void setAlternateName(String n) {
+        setItemIdentifier1(n);
+    }
+    
+    public String getExternalCableName() throws CdbException {
+        if (externalCableName == null) {
+            externalCableName = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY);
         }
-        return externalCableId;
+        return externalCableName;
     }
 
-    public void setExternalCableId(String n) throws CdbException {
-        externalCableId = n;
-        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_ID_KEY, n);
+    public void setExternalCableName(String n) throws CdbException {
+        externalCableName = n;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY, n);
+    }
+
+    public String getImportCableId() throws CdbException {
+        if (importCableId == null) {
+            importCableId = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY);
+        }
+        return importCableId;
+    }
+
+    public void setImportCableId(String id) throws CdbException {
+        importCableId = id;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY, id);
+    }
+
+    public String getAlternateCableId() throws CdbException {
+        if (alternateCableId == null) {
+            alternateCableId = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY);
+        }
+        return alternateCableId;
+    }
+
+    public void setAlternateCableId(String id) throws CdbException {
+        alternateCableId = id;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY, id);
     }
 
     public String getLaying() throws CdbException {

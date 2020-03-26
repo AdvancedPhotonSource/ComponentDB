@@ -323,7 +323,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     @Override
     protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
         ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Design Metadata", CABLE_DESIGN_INTERNAL_PROPERTY_TYPE);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_EXT_CABLE_ID_KEY, "Ext Cable Id", "External Cable Identifier", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY, "Ext Cable Name", "External cable name (e.g., from CAD or routing tool).", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY, "Import Cable ID", "Unique identifier for imported cables.", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY, "Alt Cable ID", "Alternate (e.g., group-specific) cable identifier.", ItemCoreMetadataFieldType.STRING, "");
         info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_LAYING_KEY, "Laying", "Laying", ItemCoreMetadataFieldType.STRING, "");
         info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, "Voltage", "Voltage", ItemCoreMetadataFieldType.STRING, "");
         return info;
