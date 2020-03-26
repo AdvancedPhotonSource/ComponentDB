@@ -20,12 +20,14 @@ See LICENSE file.
             <ui:param name="metadataKey" value="#{metadataField.key}"/>
             <ui:param name="metadataLabel" value="#{metadataField.label}"/>
             <ui:param name="metadataType" value="#{metadataField.typeString}"/>
+            <ui:param name="metadataDescription" value="#{metadataField.description}"/>
             <ui:param name="fieldProperty" value="#{metadataType != 'url' ? metaDataKey : metadataKey.concat('Display')}"/>
                       
 
             <h:outputLabel for="#{metadataKey}#{viewName}" 
                            value="#{metadataLabel}" 
-                           styleClass="entityDataLabel"/>
+                           styleClass="entityDataLabel"
+                           title="#{metadataDescription}"/>
             
             <p:inplace id="#{metadataKey}#{viewName}" 
                        widgetVar="#{metadataKey}#{viewName}Widget"

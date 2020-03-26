@@ -20,10 +20,12 @@ See LICENSE file.
             <ui:param name="metadataKey" value="#{metadataField.key}"/>
             <ui:param name="metadataLabel" value="#{metadataField.label}"/>
             <ui:param name="metadataType" value="#{metadataField.typeString}"/>
+            <ui:param name="metadataDescription" value="#{metadataField.description}"/>
 
             <h:outputLabel for="#{metadataKey}#{viewName}" 
                            value="#{metadataLabel}" 
-                           styleClass="entityDataLabel"/>
+                           styleClass="entityDataLabel"
+                           title="#{metadataDescription}"/>
             
             <p:column id="#{metadataKey}#{viewName}">
                 <p:inputText value="#{itemObject[metadataKey]}" 

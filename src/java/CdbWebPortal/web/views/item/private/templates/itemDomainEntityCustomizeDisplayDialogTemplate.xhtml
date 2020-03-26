@@ -73,13 +73,15 @@ See LICENSE file.
 
                     <ui:param name="metadataKey" value="#{metadataField.key}"/>
                     <ui:param name="metadataLabel" value="#{metadataField.label}"/>
+                    <ui:param name="metadataDescription" value="#{metadataField.description}"/>
                     <ui:param name="propertyName" value="#{metadataKey}Display"/>
 
                     <p:selectBooleanCheckbox id="#{metadataKey}"
                                              value="#{entitySettingObject[propertyName]}"/>  
                     <h:outputLabel for="#{metadataKey}" 
                                    value="#{metadataLabel}" 
-                                   styleClass="dialogDataLabel"/>
+                                   styleClass="dialogDataLabel"
+                                   title="#{metadataDescription}"/>
 
                 </c:forEach>
             </p:panelGrid>    

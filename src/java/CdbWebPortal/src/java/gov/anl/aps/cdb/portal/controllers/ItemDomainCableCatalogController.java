@@ -46,19 +46,19 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     @Override
     protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
         ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Type Metadata", CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_URL_KEY, "Documentation URL", "Documentation URL", ItemCoreMetadataFieldType.URL, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_IMAGE_URL_KEY, "Image URL", "Image URL", ItemCoreMetadataFieldType.URL, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_ALT_PART_NUM_KEY, "Alt Part Num", "Alternate Mfr. part number", ItemCoreMetadataFieldType.STRING, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_WEIGHT_KEY, "Weight", "Nominal weight", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_DIAMETER_KEY, "Diameter", "Nominal diameter", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_CONDUCTORS_KEY, "Conductors", "Number of conductors", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_INSULATION_KEY, "Insulation", "Insulation type", ItemCoreMetadataFieldType.STRING, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_JACKET_COLOR_KEY, "Jacket Color", "Jacket color", ItemCoreMetadataFieldType.STRING, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_VOLTAGE_RATING_KEY, "Voltage Rating", "Voltage rating", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_FIRE_LOAD_KEY, "Fire Load", "Fire load", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_HEAT_LIMIT_KEY, "Heat Limit", "Heat limit", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_BEND_RADIUS_KEY, "Bend Radius", "Bend radius", ItemCoreMetadataFieldType.NUMERIC, "");
-        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_RAD_TOLERANCE_KEY, "Radiation Tolearance", "Radiation tolerance", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_URL_KEY, "Documentation URL", "Raw URL for documentation pdf file.", ItemCoreMetadataFieldType.URL, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_IMAGE_URL_KEY, "Image URL", "Raw URL for image file.", ItemCoreMetadataFieldType.URL, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_ALT_PART_NUM_KEY, "Alt Part Num", "Manufacturer's alternate part number.", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_WEIGHT_KEY, "Weight", "Nominal weight in lbs/1000 feet.", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_DIAMETER_KEY, "Diameter", "Diameter in inches (max).", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_CONDUCTORS_KEY, "Conductors", "Number of conductors/fibers.", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_INSULATION_KEY, "Insulation", "Description of cable insulation.", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_JACKET_COLOR_KEY, "Jacket Color", "Jacket color.", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_VOLTAGE_RATING_KEY, "Voltage Rating", "Voltage rating (VRMS).", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_FIRE_LOAD_KEY, "Fire Load", "Fire load rating.", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_HEAT_LIMIT_KEY, "Heat Limit", "Heat limit rating.", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_BEND_RADIUS_KEY, "Bend Radius", "Bend radius in inches.", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_RAD_TOLERANCE_KEY, "Radiation Tolearance", "Radiation tolerance rating.", ItemCoreMetadataFieldType.NUMERIC, "");
         return info;
     }
     

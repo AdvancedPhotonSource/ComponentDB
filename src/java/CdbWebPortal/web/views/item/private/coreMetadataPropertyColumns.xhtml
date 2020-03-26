@@ -8,7 +8,8 @@ See LICENSE file.
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
     
     <ui:param name="rendered" value="#{rendered != null ? rendered : true}" />
     
@@ -19,15 +20,21 @@ See LICENSE file.
 
         <ui:param name="metadataKey" value="#{metadataField.key}"/>
         <ui:param name="metadataLabel" value="#{metadataField.label}"/>
+        <ui:param name="metadataDescription" value="#{metadataField.description}"/>
         <ui:param name="propertyName" value="#{metadataKey}Display"/>
         <ui:param name="filterValue" value="#{metadataKey}Filter"/>
 
-        <p:column headerText="#{metadataLabel}"
+        <p:column id="#{metadataKey}Column"
                   rendered="#{rendered and entitySettingObject[propertyName]}"
                   sortBy="#{itemListObject[metadataKey]}"
                   filterBy="#{itemListObject[metadataKey]}"
                   filterMatchMode="contains"
                   filterValue="#{entitySettingObject[filterValue]}">
+            <f:facet name="header">
+                <h:outputText value="#{metadataLabel}" />
+                <p:tooltip value="#{metadataDescription}"
+                           for="#{metadataKey}Column"/>
+            </f:facet> 
             <h:outputText value="#{itemListObject[metadataKey]}"/>
         </p:column>
 
