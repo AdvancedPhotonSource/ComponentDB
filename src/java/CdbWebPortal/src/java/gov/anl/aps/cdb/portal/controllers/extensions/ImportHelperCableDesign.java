@@ -34,7 +34,9 @@ public class ImportHelperCableDesign extends ImportHelperBase {
         columns.add(new ImportHelperBase.IdRefColumnModel("Project", "itemProjectString", "setProjectId", true, "Numeric ID of CDB project.", ItemProjectController.getInstance()));
         columns.add(new ImportHelperBase.IdRefColumnModel("Type", "catalogItemString", "setCatalogItemId", true, "Numeric ID of CDB cable type catalog item.", ItemDomainCableCatalogController.getInstance()));
         columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint1", "endpoint1String", "setEndpoint1Id", true, "Numeric ID of CDB machine design item for first endpoint.", ItemDomainMachineDesignController.getInstance()));
+        columns.add(new ImportHelperBase.StringColumnModel("Endpoint1 Desc", "endpoint1Description", "setEndpoint1Description", false, "Endpoint details useful for external editing."));
         columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint2", "endpoint2String", "setEndpoint2Id", true, "Numeric ID of CDB machine design item for second endpoint.", ItemDomainMachineDesignController.getInstance()));
+        columns.add(new ImportHelperBase.StringColumnModel("Endpoint2 Desc", "endpoint2Description", "setEndpoint2Description", false, "Endpoint details useful for external editing."));
     }
     
     @Override

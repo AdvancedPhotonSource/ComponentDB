@@ -32,12 +32,16 @@ public class ItemDomainCableDesign extends Item {
     private transient String laying = null;
     private transient String voltage = null;
     private transient String team = null;
+    private transient String endpoint1Description = null;
+    private transient String endpoint2Description = null;
 
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type"; 
     public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName"; 
     public final static String CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY = "alternateCableId"; 
     public final static String CABLE_DESIGN_PROPERTY_LAYING_KEY = "laying"; 
     public final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage"; 
+    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY = "endpoint1Description"; 
+    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY = "endpoint2Description"; 
 
     private static final String endpointsSeparator = " | ";
     
@@ -331,6 +335,30 @@ public class ItemDomainCableDesign extends Item {
     public void setVoltage(String v) throws CdbException {
         voltage = v;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, v);
+    }
+
+    public String getEndpoint1Description() throws CdbException {
+        if (endpoint1Description == null) {
+            endpoint1Description = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY);
+        }
+        return endpoint1Description;
+    }
+
+    public void setEndpoint1Description(String d) throws CdbException {
+        endpoint1Description = d;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY, d);
+    }
+
+    public String getEndpoint2Description() throws CdbException {
+        if (endpoint2Description == null) {
+            endpoint2Description = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY);
+        }
+        return endpoint2Description;
+    }
+
+    public void setEndpoint2Description(String d) throws CdbException {
+        endpoint2Description = d;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY, d);
     }
 
     public String getTeam() {
