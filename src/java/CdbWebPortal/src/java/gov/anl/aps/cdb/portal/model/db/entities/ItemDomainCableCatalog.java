@@ -279,9 +279,14 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return team;
     }
     
-    public void setTeamId(String categoryId) {
+    public void setTeamId(String categoryId) throws CdbException {
         ItemCategory category = ItemCategoryController.getInstance().findById(Integer.valueOf(categoryId));
+        
         if (category != null) {
+            if (!category.getDomain().getName().equals(this.getDomain().getName())) {
+                throw new CdbException("Invalid team ID (item_category) specified: " + categoryId + " for domain: " + this.getDomain().getName());
+            }
+
             List<ItemCategory> categoryList = new ArrayList<>();
             categoryList.add(category);
             this.setItemCategoryList(categoryList);

@@ -368,9 +368,14 @@ public class ItemDomainCableDesign extends Item {
         return team;
     }
     
-    public void setTeamId(String categoryId) {
+    public void setTeamId(String categoryId) throws CdbException {
         ItemCategory category = ItemCategoryController.getInstance().findById(Integer.valueOf(categoryId));
+        
         if (category != null) {
+            if (!category.getDomain().getName().equals(this.getDomain().getName())) {
+                throw new CdbException("Invalid team ID (item_category) specified: " + categoryId + " for domain: " + this.getDomain().getName());
+            }
+        
             List<ItemCategory> categoryList = new ArrayList<>();
             categoryList.add(category);
             this.setItemCategoryList(categoryList);
@@ -378,6 +383,10 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
+    public void setTechnicalSystemList(List<ItemCategory> technicalSystemList) {
+        setItemCategoryList(technicalSystemList);
+    }   
+
     public void setProjectId(String projectId) {
         ItemProject project = ItemProjectController.getInstance().findById(Integer.valueOf(projectId));
         if (project != null) {
@@ -385,9 +394,5 @@ public class ItemDomainCableDesign extends Item {
             projectList.add(project);
             this.setItemProjectList(projectList);
         }
-    }
-    
-    public void setTechnicalSystemList(List<ItemCategory> technicalSystemList) {
-        setItemCategoryList(technicalSystemList);
-    }   
+    }    
 }

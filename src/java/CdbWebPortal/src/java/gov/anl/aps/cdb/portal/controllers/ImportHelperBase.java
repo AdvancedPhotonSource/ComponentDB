@@ -358,7 +358,7 @@ public abstract class ImportHelperBase {
                 setterMethod = newEntity.getClass().getMethod(setterMethodName, String.class);
                 setterMethod.invoke(newEntity, result.getValue());
             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                validString = appendToValidString(validString, "Unable to invoke setter method: " + setterMethodName + " for column: " + colName + " reason: " + ex.toString());
+                validString = appendToValidString(validString, "Unable to invoke setter method: " + setterMethodName + " for column: " + colName + " reason: " + ex.getCause().getLocalizedMessage());
                 isValid = false;
             }
 
