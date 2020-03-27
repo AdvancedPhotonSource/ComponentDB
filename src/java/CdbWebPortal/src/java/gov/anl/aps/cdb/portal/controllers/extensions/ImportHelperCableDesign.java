@@ -26,7 +26,6 @@ public class ImportHelperCableDesign extends ImportHelperBase {
         columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "Cable name, uniquely identifies cable in CDB."));
         columns.add(new ImportHelperBase.StringColumnModel("Alt Name", "alternateName", "setAlternateName", true, "Alternate cable name."));
         columns.add(new ImportHelperBase.StringColumnModel("Ext Cable Name", "externalCableName", "setExternalCableName", true, "Cable name in external system (e.g., CAD, routing tool) e.g., SR_R_401_D1109_RR8G[low] | SR_M_A02_C61_64_02-00[high]"));
-        columns.add(new ImportHelperBase.StringColumnModel("Import Cable ID", "importCableId", "setImportCableId", true, "Unique identifier for imported cables."));
         columns.add(new ImportHelperBase.StringColumnModel("Alternate Cable ID", "alternateCableId", "setAlternateCableId", true, "Alternate (e.g., group-specific) cable identifier."));
         columns.add(new ImportHelperBase.StringColumnModel("Description", "description", "setDescription", true, "Description of cable."));
         columns.add(new ImportHelperBase.StringColumnModel("Laying", "laying", "setLaying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle"));
