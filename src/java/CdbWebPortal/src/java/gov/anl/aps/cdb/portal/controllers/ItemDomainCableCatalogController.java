@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import javax.ejb.EJB;
@@ -57,24 +58,38 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         return "/views/itemDomainCableCatalog/import?faces-redirect=true";
     }
     
+    private void initializeNewInstance(ItemDomainCableCatalog item) {
+        item.setPropertyValueList(new ArrayList<>());
+        prepareInternalCablePropertyValue(item);
+    }
+    
+    public PropertyValue prepareInternalCablePropertyValue(ItemDomainCableCatalog item) {
+        
+        // Add cable internal property type
+        PropertyType propertyType = propertyTypeFacade.findByName(CABLE_INTERNAL_PROPERTY_TYPE);
+
+        if (propertyType == null) {
+            propertyType = createInternalCablePropertyType();
+        }
+        
+        return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
+    }
+    
+    @Override
+    protected ItemDomainCableCatalog createEntityInstance() {
+        ItemDomainCableCatalog item = super.createEntityInstance();
+        initializeNewInstance(item);
+        setCurrent(item);
+        return item;
+    }
+    
     /**
      * Creates new instance but doesn't set current (for operations from
      * outside controller).
      */
     public ItemDomainCableCatalog newEntityInstance() {
-        
         ItemDomainCableCatalog item = super.createEntityInstance();
-        
-        // Add cable internal property type
-        PropertyType propertyType = propertyTypeFacade.findByName(CABLE_INTERNAL_PROPERTY_TYPE);
-        
-        if (propertyType == null) {
-            propertyType = createInternalCablePropertyType();
-        }
-
-        item.setPropertyValueList(new ArrayList<>());
-        preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
-        
+        this.initializeNewInstance(item);
         return item;
     }
     

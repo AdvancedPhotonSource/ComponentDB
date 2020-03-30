@@ -2,7 +2,10 @@
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
-from cdbApi import ApiException, DomainApi
+import base64
+import os
+
+from cdbApi import ApiException, DomainApi, FileUploadObject
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
 from cdbApi.api.property_api import PropertyApi
@@ -54,6 +57,13 @@ class CdbApiFactory:
 	def logOutUser(self):
 		self.authApi.log_out()
 
+	@classmethod
+	def createFileUploadObject(cls, filePath):
+		data = open(filePath, "rb").read()
+		b64String = base64.b64encode(data).decode()
+
+		fileName = os.path.basename(filePath)
+		return FileUploadObject(file_name=fileName, base64_binary=b64String)
 
 if __name__ == '__main__':
 	# Example

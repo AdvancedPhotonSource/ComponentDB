@@ -206,6 +206,22 @@ See LICENSE file.
             <p:message for="bendRadiusInputText#{viewId}" />
         </p:column>
 
+        <h:outputLabel for="radTolerance#{viewid}" 
+                       value="Rad Tolerance" 
+                       styleClass="entityDataEmphasizedLabel"/>
+
+        <p:column id="radTolerance#{viewId}">
+            <h:inputText id="radToleranceInputText#{viewId}" 
+                         value="#{itemObject.radTolerance}"                  
+                         title="Rad Tolerance" 
+                         styleClass="entityDataText"
+                         onkeyup="updateRadTolerance#{viewId}()"/>
+            <p:remoteCommand name="updateRadTolerance#{viewId}"
+                             update="radTolerance#{viewId}"
+                             process="radTolerance#{viewId}"/>
+            <p:message for="radToleranceInputText#{viewId}" />
+        </p:column>
+
     </p:panelGrid>
 
 </ui:composition>
