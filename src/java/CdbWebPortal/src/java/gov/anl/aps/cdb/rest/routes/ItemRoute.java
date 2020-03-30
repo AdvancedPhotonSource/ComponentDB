@@ -37,6 +37,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
+import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueDocumentUploadBean;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueImageUploadBean;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -586,39 +587,84 @@ public class ItemRoute extends BaseRoute {
     }
     
     @POST
+    @Path("/uploadDocument/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public PropertyValue uploadDocumentForItem(@PathParam("itemId") int itemId, FileUploadObject documentUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
+        return uploadForItem(itemId, documentUpload, 1); 
+    }
+    
+    @POST
     @Path("/uploadImage/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public PropertyValue uploadImageForItem(@PathParam("itemId") int itemId, FileUploadObject imageUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
-        LOGGER.debug("Uploading image for item: " + itemId);
+        return uploadForItem(itemId, imageUpload, 0); 
+    }
+    
+    /**
+     * Generic item upload function 
+     * 
+     * @param itemId
+     * @param fileUpload
+     * @param mode- 0: image, 1: document
+     * @return
+     * @throws AuthorizationError
+     * @throws DbError
+     * @throws IOException
+     * @throws ObjectNotFound
+     * @throws CdbException 
+     */
+    private PropertyValue uploadForItem(@PathParam("itemId") int itemId, FileUploadObject fileUpload, int mode) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
+        String modeString = null;        
+        if (mode == 0) {
+            modeString = "image";
+        } else {
+            modeString = "document";
+        }
+        
+        LOGGER.debug("Uploading " + modeString + " for item: " + itemId);
         Item dbItem = getItemByIdBase(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
         
         if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {            
-            AuthorizationError ex = new AuthorizationError("User does not have permission to upload image for the item");
+            AuthorizationError ex = new AuthorizationError("User does not have permission to upload " + modeString + " for the item");
             LOGGER.error(ex);
             throw ex; 
         }
         
         Base64.Decoder decoder = Base64.getDecoder();
-        byte[] decode = decoder.decode(imageUpload.getBase64Binary());
+        byte[] decode = decoder.decode(fileUpload.getBase64Binary());
         ByteArrayInputStream stream = new ByteArrayInputStream(decode);
         
         ItemController itemController = dbItem.getItemDomainController();
+        PropertyType uploadPropertyType = null;
         
-        PropertyType imagePropertyType = PropertyValueImageUploadBean.getImagePropertyType(propertyTypeHandlerFacade);
-        if (imagePropertyType == null) {
+        if (mode == 0) {
+            uploadPropertyType= PropertyValueImageUploadBean.getImagePropertyType(propertyTypeHandlerFacade);
+        } else {
+            uploadPropertyType = PropertyValueDocumentUploadBean.getDocumentPropertyType(propertyTypeHandlerFacade);
+        }
+        
+        if (uploadPropertyType == null) {
             DbError dbError = new DbError("Could not find image property type.");
             LOGGER.error(dbError);
             throw dbError; 
         }
         
-        PropertyValue pv = itemController.preparePropertyTypeValueAdd(dbItem, imagePropertyType, null, null, updatedByUser);
+        PropertyValue pv = itemController.preparePropertyTypeValueAdd(dbItem, uploadPropertyType, null, null, updatedByUser);
+        String fileName = fileUpload.getFileName(); 
         
         try {
-            PropertyValueImageUploadBean.uploadImage(pv, imageUpload.getFileName(), stream);
+            if (mode == 0) {
+                PropertyValueImageUploadBean.uploadImage(pv, fileName, stream);                
+            } else {
+                PropertyValueDocumentUploadBean.uploadDocument(pv, fileName, stream);
+            }
         } catch (IOException ex) {
             LOGGER.error(ex);
             throw ex;
