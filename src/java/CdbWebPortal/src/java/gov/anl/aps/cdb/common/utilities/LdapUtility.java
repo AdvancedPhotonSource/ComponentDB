@@ -13,7 +13,8 @@ import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * LDAP utility class for verifying user credentials.
@@ -34,7 +35,7 @@ public class LdapUtility {
     private static final String ldapLookupDnBindPassword = ConfigurationUtility.getPortalProperty(LdapLookupDnBindPasswordPropertyName);
     private static final String ldapLookupDnUsernamefilter = ConfigurationUtility.getPortalProperty(LdapLookupDnUsernameFilterPropertyName);
 
-    private static final Logger logger = Logger.getLogger(LdapUtility.class.getName());
+    private static final Logger logger = LogManager.getLogger(LdapUtility.class.getName());
 
     /**
      * Validate user credentials.

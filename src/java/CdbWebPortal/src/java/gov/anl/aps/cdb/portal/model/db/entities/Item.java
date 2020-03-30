@@ -254,9 +254,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem")
     @OrderBy("sortOrder ASC")        
     private List<ItemElement> fullItemElementList;
-    @OneToMany(mappedBy = "containedItem1")        
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "containedItem1")        
     private List<ItemElement> itemElementMemberList;
-    @OneToMany(mappedBy = "containedItem2")        
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "containedItem2")        
     private List<ItemElement> itemElementMemberList2;
     @JoinColumn(name = "domain_id", referencedColumnName = "id")
     @ManyToOne(optional = false)    
@@ -317,16 +317,31 @@ public class Item extends CdbDomainEntity implements Serializable {
     
     public Item() {
     }        
-
+    
     public void init() {
+        EntityInfo ei = null; 
+        init(ei); 
+    }
+
+    public void init(EntityInfo entityInfo) {
         ItemElement selfElement = new ItemElement();
-        selfElement.init(this);
+        if (entityInfo == null) {
+            selfElement.init(this);
+        } else {
+            selfElement.init(this, entityInfo);
+        }
         this.fullItemElementList = new ArrayList<>();
         this.fullItemElementList.add(selfElement);
 
         name = "";
         itemIdentifier1 = "";
         itemIdentifier2 = "";
+    }
+    
+    public void init(Domain domain, EntityInfo ei) {
+        init(ei);
+        
+        this.domain = domain; 
     }
 
     public void init(Domain domain) {

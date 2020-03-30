@@ -17,13 +17,14 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Named("logTopicController")
 @SessionScoped
 public class LogTopicController extends CdbEntityController<LogTopic, LogTopicFacade, LogTopicSettings> implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(LogTopicController.class.getName());
+    private static final Logger logger = LogManager.getLogger(LogTopicController.class.getName());
 
     @EJB
     private LogTopicFacade logTopicFacade;

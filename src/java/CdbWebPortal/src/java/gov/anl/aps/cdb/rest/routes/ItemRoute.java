@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
@@ -30,12 +31,14 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
+import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueDocumentUploadBean;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueImageUploadBean;
@@ -53,6 +56,7 @@ import gov.anl.aps.cdb.rest.entities.ItemSearchResults;
 import gov.anl.aps.cdb.rest.entities.ItemStatusBasicObject;
 import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
 import gov.anl.aps.cdb.rest.entities.LogEntryEditInformation;
+import gov.anl.aps.cdb.rest.entities.NewLocationInformation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -71,7 +75,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -82,7 +87,7 @@ import org.primefaces.model.TreeNode;
 @Tag(name = "Item")
 public class ItemRoute extends BaseRoute {
     
-    private static final Logger LOGGER = Logger.getLogger(ItemRoute.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ItemRoute.class.getName());
     
     @EJB
     ItemFacade itemFacade;
@@ -815,6 +820,89 @@ public class ItemRoute extends BaseRoute {
         }
         
         return childLocations;        
+    }
+    
+    @POST
+    @Path("/AddLocation")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainLocation createLocation(NewLocationInformation newLocationInformation) throws AuthorizationError, InvalidArgument, CdbException {
+        String newLocationName = newLocationInformation.getLocationName();
+        String newlocationType = newLocationInformation.getLocationType();
+        String locationDescription = newLocationInformation.getLocationDescription();                
+        
+        if (newLocationName == null || newLocationName.isEmpty()) {
+            throw new InvalidArgument("Location name for the new location must be provided with the request.");
+        }
+        if (newlocationType == null || newlocationType.isEmpty()) {
+            throw new InvalidArgument("Location type for the new location must be provided with the request.");
+        }        
+        
+        LOGGER.debug("Creating a new location: " + newLocationName);
+
+        UserInfo currentUser = getCurrentRequestUserInfo();
+        boolean userAdmin = currentUser.isUserAdmin();
+        
+        if (userAdmin == false) {
+            throw new AuthorizationError("Only adminstrators can create locations.");
+        }
+        
+        ItemDomainLocationController locController = ItemDomainLocationController.getApiInstance();        
+        
+        EntityInfo createEntityInfo = EntityInfoUtility.createEntityInfo(currentUser);
+        ItemDomainLocation newLocationItem = locController.createEntityInstanceFromApi(createEntityInfo);
+                
+        newLocationItem.setName(newLocationName);
+        newLocationItem.setDescription(locationDescription);
+        
+        // Verify type is valid
+        Domain domain = newLocationItem.getDomain();
+        ItemType selectedItemType = null; 
+        for (ItemType type : domain.getItemTypeList()) {
+            if (type.getName().equalsIgnoreCase(newlocationType)) {
+                selectedItemType = type; 
+                break;
+            }
+        }
+        
+        if (selectedItemType == null) {
+            throw new InvalidArgument("Invalid type for the new location has been provided with the request.");
+        }
+        
+        // Select location type. 
+        newLocationItem.setItemTypeList(new ArrayList<>());
+        newLocationItem.getItemTypeList().add(selectedItemType); 
+        
+        Integer locationQrId = newLocationInformation.getLocationQrId();
+        if (locationQrId != null) {
+            newLocationItem.setQrId(locationQrId);
+        }
+        
+        Integer parentLocationId = newLocationInformation.getParentLocationId();
+        if (parentLocationId != null) {
+            Item parentItem = locController.findById(parentLocationId);
+            if (parentItem == null) {
+                throw new InvalidArgument("Could not find item with parent location item id: " + parentLocationId); 
+            }
+            if (parentItem instanceof ItemDomainLocation == false) {
+                throw new InvalidArgument("Parent location id must be of type location."); 
+            }
+
+            ItemDomainLocation parentLocation = (ItemDomainLocation) parentItem;
+
+            EntityInfo entityInfo = EntityInfoUtility.createEntityInfo(currentUser);
+            ItemElement ie = locController.createItemElementFromApi(parentLocation, entityInfo);
+            ie.setContainedItem(newLocationItem);
+
+            newLocationItem.setItemElementMemberList(new ArrayList<>());
+            newLocationItem.getItemElementMemberList().add(ie);
+        }
+        
+        locController.createFromApi(newLocationItem, currentUser);
+        
+        return newLocationItem;
     }
     
     @GET

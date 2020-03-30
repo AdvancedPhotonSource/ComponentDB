@@ -15,7 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.faces.event.ActionEvent;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -23,7 +24,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class SettingBase<ObjectController> implements ICdbSettings {
     
-    private static final Logger logger = Logger.getLogger(SettingBase.class.getName());
+    private static final Logger logger = LogManager.getLogger(SettingBase.class.getName());
 
     protected Integer displayNumberOfItemsPerPage = null;
     protected Boolean displayListPageHelpFragment = true;

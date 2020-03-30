@@ -9,7 +9,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Utility class for managing portal configuration.
@@ -20,7 +21,7 @@ public class ConfigurationUtility {
     public static final String UI_PROPERTIES_PATH = "resources.properties"; 
     public static final String PROPERTIES_DELIMITER = ",";
    
-    private static final Logger logger = Logger.getLogger(ConfigurationUtility.class.getName());
+    private static final Logger logger = LogManager.getLogger(ConfigurationUtility.class.getName());
     private static final Properties portalProperties = loadProperties(PROPERTIES_PATH);
     private static final Properties uiProperties = loadProperties(UI_PROPERTIES_PATH);
     

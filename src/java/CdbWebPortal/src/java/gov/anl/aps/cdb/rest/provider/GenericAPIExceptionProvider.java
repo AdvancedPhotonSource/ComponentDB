@@ -11,7 +11,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -20,7 +21,7 @@ import org.apache.log4j.Logger;
 @Provider
 public class GenericAPIExceptionProvider  extends Exception implements ExceptionMapper<Exception> {
 
-    private static final Logger logger = Logger.getLogger(GenericAPIExceptionProvider.class.getName());
+    private static final Logger logger = LogManager.getLogger(GenericAPIExceptionProvider.class.getName());
     
     @Override
     public Response toResponse(Exception exception) {

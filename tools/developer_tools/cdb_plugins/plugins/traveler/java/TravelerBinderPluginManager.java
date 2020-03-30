@@ -5,7 +5,8 @@
 package gov.anl.aps.cdb.portal.plugins.support.traveler;
 
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -13,7 +14,7 @@ import org.apache.log4j.Logger;
  */
 public class TravelerBinderPluginManager extends TravelerPluginManager {
     
-    private static final Logger logger = Logger.getLogger(TravelerBinderPluginManager.class.getName());
+    private static final Logger logger = LogManager.getLogger(TravelerBinderPluginManager.class.getName());
 
     @Override
     public PropertyTypeHandlerInterface getPluginPropertyTypeHandler() {

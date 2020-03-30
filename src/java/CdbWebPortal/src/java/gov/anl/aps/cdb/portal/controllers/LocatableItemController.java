@@ -37,7 +37,8 @@ import java.util.Objects;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuModel;
 
@@ -51,7 +52,7 @@ public class LocatableItemController implements Serializable {
 
     public final static String controllerNamed = "locatableItemController";
 
-    private static final Logger logger = Logger.getLogger(LocatableItemController.class.getName());
+    private static final Logger logger = LogManager.getLogger(LocatableItemController.class.getName());
 
     private LocatableItem lastInventoryItemRequestedLocationMenuModel = null;
 
@@ -248,12 +249,12 @@ public class LocatableItemController implements Serializable {
             // For new items it will be null
             return null;
         }
-        List<ItemElement> allMembershipList = new ArrayList<>(); 
+        List<ItemElement> allMembershipList = new ArrayList<>();
         allMembershipList.addAll(item.getItemElementMemberList());
         allMembershipList.addAll(item.getItemElementMemberList2());
 
         if (allMembershipList.size() > 1) {
-            if (SessionUtility.runningFaces()) {                
+            if (SessionUtility.runningFaces()) {
                 SessionUtility.addWarningMessage("Error loading location", "More then one membership for item: " + item.getId());
             }
         } else if (allMembershipList.size() == 1) {
@@ -275,16 +276,18 @@ public class LocatableItemController implements Serializable {
                 parentItem = ((ItemElementHistory) itemElementObject).getParentItem();
             }
 
-            locationItem = parentItem;
+            if (parentItem != null) {
+                locationItem = parentItem;
 
-            int parentDomainId = parentItem.getDomain().getId();
-            int locatableDomainId = locatableItem.getDomain().getId();
-            if (parentDomainId == ItemDomainName.MACHINE_DESIGN_ID
-                    && locatableDomainId != ItemDomainName.MACHINE_DESIGN_ID) {
-                if (itemElementObject instanceof ItemElement) {
-                    locationItem = ((ItemElement) itemElementObject).getContainedItem();
-                } else {
-                    locationItem = ((ItemElementHistory) itemElementObject).getContainedItem();
+                int parentDomainId = parentItem.getDomain().getId();
+                int locatableDomainId = locatableItem.getDomain().getId();
+                if (parentDomainId == ItemDomainName.MACHINE_DESIGN_ID
+                        && locatableDomainId != ItemDomainName.MACHINE_DESIGN_ID) {
+                    if (itemElementObject instanceof ItemElement) {
+                        locationItem = ((ItemElement) itemElementObject).getContainedItem();
+                    } else {
+                        locationItem = ((ItemElementHistory) itemElementObject).getContainedItem();
+                    }
                 }
             }
 
@@ -324,22 +327,22 @@ public class LocatableItemController implements Serializable {
      */
     public void updateLocationStringForItem(LocatableItem item) {
         if (item != null) {
-            Item activeLocation = item.getActiveLocation(); 
+            Item activeLocation = item.getActiveLocation();
             if (activeLocation == null) {
                 return;
             }
-            Domain domain = activeLocation.getDomain();           
-            
+            Domain domain = activeLocation.getDomain();
+
             if (domain.getId() == ItemDomainName.LOCATION_ID) {
                 List<Item> locationHierarchyListForItem = getLocationHierarchyListForItem(item);
                 if (locationHierarchyListForItem != null) {
                     String locationString = ItemUtility.generateHierarchyNodeString(locationHierarchyListForItem);
                     item.setLocationString(locationString);
-                }                
+                }
             } else {
-                String locationString = "Assigned to " + domain.getName() + ": " + activeLocation.toString(); 
+                String locationString = "Assigned to " + domain.getName() + ": " + activeLocation.toString();
                 item.setLocationString(locationString);
-            }           
+            }
         }
     }
 
@@ -427,7 +430,7 @@ public class LocatableItemController implements Serializable {
     }
 
     public ItemDomainLocation getLocation(LocatableItem inventoryItem) {
-        if (inventoryItem.getLocationItem() == null) {
+        if (inventoryItem.getOriginalLocationLoaded() == false) {
             setItemLocationInfo(inventoryItem);
         }
         return inventoryItem.getLocationItem();
@@ -542,8 +545,10 @@ public class LocatableItemController implements Serializable {
             SessionUtility.addErrorMessage("Error", "Cannot use the same location as this item.");
             return;
         }
-
+        
+        Boolean originalLocationLoaded = item.getOriginalLocationLoaded();
         item.resetLocationVariables();
+        item.setOriginalLocationLoaded(originalLocationLoaded);
 
         item.setLocation(locationItem);
         updateLocationTreeForItem(item);
@@ -592,29 +597,29 @@ public class LocatableItemController implements Serializable {
     }
 
     public static String generateLocationDetailsFromItem(Item item) {
-        String partOf = "assembly"; 
+        String partOf = "assembly";
         Domain domain = item.getDomain();
-        
+
         if (domain.getId() != ItemDomainName.INVENTORY_ID) {
-            partOf = domain.getName(); 
+            partOf = domain.getName();
         }
-        
-        return "Assigned to " + partOf; 
+
+        return "Assigned to " + partOf;
     }
 
     public boolean locationEditable(Item item) {
         if (item instanceof LocatableItem) {
             LocatableItem locatableItem = (LocatableItem) item;
             // Loads the location if needed. 
-            getLocation(locatableItem); 
-            
+            getLocation(locatableItem);
+
             Item activeLocation = locatableItem.getActiveLocation();
             if (activeLocation != null) {
                 return activeLocation.getDomain().getId() == ItemDomainName.LOCATION_ID;
-            } 
-            return true; 
+            }
+            return true;
         }
-        return false; 
+        return false;
     }
 
     protected void updateItemLocation(LocatableItem item) throws InvalidRequest {
@@ -657,7 +662,7 @@ public class LocatableItemController implements Serializable {
                     || !Objects.equals(existingLocationDetails, newLocationDetails)));
         }
 
-        if (newItemWithNewLocation || locationDifferentOnCurrentItem) {            
+        if (newItemWithNewLocation || locationDifferentOnCurrentItem) {
             // Verify that the location can be changed. 
             if ((existingItem != null) && (locationEditable(existingItem)) == false) {
                 Item location = existingItem.getActiveLocation();

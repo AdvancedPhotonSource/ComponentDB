@@ -25,7 +25,8 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Setting controller.
@@ -44,7 +45,7 @@ public class SettingController implements Serializable {
     @EJB
     private UserGroupFacade userGroupFacade;
 
-    private static final Logger logger = Logger.getLogger(SettingController.class.getName());
+    private static final Logger logger = LogManager.getLogger(SettingController.class.getName());
 
     private UserInfoController userInfoController = null;
     private UserGroupController userGroupController = null;

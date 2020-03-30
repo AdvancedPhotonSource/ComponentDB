@@ -76,7 +76,8 @@ import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.event.RowEditEvent;
 import org.primefaces.event.ToggleEvent;
 import org.primefaces.model.DefaultTreeNode;
@@ -85,7 +86,7 @@ import org.primefaces.model.Visibility;
 
 public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity, ItemSettingsObject> {
 
-    private static final Logger LOGGER = Logger.getLogger(ItemController.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());
     protected final String FAVORITES_LIST_NAME = "Favorites";
     protected static final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";
 
@@ -1288,10 +1289,18 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             item.setItemConnectorList(dbItem.getItemConnectorList());
         }
     }
-
+    
+    public ItemElement createItemElementFromApi(ItemDomainEntity item, EntityInfo entityInfo) {
+        return createItemElement(item, entityInfo); 
+    }
+    
     protected ItemElement createItemElement(ItemDomainEntity item) {
-        ItemElement itemElement = new ItemElement();
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        return createItemElement(item, entityInfo);         
+    }
+
+    protected ItemElement createItemElement(ItemDomainEntity item, EntityInfo entityInfo) {
+        ItemElement itemElement = new ItemElement();
         itemElement.setEntityInfo(entityInfo);
         itemElement.setParentItem(item);
 
@@ -2189,16 +2198,32 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return super.getDisplayLoadPropertyValuesButton()
                 || checkDisplayLoadPropertyValueButtonByProperty(settingObject.getDisplayListDataModelScopePropertyTypeId());
     }
+    
+    public ItemDomainEntity createEntityInstanceFromApi(EntityInfo ei) {
+        return createEntityInstance(ei); 
+    }
 
     @Override
     protected ItemDomainEntity createEntityInstance() {
+        return createEntityInstance(null);
+    }
+    
+    protected ItemDomainEntity createEntityInstance(EntityInfo ei) {
         ItemDomainEntity item = instenciateNewItemDomainEntity();
 
         Domain domain = getDefaultDomain();
         if (domain != null) {
-            item.init(domain);
+            if (ei == null) {
+                item.init(domain);
+            } else {
+                item.init(domain, ei);
+            }
         } else {
-            item.init();
+            if (ei == null) {
+                item.init();
+            } else {
+                item.init(ei);
+            }
         }
 
         if (qrIdViewParam != null) {
@@ -2530,6 +2555,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         LOGGER.debug("Adding innitial element history for " + item);
         EntityInfo entityInfo = item.getEntityInfo();
         ItemElementUtility.prepareItemElementHistory(null, newElementList, entityInfo);
+        
+        List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
+        if (itemElementMemberList != null) {
+            // Reverse hierarchy inserted, parent specified during insert. 
+            LOGGER.debug("Adding innitial element member history for " + item);
+            ItemElementUtility.prepareItemElementHistory(null, itemElementMemberList, entityInfo);
+        }
     }
 
     @Override

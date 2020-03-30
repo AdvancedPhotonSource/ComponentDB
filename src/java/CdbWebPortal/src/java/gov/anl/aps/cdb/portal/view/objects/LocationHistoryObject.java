@@ -34,6 +34,15 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
         this.locationItem = locationItem; 
         if (locationItem != null) {
             locationDetails = LocatableItemController.generateLocationDetailsFromItem(locationItem);                    
+        } else {
+            locationDetails = "Deleted Item";
+            // This item must be contained item 2 if contained item 1 is null. 
+            if (itemElementHistory.getContainedItem() == null) {
+                locationDetails += ": " + itemElementHistory.getSnapshotContainedItemName(); 
+            } else {
+                // Usually the parent location unless this item is contained item 2. 
+                locationDetails += ": " + itemElementHistory.getSnapshotParentName(); 
+            }
         }
     }
 

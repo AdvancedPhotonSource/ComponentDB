@@ -46,7 +46,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.ListDataModel;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.component.selectonelistbox.SelectOneListbox;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
@@ -70,7 +71,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     // Inventory status variables
     private PropertyType inventoryStatusPropertyType; 
 
-    private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemDomainInventoryController.class.getName());
 
     private List<PropertyValue> filteredPropertyValueList = null;
 
@@ -599,10 +600,14 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     public void prepareBillOfMaterialsForCurrentItem() {
+        prepareBillOfMaterialsForItem(getCurrent());
+    }
+    
+    public void prepareBillOfMaterialsForItem(ItemDomainInventory item) {
         // Prepare bill of materials if not yet done so. 
         newItemsToAdd = new ArrayList<>();
-        InventoryBillOfMaterialItem iBom = new InventoryBillOfMaterialItem(getCurrent());
-        InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(getCurrent(), iBom);
+        InventoryBillOfMaterialItem iBom = new InventoryBillOfMaterialItem(item);
+        InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(item, iBom);
     }
 
     private void resetConnectorVairables() {
@@ -764,6 +769,11 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public void addItemElementsFromBillOfMaterials(ItemDomainInventory item) throws CdbException {
         // Bill of materials list.
         List<InventoryBillOfMaterialItem> bomItems = item.getInventoryDomainBillOfMaterialList();
+        
+        if (bomItems == null) {
+            prepareBillOfMaterialsForCurrentItem(); 
+            bomItems = item.getInventoryDomainBillOfMaterialList();
+        }
 
         if (bomItems != null) {
             for (InventoryBillOfMaterialItem bomItem : bomItems) {
@@ -1080,11 +1090,10 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                     item.resetItemElementDisplayList();
                 }
             }
-
-            clearItemElementsForItem(item);
-            updatePermissionOnAllNewPartsIfNeeded();
-            addItemElementsFromBillOfMaterials(item);
         }
+        clearItemElementsForItem(item);
+        updatePermissionOnAllNewPartsIfNeeded();
+        addItemElementsFromBillOfMaterials(item);
 
         super.prepareEntityInsert(item);
         checkNewItemsToAdd();

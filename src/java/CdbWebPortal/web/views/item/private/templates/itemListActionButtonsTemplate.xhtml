@@ -18,6 +18,11 @@ See LICENSE file.
               value="#{displayMultiEditButtons != null 
                        ? displayMultiEditButtons 
                        : true}" />
+    
+    <ui:param name="templateIcon"
+              value="#{templateIcon == null 
+                       ? 'ui-icon-template' 
+                       : templateIcon }" />
 
     <ui:define name="additonalListButtons" >
         <ui:param name="itemMultiEditController"
@@ -50,7 +55,7 @@ See LICENSE file.
         </p:commandButton>
         
         <p:commandButton id="#{entityTypeName}#{viewName}ViewItemTemplates"
-                         icon="ui-icon ui-icon-template"
+                         icon="ui-icon #{templateIcon}"
                          styleClass="actionButtonRight"
                          action="#{entityController.prepareTemplateList()}"
                          rendered="#{displayAvailableTemplatesButton}">

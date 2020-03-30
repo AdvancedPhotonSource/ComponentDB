@@ -12,25 +12,33 @@ See LICENSE file.
     <p:overlayPanel id="itemDomainMachineDesignReorderOverlayPanel"
                     widgetVar="itemDomainMachineDesignReorderOverlayPanelWidget"
                     modal="true"
-                    styleClass="centeredOverlayPanel viewTransparentBackgroundDialog">
+                    styleClass="centeredOverlayPanel viewTransparentBackgroundDialog"
+                    onShow="scrollReorderConfigureListender(true)"
+                    onHide="scrollReorderConfigureListender(false)">
 
         <p:outputPanel id="itemDomainMachineDesignReorderOutputPanel"
                        rendered="#{itemDomainMachineDesignController.displayMachineDesignReorderOverlayPanel}">
+
             <ui:param name="currentObject"
                       value="#{entityController.current}"/> 
-            <p:panel header="Sort elements for machine design: #{currentObject.name}">
-                <p:dataTable id="itemDomainMachineDesignReorderDataTable"
-                             value="#{currentObject.itemElementDisplayList}"
-                             var="itemElementListObject"
-                             styleClass="leftAlignedText"                             
-                             draggableRows="#{entityController.entityHasSortableElements}">
 
-                    <p:ajax event="rowReorder" listener="#{itemElementController.onListDataTableRowReorder}"
-                            update="@form:itemDomainMachineDesignReorderOutputPanel"/>
+            <ui:param name="elementList"
+                      value="#{currentObject.itemElementDisplayList}" />
+            <ui:param name="largeList" 
+                      value="#{facesUtility.islistSizeOverMin(elementList, resources.MdReorderNoScrollboxMaximum)}" />                        
 
-                    <ui:include src="itemDomainMachineDesignListObject.xhtml" />  
-                </p:dataTable>
-            </p:panel>
+            <p:outputPanel rendered="#{!largeList}">
+                <ui:include src="itemDomainMachineDesignReorderOverlayPanelDataTable.xhtml"/>
+            </p:outputPanel>
+
+            <p:outputPanel rendered="#{largeList}">
+                <p:scrollPanel styleClass="mdReorderScrollBox"
+                               id="itemDomainMachineDesignReorderScrollPanel"
+                               mode="native">
+                    <ui:include src="itemDomainMachineDesignReorderOverlayPanelDataTable.xhtml"/>
+                </p:scrollPanel>                                
+            </p:outputPanel>
+
 
             <p:commandButton value="Save"
                              icon="fa fa-save"
@@ -42,6 +50,7 @@ See LICENSE file.
                              icon="fa fa-close"
                              onclick="PF('loadingDialog').show()"
                              action="#{itemDomainMachineDesignController.revertReorderMachineDesignElement()}" />
+
         </p:outputPanel>
 
     </p:overlayPanel>
