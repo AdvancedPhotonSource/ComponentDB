@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
@@ -90,7 +91,10 @@ public class ItemRoute extends BaseRoute {
     private static final Logger LOGGER = LogManager.getLogger(ItemRoute.class.getName());
     
     @EJB
-    ItemFacade itemFacade;
+    ItemFacade itemFacade;    
+    
+    @EJB
+    ItemElementFacade itemElementFacade;
     
     @EJB
     PropertyTypeFacade propertyTypeFacade;
@@ -115,6 +119,65 @@ public class ItemRoute extends BaseRoute {
         LOGGER.debug("Fetching item by id: " + id); 
         return getItemByIdBase(id); 
     }
+    
+    @GET
+    @Path("/HierarchyById/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Fetch an item by its id.")
+    public ItemHierarchy getItemHierarchyById(@PathParam("id") int id) throws ObjectNotFound {
+        Item itemByIdBase = getItemByIdBase(id);
+        
+        ItemHierarchy hierarchy = new ItemHierarchy(itemByIdBase, true);
+        
+        return hierarchy; 
+    }
+    
+    @POST
+    @Path("/UpdateParentItem/{elementId}/{parentItemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update the contained item in a item hierarchy.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemHierarchy updateContainedItem(@PathParam("elementId") int elementId, @PathParam("parentItemId") int parentItemId) throws ObjectNotFound, CdbException {
+        LOGGER.debug("Updating contained item for item element id: " + elementId);
+        ItemElement find = itemElementFacade.find(elementId);
+                
+        Item parentItem = find.getParentItem();
+        
+        if (parentItem instanceof ItemDomainInventory == false) {
+            throw new CdbException("Currently only inventory items are supported.");
+        }
+        
+        Item newContainedItem = getItemByIdBase(parentItemId);
+                
+        UserInfo updatedByUser = getCurrentRequestUserInfo();
+        if (!verifyUserPermissionForItem(updatedByUser, parentItem)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to update property value for the item");
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        
+        boolean found = false; 
+        List<ItemElement> itemElementDisplayList = parentItem.getItemElementDisplayList();
+        for (ItemElement ie : itemElementDisplayList) {
+            if (ie.getId() == elementId) {
+                ie.setContainedItem(newContainedItem);
+                found = true; 
+                break;
+            }
+        }
+        
+        if (!found) {
+            throw new CdbException("Unexpected error occurred. Could not reference element from its parent.");
+        }
+        
+        ItemController itemDomainController = parentItem.getItemDomainController();
+        itemDomainController.updateFromApi(parentItem, updatedByUser);                        
+        
+        return getItemHierarchyById(parentItem.getId());         
+    }
+    
+    
         
     public Item getItemByIdBase(@PathParam("id") int id) throws ObjectNotFound {        
         Item findById = itemFacade.findById(id);
@@ -970,7 +1033,7 @@ public class ItemRoute extends BaseRoute {
         }
         
         return itemHierarchy; 
-    }
+    }   
     
     private UserInfo getCurrentRequestUserInfo() {
         Principal userPrincipal = securityContext.getUserPrincipal();

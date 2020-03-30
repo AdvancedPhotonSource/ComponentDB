@@ -17,8 +17,16 @@ import org.primefaces.model.TreeNode;
 public class ItemHierarchy {
 
     private Item parentItem;
+    private Item derivedItem;
     private List<ItemHierarchy> childItems;
+    private Integer elementId;
+    private String elementName; 
+    private String derivedElementName; 
 
+    private ItemHierarchy() {
+        
+    }
+    
     public ItemHierarchy(Item parentItem, boolean autocreateHierarchy) {
         this.parentItem = parentItem;
         childItems = new ArrayList<>();
@@ -26,9 +34,28 @@ public class ItemHierarchy {
         if (autocreateHierarchy) {
             for (ItemElement element : parentItem.getItemElementDisplayList()) {
                 Item containedItem = element.getContainedItem();
+               
+                ItemElement derivedFromItemElement = element.getDerivedFromItemElement();
+                
+                ItemHierarchy child = null; 
                 if (containedItem != null) {
-                    ItemHierarchy child = new ItemHierarchy(containedItem, true);
-                    addChildItem(child);
+                    child = new ItemHierarchy(containedItem, true);
+                }
+                
+                if (derivedFromItemElement != null) {
+                    if (child == null) {
+                        child = new ItemHierarchy();
+                    }
+                    
+                    child.derivedItem = derivedFromItemElement.getContainedItem(); 
+                    child.derivedElementName = derivedFromItemElement.getName(); 
+                }
+                
+                
+                if (child != null) {
+                    child.elementId = element.getId(); 
+                    child.elementName = element.getName();
+                    addChildItem(child);                    
                 }
             }
         }
@@ -73,6 +100,38 @@ public class ItemHierarchy {
 
     public void setChildItems(List<ItemHierarchy> childItems) {
         this.childItems = childItems;
+    }
+
+    public Integer getElementId() {
+        return elementId;
+    }
+
+    public void setElementId(Integer elementId) {
+        this.elementId = elementId;
+    }
+
+    public String getElementName() {
+        return elementName;
+    }
+
+    public void setElementName(String elementName) {
+        this.elementName = elementName;
+    }
+
+    public String getDerivedElementName() {
+        return derivedElementName;
+    }
+
+    public void setDerivedElementName(String derivedElementName) {
+        this.derivedElementName = derivedElementName;
+    }
+
+    public Item getDerivedItem() {
+        return derivedItem;
+    }
+
+    public void setDerivedItem(Item derivedItem) {
+        this.derivedItem = derivedItem;
     }
 
     public void addChildItem(ItemHierarchy item) {
