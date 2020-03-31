@@ -14,10 +14,13 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -28,9 +31,11 @@ import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.UploadedFile;
 
 /**
  *
@@ -241,6 +246,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected List<EntityType> rows = new ArrayList<>();
     protected List<ColumnModel> columns = new ArrayList<>();
     protected byte[] templateExcelFile = null;
+    protected boolean validInput = true;
 
     public ImportHelperBase() {
         createColumnModels();
@@ -252,6 +258,84 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
     public List<ColumnModel> getColumns() {
         return columns;
+    }
+    
+    public boolean isValidInput() {
+        return validInput;
+    }
+
+    protected boolean readXlsFileData(UploadedFile f) {
+
+        InputStream inputStream;
+        HSSFWorkbook workbook = null;
+        try {
+            inputStream = f.getInputstream();
+            workbook = new HSSFWorkbook(inputStream);
+        } catch (IOException e) {
+            return false;
+        }
+
+        HSSFSheet sheet = workbook.getSheetAt(0);
+
+        Iterator<Row> rowIterator = sheet.iterator();
+
+        parseSheet(rowIterator);
+
+        return true;
+    }
+
+    protected boolean readXlsxFileData(UploadedFile f) {
+
+        InputStream inputStream;
+        XSSFWorkbook workbook = null;
+        try {
+            inputStream = f.getInputstream();
+            workbook = new XSSFWorkbook(inputStream);
+        } catch (IOException e) {
+            return false;
+        }
+
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        if (sheet == null) {
+            return false;
+        }
+
+        Iterator<Row> rowIterator = sheet.iterator();
+        if (rowIterator == null) {
+            return false;
+        }
+
+        parseSheet(rowIterator);
+        return true;
+    }
+
+    protected void parseSheet(Iterator<Row> rowIterator) {
+
+        String importName = "import-" + java.time.Instant.now().getEpochSecond();
+
+        int rowCount = -1;
+        int entityNum = 0;
+        
+        while (rowIterator.hasNext()) {
+
+            rowCount = rowCount + 1;
+
+            Row row = rowIterator.next();
+
+            // skip header rows
+            if (rowCount < getDataStartRow()) {
+                continue;
+            } else {
+                entityNum = entityNum + 1;
+            }
+
+            CellType celltype;
+
+            boolean result = parseRow(row, entityNum, importName);
+            if (!result) {
+                validInput = false;
+            }
+        }
     }
 
     public StreamedContent getTemplateExcelFile() {
@@ -314,6 +398,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
     public void reset() {
         rows.clear();
+        validInput = true;
 
         // allow subclass to reset
         reset_();
