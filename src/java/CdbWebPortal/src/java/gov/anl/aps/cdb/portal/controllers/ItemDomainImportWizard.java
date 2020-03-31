@@ -36,33 +36,33 @@ import org.primefaces.model.UploadedFile;
 public class ItemDomainImportWizard implements Serializable {
 
     public static final String CONTROLLER_NAMED = "importWizard";
-    
-    protected static final String tabSelectFile = "SelectFileTab";    
+
+    protected static final String tabSelectFile = "SelectFileTab";
     protected static final String tabValidate = "ValidateTab";
     protected static final String tabResults = "ResultsTab";
-    
+
     protected ImportHelperBase importHelper = null;
-    
+
     protected String currentTab = tabSelectFile;
-    
+
     private Boolean disableButtonPrev = true;
     private Boolean disableButtonNext = true;
     private Boolean disableButtonFinish = true;
     private Boolean disableButtonCancel = false;
-    
+
     // models for select file tab
     private Boolean disableButtonUpload = true;
     protected UploadedFile uploadfileData = null;
-    
+
     protected boolean validInput = true;
     protected boolean importSuccessful = true;
     protected String importResult = "";
-    
+
     public static ItemDomainImportWizard getInstance() {
         return (ItemDomainImportWizard) SessionUtility.findBean(
                 ItemDomainImportWizard.CONTROLLER_NAMED);
     }
-    
+
     public void registerHelper(ImportHelperBase helper) {
         reset();
         importHelper = helper;
@@ -99,15 +99,15 @@ public class ItemDomainImportWizard implements Serializable {
     public Boolean getDisableButtonUpload() {
         return disableButtonUpload;
     }
-    
+
     public Boolean getRenderFileuploadData() {
         return uploadfileData == null;
     }
-    
+
     public Boolean getRenderOutputData() {
         return uploadfileData != null;
     }
-    
+
     public String getUploadfileDataString() {
         if (uploadfileData == null) {
             return "";
@@ -115,11 +115,11 @@ public class ItemDomainImportWizard implements Serializable {
             return uploadfileData.getFileName();
         }
     }
-    
+
     public String getImportResultString() {
         return importResult;
     }
-    
+
     public List<CdbEntity> getRows() {
         if (importHelper != null) {
             return importHelper.getRows();
@@ -127,19 +127,19 @@ public class ItemDomainImportWizard implements Serializable {
             return new ArrayList<>();
         }
     }
-    
+
     public List<ColumnModel> getColumns() {
         if (importHelper != null) {
             return importHelper.getColumns();
         } else {
             return new ArrayList<>();
-        }        
+        }
     }
-    
+
     public StreamedContent getTemplateExcelFile() {
         return importHelper.getTemplateExcelFile();
     }
-    
+
     protected boolean readXlsFileData(UploadedFile f) {
 
         InputStream inputStream;
@@ -150,16 +150,16 @@ public class ItemDomainImportWizard implements Serializable {
         } catch (IOException e) {
             return false;
         }
-        
+
         HSSFSheet sheet = workbook.getSheetAt(0);
-        
+
         Iterator<Row> rowIterator = sheet.iterator();
-        
+
         parseSheet(rowIterator);
-        
+
         return true;
     }
-    
+
     protected boolean readXlsxFileData(UploadedFile f) {
 
         InputStream inputStream;
@@ -170,53 +170,59 @@ public class ItemDomainImportWizard implements Serializable {
         } catch (IOException e) {
             return false;
         }
-        
+
         XSSFSheet sheet = workbook.getSheetAt(0);
-        
+
         Iterator<Row> rowIterator = sheet.iterator();
-        
+
         parseSheet(rowIterator);
-        
+
         return true;
     }
-    
+
     protected void parseSheet(Iterator<Row> rowIterator) {
-        
+
+        String importName = "import-" + java.time.Instant.now().getEpochSecond();
+
         int rowCount = -1;
+        int entityNum = 0;
+
         while (rowIterator.hasNext()) {
-            
+
             rowCount = rowCount + 1;
-            
+
             Row row = rowIterator.next();
-            
+
             // skip header rows
             if (rowCount < importHelper.getDataStartRow()) {
                 continue;
+            } else {
+                entityNum = entityNum + 1;
             }
 
             CellType celltype;
 
-            boolean result = importHelper.parseRow(row);
+            boolean result = importHelper.parseRow(row, entityNum, importName);
             if (!result) {
                 validInput = false;
             }
         }
     }
-    
+
     public void fileUploadListenerData(FileUploadEvent event) {
-        
+
         uploadfileData = event.getFile();
 //        String fileName = uploadfileData.getFileName();
 //        String contentType = uploadfileData.getContentType();
 //        System.out.println("uploaded: " + fileName + " type: " + contentType);
-        
+
         if (!readXlsxFileData(uploadfileData)) {
             uploadfileData = null;
         }
-        
+
         setEnablementForCurrentTab();
     }
-        
+
     /**
      * Handles FlowEvents generated by the wizard component. Determines next tab
      * based on current tab, defaults to visiting all tabs but implements
@@ -227,7 +233,7 @@ public class ItemDomainImportWizard implements Serializable {
 
         String nextStep = event.getNewStep();
         String currStep = event.getOldStep();
-        
+
         // trigger import process if moving from validate tab to results tab
         if ((currStep.endsWith(tabValidate))
                 && (nextStep.endsWith(tabResults))) {
@@ -240,11 +246,11 @@ public class ItemDomainImportWizard implements Serializable {
 
         return nextStep;
     }
-    
+
     protected void triggerImport() {
-        
+
         ImportInfo info = importHelper.importData();
-        
+
         importSuccessful = info.isImportSuccessful();
         importResult = info.getMessage();
     }
@@ -305,7 +311,7 @@ public class ItemDomainImportWizard implements Serializable {
             disableButtonPrev = true;
             disableButtonCancel = false;
             disableButtonFinish = true;
-            
+
             if (uploadfileData != null) {
                 disableButtonNext = false;
             } else {

@@ -6,15 +6,15 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
-import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 
 /**
  *
  * @author craig
  */
-public class ImportHelperCableCatalog extends ImportHelperBase {
+public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCatalog, ItemDomainCableCatalogController> {
 
 
     protected static String completionUrlValue = "/views/itemDomainCableCatalog/list?faces-redirect=true";
@@ -52,7 +52,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     }
     
     @Override
-    public ItemController getEntityController() {
+    public ItemDomainCableCatalogController getEntityController() {
         return ItemDomainCableCatalogController.getInstance();
     }
 
@@ -60,4 +60,11 @@ public class ImportHelperCableCatalog extends ImportHelperBase {
     public String getTemplateFilename() {
         return "Cable Type Catalog Template";
     }
+    
+    @Override
+    protected ItemDomainCableCatalog createEntityInstance() {
+        return getEntityController().createEntityInstance();
+    }
+    
+
 }

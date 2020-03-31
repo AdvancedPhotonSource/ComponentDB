@@ -157,12 +157,23 @@ public class Source extends CdbEntity implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Source)) {
             return false;
         }
         Source other = (Source) object;
+        
+        if ((this.id == null) && (other.id == null)) {
+            // neither object has an id, so compare by names
+            if ((this.name == null) && (other.name == null)) {
+                return true;
+            } else if ((this.name == null) ^ (other.name == null)) {
+                return false;
+            } else {
+                return this.name.equals(other.name);
+            }
+        }
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            // at least on object has a non-null id, so compare by id
             return false;
         }
         return true;

@@ -72,7 +72,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     }
     
     @Override
-    protected ItemDomainCableCatalog createEntityInstance() {
+    public ItemDomainCableCatalog createEntityInstance() {
         ItemDomainCableCatalog item = super.createEntityInstance();
         setCurrent(item);
         return item;

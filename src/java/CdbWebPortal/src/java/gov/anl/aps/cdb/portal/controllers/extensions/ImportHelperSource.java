@@ -8,12 +8,13 @@ import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
+import gov.anl.aps.cdb.portal.model.db.entities.Source;
 
 /**
  *
  * @author craig
  */
-public class ImportHelperSource extends ImportHelperBase {
+public class ImportHelperSource extends ImportHelperBase<Source, SourceController> {
 
 
     protected static String completionUrlValue = "/views/source/list?faces-redirect=true";
@@ -38,7 +39,7 @@ public class ImportHelperSource extends ImportHelperBase {
 
     
     @Override
-    public CdbEntityController getEntityController() {
+    public SourceController getEntityController() {
         return SourceController.getInstance();
     }
 
@@ -46,4 +47,9 @@ public class ImportHelperSource extends ImportHelperBase {
     public String getTemplateFilename() {
         return "Source Template";
     }
+
+    @Override
+    protected Source createEntityInstance() {
+        return getEntityController().createEntityInstance();
+    }  
 }

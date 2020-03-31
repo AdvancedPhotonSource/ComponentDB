@@ -49,7 +49,7 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
     }
 
     @Override
-    protected Source createEntityInstance() {
+    public Source createEntityInstance() {
         Source source = new Source();
         return source;
     }

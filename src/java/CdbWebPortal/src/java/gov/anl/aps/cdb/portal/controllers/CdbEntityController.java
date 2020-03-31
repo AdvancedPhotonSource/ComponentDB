@@ -1097,7 +1097,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return null;
         }
     }
-
+    
     public void performUpdateOperations(EntityType entity) throws CdbException, RuntimeException {
         try {
             setCurrent(entity);
@@ -1117,6 +1117,49 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         } catch (RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
             entity.setPersitanceErrorMessage(t.getMessage());
+            throw ex;
+        }
+    }
+
+    public void updateList(List<EntityType> entities) throws CdbException, RuntimeException {
+        try {
+            performUpdateOperations(entities);
+            SessionUtility.addInfoMessage("Success", "Updated " + entities.size() + " " + getDisplayEntityTypeName() + " instances.");
+        } catch (CdbException ex) {
+            logger.error("Could not update " + getDisplayEntityTypeName() + " entities: " + ex.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not update list of " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            addCdbEntityWarningSystemLog("Failed to update list of " + getDisplayEntityTypeName(), ex, current);
+            throw ex;
+        } catch (RuntimeException ex) {
+            Throwable t = ExceptionUtils.getRootCause(ex);
+            logger.error("Could not update list of " + getDisplayEntityTypeName() + ": " + t.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not update list of " + getDisplayEntityTypeName() + ": " + t.getMessage());
+            addCdbEntityWarningSystemLog("Failed to create list of " + getDisplayEntityTypeName(), ex, current);
+            throw ex;
+        }
+    }
+
+    public void performUpdateOperations(List<EntityType> entities) throws CdbException, RuntimeException {
+        try {
+            for (EntityType entity : entities) {
+                logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
+                prepareEntityUpdate(entity);
+            }
+            getEntityDbFacade().edit(entities);
+            for (EntityType entity : entities) {
+                completeEntityUpdate(entity);
+                entity.setPersitanceErrorMessage(null);
+                addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Updated: " + entity.toString());
+            }
+            resetListDataModel();
+            resetSelectDataModel();
+            resetLogText();
+        } catch (CdbException ex) {
+            setPersistenceErrorMessageForList(entities, ex.getMessage());
+            throw ex;
+        } catch (RuntimeException ex) {
+            Throwable t = ExceptionUtils.getRootCause(ex);
+            setPersistenceErrorMessageForList(entities, t.getMessage());
             throw ex;
         }
     }

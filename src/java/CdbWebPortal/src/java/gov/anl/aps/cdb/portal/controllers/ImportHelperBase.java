@@ -6,7 +6,6 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,7 +36,7 @@ import org.primefaces.model.StreamedContent;
  *
  * @author craig
  */
-public abstract class ImportHelperBase {
+public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityControllerType extends CdbEntityController> {
 
     public abstract class ColumnModel implements Serializable {
 
@@ -94,7 +93,7 @@ public abstract class ImportHelperBase {
                 isValid = false;
                 validString = "Required value missing for " + header;
             }
-
+            
             return new ParseInfo(parsedValue, isValid, validString);
         }
     }
@@ -239,7 +238,7 @@ public abstract class ImportHelperBase {
     protected static String validStringHeader = "Valid String";
     protected static String validStringProperty = "validStringImport";
 
-    protected List<CdbEntity> rows = new ArrayList<>();
+    protected List<EntityType> rows = new ArrayList<>();
     protected List<ColumnModel> columns = new ArrayList<>();
     protected byte[] templateExcelFile = null;
 
@@ -247,7 +246,7 @@ public abstract class ImportHelperBase {
         createColumnModels();
     }
 
-    public List<CdbEntity> getRows() {
+    public List<EntityType> getRows() {
         return rows;
     }
 
@@ -320,23 +319,24 @@ public abstract class ImportHelperBase {
         reset_();
     }
 
-    private String appendToValidString(String validString, String s) {
+    private String appendToString(String toString, String s) {
         String result = "";
-        if (!validString.isEmpty()) {
-            result = validString + ". ";
+        if (!toString.isEmpty()) {
+            result = toString + ". ";
         }
         result = result + s;
         return result;
     }
 
-    public boolean parseRow(Row row) {
+    public boolean parseRow(Row row, int entityNum, String importName) {
 
-        CdbEntity newEntity = getEntityController().createEntityInstance();
+        EntityType newEntity = createEntityInstance();
         boolean isValid = true;
         String validString = "";
+        String uniqueId = importName + "-" + entityNum;
 
         for (int i = 0; i < columns.size() - 2; i++) {
-
+            
             ColumnModel col = columns.get(i);
             String colName = col.getProperty();
             boolean required = col.isRequired();
@@ -348,60 +348,71 @@ public abstract class ImportHelperBase {
             ParseInfo result = col.parseCell(cell);
 
             if (!result.isValid()) {
-                validString = appendToValidString(validString, result.getValidString());
+                validString = appendToString(validString, result.getValidString());
                 isValid = false;
             }
-
+            
             // use reflection to invoke setter method on entity instance
             try {
                 Method setterMethod;
                 setterMethod = newEntity.getClass().getMethod(setterMethodName, String.class);
                 setterMethod.invoke(newEntity, result.getValue());
             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                validString = appendToValidString(validString, "Unable to invoke setter method: " + setterMethodName + " for column: " + colName + " reason: " + ex.getCause().getLocalizedMessage());
+                validString = appendToString(validString, "Unable to invoke setter method: " + setterMethodName + " for column: " + colName + " reason: " + ex.getCause().getLocalizedMessage());
                 isValid = false;
             }
 
         }
+        
+        String ppResult = postParse(newEntity, uniqueId);
+        validString = appendToString(validString, ppResult);
 
         if (rows.contains(newEntity)) {
-            validString = appendToValidString(validString, "Duplicate rows found in spreadsheet");
+            validString = appendToString(validString, "Duplicate rows found in spreadsheet");
             isValid = false;
         } else {
             try {
                 getEntityController().checkItemUniqueness(newEntity);
             } catch (CdbException ex) {
-                validString = appendToValidString(validString, ex.getMessage());
+                validString = appendToString(validString, ex.getMessage());
                 isValid = false;
             }
         }
-
+        
         newEntity.setIsValidImport(isValid);
         newEntity.setValidStringImport(validString);
-
+        
         rows.add(newEntity);
         return isValid;
+    }
+    
+    protected String postParse(EntityType e, String id) {
+        // by default do nothing, subclasses can override to customize
+        return "";
     }
 
     public ImportInfo importData() {
 
-        CdbEntityController controller = this.getEntityController();
+        EntityControllerType controller = this.getEntityController();
 
         String message = "";
-        List<CdbEntity> newItems = new ArrayList<>();
-        for (CdbEntity row : rows) {
-            newItems.add(row);
-        }
-
         try {
-            controller.createList(newItems);
-            return new ImportInfo(true, "Import succeeded.  Created " + rows.size() + " instances.");
-        } catch (CdbException ex) {
-            return new ImportInfo(false, "Import failed. " + ex.getMessage() + ".");
-        } catch (RuntimeException ex) {
+            controller.createList(rows);
+            message = "Import succeeded, created " + rows.size() + " instances";
+        } catch (CdbException | RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
             return new ImportInfo(false, "Import failed. " + ex.getMessage() + ": " + t.getMessage() + ".");
         }
+        
+        String result = postImport();
+        message = appendToString(message, result);
+        
+        return new ImportInfo(true, message);
+    }
+    
+    protected String postImport() {
+        // by default do nothing, subclasses can override to customize
+        return "";
     }
 
     protected abstract void createColumnModels_();
@@ -410,7 +421,9 @@ public abstract class ImportHelperBase {
 
     protected abstract String getCompletionUrlValue();
 
-    public abstract CdbEntityController getEntityController();
+    public abstract EntityControllerType getEntityController();
     
     public abstract String getTemplateFilename();
+    
+    protected abstract EntityType createEntityInstance();
 }

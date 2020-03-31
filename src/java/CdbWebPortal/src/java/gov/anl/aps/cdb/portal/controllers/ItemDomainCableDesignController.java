@@ -477,7 +477,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     @Override
-    protected ItemDomainCableDesign createEntityInstance() {
+    public ItemDomainCableDesign createEntityInstance() {
         ItemDomainCableDesign item = super.createEntityInstance();
         setCurrent(item);
         return item;
