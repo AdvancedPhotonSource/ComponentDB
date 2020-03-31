@@ -53,11 +53,6 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     }
     
     @Override
-    public int getDataStartRow() {
-        return 1;
-    }
-
-    @Override
     public ItemDomainCableDesignController getEntityController() {
         return ItemDomainCableDesignController.getInstance();
     }

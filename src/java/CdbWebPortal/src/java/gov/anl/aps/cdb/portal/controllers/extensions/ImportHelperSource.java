@@ -33,12 +33,6 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     }
     
     @Override
-    public int getDataStartRow() {
-        return 1;
-    }
-
-    
-    @Override
     public SourceController getEntityController() {
         return SourceController.getInstance();
     }

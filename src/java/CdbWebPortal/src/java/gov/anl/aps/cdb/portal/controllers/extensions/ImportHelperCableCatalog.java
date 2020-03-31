@@ -47,11 +47,6 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
     }
     
     @Override
-    public int getDataStartRow() {
-        return 1;
-    }
-    
-    @Override
     public ItemDomainCableCatalogController getEntityController() {
         return ItemDomainCableCatalogController.getInstance();
     }

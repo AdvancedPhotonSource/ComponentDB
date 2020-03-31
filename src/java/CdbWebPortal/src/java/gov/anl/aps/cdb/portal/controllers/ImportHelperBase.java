@@ -247,6 +247,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected List<ColumnModel> columns = new ArrayList<>();
     protected byte[] templateExcelFile = null;
     protected boolean validInput = true;
+    protected String validationMessage = "";
 
     public ImportHelperBase() {
         createColumnModels();
@@ -262,6 +263,86 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     public boolean isValidInput() {
         return validInput;
+    }
+    
+    public String getValidationMessage() {
+        return validationMessage;
+    }
+
+    public String getCompletionUrl() {
+        return getCompletionUrlValue();
+    }
+
+    protected void createColumnModels() {
+
+        // allow subclass to create column models
+        createColumnModels_();
+
+        columns.add(new StringColumnModel(isValidHeader, isValidProperty, "isValidImport", false, ""));
+        columns.add(new StringColumnModel(validStringHeader, validStringProperty, "setValidStringImport", false, ""));
+    }
+
+    protected void reset_() {
+        // allow subclass to reset, by default do nothing
+    }
+
+    public void reset() {
+        rows.clear();
+        validInput = true;
+        validationMessage = "";
+
+        // allow subclass to reset
+        reset_();
+    }
+
+    private String appendToString(String toString, String s) {
+        String result = "";
+        if (!toString.isEmpty()) {
+            result = toString + ". ";
+        }
+        result = result + s;
+        return result;
+    }
+
+    public StreamedContent getTemplateExcelFile() {
+        if (templateExcelFile == null) {
+            buildTemplateExcelFile();
+        }
+        InputStream inStream = new ByteArrayInputStream(templateExcelFile);
+        return new DefaultStreamedContent(inStream, "xls", getTemplateFilename() + ".xls");
+    }
+
+    private void buildTemplateExcelFile() {
+
+        Workbook wb = new XSSFWorkbook();
+        CreationHelper createHelper = wb.getCreationHelper();
+        Sheet sheet = wb.createSheet("template");
+        Drawing drawing = sheet.createDrawingPatriarch();
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < columns.size() - 2; i++) {
+            ColumnModel col = columns.get(i);
+
+            Cell headerCell = headerRow.createCell(i);
+            headerCell.setCellValue(col.getHeader());
+            
+            ClientAnchor anchor = createHelper.createClientAnchor();
+            anchor.setCol1(headerCell.getColumnIndex());
+            anchor.setCol2(headerCell.getColumnIndex() + 2);
+            anchor.setRow1(headerRow.getRowNum());
+            anchor.setRow2(headerRow.getRowNum() + 3);
+            
+            Comment headerComment = drawing.createCellComment(anchor);
+            RichTextString str = createHelper.createRichTextString(col.getDescription());
+            headerComment.setString(str);
+            headerCell.setCellComment(headerComment);
+        }
+
+        try (ByteArrayOutputStream outStream = new ByteArrayOutputStream()) {
+            wb.write(outStream);
+            templateExcelFile = outStream.toByteArray();
+        } catch (IOException ex) {
+            Logger.getLogger(ImportHelperBase.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     protected boolean readXlsFileData(UploadedFile f) {
@@ -319,101 +400,75 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         while (rowIterator.hasNext()) {
 
             rowCount = rowCount + 1;
-
             Row row = rowIterator.next();
 
-            // skip header rows
-            if (rowCount < getDataStartRow()) {
-                continue;
+            if (rowCount == 0) {
+                // parse header row
+                ParseInfo headerParseInfo = parseHeader(row);
+                if (!headerParseInfo.isValid()) {
+                    validInput = false;
+                    validationMessage = "Warning: " + headerParseInfo.getValidString() + ". Please make sure spreadsheet format is correct before proceeding.";
+                }
             } else {
                 entityNum = entityNum + 1;
-            }
-
-            CellType celltype;
-
-            boolean result = parseRow(row, entityNum, importName);
-            if (!result) {
-                validInput = false;
+                boolean result = parseRow(row, entityNum, importName);
+                if (!result) {
+                    validInput = false;
+                }
             }
         }
     }
-
-    public StreamedContent getTemplateExcelFile() {
-        if (templateExcelFile == null) {
-            buildTemplateExcelFile();
-        }
-        InputStream inStream = new ByteArrayInputStream(templateExcelFile);
-        return new DefaultStreamedContent(inStream, "xls", getTemplateFilename() + ".xls");
-    }
-
-    private void buildTemplateExcelFile() {
-
-        Workbook wb = new XSSFWorkbook();
-        CreationHelper createHelper = wb.getCreationHelper();
-        Sheet sheet = wb.createSheet("template");
-        Drawing drawing = sheet.createDrawingPatriarch();
-        Row headerRow = sheet.createRow(0);
+    
+    /**
+     * Checks that the number of values present in the header row matches the
+     * expected number of columns.
+     * @param row
+     * @return 
+     */
+    protected ParseInfo parseHeader(Row row) {
+        boolean isValid = true;
+        String validMessage = "";
+        
+        int headerValues = 0;
         for (int i = 0; i < columns.size() - 2; i++) {
-            ColumnModel col = columns.get(i);
-
-            Cell headerCell = headerRow.createCell(i);
-            headerCell.setCellValue(col.getHeader());
+            // check if header value present for each column
+            Cell cell;
+            cell = row.getCell(i);        
+            cell.setCellType(CellType.STRING);
+            String value = cell.getStringCellValue();
             
-            ClientAnchor anchor = createHelper.createClientAnchor();
-            anchor.setCol1(headerCell.getColumnIndex());
-            anchor.setCol2(headerCell.getColumnIndex() + 2);
-            anchor.setRow1(headerRow.getRowNum());
-            anchor.setRow2(headerRow.getRowNum() + 3);
-            
-            Comment headerComment = drawing.createCellComment(anchor);
-            RichTextString str = createHelper.createRichTextString(col.getDescription());
-            headerComment.setString(str);
-            headerCell.setCellComment(headerComment);
+            if ((value != null) && (!value.isEmpty())) {
+                headerValues = headerValues + 1;
+            }
+        }        
+        if (headerValues != columns.size() - 2) {
+            isValid = false;
+            validMessage = "Header row contains fewer column values than number of columns in template format";
         }
+        
+        int extraValues = 0;
+        for (int i = columns.size() - 2; i < columns.size() + 3; i++) {
+            // check for extra values beyond the expected columns
+            Cell cell;
+            cell = row.getCell(i);  
+            if (cell != null) {
+                cell.setCellType(CellType.STRING);
+                String value = cell.getStringCellValue();
 
-        try (ByteArrayOutputStream outStream = new ByteArrayOutputStream()) {
-            wb.write(outStream);
-            templateExcelFile = outStream.toByteArray();
-        } catch (IOException ex) {
-            Logger.getLogger(ImportHelperBase.class.getName()).log(Level.SEVERE, null, ex);
+                if ((value != null) && (!value.isEmpty())) {
+                    extraValues = extraValues + 1;
+                }
+            }
         }
-    }
-
-    public String getCompletionUrl() {
-        return getCompletionUrlValue();
-    }
-
-    protected void createColumnModels() {
-
-        // allow subclass to create column models
-        createColumnModels_();
-
-        columns.add(new StringColumnModel(isValidHeader, isValidProperty, "isValidImport", false, ""));
-        columns.add(new StringColumnModel(validStringHeader, validStringProperty, "setValidStringImport", false, ""));
-    }
-
-    protected void reset_() {
-        // allow subclass to reset, by default do nothing
-    }
-
-    public void reset() {
-        rows.clear();
-        validInput = true;
-
-        // allow subclass to reset
-        reset_();
-    }
-
-    private String appendToString(String toString, String s) {
-        String result = "";
-        if (!toString.isEmpty()) {
-            result = toString + ". ";
+        if (extraValues > 0) {
+            isValid = false;
+            validMessage = "Header row contains more column values than number of columns in template format";
         }
-        result = result + s;
-        return result;
+        
+        return new ParseInfo("", isValid, validMessage);
     }
 
-    public boolean parseRow(Row row, int entityNum, String importName) {
+    protected boolean parseRow(Row row, int entityNum, String importName) {
 
         EntityType newEntity = createEntityInstance();
         boolean isValid = true;
@@ -501,8 +556,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
 
     protected abstract void createColumnModels_();
-
-    public abstract int getDataStartRow();
 
     protected abstract String getCompletionUrlValue();
 
