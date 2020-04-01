@@ -745,6 +745,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return itemElementDisplayList;
     }
+    
+    public void resetItemElementVars() {
+        resetItemElementDisplayList();
+        resetSelfElement();
+    }
 
     public void resetItemElementDisplayList() {
         itemElementDisplayList = null;
