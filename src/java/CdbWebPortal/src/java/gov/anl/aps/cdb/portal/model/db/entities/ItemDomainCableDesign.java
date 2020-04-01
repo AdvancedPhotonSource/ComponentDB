@@ -28,6 +28,7 @@ import javax.persistence.Entity;
 public class ItemDomainCableDesign extends Item {
     
     private transient String externalCableName = null;
+    private transient String importCableId = null;
     private transient String alternateCableId = null;
     private transient String laying = null;
     private transient String voltage = null;
@@ -37,6 +38,7 @@ public class ItemDomainCableDesign extends Item {
 
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type"; 
     public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName"; 
+    public final static String CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY = "importCableId"; 
     public final static String CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY = "alternateCableId"; 
     public final static String CABLE_DESIGN_PROPERTY_LAYING_KEY = "laying"; 
     public final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage"; 
@@ -299,6 +301,18 @@ public class ItemDomainCableDesign extends Item {
     public void setExternalCableName(String n) throws CdbException {
         externalCableName = n;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY, n);
+    }
+
+    public String getImportCableId() throws CdbException {
+        if (importCableId == null) {
+            importCableId = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY);
+        }
+        return importCableId;
+    }
+
+    public void setImportCableId(String id) throws CdbException {
+        importCableId = id;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY, id);
     }
 
     public String getAlternateCableId() throws CdbException {

@@ -407,7 +407,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 ParseInfo headerParseInfo = parseHeader(row);
                 if (!headerParseInfo.isValid()) {
                     validInput = false;
-                    validationMessage = "Warning: " + headerParseInfo.getValidString() + ". Please make sure spreadsheet format is correct before proceeding.";
+                    validationMessage = "Warning: " + headerParseInfo.getValidString() + ". Please make sure spreadsheet format is correct and enter values in all header rows before proceeding.";
                 }
             } else {
                 entityNum = entityNum + 1;
