@@ -29,9 +29,11 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
 
     protected static String completionUrlValue = "/views/itemDomainCableDesign/list?faces-redirect=true";
     
+    protected static String COLUMN_MODEL_NAME = "Name";
+    
     @Override
     protected void createColumnModels_() {
-        columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 128));
+        columns.add(new ImportHelperBase.StringColumnModel(COLUMN_MODEL_NAME, "name", "setName", true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 128));
         columns.add(new ImportHelperBase.StringColumnModel("Alt Name", "alternateName", "setAlternateName", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 32));
         columns.add(new ImportHelperBase.StringColumnModel("Ext Cable Name", "externalCableName", "setExternalCableName", false, "Cable name in external system (e.g., CAD, routing tool) e.g., SR_R_401_D1109_RR8G[low] | SR_M_A02_C61_64_02-00[high]", 256));
         columns.add(new ImportHelperBase.StringColumnModel("Import Cable ID", "importCableId", "setImportCableId", false, "Import cable identifier.", 256));
@@ -73,17 +75,17 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     * import, that we will replace in postImport with the object's cdb id.
     */
     @Override
-    protected String postParse(ItemDomainCableDesign e, String id) {
+    protected String postParseCell(String parsedValue, String columnName, String id) {
         
         String idPattern = "#cdbid#";
         String replacePattern = "#cdbid-" + id + "#";
+        String result = parsedValue;
         
-        if (e.getName().contains(idPattern)) {
-            String nameValue = e.getName().replaceAll(idPattern, replacePattern);
-            e.setName(nameValue);
+        if (columnName.equals(COLUMN_MODEL_NAME)) {        
+            result = parsedValue.replaceAll(idPattern, replacePattern);
         }
         
-        return "";
+        return result;
     }
 
     /*

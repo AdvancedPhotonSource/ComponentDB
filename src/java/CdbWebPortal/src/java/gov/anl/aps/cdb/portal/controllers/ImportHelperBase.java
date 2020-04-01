@@ -477,7 +477,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         for (int i = 0; i < columns.size() - 2; i++) {
             
             ColumnModel col = columns.get(i);
-            String colName = col.getProperty();
+            String colName = col.getHeader();
             boolean required = col.isRequired();
             String setterMethodName = col.getSetterMethod();
 
@@ -485,13 +485,17 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             cell = row.getCell(i);
 
             ParseInfo result = col.parseCell(cell);
+            
+            String parsedValue = result.getValue();
 
             if (!result.isValid()) {
                 validString = appendToString(validString, result.getValidString());
                 isValid = false;
             }
             
-            if ((col.getMaxLength() > 0) && (result.getValue().length() > col.getMaxLength())) {
+            parsedValue = postParseCell(parsedValue, colName, uniqueId);
+            
+            if ((col.getMaxLength() > 0) && (parsedValue.length() > col.getMaxLength())) {
                 isValid = false;
                 validString = appendToString(validString, "Value length exceeds " + col.getMaxLength() + " characters for column " + colName);
             }
@@ -500,7 +504,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             try {
                 Method setterMethod;
                 setterMethod = newEntity.getClass().getMethod(setterMethodName, String.class);
-                setterMethod.invoke(newEntity, result.getValue());
+                setterMethod.invoke(newEntity, parsedValue);
             } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                 validString = appendToString(validString, "Unable to invoke setter method: " + setterMethodName + " for column: " + colName + " reason: " + ex.getCause().getLocalizedMessage());
                 isValid = false;
@@ -508,7 +512,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         }
         
-        String ppResult = postParse(newEntity, uniqueId);
+        String ppResult = postParseRow(newEntity, uniqueId);
         validString = appendToString(validString, ppResult);
 
         if (rows.contains(newEntity)) {
@@ -530,7 +534,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return isValid;
     }
     
-    protected String postParse(EntityType e, String id) {
+    protected String postParseCell(String parsedValue, String columnName, String uniqueId) {
+        // do nothing by default
+        return "";
+    }
+    
+    protected String postParseRow(EntityType e, String id) {
         // by default do nothing, subclasses can override to customize
         return "";
     }
