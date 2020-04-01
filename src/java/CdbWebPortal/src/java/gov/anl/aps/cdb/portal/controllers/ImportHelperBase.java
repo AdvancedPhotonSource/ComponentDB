@@ -50,13 +50,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         protected boolean required = false;
         protected String setterMethod;
         protected String description;
+        protected int maxLength = 0;
 
-        public ColumnModel(String h, String p, String s, boolean r, String d) {
+        public ColumnModel(String h, String p, String s, boolean r, String d, int l) {
             this.header = h;
             this.property = p;
             this.setterMethod = s;
             this.description = d;
             this.required = r;
+            this.maxLength = l;
         }
 
         public String getHeader() {
@@ -77,6 +79,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         public String getDescription() {
             return description;
+        }
+
+        public int getMaxLength() {
+            return maxLength;
         }
 
         public abstract ParseInfo parseCell(Cell cell);
@@ -105,8 +111,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
     public class StringColumnModel extends ColumnModel {
 
-        public StringColumnModel(String h, String p, String s, boolean r, String v) {
-            super(h, p, s, r, v);
+        public StringColumnModel(String h, String p, String s, boolean r, String v, int l) {
+            super(h, p, s, r, v, l);
         }
 
         @Override
@@ -117,8 +123,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
     public class NumericColumnModel extends ColumnModel {
 
-        public NumericColumnModel(String h, String p, String s, boolean r, String v) {
-            super(h, p, s, r, v);
+        public NumericColumnModel(String h, String p, String s, boolean r, String v, int l) {
+            super(h, p, s, r, v, l);
         }
 
         @Override
@@ -143,21 +149,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
     public class UrlColumnModel extends ColumnModel {
 
-        public UrlColumnModel(String h, String p, String s, boolean r, String v) {
-            super(h, p, s, r, v);
+        public UrlColumnModel(String h, String p, String s, boolean r, String v, int l) {
+            super(h, p, s, r, v, l);
         }
 
         @Override
         public ParseInfo parseCell(Cell cell) {
-            ParseInfo result = parseStringCell(cell);
-            if (result.isValid) {
-                if (result.getValue().length() > 256) {
-                    result.isValid(false);
-                    result.setValidString("URL length exceeds 256 characters for " + header);
-                }
-            }
-
-            return result;
+            return parseStringCell(cell);
         }
     }
 
@@ -165,8 +163,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         private CdbEntityController controller;
 
-        public IdRefColumnModel(String h, String p, String s, boolean r, String v, CdbEntityController c) {
-            super(h, p, s, r, v);
+        public IdRefColumnModel(String h, String p, String s, boolean r, String v, int l, CdbEntityController c) {
+            super(h, p, s, r, v, l);
             controller = c;
         }
 
@@ -278,8 +276,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         // allow subclass to create column models
         createColumnModels_();
 
-        columns.add(new StringColumnModel(isValidHeader, isValidProperty, "isValidImport", false, ""));
-        columns.add(new StringColumnModel(validStringHeader, validStringProperty, "setValidStringImport", false, ""));
+        // these are special columns just for displaying validation info for each row, they are not parsed so treated specially in parsing code
+        columns.add(new StringColumnModel(isValidHeader, isValidProperty, "isValidImport", false, "", 0));
+        columns.add(new StringColumnModel(validStringHeader, validStringProperty, "setValidStringImport", false, "", 0));
     }
 
     protected void reset_() {
@@ -490,6 +489,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             if (!result.isValid()) {
                 validString = appendToString(validString, result.getValidString());
                 isValid = false;
+            }
+            
+            if ((col.getMaxLength() > 0) && (result.getValue().length() > col.getMaxLength())) {
+                isValid = false;
+                validString = appendToString(validString, "Value length exceeds " + col.getMaxLength() + " characters for column " + colName);
             }
             
             // use reflection to invoke setter method on entity instance

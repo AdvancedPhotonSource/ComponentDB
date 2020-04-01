@@ -21,10 +21,10 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     
     @Override
     protected void createColumnModels_() {
-        columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "CommScope"));
-        columns.add(new ImportHelperBase.StringColumnModel("Description", "description", "setDescription", false, "Describe vendor/manufacturer here."));
-        columns.add(new ImportHelperBase.StringColumnModel("Contact Info", "contactInfo", "setContactInfo", false, "John Smith 555-555-1212"));
-        columns.add(new ImportHelperBase.UrlColumnModel("URL", "url", "setUrl", false, "http://www.example.com/example"));
+        columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "CommScope", 64));
+        columns.add(new ImportHelperBase.StringColumnModel("Description", "description", "setDescription", false, "Describe vendor/manufacturer here.", 256));
+        columns.add(new ImportHelperBase.StringColumnModel("Contact Info", "contactInfo", "setContactInfo", false, "John Smith 555-555-1212", 64));
+        columns.add(new ImportHelperBase.UrlColumnModel("URL", "url", "setUrl", false, "http://www.example.com/example", 256));
     }
     
     @Override
