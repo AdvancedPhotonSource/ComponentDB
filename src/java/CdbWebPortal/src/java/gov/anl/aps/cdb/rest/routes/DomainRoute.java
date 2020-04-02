@@ -19,7 +19,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -29,7 +30,7 @@ import org.apache.log4j.Logger;
 @Tag(name = "domain")
 public class DomainRoute extends BaseRoute {
     
-    private static final Logger LOGGER = Logger.getLogger(PropertyType.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(PropertyType.class.getName());
     
     @EJB
     DomainFacade domainFacade; 
@@ -54,6 +55,14 @@ public class DomainRoute extends BaseRoute {
     public Domain getDomainById(@PathParam("id") int id) {
         LOGGER.debug("Fetching domain with id: " + id);
         return domainFacade.find(id);
+    }
+    
+    @GET
+    @Path("/ByName/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Domain getDomainByName(@PathParam("name") String name) {
+        LOGGER.debug("Fetching domain with name: " + name);
+        return domainFacade.findByName(name);
     }
     
     @GET

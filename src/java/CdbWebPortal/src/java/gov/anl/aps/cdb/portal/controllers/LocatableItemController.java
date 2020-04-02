@@ -37,7 +37,8 @@ import java.util.Objects;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuModel;
 
@@ -51,7 +52,7 @@ public class LocatableItemController implements Serializable {
 
     public final static String controllerNamed = "locatableItemController";
 
-    private static final Logger logger = Logger.getLogger(LocatableItemController.class.getName());
+    private static final Logger logger = LogManager.getLogger(LocatableItemController.class.getName());
 
     private LocatableItem lastInventoryItemRequestedLocationMenuModel = null;
 
@@ -429,7 +430,7 @@ public class LocatableItemController implements Serializable {
     }
 
     public ItemDomainLocation getLocation(LocatableItem inventoryItem) {
-        if (inventoryItem.getLocationItem() == null) {
+        if (inventoryItem.getOriginalLocationLoaded() == false) {
             setItemLocationInfo(inventoryItem);
         }
         return inventoryItem.getLocationItem();
@@ -544,8 +545,10 @@ public class LocatableItemController implements Serializable {
             SessionUtility.addErrorMessage("Error", "Cannot use the same location as this item.");
             return;
         }
-
+        
+        Boolean originalLocationLoaded = item.getOriginalLocationLoaded();
         item.resetLocationVariables();
+        item.setOriginalLocationLoaded(originalLocationLoaded);
 
         item.setLocation(locationItem);
         updateLocationTreeForItem(item);

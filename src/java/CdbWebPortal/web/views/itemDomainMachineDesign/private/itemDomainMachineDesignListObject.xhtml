@@ -42,8 +42,8 @@ See LICENSE file.
             
             <ui:param name="domainIcon" 
                       value="#{itemTreeListObject != null 
-                               ? itemTreeListObject.domain.domainRepIcon
-                               : itemElementParentItem.domain.domainRepIcon}" />
+                               ? itemDomainMachineDesignController.getItemRepIcon(itemTreeListObject)
+                               : itemDomainMachineDesignController.getItemRepIcon(itemElementParentItem)}" />
             <span class="ui-treenode-icon ui-icon #{domainIcon}"/>
             <ui:fragment rendered="#{itemTreeListObject != null}">
                 <span>#{itemTreeListObject}</span>

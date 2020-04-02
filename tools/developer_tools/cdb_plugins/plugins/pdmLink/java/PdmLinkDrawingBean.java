@@ -29,7 +29,8 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,7 +50,7 @@ import org.primefaces.model.StreamedContent;
 @SessionScoped
 public class PdmLinkDrawingBean implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(PdmLinkDrawingBean.class.getName());
+    private static final Logger logger = LogManager.getLogger(PdmLinkDrawingBean.class.getName());
 
     private String drawingNumber;
     private String searchKeywords;

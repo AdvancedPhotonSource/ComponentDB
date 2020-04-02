@@ -11,7 +11,8 @@ import gov.anl.aps.cdb.portal.plugins.PluginManagerBase;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.ByteArrayOutputStream;
 import java.util.Properties;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -21,7 +22,7 @@ public class DmPluginManager extends PluginManagerBase {
     
     private static final Properties DM_PROPERTIES = getDefaultPropertiesForPlugin("dm"); 
     
-    private static final Logger LOGGER = Logger.getLogger(DmPluginManager.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(DmPluginManager.class.getName());
     
     private static final String DM_SERVICE_URL_KEY = "serviceUrl"; 
     private static final String DM_SERVICE_USER_KEY = "serviceUser";     

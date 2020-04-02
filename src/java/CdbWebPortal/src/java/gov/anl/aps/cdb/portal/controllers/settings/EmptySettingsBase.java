@@ -5,7 +5,8 @@
 package gov.anl.aps.cdb.portal.controllers.settings;
 
 import javax.faces.event.ActionEvent;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 
 /**
@@ -14,7 +15,7 @@ import org.primefaces.component.datatable.DataTable;
  */
 public abstract class EmptySettingsBase implements ICdbSettings {
     
-    private static final Logger logger = Logger.getLogger(CdbEntitySettingsBase.class.getName());
+    private static final Logger logger = LogManager.getLogger(CdbEntitySettingsBase.class.getName());
 
     @Override
     public boolean updateSettings() {

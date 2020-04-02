@@ -25,7 +25,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Named("propertyValueHistoryController")
 @SessionScoped
@@ -36,7 +37,7 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     private PropertyValue selectedPropertyValue = null;
     private DisplayType displayType = null;
 
-    private static final Logger logger = Logger.getLogger(PropertyValueHistoryController.class.getName());
+    private static final Logger logger = LogManager.getLogger(PropertyValueHistoryController.class.getName());
 
     @EJB
     private PropertyValueHistoryFacade propertyValueHistoryFacade;

@@ -19,13 +19,14 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Named("propertyTypeHandlerController")
 @SessionScoped
 public class PropertyTypeHandlerController extends CdbEntityController<PropertyTypeHandler, PropertyTypeHandlerFacade, PropertyTypeHandlerSettings> implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(PropertyTypeHandlerController.class.getName());
+    private static final Logger logger = LogManager.getLogger(PropertyTypeHandlerController.class.getName());
     
     private CdbPluginManager cdbPluginManager; 
     

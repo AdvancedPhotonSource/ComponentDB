@@ -14,9 +14,11 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
@@ -30,13 +32,16 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
+import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
+import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueDocumentUploadBean;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueImageUploadBean;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -52,6 +57,7 @@ import gov.anl.aps.cdb.rest.entities.ItemSearchResults;
 import gov.anl.aps.cdb.rest.entities.ItemStatusBasicObject;
 import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
 import gov.anl.aps.cdb.rest.entities.LogEntryEditInformation;
+import gov.anl.aps.cdb.rest.entities.NewLocationInformation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -70,7 +76,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -81,10 +88,13 @@ import org.primefaces.model.TreeNode;
 @Tag(name = "Item")
 public class ItemRoute extends BaseRoute {
     
-    private static final Logger LOGGER = Logger.getLogger(ItemRoute.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ItemRoute.class.getName());
     
     @EJB
-    ItemFacade itemFacade;
+    ItemFacade itemFacade;    
+    
+    @EJB
+    ItemElementFacade itemElementFacade;
     
     @EJB
     PropertyTypeFacade propertyTypeFacade;
@@ -109,6 +119,65 @@ public class ItemRoute extends BaseRoute {
         LOGGER.debug("Fetching item by id: " + id); 
         return getItemByIdBase(id); 
     }
+    
+    @GET
+    @Path("/HierarchyById/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Fetch an item by its id.")
+    public ItemHierarchy getItemHierarchyById(@PathParam("id") int id) throws ObjectNotFound {
+        Item itemByIdBase = getItemByIdBase(id);
+        
+        ItemHierarchy hierarchy = new ItemHierarchy(itemByIdBase, true);
+        
+        return hierarchy; 
+    }
+    
+    @POST
+    @Path("/UpdateParentItem/{elementId}/{parentItemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Update the contained item in a item hierarchy.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemHierarchy updateContainedItem(@PathParam("elementId") int elementId, @PathParam("parentItemId") int parentItemId) throws ObjectNotFound, CdbException {
+        LOGGER.debug("Updating contained item for item element id: " + elementId);
+        ItemElement find = itemElementFacade.find(elementId);
+                
+        Item parentItem = find.getParentItem();
+        
+        if (parentItem instanceof ItemDomainInventory == false) {
+            throw new CdbException("Currently only inventory items are supported.");
+        }
+        
+        Item newContainedItem = getItemByIdBase(parentItemId);
+                
+        UserInfo updatedByUser = getCurrentRequestUserInfo();
+        if (!verifyUserPermissionForItem(updatedByUser, parentItem)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to update property value for the item");
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        
+        boolean found = false; 
+        List<ItemElement> itemElementDisplayList = parentItem.getItemElementDisplayList();
+        for (ItemElement ie : itemElementDisplayList) {
+            if (ie.getId() == elementId) {
+                ie.setContainedItem(newContainedItem);
+                found = true; 
+                break;
+            }
+        }
+        
+        if (!found) {
+            throw new CdbException("Unexpected error occurred. Could not reference element from its parent.");
+        }
+        
+        ItemController itemDomainController = parentItem.getItemDomainController();
+        itemDomainController.updateFromApi(parentItem, updatedByUser);                        
+        
+        return getItemHierarchyById(parentItem.getId());         
+    }
+    
+    
         
     public Item getItemByIdBase(@PathParam("id") int id) throws ObjectNotFound {        
         Item findById = itemFacade.findById(id);
@@ -586,39 +655,84 @@ public class ItemRoute extends BaseRoute {
     }
     
     @POST
+    @Path("/uploadDocument/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public PropertyValue uploadDocumentForItem(@PathParam("itemId") int itemId, FileUploadObject documentUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
+        return uploadForItem(itemId, documentUpload, 1); 
+    }
+    
+    @POST
     @Path("/uploadImage/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public PropertyValue uploadImageForItem(@PathParam("itemId") int itemId, FileUploadObject imageUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
-        LOGGER.debug("Uploading image for item: " + itemId);
+        return uploadForItem(itemId, imageUpload, 0); 
+    }
+    
+    /**
+     * Generic item upload function 
+     * 
+     * @param itemId
+     * @param fileUpload
+     * @param mode- 0: image, 1: document
+     * @return
+     * @throws AuthorizationError
+     * @throws DbError
+     * @throws IOException
+     * @throws ObjectNotFound
+     * @throws CdbException 
+     */
+    private PropertyValue uploadForItem(@PathParam("itemId") int itemId, FileUploadObject fileUpload, int mode) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
+        String modeString = null;        
+        if (mode == 0) {
+            modeString = "image";
+        } else {
+            modeString = "document";
+        }
+        
+        LOGGER.debug("Uploading " + modeString + " for item: " + itemId);
         Item dbItem = getItemByIdBase(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
         
         if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {            
-            AuthorizationError ex = new AuthorizationError("User does not have permission to upload image for the item");
+            AuthorizationError ex = new AuthorizationError("User does not have permission to upload " + modeString + " for the item");
             LOGGER.error(ex);
             throw ex; 
         }
         
         Base64.Decoder decoder = Base64.getDecoder();
-        byte[] decode = decoder.decode(imageUpload.getBase64Binary());
+        byte[] decode = decoder.decode(fileUpload.getBase64Binary());
         ByteArrayInputStream stream = new ByteArrayInputStream(decode);
         
         ItemController itemController = dbItem.getItemDomainController();
+        PropertyType uploadPropertyType = null;
         
-        PropertyType imagePropertyType = PropertyValueImageUploadBean.getImagePropertyType(propertyTypeHandlerFacade);
-        if (imagePropertyType == null) {
+        if (mode == 0) {
+            uploadPropertyType= PropertyValueImageUploadBean.getImagePropertyType(propertyTypeHandlerFacade);
+        } else {
+            uploadPropertyType = PropertyValueDocumentUploadBean.getDocumentPropertyType(propertyTypeHandlerFacade);
+        }
+        
+        if (uploadPropertyType == null) {
             DbError dbError = new DbError("Could not find image property type.");
             LOGGER.error(dbError);
             throw dbError; 
         }
         
-        PropertyValue pv = itemController.preparePropertyTypeValueAdd(dbItem, imagePropertyType, null, null, updatedByUser);
+        PropertyValue pv = itemController.preparePropertyTypeValueAdd(dbItem, uploadPropertyType, null, null, updatedByUser);
+        String fileName = fileUpload.getFileName(); 
         
         try {
-            PropertyValueImageUploadBean.uploadImage(pv, imageUpload.getFileName(), stream);
+            if (mode == 0) {
+                PropertyValueImageUploadBean.uploadImage(pv, fileName, stream);                
+            } else {
+                PropertyValueDocumentUploadBean.uploadDocument(pv, fileName, stream);
+            }
         } catch (IOException ex) {
             LOGGER.error(ex);
             throw ex;
@@ -771,6 +885,89 @@ public class ItemRoute extends BaseRoute {
         return childLocations;        
     }
     
+    @POST
+    @Path("/AddLocation")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainLocation createLocation(NewLocationInformation newLocationInformation) throws AuthorizationError, InvalidArgument, CdbException {
+        String newLocationName = newLocationInformation.getLocationName();
+        String newlocationType = newLocationInformation.getLocationType();
+        String locationDescription = newLocationInformation.getLocationDescription();                
+        
+        if (newLocationName == null || newLocationName.isEmpty()) {
+            throw new InvalidArgument("Location name for the new location must be provided with the request.");
+        }
+        if (newlocationType == null || newlocationType.isEmpty()) {
+            throw new InvalidArgument("Location type for the new location must be provided with the request.");
+        }        
+        
+        LOGGER.debug("Creating a new location: " + newLocationName);
+
+        UserInfo currentUser = getCurrentRequestUserInfo();
+        boolean userAdmin = currentUser.isUserAdmin();
+        
+        if (userAdmin == false) {
+            throw new AuthorizationError("Only adminstrators can create locations.");
+        }
+        
+        ItemDomainLocationController locController = ItemDomainLocationController.getApiInstance();        
+        
+        EntityInfo createEntityInfo = EntityInfoUtility.createEntityInfo(currentUser);
+        ItemDomainLocation newLocationItem = locController.createEntityInstanceFromApi(createEntityInfo);
+                
+        newLocationItem.setName(newLocationName);
+        newLocationItem.setDescription(locationDescription);
+        
+        // Verify type is valid
+        Domain domain = newLocationItem.getDomain();
+        ItemType selectedItemType = null; 
+        for (ItemType type : domain.getItemTypeList()) {
+            if (type.getName().equalsIgnoreCase(newlocationType)) {
+                selectedItemType = type; 
+                break;
+            }
+        }
+        
+        if (selectedItemType == null) {
+            throw new InvalidArgument("Invalid type for the new location has been provided with the request.");
+        }
+        
+        // Select location type. 
+        newLocationItem.setItemTypeList(new ArrayList<>());
+        newLocationItem.getItemTypeList().add(selectedItemType); 
+        
+        Integer locationQrId = newLocationInformation.getLocationQrId();
+        if (locationQrId != null) {
+            newLocationItem.setQrId(locationQrId);
+        }
+        
+        Integer parentLocationId = newLocationInformation.getParentLocationId();
+        if (parentLocationId != null) {
+            Item parentItem = locController.findById(parentLocationId);
+            if (parentItem == null) {
+                throw new InvalidArgument("Could not find item with parent location item id: " + parentLocationId); 
+            }
+            if (parentItem instanceof ItemDomainLocation == false) {
+                throw new InvalidArgument("Parent location id must be of type location."); 
+            }
+
+            ItemDomainLocation parentLocation = (ItemDomainLocation) parentItem;
+
+            EntityInfo entityInfo = EntityInfoUtility.createEntityInfo(currentUser);
+            ItemElement ie = locController.createItemElementFromApi(parentLocation, entityInfo);
+            ie.setContainedItem(newLocationItem);
+
+            newLocationItem.setItemElementMemberList(new ArrayList<>());
+            newLocationItem.getItemElementMemberList().add(ie);
+        }
+        
+        locController.createFromApi(newLocationItem, currentUser);
+        
+        return newLocationItem;
+    }
+    
     @GET
     @Path("/Projects")
     @Produces(MediaType.APPLICATION_JSON)
@@ -836,7 +1033,7 @@ public class ItemRoute extends BaseRoute {
         }
         
         return itemHierarchy; 
-    }
+    }   
     
     private UserInfo getCurrentRequestUserInfo() {
         Principal userPrincipal = securityContext.getUserPrincipal();

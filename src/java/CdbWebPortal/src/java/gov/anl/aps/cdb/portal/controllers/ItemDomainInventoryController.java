@@ -46,7 +46,8 @@ import javax.enterprise.context.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.ListDataModel;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.component.selectonelistbox.SelectOneListbox;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
@@ -70,7 +71,7 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     // Inventory status variables
     private PropertyType inventoryStatusPropertyType; 
 
-    private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemDomainInventoryController.class.getName());
 
     private List<PropertyValue> filteredPropertyValueList = null;
 
@@ -599,10 +600,14 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     }
 
     public void prepareBillOfMaterialsForCurrentItem() {
+        prepareBillOfMaterialsForItem(getCurrent());
+    }
+    
+    public void prepareBillOfMaterialsForItem(ItemDomainInventory item) {
         // Prepare bill of materials if not yet done so. 
         newItemsToAdd = new ArrayList<>();
-        InventoryBillOfMaterialItem iBom = new InventoryBillOfMaterialItem(getCurrent());
-        InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(getCurrent(), iBom);
+        InventoryBillOfMaterialItem iBom = new InventoryBillOfMaterialItem(item);
+        InventoryBillOfMaterialItem.setBillOfMaterialsListForItem(item, iBom);
     }
 
     private void resetConnectorVairables() {
@@ -764,6 +769,22 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     public void addItemElementsFromBillOfMaterials(ItemDomainInventory item) throws CdbException {
         // Bill of materials list.
         List<InventoryBillOfMaterialItem> bomItems = item.getInventoryDomainBillOfMaterialList();
+        
+        if (bomItems == null) {
+            prepareBillOfMaterialsForCurrentItem(); 
+            bomItems = item.getInventoryDomainBillOfMaterialList();
+            
+            if (SessionUtility.runningFaces() == false) {
+                // API Mode
+                // Bill of materials is loaded from updated values set from API to check against db values. 
+                Integer id = item.getId();
+                ItemDomainInventory findById = findById(id);
+                List<ItemElement> fullItemElementList = findById.getFullItemElementList();
+                
+                item.setFullItemElementList(fullItemElementList);
+                item.resetItemElementDisplayList();                
+            }
+        }
 
         if (bomItems != null) {
             for (InventoryBillOfMaterialItem bomItem : bomItems) {
@@ -775,7 +796,8 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 ItemElement catalogItemElement = bomItem.getCatalogItemElement();
                 ItemElement currentInventoryItemElement = null;
                 for (ItemElement inventoryItemElement : item.getFullItemElementList()) {
-                    if (inventoryItemElement.getDerivedFromItemElement() == catalogItemElement) {
+                    ItemElement derivedFromItemElement = inventoryItemElement.getDerivedFromItemElement();
+                    if (derivedFromItemElement != null && derivedFromItemElement.equals(catalogItemElement)) {
                         currentInventoryItemElement = inventoryItemElement;
                         logger.debug("Updating element " + currentInventoryItemElement + " to item " + item);
                         break;
@@ -808,11 +830,10 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                     // No need to do that for existing items. 
                     if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
                         addItemElementsFromBillOfMaterials(inventoryItem);
-                        currentInventoryItemElement.setContainedItem(inventoryItem);
-
+                        updateContainedItemForElement(currentInventoryItemElement, inventoryItem);
                     } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
                         if (currentInventoryItemElement.getContainedItem() == inventoryItem == false) {
-                            currentInventoryItemElement.setContainedItem(itemDomainInventoryFacade.find(inventoryItem.getId()));
+                            updateContainedItemForElement(currentInventoryItemElement, itemDomainInventoryFacade.find(inventoryItem.getId()));                            
                         }
                     }
                 } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.placeholder.getValue())) {
@@ -824,6 +845,19 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             }
         }
 
+    }
+    
+    public void updateContainedItemForElement(ItemElement ie, ItemDomainInventory containedItem) throws CdbException {
+        ItemElement derivedFromItemElement = ie.getDerivedFromItemElement();
+        Item derivedContainedItem = derivedFromItemElement.getContainedItem();
+        
+        ItemDomainCatalog catalogItem = containedItem.getCatalogItem();
+        
+        if (catalogItem.equals(derivedContainedItem)) {
+            ie.setContainedItem(containedItem);
+        } else {
+            throw new CdbException("Cannot place item of type: " + catalogItem.getName() + " into position for type: " + derivedContainedItem.getName()); 
+        }
     }
 
     public void updateItemElementPermissionsToItem(ItemElement itemElement, ItemDomainInventory item) {
@@ -1080,11 +1114,10 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                     item.resetItemElementDisplayList();
                 }
             }
-
-            clearItemElementsForItem(item);
-            updatePermissionOnAllNewPartsIfNeeded();
-            addItemElementsFromBillOfMaterials(item);
         }
+        clearItemElementsForItem(item);
+        updatePermissionOnAllNewPartsIfNeeded();
+        addItemElementsFromBillOfMaterials(item);
 
         super.prepareEntityInsert(item);
         checkNewItemsToAdd();

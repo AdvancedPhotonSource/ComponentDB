@@ -23,7 +23,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Named("logController")
 @SessionScoped
@@ -31,7 +32,7 @@ public class LogController extends CdbEntityController<Log, LogFacade, LogSettin
 
     private final String SPARES_WARNING_LOG_LEVEL_NAME = "Spares Warning";
 
-    private static final Logger logger = Logger.getLogger(LogController.class.getName());
+    private static final Logger logger = LogManager.getLogger(LogController.class.getName());
 
     private final String DEFAULT_SYSTEM_ADMIN_USERNAME = "cdb";
 

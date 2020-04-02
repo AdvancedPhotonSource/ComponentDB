@@ -36,7 +36,8 @@ import java.util.UUID;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.io.IOUtils;
 import org.primefaces.model.StreamedContent;
 
@@ -56,7 +57,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
     private final String VIEWABLE_UUID_REMOTE_COMMAND_KEY = "imageUUID";
 
-    private static final Logger logger = Logger.getLogger(ItemDomainMAARCController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemDomainMAARCController.class.getName());
 
     private Integer filePropertyTypeId = null;
     private boolean attemptedFetchFilePropertyType = false;
