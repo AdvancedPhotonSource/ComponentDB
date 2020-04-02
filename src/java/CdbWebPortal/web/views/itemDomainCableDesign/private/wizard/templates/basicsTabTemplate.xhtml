@@ -40,8 +40,23 @@ See LICENSE file.
                         <f:selectItems value="#{itemProjectController.availableItems}" /> 
                         <p:ajax listener="#{wizardController.selectListenerProjectList}" 
                                 oncomplete="update#{rootViewId}WizardButtons();" />
-
-                    </p:selectCheckboxMenu>                                   
+                    </p:selectCheckboxMenu>   
+                    
+                    <h:outputLabel for="#{rootViewId}SelectCheckboxTechnicalSystem"
+                                   value="Technical System"
+                                   styleClass="entityDataLabel"/>
+                    <p:selectCheckboxMenu id="#{rootViewId}SelectCheckboxTechnicalSystem"
+                                          label="Select Technical System"
+                                          multiple="true"
+                                          value="#{wizardController.selectionTechnicalSystemList}"
+                                          converter="itemCategoryConverter"
+                                          filter="true" 
+                                          filterMatchMode="contains">
+                        <f:selectItems value="#{wizardController.availableTechnicalSystems}" /> 
+                        <p:ajax listener="#{wizardController.selectListenerTechnicalSystemList}" 
+                                oncomplete="update#{rootViewId}WizardButtons();" />
+                    </p:selectCheckboxMenu>   
+                    
                 </p:panelGrid>
             </p:outputPanel>
         </p:panel>
