@@ -186,6 +186,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         protected String value = "";
         protected boolean isValid = false;
         protected String validString = "";
+        protected boolean isDuplicate = false;
 
         public ParseInfo() {
         }
@@ -194,6 +195,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             value = v;
             isValid = iv;
             validString = s;
+        }
+
+        public ParseInfo(String v, boolean iv, String s, boolean d) {
+            this(v, iv, s);
+            isDuplicate = d;
         }
 
         public String getValue() {
@@ -214,6 +220,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         public void setValidString(String s) {
             validString = s;
+        }
+        
+        public boolean isDuplicate() {
+            return isDuplicate;
         }
     }
 
@@ -395,6 +405,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         int rowCount = -1;
         int entityNum = 0;
+        int dupCount = 0;
+        String dupString = "";
         
         while (rowIterator.hasNext()) {
 
@@ -406,15 +418,26 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 ParseInfo headerParseInfo = parseHeader(row);
                 if (!headerParseInfo.isValid()) {
                     validInput = false;
-                    validationMessage = "Warning: " + headerParseInfo.getValidString() + ". Please make sure spreadsheet format is correct and enter values in all header rows before proceeding.";
+                    validationMessage = "Warning: " + headerParseInfo.getValidString() + ". Please make sure spreadsheet format is correct and enter values in all header rows before proceeding";
                 }
             } else {
                 entityNum = entityNum + 1;
-                boolean result = parseRow(row, entityNum, importName);
-                if (!result) {
+                ParseInfo rowParseInfo = parseRow(row, entityNum, importName);
+                if (!rowParseInfo.isValid()) {
                     validInput = false;
                 }
+                if (rowParseInfo.isDuplicate()) {
+                    dupCount = dupCount + 1;
+                    dupString = appendToString(dupString, rowParseInfo.getValidString());
+                }
             }
+        }
+        
+        validationMessage = appendToString(validationMessage, "Note: removed " + dupCount + " rows that already exist in database: (" + dupString + ").");
+        if (rows.size() == 0) {
+            // nothing to import, this will disable the "next" button
+            validInput = false;
+            validationMessage = appendToString(validationMessage, "Note: nothing to import");
         }
     }
     
@@ -467,12 +490,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new ParseInfo("", isValid, validMessage);
     }
 
-    protected boolean parseRow(Row row, int entityNum, String importName) {
+    protected ParseInfo parseRow(Row row, int entityNum, String importName) {
 
         EntityType newEntity = createEntityInstance();
         boolean isValid = true;
         String validString = "";
         String uniqueId = importName + "-" + entityNum;
+        boolean isDuplicate = false;
 
         for (int i = 0; i < columns.size() - 2; i++) {
             
@@ -522,25 +546,50 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             try {
                 getEntityController().checkItemUniqueness(newEntity);
             } catch (CdbException ex) {
-                validString = appendToString(validString, ex.getMessage());
-                isValid = false;
+                if (ignoreDuplicates()) {
+                    isDuplicate = true;
+                } else {
+                    validString = appendToString(validString, ex.getMessage());
+                    isValid = false;
+                }
             }
         }
         
         newEntity.setIsValidImport(isValid);
         newEntity.setValidStringImport(validString);
         
-        rows.add(newEntity);
-        return isValid;
+        if (!isDuplicate) {
+            rows.add(newEntity);
+            return new ParseInfo("", isValid, validString, false);
+        } else {
+            return new ParseInfo("", true, newEntity.toString(), true);
+        }
     }
     
+    /**
+     * Provides callback for helper subclass to handle the parsed value for a 
+     * particular column, e.g., to perform string replacement on the value or
+     * additional validation. Default behavior is to do nothing, subclasses
+     * override to customize.
+     * @param parsedValue
+     * @param columnName
+     * @param uniqueId
+     * @return 
+     */
     protected String postParseCell(String parsedValue, String columnName, String uniqueId) {
-        // do nothing by default
-        return "";
+        return parsedValue;
     }
     
+    /**
+     * Provides callback for helper subclass to handle the result of a parsed row
+     * at the entity level.  The subclass can update one field of the entity based
+     * on the value in some other field, for example.  Default behavior is to
+     * do nothing, subclasses override to customize.
+     * @param e
+     * @param id
+     * @return 
+     */
     protected String postParseRow(EntityType e, String id) {
-        // by default do nothing, subclasses can override to customize
         return "";
     }
 
@@ -563,9 +612,26 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new ImportInfo(true, message);
     }
     
+    /**
+     * Provides callback for helper subclass to do post processing after the
+     * import commit completes.  For example, the helper may need to update some
+     * attribute of the imported rows based on the identifier created during the
+     * database commit. Default behavior is to do nothing, subclasses override to
+     * customize.
+     * @return 
+     */
     protected String postImport() {
-        // by default do nothing, subclasses can override to customize
         return "";
+    }
+    
+    /**
+     * Specifies whether the helper class ignores rows in the input data that
+     * duplicate existing database rows.  Default behavior is to not ignore
+     * duplicates, subclasses override to change the default.
+     * @return 
+     */
+    protected boolean ignoreDuplicates() {
+        return false;
     }
 
     protected abstract void createColumnModels_();

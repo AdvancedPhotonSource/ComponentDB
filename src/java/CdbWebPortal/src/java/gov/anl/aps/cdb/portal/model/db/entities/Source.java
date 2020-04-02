@@ -181,7 +181,11 @@ public class Source extends CdbEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.db.entities.Source[ id=" + id + " ]";
+        if (getName() != null && getName().isEmpty() == false) {
+            return getName();
+        } else {
+            return "gov.anl.aps.cdb.portal.model.db.entities.Source[ id=" + id + " ]";
+        }
     }
 
 }

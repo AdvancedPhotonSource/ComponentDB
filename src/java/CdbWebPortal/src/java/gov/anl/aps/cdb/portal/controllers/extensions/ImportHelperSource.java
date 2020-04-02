@@ -46,4 +46,8 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     protected Source createEntityInstance() {
         return getEntityController().createEntityInstance();
     }  
+
+    protected boolean ignoreDuplicates() {
+        return true;
+    }
 }
