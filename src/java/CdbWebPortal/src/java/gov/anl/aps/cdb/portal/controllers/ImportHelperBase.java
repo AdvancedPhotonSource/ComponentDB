@@ -433,7 +433,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
         
-        validationMessage = appendToString(validationMessage, "Note: removed " + dupCount + " rows that already exist in database: (" + dupString + ").");
+        if (dupCount > 0) {
+            validationMessage = appendToString(validationMessage, "Note: removed " + dupCount + " rows that already exist in database: (" + dupString + ")");
+        }
         if (rows.size() == 0) {
             // nothing to import, this will disable the "next" button
             validInput = false;
@@ -517,7 +519,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 isValid = false;
             }
             
-            parsedValue = postParseCell(parsedValue, colName, uniqueId);
+            ParseInfo ppCellResult = postParseCell(parsedValue, colName, uniqueId);
+            if (!ppCellResult.isValid()) {
+                validString = appendToString(validString, ppCellResult.getValidString());
+                isValid = false;
+            }
+            parsedValue = ppCellResult.getValue();
             
             if ((col.getMaxLength() > 0) && (parsedValue.length() > col.getMaxLength())) {
                 isValid = false;
@@ -536,8 +543,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         }
         
-        String ppResult = postParseRow(newEntity, uniqueId);
-        validString = appendToString(validString, ppResult);
+        ParseInfo ppResult = postParseRow(newEntity, uniqueId);
+        validString = appendToString(validString, ppResult.getValidString());
 
         if (rows.contains(newEntity)) {
             validString = appendToString(validString, "Duplicate rows found in spreadsheet");
@@ -576,8 +583,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      * @param uniqueId
      * @return 
      */
-    protected String postParseCell(String parsedValue, String columnName, String uniqueId) {
-        return parsedValue;
+    protected ParseInfo postParseCell(String parsedValue, String columnName, String uniqueId) {
+        return new ParseInfo(parsedValue, true, "");
     }
     
     /**
@@ -589,8 +596,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      * @param id
      * @return 
      */
-    protected String postParseRow(EntityType e, String id) {
-        return "";
+    protected ParseInfo postParseRow(EntityType e, String id) {
+        return new ParseInfo("", true, "");
     }
 
     public ImportInfo importData() {
@@ -606,8 +613,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return new ImportInfo(false, "Import failed. " + ex.getMessage() + ": " + t.getMessage() + ".");
         }
         
-        String result = postImport();
-        message = appendToString(message, result);
+        ParseInfo result = postImport();
+        message = appendToString(message, result.getValidString());
         
         return new ImportInfo(true, message);
     }
@@ -620,8 +627,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      * customize.
      * @return 
      */
-    protected String postImport() {
-        return "";
+    protected ParseInfo postImport() {
+        return new ParseInfo("", true, "");
     }
     
     /**

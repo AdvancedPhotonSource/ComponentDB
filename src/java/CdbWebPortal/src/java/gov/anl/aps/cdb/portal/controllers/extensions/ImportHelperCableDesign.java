@@ -75,7 +75,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     * import, that we will replace in postImport with the object's cdb id.
     */
     @Override
-    protected String postParseCell(String parsedValue, String columnName, String id) {
+    protected ParseInfo postParseCell(String parsedValue, String columnName, String id) {
         
         String idPattern = "#cdbid#";
         String replacePattern = "#cdbid-" + id + "#";
@@ -85,7 +85,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
             result = parsedValue.replaceAll(idPattern, replacePattern);
         }
         
-        return result;
+        return new ParseInfo(result, true, "");
     }
 
     /*
@@ -93,7 +93,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     * and replace them with the internal cdb identifier.
     */
     @Override
-    protected String postImport() {
+    protected ParseInfo postImport() {
         
         String idRegexPattern = "#cdbid[^#]*#";
         idRegexPattern = Matcher.quoteReplacement(idRegexPattern);
@@ -134,6 +134,6 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
             }
         }
         
-        return message;
+        return new ParseInfo("", true, message);
     }
 }
