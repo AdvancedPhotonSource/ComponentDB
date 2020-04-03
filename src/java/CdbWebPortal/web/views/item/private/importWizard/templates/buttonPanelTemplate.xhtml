@@ -18,8 +18,8 @@ See LICENSE file.
             <p:commandButton value="Previous Step" 
                              process="@this"
                              update="@this"
-                             onstart="PF('loadingDialog').show();PF('#{rootViewId}').back();"
-                             oncomplete="PF('loadingDialog').hide(); update#{rootViewId}WizardButtons();"
+                             onstart="PF('loadingDialog').show(); PF('#{rootViewId}').back();"
+                             oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
                              disabled="#{wizardController.disableButtonPrev}"
                              icon="ui-icon-arrowthick-1-w"/>
 
@@ -30,7 +30,8 @@ See LICENSE file.
                              icon="fa fa-times-circle-o"
                              rendered="true"
                              immediate="true"
-                             oncomplete="update#{rootViewId}WizardButtons();"
+                             onstart="PF('loadingDialog').show();"
+                             oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
                              disabled="#{wizardController.disableButtonCancel}"
                              process="@this"
                              update="@this"> 
@@ -48,7 +49,8 @@ See LICENSE file.
                              icon="ui-icon-check"
                              rendered="true"
                              immediate="true"
-                             oncomplete="update#{rootViewId}WizardButtons();"
+                             onstart="PF('loadingDialog').show();"
+                             oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
                              disabled="#{wizardController.disableButtonFinish}"
                              process="@this"
                              update="@this"> 
@@ -59,8 +61,8 @@ See LICENSE file.
             <p:commandButton value="Next Step"
                              process="@this"
                              update="@this"
-                             onstart="PF('loadingDialog').show();PF('#{rootViewId}').next();"
-                             oncomplete="PF('loadingDialog').hide(); update#{rootViewId}WizardButtons();"
+                             onstart="PF('loadingDialog').show(); PF('#{rootViewId}').next();"
+                             oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
                              disabled="#{wizardController.disableButtonNext}"
                              icon="ui-icon-arrowthick-1-e"
                              iconPos="right"/>

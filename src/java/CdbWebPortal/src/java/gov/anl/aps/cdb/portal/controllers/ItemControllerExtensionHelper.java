@@ -255,8 +255,8 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     }
     
     @Override
-    public void checkItemUniqueness(Item item) throws CdbException {
-        getItemController().checkItemUniqueness(item);
+    public void checkItemUniqueness(Item entity) throws CdbException {
+        getItemController().checkItemUniqueness(entity);
     } 
     
     @Override
@@ -575,5 +575,4 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     public void deleteProperty(PropertyValue cdbDomainEntityProperty) {
         getItemController().deleteProperty(cdbDomainEntityProperty);
     }
-
 }
