@@ -27,6 +27,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
@@ -47,6 +48,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
@@ -61,6 +63,8 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataFieldInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 
 import java.util.ArrayList;
@@ -120,6 +124,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     @EJB
     private ItemElementRelationshipFacade itemElementRelationshipFacade;
 
+    @EJB
+    private PropertyTypeFacade propertyTypeFacade;
+    
     private List<ItemElementRelationship> locationRelationshipCache;
 
     private List<Item> parentItemList;
@@ -179,7 +186,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected Boolean hasElementReorderChangesForCurrent = false;
 
     protected List<String> expandedRowUUIDs = null;
-
+    
+    protected ItemCoreMetadataPropertyInfo coreMetadataPropertyInfo = null;
+    protected PropertyType coreMetadataPropertyType = null;
+    
     public ItemController() {
     }
 
@@ -2230,6 +2240,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             item.setQrId(qrIdViewParam);
             qrIdViewParam = null;
         }
+        
+        initializeCoreMetadataPropertyValue(item);
 
         return item;
     }
@@ -2711,7 +2723,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
-    public void checkItemUniqueness(Item item) throws CdbException {
+    public void checkItemUniqueness(ItemDomainEntity item) throws CdbException {
+        
         String name = item.getName();
         Integer qrId = item.getQrId();
 
@@ -2856,5 +2869,96 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
 
     }
+    
+    public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
+        if (coreMetadataPropertyInfo == null) {
+            coreMetadataPropertyInfo = initializeCoreMetadataPropertyInfo();
+        }
+        return coreMetadataPropertyInfo;
+    }
+    
+    public PropertyType getCoreMetadataPropertyType() {
+        if (coreMetadataPropertyType == null) {
+            initializeCoreMetadataPropertyType();
+        }
+        return coreMetadataPropertyType;
+    }
+    
+    protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
+        // do nothing by default, subclasses with core metadata to override
+        return null;
+    }
+    
+    protected void initializeCoreMetadataPropertyType() {
+        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        if (info != null) {
+            coreMetadataPropertyType = PropertyTypeFacade.getInstance().findByName(info.getPropertyName());
+        }
+    }
 
+    protected void initializeCoreMetadataPropertyValue(ItemDomainEntity item) {
+        if (item.getCoreMetadataPropertyInfo() != null) {
+            item.setPropertyValueList(new ArrayList<>());
+            prepareCoreMetadataPropertyValue(item);
+        }
+    }
+    
+    public PropertyValue prepareCoreMetadataPropertyValue(ItemDomainEntity item) {
+        
+        // Add cable internal property type
+        PropertyType propertyType = propertyTypeFacade.findByName(item.getCoreMetadataPropertyInfo().getPropertyName());
+
+        if (propertyType == null) {
+            propertyType = prepareCoreMetadataPropertyType(item);
+        }
+        
+        return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
+    }
+    
+    protected PropertyType prepareCoreMetadataPropertyType(ItemDomainEntity item) {
+        PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
+        PropertyType propertyType = propertyTypeController.createEntityInstance();
+        
+        ItemCoreMetadataPropertyInfo propInfo = item.getCoreMetadataPropertyInfo();
+        
+        propertyType.setIsInternal(true);
+        propertyType.setName(propInfo.getPropertyName());
+        propertyType.setDescription(propInfo.getDisplayName());
+        
+        List<Domain> allowedDomainList = new ArrayList<>();
+        allowedDomainList.add(getDefaultDomain());
+        propertyType.setAllowedDomainList(allowedDomainList);
+        
+        List<PropertyTypeMetadata> ptmList = new ArrayList<>();
+        for (ItemCoreMetadataFieldInfo fieldInfo : propInfo.getFields()) {
+            PropertyTypeMetadata ptm = new PropertyTypeMetadata();
+            ptm.setMetadataKey(fieldInfo.getKey());
+            ptm.setDescription(fieldInfo.getDescription());
+            ptm.setPropertyType(propertyType);
+            ptmList.add(ptm);
+        }
+        propertyType.setPropertyTypeMetadataList(ptmList);
+        
+        propertyTypeController.setCurrent(propertyType);
+        propertyTypeController.create(true, false); 
+        return propertyType; 
+    }    
+
+    public String getCoreMetadataPropertyTitle() {
+        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        if (info == null) {
+            return "";
+        } else {
+            return info.getDisplayName();
+        }
+    }
+    
+    public boolean getRenderCoreMetadataProperty() {
+        return (getCoreMetadataPropertyInfo() != null);
+    }
+
+    public boolean getDisplayCoreMetadataProperty() {
+        return (getCoreMetadataPropertyInfo() != null);
+    }
+    
 }

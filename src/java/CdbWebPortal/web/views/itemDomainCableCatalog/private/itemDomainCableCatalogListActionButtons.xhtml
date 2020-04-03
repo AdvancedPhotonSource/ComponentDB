@@ -14,7 +14,9 @@ See LICENSE file.
         <p:commandButton value="Import"
                          icon="ui-icon-plus"
                          action="#{itemDomainCableCatalogController.prepareWizardImport()}"
-                         rendered="#{loginController.loggedInAsAdmin}"/>
+                         rendered="#{loginController.loggedInAsAdmin}"
+                         onstart="PF('loadingDialog').show();"
+                         oncomplete="PF('loadingDialog').hide();"/>
     </ui:define>
 
 </ui:composition>

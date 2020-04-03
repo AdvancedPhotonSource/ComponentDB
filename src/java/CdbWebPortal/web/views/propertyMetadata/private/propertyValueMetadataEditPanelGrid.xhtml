@@ -11,6 +11,7 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <!--Use viewId parameter from caller to make component ids unique.-->
     <p:panelGrid columns="2">
         <c:forEach items="#{propertyValueObject.propertyValueMetadataList}"
                    var="propertyValueMetadataObject">       
@@ -19,24 +20,24 @@ See LICENSE file.
                 <ui:param name="propertyMetadata" value="#{propertyValueMetadataObject.propertyMetadata}"/>
 
                 <h:outputLabel value="#{propertyValueMetadataObject.propertyMetadata.metadataKey}" styleClass="entityDataEmphasizedLabel"/>
-                <p:commandLink id="propertyMetadataKeyRemoveCommandLink#{propertyMetadata.viewUUID}"
+                <p:commandLink id="#{viewId}propertyMetadataKeyRemoveCommandLink#{propertyMetadata.viewUUID}"
                                styleClass="fa fa-link-icon fa-trash"
                                rendered="#{propertyValueMetadataObject.isTrashFunctionalityAvaiable}"
                                onclick="PF('propertyMetadataDestoryConfirmWidget').show()">
                     <f:setPropertyActionListener target="#{propertyValueController.currentPropertyMetadata}"
                                                  value="#{propertyValueMetadataObject}" />                                
                 </p:commandLink>
-                <p:tooltip for="propertyMetadataKeyRemoveCommandLink#{propertyMetadata.viewUUID}"
+                <p:tooltip for="#{viewId}propertyMetadataKeyRemoveCommandLink#{propertyMetadata.viewUUID}"
                            value="Remove depreciated key from property value." />
 
                 <ui:param name="renderDescriptionDisplayCommandLink"
                           value="#{propertyTypeMetadata != null and propertyTypeMetadata.description != null}" />
 
-                <p:commandLink id="propertyMetadataKeyDescriptionDisplayCommandLink#{propertyMetadata.viewUUID}"
+                <p:commandLink id="#{viewId}propertyMetadataKeyDescriptionDisplayCommandLink#{propertyMetadata.viewUUID}"
                                styleClass="fa fa-link-icon fa-info"
                                rendered="#{propertyTypeMetadata.isHaveDescription}"
                                />
-                <p:overlayPanel for="propertyMetadataKeyDescriptionDisplayCommandLink#{propertyMetadata.viewUUID}"
+                <p:overlayPanel for="#{viewId}propertyMetadataKeyDescriptionDisplayCommandLink#{propertyMetadata.viewUUID}"
                                 rendered="#{propertyTypeMetadata != null and propertyTypeMetadata.description != null}"
                                 hideEffect="fade"
                                 showEffect="fade">

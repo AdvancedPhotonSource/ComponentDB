@@ -26,14 +26,12 @@ See LICENSE file.
                                   update="#{rootViewId}SelectFilePanel"
                                   oncomplete="update#{rootViewId}WizardButtons();"/>
                     
-                    <ui:remove><p:fileUpload value="#{wizardController.uploadfileData}"
-                                  mode="simple" 
-                                  allowTypes="/(\.|\/)([xX][lL][sS][xX]?)$/"/>
-                    <p:commandButton value="Upload" 
-                                     ajax="false"
-                                     action="#{wizardController.upload}"/>
-                    </ui:remove>
-                    
+                    <p:commandLink id="#{rootViewId}DownloadTemplateLink"
+                                   value="Download Excel template"
+                                   ajax="false">
+                        <p:fileDownload value="#{wizardController.templateExcelFile}" />
+                    </p:commandLink>
+
                     <p:panelGrid columns="2">
                         <p:outputLabel value="Successfully uploaded file:" 
                                        styleClass="entityDataEmphasizedLabel"
