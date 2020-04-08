@@ -67,7 +67,7 @@ def main():
         api.testAuthenticated()
     except ApiException:
         sys.exit("CDB login failed")
-    # source_api = api.getSourceApi()
+    source_api = api.getSourceApi()
 
     # create output spreadsheet
     output_book = openpyxl.Workbook()
@@ -82,13 +82,22 @@ def main():
 
     # process each unique manufacturer
     row_count = row_count + 1
-    for manufacturer in manufacturers:
+    for manufacturer in sorted(manufacturers):
 
         # check to see if manufacturer exists as a CDB Source
-
-        # write row to output spreadsheet for this manufacturer
-        output_sheet.cell(column=1, row=row_count, value=manufacturer)
-        row_count = row_count + 1
+        try:
+            mfr_source = source_api.get_source_by_name(manufacturer)
+        except ApiException as ex:
+            if "ObjectNotFound" not in ex.body:
+                print("exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body))
+            mfr_source = None
+        if mfr_source:
+            print("source: %s already exists for manufacturer: %s, skipping" % (mfr_source, manufacturer))
+        else:
+            # write row to output spreadsheet for this manufacturer
+            print("adding manufacturer: %s to output spreadsheet" % manufacturer)
+            output_sheet.cell(column=1, row=row_count, value=manufacturer)
+            row_count = row_count + 1
 
     # save output spreadsheet
     output_book.save(filename=args.outputFile)

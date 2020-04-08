@@ -10,6 +10,7 @@ from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
 from cdbApi.api.property_api import PropertyApi
 from cdbApi.api.users_api import UsersApi
+from cdbApi.api.source_api import SourceApi
 from cdbApi.api_client import ApiClient
 from cdbApi.api.authentication_api import AuthenticationApi
 from cdbApi.configuration import Configuration
@@ -27,6 +28,7 @@ class CdbApiFactory:
 		self.propertyApi = PropertyApi(api_client=self.apiClient)
 		self.usersApi = UsersApi(api_client=self.apiClient)
 		self.domainApi = DomainApi(api_client=self.apiClient)
+		self.sourceApi = SourceApi(api_client=self.apiClient)
 
 		self.authApi = AuthenticationApi(api_client=self.apiClient)
 
@@ -44,6 +46,9 @@ class CdbApiFactory:
 
 	def getUsersApi(self):
 		return self.usersApi
+
+	def getSourceApi(self):
+		return self.sourceApi
 
 	def authenticateUser(self, username, password):
 		response = self.authApi.authenticate_user_with_http_info(username=username, password=password)
