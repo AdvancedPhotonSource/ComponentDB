@@ -20,6 +20,7 @@
 import argparse
 import sys
 import openpyxl
+import xlsxwriter
 
 from CdbApiFactory import CdbApiFactory
 from cdbApi import ApiException
@@ -70,15 +71,15 @@ def main():
     source_api = api.getSourceApi()
 
     # create output spreadsheet
-    output_book = openpyxl.Workbook()
-    output_sheet = output_book.active
+    output_book = xlsxwriter.Workbook(args.outputFile)
+    output_sheet = output_book.add_worksheet()
 
     # write output spreadsheet header row
-    row_count = 1
-    output_sheet.cell(column=1, row=row_count, value="Name")
-    output_sheet.cell(column=2, row=row_count, value="Description")
-    output_sheet.cell(column=3, row=row_count, value="Contact Info")
-    output_sheet.cell(column=4, row=row_count, value="URL")
+    row_count = 0
+    output_sheet.write(row_count, 0, "Name")
+    output_sheet.write(row_count, 1, "Description")
+    output_sheet.write(row_count, 2, "Contact Info")
+    output_sheet.write(row_count, 3, "URL")
 
     # process each unique manufacturer
     row_count = row_count + 1
@@ -96,11 +97,11 @@ def main():
         else:
             # write row to output spreadsheet for this manufacturer
             print("adding manufacturer: %s to output spreadsheet" % manufacturer)
-            output_sheet.cell(column=1, row=row_count, value=manufacturer)
+            output_sheet.write(row_count, 0, manufacturer)
             row_count = row_count + 1
 
     # save output spreadsheet
-    output_book.save(filename=args.outputFile)
+    output_book.close()
 
     # close CDB connection
     try:
