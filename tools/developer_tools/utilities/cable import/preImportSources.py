@@ -18,6 +18,7 @@
 #       - log a message about the Source, if it exists already, if there are existing variations on the name, etc
 #
 # Input spreadsheet format assumptions:
+#   * contains a single worksheet
 #   * contains 2 or more rows, header is on row 1, data starts on row 2
 #   * there are no empty rows within the data
 #   * contains 17 columns
@@ -25,7 +26,7 @@
 
 import argparse
 import sys
-import openpyxl
+import xlrd
 import xlsxwriter
 
 from CdbApiFactory import CdbApiFactory
@@ -47,23 +48,21 @@ def main():
 
     # process input spreadsheet
 
-    input_book = openpyxl.load_workbook(filename=args.inputFile, read_only=True, data_only=True)
-    input_sheet = input_book.active
-    input_sheet.reset_dimensions()
-    print("input spreadsheet dimensions: %s" % input_sheet.calculate_dimension(force=True))
+    input_book = xlrd.open_workbook(args.inputFile)
+    input_sheet = input_book.sheet_by_index(0)
+    print("input spreadsheet dimensions: %d x %d" % (input_sheet.nrows, input_sheet.ncols))
 
-    if input_sheet.max_row < 2:
+    if input_sheet.nrows < 2:
         sys.exit("no data in inputFile: %s" % args.inputFile)
-    if input_sheet.max_column != 17:
+    if input_sheet.ncols != 17:
         sys.exit("inputFile %s doesn't contain expected number of columns" % args.inputFile)
 
-    row_count = 0
     manufacturers = set()
-    for row in input_sheet.rows:
-        row_count = row_count + 1
-        if row_count == 1:
+    for row_count in range(input_sheet.nrows):
+        # skip header
+        if row_count == 0:
             continue
-        manufacturer = row[4].value
+        manufacturer = input_sheet.cell(row_count, 4).value
         print("row %d found manufacturer: %s" % (row_count, manufacturer))
         manufacturers.add(manufacturer)
 
