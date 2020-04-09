@@ -16,6 +16,12 @@
 #       - if the source does not exist in CDB, add a row for it to the output spreadsheet
 #           - the CDB Sources import mechanism will ignore duplicates, if we want to take advantage of that
 #       - log a message about the Source, if it exists already, if there are existing variations on the name, etc
+#
+# Input spreadsheet format assumptions:
+#   * contains 2 or more rows, header is on row 1, data starts on row 2
+#   * there are no empty rows within the data
+#   * contains 17 columns
+#   * manufacturer is column 5
 
 import argparse
 import sys
@@ -48,7 +54,7 @@ def main():
 
     if input_sheet.max_row < 2:
         sys.exit("no data in inputFile: %s" % args.inputFile)
-    if input_sheet.max_column != 16:
+    if input_sheet.max_column != 17:
         sys.exit("inputFile %s doesn't contain expected number of columns" % args.inputFile)
 
     row_count = 0
@@ -93,7 +99,7 @@ def main():
                 print("exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body))
             mfr_source = None
         if mfr_source:
-            print("source: %s already exists for manufacturer: %s, skipping" % (mfr_source, manufacturer))
+            print("source already exists for manufacturer: %s, skipping" % (manufacturer))
         else:
             # write row to output spreadsheet for this manufacturer
             print("adding manufacturer: %s to output spreadsheet" % manufacturer)
