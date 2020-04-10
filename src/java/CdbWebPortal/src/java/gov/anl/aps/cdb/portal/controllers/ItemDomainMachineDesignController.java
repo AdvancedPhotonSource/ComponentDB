@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -2406,7 +2405,7 @@ public class ItemDomainMachineDesignController
         return (currentViewIsSubAssembly == false && currentViewIsTemplate == false); 
     }
 
-    public boolean isCurrentViewIsFixture() {
+    public boolean isCurrentViewIsSubAssembly() {
         return currentViewIsSubAssembly;
     }
 
