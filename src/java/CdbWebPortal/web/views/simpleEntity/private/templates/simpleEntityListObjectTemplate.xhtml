@@ -24,6 +24,7 @@ See LICENSE file.
     <ui:define name="nameColumn" >
          <p:column sortBy="#{simpleEntityListObject.name}" headerText="Name" 
                   filterBy="#{simpleEntityListObject.name}" filterMatchMode="contains"
+                  exportFunction="#{facesUtility.getFilterString(simpleEntityListObject.name)}"
                   filterValue="#{entitySettingObject.filterByName}">
              <h:outputLink value="view.xhtml?id=#{simpleEntityListObject.id}" title="View #{entityController.displayEntityTypeName} details">
                 <h:outputText value="#{simpleEntityListObject.name}"/>
