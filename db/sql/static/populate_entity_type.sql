@@ -6,6 +6,7 @@ INSERT INTO `entity_type` VALUES
 (3,'Study', 'cassification for a study type items'),
 (4,'File', 'classification for a file type items'),
 (5,'Template', 'classification for a machine design template items'),
-(6,'Measurement Data', 'classification for MAARC measurment data type items.'); 
+(6,'Measurement Data', 'classification for MAARC measurment data type items.'),
+(7,'Inventory','Entity type used for marking a sub domain of intevntory type items.'); 
 /*!40000 ALTER TABLE `entity_type` ENABLE KEYS */;
 UNLOCK TABLES;
