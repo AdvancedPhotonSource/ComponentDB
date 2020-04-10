@@ -97,6 +97,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl WHERE i.domain.name = :domainName and ipl.name = :projectName ORDER BY i.derivedFromItem DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityType",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevel",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY"),
     @NamedQuery(name = "Item.findByDomainNameAndExcludeEntityType",
             query = "SELECT DISTINCT(i) FROM Item i LEFT JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and (etl.name != :entityTypeName or etl.name is null) ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameOderByQrId",
@@ -1144,13 +1146,22 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return isItemTemplate;
     }
+    
+    public boolean isItemEntityType(String entityTypeName) {
+        return isItemEntityType(this, entityTypeName);
+    }
 
     public static boolean isItemTemplate(Item item) {
+        return isItemEntityType(item, EntityTypeName.template.getValue()); 
+    }
+    
+    // TODO for future performance, use id instead
+    public static boolean isItemEntityType(Item item, String entityTypeName) {
         if (item != null) {
             List<EntityType> entityTypeList = item.getEntityTypeList();
             if (entityTypeList != null) {
                 for (EntityType entityType : entityTypeList) {
-                    if (entityType.getName().equals(EntityTypeName.template.getValue())) {
+                    if (entityType.getName().equals(entityTypeName)) {
                         return true;
                     }
                 }
