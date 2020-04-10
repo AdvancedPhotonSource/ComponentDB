@@ -6,10 +6,20 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../../item/private/templates/itemListViewObjectTemplate.xhtml">
+                template="../../item/private/templates/itemListViewObjectTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
               
     <ui:define name="additonalItemColumns">
         <ui:include src="../../locatableItem/private/locatableItemListLocationObject.xhtml"/>
+        
+        <p:column headerText="Domain"
+                  sortable="#{true}"
+                  filterable="#{true}"                 
+                  filterOptions="#{itemDomainInventoryController.domainFilterOptions}"
+                  filterBy="#{itemListObject.domain}">
+            #{itemListObject.domain.name}
+        </p:column>
+                  
     </ui:define>
     
 </ui:composition>
