@@ -781,8 +781,19 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 ItemDomainInventory findById = findById(id);
                 List<ItemElement> fullItemElementList = findById.getFullItemElementList();
                 
+                ItemElement selfElement = item.getSelfElement();
                 item.setFullItemElementList(fullItemElementList);
-                item.resetItemElementDisplayList();                
+                item.resetItemElementVars();
+                
+                // Restore self element
+                for (int i = 0; i < fullItemElementList.size(); i ++) {
+                    ItemElement itemElement = fullItemElementList.get(i);
+                    if (itemElement.equals(selfElement)) {
+                        fullItemElementList.remove(i);
+                        fullItemElementList.add(i, selfElement);
+                        break; 
+                    }
+                }
             }
         }
 
