@@ -114,6 +114,8 @@ INSERT INTO `setting_type` VALUES
 (3046,'ItemDomainInventory.ItemElementList.Display.Project','Display column for project in the item elements list.','false'),
 (3047,'ItemDomainInventory.ItemElementList.Display.Description','Display column for description in the item elements list.','false'),
 (3048,'ItemDomainInventory.ItemElementList.Display.QrId','Display column for qrid in the item elements list.','false'),
+(3049,'ItemDomainInventory.List.Display.Domain','Display column for domain in the item list.','false'),
+(3050,'ItemDomainInventory.List.FilterBy.Domain','Filter for domain in the item list.',''),
 (4000,'ItemSource.List.Display.ContactInfo','Display component source contact info.','false'),
 (4001,'ItemSource.List.Display.Cost','Display component cost.','true'),
 (4002,'ItemSource.List.Display.Description','Display component source description.','true'),

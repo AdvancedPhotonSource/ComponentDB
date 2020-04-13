@@ -6,11 +6,16 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
                 template="../../item/private/templates/itemListCustomizeDisplayDialogTemplate.xhtml">
 
     <ui:define name="additionalItemSpecificColumns">
         <ui:include src="../../locatableItem/private/locatableItemListCustomizeObject.xhtml" >
             <ui:param name="settingObject" value="#{itemDomainInventoryController.settingObject}" /> 
         </ui:include>
+        
+        <p:selectBooleanCheckbox id="#{entityTypeName}DisplayDomain" value="#{itemDomainInventoryController.settingObject.displayDomain}"/>  
+        <h:outputLabel for="#{entityTypeName}DisplayDomain" value="Display Domain" styleClass="dialogDataLabel"/>        
     </ui:define>
 </ui:composition>

@@ -127,6 +127,15 @@ public class ItemElementUtility {
                 prepareItemElementHistory(originalItemElement, itemElementValue, entityInfo);
             } else {
                 prepareItemElementHistory(null, itemElementValue, entityInfo);
+                
+                // New item elements may be created hierarchically
+                Item containedItem = itemElementValue.getContainedItem();
+                if (containedItem != null) {
+                    List<ItemElement> itemElementDisplayList = containedItem.getItemElementDisplayList();
+                    if (itemElementDisplayList != null) {
+                        prepareItemElementHistory(null, itemElementDisplayList, entityInfo);
+                    }
+                }
             }
         }
     }
