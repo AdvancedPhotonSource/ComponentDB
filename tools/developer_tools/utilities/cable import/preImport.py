@@ -1,3 +1,47 @@
+#
+# This file contains a pre-import framework for various CDB object types.  It supports reading an input spreadsheet
+# file, and then creating an output spreadsheet file that contains the standard columns for CDB import.  It is intended
+# to support the cable data collection process, which uses an Excel workbook to collect cable type and cable data from
+# users.  The pre-import process takes that data collection workbook, and augments/formats it for import to CDB.
+#
+# The framework initially supports pre-import data transformation for 3 types of objects: sources, cable types, and
+# cable designs.  To add support for a new type of object, you must provide concrete subclass implementations of the
+# framework's PreImportHelper and OutputObject bases classes.  For an example, see the classes "SourceHelper" and
+# SourceOutputObject, which together support the pre-import transformation of CDB "Source" objects.
+#
+# The framework opens the input spreadsheet and processes it row by row.  A python dictionary is created for each
+# input row.  The helper class validates and filters the input rows.  The framework collects a list of "OutputObject"
+# instances, and then iterates through them one by one, writing a row for each to the output spreadsheet.
+#
+# The roles of the framework classes that must be extended to add pre-import support for a new object type are as
+# follows.
+#
+# The PreImportHelper subclass specifies the input spreadsheet columns via the input_column_list() method,
+# including the column index and dictionary key name to use for each.  Not all input columns need be mapped,
+# only those that are used to generate the values in the output objects.  Column labels are not needed in the input
+# column specifications since we don't use them.  It also specifies the columns for the output spreadsheet via the
+# output_column_list() method, including for each a column index, label, and getter method name on the output object
+# to extract the column value.  It specifies the number of columns in the input spreadsheet (num_input_columns()) and
+# the number of columns in the output spreadsheet (num_output_columns()).  It implements get_output_object() which
+# takes the dictionary of values for a row from the input spreadsheet and produces an instance of the OutputObject
+# subclass that will be used to generate a row in the output spreadsheet.  Finally, the tag() function returns the
+# value that identifies the pre-import object type, e.g., "Source".  This value must match the "--type" command line
+# option.
+#
+# The OutputObject subclass's primary responsibility is to transform the data read from an input spreadsheet row into
+# the values needed for the corresponding row in the output spreadsheet.  Sometimes the output value is simply a copy of
+# the input value, but in other cases, we might perform a CDB query API lookup to transform a name from the input file
+# to the corresponding database identifier for that name in the output file.  Each getter method in the OutputObject
+# corresponds to a column in the output spreadsheet.  It is these getter methods that perform the required data
+# transformation, such as API query.  The column specifications in the helper's output_column_list() map the column
+# index in the output spreadsheet to the appropriate getter method on the output object.
+
+# Input spreadsheet format assumptions:
+#   * contains a single worksheet
+#   * contains 2 or more rows, header is on row 1, data starts on row 2
+#   * there are no empty rows within the data
+
+
 import argparse
 import logging
 import sys
@@ -11,7 +55,23 @@ from cdbApi import ApiException
 
 
 # constants
+CABLE_TYPE_NAME_KEY = "name"
+CABLE_TYPE_DESCRIPTION_KEY = "description"
+CABLE_TYPE_LINK_URL_KEY = "linkUrl"
+CABLE_TYPE_IMAGE_URL_KEY = "imageUrl"
 CABLE_TYPE_MANUFACTURER_KEY = "manufacturer"
+CABLE_TYPE_PART_NUMBER_KEY = "partNumber"
+CABLE_TYPE_ALT_PART_NUMBER_KEY = "altPartNumber"
+CABLE_TYPE_DIAMETER_KEY = "diameter"
+CABLE_TYPE_WEIGHT_KEY = "weight"
+CABLE_TYPE_CONDUCTORS_KEY = "conductors"
+CABLE_TYPE_INSULATION_KEY = "insulation"
+CABLE_TYPE_JACKET_COLOR_KEY = "jacketColor"
+CABLE_TYPE_VOLTAGE_RATING_KEY = "voltageRating"
+CABLE_TYPE_FIRE_LOAD_KEY = "fireLoad"
+CABLE_TYPE_HEAT_LIMIT_KEY = "heatLimit"
+CABLE_TYPE_BEND_RADIUS_KEY = "bendRadius"
+CABLE_TYPE_RAD_TOLERANCE_KEY = "radTolerance"
 
 
 def register(helper_class):
@@ -64,15 +124,15 @@ class PreImportHelper(ABC):
         pass
 
     # Returns expected number of columns in input spreadsheet.
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def num_input_cols():
+    def num_input_cols(cls):
         pass
 
     # Returns number of columns in output spreadsheet.
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def num_output_cols():
+    def num_output_cols(cls):
         pass
 
     # Returns list of column models for input spreadsheet.  Not all columns need be mapped, only the ones we wish to
@@ -124,6 +184,20 @@ class PreImportHelper(ABC):
         return val
 
 
+class ColumnModel:
+
+    def __init__(self, col_index, property, label=""):
+        self.index = col_index
+        self.property = property
+        self.label = label
+
+
+class OutputObject(ABC):
+
+    def __init__(self, input_dict):
+        self.input_dict = input_dict
+
+
 @register
 class SourceHelper(PreImportHelper):
 
@@ -135,12 +209,12 @@ class SourceHelper(PreImportHelper):
     def tag():
         return "Source"
 
-    @staticmethod
-    def num_input_cols():
+    @classmethod
+    def num_input_cols(cls):
         return 17
 
-    @staticmethod
-    def num_output_cols():
+    @classmethod
+    def num_output_cols(cls):
         return 4
 
     @classmethod
@@ -186,20 +260,6 @@ class SourceHelper(PreImportHelper):
             return None
 
 
-class ColumnModel:
-
-    def __init__(self, col_index, property, label=""):
-        self.index = col_index
-        self.property = property
-        self.label = label
-
-
-class OutputObject(ABC):
-
-    def __init__(self, input_dict):
-        self.input_dict = input_dict
-
-
 class SourceOutputObject(OutputObject):
 
     def __init__(self, input_dict):
@@ -219,6 +279,137 @@ class SourceOutputObject(OutputObject):
 
     def get_url(self):
         return self.url
+
+
+@register
+class CableTypeHelper(PreImportHelper):
+
+    def __init__(self):
+        super().__init__()
+
+    @staticmethod
+    def tag():
+        return "CableType"
+
+    @classmethod
+    def num_input_cols(cls):
+        return 17
+
+    @classmethod
+    def num_output_cols(cls):
+        return len(cls.output_column_list())
+
+    @classmethod
+    def input_column_list(cls):
+        column_list = [
+            ColumnModel(col_index=0, property=CABLE_TYPE_NAME_KEY),
+            ColumnModel(col_index=1, property=CABLE_TYPE_DESCRIPTION_KEY),
+            ColumnModel(col_index=2, property=CABLE_TYPE_LINK_URL_KEY),
+            ColumnModel(col_index=3, property=CABLE_TYPE_IMAGE_URL_KEY),
+            ColumnModel(col_index=4, property=CABLE_TYPE_MANUFACTURER_KEY),
+            ColumnModel(col_index=5, property=CABLE_TYPE_PART_NUMBER_KEY),
+            ColumnModel(col_index=6, property=CABLE_TYPE_ALT_PART_NUMBER_KEY),
+            ColumnModel(col_index=7, property=CABLE_TYPE_DIAMETER_KEY),
+            ColumnModel(col_index=8, property=CABLE_TYPE_WEIGHT_KEY),
+            ColumnModel(col_index=9, property=CABLE_TYPE_CONDUCTORS_KEY),
+            ColumnModel(col_index=10, property=CABLE_TYPE_INSULATION_KEY),
+            ColumnModel(col_index=11, property=CABLE_TYPE_JACKET_COLOR_KEY),
+            ColumnModel(col_index=12, property=CABLE_TYPE_VOLTAGE_RATING_KEY),
+            ColumnModel(col_index=13, property=CABLE_TYPE_FIRE_LOAD_KEY),
+            ColumnModel(col_index=14, property=CABLE_TYPE_HEAT_LIMIT_KEY),
+            ColumnModel(col_index=15, property=CABLE_TYPE_BEND_RADIUS_KEY),
+            ColumnModel(col_index=16, property=CABLE_TYPE_RAD_TOLERANCE_KEY),
+        ]
+        return column_list
+
+    @staticmethod
+    def output_column_list():
+        column_list = [
+            ColumnModel(col_index=0, property="get_name", label=CABLE_TYPE_NAME_KEY),
+            ColumnModel(col_index=1, property="get_description", label=CABLE_TYPE_DESCRIPTION_KEY),
+            ColumnModel(col_index=2, property="get_link_url", label=CABLE_TYPE_LINK_URL_KEY),
+            ColumnModel(col_index=3, property="get_image_url", label=CABLE_TYPE_IMAGE_URL_KEY),
+            ColumnModel(col_index=4, property="get_manufacturer_id", label=CABLE_TYPE_MANUFACTURER_KEY),
+            ColumnModel(col_index=5, property="get_part_number", label=CABLE_TYPE_PART_NUMBER_KEY),
+            ColumnModel(col_index=6, property="get_alt_part_number", label=CABLE_TYPE_ALT_PART_NUMBER_KEY),
+            ColumnModel(col_index=7, property="get_diameter", label=CABLE_TYPE_DIAMETER_KEY),
+            ColumnModel(col_index=8, property="get_weight", label=CABLE_TYPE_WEIGHT_KEY),
+            ColumnModel(col_index=9, property="get_conductors", label=CABLE_TYPE_CONDUCTORS_KEY),
+            ColumnModel(col_index=10, property="get_insulation", label=CABLE_TYPE_INSULATION_KEY),
+            ColumnModel(col_index=11, property="get_jacket_color", label=CABLE_TYPE_JACKET_COLOR_KEY),
+            ColumnModel(col_index=12, property="get_voltage_rating", label=CABLE_TYPE_VOLTAGE_RATING_KEY),
+            ColumnModel(col_index=13, property="get_fire_load", label=CABLE_TYPE_FIRE_LOAD_KEY),
+            ColumnModel(col_index=14, property="get_heat_limit", label=CABLE_TYPE_HEAT_LIMIT_KEY),
+            ColumnModel(col_index=15, property="get_bend_radius", label=CABLE_TYPE_BEND_RADIUS_KEY),
+            ColumnModel(col_index=16, property="get_rad_tolerance", label=CABLE_TYPE_RAD_TOLERANCE_KEY),
+            ColumnModel(col_index=17, property="get_owner_id", label="owner"),
+        ]
+        return column_list
+
+    def get_output_object(self, input_dict):
+
+        logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
+        return CableTypeOutputObject(input_dict=input_dict)
+
+
+class CableTypeOutputObject(OutputObject):
+
+    def __init__(self, input_dict):
+        super().__init__(input_dict)
+
+    def get_name(self):
+        return self.input_dict[CABLE_TYPE_NAME_KEY]
+
+    def get_description(self):
+        return self.input_dict[CABLE_TYPE_DESCRIPTION_KEY]
+
+    def get_link_url(self):
+        return self.input_dict[CABLE_TYPE_LINK_URL_KEY]
+
+    def get_image_url(self):
+        return self.input_dict[CABLE_TYPE_IMAGE_URL_KEY]
+
+    def get_manufacturer_id(self):
+        return ""
+
+    def get_part_number(self):
+        return self.input_dict[CABLE_TYPE_PART_NUMBER_KEY]
+
+    def get_alt_part_number(self):
+        return self.input_dict[CABLE_TYPE_ALT_PART_NUMBER_KEY]
+
+    def get_diameter(self):
+        return self.input_dict[CABLE_TYPE_DIAMETER_KEY]
+
+    def get_weight(self):
+        return self.input_dict[CABLE_TYPE_WEIGHT_KEY]
+
+    def get_conductors(self):
+        return self.input_dict[CABLE_TYPE_CONDUCTORS_KEY]
+
+    def get_insulation(self):
+        return self.input_dict[CABLE_TYPE_INSULATION_KEY]
+
+    def get_jacket_color(self):
+        return self.input_dict[CABLE_TYPE_JACKET_COLOR_KEY]
+
+    def get_voltage_rating(self):
+        return self.input_dict[CABLE_TYPE_VOLTAGE_RATING_KEY]
+
+    def get_fire_load(self):
+        return self.input_dict[CABLE_TYPE_FIRE_LOAD_KEY]
+
+    def get_heat_limit(self):
+        return self.input_dict[CABLE_TYPE_HEAT_LIMIT_KEY]
+
+    def get_bend_radius(self):
+        return self.input_dict[CABLE_TYPE_BEND_RADIUS_KEY]
+
+    def get_rad_tolerance(self):
+        return self.input_dict[CABLE_TYPE_RAD_TOLERANCE_KEY]
+
+    def get_owner_id(self):
+        return ""
 
 
 def main():
