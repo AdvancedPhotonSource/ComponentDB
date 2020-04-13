@@ -549,14 +549,28 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-
-    public List<ItemDomainEntity> getItemListContainedInListExcludeEntityType(String domainName, ListTbl list, String entityTypeName) {
+    
+     public List<ItemDomainEntity> getItemListContainedInListExcludeEntityType(String domainName, ListTbl list, String entityTypeName) {
         if (list != null) {
             try {
                 return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsInListExcludeEntityType")
                         .setParameter("domainName", domainName)
-                        .setParameter("list", list)
+                        .setParameter("list", list)                        
                         .setParameter("entityTypeName", entityTypeName)
+                        .getResultList();
+            } catch (NoResultException ex) {
+            }
+        }
+        return null;
+    }
+
+
+    public List<ItemDomainEntity> getItemListContainedInListWithoutEntityType(String domainName, ListTbl list) {
+        if (list != null) {
+            try {
+                return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsInListWithoutEntityType")
+                        .setParameter("domainName", domainName)
+                        .setParameter("list", list)                        
                         .getResultList();
             } catch (NoResultException ex) {
             }

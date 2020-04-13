@@ -892,17 +892,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return getFavoriteItems(null);
     }
 
-    public List<ItemDomainEntity> getFavoriteItems(SettingEntity settingEntity) {
-        String templateEntityTypeName = EntityTypeName.template.getValue();
+    public List<ItemDomainEntity> getFavoriteItems(SettingEntity settingEntity) {        
         ItemDomainEntityFacade itemFacade = getEntityDbFacade();
         String domainName = getDefaultDomainName();
 
-        List<ItemDomainEntity> itemList = null;
-        if (getEntityDisplayTemplates()) {
-            itemList = itemFacade.getItemListContainedInListExcludeEntityType(domainName, getFavoritesList(settingEntity), templateEntityTypeName);
-        } else {
-            itemList = itemFacade.getItemListContainedInList(domainName, getFavoritesList(settingEntity));
-        }
+        List<ItemDomainEntity> itemList = null;        
+        itemList = itemFacade.getItemListContainedInListWithoutEntityType(domainName, getFavoritesList(settingEntity));
+        
         return itemList;
     }
 
