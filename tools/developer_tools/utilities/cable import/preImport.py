@@ -10,6 +10,10 @@ from CdbApiFactory import CdbApiFactory
 from cdbApi import ApiException
 
 
+# constants
+CABLE_TYPE_MANUFACTURER_KEY = "manufacturer"
+
+
 def register(helper_class):
     PreImportHelper.register(helper_class.tag(), helper_class)
 
@@ -87,7 +91,7 @@ class PreImportHelper(ABC):
 
     # Returns an output object for the specified input object, or None if the input object is duplicate.
     @abstractmethod
-    def get_output_object(self, obj):
+    def get_output_object(self, input_dict):
         pass
 
     def set_api(self, api):
@@ -104,9 +108,9 @@ class PreImportHelper(ABC):
             self.output_columns[col.index] = col
 
     # Handles cell value from input spreadsheet at specified column index for supplied input object.
-    def handle_input_cell_value(self, obj, index, value):
-        # use reflection to invoke column setter method on supplied object
-        getattr(obj, self.input_columns[index].method)(value)
+    def handle_input_cell_value(self, input_dict, index, value):
+        key = self.input_columns[index].property
+        input_dict[key] = value
 
     # Returns column label for specified column index.
     def get_output_column_label(self, col_index):
@@ -115,8 +119,8 @@ class PreImportHelper(ABC):
     # Returns value for output spreadsheet cell and supplied object at specified index.
     def get_output_cell_value(self, obj, index):
         # use reflection to invoke column getter method on supplied object
-        val = getattr(obj, self.output_columns[index].method)()
-        logging.debug("index: %d method: %s value: %s" % (index, self.output_columns[index].method, val))
+        val = getattr(obj, self.output_columns[index].property)()
+        logging.debug("index: %d method: %s value: %s" % (index, self.output_columns[index].property, val))
         return val
 
 
@@ -139,26 +143,26 @@ class SourceHelper(PreImportHelper):
     def num_output_cols():
         return 4
 
-    @staticmethod
-    def input_column_list():
+    @classmethod
+    def input_column_list(cls):
         column_list = [
-            ColumnModel(col_index=4, method="set_manufacturer"),
+            ColumnModel(col_index=4, property=CABLE_TYPE_MANUFACTURER_KEY),
         ]
         return column_list
 
     @staticmethod
     def output_column_list():
         column_list = [
-            ColumnModel(col_index=0, method="get_name", label="Name"),
-            ColumnModel(col_index=1, method="get_description", label="Description"),
-            ColumnModel(col_index=2, method="get_contact_info", label="Contact Info"),
-            ColumnModel(col_index=3, method="get_url", label="URL"),
+            ColumnModel(col_index=0, property="get_name", label="Name"),
+            ColumnModel(col_index=1, property="get_description", label="Description"),
+            ColumnModel(col_index=2, property="get_contact_info", label="Contact Info"),
+            ColumnModel(col_index=3, property="get_url", label="URL"),
         ]
         return column_list
 
-    def get_output_object(self, obj):
+    def get_output_object(self, input_dict):
 
-        manufacturer = obj.get_manufacturer()
+        manufacturer = input_dict[CABLE_TYPE_MANUFACTURER_KEY]
         logging.debug("found manufacturer: %s" % manufacturer)
 
         if manufacturer not in self.manufacturers:
@@ -175,7 +179,7 @@ class SourceHelper(PreImportHelper):
             else:
                 logging.debug("adding output object for unique manufacturer: %s" % manufacturer)
                 self.manufacturers.add(manufacturer)
-                return SourceOutputObject(input_object=obj)
+                return SourceOutputObject(input_dict=input_dict)
 
         else:
             logging.debug("ignoring duplicate manufacturer: %s" % manufacturer)
@@ -184,44 +188,28 @@ class SourceHelper(PreImportHelper):
 
 class ColumnModel:
 
-    def __init__(self, col_index, method, label=""):
+    def __init__(self, col_index, property, label=""):
         self.index = col_index
-        self.method = method
+        self.property = property
         self.label = label
-
-
-class InputObject(ABC):
-    pass
-
-
-class SourceInputObject(InputObject):
-
-    def __init__(self):
-        self.manufacturer = ""
-
-    def set_manufacturer(self, m):
-        self.manufacturer = m
-
-    def get_manufacturer(self):
-        return self.manufacturer
 
 
 class OutputObject(ABC):
 
-    def __init__(self, o):
-        self.input_object = o
+    def __init__(self, input_dict):
+        self.input_dict = input_dict
 
 
 class SourceOutputObject(OutputObject):
 
-    def __init__(self, input_object):
-        super().__init__(input_object)
+    def __init__(self, input_dict):
+        super().__init__(input_dict)
         self.description = ""
         self.contact_info = ""
         self.url = ""
 
     def get_name(self):
-        return self.input_object.get_manufacturer()
+        return self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
 
     def get_description(self):
         return self.description
@@ -304,15 +292,15 @@ def main():
 
         logging.debug("processing row %d from input spreadsheet" % (row_count+1))
 
-        input_object = SourceInputObject()
+        input_dict = {}
 
         for col_count in range(helper.num_input_cols()):
             if col_count in helper.input_columns:
                 # read cell value from spreadsheet
                 val = input_sheet.cell(row_count, col_count).value
-                helper.handle_input_cell_value(obj=input_object, index=col_count, value=val)
+                helper.handle_input_cell_value(input_dict=input_dict, index=col_count, value=val)
 
-        output_obj = helper.get_output_object(obj=input_object)
+        output_obj = helper.get_output_object(input_dict=input_dict)
         if output_obj:
             output_objects.append(output_obj)
 
