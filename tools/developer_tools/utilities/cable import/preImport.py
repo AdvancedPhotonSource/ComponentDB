@@ -55,6 +55,7 @@ from cdbApi import ApiException
 
 
 # constants
+
 CABLE_TYPE_NAME_KEY = "name"
 CABLE_TYPE_DESCRIPTION_KEY = "description"
 CABLE_TYPE_LINK_URL_KEY = "linkUrl"
@@ -73,6 +74,21 @@ CABLE_TYPE_HEAT_LIMIT_KEY = "heatLimit"
 CABLE_TYPE_BEND_RADIUS_KEY = "bendRadius"
 CABLE_TYPE_RAD_TOLERANCE_KEY = "radTolerance"
 
+CABLE_DESIGN_NAME_KEY = "name"
+CABLE_DESIGN_LAYING_KEY = "laying"
+CABLE_DESIGN_VOLTAGE_KEY = "voltage"
+CABLE_DESIGN_OWNER_KEY = "owner"
+CABLE_DESIGN_TYPE_KEY = "type"
+CABLE_DESIGN_SRC_LOCATION_KEY = "srcLocation"
+CABLE_DESIGN_SRC_ANS_KEY = "srcANS"
+CABLE_DESIGN_SRC_ETPM_KEY = "srcETPM"
+CABLE_DESIGN_SRC_ADDRESS_KEY = "srcAddress"
+CABLE_DESIGN_SRC_DESCRIPTION_KEY = "srcDescription"
+CABLE_DESIGN_DEST_LOCATION_KEY = "destLocation"
+CABLE_DESIGN_DEST_ANS_KEY = "destANS"
+CABLE_DESIGN_DEST_ETPM_KEY = "destETPM"
+CABLE_DESIGN_DEST_ADDRESS_KEY = "destAddress"
+CABLE_DESIGN_DEST_DESCRIPTION_KEY = "destDescription"
 
 def register(helper_class):
     PreImportHelper.register(helper_class.tag(), helper_class)
@@ -112,6 +128,10 @@ class PreImportHelper(ABC):
         helper_instance = helper_class()
         return helper_instance
 
+    @classmethod
+    def num_output_cols(cls):
+        return len(cls.output_column_list())
+
     # Allows subclasses to add command line parser args.  Default behavior is to do nothing.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
     @staticmethod
@@ -128,12 +148,6 @@ class PreImportHelper(ABC):
     @classmethod
     @abstractmethod
     def num_input_cols(cls):
-        pass
-
-    # Returns number of columns in output spreadsheet.
-    @classmethod
-    @abstractmethod
-    def num_output_cols(cls):
         pass
 
     # Returns list of column models for input spreadsheet.  Not all columns need be mapped, only the ones we wish to
@@ -222,10 +236,6 @@ class SourceHelper(PreImportHelper):
         return 17
 
     @classmethod
-    def num_output_cols(cls):
-        return 4
-
-    @classmethod
     def input_column_list(cls):
         column_list = [
             ColumnModel(col_index=4, property=CABLE_TYPE_MANUFACTURER_KEY),
@@ -301,7 +311,7 @@ class CableTypeHelper(PreImportHelper):
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
     @staticmethod
     def add_parser_args(parser):
-        parser.add_argument("--ownerId", help="CDB techincal system ID for owner", required=True)
+        parser.add_argument("--ownerId", help="CDB technical system ID for owner", required=True)
 
     def set_args(self, args):
         super().set_args(args)
@@ -314,10 +324,6 @@ class CableTypeHelper(PreImportHelper):
     @classmethod
     def num_input_cols(cls):
         return 17
-
-    @classmethod
-    def num_output_cols(cls):
-        return len(cls.output_column_list())
 
     @classmethod
     def input_column_list(cls):
@@ -460,6 +466,131 @@ class CableTypeOutputObject(OutputObject):
 
     def get_owner_id(self):
         return self.helper.get_args().ownerId
+
+
+@register
+class CableDesignHelper(PreImportHelper):
+
+    def __init__(self):
+        super().__init__()
+
+    # Adds helper specific command line args.
+    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
+    @staticmethod
+    def add_parser_args(parser):
+        parser.add_argument("--ownerId", help="CDB technical system ID for owner (item_category table)", required=True)
+        parser.add_argument("--projectId", help="CDB item category ID for project (item_project table)", required=True)
+
+    def set_args(self, args):
+        super().set_args(args)
+        print("owner CDB technical system (owner) id: %s" % args.ownerId)
+        print("owner CDB item category (project) id: %s" % args.projectId)
+
+    @staticmethod
+    def tag():
+        return "CableDesign"
+
+    @classmethod
+    def num_input_cols(cls):
+        return 15
+
+    @classmethod
+    def input_column_list(cls):
+        column_list = [
+            ColumnModel(col_index=0, property=CABLE_DESIGN_NAME_KEY),
+            ColumnModel(col_index=1, property=CABLE_DESIGN_LAYING_KEY),
+            ColumnModel(col_index=2, property=CABLE_DESIGN_VOLTAGE_KEY),
+            ColumnModel(col_index=3, property=CABLE_DESIGN_OWNER_KEY),
+            ColumnModel(col_index=4, property=CABLE_DESIGN_TYPE_KEY),
+            ColumnModel(col_index=5, property=CABLE_DESIGN_SRC_LOCATION_KEY),
+            ColumnModel(col_index=6, property=CABLE_DESIGN_SRC_ANS_KEY),
+            ColumnModel(col_index=7, property=CABLE_DESIGN_SRC_ETPM_KEY),
+            ColumnModel(col_index=8, property=CABLE_DESIGN_SRC_ADDRESS_KEY),
+            ColumnModel(col_index=9, property=CABLE_DESIGN_SRC_DESCRIPTION_KEY),
+            ColumnModel(col_index=10, property=CABLE_DESIGN_DEST_LOCATION_KEY),
+            ColumnModel(col_index=11, property=CABLE_DESIGN_DEST_ANS_KEY),
+            ColumnModel(col_index=12, property=CABLE_DESIGN_DEST_ETPM_KEY),
+            ColumnModel(col_index=13, property=CABLE_DESIGN_DEST_ADDRESS_KEY),
+            ColumnModel(col_index=14, property=CABLE_DESIGN_DEST_DESCRIPTION_KEY),
+        ]
+        return column_list
+
+    @staticmethod
+    def output_column_list():
+        column_list = [
+            ColumnModel(col_index=0, property="get_name", label="name"),
+            ColumnModel(col_index=1, property="get_alt_name", label="alt name"),
+            ColumnModel(col_index=2, property="get_ext_name", label="ext cable name"),
+            ColumnModel(col_index=3, property="get_import_id", label="import cable id"),
+            ColumnModel(col_index=4, property="get_alt_id", label="alt cable id"),
+            ColumnModel(col_index=5, property="get_description", label="description"),
+            ColumnModel(col_index=6, property="get_laying", label="laying"),
+            ColumnModel(col_index=7, property="get_voltage", label="voltage"),
+            ColumnModel(col_index=8, property="get_owner_id", label="owner id"),
+            ColumnModel(col_index=9, property="get_project_id", label="project id"),
+            ColumnModel(col_index=10, property="get_cable_type_id", label="cable type id"),
+            ColumnModel(col_index=11, property="get_endpoint1_id", label="endpoint1 id"),
+            ColumnModel(col_index=12, property="get_endpoint1_description", label="endpoint1 description"),
+            ColumnModel(col_index=13, property="get_endpoint2_id", label="endpoint2 id"),
+            ColumnModel(col_index=14, property="get_endpoint2_description", label="endpoint2 description"),
+        ]
+        return column_list
+
+    def get_output_object(self, input_dict):
+
+        logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
+        return CableDesignOutputObject(helper=self, input_dict=input_dict)
+
+
+class CableDesignOutputObject(OutputObject):
+
+    def __init__(self, helper, input_dict):
+        super().__init__(helper, input_dict)
+
+    def get_name(self):
+        return "#cdbid#"
+
+    def get_alt_name(self):
+        return self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ":#cdbid#"
+
+    def get_ext_name(self):
+        return self.input_dict[CABLE_DESIGN_NAME_KEY]
+
+    def get_import_id(self):
+        return ""
+
+    def get_alt_id(self):
+        return ""
+
+    def get_description(self):
+        return ""
+
+    def get_laying(self):
+        return self.input_dict[CABLE_DESIGN_LAYING_KEY]
+
+    def get_voltage(self):
+        return self.input_dict[CABLE_DESIGN_VOLTAGE_KEY]
+
+    def get_owner_id(self):
+        return self.helper.get_args().ownerId
+
+    def get_project_id(self):
+        return self.helper.get_args().projectId
+
+    def get_cable_type_id(self):
+        return ""
+
+    def get_endpoint1_id(self):
+        return ""
+
+    def get_endpoint1_description(self):
+        return self.input_dict[CABLE_DESIGN_SRC_LOCATION_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_ANS_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_ADDRESS_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_DESCRIPTION_KEY]
+
+    def get_endpoint2_id(self):
+        return ""
+
+    def get_endpoint2_description(self):
+        return self.input_dict[CABLE_DESIGN_DEST_LOCATION_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_ANS_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_ADDRESS_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_DESCRIPTION_KEY]
 
 
 def main():
