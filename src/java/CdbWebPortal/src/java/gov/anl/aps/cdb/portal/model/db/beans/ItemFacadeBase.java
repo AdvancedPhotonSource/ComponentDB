@@ -34,7 +34,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     List<ItemDomainEntity> itemsToAdd;
 
     private final String QUERY_STRING_START = "SELECT i FROM Item i ";
-    private final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"}; 
+    private final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"};
 
     public ItemFacadeBase(Class<ItemDomainEntity> entityClass) {
         super(entityClass);
@@ -133,7 +133,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
     public List<ItemDomainEntity> findByDomainAndEntityTypeAndTopLevel(String domainName, String entityTypeName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndTopLevel")
@@ -292,11 +292,11 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         return null;
     }
-    
+
     private String escapeCharacters(String queryParameter) {
         for (CharSequence cs : ESCAPE_QUERY_CHARACTERS) {
             if (queryParameter.contains(cs)) {
-                queryParameter = queryParameter.replace(cs, "'" + cs); 
+                queryParameter = queryParameter.replace(cs, "'" + cs);
             }
         }
         return queryParameter;
@@ -534,7 +534,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     public List<ItemDomainEntity> getItemListOwnedByUserGroupExcludeEntityType(String domainName, UserGroup ownerUserGroup, String entityTypeName) {
         List<ItemDomainEntity> itemListOwnedByUserGroup = getItemListOwnedByUserGroup(domainName, ownerUserGroup);
         trimEntityTypeName(itemListOwnedByUserGroup, entityTypeName);
-        return itemListOwnedByUserGroup; 
+        return itemListOwnedByUserGroup;
     }
 
     public List<ItemDomainEntity> getItemListContainedInList(String domainName, ListTbl list) {
@@ -564,6 +564,33 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
     }
 
+    public List<ItemDomainEntity> getItemListContainedInListWithEntityType(String domainName, ListTbl list, String entityTypeName) {
+        if (list != null) {
+            try {
+                return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsInListWithEntityType")
+                        .setParameter("domainName", domainName)
+                        .setParameter("list", list)
+                        .setParameter("entityTypeName", entityTypeName)
+                        .getResultList();
+            } catch (NoResultException ex) {
+            }
+        }
+        return null;
+    }
+
+    public List<ItemDomainEntity> getItemListContainedInListWithoutEntityType(String domainName, ListTbl list) {
+        if (list != null) {
+            try {
+                return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsInListWithoutEntityType")
+                        .setParameter("domainName", domainName)
+                        .setParameter("list", list)
+                        .getResultList();
+            } catch (NoResultException ex) {
+            }
+        }
+        return null;
+    }
+
     public List<ItemDomainEntity> getItemListContainedInListOrOwnedByUser(String domainName, ListTbl list, UserInfo ownerUserInfo) {
         if (list != null) {
             try {
@@ -579,9 +606,9 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     public List<ItemDomainEntity> getItemListContainedInListOrOwnedByUserExcludeEntityType(String domainName, ListTbl list, UserInfo ownerUserInfo, String entityTypeName) {
-        List<ItemDomainEntity> itemListContainedInListOrOwnedByUser = getItemListContainedInListOrOwnedByUser(domainName, list, ownerUserInfo); 
+        List<ItemDomainEntity> itemListContainedInListOrOwnedByUser = getItemListContainedInListOrOwnedByUser(domainName, list, ownerUserInfo);
         trimEntityTypeName(itemListContainedInListOrOwnedByUser, entityTypeName);
-        return itemListContainedInListOrOwnedByUser; 
+        return itemListContainedInListOrOwnedByUser;
     }
 
     public List<ItemDomainEntity> getItemListContainedInListOrOwnedByGroup(String domainName, ListTbl list, UserGroup ownerUserGroup) {
@@ -600,12 +627,12 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     public List<ItemDomainEntity> getItemListContainedInListOrOwnedByGroupExcludeEntityType(String domainName, ListTbl list, UserGroup ownerUserGroup, String entityTypeName) {
-        List<ItemDomainEntity> itemListContainedInListOrOwnedByGroup = getItemListContainedInListOrOwnedByGroup(domainName, list, ownerUserGroup); 
+        List<ItemDomainEntity> itemListContainedInListOrOwnedByGroup = getItemListContainedInListOrOwnedByGroup(domainName, list, ownerUserGroup);
         trimEntityTypeName(itemListContainedInListOrOwnedByGroup, entityTypeName);
         return itemListContainedInListOrOwnedByGroup;
     }
-    
-     private void trimEntityTypeName(List<ItemDomainEntity> entityList, String entityTypeName) {
+
+    private void trimEntityTypeName(List<ItemDomainEntity> entityList, String entityTypeName) {
         if (entityList != null) {
             int i = 0;
             while (i < entityList.size()) {

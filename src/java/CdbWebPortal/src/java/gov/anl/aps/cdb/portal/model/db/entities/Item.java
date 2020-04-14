@@ -138,6 +138,20 @@ import org.primefaces.model.TreeNode;
             + "AND fiel.derivedFromItemElement is NULL "
             + "AND fiel.name is NULL "
             + "AND fiel.listList = :list "),
+    @NamedQuery(name = "Item.findItemsInListWithoutEntityType",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
+            + "WHERE i.domain.name = :domainName "
+            + "AND i.entityTypeList IS EMPTY "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND fiel.name is NULL "
+            + "AND fiel.listList = :list "),
+    @NamedQuery(name = "Item.findItemsInListWithEntityType",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel JOIN i.entityTypeList etl "
+            + "WHERE i.domain.name = :domainName "
+            + "AND etl.name = :entityTypeName "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND fiel.name is NULL "
+            + "AND fiel.listList = :list "),
     @NamedQuery(name = "Item.findItemsOwnedByUserGroupIdOrInList",
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel LEFT JOIN fiel.listList ieList "
             + "WHERE  fiel.name is NULL "
