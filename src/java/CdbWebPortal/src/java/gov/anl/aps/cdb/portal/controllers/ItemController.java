@@ -819,9 +819,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 }
 
                 // Show only favorites
-                if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
-                    List<ItemDomainEntity> itemList = getFavoriteItems();
-                    scopedListDataModel = new ListDataModel(itemList);
+                if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {                    
+                    scopedListDataModel = createFavoritesListDataModel();
                 } else {
                     // Show owned or owned & favorites. 
                     boolean showOwnedAndFavorites = settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue());
@@ -886,6 +885,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         loadPreProcessListDataModelIfNeeded(scopedListDataModel);
 
         return scopedListDataModel;
+    }
+    
+    public ListDataModel createFavoritesListDataModel() {
+        List<ItemDomainEntity> itemList = getFavoriteItems();
+        return new ListDataModel(itemList); 
     }
 
     public List<ItemDomainEntity> getFavoriteItems() {
@@ -983,7 +987,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return null;
     }
 
-    private ListTbl getFavoritesList() {
+    protected ListTbl getFavoritesList() {
         return getFavoritesList(null);
     }
 

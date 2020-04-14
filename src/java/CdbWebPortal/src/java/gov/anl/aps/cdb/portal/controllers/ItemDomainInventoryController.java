@@ -30,12 +30,15 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCable;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
@@ -137,7 +140,19 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         List<Item> findAll = (List<Item>)(List<?>)itemDomainMachineDesignFacade.getTopLevelMachineDesignInventory();
         inventory.addAll(findAll);
         listDataModel = new ListDataModel(inventory);               
-    } 
+    }
+
+    @Override
+    public ListDataModel createFavoritesListDataModel() {
+        List<Item> favoriteItems = (List<Item>)(List<?>)getFavoriteItems();
+        
+        ListTbl favoritesList = getFavoritesList();
+        List<ItemDomainMachineDesign> favoriteMachineDesignInventory = itemDomainMachineDesignFacade.getMachineDesignInventoryInList(favoritesList);
+        
+        favoriteItems.addAll(favoriteMachineDesignInventory); 
+        
+        return new ListDataModel(favoriteItems); 
+    }
 
     public List<SelectItem> getDomainFilterOptions() {
         if (domainFilterOptions == null) {           
