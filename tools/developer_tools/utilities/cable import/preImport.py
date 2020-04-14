@@ -194,7 +194,8 @@ class ColumnModel:
 
 class OutputObject(ABC):
 
-    def __init__(self, input_dict):
+    def __init__(self, helper, input_dict):
+        self.helper = helper
         self.input_dict = input_dict
 
 
@@ -245,7 +246,7 @@ class SourceHelper(PreImportHelper):
                 mfr_source = self.api.getSourceApi().get_source_by_name(manufacturer)
             except ApiException as ex:
                 if "ObjectNotFound" not in ex.body:
-                    logging.error("exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body))
+                    sys.exit("exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body))
                 mfr_source = None
             if mfr_source:
                 logging.debug("source already exists for manufacturer: %s, skipping" % manufacturer)
@@ -253,7 +254,7 @@ class SourceHelper(PreImportHelper):
             else:
                 logging.debug("adding output object for unique manufacturer: %s" % manufacturer)
                 self.manufacturers.add(manufacturer)
-                return SourceOutputObject(input_dict=input_dict)
+                return SourceOutputObject(helper=self, input_dict=input_dict)
 
         else:
             logging.debug("ignoring duplicate manufacturer: %s" % manufacturer)
@@ -262,8 +263,8 @@ class SourceHelper(PreImportHelper):
 
 class SourceOutputObject(OutputObject):
 
-    def __init__(self, input_dict):
-        super().__init__(input_dict)
+    def __init__(self, helper, input_dict):
+        super().__init__(helper, input_dict)
         self.description = ""
         self.contact_info = ""
         self.url = ""
@@ -286,6 +287,7 @@ class CableTypeHelper(PreImportHelper):
 
     def __init__(self):
         super().__init__()
+        self.source_dict = {}
 
     @staticmethod
     def tag():
@@ -349,13 +351,13 @@ class CableTypeHelper(PreImportHelper):
     def get_output_object(self, input_dict):
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
-        return CableTypeOutputObject(input_dict=input_dict)
+        return CableTypeOutputObject(helper=self, input_dict=input_dict)
 
 
 class CableTypeOutputObject(OutputObject):
 
-    def __init__(self, input_dict):
-        super().__init__(input_dict)
+    def __init__(self, helper, input_dict):
+        super().__init__(helper, input_dict)
 
     def get_name(self):
         return self.input_dict[CABLE_TYPE_NAME_KEY]
@@ -370,7 +372,28 @@ class CableTypeOutputObject(OutputObject):
         return self.input_dict[CABLE_TYPE_IMAGE_URL_KEY]
 
     def get_manufacturer_id(self):
-        return ""
+        manufacturer = self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
+
+        if manufacturer == "" or manufacturer == None:
+            return ""
+
+        if manufacturer in self.helper.source_dict:
+            return self.helper.source_dict[manufacturer]
+        else:
+            # check to see if manufacturer exists as a CDB Source
+            mfr_source = None
+            try:
+                mfr_source = self.helper.api.getSourceApi().get_source_by_name(manufacturer)
+            except ApiException as ex:
+                sys.exit("exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body))
+
+            if mfr_source:
+                source_id = mfr_source.id
+                logging.debug("found source for manufacturer: %s, id: %s" % (manufacturer, source_id))
+                self.helper.source_dict[manufacturer] = source_id
+                return source_id
+            else:
+                sys.exit("no source found for manufacturer: %s" % manufacturer)
 
     def get_part_number(self):
         return self.input_dict[CABLE_TYPE_PART_NUMBER_KEY]
