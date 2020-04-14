@@ -87,6 +87,7 @@ class PreImportHelper(ABC):
         self.initialize_input_columns()
         self.output_columns = {}
         self.initialize_output_columns()
+        self.args = None
         self.api = None
 
     # registers helper concrete classes for lookup by tag
@@ -153,6 +154,12 @@ class PreImportHelper(ABC):
     @abstractmethod
     def get_output_object(self, input_dict):
         pass
+
+    def set_args(self, args):
+        self.args = args
+
+    def get_args(self):
+        return self.args
 
     def set_api(self, api):
         self.api = api
@@ -289,6 +296,16 @@ class CableTypeHelper(PreImportHelper):
         super().__init__()
         self.source_dict = {}
 
+    # Adds helper specific command line args.
+    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
+    @staticmethod
+    def add_parser_args(parser):
+        parser.add_argument("--ownerId", help="CDB techincal system ID for owner", required=True)
+
+    def set_args(self, args):
+        super().set_args(args)
+        print("owner CDB technical system id: %s" % args.ownerId)
+
     @staticmethod
     def tag():
         return "CableType"
@@ -353,6 +370,15 @@ class CableTypeHelper(PreImportHelper):
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
         return CableTypeOutputObject(helper=self, input_dict=input_dict)
 
+    def has_mfr(self, mfr):
+        return mfr in self.source_dict
+
+    def get_id_for_mfr(self, mfr):
+        return self.source_dict[mfr]
+
+    def set_id_for_mfr(self, mfr, id):
+        self.source_dict[mfr] = id
+
 
 class CableTypeOutputObject(OutputObject):
 
@@ -374,11 +400,11 @@ class CableTypeOutputObject(OutputObject):
     def get_manufacturer_id(self):
         manufacturer = self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
 
-        if manufacturer == "" or manufacturer == None:
+        if manufacturer == "" or manufacturer is None:
             return ""
 
-        if manufacturer in self.helper.source_dict:
-            return self.helper.source_dict[manufacturer]
+        if self.helper.has_mfr(manufacturer):
+            return self.helper.get_id_for_mfr(manufacturer)
         else:
             # check to see if manufacturer exists as a CDB Source
             mfr_source = None
@@ -390,7 +416,7 @@ class CableTypeOutputObject(OutputObject):
             if mfr_source:
                 source_id = mfr_source.id
                 logging.debug("found source for manufacturer: %s, id: %s" % (manufacturer, source_id))
-                self.helper.source_dict[manufacturer] = source_id
+                self.helper.set_id_for_mfr(manufacturer, source_id)
                 return source_id
             else:
                 sys.exit("no source found for manufacturer: %s" % manufacturer)
@@ -432,7 +458,7 @@ class CableTypeOutputObject(OutputObject):
         return self.input_dict[CABLE_TYPE_RAD_TOLERANCE_KEY]
 
     def get_owner_id(self):
-        return ""
+        return self.helper.get_args().ownerId
 
 
 def main():
@@ -469,6 +495,7 @@ def main():
     print("pre-import type: %s" % args.type)
     print("cdb user id: %s" % args.cdbUser)
     print("cdb user password: %s" % args.cdbPassword)
+    helper.set_args(args)
 
     # configure logging
     logging.basicConfig(filename=args.logFile, filemode='w', level=logging.DEBUG, format='%(levelname)s - %(message)s')
