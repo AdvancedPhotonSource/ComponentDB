@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 @Tag(name = "source")
 public class SourceRoute extends BaseRoute {
     
-    private static final Logger LOGGER = LogManager.getLogger(Source.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(SourceRoute.class.getName());
     
     @EJB
     SourceFacade sourceFacade; 

@@ -473,6 +473,7 @@ class CableDesignHelper(PreImportHelper):
 
     def __init__(self):
         super().__init__()
+        self.cable_type_dict = {}
 
     # Adds helper specific command line args.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
@@ -541,6 +542,15 @@ class CableDesignHelper(PreImportHelper):
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
         return CableDesignOutputObject(helper=self, input_dict=input_dict)
 
+    def has_cable_type(self, cable_type):
+        return cable_type in self.cable_type_dict
+
+    def get_id_for_cable_type(self, cable_type):
+        return self.cable_type_dict[cable_type]
+
+    def set_id_for_cable_type(self, cable_type, id):
+        self.cable_type_dict[cable_type] = id
+
 
 class CableDesignOutputObject(OutputObject):
 
@@ -577,8 +587,29 @@ class CableDesignOutputObject(OutputObject):
     def get_project_id(self):
         return self.helper.get_args().projectId
 
-    def get_cable_type_id(self):
-        return ""
+    def get_cable_type_id(self):        
+        cable_type_name = self.input_dict[CABLE_DESIGN_TYPE_KEY]
+
+        if cable_type_name == "" or cable_type_name is None:
+            return ""
+        
+        if self.helper.has_cable_type(cable_type_name):
+            return self.helper.get_id_for_cable_type(cable_type_name)
+        else:
+            # check to see if cable type exists in CDB by name
+            cable_type_object = None
+            try:
+                cable_type_object = self.helper.api.getCableCatalogItemApi().get_cable_catalog_item_by_name(cable_type_name)
+            except ApiException as ex:
+                sys.exit("exception retrieving cable catalog item: %s - %s" % (cable_type_name, ex.body))
+    
+            if cable_type_object:
+                cable_type_id = cable_type_object.id
+                logging.debug("found cable type with name: %s, id: %s" % (cable_type_name, cable_type_id))
+                self.helper.set_id_for_cable_type(cable_type_name, cable_type_id)
+                return cable_type_id
+            else:
+                sys.exit("no cable type found with name: %s" % cable_type_name)
 
     def get_endpoint1_id(self):
         return ""

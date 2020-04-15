@@ -210,7 +210,7 @@ public class ItemDomainCableDesign extends Item {
 
     public Item getEndpoint1() {
         List<Item> iList = this.getEndpointList();
-        if (iList.size() > 0) {
+        if ((iList != null) && (iList.size() > 0)) {
             return iList.get(0);
         }
         else {
@@ -229,7 +229,7 @@ public class ItemDomainCableDesign extends Item {
 
     public Item getEndpoint2() {
         List<Item> iList = this.getEndpointList();
-        if (iList.size() > 1) {
+        if ((iList != null) && (iList.size() > 0)) {
             return iList.get(1);
         }
         else {

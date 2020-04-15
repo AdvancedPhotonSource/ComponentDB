@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
@@ -20,6 +21,30 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_CATALOG_ID + "")   
+@JsonIgnoreProperties(value = {
+    // Transient
+    "url",
+    "urlDisplay",
+    "imageUrl",
+    "imageUrlDisplay",
+    "manufacturer",
+    "altPartNumber",
+    "weight",
+    "diameter",
+    "conductors",
+    "insulation",
+    "jacketColor",
+    "voltageRating",
+    "fireLoad",
+    "heatLimit",
+    "bendRadius",
+    "radTolerance",
+    "team",
+    "isValid",
+    "validString",
+    "coreMetadataPropertyValue",
+    "coreMetadataPropertyInfo"
+})
 public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCableInventory> {
     
     private transient String url = null;

@@ -199,7 +199,9 @@ import org.primefaces.model.TreeNode;
     "lastKnownItemCategoryList",
     "isItemTemplate",    
     "selfElement",
-    "descriptionFromAPI"
+    "descriptionFromAPI",
+    "coreMetadataPropertyValue",
+    "coreMetadataPropertyInfo"
 })
 @Schema(name="Item", 
         subTypes= 
