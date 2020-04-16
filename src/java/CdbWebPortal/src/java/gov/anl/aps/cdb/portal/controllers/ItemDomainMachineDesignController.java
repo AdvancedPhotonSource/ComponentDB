@@ -113,7 +113,6 @@ public class ItemDomainMachineDesignController
     private boolean displayAddCatalogItemListConfigurationPanel = true;
     private boolean displayAssignCatalogItemListConfigurationPanel = true;
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
-    private boolean displayCreateMachineDesignForTemplateElementPlaceholder = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
     private boolean displayAddCablePanel = true;
     private boolean displayAddCableCircuitPanel = true;
@@ -628,8 +627,7 @@ public class ItemDomainMachineDesignController
         displayAddMDMoveExistingConfigurationPanel = false;
         displayAddCatalogItemListConfigurationPanel = false;
         displayAssignCatalogItemListConfigurationPanel = false;
-        displayAssignInventoryItemListConfigurationPanel = false;
-        displayCreateMachineDesignForTemplateElementPlaceholder = false;
+        displayAssignInventoryItemListConfigurationPanel = false;        
         displayMachineDesignReorderOverlayPanel = false;
         displayAddCablePanel = false;
         displayAddCableCircuitPanel = false;
@@ -689,8 +687,7 @@ public class ItemDomainMachineDesignController
     }
 
     public boolean isDisplayFollowInstructionOnRightOnBlockUI() {
-        return displayCreateMachineDesignForTemplateElementPlaceholder
-                || displayAddMDMoveExistingConfigurationPanel
+        return displayAddMDMoveExistingConfigurationPanel
                 || displayAddMDFromTemplateConfigurationPanel
                 || displayAddMDPlaceholderListConfigurationPanel
                 || displayAssignCatalogItemListConfigurationPanel
@@ -727,10 +724,6 @@ public class ItemDomainMachineDesignController
 
     public boolean isDisplayAssignInventoryItemListConfigurationPanel() {
         return displayAssignInventoryItemListConfigurationPanel;
-    }
-
-    public boolean isDisplayCreateMachineDesignForTemplateElementPlaceholder() {
-        return displayCreateMachineDesignForTemplateElementPlaceholder;
     }
 
     public boolean isDisplayMachineDesignReorderOverlayPanel() {
@@ -854,23 +847,22 @@ public class ItemDomainMachineDesignController
         destroy();
     }
 
-    public void prepareCreateMachineDesignForDualViewTemplateElementPlaceholder() {
-        updateCurrentUsingSelectedItemInTreeTable();
-        currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
-
-        prepareCreateMachineDesignFromTemplate();
-
-        displayListConfigurationView = true;
-        displayCreateMachineDesignForTemplateElementPlaceholder = true;
-    }
-
-    public void createMachineDesignForDualViewTemplatePlaceholder(String successCreatePlaceholder) {
-        boolean success = createMachineDesignFromTemplate(successCreatePlaceholder);
-
-        if (success) {
-            expandToSpecificTreeNode(selectedItemInListTreeTable);
-            resetListConfigurationVariables();
-        }
+    public void prepareFullfilPlaceholder() {
+        // Element with template to be fullfilled
+        ItemElement templateElement = (ItemElement) selectedItemInListTreeTable.getData();
+                
+        // Select Parent where the template will be created 
+        selectedItemInListTreeTable = selectedItemInListTreeTable.getParent();                                
+        
+        // Execute standard add template function 
+        prepareAddMdFromPlaceholder();
+        
+        // Remove the template element                 
+        getCurrent().removeItemElement(templateElement);
+        
+        // Select current template 
+        templateToCreateNewItem = (ItemDomainMachineDesign) templateElement.getContainedItem();
+        generateTemplateForElementMachineDesignNameVars();       
     }
 
     public void prepareAssignInventoryMachineDesignListConfiguration() {
@@ -920,8 +912,6 @@ public class ItemDomainMachineDesignController
         displayListConfigurationView = true;
 
         prepareCreateSingleItemElementSimpleDialog();
-
-        createCatalogElement = false;
     }
 
     public void completeAddNewMachineDesignListConfiguration() {
@@ -1765,7 +1755,7 @@ public class ItemDomainMachineDesignController
         super.cancelCreateSingleItemElementSimpleDialog();
         resetItemElementEditVariables();
     }
-
+    
     public void prepareCreateMachineDesignFromTemplate() {
         resetItemElementEditVariables();
         displayCreateMachineDesignFromTemplateContent = true;
@@ -1904,7 +1894,7 @@ public class ItemDomainMachineDesignController
         displayCreateMachineDesignFromTemplateContent = false;
 
         installedInventorySelectionForCurrentElement = null;
-        createCatalogElement = null;
+        createCatalogElement = false;
         machineDesignItemCreateFromTemplate = null;
         inventoryForElement = null;
         catalogForElement = null;
