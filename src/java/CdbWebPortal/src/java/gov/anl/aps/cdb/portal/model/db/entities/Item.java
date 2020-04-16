@@ -73,6 +73,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM Item i WHERE i.derivedFromItem.id = :id"),
     @NamedQuery(name = "Item.findByName",
             query = "SELECT i FROM Item i WHERE i.name = :name"),
+    @NamedQuery(name = "Item.findByDomainNameAndName",
+            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName AND i.name = :name"),
     @NamedQuery(name = "Item.findByItemIdentifier1",
             query = "SELECT i FROM Item i WHERE i.itemIdentifier1 = :itemIdentifier1"),
     @NamedQuery(name = "Item.findByItemIdentifier2",
