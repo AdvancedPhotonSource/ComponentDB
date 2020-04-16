@@ -76,8 +76,7 @@ public class ItemDomainMachineDesignController
 
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private Boolean createCatalogElement = null;
-    private Boolean machineDesignItemCreateFromTemplate = null;
-    private Boolean machineDesignTemplateCreateAll = null;
+    private Boolean machineDesignItemCreateFromTemplate = null;    
     private Item inventoryForElement = null;
     private Item catalogForElement = null;
     private Item originalForElement = null;
@@ -673,7 +672,6 @@ public class ItemDomainMachineDesignController
     public void prepareAddMdFromPlaceholder() {
         prepareAddNewMachineDesignListConfiguration();
         displayAddMDFromTemplateConfigurationPanel = true;
-        machineDesignTemplateCreateAll = false;
     }
 
     public void prepareAddMdFromCatalog() {
@@ -740,14 +738,6 @@ public class ItemDomainMachineDesignController
 
     public boolean isDisplayAddCableBundlePanel() {
         return displayAddCableBundlePanel;
-    }
-
-    public Boolean getMachineDesignTemplateCreateAll() {
-        return machineDesignTemplateCreateAll;
-    }
-
-    public void setMachineDesignTemplateCreateAll(Boolean machineDesignTemplateCreateAll) {
-        this.machineDesignTemplateCreateAll = machineDesignTemplateCreateAll;
     }
 
     private void updateCurrentUsingSelectedItemInTreeTable() {
@@ -847,6 +837,10 @@ public class ItemDomainMachineDesignController
         destroy();
     }
 
+    @Deprecated
+    /**
+     * Templates are only created fully and only previously partially created md from templates will utilize this. 
+     */
     public void prepareFullfilPlaceholder() {
         // Element with template to be fullfilled
         ItemElement templateElement = (ItemElement) selectedItemInListTreeTable.getData();
@@ -1928,12 +1922,8 @@ public class ItemDomainMachineDesignController
         if (templateToCreateNewItem != null) {
 
             machineDesignNameList = new ArrayList<>();
-
-            if (machineDesignTemplateCreateAll) {
-                generateMachineDesignTemplateNameVarsRecursivelly(templateToCreateNewItem);
-            } else {
-                generateMachineDesignTemplateNameVars(templateToCreateNewItem);
-            }
+            
+            generateMachineDesignTemplateNameVarsRecursivelly(templateToCreateNewItem);            
 
             generateMachineDesignName();
         }
@@ -2048,10 +2038,8 @@ public class ItemDomainMachineDesignController
 
     private void createMachineDesignFromTemplateForEditItemElement() throws CdbException, CloneNotSupportedException {
         createMachineDesignFromTemplate(currentEditItemElement, templateToCreateNewItem);
-
-        if (machineDesignTemplateCreateAll) {
-            createMachineDesignFromTemplateHierachically(currentEditItemElement);
-        }
+        
+        createMachineDesignFromTemplateHierachically(currentEditItemElement);
     }
 
     private void createMachineDesignFromTemplateHierachically(ItemElement itemElement) throws CdbException, CloneNotSupportedException {
