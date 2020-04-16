@@ -17,12 +17,9 @@ import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -271,7 +268,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @ManyToMany    
     @JsonProperty("itemProjectList")
     private List<ItemProject> itemProjectList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem", orphanRemoval = true)
     @OrderBy("sortOrder ASC")        
     private List<ItemElement> fullItemElementList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "containedItem1")        
@@ -766,6 +763,11 @@ public class Item extends CdbDomainEntity implements Serializable {
             }
         }
         return itemElementDisplayList;
+    }
+    
+    public void removeItemElement(ItemElement itemElement) {
+        fullItemElementList.remove(itemElement);
+        resetItemElementVars();
     }
     
     public void resetItemElementVars() {

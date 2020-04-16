@@ -76,8 +76,7 @@ public class ItemDomainMachineDesignController
 
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private Boolean createCatalogElement = null;
-    private Boolean machineDesignItemCreateFromTemplate = null;
-    private Boolean machineDesignTemplateCreateAll = null;
+    private Boolean machineDesignItemCreateFromTemplate = null;    
     private Item inventoryForElement = null;
     private Item catalogForElement = null;
     private Item originalForElement = null;
@@ -113,7 +112,6 @@ public class ItemDomainMachineDesignController
     private boolean displayAddCatalogItemListConfigurationPanel = true;
     private boolean displayAssignCatalogItemListConfigurationPanel = true;
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
-    private boolean displayCreateMachineDesignForTemplateElementPlaceholder = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
     private boolean displayAddCablePanel = true;
     private boolean displayAddCableCircuitPanel = true;
@@ -628,8 +626,7 @@ public class ItemDomainMachineDesignController
         displayAddMDMoveExistingConfigurationPanel = false;
         displayAddCatalogItemListConfigurationPanel = false;
         displayAssignCatalogItemListConfigurationPanel = false;
-        displayAssignInventoryItemListConfigurationPanel = false;
-        displayCreateMachineDesignForTemplateElementPlaceholder = false;
+        displayAssignInventoryItemListConfigurationPanel = false;        
         displayMachineDesignReorderOverlayPanel = false;
         displayAddCablePanel = false;
         displayAddCableCircuitPanel = false;
@@ -675,7 +672,6 @@ public class ItemDomainMachineDesignController
     public void prepareAddMdFromPlaceholder() {
         prepareAddNewMachineDesignListConfiguration();
         displayAddMDFromTemplateConfigurationPanel = true;
-        machineDesignTemplateCreateAll = false;
     }
 
     public void prepareAddMdFromCatalog() {
@@ -689,8 +685,7 @@ public class ItemDomainMachineDesignController
     }
 
     public boolean isDisplayFollowInstructionOnRightOnBlockUI() {
-        return displayCreateMachineDesignForTemplateElementPlaceholder
-                || displayAddMDMoveExistingConfigurationPanel
+        return displayAddMDMoveExistingConfigurationPanel
                 || displayAddMDFromTemplateConfigurationPanel
                 || displayAddMDPlaceholderListConfigurationPanel
                 || displayAssignCatalogItemListConfigurationPanel
@@ -729,10 +724,6 @@ public class ItemDomainMachineDesignController
         return displayAssignInventoryItemListConfigurationPanel;
     }
 
-    public boolean isDisplayCreateMachineDesignForTemplateElementPlaceholder() {
-        return displayCreateMachineDesignForTemplateElementPlaceholder;
-    }
-
     public boolean isDisplayMachineDesignReorderOverlayPanel() {
         return displayMachineDesignReorderOverlayPanel;
     }
@@ -747,14 +738,6 @@ public class ItemDomainMachineDesignController
 
     public boolean isDisplayAddCableBundlePanel() {
         return displayAddCableBundlePanel;
-    }
-
-    public Boolean getMachineDesignTemplateCreateAll() {
-        return machineDesignTemplateCreateAll;
-    }
-
-    public void setMachineDesignTemplateCreateAll(Boolean machineDesignTemplateCreateAll) {
-        this.machineDesignTemplateCreateAll = machineDesignTemplateCreateAll;
     }
 
     private void updateCurrentUsingSelectedItemInTreeTable() {
@@ -854,23 +837,26 @@ public class ItemDomainMachineDesignController
         destroy();
     }
 
-    public void prepareCreateMachineDesignForDualViewTemplateElementPlaceholder() {
-        updateCurrentUsingSelectedItemInTreeTable();
-        currentEditItemElement = (ItemElement) selectedItemInListTreeTable.getData();
-
-        prepareCreateMachineDesignFromTemplate();
-
-        displayListConfigurationView = true;
-        displayCreateMachineDesignForTemplateElementPlaceholder = true;
-    }
-
-    public void createMachineDesignForDualViewTemplatePlaceholder(String successCreatePlaceholder) {
-        boolean success = createMachineDesignFromTemplate(successCreatePlaceholder);
-
-        if (success) {
-            expandToSpecificTreeNode(selectedItemInListTreeTable);
-            resetListConfigurationVariables();
-        }
+    @Deprecated
+    /**
+     * Templates are only created fully and only previously partially created md from templates will utilize this. 
+     */
+    public void prepareFullfilPlaceholder() {
+        // Element with template to be fullfilled
+        ItemElement templateElement = (ItemElement) selectedItemInListTreeTable.getData();
+                
+        // Select Parent where the template will be created 
+        selectedItemInListTreeTable = selectedItemInListTreeTable.getParent();                                
+        
+        // Execute standard add template function 
+        prepareAddMdFromPlaceholder();
+        
+        // Remove the template element                 
+        getCurrent().removeItemElement(templateElement);
+        
+        // Select current template 
+        templateToCreateNewItem = (ItemDomainMachineDesign) templateElement.getContainedItem();
+        generateTemplateForElementMachineDesignNameVars();       
     }
 
     public void prepareAssignInventoryMachineDesignListConfiguration() {
@@ -920,8 +906,6 @@ public class ItemDomainMachineDesignController
         displayListConfigurationView = true;
 
         prepareCreateSingleItemElementSimpleDialog();
-
-        createCatalogElement = false;
     }
 
     public void completeAddNewMachineDesignListConfiguration() {
@@ -1765,7 +1749,7 @@ public class ItemDomainMachineDesignController
         super.cancelCreateSingleItemElementSimpleDialog();
         resetItemElementEditVariables();
     }
-
+    
     public void prepareCreateMachineDesignFromTemplate() {
         resetItemElementEditVariables();
         displayCreateMachineDesignFromTemplateContent = true;
@@ -1904,7 +1888,7 @@ public class ItemDomainMachineDesignController
         displayCreateMachineDesignFromTemplateContent = false;
 
         installedInventorySelectionForCurrentElement = null;
-        createCatalogElement = null;
+        createCatalogElement = false;
         machineDesignItemCreateFromTemplate = null;
         inventoryForElement = null;
         catalogForElement = null;
@@ -1938,12 +1922,8 @@ public class ItemDomainMachineDesignController
         if (templateToCreateNewItem != null) {
 
             machineDesignNameList = new ArrayList<>();
-
-            if (machineDesignTemplateCreateAll) {
-                generateMachineDesignTemplateNameVarsRecursivelly(templateToCreateNewItem);
-            } else {
-                generateMachineDesignTemplateNameVars(templateToCreateNewItem);
-            }
+            
+            generateMachineDesignTemplateNameVarsRecursivelly(templateToCreateNewItem);            
 
             generateMachineDesignName();
         }
@@ -2058,10 +2038,8 @@ public class ItemDomainMachineDesignController
 
     private void createMachineDesignFromTemplateForEditItemElement() throws CdbException, CloneNotSupportedException {
         createMachineDesignFromTemplate(currentEditItemElement, templateToCreateNewItem);
-
-        if (machineDesignTemplateCreateAll) {
-            createMachineDesignFromTemplateHierachically(currentEditItemElement);
-        }
+        
+        createMachineDesignFromTemplateHierachically(currentEditItemElement);
     }
 
     private void createMachineDesignFromTemplateHierachically(ItemElement itemElement) throws CdbException, CloneNotSupportedException {
