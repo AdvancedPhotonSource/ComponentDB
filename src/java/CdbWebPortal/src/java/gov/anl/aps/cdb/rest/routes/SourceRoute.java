@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
  * @author craig
  */
 @Path("/Sources")
-@Tag(name = "source")
+@Tag(name = "sources")
 public class SourceRoute extends BaseRoute {
     
     private static final Logger LOGGER = LogManager.getLogger(SourceRoute.class.getName());

@@ -474,6 +474,7 @@ class CableDesignHelper(PreImportHelper):
     def __init__(self):
         super().__init__()
         self.cable_type_dict = {}
+        self.endpoint_dict = {}
 
     # Adds helper specific command line args.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
@@ -493,7 +494,7 @@ class CableDesignHelper(PreImportHelper):
 
     @classmethod
     def num_input_cols(cls):
-        return 15
+        return 20
 
     @classmethod
     def input_column_list(cls):
@@ -550,6 +551,15 @@ class CableDesignHelper(PreImportHelper):
 
     def set_id_for_cable_type(self, cable_type, id):
         self.cable_type_dict[cable_type] = id
+
+    def has_endpoint(self, endpoint):
+        return endpoint in self.endpoint_dict
+
+    def get_id_for_endpoint(self, endpoint):
+        return self.endpoint_dict[endpoint]
+
+    def set_id_for_endpoint(self, endpoint, id):
+        self.endpoint_dict[endpoint] = id
 
 
 class CableDesignOutputObject(OutputObject):
@@ -611,14 +621,44 @@ class CableDesignOutputObject(OutputObject):
             else:
                 sys.exit("no cable type found with name: %s" % cable_type_name)
 
+    def get_endpoint_id(self, input_column_key):
+        endpoint_name = self.input_dict[input_column_key]
+
+        if endpoint_name == "" or endpoint_name is None:
+            return ""
+
+        if self.helper.has_endpoint(endpoint_name):
+            return self.helper.get_id_for_endpoint(endpoint_name)
+        else:
+            # check to see if endpoint exists in CDB by name
+            endpoint_object = None
+            try:
+                endpoint_object = self.helper.api.getMachineDesignItemApi().get_machine_design_item_by_name(endpoint_name)
+            except ApiException as ex:
+                msg_string = ""
+                items = self.helper.api.getItemApi().get_detailed_md_search_results(endpoint_name)
+                for item in items:
+                    msg_string = msg_string + item.object_name + ", "
+                if len(msg_string) > 0:
+                    print("candidate items located by fuzzy search: " + msg_string)
+                sys.exit("exception retrieving machine design item: %s - %s" % (endpoint_name, ex.body))
+
+            if endpoint_object:
+                endpoint_id = endpoint_object['id']
+                logging.debug("found machine design item with name: %s, id: %s" % (endpoint_name, endpoint_id))
+                self.helper.set_id_for_endpoint(endpoint_name, endpoint_id)
+                return endpoint_id
+            else:
+                sys.exit("no machine design item found with name: %s" % endpoint_name)
+
     def get_endpoint1_id(self):
-        return ""
+        return self.get_endpoint_id(CABLE_DESIGN_SRC_ETPM_KEY)
 
     def get_endpoint1_description(self):
         return self.input_dict[CABLE_DESIGN_SRC_LOCATION_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_ANS_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_ADDRESS_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_DESCRIPTION_KEY]
 
     def get_endpoint2_id(self):
-        return ""
+        return self.get_endpoint_id(CABLE_DESIGN_DEST_ETPM_KEY)
 
     def get_endpoint2_description(self):
         return self.input_dict[CABLE_DESIGN_DEST_LOCATION_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_ANS_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_ADDRESS_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_DESCRIPTION_KEY]
