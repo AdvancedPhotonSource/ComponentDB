@@ -238,7 +238,7 @@ class SourceHelper(PreImportHelper):
     @classmethod
     def input_column_list(cls):
         column_list = [
-            ColumnModel(col_index=4, property=CABLE_TYPE_MANUFACTURER_KEY),
+            ColumnModel(col_index=2, property=CABLE_TYPE_MANUFACTURER_KEY),
         ]
         return column_list
 
@@ -255,6 +255,10 @@ class SourceHelper(PreImportHelper):
     def get_output_object(self, input_dict):
 
         manufacturer = input_dict[CABLE_TYPE_MANUFACTURER_KEY]
+        if len(manufacturer) == 0:
+            logging.debug("manufacturer is empty")
+            return None
+
         logging.debug("found manufacturer: %s" % manufacturer)
 
         if manufacturer not in self.manufacturers:
@@ -262,7 +266,7 @@ class SourceHelper(PreImportHelper):
             try:
                 mfr_source = self.api.getSourceApi().get_source_by_name(manufacturer)
             except ApiException as ex:
-                if "NotFoundException" not in ex.body:
+                if "ObjectNotFound" not in ex.body:
                     logging.error("exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body))
                     print("exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body))
                 mfr_source = None
@@ -330,21 +334,21 @@ class CableTypeHelper(PreImportHelper):
         column_list = [
             ColumnModel(col_index=0, property=CABLE_TYPE_NAME_KEY),
             ColumnModel(col_index=1, property=CABLE_TYPE_DESCRIPTION_KEY),
-            ColumnModel(col_index=2, property=CABLE_TYPE_LINK_URL_KEY),
-            ColumnModel(col_index=3, property=CABLE_TYPE_IMAGE_URL_KEY),
-            ColumnModel(col_index=4, property=CABLE_TYPE_MANUFACTURER_KEY),
-            ColumnModel(col_index=5, property=CABLE_TYPE_PART_NUMBER_KEY),
-            ColumnModel(col_index=6, property=CABLE_TYPE_ALT_PART_NUMBER_KEY),
-            ColumnModel(col_index=7, property=CABLE_TYPE_DIAMETER_KEY),
-            ColumnModel(col_index=8, property=CABLE_TYPE_WEIGHT_KEY),
-            ColumnModel(col_index=9, property=CABLE_TYPE_CONDUCTORS_KEY),
-            ColumnModel(col_index=10, property=CABLE_TYPE_INSULATION_KEY),
-            ColumnModel(col_index=11, property=CABLE_TYPE_JACKET_COLOR_KEY),
-            ColumnModel(col_index=12, property=CABLE_TYPE_VOLTAGE_RATING_KEY),
-            ColumnModel(col_index=13, property=CABLE_TYPE_FIRE_LOAD_KEY),
-            ColumnModel(col_index=14, property=CABLE_TYPE_HEAT_LIMIT_KEY),
-            ColumnModel(col_index=15, property=CABLE_TYPE_BEND_RADIUS_KEY),
-            ColumnModel(col_index=16, property=CABLE_TYPE_RAD_TOLERANCE_KEY),
+            ColumnModel(col_index=2, property=CABLE_TYPE_MANUFACTURER_KEY),
+            ColumnModel(col_index=3, property=CABLE_TYPE_PART_NUMBER_KEY),
+            ColumnModel(col_index=4, property=CABLE_TYPE_ALT_PART_NUMBER_KEY),
+            ColumnModel(col_index=5, property=CABLE_TYPE_DIAMETER_KEY),
+            ColumnModel(col_index=6, property=CABLE_TYPE_WEIGHT_KEY),
+            ColumnModel(col_index=7, property=CABLE_TYPE_CONDUCTORS_KEY),
+            ColumnModel(col_index=8, property=CABLE_TYPE_INSULATION_KEY),
+            ColumnModel(col_index=9, property=CABLE_TYPE_JACKET_COLOR_KEY),
+            ColumnModel(col_index=10, property=CABLE_TYPE_VOLTAGE_RATING_KEY),
+            ColumnModel(col_index=11, property=CABLE_TYPE_FIRE_LOAD_KEY),
+            ColumnModel(col_index=12, property=CABLE_TYPE_HEAT_LIMIT_KEY),
+            ColumnModel(col_index=13, property=CABLE_TYPE_BEND_RADIUS_KEY),
+            ColumnModel(col_index=14, property=CABLE_TYPE_RAD_TOLERANCE_KEY),
+            ColumnModel(col_index=15, property=CABLE_TYPE_LINK_URL_KEY),
+            ColumnModel(col_index=16, property=CABLE_TYPE_IMAGE_URL_KEY),
         ]
         return column_list
 
