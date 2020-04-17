@@ -89,6 +89,11 @@ CABLE_DESIGN_DEST_ANS_KEY = "destANS"
 CABLE_DESIGN_DEST_ETPM_KEY = "destETPM"
 CABLE_DESIGN_DEST_ADDRESS_KEY = "destAddress"
 CABLE_DESIGN_DEST_DESCRIPTION_KEY = "destDescription"
+CABLE_DESIGN_LEGACY_ID_KEY = "legacyId"
+CABLE_DESIGN_FROM_DEVICE_NAME_KEY = "fromDeviceName"
+CABLE_DESIGN_TO_DEVICE_NAME_KEY = "toDeviceName"
+CABLE_DESIGN_MBA_ID_KEY = "mbaId"
+CABLE_DESIGN_IMPORT_ID_KEY = "importId"
 
 def register(helper_class):
     PreImportHelper.register(helper_class.tag(), helper_class)
@@ -518,6 +523,11 @@ class CableDesignHelper(PreImportHelper):
             ColumnModel(col_index=12, property=CABLE_DESIGN_DEST_ETPM_KEY),
             ColumnModel(col_index=13, property=CABLE_DESIGN_DEST_ADDRESS_KEY),
             ColumnModel(col_index=14, property=CABLE_DESIGN_DEST_DESCRIPTION_KEY),
+            ColumnModel(col_index=15, property=CABLE_DESIGN_LEGACY_ID_KEY),
+            ColumnModel(col_index=16, property=CABLE_DESIGN_FROM_DEVICE_NAME_KEY),
+            ColumnModel(col_index=17, property=CABLE_DESIGN_TO_DEVICE_NAME_KEY),
+            ColumnModel(col_index=18, property=CABLE_DESIGN_MBA_ID_KEY),
+            ColumnModel(col_index=19, property=CABLE_DESIGN_IMPORT_ID_KEY),
         ]
         return column_list
 
@@ -572,19 +582,31 @@ class CableDesignOutputObject(OutputObject):
         super().__init__(helper, input_dict)
 
     def get_name(self):
-        return "#cdbid#"
+        # use legacy_id if specified
+        legacy_id = self.input_dict[CABLE_DESIGN_LEGACY_ID_KEY]
+        if len(legacy_id) > 0:
+            return legacy_id
+
+        # next try MBA cable id
+        mba_id = self.input_dict[CABLE_DESIGN_MBA_ID_KEY]
+        if len(mba_id) > 0:
+            return mba_id
+
+        # otherwise use import_id prefixed with "CA "
+        import_id = self.input_dict[CABLE_DESIGN_IMPORT_ID_KEY]
+        return "CA " + str(import_id)
 
     def get_alt_name(self):
-        return self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ":#cdbid#"
+        return "<" + self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + "><" + self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ">:" + self.get_name()
 
     def get_ext_name(self):
         return self.input_dict[CABLE_DESIGN_NAME_KEY]
 
     def get_import_id(self):
-        return ""
+        return str(self.input_dict[CABLE_DESIGN_IMPORT_ID_KEY])
 
     def get_alt_id(self):
-        return ""
+        return self.input_dict[CABLE_DESIGN_LEGACY_ID_KEY]
 
     def get_description(self):
         return ""
