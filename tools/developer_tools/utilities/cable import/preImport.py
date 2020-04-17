@@ -692,7 +692,8 @@ def main():
     parser.add_argument("--cdbPassword", help="CDB User password for API login", required=True)
     parser.add_argument("--sheetIndex", help="Index of worksheet within workbook (0-based)", required=True)
     parser.add_argument("--headerIndex", help="Index of header row in worksheet (0-based)", required=True)
-    parser.add_argument("--dataIndex", help="Index of first data row in worksheet (0-based)", required=True)
+    parser.add_argument("--firstDataIndex", help="Index of first data row in worksheet (0-based)", required=True)
+    parser.add_argument("--lastDataIndex", help="Index of last data row in worksheet (0-based)", required=True)
     helper.add_parser_args(parser)
     args = parser.parse_args()
     print("using inputFile: %s" % args.inputFile)
@@ -703,7 +704,8 @@ def main():
     print("cdb user password: %s" % args.cdbPassword)
     print("worksheet index: %s" % args.sheetIndex)
     print("header row index: %s" % args.headerIndex)
-    print("first data row index: %s" % args.dataIndex)
+    print("first data row index: %s" % args.firstDataIndex)
+    print("last data row index: %s" % args.lastDataIndex)
     helper.set_args(args)
 
     # configure logging
@@ -724,7 +726,7 @@ def main():
     logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.nrows, input_sheet.ncols))
 
     # validate input spreadsheet dimensions
-    if input_sheet.nrows < int(args.dataIndex)+1:
+    if input_sheet.nrows < int(args.firstDataIndex)+1:
         sys.exit("no data in inputFile: %s" % args.inputFile)
     if input_sheet.ncols != helper.num_input_cols():
         sys.exit("inputFile %s doesn't contain expected number of columns: %d" % (args.inputFile, helper.num_input_cols()))
@@ -734,8 +736,12 @@ def main():
     input_rows = 0
     for row_count in range(input_sheet.nrows):
 
+        # stop when we reach lastDataIndex
+        if row_count > int(args.lastDataIndex):
+            break
+
         # skip header
-        if row_count < int(args.dataIndex):
+        if row_count < int(args.firstDataIndex):
             continue
 
         input_rows = input_rows + 1
