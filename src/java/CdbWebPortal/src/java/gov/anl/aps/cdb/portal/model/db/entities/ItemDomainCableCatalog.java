@@ -140,10 +140,19 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
     }
     
-    public void setManufacturerId(String sourceId) {  
-        Source source = SourceController.getInstance().findById(Integer.valueOf(sourceId));
-        if (source != null) {
-            this.setManufacturerSource(source);
+    public void setManufacturerId(String sourceId) {
+        if (sourceId != null && !sourceId.isEmpty()) {
+            Integer intId = 0;
+            try {
+                intId = Integer.valueOf(sourceId);
+            } catch (NumberFormatException ex) {                
+            }
+            if (intId > 0) {
+                Source source = SourceController.getInstance().findById(intId);
+                if (source != null) {
+                    this.setManufacturerSource(source);
+                }
+            }
         }
     }
     
