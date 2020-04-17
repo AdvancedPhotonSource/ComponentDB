@@ -4,10 +4,14 @@
  */
 package gov.anl.aps.cdb.rest.routes;
 
+import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.GET;
@@ -17,6 +21,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -70,4 +75,24 @@ public class MachineDesignItemRoute extends BaseRoute {
         }
         return itemList.get(0);
     }
+    
+    @GET
+    @Path("/DetailedMachineDesignSearch/{searchText}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainMdSearchResult> getDetailedMdSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
+        LOGGER.debug("Performing a detailed machine design item search for search query: " + searchText);
+        
+        ItemDomainMachineDesignController mdInstance = ItemDomainMachineDesignController.getApiInstance();
+        
+        TreeNode rootNode = mdInstance.getSearchResults(searchText, true);
+        
+        List<TreeNode> children = rootNode.getChildren();
+        List<ItemDomainMdSearchResult> itemHierarchy = new ArrayList<>(); 
+        for (TreeNode child: children) {
+            ItemDomainMdSearchResult hierarchy = new ItemDomainMdSearchResult(child);
+            itemHierarchy.add(hierarchy); 
+        }
+        
+        return itemHierarchy; 
+    }   
 }

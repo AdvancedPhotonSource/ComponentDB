@@ -1015,26 +1015,6 @@ public class ItemRoute extends BaseRoute {
         return detailedSearchResults; 
     }
     
-    @GET
-    @Path("/DetailedMachineDesignSearch/{searchText}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<ItemDomainMdSearchResult> getDetailedMdSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
-        LOGGER.debug("Performing a detailed machine design item search for search query: " + searchText);
-        
-        ItemDomainMachineDesignController mdInstance = ItemDomainMachineDesignController.getApiInstance();
-        
-        TreeNode rootNode = mdInstance.getSearchResults(searchText, true);
-        
-        List<TreeNode> children = rootNode.getChildren();
-        List<ItemDomainMdSearchResult> itemHierarchy = new ArrayList<>(); 
-        for (TreeNode child: children) {
-            ItemDomainMdSearchResult hierarchy = new ItemDomainMdSearchResult(child);
-            itemHierarchy.add(hierarchy); 
-        }
-        
-        return itemHierarchy; 
-    }   
-    
     private UserInfo getCurrentRequestUserInfo() {
         Principal userPrincipal = securityContext.getUserPrincipal();
         if (userPrincipal instanceof User) {

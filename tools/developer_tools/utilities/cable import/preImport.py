@@ -636,7 +636,7 @@ class CableDesignOutputObject(OutputObject):
                 endpoint_object = self.helper.api.getMachineDesignItemApi().get_machine_design_item_by_name(endpoint_name)
             except ApiException as ex:
                 msg_string = ""
-                items = self.helper.api.getItemApi().get_detailed_md_search_results(endpoint_name)
+                items = self.helper.api.getMachineDesignItemApi().get_detailed_md_search_results(endpoint_name)
                 for item in items:
                     msg_string = msg_string + item.object_name + ", "
                 if len(msg_string) > 0:
