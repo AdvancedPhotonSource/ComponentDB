@@ -145,23 +145,11 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
     
     public void setManufacturerId(String sourceId) {
-        if (sourceId != null && !sourceId.isEmpty()) {
-            Integer intId = 0;
-            try {
-                intId = Integer.valueOf(sourceId);
-            } catch (NumberFormatException ex) {
-                LOGGER.error("setManufacturerId() number format exception on id " + sourceId);
-            }
-            if (intId > 0) {
-                Source source = SourceController.getInstance().findById(intId);
-                if (source != null) {
-                    this.setManufacturerSource(source);
-                } else {
-                    LOGGER.error("setManufacturerId() unknown machine design item id " + sourceId);
-                }
-            }
+        Source source = (Source)(getEntityById(SourceController.getInstance(), sourceId));
+        if (source != null) {
+            this.setManufacturerSource(source);
         } else {
-            LOGGER.debug("setManufacturerId() ignoring null or empty sourceId");
+            LOGGER.error("setManufacturerId() unknown source id " + sourceId);
         }
     }
     
@@ -323,33 +311,20 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
     
     public void setTeamId(String categoryId) throws CdbException {
-        if (categoryId != null && !categoryId.isEmpty()) {
-            Integer intId = 0;
-            try {
-                intId = Integer.valueOf(categoryId);
-            } catch (NumberFormatException ex) {
-                LOGGER.error("setTeamId() number format exception on id " + categoryId);
+        ItemCategory category = (ItemCategory)(getEntityById(ItemCategoryController.getInstance(), categoryId));
+        if (category != null) {
+            String domainName = category.getDomain().getName();
+            if (!domainName.equals(this.getDomain().getName())) {
+                LOGGER.error("setTeamId() invalid domain for specified categoryId: " + domainName);
+                throw new CdbException("Invalid domain: " + domainName + " for specified categoryId: " + categoryId);
             }
-            if (intId > 0) {
-                ItemCategory category = ItemCategoryController.getInstance().findById(intId);
 
-                if (category != null) {
-                    String domainName = category.getDomain().getName();
-                    if (!domainName.equals(this.getDomain().getName())) {
-                        LOGGER.error("setTeamId() invalid domain for specified categoryId: " + domainName);
-                        throw new CdbException("Invalid domain: " + domainName + " for specified categoryId: " + categoryId);
-                    }
-
-                    List<ItemCategory> categoryList = new ArrayList<>();
-                    categoryList.add(category);
-                    this.setItemCategoryList(categoryList);
-                    team = this.getItemCategoryString();
-                } else {
-                    LOGGER.error("setTeamId() unknown machine design item id " + categoryId);
-                }
-            }
+            List<ItemCategory> categoryList = new ArrayList<>();
+            categoryList.add(category);
+            this.setItemCategoryList(categoryList);
+            team = this.getItemCategoryString();
         } else {
-            LOGGER.debug("setTeamId() ignoring null or empty categoryId");
+            LOGGER.error("setTeamId() invalid item category id " + categoryId);
         }
     }
     

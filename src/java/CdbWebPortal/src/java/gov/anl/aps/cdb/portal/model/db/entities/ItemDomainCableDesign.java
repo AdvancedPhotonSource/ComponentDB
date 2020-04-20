@@ -147,23 +147,11 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint1Id(String id) {
-        if (id != null && !id.isEmpty()) {
-            Integer intId = 0;
-            try {
-                intId = Integer.valueOf(id);
-            } catch (NumberFormatException ex) {
-                LOGGER.error("setEndpoint1Id() number format exception on id " + id);
-            }
-            if (intId > 0) {
-                Item itemEndpoint1 = ItemDomainMachineDesignController.getInstance().findById(intId);
-                if (itemEndpoint1 != null) {
-                    setEndpoint1(itemEndpoint1);
-                } else {
-                    LOGGER.error("setEndpoint1Id() unknown machine design item id " + id);
-                }
-            }
+        ItemDomainMachineDesign itemEndpoint1 = (ItemDomainMachineDesign)(getEntityById(ItemDomainMachineDesignController.getInstance(), id));
+        if (itemEndpoint1 != null) {
+            setEndpoint1(itemEndpoint1);
         } else {
-            LOGGER.debug("setEndpoint1Id() ignoring null or empty sourceId");
+            LOGGER.error("setEndpoint1Id() unknown machine design item id " + id);
         }
     }
 
@@ -172,23 +160,11 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint2Id(String id) {
-        if (id != null && !id.isEmpty()) {
-            Integer intId = 0;
-            try {
-                intId = Integer.valueOf(id);
-            } catch (NumberFormatException ex) {
-                LOGGER.error("setEndpoint2Id() number format exception on id " + id);
-            }
-            if (intId > 0) {
-                Item itemEndpoint2 = ItemDomainMachineDesignController.getInstance().findById(intId);
-                if (itemEndpoint2 != null) {
-                    setEndpoint2(itemEndpoint2);
-                } else {
-                    LOGGER.error("setEndpoint2Id() unknown machine design item id " + id);
-                }
-            }
+        ItemDomainMachineDesign itemEndpoint2 = (ItemDomainMachineDesign)(getEntityById(ItemDomainMachineDesignController.getInstance(), id));
+        if (itemEndpoint2 != null) {
+            setEndpoint2(itemEndpoint2);
         } else {
-            LOGGER.debug("setEndpoint2Id() ignoring null or empty sourceId");
+            LOGGER.error("setEndpoint2Id() unknown machine design item id " + id);
         }
     }
 
@@ -287,25 +263,14 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setCatalogItemId(String catalogItemId) {
-        if (catalogItemId != null && !catalogItemId.isEmpty()) {
-            Integer intId = 0;
-            try {
-                intId = Integer.valueOf(catalogItemId);
-            } catch (NumberFormatException ex) {
-                LOGGER.error("setCatalogItemId() number format exception on id " + catalogItemId);
-            }
-            if (intId > 0) {
-                Item catalogItem = ItemDomainCableCatalogController.getInstance().findById(intId);
-                if (catalogItem != null) {
-                    setCatalogItem(catalogItem);
-                } else {
-                    LOGGER.error("setCatalogItemId() unknown machine design item id " + catalogItemId);
-                }
-            }
+        ItemDomainCableCatalog catalogItem = (ItemDomainCableCatalog) (getEntityById(ItemDomainCableCatalogController.getInstance(), catalogItemId));
+
+        if (catalogItem != null) {
+            setCatalogItem(catalogItem);
         } else {
-            LOGGER.debug("setCatalogItemId() ignoring null or empty sourceId");
+            LOGGER.error("setCatalogItemId() unknown cable catalog item id " + catalogItemId);
         }
-    }
+     }
 
     public Item getCatalogItem() {
         ItemElement selfElementCable = this.getSelfElement();
@@ -431,33 +396,21 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setTeamId(String categoryId) throws CdbException {
-        if (categoryId != null && !categoryId.isEmpty()) {
-            Integer intId = 0;
-            try {
-                intId = Integer.valueOf(categoryId);
-            } catch (NumberFormatException ex) {
-                LOGGER.error("setTeamId() number format exception on id " + categoryId);
-            }
-            if (intId > 0) {
-                ItemCategory category = ItemCategoryController.getInstance().findById(intId);
+        ItemCategory category = (ItemCategory) (getEntityById(ItemCategoryController.getInstance(), categoryId));
 
-                if (category != null) {
-                    String domainName = category.getDomain().getName();
-                    if (!domainName.equals(this.getDomain().getName())) {
-                        LOGGER.error("setTeamId() invalid domain for specified categoryId: " + domainName);
-                        throw new CdbException("Invalid domain: " + domainName + " for specified categoryId: " + categoryId);
-                    }
-
-                    List<ItemCategory> categoryList = new ArrayList<>();
-                    categoryList.add(category);
-                    this.setItemCategoryList(categoryList);
-                    team = this.getItemCategoryString();
-                } else {
-                    LOGGER.error("setTeamId() unknown machine design item id " + categoryId);
-                }
+        if (category != null) {
+            String domainName = category.getDomain().getName();
+            if (!domainName.equals(this.getDomain().getName())) {
+                LOGGER.error("setTeamId() invalid domain for specified categoryId: " + domainName);
+                throw new CdbException("Invalid domain: " + domainName + " for specified categoryId: " + categoryId);
             }
+
+            List<ItemCategory> categoryList = new ArrayList<>();
+            categoryList.add(category);
+            this.setItemCategoryList(categoryList);
+            team = this.getItemCategoryString();
         } else {
-            LOGGER.debug("setTeamId() ignoring null or empty categoryId");
+            LOGGER.error("setTeamId() unknown item category id " + categoryId);
         }
     }
 
@@ -466,7 +419,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setProjectId(String projectId) {
-        ItemProject project = ItemProjectController.getInstance().findById(Integer.valueOf(projectId));
+        ItemProject project = (ItemProject) (getEntityById(ItemProjectController.getInstance(), projectId));
         if (project != null) {
             List<ItemProject> projectList = new ArrayList<>();
             projectList.add(project);

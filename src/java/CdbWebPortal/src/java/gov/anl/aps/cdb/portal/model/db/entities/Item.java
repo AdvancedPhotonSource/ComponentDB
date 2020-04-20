@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
+import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -52,6 +53,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -217,6 +220,8 @@ import org.primefaces.model.TreeNode;
         }
 )
 public class Item extends CdbDomainEntity implements Serializable {
+    
+    private static final Logger LOGGER = LogManager.getLogger(Item.class.getName());
         
     private static final long serialVersionUID = 1L;
     @Id
@@ -1237,5 +1242,23 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
         return getItemDomainController().getCoreMetadataPropertyInfo();
+    }
+    
+    protected CdbEntity getEntityById(CdbEntityController controller, String id) {
+        
+        if (id != null && !id.isEmpty()) {
+            Integer intId = 0;
+            try {
+                intId = Integer.valueOf(id);
+            } catch (NumberFormatException ex) {
+                LOGGER.error("getEntityById() number format exception on id: " + id);
+            }
+            if (intId > 0) {
+                return controller.findById(intId);
+            }
+        }
+        
+        LOGGER.error("getEntityById() invalid reference id: " + id);
+        return null;
     }
 }
