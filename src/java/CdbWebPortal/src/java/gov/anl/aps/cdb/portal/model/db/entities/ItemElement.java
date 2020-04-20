@@ -110,10 +110,10 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     @ManyToOne
     private ItemElement derivedFromItemElement;
     @JoinColumn(name = "contained_item_id1", referencedColumnName = "id")
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne()
     private Item containedItem1;
     @JoinColumn(name = "contained_item_id2", referencedColumnName = "id")
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne()
     private Item containedItem2;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
