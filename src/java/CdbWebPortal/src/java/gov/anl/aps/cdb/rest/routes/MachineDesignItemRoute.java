@@ -61,19 +61,46 @@ public class MachineDesignItemRoute extends BaseRoute {
     @GET
     @Path("/ByName/{name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ItemDomainMachineDesign getMachineDesignItemByName(@PathParam("name") String name) throws ObjectNotFound {
-        LOGGER.debug("Fetching item with name: " + name);
+    public List<ItemDomainMachineDesign> getMachineDesignItemsByName(@PathParam("name") String name) throws ObjectNotFound {
+        LOGGER.debug("Fetching items with name: " + name);
         List<ItemDomainMachineDesign> itemList = facade.findByName(name);
         if (itemList == null || itemList.isEmpty()) {
             ObjectNotFound ex = new ObjectNotFound("Could not find item with name: " + name);
             LOGGER.error(ex);
             throw ex; 
-        } else if (itemList.size() > 1) {
-            ObjectNotFound ex = new ObjectNotFound("Found multiple items with name: " + name);
-            LOGGER.error(ex);
-            throw ex; 
         }
-        return itemList.get(0);
+        return itemList;
+    }
+    
+    /**
+     * Searches the top-level machine design hierarchy "root" node for children
+     * with specified name.
+     * @throws ObjectNotFound 
+     */
+    @GET
+    @Path("/ByRootAndName/{root}/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainMachineDesign> getMdInHierarchyByName(@PathParam("root") String root, @PathParam("name") String name) {
+        LOGGER.debug("Fetching items in hiearchy: " + root + " with name: " + name);
+        List<ItemDomainMachineDesign> itemList = facade.findByName(name);
+        
+        // eliminate items whose top-level parent is not the specified "root" node
+        List<ItemDomainMachineDesign> result = new ArrayList<>();
+        for (ItemDomainMachineDesign item : itemList) {
+            
+            // walk up hierarchy to top-level "root" parent
+            ItemDomainMachineDesign parent = item.getParentMachineDesign();
+            while (parent != null) {
+                parent = parent.getParentMachineDesign();
+            }
+            
+            if (parent.getName().equals(root)) {
+                // add item to result if top-level parent is specified root
+                result.add(item);
+            }
+        }
+        
+        return result;
     }
     
     @GET

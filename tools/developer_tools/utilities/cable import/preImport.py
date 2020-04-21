@@ -496,6 +496,7 @@ class CableDesignHelper(PreImportHelper):
         super().__init__()
         self.cable_type_dict = {}
         self.endpoint_dict = {}
+        self.md_root = None
 
     # Adds helper specific command line args.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
@@ -503,11 +504,14 @@ class CableDesignHelper(PreImportHelper):
     def add_parser_args(parser):
         parser.add_argument("--ownerId", help="CDB technical system ID for owner (item_category table)", required=True)
         parser.add_argument("--projectId", help="CDB item category ID for project (item_project table)", required=True)
+        parser.add_argument("--mdRoot", help="CDB top-level parent machine design node name", required=True)
 
     def set_args(self, args):
         super().set_args(args)
         print("owner CDB technical system (owner) id: %s" % args.ownerId)
         print("owner CDB item category (project) id: %s" % args.projectId)
+        print("top-level parent machine design node name: %s" % args.mdRoot)
+        self.md_root = args.mdRoot
 
     @staticmethod
     def tag():
@@ -525,16 +529,16 @@ class CableDesignHelper(PreImportHelper):
             InputColumnModel(col_index=2, key=CABLE_DESIGN_VOLTAGE_KEY),
             InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
             InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, required=True),
-            InputColumnModel(col_index=5, key=CABLE_DESIGN_SRC_LOCATION_KEY),
-            InputColumnModel(col_index=6, key=CABLE_DESIGN_SRC_ANS_KEY),
-            InputColumnModel(col_index=7, key=CABLE_DESIGN_SRC_ETPM_KEY),
-            InputColumnModel(col_index=8, key=CABLE_DESIGN_SRC_ADDRESS_KEY),
-            InputColumnModel(col_index=9, key=CABLE_DESIGN_SRC_DESCRIPTION_KEY),
-            InputColumnModel(col_index=10, key=CABLE_DESIGN_DEST_LOCATION_KEY),
-            InputColumnModel(col_index=11, key=CABLE_DESIGN_DEST_ANS_KEY),
-            InputColumnModel(col_index=12, key=CABLE_DESIGN_DEST_ETPM_KEY),
-            InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY),
-            InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY),
+            InputColumnModel(col_index=5, key=CABLE_DESIGN_SRC_LOCATION_KEY, required=True),
+            InputColumnModel(col_index=6, key=CABLE_DESIGN_SRC_ANS_KEY, required=True),
+            InputColumnModel(col_index=7, key=CABLE_DESIGN_SRC_ETPM_KEY, required=True),
+            InputColumnModel(col_index=8, key=CABLE_DESIGN_SRC_ADDRESS_KEY, required=True),
+            InputColumnModel(col_index=9, key=CABLE_DESIGN_SRC_DESCRIPTION_KEY, required=True),
+            InputColumnModel(col_index=10, key=CABLE_DESIGN_DEST_LOCATION_KEY, required=True),
+            InputColumnModel(col_index=11, key=CABLE_DESIGN_DEST_ANS_KEY, required=True),
+            InputColumnModel(col_index=12, key=CABLE_DESIGN_DEST_ETPM_KEY, required=True),
+            InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, required=True),
+            InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY, required=True),
             InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
             InputColumnModel(col_index=16, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
             InputColumnModel(col_index=17, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
@@ -563,6 +567,9 @@ class CableDesignHelper(PreImportHelper):
             OutputColumnModel(col_index=14, method="get_endpoint2_description", label="endpoint2 description"),
         ]
         return column_list
+
+    def get_md_root(self):
+        return self.md_root
 
     def get_output_object(self, input_dict):
 
@@ -669,37 +676,41 @@ class CableDesignOutputObject(OutputObject):
             return self.helper.get_id_for_endpoint(endpoint_name)
         else:
             # check to see if endpoint exists in CDB by name
-            endpoint_object = None
-            try:
-                endpoint_object = self.helper.api.getMachineDesignItemApi().get_machine_design_item_by_name(endpoint_name)
-            except ApiException as ex:
-                msg_string = ""
-                items = self.helper.api.getMachineDesignItemApi().get_detailed_md_search_results(endpoint_name)
-                for item in items:
-                    msg_string = msg_string + item.object_name + ", "
-                if len(msg_string) > 0:
-                    print("candidate items located by fuzzy search: " + msg_string)
-                sys.exit("exception retrieving machine design item: %s - %s" % (endpoint_name, ex.body))
+            result_list = []
+            result_list = self.helper.api.getMachineDesignItemApi().get_md_in_hierarchy_by_name(self.helper.get_md_root(), endpoint_name)
 
-            if endpoint_object:
+            if len(result_list) == 0:
+                sys.exit("no endpoint machine design item found with name: %s in specified hierarchy, exiting" % (endpoint_name))
+
+            elif len(result_list) > 1:
+                sys.exit("non-unique endpoint name: %s in specified hierarchy, exiting")
+
+            else:
+                endpoint_object = result_list[0]
                 endpoint_id = endpoint_object['id']
                 logging.debug("found machine design item with name: %s, id: %s" % (endpoint_name, endpoint_id))
                 self.helper.set_id_for_endpoint(endpoint_name, endpoint_id)
                 return endpoint_id
-            else:
-                sys.exit("no machine design item found with name: %s" % endpoint_name)
 
     def get_endpoint1_id(self):
-        return self.get_endpoint_id(CABLE_DESIGN_SRC_ETPM_KEY)
+        return self.get_endpoint_id(CABLE_DESIGN_FROM_DEVICE_NAME_KEY)
 
     def get_endpoint1_description(self):
-        return self.input_dict[CABLE_DESIGN_SRC_LOCATION_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_ANS_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_ADDRESS_KEY] + ":" + self.input_dict[CABLE_DESIGN_SRC_DESCRIPTION_KEY]
+        return self.input_dict[CABLE_DESIGN_SRC_LOCATION_KEY] + ":" + \
+               self.input_dict[CABLE_DESIGN_SRC_ANS_KEY] + ":" + \
+               self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + ":" + \
+               self.input_dict[CABLE_DESIGN_SRC_ADDRESS_KEY] + ":" + \
+               self.input_dict[CABLE_DESIGN_SRC_DESCRIPTION_KEY]
 
     def get_endpoint2_id(self):
-        return self.get_endpoint_id(CABLE_DESIGN_DEST_ETPM_KEY)
+        return self.get_endpoint_id(CABLE_DESIGN_TO_DEVICE_NAME_KEY)
 
     def get_endpoint2_description(self):
-        return self.input_dict[CABLE_DESIGN_DEST_LOCATION_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_ANS_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_ADDRESS_KEY] + ":" + self.input_dict[CABLE_DESIGN_DEST_DESCRIPTION_KEY]
+        return self.input_dict[CABLE_DESIGN_DEST_LOCATION_KEY] + ":" + \
+               self.input_dict[CABLE_DESIGN_DEST_ANS_KEY] + ":" + \
+               self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ":" + \
+               self.input_dict[CABLE_DESIGN_DEST_ADDRESS_KEY] + ":" + \
+               self.input_dict[CABLE_DESIGN_DEST_DESCRIPTION_KEY]
 
 
 def main():
