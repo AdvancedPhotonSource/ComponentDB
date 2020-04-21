@@ -95,6 +95,7 @@ CABLE_DESIGN_TO_DEVICE_NAME_KEY = "toDeviceName"
 CABLE_DESIGN_MBA_ID_KEY = "mbaId"
 CABLE_DESIGN_IMPORT_ID_KEY = "importId"
 
+
 def register(helper_class):
     PreImportHelper.register(helper_class.tag(), helper_class)
 
@@ -195,7 +196,10 @@ class PreImportHelper(ABC):
 
     # Handles cell value from input spreadsheet at specified column index for supplied input object.
     def handle_input_cell_value(self, input_dict, index, value):
-        key = self.input_columns[index].property
+        key = self.input_columns[index].key
+        required = self.input_columns[index].required
+        if required and (value is None or len(str(value)) == 0):
+            sys.exit("required value missing for key: %s, exiting" % (key))
         input_dict[key] = value
 
     # Returns column label for specified column index.
@@ -205,16 +209,24 @@ class PreImportHelper(ABC):
     # Returns value for output spreadsheet cell and supplied object at specified index.
     def get_output_cell_value(self, obj, index):
         # use reflection to invoke column getter method on supplied object
-        val = getattr(obj, self.output_columns[index].property)()
-        logging.debug("index: %d method: %s value: %s" % (index, self.output_columns[index].property, val))
+        val = getattr(obj, self.output_columns[index].method)()
+        logging.debug("index: %d method: %s value: %s" % (index, self.output_columns[index].method, val))
         return val
 
 
-class ColumnModel:
+class InputColumnModel:
 
-    def __init__(self, col_index, property, label=""):
+    def __init__(self, col_index, key, required=False):
         self.index = col_index
-        self.property = property
+        self.key = key
+        self.required = required
+
+
+class OutputColumnModel:
+
+    def __init__(self, col_index, method, label=""):
+        self.index = col_index
+        self.method = method
         self.label = label
 
 
@@ -243,17 +255,17 @@ class SourceHelper(PreImportHelper):
     @classmethod
     def input_column_list(cls):
         column_list = [
-            ColumnModel(col_index=2, property=CABLE_TYPE_MANUFACTURER_KEY),
+            InputColumnModel(col_index=2, key=CABLE_TYPE_MANUFACTURER_KEY),
         ]
         return column_list
 
     @staticmethod
     def output_column_list():
         column_list = [
-            ColumnModel(col_index=0, property="get_name", label="Name"),
-            ColumnModel(col_index=1, property="get_description", label="Description"),
-            ColumnModel(col_index=2, property="get_contact_info", label="Contact Info"),
-            ColumnModel(col_index=3, property="get_url", label="URL"),
+            OutputColumnModel(col_index=0, method="get_name", label="Name"),
+            OutputColumnModel(col_index=1, method="get_description", label="Description"),
+            OutputColumnModel(col_index=2, method="get_contact_info", label="Contact Info"),
+            OutputColumnModel(col_index=3, method="get_url", label="URL"),
         ]
         return column_list
 
@@ -337,47 +349,47 @@ class CableTypeHelper(PreImportHelper):
     @classmethod
     def input_column_list(cls):
         column_list = [
-            ColumnModel(col_index=0, property=CABLE_TYPE_NAME_KEY),
-            ColumnModel(col_index=1, property=CABLE_TYPE_DESCRIPTION_KEY),
-            ColumnModel(col_index=2, property=CABLE_TYPE_MANUFACTURER_KEY),
-            ColumnModel(col_index=3, property=CABLE_TYPE_PART_NUMBER_KEY),
-            ColumnModel(col_index=4, property=CABLE_TYPE_ALT_PART_NUMBER_KEY),
-            ColumnModel(col_index=5, property=CABLE_TYPE_DIAMETER_KEY),
-            ColumnModel(col_index=6, property=CABLE_TYPE_WEIGHT_KEY),
-            ColumnModel(col_index=7, property=CABLE_TYPE_CONDUCTORS_KEY),
-            ColumnModel(col_index=8, property=CABLE_TYPE_INSULATION_KEY),
-            ColumnModel(col_index=9, property=CABLE_TYPE_JACKET_COLOR_KEY),
-            ColumnModel(col_index=10, property=CABLE_TYPE_VOLTAGE_RATING_KEY),
-            ColumnModel(col_index=11, property=CABLE_TYPE_FIRE_LOAD_KEY),
-            ColumnModel(col_index=12, property=CABLE_TYPE_HEAT_LIMIT_KEY),
-            ColumnModel(col_index=13, property=CABLE_TYPE_BEND_RADIUS_KEY),
-            ColumnModel(col_index=14, property=CABLE_TYPE_RAD_TOLERANCE_KEY),
-            ColumnModel(col_index=15, property=CABLE_TYPE_LINK_URL_KEY),
-            ColumnModel(col_index=16, property=CABLE_TYPE_IMAGE_URL_KEY),
+            InputColumnModel(col_index=0, key=CABLE_TYPE_NAME_KEY, required=True),
+            InputColumnModel(col_index=1, key=CABLE_TYPE_DESCRIPTION_KEY),
+            InputColumnModel(col_index=2, key=CABLE_TYPE_MANUFACTURER_KEY),
+            InputColumnModel(col_index=3, key=CABLE_TYPE_PART_NUMBER_KEY),
+            InputColumnModel(col_index=4, key=CABLE_TYPE_ALT_PART_NUMBER_KEY),
+            InputColumnModel(col_index=5, key=CABLE_TYPE_DIAMETER_KEY),
+            InputColumnModel(col_index=6, key=CABLE_TYPE_WEIGHT_KEY),
+            InputColumnModel(col_index=7, key=CABLE_TYPE_CONDUCTORS_KEY),
+            InputColumnModel(col_index=8, key=CABLE_TYPE_INSULATION_KEY),
+            InputColumnModel(col_index=9, key=CABLE_TYPE_JACKET_COLOR_KEY),
+            InputColumnModel(col_index=10, key=CABLE_TYPE_VOLTAGE_RATING_KEY),
+            InputColumnModel(col_index=11, key=CABLE_TYPE_FIRE_LOAD_KEY),
+            InputColumnModel(col_index=12, key=CABLE_TYPE_HEAT_LIMIT_KEY),
+            InputColumnModel(col_index=13, key=CABLE_TYPE_BEND_RADIUS_KEY),
+            InputColumnModel(col_index=14, key=CABLE_TYPE_RAD_TOLERANCE_KEY),
+            InputColumnModel(col_index=15, key=CABLE_TYPE_LINK_URL_KEY),
+            InputColumnModel(col_index=16, key=CABLE_TYPE_IMAGE_URL_KEY),
         ]
         return column_list
 
     @staticmethod
     def output_column_list():
         column_list = [
-            ColumnModel(col_index=0, property="get_name", label=CABLE_TYPE_NAME_KEY),
-            ColumnModel(col_index=1, property="get_description", label=CABLE_TYPE_DESCRIPTION_KEY),
-            ColumnModel(col_index=2, property="get_link_url", label=CABLE_TYPE_LINK_URL_KEY),
-            ColumnModel(col_index=3, property="get_image_url", label=CABLE_TYPE_IMAGE_URL_KEY),
-            ColumnModel(col_index=4, property="get_manufacturer_id", label=CABLE_TYPE_MANUFACTURER_KEY),
-            ColumnModel(col_index=5, property="get_part_number", label=CABLE_TYPE_PART_NUMBER_KEY),
-            ColumnModel(col_index=6, property="get_alt_part_number", label=CABLE_TYPE_ALT_PART_NUMBER_KEY),
-            ColumnModel(col_index=7, property="get_diameter", label=CABLE_TYPE_DIAMETER_KEY),
-            ColumnModel(col_index=8, property="get_weight", label=CABLE_TYPE_WEIGHT_KEY),
-            ColumnModel(col_index=9, property="get_conductors", label=CABLE_TYPE_CONDUCTORS_KEY),
-            ColumnModel(col_index=10, property="get_insulation", label=CABLE_TYPE_INSULATION_KEY),
-            ColumnModel(col_index=11, property="get_jacket_color", label=CABLE_TYPE_JACKET_COLOR_KEY),
-            ColumnModel(col_index=12, property="get_voltage_rating", label=CABLE_TYPE_VOLTAGE_RATING_KEY),
-            ColumnModel(col_index=13, property="get_fire_load", label=CABLE_TYPE_FIRE_LOAD_KEY),
-            ColumnModel(col_index=14, property="get_heat_limit", label=CABLE_TYPE_HEAT_LIMIT_KEY),
-            ColumnModel(col_index=15, property="get_bend_radius", label=CABLE_TYPE_BEND_RADIUS_KEY),
-            ColumnModel(col_index=16, property="get_rad_tolerance", label=CABLE_TYPE_RAD_TOLERANCE_KEY),
-            ColumnModel(col_index=17, property="get_owner_id", label="owner"),
+            OutputColumnModel(col_index=0, method="get_name", label=CABLE_TYPE_NAME_KEY),
+            OutputColumnModel(col_index=1, method="get_description", label=CABLE_TYPE_DESCRIPTION_KEY),
+            OutputColumnModel(col_index=2, method="get_link_url", label=CABLE_TYPE_LINK_URL_KEY),
+            OutputColumnModel(col_index=3, method="get_image_url", label=CABLE_TYPE_IMAGE_URL_KEY),
+            OutputColumnModel(col_index=4, method="get_manufacturer_id", label=CABLE_TYPE_MANUFACTURER_KEY),
+            OutputColumnModel(col_index=5, method="get_part_number", label=CABLE_TYPE_PART_NUMBER_KEY),
+            OutputColumnModel(col_index=6, method="get_alt_part_number", label=CABLE_TYPE_ALT_PART_NUMBER_KEY),
+            OutputColumnModel(col_index=7, method="get_diameter", label=CABLE_TYPE_DIAMETER_KEY),
+            OutputColumnModel(col_index=8, method="get_weight", label=CABLE_TYPE_WEIGHT_KEY),
+            OutputColumnModel(col_index=9, method="get_conductors", label=CABLE_TYPE_CONDUCTORS_KEY),
+            OutputColumnModel(col_index=10, method="get_insulation", label=CABLE_TYPE_INSULATION_KEY),
+            OutputColumnModel(col_index=11, method="get_jacket_color", label=CABLE_TYPE_JACKET_COLOR_KEY),
+            OutputColumnModel(col_index=12, method="get_voltage_rating", label=CABLE_TYPE_VOLTAGE_RATING_KEY),
+            OutputColumnModel(col_index=13, method="get_fire_load", label=CABLE_TYPE_FIRE_LOAD_KEY),
+            OutputColumnModel(col_index=14, method="get_heat_limit", label=CABLE_TYPE_HEAT_LIMIT_KEY),
+            OutputColumnModel(col_index=15, method="get_bend_radius", label=CABLE_TYPE_BEND_RADIUS_KEY),
+            OutputColumnModel(col_index=16, method="get_rad_tolerance", label=CABLE_TYPE_RAD_TOLERANCE_KEY),
+            OutputColumnModel(col_index=17, method="get_owner_id", label="owner"),
         ]
         return column_list
 
@@ -508,47 +520,47 @@ class CableDesignHelper(PreImportHelper):
     @classmethod
     def input_column_list(cls):
         column_list = [
-            ColumnModel(col_index=0, property=CABLE_DESIGN_NAME_KEY),
-            ColumnModel(col_index=1, property=CABLE_DESIGN_LAYING_KEY),
-            ColumnModel(col_index=2, property=CABLE_DESIGN_VOLTAGE_KEY),
-            ColumnModel(col_index=3, property=CABLE_DESIGN_OWNER_KEY),
-            ColumnModel(col_index=4, property=CABLE_DESIGN_TYPE_KEY),
-            ColumnModel(col_index=5, property=CABLE_DESIGN_SRC_LOCATION_KEY),
-            ColumnModel(col_index=6, property=CABLE_DESIGN_SRC_ANS_KEY),
-            ColumnModel(col_index=7, property=CABLE_DESIGN_SRC_ETPM_KEY),
-            ColumnModel(col_index=8, property=CABLE_DESIGN_SRC_ADDRESS_KEY),
-            ColumnModel(col_index=9, property=CABLE_DESIGN_SRC_DESCRIPTION_KEY),
-            ColumnModel(col_index=10, property=CABLE_DESIGN_DEST_LOCATION_KEY),
-            ColumnModel(col_index=11, property=CABLE_DESIGN_DEST_ANS_KEY),
-            ColumnModel(col_index=12, property=CABLE_DESIGN_DEST_ETPM_KEY),
-            ColumnModel(col_index=13, property=CABLE_DESIGN_DEST_ADDRESS_KEY),
-            ColumnModel(col_index=14, property=CABLE_DESIGN_DEST_DESCRIPTION_KEY),
-            ColumnModel(col_index=15, property=CABLE_DESIGN_LEGACY_ID_KEY),
-            ColumnModel(col_index=16, property=CABLE_DESIGN_FROM_DEVICE_NAME_KEY),
-            ColumnModel(col_index=17, property=CABLE_DESIGN_TO_DEVICE_NAME_KEY),
-            ColumnModel(col_index=18, property=CABLE_DESIGN_MBA_ID_KEY),
-            ColumnModel(col_index=19, property=CABLE_DESIGN_IMPORT_ID_KEY),
+            InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
+            InputColumnModel(col_index=1, key=CABLE_DESIGN_LAYING_KEY),
+            InputColumnModel(col_index=2, key=CABLE_DESIGN_VOLTAGE_KEY),
+            InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
+            InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, required=True),
+            InputColumnModel(col_index=5, key=CABLE_DESIGN_SRC_LOCATION_KEY),
+            InputColumnModel(col_index=6, key=CABLE_DESIGN_SRC_ANS_KEY),
+            InputColumnModel(col_index=7, key=CABLE_DESIGN_SRC_ETPM_KEY),
+            InputColumnModel(col_index=8, key=CABLE_DESIGN_SRC_ADDRESS_KEY),
+            InputColumnModel(col_index=9, key=CABLE_DESIGN_SRC_DESCRIPTION_KEY),
+            InputColumnModel(col_index=10, key=CABLE_DESIGN_DEST_LOCATION_KEY),
+            InputColumnModel(col_index=11, key=CABLE_DESIGN_DEST_ANS_KEY),
+            InputColumnModel(col_index=12, key=CABLE_DESIGN_DEST_ETPM_KEY),
+            InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY),
+            InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY),
+            InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
+            InputColumnModel(col_index=16, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
+            InputColumnModel(col_index=17, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
+            InputColumnModel(col_index=18, key=CABLE_DESIGN_MBA_ID_KEY),
+            InputColumnModel(col_index=19, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
         ]
         return column_list
 
     @staticmethod
     def output_column_list():
         column_list = [
-            ColumnModel(col_index=0, property="get_name", label="name"),
-            ColumnModel(col_index=1, property="get_alt_name", label="alt name"),
-            ColumnModel(col_index=2, property="get_ext_name", label="ext cable name"),
-            ColumnModel(col_index=3, property="get_import_id", label="import cable id"),
-            ColumnModel(col_index=4, property="get_alt_id", label="alt cable id"),
-            ColumnModel(col_index=5, property="get_description", label="description"),
-            ColumnModel(col_index=6, property="get_laying", label="laying"),
-            ColumnModel(col_index=7, property="get_voltage", label="voltage"),
-            ColumnModel(col_index=8, property="get_owner_id", label="owner id"),
-            ColumnModel(col_index=9, property="get_project_id", label="project id"),
-            ColumnModel(col_index=10, property="get_cable_type_id", label="cable type id"),
-            ColumnModel(col_index=11, property="get_endpoint1_id", label="endpoint1 id"),
-            ColumnModel(col_index=12, property="get_endpoint1_description", label="endpoint1 description"),
-            ColumnModel(col_index=13, property="get_endpoint2_id", label="endpoint2 id"),
-            ColumnModel(col_index=14, property="get_endpoint2_description", label="endpoint2 description"),
+            OutputColumnModel(col_index=0, method="get_name", label="name"),
+            OutputColumnModel(col_index=1, method="get_alt_name", label="alt name"),
+            OutputColumnModel(col_index=2, method="get_ext_name", label="ext cable name"),
+            OutputColumnModel(col_index=3, method="get_import_id", label="import cable id"),
+            OutputColumnModel(col_index=4, method="get_alt_id", label="alt cable id"),
+            OutputColumnModel(col_index=5, method="get_description", label="description"),
+            OutputColumnModel(col_index=6, method="get_laying", label="laying"),
+            OutputColumnModel(col_index=7, method="get_voltage", label="voltage"),
+            OutputColumnModel(col_index=8, method="get_owner_id", label="owner id"),
+            OutputColumnModel(col_index=9, method="get_project_id", label="project id"),
+            OutputColumnModel(col_index=10, method="get_cable_type_id", label="cable type id"),
+            OutputColumnModel(col_index=11, method="get_endpoint1_id", label="endpoint1 id"),
+            OutputColumnModel(col_index=12, method="get_endpoint1_description", label="endpoint1 description"),
+            OutputColumnModel(col_index=13, method="get_endpoint2_id", label="endpoint2 id"),
+            OutputColumnModel(col_index=14, method="get_endpoint2_description", label="endpoint2 description"),
         ]
         return column_list
 
