@@ -11,8 +11,12 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <p:column rendered="#{entityController.updateLocation}"
-              id="multiEditEditLocationColumn"
-              headerText="Location">
+              id="multiEditEditLocationColumn">
+        
+        <ui:include src="../../itemMultiEdit/private/itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.location}" />
+            <ui:param name="columnHeader" value="Location" />
+        </ui:include>
 
         <ui:param name="rowItemViewUUID"
                   value="#{itemListObject.viewUUID}" />         

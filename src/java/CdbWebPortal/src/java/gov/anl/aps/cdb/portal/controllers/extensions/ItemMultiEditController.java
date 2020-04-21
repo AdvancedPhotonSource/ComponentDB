@@ -8,14 +8,17 @@ import gov.anl.aps.cdb.portal.constants.ItemDefaultColumnReferences;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
+import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.controllers.LoginController;
 import gov.anl.aps.cdb.portal.controllers.PropertyValueController;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
@@ -35,6 +38,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.ListDataModel;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.primefaces.event.ReorderEvent;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 
@@ -918,6 +922,10 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     public boolean getRenderItemProjectInputValue() {
         return getRenderSpecificInput(ItemDefaultColumnReferences.itemProject);
     }
+    
+    public boolean getRenderLocationInputValue() {
+        return getRenderSpecificInput(ItemDefaultColumnReferences.location); 
+    }
 
     public boolean getRenderPropertyInputValue() {
         return getRenderSpecificInput(ItemDefaultColumnReferences.property);
@@ -993,6 +1001,17 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                         value.setValue(currentMockPropertyValueApplyValuesToColumn.getValue());
                     }
                     break;
+                case location:
+                    LocatableItemController locationController = LocatableItemController.getInstance();
+                    DefaultTreeNode node = (DefaultTreeNode) currentObjectValueToColumn;
+                    ItemDomainLocation location = null; 
+                    if (node != null) {
+                        location = (ItemDomainLocation) node.getData();                         
+                    }
+                    
+                    LocatableItem locatableItem = (LocatableItem) item;                                                 
+                    locationController.updateLocationForItem(locatableItem, location, null);
+                    break; 
                 default:
                     customApplyValuesForColumn(item, currentApplyValuesToColumn);
                     break;
@@ -1021,7 +1040,9 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
             return "applyValuesTo/entityInfoGroupWriteableInput.xhtml"; 
         } else if (getRenderPropertyInputValue()) {
             return "applyValuesTo/propertyValueInput.xhtml";
-        } else {
+        } else if (getRenderLocationInputValue()) {
+            return LocatableItemController.getRelPathMultiEditLocationInput();
+        }else {
             return REL_PATH_EMPTY_PAGE; 
         }
     }

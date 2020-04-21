@@ -50,6 +50,8 @@ import org.primefaces.model.menu.DefaultMenuModel;
 public class LocatableItemController implements Serializable {
 
     public final static String controllerNamed = "locatableItemController";
+    
+    private static final String REL_PATH_MULTI_EDIT_LOCATION_INPUT = "../../locatableItem/private/applyValuesTo/locationInput.xhtml";
 
     private static final Logger logger = Logger.getLogger(LocatableItemController.class.getName());
 
@@ -738,6 +740,10 @@ public class LocatableItemController implements Serializable {
             locationItemHierarchyCaches = ItemElementUtility.generateItemHierarchyCacheList(baseLocations);
         }
         return locationItemHierarchyCaches;
+    }
+
+    public static String getRelPathMultiEditLocationInput() {
+        return REL_PATH_MULTI_EDIT_LOCATION_INPUT;
     }
 
 }
