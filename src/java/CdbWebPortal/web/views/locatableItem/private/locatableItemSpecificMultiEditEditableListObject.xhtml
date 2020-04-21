@@ -63,8 +63,13 @@ See LICENSE file.
         </p:outputPanel>
     </p:column>
 
-    <p:column rendered="#{entityController.updateLocationDetails}"
-              headerText="Location Details">
+    <p:column rendered="#{entityController.updateLocationDetails}">
+        
+        <ui:include src="../../itemMultiEdit/private/itemMultiEditColumnHeaderFacet.xhtml" >
+            <ui:param name="columnEnum" value="#{columnNamesToApplyValuesTo.locationDetails}" />
+            <ui:param name="columnHeader" value="Location Details" />
+        </ui:include>
+        
         <ui:include src="locatableItemLocationDetailsEditObjectInput.xhtml">
             <ui:param name="viewName"
                       value="multiEditInline" /> 

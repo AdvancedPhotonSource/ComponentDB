@@ -947,6 +947,8 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                 return true;
             } else if (this.currentApplyValuesToColumn == ItemDefaultColumnReferences.itemIdentifier2) {
                 return true;
+            } else if (this.currentApplyValuesToColumn == ItemDefaultColumnReferences.locationDetails) {
+                return true; 
             }
         }
 
@@ -1009,9 +1011,15 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                         location = (ItemDomainLocation) node.getData();                         
                     }
                     
-                    LocatableItem locatableItem = (LocatableItem) item;                                                 
+                    LocatableItem locatableItem = (LocatableItem) item;
                     locationController.updateLocationForItem(locatableItem, location, null);
-                    break; 
+                    break;
+                case locationDetails:
+                    String locDetails = getNextValueForCurrentSequence();
+                    LocatableItem locitem = (LocatableItem) item;
+                    
+                    locitem.setLocationDetails(locDetails);                     
+                    break;  
                 default:
                     customApplyValuesForColumn(item, currentApplyValuesToColumn);
                     break;
