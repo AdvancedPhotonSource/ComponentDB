@@ -356,7 +356,11 @@ public class LocatableItemController implements Serializable {
     public void updateLocationTreeForItem(LocatableItem item) {
         List<Item> hiearchyList = getLocationHierarchyListForItem(item);
         if (hiearchyList != null) {
-            TreeNode treeBranch = ItemUtility.generateHierarchyNodeTreeBranch(hiearchyList);
+            List<Item> revList = new ArrayList<>();
+            revList.addAll(hiearchyList);
+            Collections.reverse(revList);
+            
+            TreeNode treeBranch = ItemUtility.generateHierarchyNodeTreeBranch(revList);
             prepLocationTreeForView(treeBranch);
             item.setLocationTree(treeBranch);
         }
