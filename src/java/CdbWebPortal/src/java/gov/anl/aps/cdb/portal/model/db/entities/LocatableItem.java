@@ -18,7 +18,7 @@ public abstract class LocatableItem extends Item {
 
     private transient List<Item> cachedLocationHierarchy = null; 
     private transient TreeNode locationTree = null;
-    private transient String locationDetails = null;        
+    protected transient String locationDetails = null;        
     protected transient Item membershipLocation; 
     protected transient ItemDomainLocation location;
     private transient ItemElementRelationship locationRelationship; 

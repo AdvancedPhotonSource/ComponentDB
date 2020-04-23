@@ -110,4 +110,12 @@ public class ItemDomainMachineDesign extends LocatableItem {
         return membershipLocation; 
     }
 
+    @Override
+    public String getLocationDetails() {
+        if (location != null) {
+            return locationDetails; 
+        }
+        return super.getLocationDetails(); 
+    }
+
 }
