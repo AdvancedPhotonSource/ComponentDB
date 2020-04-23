@@ -197,10 +197,36 @@ class PreImportHelper(ABC):
     # Handles cell value from input spreadsheet at specified column index for supplied input object.
     def handle_input_cell_value(self, input_dict, index, value):
         key = self.input_columns[index].key
-        required = self.input_columns[index].required
-        if required and (value is None or len(str(value)) == 0):
-            sys.exit("required value missing for key: %s, exiting" % (key))
         input_dict[key] = value
+
+    def input_row_is_empty(self, input_dict, row_index):
+        non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
+        if non_empty_count == 0 or self.treat_input_row_as_empty(input_dict, row_index):
+            logging.debug("skipping empty row: %d" % (row_index+1))
+            return True
+
+    # Returns True if the row represented by input_dict should be treated as a blank row.  Default is False.  Subclass
+    # can override to allow certain non-empty values to be treated as empty.
+    def treat_input_row_as_empty(self, input_dict, row_index):
+        return False
+
+    # Performs validation on row from input spreadsheet and returns True if the row is determined to be valid.
+    # Can return False where input is valid, but it might be better to call sys.exit() with a useful message.
+    def input_row_is_valid(self, input_dict, row_index):
+
+        for column in self.input_column_list():
+            required = column.required
+            if required:
+                value = input_dict[column.key]
+                if value is None or len(str(value)) == 0:
+                    sys.exit("required value missing for key: %s row index: %d, exiting" % (column.key, row_index+1))
+
+        return self.custom_row_is_valid(input_dict)
+
+    # Performs custom validation on input row.  Returns True if row is valid.  Default is to return True. Subclass
+    # can override to customize.
+    def custom_row_is_valid(self, input_dict):
+        return True
 
     # Returns column label for specified column index.
     def get_output_column_label(self, col_index):
@@ -571,6 +597,13 @@ class CableDesignHelper(PreImportHelper):
     def get_md_root(self):
         return self.md_root
 
+    # Treat a row that contains a single non-empty value in the "import id" column as an empty row.
+    def treat_input_row_as_empty(self, input_dict, row_index):
+        non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
+        if non_empty_count == 1 and len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0:
+            logging.debug("skipping empty row with non-empty import id: %s row: %d" % (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_index+1))
+            return True
+
     def get_output_object(self, input_dict):
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
@@ -783,7 +816,7 @@ def main():
     # process rows from input spreadsheet
     output_objects = []
     input_rows = 0
-    for row_count in range(input_sheet.nrows):
+    for row_count in range(int(args.lastDataIndex)):
 
         # stop when we reach lastDataIndex
         if row_count > int(args.lastDataIndex):
@@ -805,9 +838,16 @@ def main():
                 val = input_sheet.cell(row_count, col_count).value
                 helper.handle_input_cell_value(input_dict=input_dict, index=col_count, value=val)
 
-        output_obj = helper.get_output_object(input_dict=input_dict)
-        if output_obj:
-            output_objects.append(output_obj)
+        # ignore row if blank
+        if helper.input_row_is_empty(input_dict=input_dict, row_index=row_count):
+            continue
+
+        if helper.input_row_is_valid(input_dict=input_dict, row_index=row_count):
+            output_obj = helper.get_output_object(input_dict=input_dict)
+            if output_obj:
+                output_objects.append(output_obj)
+        else:
+            sys.exit("invalid input row, exiting")
 
     # create output spreadsheet
     output_book = xlsxwriter.Workbook(args.outputFile)
