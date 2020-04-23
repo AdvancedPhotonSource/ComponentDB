@@ -102,4 +102,12 @@ public class ItemDomainMachineDesign extends LocatableItem {
         return ItemDomainMachineDesignController.getInstance();
     }
 
+    @Override
+    public Item getActiveLocation() {        
+        if (location != null) {
+            return location;            
+        }
+        return membershipLocation; 
+    }
+
 }

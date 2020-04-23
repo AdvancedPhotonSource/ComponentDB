@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -610,6 +611,9 @@ public class LocatableItemController implements Serializable {
 
     public boolean locationEditable(Item item) {
         if (item instanceof LocatableItem) {
+            if (item instanceof ItemDomainMachineDesign) {
+                return true; 
+            }
             LocatableItem locatableItem = (LocatableItem) item;
             // Loads the location if needed. 
             getLocation(locatableItem);

@@ -19,8 +19,8 @@ public abstract class LocatableItem extends Item {
     private transient List<Item> cachedLocationHierarchy = null; 
     private transient TreeNode locationTree = null;
     private transient String locationDetails = null;        
-    private transient Item membershipLocation; 
-    private transient ItemDomainLocation location;
+    protected transient Item membershipLocation; 
+    protected transient ItemDomainLocation location;
     private transient ItemElementRelationship locationRelationship; 
     private transient String locationString;
     private transient DefaultMenuModel locationMenuModel;
@@ -101,7 +101,7 @@ public abstract class LocatableItem extends Item {
     }  
     
     @JsonIgnore
-    public Item getActiveLocation() {
+    public Item getActiveLocation() {        
         if (membershipLocation != null) {
             return membershipLocation;            
         }
