@@ -195,37 +195,37 @@ class PreImportHelper(ABC):
             self.output_columns[col.index] = col
 
     # Handles cell value from input spreadsheet at specified column index for supplied input object.
-    def handle_input_cell_value(self, input_dict, index, value):
+    def handle_input_cell_value(self, input_dict, index, value, row_num):
         key = self.input_columns[index].key
         input_dict[key] = value
 
-    def input_row_is_empty(self, input_dict, row_index):
+    def input_row_is_empty(self, input_dict, row_num):
         non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
-        if non_empty_count == 0 or self.treat_input_row_as_empty(input_dict, row_index):
-            logging.debug("skipping empty row: %d" % (row_index+1))
+        if non_empty_count == 0 or self.input_row_is_empty_custom(input_dict, row_num):
+            logging.debug("skipping empty row: %d" % row_num)
             return True
 
     # Returns True if the row represented by input_dict should be treated as a blank row.  Default is False.  Subclass
     # can override to allow certain non-empty values to be treated as empty.
-    def treat_input_row_as_empty(self, input_dict, row_index):
+    def input_row_is_empty_custom(self, input_dict, row_num):
         return False
 
     # Performs validation on row from input spreadsheet and returns True if the row is determined to be valid.
     # Can return False where input is valid, but it might be better to call sys.exit() with a useful message.
-    def input_row_is_valid(self, input_dict, row_index):
+    def input_row_is_valid(self, input_dict, row_num):
 
         for column in self.input_column_list():
             required = column.required
             if required:
                 value = input_dict[column.key]
                 if value is None or len(str(value)) == 0:
-                    sys.exit("required value missing for key: %s row index: %d, exiting" % (column.key, row_index+1))
+                    sys.exit("required value missing for key: %s row index: %d, exiting" % (column.key, row_num))
 
-        return self.custom_row_is_valid(input_dict)
+        return self.input_row_is_valid_custom(input_dict)
 
     # Performs custom validation on input row.  Returns True if row is valid.  Default is to return True. Subclass
     # can override to customize.
-    def custom_row_is_valid(self, input_dict):
+    def input_row_is_valid_custom(self, input_dict):
         return True
 
     # Returns column label for specified column index.
@@ -598,10 +598,11 @@ class CableDesignHelper(PreImportHelper):
         return self.md_root
 
     # Treat a row that contains a single non-empty value in the "import id" column as an empty row.
-    def treat_input_row_as_empty(self, input_dict, row_index):
+    def input_row_is_empty_custom(self, input_dict, row_num):
         non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
         if non_empty_count == 1 and len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0:
-            logging.debug("skipping empty row with non-empty import id: %s row: %d" % (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_index+1))
+            logging.debug("skipping empty row with non-empty import id: %s row: %d" %
+                          (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
             return True
 
     def get_output_object(self, input_dict):
@@ -770,31 +771,43 @@ def main():
     parser.add_argument("outputFile", help="Official CDB Sources import format xlsx file")
     parser.add_argument(type_arg, help="Type of pre-import processing (Source, CableType, or CableDesign)", required=True)
     parser.add_argument("--logFile", help="File for log output", required=True)
+    parser.add_argument("--cdbUrl", help="CDB system URL", required=True)
     parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)
     parser.add_argument("--cdbPassword", help="CDB User password for API login", required=True)
-    parser.add_argument("--sheetIndex", help="Index of worksheet within workbook (0-based)", required=True)
-    parser.add_argument("--headerIndex", help="Index of header row in worksheet (0-based)", required=True)
-    parser.add_argument("--firstDataIndex", help="Index of first data row in worksheet (0-based)", required=True)
-    parser.add_argument("--lastDataIndex", help="Index of last data row in worksheet (0-based)", required=True)
+    parser.add_argument("--sheetNumber", help="Worksheet number within workbook (1-based)", required=True)
+    parser.add_argument("--headerRow", help="Input spreadsheet row number of header row (1-based)", required=True)
+    parser.add_argument("--firstDataRow", help="Input spreadsheet row number of first data row (1-based)", required=True)
+    parser.add_argument("--lastDataRow", help="Input spreadsheet row number of last data row (1-based)", required=True)
     helper.add_parser_args(parser)
     args = parser.parse_args()
     print("using inputFile: %s" % args.inputFile)
     print("using outputFile: %s" % args.outputFile)
     print("using logFile: %s" % args.logFile)
     print("pre-import type: %s" % args.type)
+    print("cdb url: %s" % args.cdbUrl)
     print("cdb user id: %s" % args.cdbUser)
     print("cdb user password: %s" % args.cdbPassword)
-    print("worksheet index: %s" % args.sheetIndex)
-    print("header row index: %s" % args.headerIndex)
-    print("first data row index: %s" % args.firstDataIndex)
-    print("last data row index: %s" % args.lastDataIndex)
+    print("worksheet number: %s" % args.sheetNumber)
+    print("header row number: %s" % args.headerRow)
+    print("first data row number: %s" % args.firstDataRow)
+    print("last data row number: %s" % args.lastDataRow)
     helper.set_args(args)
+
+    sheetNum = int(args.sheetNumber)
+    headerRowNum = int(args.headerRow)
+    firstDataRowNum = int(args.firstDataRow)
+    lastDataRowNum = int(args.lastDataRow)
+
+    sheetIndex = sheetNum - 1
+    headerIndex = headerRowNum - 1
+    firstDataIndex = firstDataRowNum - 1
+    lastDataIndex = lastDataRowNum - 1
 
     # configure logging
     logging.basicConfig(filename=args.logFile, filemode='w', level=logging.DEBUG, format='%(levelname)s - %(message)s')
 
     # open connection to CDB
-    api = CdbApiFactory("http://localhost:8080/cdb")
+    api = CdbApiFactory(args.cdbUrl)
     try:
         api.authenticateUser(args.cdbUser, args.cdbPassword)
         api.testAuthenticated()
@@ -804,78 +817,72 @@ def main():
 
     # open input spreadsheet
     input_book = xlrd.open_workbook(args.inputFile)
-    input_sheet = input_book.sheet_by_index(int(args.sheetIndex))
+    input_sheet = input_book.sheet_by_index(int(sheetIndex))
     logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.nrows, input_sheet.ncols))
 
     # validate input spreadsheet dimensions
-    if input_sheet.nrows < int(args.firstDataIndex)+1:
-        sys.exit("no data in inputFile: %s" % args.inputFile)
+    if input_sheet.nrows < lastDataRowNum:
+        sys.exit("fewer rows in inputFile: %s than last data row: %d" % (args.inputFile, lastDataRowNum))
     if input_sheet.ncols != helper.num_input_cols():
         sys.exit("inputFile %s doesn't contain expected number of columns: %d" % (args.inputFile, helper.num_input_cols()))
 
     # process rows from input spreadsheet
     output_objects = []
-    input_rows = 0
-    for row_count in range(int(args.lastDataIndex)):
+    num_input_rows = 0
+    for row_ind in range(firstDataIndex, lastDataIndex + 1):
 
-        # stop when we reach lastDataIndex
-        if row_count > int(args.lastDataIndex):
-            break
+        current_row_num = row_ind + 1
+        num_input_rows = num_input_rows + 1
 
-        # skip header
-        if row_count < int(args.firstDataIndex):
-            continue
-
-        input_rows = input_rows + 1
-
-        logging.debug("processing row %d from input spreadsheet" % (row_count+1))
+        logging.debug("processing row %d from input spreadsheet" % current_row_num)
 
         input_dict = {}
 
-        for col_count in range(helper.num_input_cols()):
-            if col_count in helper.input_columns:
+        for col_ind in range(helper.num_input_cols()):
+            if col_ind in helper.input_columns:
                 # read cell value from spreadsheet
-                val = input_sheet.cell(row_count, col_count).value
-                helper.handle_input_cell_value(input_dict=input_dict, index=col_count, value=val)
+                val = input_sheet.cell(row_ind, col_ind).value
+                helper.handle_input_cell_value(input_dict=input_dict, index=col_ind, value=val, row_num=current_row_num)
 
         # ignore row if blank
-        if helper.input_row_is_empty(input_dict=input_dict, row_index=row_count):
+        if helper.input_row_is_empty(input_dict=input_dict, row_num=current_row_num):
             continue
 
-        if helper.input_row_is_valid(input_dict=input_dict, row_index=row_count):
+        if helper.input_row_is_valid(input_dict=input_dict, row_num=row_ind):
             output_obj = helper.get_output_object(input_dict=input_dict)
             if output_obj:
                 output_objects.append(output_obj)
         else:
-            sys.exit("invalid input row, exiting")
+            sys.exit("invalid input row: %d, exiting" % current_row_num)
 
     # create output spreadsheet
     output_book = xlsxwriter.Workbook(args.outputFile)
     output_sheet = output_book.add_worksheet()
 
     # write output spreadsheet header row
-    row_count = 0
-    for col_count in range(helper.num_output_cols()):
-        if col_count in helper.output_columns:
-            label = helper.get_output_column_label(col_index=col_count)
-            output_sheet.write(row_count, col_count, label)
+    row_ind = 0
+    for col_ind in range(helper.num_output_cols()):
+        if col_ind in helper.output_columns:
+            label = helper.get_output_column_label(col_index=col_ind)
+            output_sheet.write(row_ind, col_ind, label)
 
     # process output spreadsheet rows
-    output_rows = 0
+    num_output_rows = 0
     if len(output_objects) == 0:
         logging.info("no output objects, output spreadsheet will be empty")
     for output_obj in output_objects:
 
-        row_count = row_count + 1
-        output_rows = output_rows + 1
+        row_ind = row_ind + 1
+        num_output_rows = num_output_rows + 1
+        current_row_num = row_ind + 1
 
-        logging.debug("processing row %d in output spreadsheet" % (row_count+1))
+        logging.debug("processing row %d in output spreadsheet" % current_row_num)
 
-        for col_count in range(helper.num_output_cols()):
-            if col_count in helper.output_columns:
+        for col_ind in range(helper.num_output_cols()):
+            if col_ind in helper.output_columns:
 
-                val = helper.get_output_cell_value(obj=output_obj, index=col_count)
-                output_sheet.write(row_count, col_count, val)
+                val = helper.get_output_cell_value(obj=output_obj, index=col_ind)
+                output_sheet.write(row_ind, col_ind, val)
 
     # save output spreadsheet
     output_book.close()
@@ -887,7 +894,7 @@ def main():
         sys.exit("CDB logout failed")
 
     # print summary
-    summary_msg = "SUMMARY: processed %d input rows and wrote %d output rows" % (input_rows, output_rows)
+    summary_msg = "SUMMARY: processed %d input rows and wrote %d output rows" % (num_input_rows, num_output_rows)
     print()
     print(summary_msg)
     logging.info(summary_msg)
