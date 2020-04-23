@@ -11,6 +11,5 @@
 UPDATE `domain` SET item_identifier1_label = 'Part Number' where id = 7;
 
 # Prepopulate list of categories for cable catalog. 
-INSERT INTO `domain` VALUES
 (9,'Cable Design', 'Item domain for managing cable design items', 'Alternate Name', 'UUID', NULL, 'Technical System');
 INSERT INTO `item_category` (name, description, domain_id) (select name,description, 9 AS domain_id FROM item_category WHERE domain_id = 2);

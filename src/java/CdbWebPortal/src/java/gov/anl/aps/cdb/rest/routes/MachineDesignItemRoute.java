@@ -90,7 +90,7 @@ public class MachineDesignItemRoute extends BaseRoute {
             
             // walk up hierarchy to top-level "root" parent
             ItemDomainMachineDesign parent = item.getParentMachineDesign();
-            while (parent != null) {
+            while (parent.getParentMachineDesign() != null) {
                 parent = parent.getParentMachineDesign();
             }
             

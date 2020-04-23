@@ -646,8 +646,7 @@ class CableDesignOutputObject(OutputObject):
             return mba_id
 
         # otherwise use import_id prefixed with "CA "
-        import_id = self.input_dict[CABLE_DESIGN_IMPORT_ID_KEY]
-        return "CA " + str(import_id)
+        return "CA " + self.get_import_id()
 
     def get_alt_name(self):
         return "<" + self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + "><" + self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ">:" + self.get_name()
@@ -656,7 +655,7 @@ class CableDesignOutputObject(OutputObject):
         return self.input_dict[CABLE_DESIGN_NAME_KEY]
 
     def get_import_id(self):
-        return str(self.input_dict[CABLE_DESIGN_IMPORT_ID_KEY])
+        return str(int(self.input_dict[CABLE_DESIGN_IMPORT_ID_KEY]))
 
     def get_alt_id(self):
         return self.input_dict[CABLE_DESIGN_LEGACY_ID_KEY]
