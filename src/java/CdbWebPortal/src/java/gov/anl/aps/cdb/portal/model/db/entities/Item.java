@@ -18,12 +18,9 @@ import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -102,6 +99,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl WHERE i.domain.name = :domainName and ipl.name = :projectName ORDER BY i.derivedFromItem DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityType",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevel",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY"),
     @NamedQuery(name = "Item.findByDomainNameAndExcludeEntityType",
             query = "SELECT DISTINCT(i) FROM Item i LEFT JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and (etl.name != :entityTypeName or etl.name is null) ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameOderByQrId",
@@ -138,6 +137,20 @@ import org.primefaces.model.TreeNode;
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel LEFT JOIN i.entityTypeList etl "
             + "WHERE i.domain.name = :domainName "
             + "AND (etl.name != :entityTypeName or etl.name is null) "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND fiel.name is NULL "
+            + "AND fiel.listList = :list "),
+    @NamedQuery(name = "Item.findItemsInListWithoutEntityType",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
+            + "WHERE i.domain.name = :domainName "
+            + "AND i.entityTypeList IS EMPTY "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND fiel.name is NULL "
+            + "AND fiel.listList = :list "),
+    @NamedQuery(name = "Item.findItemsInListWithEntityType",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel JOIN i.entityTypeList etl "
+            + "WHERE i.domain.name = :domainName "
+            + "AND etl.name = :entityTypeName "
             + "AND fiel.derivedFromItemElement is NULL "
             + "AND fiel.name is NULL "
             + "AND fiel.listList = :list "),
@@ -264,7 +277,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     @ManyToMany    
     @JsonProperty("itemProjectList")
     private List<ItemProject> itemProjectList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem", orphanRemoval = true)
     @OrderBy("sortOrder ASC")        
     private List<ItemElement> fullItemElementList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "containedItem1")        
@@ -760,6 +773,16 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return itemElementDisplayList;
     }
+    
+    public void removeItemElement(ItemElement itemElement) {
+        fullItemElementList.remove(itemElement);
+        resetItemElementVars();
+    }
+    
+    public void resetItemElementVars() {
+        resetItemElementDisplayList();
+        resetSelfElement();
+    }
 
     public void resetItemElementDisplayList() {
         itemElementDisplayList = null;
@@ -1148,13 +1171,22 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return isItemTemplate;
     }
+    
+    public boolean isItemEntityType(String entityTypeName) {
+        return isItemEntityType(this, entityTypeName);
+    }
 
     public static boolean isItemTemplate(Item item) {
+        return isItemEntityType(item, EntityTypeName.template.getValue()); 
+    }
+    
+    // TODO for future performance, use id instead
+    public static boolean isItemEntityType(Item item, String entityTypeName) {
         if (item != null) {
             List<EntityType> entityTypeList = item.getEntityTypeList();
             if (entityTypeList != null) {
                 for (EntityType entityType : entityTypeList) {
-                    if (entityType.getName().equals(EntityTypeName.template.getValue())) {
+                    if (entityType.getName().equals(entityTypeName)) {
                         return true;
                     }
                 }

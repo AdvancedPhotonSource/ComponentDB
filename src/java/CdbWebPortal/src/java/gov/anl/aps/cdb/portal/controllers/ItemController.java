@@ -819,9 +819,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 }
 
                 // Show only favorites
-                if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {
-                    List<ItemDomainEntity> itemList = getFavoriteItems();
-                    scopedListDataModel = new ListDataModel(itemList);
+                if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showFavorites.getValue())) {                    
+                    scopedListDataModel = createFavoritesListDataModel();
                 } else {
                     // Show owned or owned & favorites. 
                     boolean showOwnedAndFavorites = settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showOwnedPlusFavorites.getValue());
@@ -887,22 +886,23 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
         return scopedListDataModel;
     }
+    
+    public ListDataModel createFavoritesListDataModel() {
+        List<ItemDomainEntity> itemList = getFavoriteItems();
+        return new ListDataModel(itemList); 
+    }
 
     public List<ItemDomainEntity> getFavoriteItems() {
         return getFavoriteItems(null);
     }
 
-    public List<ItemDomainEntity> getFavoriteItems(SettingEntity settingEntity) {
-        String templateEntityTypeName = EntityTypeName.template.getValue();
+    public List<ItemDomainEntity> getFavoriteItems(SettingEntity settingEntity) {        
         ItemDomainEntityFacade itemFacade = getEntityDbFacade();
         String domainName = getDefaultDomainName();
 
-        List<ItemDomainEntity> itemList = null;
-        if (getEntityDisplayTemplates()) {
-            itemList = itemFacade.getItemListContainedInListExcludeEntityType(domainName, getFavoritesList(settingEntity), templateEntityTypeName);
-        } else {
-            itemList = itemFacade.getItemListContainedInList(domainName, getFavoritesList(settingEntity));
-        }
+        List<ItemDomainEntity> itemList = null;        
+        itemList = itemFacade.getItemListContainedInListWithoutEntityType(domainName, getFavoritesList(settingEntity));
+        
         return itemList;
     }
 
@@ -987,7 +987,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return null;
     }
 
-    private ListTbl getFavoritesList() {
+    protected ListTbl getFavoritesList() {
         return getFavoritesList(null);
     }
 
