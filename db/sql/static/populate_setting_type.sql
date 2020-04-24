@@ -188,6 +188,7 @@ INSERT INTO `setting_type` VALUES
 (8035,'ItemElement.List.FilterBy.OwnerUser','Filter for design elements by owner username.',NULL),
 (8036,'ItemElement.List.FilterBy.OwnerGroup','Filter for design elements by owner group name.',NULL),
 (8037,'ItemElement.List.FilterBy.SortOrder','Filter for design elements by sort order.',NULL),
+(8038,'ItemElement.List.Display.SimpleViewPartName','Display part name (element name) on the simple view.','false'),
 (9000,'Log.List.Display.Attachments','Display log entry attachments.','true'),
 (9001,'Log.List.Display.EnteredOnDateTime','Display log entry entered on date/time.','false'),
 (9002,'Log.List.Display.EnteredByUser','Display log entry entered by user.','true'),

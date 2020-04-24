@@ -37,6 +37,12 @@ See LICENSE file.
                                : itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementObject)}" />
         </ui:include>
     </ui:define>
+    
+    <ui:define name="partNameColumnUIParams">
+        <ui:param name="partNameColumnValue"
+                  value="#{itemElementObject.derivedFromItemElement.name}" />
+    </ui:define>
+    
     <ui:define name="nameColumn"/>
 
 </ui:composition>
