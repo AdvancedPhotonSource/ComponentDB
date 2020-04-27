@@ -2475,7 +2475,7 @@ public class ItemDomainMachineDesignController
 
     @Override
     public boolean getEntityDisplayQrId() {
-        return false;
+        return isCurrentViewIsTemplate() == false; 
     }
 
     @Override

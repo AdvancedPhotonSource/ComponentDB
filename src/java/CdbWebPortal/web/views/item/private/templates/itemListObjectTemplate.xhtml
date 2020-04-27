@@ -14,9 +14,9 @@ See LICENSE file.
     <ui:param name="renderWheneverAvaiable" value="#{renderWheneverAvaiable != null 
                                                      ? renderWheneverAvaiable 
                                                      : false}" />
-    
+
     <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
-    
+
     <!-- allows for external usage with override of render --> 
     <ui:param name="itemListDisplayId" value="#{externalDisplayId != null ? externalDisplayId : entitySettingObject.displayId }" /> 
     <ui:param name="itemListDisplayName" value="#{itemListDisplayName != null ? itemListDisplayName : entitySettingObject.displayName }" />
@@ -81,7 +81,7 @@ See LICENSE file.
     <ui:define name="thumbnail">
         <ui:include src="../templateDefaults/itemListObjectColumns/itemThumbnailColumn.xhtml" /> 
     </ui:define>
-   
+
     <ui:define name="idColumn">
         <p:column sortBy="#{itemListObject.id}" headerText="Id"
                   filterBy="#{itemListObject.id}" filterMatchMode="contains"
@@ -131,14 +131,9 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="qrIdColumn">
-        <p:column sortBy="#{itemListObject.qrId}" headerText="QrId"
-                  filterBy="#{itemListObject.qrIdFilter}" filterMatchMode="contains"
-                  filterValue="#{entitySettingObject.filterByQrId}"
-                  filterable="#{filterable}"
-                  sortable="#{sortable}"
-                  rendered="#{rendered and itemListRenderQrId}" >
-            <ui:insert name="qrIdColumnObject" />
-        </p:column>
+        <ui:include src="../templateDefaults/itemListObjectColumns/itemQrId.xhtml">
+            <ui:param name="rendered" value="#{rendered and itemListRenderQrId}" />
+        </ui:include>
     </ui:define>
 
     <ui:define name="itemIdentifier1Column">

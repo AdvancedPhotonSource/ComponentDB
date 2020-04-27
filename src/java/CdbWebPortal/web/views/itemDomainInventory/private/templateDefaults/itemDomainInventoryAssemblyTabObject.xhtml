@@ -17,8 +17,8 @@ See LICENSE file.
 
     <ui:define name="customItemIdentifierColumn">
         <p:column headerText="Part Name"
-                  sortBy="#{itemElementListObject.name}">
-            <h:outputText value="#{itemElementListObject.name}" />
+                  sortBy="#{itemElementListObject.derivedFromItemElement.name}">
+            <h:outputText value="#{itemElementListObject.derivedFromItemElement.name}" />
         </p:column>
 
         <ui:include src="../itemDomainInventoryListCustomIdentifierObject.xhtml">

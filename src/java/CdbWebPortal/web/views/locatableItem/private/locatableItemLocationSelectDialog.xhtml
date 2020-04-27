@@ -26,7 +26,7 @@ See LICENSE file.
         <f:facet name="footer">
             <p:commandButton value="Done" 
                              id="#{entityTypeName}LocationItemSelectionDialog#{viewName}DoneButton"
-                             update="#{entityTypeName}LocationSelectionTree"
+                             update="#{entityTypeName}LocationSelectionTree#{viewName}"
                              action="#{locatableItemController.updateLocationForItem(itemObject, 
                                        itemDomainLocationController.itemFromSelectedLocationTreeNode, 
                                        'locationItemSelectionDialogSelectionSuccess()')}"/>          

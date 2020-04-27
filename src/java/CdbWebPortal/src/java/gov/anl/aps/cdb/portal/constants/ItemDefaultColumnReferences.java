@@ -17,8 +17,12 @@ public enum ItemDefaultColumnReferences {
     groupWriteable("groupWriteable"),
     property("property"),
     
-    //Inventory Specific
-    inventoryStatus("status");
+    //Inventory specific
+    inventoryStatus("status"),
+    
+    //Locatable item specific 
+    location("location"),
+    locationDetails("locationDetails"); 
 
     private String value;
 
