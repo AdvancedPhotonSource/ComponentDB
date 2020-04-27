@@ -38,7 +38,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
         columns.add(new NumericColumnModel("Heat Limit", "heatLimit", "setHeatLimit", false, "Heat limit.", 256));
         columns.add(new NumericColumnModel("Bend Radius", "bendRadius", "setBendRadius", false, "Bend radius in inches.", 256));
         columns.add(new NumericColumnModel("Rad Tolerance", "radTolerance", "setRadTolerance", false, "Radiation tolerance rating.", 256));
-        columns.add(new IdRefColumnModel("Owner", "team", "setTeamId", true, "Numeric ID of CDB technical system.", 0, ItemCategoryController.getInstance()));
+        columns.add(new IdRefColumnModel("Owner", "team", "setTeamId", false, "Numeric ID of CDB technical system.", 0, ItemCategoryController.getInstance()));
     }
     
     @Override

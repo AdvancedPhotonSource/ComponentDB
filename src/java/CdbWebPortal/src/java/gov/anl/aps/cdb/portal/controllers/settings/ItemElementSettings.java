@@ -19,6 +19,7 @@ import org.primefaces.component.datatable.DataTable;
  */
 public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementController> {
             
+    private static final String DisplayPartNameSettingTypeKey = "ItemElement.List.Display.SimpleViewPartName"; 
     private static final String DisplayChildItemSettingTypeKey = "ItemElement.List.Display.ChildDesign";
     private static final String DisplayComponentSettingTypeKey = "ItemElement.List.Display.Component";
     private static final String DisplayComponentTypeSettingTypeKey = "ItemElement.List.Display.ComponentType";
@@ -58,6 +59,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
     private static final String FilterByOwnerGroupSettingTypeKey = "ItemElement.List.FilterBy.OwnerGroup";
     private static final String FilterBySortOrderSettingTypeKey = "ItemElement.List.FilterBy.SortOrder";
     
+    private Boolean displayPartName = null; 
     private Boolean displayChildItem = null;
     private Boolean displayComponent = null;
     private Boolean displayComponentType = null;
@@ -107,6 +109,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
 
         sortByPropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(SortByPropertyTypeIdSettingTypeKey).getDefaultValue());
 
+        displayPartName = Boolean.parseBoolean(settingTypeMap.get(DisplayPartNameSettingTypeKey).getDefaultValue()); 
         displayChildItem = Boolean.parseBoolean(settingTypeMap.get(DisplayChildItemSettingTypeKey).getDefaultValue());
         displayComponent = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentSettingTypeKey).getDefaultValue());
         displayComponentType = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypeSettingTypeKey).getDefaultValue());
@@ -159,6 +162,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
 
         sortByPropertyTypeId = settingEntity.getSettingValueAsInteger(SortByPropertyTypeIdSettingTypeKey, sortByPropertyTypeId);
 
+        displayPartName = settingEntity.getSettingValueAsBoolean(DisplayPartNameSettingTypeKey, displayPartName); 
         displayChildItem = settingEntity.getSettingValueAsBoolean(DisplayChildItemSettingTypeKey, displayChildItem);
         displayComponent = settingEntity.getSettingValueAsBoolean(DisplayComponentSettingTypeKey, displayComponent);
         displayComponentType = settingEntity.getSettingValueAsBoolean(DisplayComponentTypeSettingTypeKey, displayComponentType);
@@ -211,6 +215,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
 
         settingEntity.setSettingValue(SortByPropertyTypeIdSettingTypeKey, sortByPropertyTypeId);
 
+        settingEntity.setSettingValue(DisplayPartNameSettingTypeKey, displayPartName);
         settingEntity.setSettingValue(DisplayChildItemSettingTypeKey, displayChildItem);
         settingEntity.setSettingValue(DisplayComponentSettingTypeKey, displayComponent);
         settingEntity.setSettingValue(DisplayComponentTypeSettingTypeKey, displayComponentType);
@@ -351,6 +356,14 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
 
     public void setDisplaySortOrder(Boolean displaySortOrder) {
         this.displaySortOrder = displaySortOrder;
+    }
+
+    public Boolean getDisplayPartName() {
+        return displayPartName;
+    }
+
+    public void setDisplayPartName(Boolean displayPartName) {
+        this.displayPartName = displayPartName;
     }
 
     public String getFilterByChildItem() {

@@ -38,15 +38,15 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         columns.add(new ImportHelperBase.StringColumnModel("Ext Cable Name", "externalCableName", "setExternalCableName", false, "Cable name in external system (e.g., CAD, routing tool) e.g., SR_R_401_D1109_RR8G[low] | SR_M_A02_C61_64_02-00[high]", 256));
         columns.add(new ImportHelperBase.StringColumnModel("Import Cable ID", "importCableId", "setImportCableId", false, "Import cable identifier.", 256));
         columns.add(new ImportHelperBase.StringColumnModel("Alternate Cable ID", "alternateCableId", "setAlternateCableId", false, "Alternate (e.g., group-specific) cable identifier.", 256));
-        columns.add(new ImportHelperBase.StringColumnModel("Description", "description", "setDescription", true, "Description of cable.", 256));
+        columns.add(new ImportHelperBase.StringColumnModel("Description", "description", "setDescription", false, "Description of cable.", 256));
         columns.add(new ImportHelperBase.StringColumnModel("Laying", "laying", "setLaying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 256));
         columns.add(new ImportHelperBase.StringColumnModel("Voltage", "voltage", "setVoltage", false, "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 256));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Owner", "team", "setTeamId", true, "Numeric ID of CDB technical system.", 0, ItemCategoryController.getInstance()));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Owner", "team", "setTeamId", false, "Numeric ID of CDB technical system.", 0, ItemCategoryController.getInstance()));
         columns.add(new ImportHelperBase.IdRefColumnModel("Project", "itemProjectString", "setProjectId", true, "Numeric ID of CDB project.", 0, ItemProjectController.getInstance()));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Type", "catalogItemString", "setCatalogItemId", true, "Numeric ID of CDB cable type catalog item.", 0, ItemDomainCableCatalogController.getInstance()));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint1", "endpoint1String", "setEndpoint1Id", true, "Numeric ID of CDB machine design item for first endpoint.", 0, ItemDomainMachineDesignController.getInstance()));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Type", "catalogItemString", "setCatalogItemId", false, "Numeric ID of CDB cable type catalog item.", 0, ItemDomainCableCatalogController.getInstance()));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint1", "endpoint1String", "setEndpoint1Id", false, "Numeric ID of CDB machine design item for first endpoint.", 0, ItemDomainMachineDesignController.getInstance()));
         columns.add(new ImportHelperBase.StringColumnModel("Endpoint1 Desc", "endpoint1Description", "setEndpoint1Description", false, "Endpoint details useful for external editing.", 256));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint2", "endpoint2String", "setEndpoint2Id", true, "Numeric ID of CDB machine design item for second endpoint.", 0, ItemDomainMachineDesignController.getInstance()));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint2", "endpoint2String", "setEndpoint2Id", false, "Numeric ID of CDB machine design item for second endpoint.", 0, ItemDomainMachineDesignController.getInstance()));
         columns.add(new ImportHelperBase.StringColumnModel("Endpoint2 Desc", "endpoint2Description", "setEndpoint2Description", false, "Endpoint details useful for external editing.", 256));
     }
     

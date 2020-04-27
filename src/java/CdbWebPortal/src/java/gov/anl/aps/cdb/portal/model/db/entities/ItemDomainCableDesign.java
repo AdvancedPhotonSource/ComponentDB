@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -26,7 +28,9 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_DESIGN_ID + "")
 public class ItemDomainCableDesign extends Item {
-    
+
+    private static final Logger LOGGER = LogManager.getLogger(ItemDomainCableDesign.class.getName());
+
     private transient String externalCableName = null;
     private transient String importCableId = null;
     private transient String alternateCableId = null;
@@ -36,17 +40,17 @@ public class ItemDomainCableDesign extends Item {
     private transient String endpoint1Description = null;
     private transient String endpoint2Description = null;
 
-    public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type"; 
-    public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName"; 
-    public final static String CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY = "importCableId"; 
-    public final static String CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY = "alternateCableId"; 
-    public final static String CABLE_DESIGN_PROPERTY_LAYING_KEY = "laying"; 
-    public final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage"; 
-    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY = "endpoint1Description"; 
-    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY = "endpoint2Description"; 
+    public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type";
+    public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName";
+    public final static String CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY = "importCableId";
+    public final static String CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY = "alternateCableId";
+    public final static String CABLE_DESIGN_PROPERTY_LAYING_KEY = "laying";
+    public final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage";
+    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY = "endpoint1Description";
+    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY = "endpoint2Description";
 
     private static final String endpointsSeparator = " | ";
-    
+
     @Override
     public Item createInstance() {
         return new ItemDomainCableDesign();
@@ -73,10 +77,10 @@ public class ItemDomainCableDesign extends Item {
             return null;
         }
     }
-    
+
     private RelationshipType getCableConnectionRelationshipType() {
-        RelationshipType relationshipType = 
-                RelationshipTypeFacade.getInstance().findByName(
+        RelationshipType relationshipType
+                = RelationshipTypeFacade.getInstance().findByName(
                         ItemElementRelationshipTypeNames.itemCableConnection.getValue());
         if (relationshipType == null) {
             RelationshipTypeController controller = RelationshipTypeController.getInstance();
@@ -84,15 +88,16 @@ public class ItemDomainCableDesign extends Item {
             relationshipType = controller.createRelationshipTypeWithName(name);
         }
         return relationshipType;
-    }    
+    }
 
     /**
      * Creates ItemElementRelationship for the 2 specified items.
+     *
      * @param item Machine design item for cable endpoint.
      * @return New instance of ItemElementRelationshipo for specified items.
      */
     private ItemElementRelationship createRelationship(Item item) {
-        
+
         ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
         itemElementRelationship.setFirstItemElement(item.getSelfElement());
         itemElementRelationship.setSecondItemElement(this.getSelfElement());
@@ -105,9 +110,11 @@ public class ItemDomainCableDesign extends Item {
 
     /**
      * Adds specified relationship for specified item.
+     *
      * @param item Item to add relationship for.
      * @param ier Relationship to add.
-     * @param secondItem True if the item is the second item in the relationship.
+     * @param secondItem True if the item is the second item in the
+     * relationship.
      */
     private void addItemElementRelationshipToItem(Item item, ItemElementRelationship ier, boolean secondItem) {
         ItemElement selfElement = item.getSelfElement();
@@ -119,8 +126,8 @@ public class ItemDomainCableDesign extends Item {
         }
         ierList.add(ier);
     }
-    
-    private void addCableRelationship(Item endpoint) {       
+
+    private void addCableRelationship(Item endpoint) {
         // create relationships from cable to endpoints
         ItemElementRelationship relationship = createRelationship(endpoint);
 
@@ -134,39 +141,44 @@ public class ItemDomainCableDesign extends Item {
         addItemElementRelationshipToItem(endpoint, relationship, false);
         addItemElementRelationshipToItem(this, relationship, true);
     }
-    
+
     public void setEndpoint1(Item itemEndpoint1) {
         this.addCableRelationship(itemEndpoint1);
     }
-    
+
     public void setEndpoint1Id(String id) {
-        Item itemEndpoint1 = ItemDomainMachineDesignController.getInstance().findById(Integer.valueOf(id));
+        ItemDomainMachineDesign itemEndpoint1 = (ItemDomainMachineDesign)(getEntityById(ItemDomainMachineDesignController.getInstance(), id));
         if (itemEndpoint1 != null) {
             setEndpoint1(itemEndpoint1);
+        } else {
+            LOGGER.error("setEndpoint1Id() unknown machine design item id " + id);
         }
     }
-    
+
     public void setEndpoint2(Item itemEndpoint2) {
         this.addCableRelationship(itemEndpoint2);
     }
-    
+
     public void setEndpoint2Id(String id) {
-        Item itemEndpoint2 = ItemDomainMachineDesignController.getInstance().findById(Integer.valueOf(id));
+        ItemDomainMachineDesign itemEndpoint2 = (ItemDomainMachineDesign)(getEntityById(ItemDomainMachineDesignController.getInstance(), id));
         if (itemEndpoint2 != null) {
             setEndpoint2(itemEndpoint2);
+        } else {
+            LOGGER.error("setEndpoint2Id() unknown machine design item id " + id);
         }
     }
-    
+
     /**
      * Updates oldEndpoint to newEndpoint.
+     *
      * @param oldEndpoint
-     * @param newEndpoint 
+     * @param newEndpoint
      */
     public Boolean updateEndpoint(Item oldEndpoint, Item newEndpoint) {
 
         ItemElement selfElement = this.getSelfElement();
         List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
-        
+
         if (ierList != null) {
 
             RelationshipType cableIerType
@@ -179,7 +191,7 @@ public class ItemDomainCableDesign extends Item {
                     && (ier.getFirstItemElement().equals(oldEndpoint.getSelfElement())))
                     .findAny()
                     .orElse(null);
-            
+
             // update cable relationship to new endpoint
             if (cableRelationship != null) {
                 cableRelationship.setFirstItemElement(newEndpoint.getSelfElement());
@@ -187,17 +199,17 @@ public class ItemDomainCableDesign extends Item {
                 cableRelationship.setFirstItemConnector(null);
             }
         }
-        
+
         return true;
     }
-    
+
     /**
      * Returns a string containing the cables endpoints for display.
      */
     public String getEndpointsString() {
         String result = "";
         int count = 0;
-        List<Item> iList = this.getEndpointList();      
+        List<Item> iList = this.getEndpointList();
         for (Item endpoint : iList) {
             count = count + 1;
             result = result + endpoint.getName();
@@ -210,10 +222,9 @@ public class ItemDomainCableDesign extends Item {
 
     public Item getEndpoint1() {
         List<Item> iList = this.getEndpointList();
-        if (iList.size() > 0) {
+        if ((iList != null) && (iList.size() > 0)) {
             return iList.get(0);
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -229,10 +240,9 @@ public class ItemDomainCableDesign extends Item {
 
     public Item getEndpoint2() {
         List<Item> iList = this.getEndpointList();
-        if (iList.size() > 1) {
+        if ((iList != null) && (iList.size() > 0)) {
             return iList.get(1);
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -245,23 +255,26 @@ public class ItemDomainCableDesign extends Item {
             return "";
         }
     }
-    
+
     public void setCatalogItem(Item itemCableCatalog) {
         // "assign" catalog item to cable design
         ItemElement selfElement = this.getSelfElement();
         selfElement.setContainedItem2(itemCableCatalog);
     }
-    
+
     public void setCatalogItemId(String catalogItemId) {
-        Item catalogItem = ItemDomainCableCatalogController.getInstance().findById(Integer.valueOf(catalogItemId));
+        ItemDomainCableCatalog catalogItem = (ItemDomainCableCatalog) (getEntityById(ItemDomainCableCatalogController.getInstance(), catalogItemId));
+
         if (catalogItem != null) {
             setCatalogItem(catalogItem);
+        } else {
+            LOGGER.error("setCatalogItemId() unknown cable catalog item id " + catalogItemId);
         }
-    }
-    
+     }
+
     public Item getCatalogItem() {
         ItemElement selfElementCable = this.getSelfElement();
-        return selfElementCable.getContainedItem2();       
+        return selfElementCable.getContainedItem2();
     }
 
     public String getCatalogItemString() {
@@ -272,25 +285,25 @@ public class ItemDomainCableDesign extends Item {
             return "";
         }
     }
-    
+
     private PropertyValue getInternalCableDesignPropertyValue() {
-        List<PropertyValue> propertyValueList = getPropertyValueList(); 
-        for (PropertyValue propertyValue: propertyValueList) {
+        List<PropertyValue> propertyValueList = getPropertyValueList();
+        for (PropertyValue propertyValue : propertyValueList) {
             if (propertyValue.getPropertyType().getName().equals(CABLE_DESIGN_INTERNAL_PROPERTY_TYPE)) {
-                return propertyValue; 
+                return propertyValue;
             }
         }
-        return null; 
+        return null;
     }
-    
+
     public String getAlternateName() {
         return getItemIdentifier1();
     }
-    
+
     public void setAlternateName(String n) {
         setItemIdentifier1(n);
     }
-    
+
     public String getExternalCableName() throws CdbException {
         if (externalCableName == null) {
             externalCableName = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY);
@@ -381,32 +394,36 @@ public class ItemDomainCableDesign extends Item {
         }
         return team;
     }
-    
+
     public void setTeamId(String categoryId) throws CdbException {
-        ItemCategory category = ItemCategoryController.getInstance().findById(Integer.valueOf(categoryId));
-        
+        ItemCategory category = (ItemCategory) (getEntityById(ItemCategoryController.getInstance(), categoryId));
+
         if (category != null) {
-            if (!category.getDomain().getName().equals(this.getDomain().getName())) {
-                throw new CdbException("Invalid team ID (item_category) specified: " + categoryId + " for domain: " + this.getDomain().getName());
+            String domainName = category.getDomain().getName();
+            if (!domainName.equals(this.getDomain().getName())) {
+                LOGGER.error("setTeamId() invalid domain for specified categoryId: " + domainName);
+                throw new CdbException("Invalid domain: " + domainName + " for specified categoryId: " + categoryId);
             }
-        
+
             List<ItemCategory> categoryList = new ArrayList<>();
             categoryList.add(category);
             this.setItemCategoryList(categoryList);
             team = this.getItemCategoryString();
+        } else {
+            LOGGER.error("setTeamId() unknown item category id " + categoryId);
         }
     }
-    
+
     public void setTechnicalSystemList(List<ItemCategory> technicalSystemList) {
         setItemCategoryList(technicalSystemList);
-    }   
+    }
 
     public void setProjectId(String projectId) {
-        ItemProject project = ItemProjectController.getInstance().findById(Integer.valueOf(projectId));
+        ItemProject project = (ItemProject) (getEntityById(ItemProjectController.getInstance(), projectId));
         if (project != null) {
             List<ItemProject> projectList = new ArrayList<>();
             projectList.add(project);
             this.setItemProjectList(projectList);
         }
-    }    
+    }
 }

@@ -100,25 +100,25 @@ public class UserInfo extends SettingEntity implements Serializable {
         @JoinColumn(name = "user_group_id", referencedColumnName = "id")})
     @ManyToMany
     private List<UserGroup> userGroupList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "enteredByUser")
     private List<Log> logList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "enteredByUser")
     private List<PropertyValue> propertyValueList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userInfo")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "userInfo")
     private List<UserRole> userRoleList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
     private List<UserSetting> userSettingList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "enteredByUser")
     private List<PropertyValueHistory> propertyValueHistoryList;
-    @OneToMany(mappedBy = "ownerUser")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "ownerUser")
     private List<EntityInfo> entityInfoList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "createdByUser")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "createdByUser")
     private List<EntityInfo> entityInfoList1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "lastModifiedByUser")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "lastModifiedByUser")
     private List<EntityInfo> entityInfoList2;
     @OneToMany(mappedBy = "obsoletedByUser")
     private List<EntityInfo> entityInfoList3;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "enteredByUser")
+    @OneToMany(cascade = CascadeType.MERGE, mappedBy = "enteredByUser")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
             
     private transient String fullNameForSelection = null;

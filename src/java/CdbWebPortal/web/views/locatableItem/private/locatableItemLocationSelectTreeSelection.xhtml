@@ -9,12 +9,21 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <p:scrollPanel style="width: 650px; height: 500px" mode="native" >
-        <p:tree id="#{entityTypeName}LocationSelectionTree"
+
+        <ui:param name="useDefaultLocationSelectionValue" value="#{useDefaultLocationSelectionValue != null 
+                                                                   ? useDefaultLocationSelectionValue
+                                                                   : true}" /> 
+        <ui:param name="locationSelectionValue"
+                  value="#{useDefaultLocationSelectionValue
+                           ? itemDomainLocationController.selectedLocationTreeNode
+                           : locationSelectionValue}" />
+        
+        <p:tree id="#{entityTypeName}LocationSelectionTree#{viewName}"
                 value="#{itemDomainLocationController.itemsWithNoParentsRootNode}"
                 var="node"
                 selectionMode="single"
                 style="width: 635px; background: none; border: none;"
-                selection="#{itemDomainLocationController.selectedLocationTreeNode}">
+                selection="#{locationSelectionValue}">
             <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
         </p:tree>
     </p:scrollPanel>

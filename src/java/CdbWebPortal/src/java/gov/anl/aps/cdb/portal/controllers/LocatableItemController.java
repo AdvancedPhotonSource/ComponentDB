@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -51,6 +52,8 @@ import org.primefaces.model.menu.DefaultMenuModel;
 public class LocatableItemController implements Serializable {
 
     public final static String controllerNamed = "locatableItemController";
+
+    private static final String REL_PATH_MULTI_EDIT_LOCATION_INPUT = "../../locatableItem/private/applyValuesTo/locationInput.xhtml";
 
     private static final Logger logger = LogManager.getLogger(LocatableItemController.class.getName());
 
@@ -354,7 +357,11 @@ public class LocatableItemController implements Serializable {
     public void updateLocationTreeForItem(LocatableItem item) {
         List<Item> hiearchyList = getLocationHierarchyListForItem(item);
         if (hiearchyList != null) {
-            TreeNode treeBranch = ItemUtility.generateHierarchyNodeTreeBranch(hiearchyList);
+            List<Item> revList = new ArrayList<>();
+            revList.addAll(hiearchyList);
+            Collections.reverse(revList);
+            
+            TreeNode treeBranch = ItemUtility.generateHierarchyNodeTreeBranch(revList);
             prepLocationTreeForView(treeBranch);
             item.setLocationTree(treeBranch);
         }
@@ -398,6 +405,8 @@ public class LocatableItemController implements Serializable {
             if (location != null) {
                 List<Item> hierarchyList = generateLocationHierarchyList(location);
 
+                hierarchyList = appendMachineDesignContext(item, hierarchyList);
+
                 item.setCachedLocationHierarchy(hierarchyList);
 
                 return hierarchyList;
@@ -406,6 +415,40 @@ public class LocatableItemController implements Serializable {
 
         return null;
 
+    }
+
+    public List<Item> appendMachineDesignContext(LocatableItem item, List<Item> hierarchyList) {
+        if (item instanceof ItemDomainMachineDesign) {
+            LocatableItem membershipLocation = (LocatableItem) item.getMembershipLocation();
+            
+            if (membershipLocation != null) {
+                Item activeLocation = item.getActiveLocation();
+                
+                if (activeLocation.equals(membershipLocation) == false) {
+                    List<Item> finalHierarchy = generateLocationHierarchyList(membershipLocation);
+
+                    for (int i = finalHierarchy.size() - 1; i >= 0; i--) {
+                        Item memberItem = finalHierarchy.get(i);
+                        if (memberItem instanceof ItemDomainLocation) {
+                            int hieararchyLastSize = hierarchyList.size();
+                            for (int j = hieararchyLastSize - 2; j >= 0; j--) {
+                                Item hierarchyItem = hierarchyList.get(j);
+                                if (hierarchyItem.equals(memberItem)) {
+                                    finalHierarchy.addAll(hierarchyList.subList(j + 1, hieararchyLastSize));
+                                    break;
+                                }
+                            }
+                            break;
+                        }
+                    }
+                    hierarchyList = finalHierarchy;
+                }
+
+                hierarchyList = appendMachineDesignContext(membershipLocation, hierarchyList);
+            }
+        }
+
+        return hierarchyList;
     }
 
     public List<Item> generateLocationHierarchyList(Item lowestLocationItem) {
@@ -545,7 +588,7 @@ public class LocatableItemController implements Serializable {
             SessionUtility.addErrorMessage("Error", "Cannot use the same location as this item.");
             return;
         }
-        
+
         Boolean originalLocationLoaded = item.getOriginalLocationLoaded();
         item.resetLocationVariables();
         item.setOriginalLocationLoaded(originalLocationLoaded);
@@ -609,6 +652,9 @@ public class LocatableItemController implements Serializable {
 
     public boolean locationEditable(Item item) {
         if (item instanceof LocatableItem) {
+            if (item instanceof ItemDomainMachineDesign) {
+                return true;
+            }
             LocatableItem locatableItem = (LocatableItem) item;
             // Loads the location if needed. 
             getLocation(locatableItem);
@@ -739,6 +785,10 @@ public class LocatableItemController implements Serializable {
             locationItemHierarchyCaches = ItemElementUtility.generateItemHierarchyCacheList(baseLocations);
         }
         return locationItemHierarchyCaches;
+    }
+
+    public static String getRelPathMultiEditLocationInput() {
+        return REL_PATH_MULTI_EDIT_LOCATION_INPUT;
     }
 
 }

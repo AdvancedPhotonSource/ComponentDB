@@ -39,6 +39,9 @@ See LICENSE file.
             
             
             <ui:param name="simpleElementsView" value="#{currentItemController.settingObject.displayItemElementSimpleView}" />
+            <ui:param name="displayPartName" value="#{itemElementController.settingObject.displayPartName}"/> 
+            
+            <ui:param name="itemElementNameLabel" value="#{simpleElementsView ? 'Part Name' : 'Item Element Name'}"/> 
 
             <p:remoteCommand name="toggleAddNewAssemblyItemPanels"
                              onstart="PF('loadingDialog').show();
@@ -100,14 +103,14 @@ See LICENSE file.
                         </ui:include>
                         
                         <h:outputText id="addNewAssemblyItemDialogItemElementName"
-                                      value="Item Element Name"
+                                      value="#{itemElementNameLabel}"
                                       styleClass="entityDataEmphasizedLabel"
-                                      rendered="#{!simpleElementsView}"/>
+                                      rendered="#{!simpleElementsView or displayPartName}"/>
                         <h:inputText value="#{newItemElement.name}"
-                                     rendered="#{!simpleElementsView}"/> 
+                                     rendered="#{!simpleElementsView or displayPartName}"/> 
                         <p:tooltip for="addNewAssemblyItemDialogItemElementName" 
                                    value="Name of the new element."
-                                   rendered="#{!simpleElementsView}"/>
+                                   rendered="#{!simpleElementsView or displayPartName}"/>
                     </p:panelGrid>                   
                 </p:outputPanel>                
             </p:panel>
