@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">  
+
+
+    <p:dialog id="itemDomainMachineDesignCreateMDInventoryDialog"
+              widgetVar="itemDomainMachineDesignCreateMDInventoryDialogWidget"
+              modal="true"
+              resizable="false"
+              header="Create Inventory"
+              styleClass="viewTransparentBackgroundDialog">
+
+        <ui:param name="newInventoryObject"
+                  value="#{itemDomainMachineDesignController.newMdInventoryItem}" />
+
+        <p:outputPanel rendered="#{newInventoryObject != null}" >                    
+            <p:panelGrid columns="3">
+                <ui:param name="viewName"
+                          value="newInventory"/> 
+                <ui:param name="itemObject"
+                          value="#{newInventoryObject}" /> 
+                
+                
+                <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemName.xhtml"/>
+                <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemName.xhtml" />
+                <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemName.xhtml" />
+
+                <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemQrId.xhtml" />
+                <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemQrId.xhtml" />
+                <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemQrId.xhtml" />
+
+                <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemIdentifier2.xhtml"/>
+                <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml" />
+                <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemIdentifier2.xhtml" />
+
+                <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemProject.xhtml"/>
+                <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemProject.xhtml"/>
+                <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemProject.xhtml"/>               
+            </p:panelGrid>
+        </p:outputPanel>
+
+        <f:facet name="footer">           
+            <p:commandButton value="Save"
+                             icon="fa fa-save"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             update="@form"
+                             action="#{itemDomainMachineDesignController.createNewMdInventoryItem()}" />
+            
+            <p:commandButton value="Close"
+                             icon="fa fa-close"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('itemDomainMachineDesignCreateMDInventoryDialogWidget').hide();
+                             PF('loadingDialog').hide();"/>
+        </f:facet>
+
+
+    </p:dialog>
+
+
+</ui:composition>
+
+

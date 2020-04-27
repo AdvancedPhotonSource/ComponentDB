@@ -30,7 +30,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.StreamedContent;
 
 @Named("propertyValueController")
@@ -45,7 +46,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
 
     private PropertyValueMetadata currentPropertyMetadata;
 
-    private static final Logger logger = Logger.getLogger(PropertyValueController.class.getName());
+    private static final Logger logger = LogManager.getLogger(PropertyValueController.class.getName());
 
     public PropertyValueController() {
         super();

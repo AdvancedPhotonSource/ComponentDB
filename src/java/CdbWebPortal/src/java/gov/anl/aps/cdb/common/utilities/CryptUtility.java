@@ -10,7 +10,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Random;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.util.Base64;
 
 /**
@@ -25,7 +26,7 @@ public class CryptUtility {
     private static final char[] SaltCharset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
     private static final String SaltDelimiter = "$";
 
-    private static final Logger logger = Logger.getLogger(CryptUtility.class.getName());
+    private static final Logger logger = LogManager.getLogger(CryptUtility.class.getName());
 
     /**
      * Generate random string.

@@ -1,0 +1,125 @@
+/*
+ * Copyright (c) UChicago Argonne, LLC. All rights reserved.
+ * See LICENSE file.
+ */
+package gov.anl.aps.cdb.rest.routes;
+
+import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
+import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.ArrayList;
+import java.util.List;
+import javax.ejb.EJB;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.primefaces.model.TreeNode;
+
+/**
+ *
+ * @author craig
+ */
+@Path("/MachineDesignItems")
+@Tag(name = "machineDesignItems")
+public class MachineDesignItemRoute extends BaseRoute {
+    
+    private static final Logger LOGGER = LogManager.getLogger(MachineDesignItemRoute.class.getName());
+    
+    @EJB
+    ItemDomainMachineDesignFacade facade; 
+    
+    @GET
+    @Path("/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainMachineDesign> getMachineDesignItemList() {
+        LOGGER.debug("Fetching machine design list");
+        return facade.findAll();
+    }
+    
+    @GET
+    @Path("/ById/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public ItemDomainMachineDesign getMachineDesignItemById(@PathParam("id") int id) throws ObjectNotFound {
+        LOGGER.debug("Fetching item with id: " + id);
+        ItemDomainMachineDesign item = facade.find(id);
+        if (item == null) {
+            ObjectNotFound ex = new ObjectNotFound("Could not find item with id: " + id);
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        return item;
+    }
+    
+    @GET
+    @Path("/ByName/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainMachineDesign> getMachineDesignItemsByName(@PathParam("name") String name) throws ObjectNotFound {
+        LOGGER.debug("Fetching items with name: " + name);
+        List<ItemDomainMachineDesign> itemList = facade.findByName(name);
+        if (itemList == null || itemList.isEmpty()) {
+            ObjectNotFound ex = new ObjectNotFound("Could not find item with name: " + name);
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        return itemList;
+    }
+    
+    /**
+     * Searches the top-level machine design hierarchy "root" node for children
+     * with specified name.
+     * @throws ObjectNotFound 
+     */
+    @GET
+    @Path("/ByRootAndName/{root}/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainMachineDesign> getMdInHierarchyByName(@PathParam("root") String root, @PathParam("name") String name) {
+        LOGGER.debug("Fetching items in hiearchy: " + root + " with name: " + name);
+        List<ItemDomainMachineDesign> itemList = facade.findByName(name);
+        
+        // eliminate items whose top-level parent is not the specified "root" node
+        List<ItemDomainMachineDesign> result = new ArrayList<>();
+        for (ItemDomainMachineDesign item : itemList) {
+            
+            // walk up hierarchy to top-level "root" parent
+            ItemDomainMachineDesign parent = item.getParentMachineDesign();
+            while (parent.getParentMachineDesign() != null) {
+                parent = parent.getParentMachineDesign();
+            }
+            
+            if (parent.getName().equals(root)) {
+                // add item to result if top-level parent is specified root
+                result.add(item);
+            }
+        }
+        
+        return result;
+    }
+    
+    @GET
+    @Path("/DetailedMachineDesignSearch/{searchText}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainMdSearchResult> getDetailedMdSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
+        LOGGER.debug("Performing a detailed machine design item search for search query: " + searchText);
+        
+        ItemDomainMachineDesignController mdInstance = ItemDomainMachineDesignController.getApiInstance();
+        
+        TreeNode rootNode = mdInstance.getSearchResults(searchText, true);
+        
+        List<TreeNode> children = rootNode.getChildren();
+        List<ItemDomainMdSearchResult> itemHierarchy = new ArrayList<>(); 
+        for (TreeNode child: children) {
+            ItemDomainMdSearchResult hierarchy = new ItemDomainMdSearchResult(child);
+            itemHierarchy.add(hierarchy); 
+        }
+        
+        return itemHierarchy; 
+    }   
+}

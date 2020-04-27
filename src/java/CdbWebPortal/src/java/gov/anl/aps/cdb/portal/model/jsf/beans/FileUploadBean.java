@@ -11,7 +11,8 @@ import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.primefaces.model.UploadedFile;
 
@@ -22,7 +23,7 @@ import org.primefaces.model.UploadedFile;
 @RequestScoped
 public class FileUploadBean {
 
-    private static final Logger logger = Logger.getLogger(FileUploadBean.class.getName());
+    private static final Logger logger = LogManager.getLogger(FileUploadBean.class.getName());
 
     private UploadedFile uploadedFile;
 

@@ -12,8 +12,6 @@ import gov.anl.aps.cdb.common.objects.CdbObjectFactory;
 import gov.anl.aps.cdb.common.utilities.ArgumentUtility;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.Collection;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.Container;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,6 +28,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.logging.log4j.Level; 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -49,7 +50,7 @@ public class DocumentManagamentApi extends CdbRestApi {
     protected static final String REST_GET_PDMLINK_DOCINFO = "/data/pdmlink/docDetail";
             
 
-    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(DocumentManagamentApi.class.getName());
+    private static final Logger logger = LogManager.getLogger(DocumentManagamentApi.class.getName());
 
     /**
      * Constructor.
@@ -208,16 +209,16 @@ public class DocumentManagamentApi extends CdbRestApi {
             System.out.println(results);
 
         } catch (ConfigurationError ex) {
-            Logger.getLogger(DocumentManagamentApi.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(DocumentManagamentApi.class
+                    .getName()).log(Level.ERROR, "", ex);
 
         } catch (InvalidArgument ex) {
-            Logger.getLogger(DocumentManagamentApi.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(DocumentManagamentApi.class
+                    .getName()).log(Level.ERROR, "", ex);
 
         } catch (CdbException ex) {
-            Logger.getLogger(DocumentManagamentApi.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            LogManager.getLogger(DocumentManagamentApi.class
+                    .getName()).log(Level.ERROR, "", ex);
         }
     }
 

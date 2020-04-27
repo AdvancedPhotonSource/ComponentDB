@@ -13,7 +13,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.view.objects.ItemHierarchyCache;
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
@@ -31,7 +32,7 @@ public class ItemElementUtility {
     private final static String CLEAR_ITEM_ONCLICK_TEMPLATE = "#{%s.%s(%s)}";
     private final static String ACTIVE_LOCATION_MENU_ITEM_STYLE = "activeLocationMenuItem";
 
-    private static final Logger logger = Logger.getLogger(ItemElementUtility.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemElementUtility.class.getName());
 
     public static TreeNode createItemElementRoot(Item parentItem) throws CdbException {
         return createTreeRoot(parentItem, false);
@@ -126,6 +127,15 @@ public class ItemElementUtility {
                 prepareItemElementHistory(originalItemElement, itemElementValue, entityInfo);
             } else {
                 prepareItemElementHistory(null, itemElementValue, entityInfo);
+                
+                // New item elements may be created hierarchically
+                Item containedItem = itemElementValue.getContainedItem();
+                if (containedItem != null) {
+                    List<ItemElement> itemElementDisplayList = containedItem.getItemElementDisplayList();
+                    if (itemElementDisplayList != null) {
+                        prepareItemElementHistory(null, itemElementDisplayList, entityInfo);
+                    }
+                }
             }
         }
     }

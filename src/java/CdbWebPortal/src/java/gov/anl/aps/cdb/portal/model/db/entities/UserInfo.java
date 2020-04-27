@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import gov.anl.aps.cdb.portal.controllers.LoginController;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -315,6 +316,26 @@ public class UserInfo extends SettingEntity implements Serializable {
 
     public void setItemElementRelationshipHistoryList(List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList) {
         this.itemElementRelationshipHistoryList = itemElementRelationshipHistoryList;
+    }
+    
+    public boolean isUserAdmin() {
+        List<String> adminGroupNameList = LoginController.getAdminGroupNameList();
+        for (String adminGroupName : adminGroupNameList) {
+            if (isUserMemberOfUserGroup(adminGroupName)) {
+                return true; 
+            }
+        }
+        return false;
+        
+    }
+    
+    public boolean isUserMemberOfUserGroup(String groupName) {
+        for (UserGroup userGroup : getUserGroupList()) {
+            if (userGroup.getName().equals(groupName)) {
+                return true;
+            }
+        }
+        return false;
     }
         
     public String getFullNameForSelection() {

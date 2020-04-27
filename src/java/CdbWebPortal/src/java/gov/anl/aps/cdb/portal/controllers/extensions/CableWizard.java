@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignWizardBase;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -219,7 +220,8 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
                 if (result = controller.createCableUnspecified(itemEndpoint1,
                         itemEndpoint2,
                         inputValueName,
-                        selectionProjectList)) {
+                        selectionProjectList,
+                        selectionTechnicalSystemList)) {
                 } else {
                 }
                 break;
@@ -236,6 +238,7 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
                             itemEndpoint2,
                             inputValueName,
                             selectionProjectList,
+                            selectionTechnicalSystemList,
                             selectionCableCatalogItem)) {
                     } else {
                     }
@@ -263,5 +266,4 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
             return "";
         }
     }
-    
 }

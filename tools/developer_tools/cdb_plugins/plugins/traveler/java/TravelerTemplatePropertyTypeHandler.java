@@ -13,7 +13,8 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.api.TravelerApi;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Form;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -25,7 +26,7 @@ public class TravelerTemplatePropertyTypeHandler extends AbstractPropertyTypeHan
 
     private static final String PROPERTY_EDIT_PAGE = "travelerTemplatePropertyValueEditPanel";
 
-    private static final Logger logger = Logger.getLogger(TravelerTemplatePropertyTypeHandler.class.getName());
+    private static final Logger logger = LogManager.getLogger(TravelerTemplatePropertyTypeHandler.class.getName());
 
     private TravelerApi travelerApi;
 

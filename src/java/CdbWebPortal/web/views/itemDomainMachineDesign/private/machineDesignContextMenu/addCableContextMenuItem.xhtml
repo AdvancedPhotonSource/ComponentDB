@@ -11,7 +11,9 @@ See LICENSE file.
     <p:menuitem value="#{value}" icon="#{icon}"
                 update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel emphasizedContentBelowTitleOutputPanel"
                 disabled="#{disabledEditContextMenuItemForSelection or disabled}"
-                immediate="true"                
+                immediate="true"
+                onstart="PF('loadingDialog').show();"
+                oncomplete="PF('loadingDialog').hide();"              
                 action='#{entityController[action]}'/>
     
 </ui:composition>

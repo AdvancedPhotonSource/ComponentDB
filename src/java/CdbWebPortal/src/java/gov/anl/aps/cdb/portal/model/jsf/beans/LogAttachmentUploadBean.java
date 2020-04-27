@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.event.FileUploadEvent;
 
 import org.primefaces.model.UploadedFile;
@@ -33,7 +34,7 @@ import org.primefaces.model.UploadedFile;
 @SessionScoped
 public class LogAttachmentUploadBean implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(LogAttachmentUploadBean.class.getName());
+    private static final Logger logger = LogManager.getLogger(LogAttachmentUploadBean.class.getName());
 
     private Log logEntry;
 

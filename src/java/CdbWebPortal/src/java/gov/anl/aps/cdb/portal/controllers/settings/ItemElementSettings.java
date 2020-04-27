@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers.settings;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemElementController;
 import gov.anl.aps.cdb.portal.controllers.SettingController;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
@@ -405,5 +406,12 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
         this.filterBySortOrder = filterBySortOrder;
     }
     
-    
+    public PropertyType getCoreMetadataPropertyType() {
+        return null;
+    }
+         
+    public PropertyType getCoreMetadataPropertyInfo() {
+        return null;
+    }
+         
 }

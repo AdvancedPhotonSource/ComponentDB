@@ -11,9 +11,11 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
+import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,6 +50,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -69,6 +73,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM Item i WHERE i.derivedFromItem.id = :id"),
     @NamedQuery(name = "Item.findByName",
             query = "SELECT i FROM Item i WHERE i.name = :name"),
+    @NamedQuery(name = "Item.findByDomainNameAndName",
+            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName AND i.name = :name"),
     @NamedQuery(name = "Item.findByItemIdentifier1",
             query = "SELECT i FROM Item i WHERE i.itemIdentifier1 = :itemIdentifier1"),
     @NamedQuery(name = "Item.findByItemIdentifier2",
@@ -93,6 +99,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl WHERE i.domain.name = :domainName and ipl.name = :projectName ORDER BY i.derivedFromItem DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityType",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevel",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY"),
     @NamedQuery(name = "Item.findByDomainNameAndExcludeEntityType",
             query = "SELECT DISTINCT(i) FROM Item i LEFT JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and (etl.name != :entityTypeName or etl.name is null) ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameOderByQrId",
@@ -129,6 +137,20 @@ import org.primefaces.model.TreeNode;
             query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel LEFT JOIN i.entityTypeList etl "
             + "WHERE i.domain.name = :domainName "
             + "AND (etl.name != :entityTypeName or etl.name is null) "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND fiel.name is NULL "
+            + "AND fiel.listList = :list "),
+    @NamedQuery(name = "Item.findItemsInListWithoutEntityType",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel "
+            + "WHERE i.domain.name = :domainName "
+            + "AND i.entityTypeList IS EMPTY "
+            + "AND fiel.derivedFromItemElement is NULL "
+            + "AND fiel.name is NULL "
+            + "AND fiel.listList = :list "),
+    @NamedQuery(name = "Item.findItemsInListWithEntityType",
+            query = "Select DISTINCT(i) FROM Item i JOIN i.fullItemElementList fiel JOIN i.entityTypeList etl "
+            + "WHERE i.domain.name = :domainName "
+            + "AND etl.name = :entityTypeName "
             + "AND fiel.derivedFromItemElement is NULL "
             + "AND fiel.name is NULL "
             + "AND fiel.listList = :list "),
@@ -195,7 +217,9 @@ import org.primefaces.model.TreeNode;
     "lastKnownItemCategoryList",
     "isItemTemplate",    
     "selfElement",
-    "descriptionFromAPI"
+    "descriptionFromAPI",
+    "coreMetadataPropertyValue",
+    "coreMetadataPropertyInfo"
 })
 @Schema(name="Item", 
         subTypes= 
@@ -209,6 +233,8 @@ import org.primefaces.model.TreeNode;
         }
 )
 public class Item extends CdbDomainEntity implements Serializable {
+    
+    private static final Logger LOGGER = LogManager.getLogger(Item.class.getName());
         
     private static final long serialVersionUID = 1L;
     @Id
@@ -251,12 +277,12 @@ public class Item extends CdbDomainEntity implements Serializable {
     @ManyToMany    
     @JsonProperty("itemProjectList")
     private List<ItemProject> itemProjectList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parentItem", orphanRemoval = true)
     @OrderBy("sortOrder ASC")        
     private List<ItemElement> fullItemElementList;
-    @OneToMany(mappedBy = "containedItem1")        
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "containedItem1")        
     private List<ItemElement> itemElementMemberList;
-    @OneToMany(mappedBy = "containedItem2")        
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "containedItem2")        
     private List<ItemElement> itemElementMemberList2;
     @JoinColumn(name = "domain_id", referencedColumnName = "id")
     @ManyToOne(optional = false)    
@@ -315,18 +341,35 @@ public class Item extends CdbDomainEntity implements Serializable {
     // API generation variables    
     private transient String descriptionFromAPI;
     
+    protected transient PropertyValue coreMetadataPropertyValue = null;
+    
     public Item() {
     }        
-
+    
     public void init() {
+        EntityInfo ei = null; 
+        init(ei); 
+    }
+
+    public void init(EntityInfo entityInfo) {
         ItemElement selfElement = new ItemElement();
-        selfElement.init(this);
+        if (entityInfo == null) {
+            selfElement.init(this);
+        } else {
+            selfElement.init(this, entityInfo);
+        }
         this.fullItemElementList = new ArrayList<>();
         this.fullItemElementList.add(selfElement);
 
         name = "";
         itemIdentifier1 = "";
         itemIdentifier2 = "";
+    }
+    
+    public void init(Domain domain, EntityInfo ei) {
+        init(ei);
+        
+        this.domain = domain; 
     }
 
     public void init(Domain domain) {
@@ -730,6 +773,16 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return itemElementDisplayList;
     }
+    
+    public void removeItemElement(ItemElement itemElement) {
+        fullItemElementList.remove(itemElement);
+        resetItemElementVars();
+    }
+    
+    public void resetItemElementVars() {
+        resetItemElementDisplayList();
+        resetSelfElement();
+    }
 
     public void resetItemElementDisplayList() {
         itemElementDisplayList = null;
@@ -1118,13 +1171,22 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return isItemTemplate;
     }
+    
+    public boolean isItemEntityType(String entityTypeName) {
+        return isItemEntityType(this, entityTypeName);
+    }
 
     public static boolean isItemTemplate(Item item) {
+        return isItemEntityType(item, EntityTypeName.template.getValue()); 
+    }
+    
+    // TODO for future performance, use id instead
+    public static boolean isItemEntityType(Item item, String entityTypeName) {
         if (item != null) {
             List<EntityType> entityTypeList = item.getEntityTypeList();
             if (entityTypeList != null) {
                 for (EntityType entityType : entityTypeList) {
-                    if (entityType.getName().equals(EntityTypeName.template.getValue())) {
+                    if (entityType.getName().equals(entityTypeName)) {
                         return true;
                     }
                 }
@@ -1157,6 +1219,78 @@ public class Item extends CdbDomainEntity implements Serializable {
             }
         }
         return assemblyRootTreeNode;
-    }      
+    }   
+    
+    public PropertyValue getCoreMetadataPropertyValue() {
+        
+        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        
+        if (info != null) {
+            if (coreMetadataPropertyValue == null) {
+                List<PropertyValue> propertyValueList = getPropertyValueList();
+                for (PropertyValue propertyValue : propertyValueList) {
+                    if (propertyValue.getPropertyType().getName().equals(info.getPropertyName())) {
+                        coreMetadataPropertyValue = propertyValue;
+                    }
+                }
+            }
+            return coreMetadataPropertyValue;
+        }
+        
+        return null;
+    }
+    
+    protected void validateCoreMetadataKey(String key) throws CdbException {
+        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        if (!info.hasKey(key)) {
+            throw new CdbException("Invalid metadata key used to get/set core metadata field value: " + key);
+        }
+    }
 
+    protected void setCoreMetadataPropertyFieldValue(String key, String value) throws CdbException {
+
+        validateCoreMetadataKey(key);
+
+        PropertyValue propertyValue = getCoreMetadataPropertyValue();
+
+        if (propertyValue == null) {
+            propertyValue = getItemDomainController().prepareCoreMetadataPropertyValue(this);
+        }
+
+        propertyValue.setPropertyMetadataValue(key, value);
+    }
+
+    protected String getCoreMetadataPropertyFieldValue(String key) throws CdbException {
+        
+        validateCoreMetadataKey(key);
+
+        PropertyValue propertyValue = getCoreMetadataPropertyValue();
+        if (propertyValue != null) {
+            return propertyValue.getPropertyMetadataValueForKey(key);
+        } else {
+            return "";
+        }
+    }
+
+    public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
+        return getItemDomainController().getCoreMetadataPropertyInfo();
+    }
+    
+    protected CdbEntity getEntityById(CdbEntityController controller, String id) {
+        
+        if (id != null && !id.isEmpty()) {
+            Integer intId = 0;
+            try {
+                intId = Integer.valueOf(id);
+            } catch (NumberFormatException ex) {
+                LOGGER.error("getEntityById() number format exception on id: " + id);
+            }
+            if (intId > 0) {
+                return controller.findById(intId);
+            }
+        }
+        
+        LOGGER.error("getEntityById() invalid reference id: " + id);
+        return null;
+    }
 }

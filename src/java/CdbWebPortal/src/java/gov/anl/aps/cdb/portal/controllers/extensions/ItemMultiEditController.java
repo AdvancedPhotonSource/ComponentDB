@@ -41,6 +41,8 @@ import org.primefaces.event.ReorderEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager; 
 
 /**
  *
@@ -48,7 +50,7 @@ import org.primefaces.model.menu.DefaultMenuModel;
  */
 public abstract class ItemMultiEditController extends ItemControllerExtensionHelper {
 
-    private static final org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Item.class.getName());
+    private static final Logger logger = LogManager.getLogger(Item.class.getName());
 
     @EJB
     protected PropertyValueFacade propertyValueFacade;

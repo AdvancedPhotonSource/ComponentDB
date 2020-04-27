@@ -17,6 +17,34 @@ See LICENSE file.
     <p:tab id="#{rootViewId}ValidateTab">
         <p:panel header="Review imported file content, then click Next Step to import.">
             <p:outputPanel id="#{rootViewId}ValidatePanel">
+                
+                <div class="actionButton">
+                    
+                    <p:commandButton id="#{rootViewid}ExportXlsButton" 
+                                     styleClass="actionButtonRight" 
+                                     ajax="false" 
+                                     icon="fa fa-file-excel-o">
+                        <p:tooltip for="#{rootViewid}ExportXlsButton" 
+                                   value="Export table to Excel file."/>
+                        <p:dataExporter type="xls" 
+                                        target="#{rootViewId}TableContent" 
+                                        fileName="ValidationReport" />
+                    </p:commandButton>  
+
+                    <ui:remove>
+                        <p:commandButton id="#{rootViewid}ExportPdfButton"
+                                         styleClass="actionButtonRight" 
+                                         ajax="false" 
+                                         icon="fa fa-file-pdf-o">
+                            <p:tooltip for="#{rootViewid}ExportPdfButton" 
+                                       value="Export table to pdf file."/>
+                            <p:dataExporter type="pdf" 
+                                            target="#{rootViewId}TableContent" 
+                                            fileName="ValidationReport" />
+                        </p:commandButton>  
+                    </ui:remove>
+                    
+                </div>
                 <p:panelGrid columns="2">
                     
                     <p:dataTable id="#{rootViewId}TableContent"
@@ -37,6 +65,14 @@ See LICENSE file.
                     </p:dataTable>
 
                 </p:panelGrid>
+                
+                <div class="userNotification">
+                    <h3>#{wizardController.validationMessage}</h3>
+                    <ui:remove><h:outputText value="#{wizardController.validationMessage}"
+                                  rendered ="#{wizardController.showValidationMessage}"
+                                  styleClass="userNotification"/></ui:remove>
+                </div>
+
             </p:outputPanel>
         </p:panel>
     </p:tab>

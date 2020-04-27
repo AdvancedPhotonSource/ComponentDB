@@ -30,13 +30,14 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 import javax.faces.model.DataModel;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Named("userInfoController")
 @SessionScoped
 public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFacade, UserInfoSettings> implements Serializable {   
 
-    private static final Logger logger = Logger.getLogger(UserInfoController.class.getName());
+    private static final Logger logger = LogManager.getLogger(UserInfoController.class.getName());
 
     @EJB
     private UserInfoFacade userInfoFacade;

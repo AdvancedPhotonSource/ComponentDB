@@ -17,7 +17,8 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -27,7 +28,7 @@ import org.apache.log4j.Logger;
 @SessionScoped
 public class ItemDomainCatalogController extends ItemDomainCatalogBaseController<ItemDomainCatalog, ItemDomainCatalogFacade, ItemDomainCatalogSettings> {
 
-    private static final Logger logger = Logger.getLogger(ItemDomainCatalogController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemDomainCatalogController.class.getName());
 
     public final static String CONTROLLER_NAMED = "itemDomainCatalogController";
 

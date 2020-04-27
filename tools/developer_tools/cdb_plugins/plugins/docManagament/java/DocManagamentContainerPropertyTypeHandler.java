@@ -12,7 +12,8 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.api.DocumentManagamentApi;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.Container;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -25,7 +26,7 @@ public class DocManagamentContainerPropertyTypeHandler extends AbstractPropertyT
     
     private static final String PROPERTY_EDIT_PAGE = "dmsContainerPropertyValueEditPanel";
     
-    private static final Logger logger = Logger.getLogger(DocManagamentContainerPropertyTypeHandler.class.getName());
+    private static final Logger logger = LogManager.getLogger(DocManagamentContainerPropertyTypeHandler.class.getName());
     
     protected DocumentManagamentApi api = null;
     

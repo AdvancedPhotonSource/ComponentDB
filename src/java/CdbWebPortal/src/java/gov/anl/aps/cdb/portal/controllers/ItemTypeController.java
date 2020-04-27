@@ -17,13 +17,14 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Named("itemTypeController")
 @SessionScoped
 public class ItemTypeController extends ItemTypeCategoryController<ItemType, ItemTypeFacade, ItemTypeSettings> implements Serializable {       
 
-    private static final Logger logger = Logger.getLogger(ItemTypeController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemTypeController.class.getName());
 
     @EJB
     private ItemTypeFacade itemTypeFacade;   

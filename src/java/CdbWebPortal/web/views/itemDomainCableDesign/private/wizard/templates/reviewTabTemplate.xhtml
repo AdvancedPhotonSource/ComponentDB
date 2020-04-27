@@ -22,7 +22,12 @@ See LICENSE file.
 
                 <p:outputLabel value="Project" />
                 <h:outputText value="#{wizardController.getProjectsString()}" 
-                              title="Item Project" 
+                              title="Project" 
+                              styleClass="entityDataEmphasizedText" />
+
+                <p:outputLabel value="Technical System" />
+                <h:outputText value="#{wizardController.getTechnicalSystemsString()}" 
+                              title="Technical System" 
                               styleClass="entityDataEmphasizedText" />
 
                 <p:outputLabel value="Endpoint1" />

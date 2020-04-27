@@ -28,6 +28,10 @@ public class EntityInfoUtility {
             // Created by user cannot be empty.
             return null;
         }
+        return createEntityInfo(createdByUser);
+    }
+    
+    public static EntityInfo createEntityInfo(UserInfo createdByUser) {       
         Date createdOnDateTime = new Date();
         EntityInfo entityInfo = new EntityInfo();
         entityInfo.setOwnerUser(createdByUser);

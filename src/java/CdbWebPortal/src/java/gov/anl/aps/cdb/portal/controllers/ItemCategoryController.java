@@ -18,7 +18,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Named(ItemCategoryController.CONTROLLER_NAMED)
 @SessionScoped
@@ -29,7 +30,7 @@ public class ItemCategoryController extends ItemTypeCategoryController<ItemCateg
     @EJB
     ItemCategoryFacade itemCategoryFacade;             
     
-    private static final Logger logger = Logger.getLogger(ItemCategoryController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemCategoryController.class.getName());
     
     public ItemCategoryController() {
         super();        

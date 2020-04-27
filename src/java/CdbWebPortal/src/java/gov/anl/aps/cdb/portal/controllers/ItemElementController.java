@@ -33,7 +33,8 @@ import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ValueChangeEvent;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.event.DragDropEvent;
 import org.primefaces.event.ReorderEvent;
@@ -46,7 +47,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     @EJB
     private ItemElementFacade itemElementFacade;
 
-    private static final Logger logger = Logger.getLogger(ItemElementController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemElementController.class.getName());
 
     private static final String DESIGN_ELEMENT_ROW_COLOR_PROPERTY_NAME = "Item Element Row Color";
 
