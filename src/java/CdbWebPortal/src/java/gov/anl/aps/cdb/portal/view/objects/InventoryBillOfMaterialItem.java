@@ -194,7 +194,7 @@ public class InventoryBillOfMaterialItem {
 
     public void loadItemDomainInventoryController() {
         if (itemDomainInventoryController == null) {
-            itemDomainInventoryController = (ItemDomainInventoryController) SessionUtility.findBean(INVENTORY_DOMAIN_CONTROLLER_NAME);
+            itemDomainInventoryController = ItemDomainInventoryController.getInstance(); 
         }
     }
 
