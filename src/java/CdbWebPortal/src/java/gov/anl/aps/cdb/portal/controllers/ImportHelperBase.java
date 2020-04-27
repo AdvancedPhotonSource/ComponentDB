@@ -532,15 +532,16 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
             
             // use reflection to invoke setter method on entity instance
-            try {
-                Method setterMethod;
-                setterMethod = newEntity.getClass().getMethod(setterMethodName, String.class);
-                setterMethod.invoke(newEntity, parsedValue);
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                validString = appendToString(validString, "Unable to invoke setter method: " + setterMethodName + " for column: " + colName + " reason: " + ex.getCause().getLocalizedMessage());
-                isValid = false;
+            if (parsedValue != null && !parsedValue.isEmpty()) {
+                try {
+                    Method setterMethod;
+                    setterMethod = newEntity.getClass().getMethod(setterMethodName, String.class);
+                    setterMethod.invoke(newEntity, parsedValue);
+                } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    validString = appendToString(validString, "Unable to invoke setter method: " + setterMethodName + " for column: " + colName + " reason: " + ex.getCause().getLocalizedMessage());
+                    isValid = false;
+                }
             }
-
         }
         
         ParseInfo ppResult = postParseRow(newEntity, uniqueId);

@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 @Tag(name = "domain")
 public class DomainRoute extends BaseRoute {
     
-    private static final Logger LOGGER = LogManager.getLogger(PropertyType.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(Domain.class.getName());
     
     @EJB
     DomainFacade domainFacade; 

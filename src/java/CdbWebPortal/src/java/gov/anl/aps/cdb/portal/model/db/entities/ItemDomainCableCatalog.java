@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -20,8 +23,34 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_CATALOG_ID + "")   
+@JsonIgnoreProperties(value = {
+    // Transient
+    "url",
+    "urlDisplay",
+    "imageUrl",
+    "imageUrlDisplay",
+    "manufacturer",
+    "altPartNumber",
+    "weight",
+    "diameter",
+    "conductors",
+    "insulation",
+    "jacketColor",
+    "voltageRating",
+    "fireLoad",
+    "heatLimit",
+    "bendRadius",
+    "radTolerance",
+    "team",
+    "isValid",
+    "validString",
+    "coreMetadataPropertyValue",
+    "coreMetadataPropertyInfo"
+})
 public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCableInventory> {
     
+    private static final Logger LOGGER = LogManager.getLogger(ItemDomainCableCatalog.class.getName());
+
     private transient String url = null;
     private transient String urlDisplay = null;
     private transient String imageUrl = null;
@@ -115,10 +144,12 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
     }
     
-    public void setManufacturerId(String sourceId) {  
-        Source source = SourceController.getInstance().findById(Integer.valueOf(sourceId));
+    public void setManufacturerId(String sourceId) {
+        Source source = (Source)(getEntityById(SourceController.getInstance(), sourceId));
         if (source != null) {
             this.setManufacturerSource(source);
+        } else {
+            LOGGER.error("setManufacturerId() unknown source id " + sourceId);
         }
     }
     
@@ -280,17 +311,20 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
     
     public void setTeamId(String categoryId) throws CdbException {
-        ItemCategory category = ItemCategoryController.getInstance().findById(Integer.valueOf(categoryId));
-        
+        ItemCategory category = (ItemCategory)(getEntityById(ItemCategoryController.getInstance(), categoryId));
         if (category != null) {
-            if (!category.getDomain().getName().equals(this.getDomain().getName())) {
-                throw new CdbException("Invalid team ID (item_category) specified: " + categoryId + " for domain: " + this.getDomain().getName());
+            String domainName = category.getDomain().getName();
+            if (!domainName.equals(this.getDomain().getName())) {
+                LOGGER.error("setTeamId() invalid domain for specified categoryId: " + domainName);
+                throw new CdbException("Invalid domain: " + domainName + " for specified categoryId: " + categoryId);
             }
 
             List<ItemCategory> categoryList = new ArrayList<>();
             categoryList.add(category);
             this.setItemCategoryList(categoryList);
             team = this.getItemCategoryString();
+        } else {
+            LOGGER.error("setTeamId() invalid item category id " + categoryId);
         }
     }
     

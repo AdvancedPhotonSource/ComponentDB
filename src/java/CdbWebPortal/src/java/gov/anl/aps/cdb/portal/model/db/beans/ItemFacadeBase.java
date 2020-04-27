@@ -255,6 +255,18 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
+    
+    public List<ItemDomainEntity> findByDomainAndName(String domainName, String name) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndName")
+                    .setParameter("domainName", domainName)
+                    .setParameter("name", name)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
 
     public ItemDomainEntity findByUniqueAttributes(Item derivedFromItem, Domain domain,
             String name, String itemIdentifier1, String itemIdentifier2) {
