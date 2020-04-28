@@ -99,6 +99,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     protected boolean apiMode = false;
     protected UserInfo apiUser;
+    
+    protected ImportHelperBase importHelper = null;
 
     /**
      * Default constructor.
@@ -1761,4 +1763,25 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         throw new CdbException("Uniqueness check not implemented by controller: " + this.getClass().getName());
     }
 
+    public boolean getEntityDisplayImportButton() {
+        return false;
+    }
+    
+    protected ImportHelperBase createImportHelperInstance() throws CdbException {
+        throw new CdbException("Import helper not implemented by controller: " + this.getClass().getName());
+    }
+
+    /**
+     * Prepares import wizard.
+     */
+    public String prepareImport() throws CdbException {  
+        if (importHelper != null) {
+            importHelper.reset();
+        } else {
+            importHelper = this.createImportHelperInstance();
+        }
+        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
+        return "import?faces-redirect=true";
+    }
+    
 }

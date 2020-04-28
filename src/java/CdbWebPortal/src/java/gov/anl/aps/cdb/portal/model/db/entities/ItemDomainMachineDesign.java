@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -21,12 +23,14 @@ import javax.persistence.Entity;
 @DiscriminatorValue(value = ItemDomainName.MACHINE_DESIGN_ID + "")
 public class ItemDomainMachineDesign extends LocatableItem {   
     
+    private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesign.class.getName());
+
     private transient List<ItemElement> combinedItemElementList; 
     private transient ItemElement combinedItemElementListParentElement; 
     private transient ItemElement currentItemElement; 
     
     private transient String importIsTemplate = "";
-    private transient String importContainerItemId = "";
+    private transient ItemDomainMachineDesign importContainerItem = null;
     private transient String importPath = "";
 
     @Override
@@ -127,13 +131,31 @@ public class ItemDomainMachineDesign extends LocatableItem {
     public void setImportIsTemplate(String importIsTemplate) {
         this.importIsTemplate = importIsTemplate;
     }
-
-    public String getImportContainerItemId() {
-        return importContainerItemId;
+    
+    public ItemDomainMachineDesign getImportContainerItem() {
+        return importContainerItem;
     }
 
-    public void setImportContainerItemId(String importContainerItemId) {
-        this.importContainerItemId = importContainerItemId;
+    public String getImportContainerString() {
+        ItemDomainMachineDesign itemContainer = this.getImportContainerItem();
+        if (itemContainer != null) {
+            return itemContainer.getName();
+        } else {
+            return "";
+        }
+    }
+    
+    public void setImportContainerItem(ItemDomainMachineDesign item) {
+        importContainerItem = item;
+    }
+
+    public void setImportContainerItemId(String id) {
+        ItemDomainMachineDesign itemContainer = (ItemDomainMachineDesign)(getEntityById(ItemDomainMachineDesignController.getInstance(), id));
+        if (itemContainer != null) {
+            setImportContainerItem(itemContainer);
+        } else {
+            LOGGER.error("setImportContainerItemId() unknown machine design item id " + id);
+        }
     }
 
     public String getImportPath() {

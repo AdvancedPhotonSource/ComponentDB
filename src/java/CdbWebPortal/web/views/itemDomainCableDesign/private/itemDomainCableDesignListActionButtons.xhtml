@@ -43,15 +43,5 @@ See LICENSE file.
 
     </ui:define>    
 
-    <ui:define name ="additonalListButtons">
-        <p:commandButton value="Import"
-                         icon="ui-icon-plus"
-                         action="#{itemDomainCableDesignController.prepareWizardImport()}"
-                         rendered="#{loginController.loggedInAsAdmin}"
-                         onstart="PF('loadingDialog').show();"
-                         oncomplete="PF('loadingDialog').hide();"/> 
-
-    </ui:define>
-
 </ui:composition>
 

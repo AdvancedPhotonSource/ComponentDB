@@ -35,8 +35,6 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
     @EJB
     private SourceFacade sourceFacade;
     
-    protected ImportHelperSource importHelper = new ImportHelperSource();
-
     public SourceController() {
     }
     
@@ -161,15 +159,6 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
         return true;
     }    
 
-    /**
-     * Prepares import wizard.
-     */
-    public String prepareWizardImport() {
-        importHelper.reset();
-        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
-        return "/views/source/import?faces-redirect=true";
-    }
-
     @Override
     public void checkItemUniqueness(Source item) throws CdbException {
         String name = item.getName();
@@ -195,6 +184,16 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
             }
         }
         return true;
+    }
+    
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected ImportHelperBase createImportHelperInstance() throws CdbException {
+        return new ImportHelperSource();
     }
     
 }
