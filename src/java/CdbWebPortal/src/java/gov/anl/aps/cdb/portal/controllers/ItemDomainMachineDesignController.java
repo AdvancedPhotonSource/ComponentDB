@@ -636,6 +636,12 @@ public class ItemDomainMachineDesignController
         currentMachineDesignListRootTreeNode = null;
     }
 
+    @Override
+    public ItemDomainMachineDesign createEntityInstance() {
+        ItemDomainMachineDesign item = super.createEntityInstance();
+        return item;
+    }
+
     public ItemDomainMachineDesign createEntityInstanceForDualTreeView() {
         ItemDomainMachineDesign newInstance = createEntityInstance();
 

@@ -60,6 +60,4 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
     protected ItemDomainCableCatalog createEntityInstance() {
         return getEntityController().createEntityInstance();
     }
-    
-
 }

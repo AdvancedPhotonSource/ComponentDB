@@ -24,6 +24,10 @@ public class ItemDomainMachineDesign extends LocatableItem {
     private transient List<ItemElement> combinedItemElementList; 
     private transient ItemElement combinedItemElementListParentElement; 
     private transient ItemElement currentItemElement; 
+    
+    private transient String importIsTemplate = "";
+    private transient String importContainerItemId = "";
+    private transient String importPath = "";
 
     @Override
     public Item createInstance() {
@@ -114,5 +118,29 @@ public class ItemDomainMachineDesign extends LocatableItem {
         }
         
         return super.toString();
+    }
+
+    public String getImportIsTemplate() {
+        return importIsTemplate;
+    }
+
+    public void setImportIsTemplate(String importIsTemplate) {
+        this.importIsTemplate = importIsTemplate;
+    }
+
+    public String getImportContainerItemId() {
+        return importContainerItemId;
+    }
+
+    public void setImportContainerItemId(String importContainerItemId) {
+        this.importContainerItemId = importContainerItemId;
+    }
+
+    public String getImportPath() {
+        return importPath;
+    }
+
+    public void setImportPath(String importPath) {
+        this.importPath = importPath;
     }
 }
