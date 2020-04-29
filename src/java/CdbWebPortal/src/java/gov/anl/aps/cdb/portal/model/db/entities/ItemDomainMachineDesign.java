@@ -7,7 +7,10 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
@@ -32,6 +35,8 @@ public class ItemDomainMachineDesign extends LocatableItem {
     private transient String importIsTemplate = "";
     private transient ItemDomainMachineDesign importContainerItem = null;
     private transient String importPath = "";
+    private transient String importAssignedCatalogItemString = "";
+    private transient String importAssignedInventoryItemString = "";
 
     @Override
     public Item createInstance() {
@@ -165,4 +170,80 @@ public class ItemDomainMachineDesign extends LocatableItem {
     public void setImportPath(String importPath) {
         this.importPath = importPath;
     }
+
+    public String getAlternateName() {
+        return getItemIdentifier1();
+    }
+
+    public void setAlternateName(String n) {
+        setItemIdentifier1(n);
+    }
+
+    public void setAssignedItem(Item item) {
+        // "assign" catalog or inventory item
+        ItemElement selfElement = this.getSelfElement();
+        selfElement.setContainedItem2(item);
+    }
+
+    public Item getAssignedItem() {
+        ItemElement selfElement = this.getSelfElement();
+        return selfElement.getContainedItem2();
+    }
+
+    public String getAssignedItemString() {
+        Item assignedItem = this.getAssignedItem();
+        if (assignedItem != null) {
+            return assignedItem.getName();
+        } else {
+            return "";
+        }
+    }
+
+    public void setAssignedCatalogItemId(String itemId) {
+        Item item = (Item) (getEntityById(ItemDomainCatalogController.getInstance(), itemId));
+
+        if (item != null) {
+            setAssignedItem(item);
+            setImportAssignedCatalogItemString(item.getName());
+        } else {
+            LOGGER.error("setAssignedItemId() unknown assigned catalog item id " + itemId);
+        }
+     }
+
+    public void setAssignedInventoryItemId(String itemId) {
+        Item item = (Item) (getEntityById(ItemDomainInventoryController.getInstance(), itemId));
+
+        if (item != null) {
+            setAssignedItem(item);
+            setImportAssignedInventoryItemString(item.getName());
+        } else {
+            LOGGER.error("setAssignedItemId() unknown assigned inventory item id " + itemId);
+        }
+     }
+
+    public String getImportAssignedCatalogItemString() {
+        return importAssignedCatalogItemString;
+    }
+
+    public void setImportAssignedCatalogItemString(String importAssignedCatalogItemString) {
+        this.importAssignedCatalogItemString = importAssignedCatalogItemString;
+    }
+
+    public String getImportAssignedInventoryItemString() {
+        return importAssignedInventoryItemString;
+    }
+
+    public void setImportAssignedInventoryItemString(String importAssignedInventoryItemString) {
+        this.importAssignedInventoryItemString = importAssignedInventoryItemString;
+    }
+    
+    public void setProjectId(String projectId) {
+        ItemProject project = (ItemProject) (getEntityById(ItemProjectController.getInstance(), projectId));
+        if (project != null) {
+            List<ItemProject> projectList = new ArrayList<>();
+            projectList.add(project);
+            this.setItemProjectList(projectList);
+        }
+    }
+    
 }
