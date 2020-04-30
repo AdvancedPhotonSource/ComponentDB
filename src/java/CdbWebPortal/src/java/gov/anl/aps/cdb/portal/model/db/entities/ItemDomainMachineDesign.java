@@ -5,12 +5,16 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
@@ -32,7 +36,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
     private transient ItemElement combinedItemElementListParentElement; 
     private transient ItemElement currentItemElement; 
     
-    private transient String importIsTemplate = "";
+    private transient boolean importIsTemplate = false;
     private transient ItemDomainMachineDesign importContainerItem = null;
     private transient String importPath = "";
     private transient String importAssignedCatalogItemString = "";
@@ -129,12 +133,17 @@ public class ItemDomainMachineDesign extends LocatableItem {
         return super.toString();
     }
 
-    public String getImportIsTemplate() {
+    public boolean getImportIsTemplate() {
         return importIsTemplate;
     }
 
     public void setImportIsTemplate(String importIsTemplate) {
-        this.importIsTemplate = importIsTemplate;
+        boolean isTemplate = (importIsTemplate.equals("1"));
+        if (isTemplate) {
+            // mark this item as template entity type
+            setIsTemplate();
+        }
+        this.importIsTemplate = isTemplate;
     }
     
     public ItemDomainMachineDesign getImportContainerItem() {
@@ -244,6 +253,58 @@ public class ItemDomainMachineDesign extends LocatableItem {
             projectList.add(project);
             this.setItemProjectList(projectList);
         }
+    }
+    
+    /**
+     * Marks this machine design item as a template EntityType.
+     */
+    public void setIsTemplate() {
+        try {
+            List<EntityType> entityTypeList = new ArrayList<>();
+            EntityType templateEntity = 
+                    EntityTypeController.getInstance().
+                            findByName(EntityTypeName.template.getValue());
+            entityTypeList.add(templateEntity);
+            setEntityTypeList(entityTypeList);
+        } catch (CdbException ex) {
+            String msg = "Exception setting template entity type for: " + getName();
+            LOGGER.error("setIsTemplate() " + ex);
+        }
+    }
+    
+    /**
+     * Establishes parent/child relationship, with this item as child of supplied
+     * parentItem.
+     * 
+     * @param parentItem 
+     */
+    public void addChildMachineDesign(ItemDomainMachineDesign childItem) {
+        
+        // create ItemElement for new relationship
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        ItemElement itemElement = new ItemElement();
+        itemElement.setEntityInfo(entityInfo);
+        itemElement.setParentItem(this);
+        String elementName = 
+                ItemDomainMachineDesignController.getInstance().
+                        generateUniqueElementNameForItem(this);
+        itemElement.setName(elementName);
+        
+        int elementSize = this.getItemElementDisplayList().size();
+        float sortOrder = elementSize;
+        itemElement.setSortOrder(sortOrder);
+        
+        itemElement.setContainedItem(childItem);
+        
+        // add ItemElement to parent
+        getFullItemElementList().add(itemElement);
+        getItemElementDisplayList().add(0, itemElement);
+
+        // add ItemElement to child
+        if (childItem.getItemElementMemberList() == null) {
+            childItem.setItemElementMemberList(new ArrayList<>());
+        }
+        childItem.getItemElementMemberList().add(itemElement);
     }
     
 }

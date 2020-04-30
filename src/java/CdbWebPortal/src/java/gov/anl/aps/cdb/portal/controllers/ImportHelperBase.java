@@ -147,6 +147,32 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
 
+    public class BooleanColumnModel extends ColumnModel {
+
+        public BooleanColumnModel(String h, String p, String s, boolean r, String v, int l) {
+            super(h, p, s, r, v, l);
+        }
+
+        @Override
+        public ParseInfo parseCell(Cell cell) {
+            String parsedValue = "";
+            boolean isValid = true;
+            String validString = "";
+
+            if (cell == null) {
+                parsedValue = "";
+            } else if (cell.getCellType() != CellType.BOOLEAN) {
+                parsedValue = "";
+                isValid = false;
+                validString = header + " is not boolean";
+            } else {
+                parsedValue = String.valueOf(cell.getBooleanCellValue());
+            }
+
+            return new ParseInfo(parsedValue, isValid, validString);
+        }
+    }
+
     public class UrlColumnModel extends ColumnModel {
 
         public UrlColumnModel(String h, String p, String s, boolean r, String v, int l) {

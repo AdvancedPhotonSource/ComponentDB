@@ -7,10 +7,13 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import java.util.HashMap;
+import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -18,8 +21,11 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
  */
 public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
 
+    private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineDesign.class.getName());
 
     protected static String completionUrlValue = "/views/itemDomainMachineDesign/list?faces-redirect=true";
+    
+    protected Map<String, ItemDomainMachineDesign> itemByNameMap = new HashMap<>();
     
     @Override
     protected void createColumnModels_() {
@@ -54,4 +60,57 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     protected ItemDomainMachineDesign createEntityInstance() {
         return getEntityController().createEntityInstance();
     }
+    
+    /**
+     * Set parent/child relationships between items, and create new item at
+     * specified path within container item.  The path contains the names of 
+     * the parent nodes between the new item and the container item, separated by
+     * unix style slashes.
+     */
+    @Override
+    protected ParseInfo postParseRow(ItemDomainMachineDesign item, String id) {
+        
+        String methodLogName = "postParseRow() ";
+        ItemDomainMachineDesign parentItem = null;
+        
+        // find parent item
+        String path = item.getImportPath();
+        if ((path == null) || (path.isEmpty())) {
+            // no path is specified, use container as parentItem
+            ItemDomainMachineDesign container = item.getImportContainerItem();
+            if (container == null) {
+                String msg = "no container specified";
+                LOGGER.info(methodLogName + msg);
+                return new ParseInfo("", false, "msg");
+            }
+            parentItem = container;
+        } else {
+            // path is specified
+            String[] nodeNames = path.split("/");
+            if (nodeNames.length == 0) {
+                // path is invalid after tokenization
+                String msg = "invalid path specified: " + path;
+                LOGGER.info(methodLogName + msg);
+                return new ParseInfo("", false, "msg");                
+            } else {
+                // path contains valid tokens, find parent whose name matches
+                // last token
+                String parentNodeName = nodeNames[nodeNames.length - 1].trim();
+                parentItem = itemByNameMap.get(parentNodeName);
+                if (parentItem == null) {
+                    // no item with that name
+                    String msg = "no parent with name: " + parentNodeName;
+                    LOGGER.info(methodLogName + msg);
+                    return new ParseInfo("", false, "msg");
+                }
+            }
+        }
+        
+        // we have a non-null parent item, so establish parent/child relationship
+        parentItem.addChildMachineDesign(item);
+        itemByNameMap.put(item.getName(), item);
+        
+        return new ParseInfo("", true, "");
+    }
+
 }
