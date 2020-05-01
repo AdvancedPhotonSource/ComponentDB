@@ -30,7 +30,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     @Override
     protected void createColumnModels_() {
         columns.add(new ImportHelperBase.StringColumnModel("Is Template", "importIsTemplate", "setImportIsTemplate", true, "Specifies whether this item is a template (true or false).", 5));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Container Id", "importContainerString", "setImportContainerItemId", true, "Numeric ID of CDB machine design item that contains this new machine design hierarchy.", 0, ItemDomainMachineDesignController.getInstance()));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Container Id", "importContainerString", "setImportContainerItemId", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy.", 0, ItemDomainMachineDesignController.getInstance()));
         columns.add(new ImportHelperBase.StringColumnModel("Path", "importPath", "setImportPath", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container.", 700));
         columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "Machine design item name.", 128));
         columns.add(new ImportHelperBase.StringColumnModel("Alt Name", "alternateName", "setAlternateName", false, "Alternate machine design item name.", 32));
@@ -76,14 +76,20 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         // find parent item
         String path = item.getImportPath();
         if ((path == null) || (path.isEmpty())) {
-            // no path is specified, use container as parentItem
-            ItemDomainMachineDesign container = item.getImportContainerItem();
-            if (container == null) {
-                String msg = "no container specified";
-                LOGGER.info(methodLogName + msg);
-                return new ParseInfo("", false, "msg");
+            // no path is specified
+            if (item.getIsItemTemplate())
+            {
+                // item is top-level template, so there is no parent
+            } else {
+                // item is not template, so find item for specified container
+                ItemDomainMachineDesign container = item.getImportContainerItem();
+                if (container == null) {
+                    String msg = "no container specified";
+                    LOGGER.info(methodLogName + msg);
+                    return new ParseInfo("", false, "msg");
+                }
+                parentItem = container;
             }
-            parentItem = container;
         } else {
             // path is specified
             String[] nodeNames = path.split("/");
@@ -106,8 +112,12 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             }
         }
         
-        // we have a non-null parent item, so establish parent/child relationship
-        parentItem.addChildMachineDesign(item);
+        if (parentItem != null) {
+            // establish parent/child relationship
+            parentItem.addChildMachineDesign(item);
+        }
+        
+        // add entry to name map for new item
         itemByNameMap.put(item.getName(), item);
         
         return new ParseInfo("", true, "");
