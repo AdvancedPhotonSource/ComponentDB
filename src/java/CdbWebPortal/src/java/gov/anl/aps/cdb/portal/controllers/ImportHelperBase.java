@@ -571,7 +571,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         
         ParseInfo ppResult = postParseRow(newEntity, uniqueId);
-        validString = appendToString(validString, ppResult.getValidString());
+        if (!ppResult.isValid()) {
+            validString = appendToString(validString, ppResult.getValidString());
+            isValid = false;
+        }
 
         if (rows.contains(newEntity)) {
             validString = appendToString(validString, "Duplicate rows found in spreadsheet");

@@ -36,7 +36,6 @@ public class ItemDomainMachineDesign extends LocatableItem {
     private transient ItemElement combinedItemElementListParentElement; 
     private transient ItemElement currentItemElement; 
     
-    private transient boolean importIsTemplate = false;
     private transient ItemDomainMachineDesign importContainerItem = null;
     private transient String importPath = "";
     private transient String importAssignedCatalogItemString = "";
@@ -133,17 +132,12 @@ public class ItemDomainMachineDesign extends LocatableItem {
         return super.toString();
     }
 
-    public boolean getImportIsTemplate() {
-        return importIsTemplate;
-    }
-
     public void setImportIsTemplate(String importIsTemplate) {
         boolean isTemplate = (importIsTemplate.equals("1"));
         if (isTemplate) {
             // mark this item as template entity type
             setIsTemplate();
         }
-        this.importIsTemplate = isTemplate;
     }
     
     public ItemDomainMachineDesign getImportContainerItem() {
@@ -273,10 +267,10 @@ public class ItemDomainMachineDesign extends LocatableItem {
     }
     
     /**
-     * Establishes parent/child relationship, with this item as child of supplied
-     * parentItem.
+     * Establishes parent/child relationship, with this item as parent of supplied
+     * childItem.
      * 
-     * @param parentItem 
+     * @param childItem 
      */
     public void addChildMachineDesign(ItemDomainMachineDesign childItem) {
         

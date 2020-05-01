@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,7 +30,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     
     @Override
     protected void createColumnModels_() {
-        columns.add(new ImportHelperBase.StringColumnModel("Is Template", "importIsTemplate", "setImportIsTemplate", true, "Specifies whether this item is a template (true or false).", 5));
+        columns.add(new ImportHelperBase.StringColumnModel("Is Template", "isItemTemplate", "setImportIsTemplate", true, "Specifies whether this item is a template (true or false).", 5));
         columns.add(new ImportHelperBase.IdRefColumnModel("Container Id", "importContainerString", "setImportContainerItemId", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy.", 0, ItemDomainMachineDesignController.getInstance()));
         columns.add(new ImportHelperBase.StringColumnModel("Path", "importPath", "setImportPath", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container.", 700));
         columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "Machine design item name.", 128));
@@ -93,7 +94,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 // path is invalid after tokenization
                 String msg = "invalid path specified: " + path;
                 LOGGER.info(methodLogName + msg);
-                return new ParseInfo("", false, "msg");                
+                return new ParseInfo("", false, msg);                
             } else {
                 // path contains valid tokens, find parent whose name matches
                 // last token
@@ -103,12 +104,18 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     // no item with that name
                     String msg = "no parent with name: " + parentNodeName;
                     LOGGER.info(methodLogName + msg);
-                    return new ParseInfo("", false, "msg");
+                    return new ParseInfo("", false, msg);
                 }
             }
         }
         
         if (parentItem != null) {
+            if (!Objects.equals(item.getIsItemTemplate(), parentItem.getIsItemTemplate())) {
+                // parent and child must both be templates or both not be
+                String msg = "parent and child must both be templates or both not be templates";
+                LOGGER.info(methodLogName + msg);
+                return new ParseInfo("", false, msg);
+            }
             // establish parent/child relationship
             parentItem.addChildMachineDesign(item);
         }
