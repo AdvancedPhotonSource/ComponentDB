@@ -76,18 +76,14 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         // find parent item
         String path = item.getImportPath();
         if ((path == null) || (path.isEmpty())) {
-            // no path is specified
-            if (item.getIsItemTemplate())
-            {
-                // item is top-level template, so there is no parent
+            // no path is specified, see if there is a container machine design item
+            ItemDomainMachineDesign container = item.getImportContainerItem();
+            if (container == null) {
+                // new item is a top-level machine design with no parent
+                String msg = "creating top-level machine design item: " + item.getName();
+                LOGGER.debug(methodLogName + msg);
+                parentItem = null;
             } else {
-                // item is not template, so find item for specified container
-                ItemDomainMachineDesign container = item.getImportContainerItem();
-                if (container == null) {
-                    String msg = "no container specified";
-                    LOGGER.info(methodLogName + msg);
-                    return new ParseInfo("", false, "msg");
-                }
                 parentItem = container;
             }
         } else {
