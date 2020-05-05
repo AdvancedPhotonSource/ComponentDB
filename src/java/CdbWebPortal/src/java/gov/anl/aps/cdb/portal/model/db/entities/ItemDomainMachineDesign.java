@@ -38,8 +38,6 @@ public class ItemDomainMachineDesign extends LocatableItem {
     
     private transient ItemDomainMachineDesign importContainerItem = null;
     private transient String importPath = "";
-    private transient String importAssignedCatalogItemString = "";
-    private transient String importAssignedInventoryItemString = "";
 
     @Override
     public Item createInstance() {
@@ -132,9 +130,8 @@ public class ItemDomainMachineDesign extends LocatableItem {
         return super.toString();
     }
 
-    public void setImportIsTemplate(String importIsTemplate) {
-        boolean isTemplate = (importIsTemplate.equals("1"));
-        if (isTemplate) {
+    public void setImportIsTemplate(Boolean importIsTemplate) {
+        if (importIsTemplate) {
             // mark this item as template entity type
             setIsTemplate();
         }
@@ -202,46 +199,27 @@ public class ItemDomainMachineDesign extends LocatableItem {
         }
     }
 
-    public void setAssignedCatalogItemId(String itemId) {
-        Item item = (Item) (getEntityById(ItemDomainCatalogController.getInstance(), itemId));
-
+    public void setAssignedCatalogItem(ItemDomainCatalog item) {
         if (item != null) {
             setAssignedItem(item);
-            setImportAssignedCatalogItemString(item.getName());
-        } else {
-            LOGGER.error("setAssignedItemId() unknown assigned catalog item id " + itemId);
         }
-     }
+    }
 
-    public void setAssignedInventoryItemId(String itemId) {
-        Item item = (Item) (getEntityById(ItemDomainInventoryController.getInstance(), itemId));
-
+    public void setAssignedInventoryItem(ItemDomainInventory item) {
         if (item != null) {
             setAssignedItem(item);
-            setImportAssignedInventoryItemString(item.getName());
-        } else {
-            LOGGER.error("setAssignedItemId() unknown assigned inventory item id " + itemId);
         }
-     }
-
-    public String getImportAssignedCatalogItemString() {
-        return importAssignedCatalogItemString;
-    }
-
-    public void setImportAssignedCatalogItemString(String importAssignedCatalogItemString) {
-        this.importAssignedCatalogItemString = importAssignedCatalogItemString;
-    }
-
-    public String getImportAssignedInventoryItemString() {
-        return importAssignedInventoryItemString;
-    }
-
-    public void setImportAssignedInventoryItemString(String importAssignedInventoryItemString) {
-        this.importAssignedInventoryItemString = importAssignedInventoryItemString;
     }
     
     public void setProjectId(String projectId) {
-        ItemProject project = (ItemProject) (getEntityById(ItemProjectController.getInstance(), projectId));
+        
+        ItemProject project = 
+                (ItemProject) (getEntityById(ItemProjectController.getInstance(), projectId));
+        
+        setProjectValue(project);
+    }
+    
+    public void setProjectValue(ItemProject project) {
         if (project != null) {
             List<ItemProject> projectList = new ArrayList<>();
             projectList.add(project);

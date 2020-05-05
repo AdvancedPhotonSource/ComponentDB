@@ -50,15 +50,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         protected boolean required = false;
         protected String setterMethod;
         protected String description;
-        protected int maxLength = 0;
 
-        public ColumnModel(String h, String p, String s, boolean r, String d, int l) {
+        public ColumnModel(String h, String p, String s, boolean r, String d) {
             this.header = h;
             this.property = p;
             this.setterMethod = s;
             this.description = d;
             this.required = r;
-            this.maxLength = l;
         }
 
         public String getHeader() {
@@ -81,17 +79,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return description;
         }
 
-        public int getMaxLength() {
-            return maxLength;
-        }
-
         public abstract ParseInfo parseCell(Cell cell);
+        
+        public abstract Class getParamType();
 
-        protected ParseInfo parseStringCell(Cell cell) {
+        protected String parseStringCell(Cell cell) {
 
             String parsedValue = "";
-            boolean isValid = true;
-            String validString = "";
 
             if (cell == null) {
                 parsedValue = "";
@@ -100,136 +94,165 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 parsedValue = cell.getStringCellValue();
             }
 
-            if (required && parsedValue.equals("")) {
-                isValid = false;
-                validString = "Required value missing for " + header;
-            }
-            
-            return new ParseInfo(parsedValue, isValid, validString);
+            return parsedValue;
         }
     }
 
     public class StringColumnModel extends ColumnModel {
 
+        protected int maxLength = 0;
+        
         public StringColumnModel(String h, String p, String s, boolean r, String v, int l) {
-            super(h, p, s, r, v, l);
+            super(h, p, s, r, v);
+            maxLength = l;
+        }
+
+        public int getMaxLength() {
+            return maxLength;
         }
 
         @Override
         public ParseInfo parseCell(Cell cell) {
-            return parseStringCell(cell);
+            boolean isValid = true;
+            String validString = "";
+            String value = parseStringCell(cell);
+            if ((getMaxLength() > 0) && (value.length() > getMaxLength())) {
+                isValid = false;
+                validString = appendToString(validString, "Value length exceeds " + getMaxLength() + " characters for column " + header);
+            }
+            return new ParseInfo<>(value, isValid, validString);
+        }
+        
+        @Override
+        public Class getParamType() {
+            return String.class;
         }
     }
 
     public class NumericColumnModel extends ColumnModel {
 
-        public NumericColumnModel(String h, String p, String s, boolean r, String v, int l) {
-            super(h, p, s, r, v, l);
+        public NumericColumnModel(String h, String p, String s, boolean r, String v) {
+            super(h, p, s, r, v);
         }
 
         @Override
         public ParseInfo parseCell(Cell cell) {
-            String parsedValue = "";
+            Double parsedValue = null;
             boolean isValid = true;
             String validString = "";
 
             if (cell == null) {
-                parsedValue = "";
+                parsedValue = null;
             } else if (cell.getCellType() != CellType.NUMERIC) {
-                parsedValue = "";
+                parsedValue = null;
                 isValid = false;
                 validString = header + " is not a number";
             } else {
-                parsedValue = String.valueOf(cell.getNumericCellValue());
+                parsedValue = cell.getNumericCellValue();
             }
 
-            return new ParseInfo(parsedValue, isValid, validString);
+            return new ParseInfo<>(parsedValue, isValid, validString);
+        }
+        
+        @Override
+        public Class getParamType() {
+            return Double.class;
         }
     }
 
     public class BooleanColumnModel extends ColumnModel {
 
-        public BooleanColumnModel(String h, String p, String s, boolean r, String v, int l) {
-            super(h, p, s, r, v, l);
+        public BooleanColumnModel(String h, String p, String s, boolean r, String v) {
+            super(h, p, s, r, v);
         }
 
         @Override
         public ParseInfo parseCell(Cell cell) {
-            String parsedValue = "";
+            Boolean parsedValue = null;
             boolean isValid = true;
             String validString = "";
 
             if (cell == null) {
-                parsedValue = "";
+                parsedValue = null;
             } else if (cell.getCellType() != CellType.BOOLEAN) {
-                parsedValue = "";
-                isValid = false;
-                validString = header + " is not boolean";
+                String stringValue = parseStringCell(cell);
+                if (stringValue.length() == 0) {
+                    parsedValue = null;
+                    isValid = true;
+                    validString = "";
+                } else {
+                    if (stringValue.equalsIgnoreCase("true") || stringValue.equalsIgnoreCase("1")) {
+                        parsedValue = true;
+                    } else if (stringValue.equalsIgnoreCase("false") || stringValue.equalsIgnoreCase("0")) {
+                        parsedValue = false;
+                    } else {
+                        parsedValue = null;
+                        isValid = false;
+                        validString = "unexpected boolean value: " + stringValue +
+                                " for column: " + header;
+                    }
+                }
             } else {
-                parsedValue = String.valueOf(cell.getBooleanCellValue());
+                parsedValue = cell.getBooleanCellValue();
             }
 
-            return new ParseInfo(parsedValue, isValid, validString);
+            return new ParseInfo<>(parsedValue, isValid, validString);
         }
-    }
-
-    public class UrlColumnModel extends ColumnModel {
-
-        public UrlColumnModel(String h, String p, String s, boolean r, String v, int l) {
-            super(h, p, s, r, v, l);
-        }
-
+        
         @Override
-        public ParseInfo parseCell(Cell cell) {
-            return parseStringCell(cell);
+        public Class getParamType() {
+            return Boolean.class;
         }
     }
 
     public class IdRefColumnModel extends ColumnModel {
         
         private CdbEntityController controller;
+        private Class paramType;
 
-        public IdRefColumnModel(String h, String p, String s, boolean r, String v, int l, CdbEntityController c) {
-            super(h, p, s, r, v, l);
+        public IdRefColumnModel(String h, String p, String s, boolean r, String v, CdbEntityController c, Class pType) {
+            super(h, p, s, r, v);
             controller = c;
+            paramType = pType;
         }
 
         @Override
         public ParseInfo parseCell(Cell cell) {
-            ParseInfo result = parseStringCell(cell);
-            if ((result.isValid) && (result.getValue().length() > 0)) {
-                if (controller.findById(Integer.valueOf(result.getValue())) == null) {
-                    result.isValid(false);
-                    result.setValidString("Unable to find object for: " + header + " with id: " + result.getValue());
+            String strValue = parseStringCell(cell);
+            Object objValue = null;
+            if (strValue.length() > 0) {
+                objValue = controller.findById(Integer.valueOf(strValue));
+                if (objValue == null) {
+                    String msg = "Unable to find object for: " + header + 
+                            " with id: " + strValue;
+                    return new ParseInfo<>(objValue, false, msg);
+                } else {
+                    return new ParseInfo<>(objValue, true, "");
                 }
             }
-            return result;
+            return new ParseInfo<>(objValue, true, "");
+        }
+        
+        @Override
+        public Class getParamType() {
+            return paramType;
         }
     }
 
-    static public class ParseInfo {
+    static public class ValidInfo {
 
-        protected String value = "";
         protected boolean isValid = false;
         protected String validString = "";
         protected boolean isDuplicate = false;
 
-        public ParseInfo() {
-        }
-
-        public ParseInfo(String v, boolean iv, String s) {
-            value = v;
+        public ValidInfo(boolean iv, String s) {
             isValid = iv;
             validString = s;
         }
-
-        public ParseInfo(String v, boolean iv, String s, boolean d) {
-            this(v, iv, s);
+        
+        public ValidInfo(boolean iv, String s, boolean d) {
+            this(iv, s);
             isDuplicate = d;
-        }
-
-        public String getValue() {
-            return value;
         }
 
         public boolean isValid() {
@@ -251,6 +274,31 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         public boolean isDuplicate() {
             return isDuplicate;
         }
+    }
+    
+    static public class ParseInfo<ValueType extends Object> {
+
+        protected ValueType value = null;
+        protected ValidInfo validInfo = null;
+
+        public ParseInfo(ValueType v, boolean iv, String s) {
+            value = v;
+            validInfo = new ValidInfo(iv, s);
+        }
+
+        public ParseInfo(ValueType v, boolean iv, String s, boolean d) {
+            value = v;
+            validInfo = new ValidInfo(iv, s, d);
+        }
+
+        public ValidInfo getValidInfo() {
+            return validInfo;
+        }
+        
+        public ValueType getValue() {
+            return value;
+        }
+        
     }
 
     static public class ImportInfo {
@@ -441,20 +489,21 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
             if (rowCount == 0) {
                 // parse header row
-                ParseInfo headerParseInfo = parseHeader(row);
-                if (!headerParseInfo.isValid()) {
+                ValidInfo headerValidInfo = parseHeader(row);
+                if (!headerValidInfo.isValid()) {
                     validInput = false;
-                    validationMessage = "Warning: " + headerParseInfo.getValidString() + ". Please make sure spreadsheet format is correct and enter values in all header rows before proceeding";
+                    validationMessage = "Warning: " + headerValidInfo.getValidString() + 
+                            ". Please make sure spreadsheet format is correct and enter values in all header rows before proceeding";
                 }
             } else {
                 entityNum = entityNum + 1;
-                ParseInfo rowParseInfo = parseRow(row, entityNum, importName);
-                if (!rowParseInfo.isValid()) {
+                ValidInfo rowValidInfo = parseRow(row, entityNum, importName);
+                if (!rowValidInfo.isValid()) {
                     validInput = false;
                 }
-                if (rowParseInfo.isDuplicate()) {
+                if (rowValidInfo.isDuplicate()) {
                     dupCount = dupCount + 1;
-                    dupString = appendToString(dupString, rowParseInfo.getValidString());
+                    dupString = appendToString(dupString, rowValidInfo.getValidString());
                 }
             }
         }
@@ -475,7 +524,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      * @param row
      * @return 
      */
-    protected ParseInfo parseHeader(Row row) {
+    protected ValidInfo parseHeader(Row row) {
         boolean isValid = true;
         String validMessage = "";
         
@@ -515,10 +564,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             validMessage = "Header row contains more column values than number of columns in template format";
         }
         
-        return new ParseInfo("", isValid, validMessage);
+        return new ValidInfo(isValid, validMessage);
     }
 
-    protected ParseInfo parseRow(Row row, int entityNum, String importName) {
+    protected ValidInfo parseRow(Row row, int entityNum, String importName) {
 
         EntityType newEntity = createEntityInstance();
         boolean isValid = true;
@@ -537,40 +586,40 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             cell = row.getCell(i);
 
             ParseInfo result = col.parseCell(cell);
+            ValidInfo validInfo = result.getValidInfo();
             
-            String parsedValue = result.getValue();
-
-            if (!result.isValid()) {
-                validString = appendToString(validString, result.getValidString());
+            if (!validInfo.isValid()) {
+                validString = appendToString(validString, validInfo.getValidString());
                 isValid = false;
             }
             
-            ParseInfo ppCellResult = postParseCell(parsedValue, colName, uniqueId);
-            if (!ppCellResult.isValid()) {
-                validString = appendToString(validString, ppCellResult.getValidString());
+            ParseInfo ppCellResult = postParseCell(result.getValue(), colName, uniqueId);
+            if (!ppCellResult.getValidInfo().isValid()) {
+                validString = appendToString(validString, ppCellResult.getValidInfo().getValidString());
                 isValid = false;
             }
-            parsedValue = ppCellResult.getValue();
+            Object parsedValue = ppCellResult.getValue();
             
-            if ((col.getMaxLength() > 0) && (parsedValue.length() > col.getMaxLength())) {
+            if (required && (parsedValue == null)) {
                 isValid = false;
-                validString = appendToString(validString, "Value length exceeds " + col.getMaxLength() + " characters for column " + colName);
+                validString = "Required value missing for " + colName;
             }
-            
+                 
             // use reflection to invoke setter method on entity instance
-            if (parsedValue != null && !parsedValue.isEmpty()) {
+            if (parsedValue != null) {
                 try {
                     Method setterMethod;
-                    setterMethod = newEntity.getClass().getMethod(setterMethodName, String.class);
+                    Class paramType = col.getParamType();
+                    setterMethod = newEntity.getClass().getMethod(setterMethodName, paramType);
                     setterMethod.invoke(newEntity, parsedValue);
                 } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    validString = appendToString(validString, "Unable to invoke setter method: " + setterMethodName + " for column: " + colName + " reason: " + ex.getCause().getLocalizedMessage());
+                    validString = appendToString(validString, "Unable to invoke setter method: " + setterMethodName + " for column: " + colName + " reason: " + ex.getClass().getName());
                     isValid = false;
                 }
             }
         }
         
-        ParseInfo ppResult = postParseRow(newEntity, uniqueId);
+        ValidInfo ppResult = postParseRow(newEntity, uniqueId);
         if (!ppResult.isValid()) {
             validString = appendToString(validString, ppResult.getValidString());
             isValid = false;
@@ -597,9 +646,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         if (!isDuplicate) {
             rows.add(newEntity);
-            return new ParseInfo("", isValid, validString, false);
+            return new ValidInfo(isValid, validString, false);
         } else {
-            return new ParseInfo("", true, newEntity.toString(), true);
+            return new ValidInfo(true, newEntity.toString(), true);
         }
     }
     
@@ -613,7 +662,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      * @param uniqueId
      * @return 
      */
-    protected ParseInfo postParseCell(String parsedValue, String columnName, String uniqueId) {
+    protected ParseInfo postParseCell(Object parsedValue, String columnName, String uniqueId) {
         return new ParseInfo(parsedValue, true, "");
     }
     
@@ -626,8 +675,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      * @param id
      * @return 
      */
-    protected ParseInfo postParseRow(EntityType e, String id) {
-        return new ParseInfo("", true, "");
+    protected ValidInfo postParseRow(EntityType e, String id) {
+        return new ValidInfo(true, "");
     }
 
     public ImportInfo importData() {
@@ -643,7 +692,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return new ImportInfo(false, "Import failed. " + ex.getMessage() + ": " + t.getMessage() + ".");
         }
         
-        ParseInfo result = postImport();
+        ValidInfo result = postImport();
         message = appendToString(message, result.getValidString());
         
         return new ImportInfo(true, message);
@@ -657,8 +706,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      * customize.
      * @return 
      */
-    protected ParseInfo postImport() {
-        return new ParseInfo("", true, "");
+    protected ValidInfo postImport() {
+        return new ValidInfo(true, "");
     }
     
     /**

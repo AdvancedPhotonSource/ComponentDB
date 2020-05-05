@@ -9,7 +9,10 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -30,16 +33,16 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     
     @Override
     protected void createColumnModels_() {
-        columns.add(new ImportHelperBase.StringColumnModel("Is Template", "isItemTemplate", "setImportIsTemplate", true, "Specifies whether this item is a template (true or false).", 5));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Container Id", "importContainerString", "setImportContainerItemId", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy.", 0, ItemDomainMachineDesignController.getInstance()));
+        columns.add(new ImportHelperBase.BooleanColumnModel("Is Template", "isItemTemplate", "setImportIsTemplate", true, "Specifies whether this item is a template (true or false)."));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Container Id", "importContainerString", "setImportContainerItem", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
         columns.add(new ImportHelperBase.StringColumnModel("Path", "importPath", "setImportPath", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container.", 700));
         columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "Machine design item name.", 128));
         columns.add(new ImportHelperBase.StringColumnModel("Alt Name", "alternateName", "setAlternateName", false, "Alternate machine design item name.", 32));
         columns.add(new ImportHelperBase.StringColumnModel("Description", "description", "setDescription", false, "Textual description of machine design item.", 256));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Assigned Catalog Item Id", "importAssignedCatalogItemString", "setAssignedCatalogItemId", false, "Numeric ID of assigned catalog item.", 0, ItemDomainCatalogController.getInstance()));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Assigned Inventory Item Id", "importAssignedInventoryItemString", "setAssignedInventoryItemId", false, "Numeric ID of assigned inventory item.", 0, ItemDomainInventoryController.getInstance()));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Assigned Catalog Item Id", "assignedItemString", "setAssignedCatalogItem", false, "Numeric ID of assigned catalog item.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Assigned Inventory Item Id", "assignedItemString", "setAssignedInventoryItem", false, "Numeric ID of assigned inventory item.", ItemDomainInventoryController.getInstance(), ItemDomainInventory.class));
         columns.add(new ImportHelperBase.StringColumnModel("Location", "locationString", "setLocationString", false, "CDB location string.", 0));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Project", "itemProjectString", "setProjectId", true, "Numeric ID of CDB project.", 0, ItemProjectController.getInstance()));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Project", "itemProjectString", "setProjectValue", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class));
     }
     
     @Override
@@ -66,10 +69,10 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
      * Set parent/child relationships between items, and create new item at
      * specified path within container item.  The path contains the names of 
      * the parent nodes between the new item and the container item, separated by
-     * unix style slashes.
+     * Unix style slashes.
      */
     @Override
-    protected ParseInfo postParseRow(ItemDomainMachineDesign item, String id) {
+    protected ValidInfo postParseRow(ItemDomainMachineDesign item, String id) {
         
         String methodLogName = "postParseRow() ";
         ItemDomainMachineDesign parentItem = null;
@@ -94,7 +97,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 // path is invalid after tokenization
                 String msg = "invalid path specified: " + path;
                 LOGGER.info(methodLogName + msg);
-                return new ParseInfo("", false, msg);                
+                return new ValidInfo(false, msg);                
             } else {
                 // path contains valid tokens, find parent whose name matches
                 // last token
@@ -104,7 +107,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     // no item with that name
                     String msg = "no parent with name: " + parentNodeName;
                     LOGGER.info(methodLogName + msg);
-                    return new ParseInfo("", false, msg);
+                    return new ValidInfo(false, msg);
                 }
             }
         }
@@ -114,7 +117,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 // parent and child must both be templates or both not be
                 String msg = "parent and child must both be templates or both not be templates";
                 LOGGER.info(methodLogName + msg);
-                return new ParseInfo("", false, msg);
+                return new ValidInfo(false, msg);
             }
             // establish parent/child relationship
             parentItem.addChildMachineDesign(item);
@@ -123,7 +126,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         // add entry to name map for new item
         itemByNameMap.put(item.getName(), item);
         
-        return new ParseInfo("", true, "");
+        return new ValidInfo(true, "");
     }
 
 }

@@ -11,7 +11,10 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -39,12 +42,12 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         columns.add(new ImportHelperBase.StringColumnModel("Description", "description", "setDescription", false, "Description of cable.", 256));
         columns.add(new ImportHelperBase.StringColumnModel("Laying", "laying", "setLaying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 256));
         columns.add(new ImportHelperBase.StringColumnModel("Voltage", "voltage", "setVoltage", false, "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 256));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Owner", "team", "setTeamId", false, "Numeric ID of CDB technical system.", 0, ItemCategoryController.getInstance()));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Project", "itemProjectString", "setProjectId", true, "Numeric ID of CDB project.", 0, ItemProjectController.getInstance()));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Type", "catalogItemString", "setCatalogItemId", false, "Numeric ID of CDB cable type catalog item.", 0, ItemDomainCableCatalogController.getInstance()));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint1", "endpoint1String", "setEndpoint1Id", false, "Numeric ID of CDB machine design item for first endpoint.", 0, ItemDomainMachineDesignController.getInstance()));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Owner", "team", "setTeam", false, "Numeric ID of CDB technical system.", ItemCategoryController.getInstance(), ItemCategory.class));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Project", "itemProjectString", "setProject", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Type", "catalogItemString", "setCatalogItem", false, "Numeric ID of CDB cable type catalog item.", ItemDomainCableCatalogController.getInstance(), Item.class));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint1", "endpoint1String", "setEndpoint1", false, "Numeric ID of CDB machine design item for first endpoint.", ItemDomainMachineDesignController.getInstance(), Item.class));
         columns.add(new ImportHelperBase.StringColumnModel("Endpoint1 Desc", "endpoint1Description", "setEndpoint1Description", false, "Endpoint details useful for external editing.", 256));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint2", "endpoint2String", "setEndpoint2Id", false, "Numeric ID of CDB machine design item for second endpoint.", 0, ItemDomainMachineDesignController.getInstance()));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Endpoint2", "endpoint2String", "setEndpoint2", false, "Numeric ID of CDB machine design item for second endpoint.", ItemDomainMachineDesignController.getInstance(), Item.class));
         columns.add(new ImportHelperBase.StringColumnModel("Endpoint2 Desc", "endpoint2Description", "setEndpoint2Description", false, "Endpoint details useful for external editing.", 256));
     }
     
@@ -73,17 +76,17 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     * import, that we will replace in postImport with the object's cdb id.
     */
     @Override
-    protected ParseInfo postParseCell(String parsedValue, String columnName, String id) {
-        
-        String idPattern = "#cdbid#";
-        String replacePattern = "#cdbid-" + id + "#";
-        String result = parsedValue;
+    protected ParseInfo postParseCell(Object parsedValue, String columnName, String id) {
         
         if (columnName.equals(COLUMN_MODEL_NAME)) {        
-            result = parsedValue.replaceAll(idPattern, replacePattern);
+            String idPattern = "#cdbid#";
+            String replacePattern = "#cdbid-" + id + "#";
+            String result = (String)parsedValue;
+            result = result.replaceAll(idPattern, replacePattern);
+            return new ParseInfo<>(result, true, "");
         }
         
-        return new ParseInfo(result, true, "");
+        return new ParseInfo<>(parsedValue, true, "");
     }
 
     /*
@@ -91,7 +94,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     * and replace them with the internal cdb identifier.
     */
     @Override
-    protected ParseInfo postImport() {
+    protected ValidInfo postImport() {
         
         String idRegexPattern = "#cdbid[^#]*#";
         idRegexPattern = Matcher.quoteReplacement(idRegexPattern);
@@ -132,6 +135,6 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
             }
         }
         
-        return new ParseInfo("", true, message);
+        return new ValidInfo(true, message);
     }
 }
