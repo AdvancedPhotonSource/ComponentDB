@@ -4,17 +4,17 @@
  */
 package gov.anl.aps.cdb.portal.plugins.support.icmsLink;
 
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfReader;
-import com.lowagie.text.pdf.PdfStamper;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import com.sun.xml.wss.impl.misc.Base64;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -198,11 +198,11 @@ public class IcmsWatermarkUtility {
             over.beginText();
             over.setTextMatrix(30, 30);
             over.setFontAndSize(bf, 10);
-            over.setColorFill(new Color(0x80, 0x80, 0x80));
+            over.setColorFill(new BaseColor(0x80, 0x80, 0x80));
             over.showTextAligned(Element.ALIGN_LEFT, watermarkContents, 25, 25, 90);
             over.showTextAligned(Element.ALIGN_LEFT, bottomMessage, 50, 10, 0);
             if (status.equals(ICMS_UNDER_REV_STATUS)) {
-                over.setColorFill(new Color(0xFF, 0x00, 0x00));
+                over.setColorFill(new BaseColor(0xFF, 0x00, 0x00));
             }
             //over.showTextAligned(Element.ALIGN_LEFT, status, 25, 25 + bf.getWidthPoint(watermarkContents + " - ", 10), 90);
 
