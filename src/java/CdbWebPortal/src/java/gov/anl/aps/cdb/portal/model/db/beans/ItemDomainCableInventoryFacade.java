@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
@@ -14,6 +15,11 @@ import javax.ejb.Stateless;
  */
 @Stateless
 public class ItemDomainCableInventoryFacade extends ItemFacadeBase<ItemDomainCableInventory> {
+    
+    @Override
+    public String getDomainName() {
+        return ItemDomainName.cableInventory.getValue();
+    }
     
     public ItemDomainCableInventoryFacade() {
         super(ItemDomainCableInventory.class);

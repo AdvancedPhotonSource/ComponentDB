@@ -40,7 +40,8 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ItemCategory.findById", query = "SELECT i FROM ItemCategory i WHERE i.id = :id"),
     @NamedQuery(name = "ItemCategory.findByName", query = "SELECT i FROM ItemCategory i WHERE i.name = :name"),
     @NamedQuery(name = "ItemCategory.findByDescription", query = "SELECT i FROM ItemCategory i WHERE i.description = :description"),
-    @NamedQuery(name = "ItemCategory.findByDomainName", query = "SELECT i FROM ItemCategory i WHERE i.domain.name = :domainName ORDER BY i.name ASC")})
+    @NamedQuery(name = "ItemCategory.findByDomainName", query = "SELECT i FROM ItemCategory i WHERE i.domain.name = :domainName ORDER BY i.name ASC"),
+    @NamedQuery(name = "ItemCategory.findByNameAndDomainName", query = "SELECT i FROM ItemCategory i WHERE i.name = :name AND i.domain.name = :domainName ORDER BY i.name ASC")})
 public class ItemCategory extends ItemTypeCategoryEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

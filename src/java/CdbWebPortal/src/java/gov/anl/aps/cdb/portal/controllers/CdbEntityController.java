@@ -252,6 +252,50 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     public EntityType findById(Integer id) {
         return getEntityDbFacade().find(id);
     }
+    
+    /**
+     * Find unique entity by name.  Returns null if none is found, or raises
+     * CdbException if multiple instances are found.
+     */
+    public EntityType findUniqueByName(String name, String domainName) throws CdbException {
+        
+        if ((name == null) || (name.isEmpty())) {
+            return null;
+        }
+        
+        return getEntityDbFacade().findUniqueByName(name, domainName);
+    }
+    
+    /**
+     * Find unique entity by id or name.  Added as a utility for the import
+     * framework, but maybe useful in other contexts.  First checks to see if 
+     * search criteria is numeric, and if so tries to find an instance by id.
+     * If that fails, or the criteria is alpha, tries to search by name.
+     * Returns null if no instance matching criteria is found, raises
+     * CdbException if multiple instances are found.
+     */
+    public EntityType findUniqueByIdOrName(String criteria, String domainName) throws CdbException {
+        
+        if ((criteria == null) || (criteria.isEmpty())) {
+            return null;
+        }
+        
+        boolean isNumeric = true;
+        int id = 0;
+        try {
+            id = Integer.parseInt(criteria);
+        } catch (NumberFormatException ex) {
+            isNumeric = false;
+        }
+        
+        if (isNumeric) {
+            // criteria is numeric, so search by id
+            return findById(id);
+        } else {
+            // criteria is alpha, so search by name
+            return findUniqueByName(criteria, domainName);
+        }
+    }
 
     /**
      * New current is being set, reset related variables.

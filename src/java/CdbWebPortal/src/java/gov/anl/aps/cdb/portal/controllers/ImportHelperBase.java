@@ -181,9 +181,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     isValid = true;
                     validString = "";
                 } else {
-                    if (stringValue.equalsIgnoreCase("true") || stringValue.equalsIgnoreCase("1")) {
+                    if (stringValue.equalsIgnoreCase("true") || stringValue.equals("1")) {
                         parsedValue = true;
-                    } else if (stringValue.equalsIgnoreCase("false") || stringValue.equalsIgnoreCase("0")) {
+                    } else if (stringValue.equalsIgnoreCase("false") || stringValue.equals("0")) {
                         parsedValue = false;
                     } else {
                         parsedValue = null;
@@ -204,16 +204,28 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return Boolean.class;
         }
     }
-
-    public class IdRefColumnModel extends ColumnModel {
+    
+    public abstract class RefColumnModel extends ColumnModel {
         
-        private CdbEntityController controller;
-        private Class paramType;
+        protected CdbEntityController controller;
+        protected Class paramType;
 
-        public IdRefColumnModel(String h, String p, String s, boolean r, String v, CdbEntityController c, Class pType) {
+        public RefColumnModel(String h, String p, String s, boolean r, String v, CdbEntityController c, Class pType) {
             super(h, p, s, r, v);
             controller = c;
             paramType = pType;
+        }
+        
+        @Override
+        public Class getParamType() {
+            return paramType;
+        }
+    }
+
+    public class IdRefColumnModel extends RefColumnModel {
+        
+        public IdRefColumnModel(String h, String p, String s, boolean r, String v, CdbEntityController c, Class pType) {
+            super(h, p, s, r, v, c, pType);
         }
 
         @Override
@@ -232,10 +244,37 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
             return new ParseInfo<>(objValue, true, "");
         }
+    }
+
+    public class IdOrNameRefColumnModel extends RefColumnModel {
         
+        String domainName = null;
+        
+        public IdOrNameRefColumnModel(String h, String p, String s, boolean r, String v, CdbEntityController c, Class pType, String domainName) {
+            super(h, p, s, r, v, c, pType);
+            this.domainName = domainName;
+        }
+
         @Override
-        public Class getParamType() {
-            return paramType;
+        public ParseInfo parseCell(Cell cell) {
+            
+            String strValue = parseStringCell(cell);
+            Object objValue = null;
+            if ((strValue != null) && (!strValue.isEmpty())) {
+                try {
+                    objValue = controller.findUniqueByIdOrName(strValue, domainName);
+                } catch (CdbException ex) {
+                    String msg = "Unable to find object by id or name: " + strValue
+                            + " reason: " + ex.getMessage();
+                    return new ParseInfo<>(objValue, false, msg);
+                }
+                if (objValue == null) {
+                    String msg = "Unable to find object for: " + header
+                            + " with id or name: " + strValue;
+                    return new ParseInfo<>(objValue, false, msg);
+                }
+            }
+            return new ParseInfo<>(objValue, true, "");
         }
     }
 
@@ -602,7 +641,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             
             if (required && (parsedValue == null)) {
                 isValid = false;
-                validString = "Required value missing for " + colName;
+                validString = appendToString(validString, "Required value missing for " + colName);
             }
                  
             // use reflection to invoke setter method on entity instance

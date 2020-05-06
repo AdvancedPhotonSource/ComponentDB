@@ -17,6 +17,11 @@ import javax.ejb.Stateless;
 @Stateless
 public class ItemDomainCableCatalogFacade extends ItemFacadeBase<ItemDomainCableCatalog> {
     
+    @Override
+    public String getDomainName() {
+        return ItemDomainName.cableCatalog.getValue();
+    }
+    
     public ItemDomainCableCatalogFacade() {
         super(ItemDomainCableCatalog.class);
     }
@@ -26,6 +31,6 @@ public class ItemDomainCableCatalogFacade extends ItemFacadeBase<ItemDomainCable
     }
     
     public List<ItemDomainCableCatalog> findByName(String name) {
-        return findByDomainAndName(ItemDomainName.cableCatalog.getValue(), name);
+        return findByDomainAndName(getDomainName(), name);
     }  
 }
