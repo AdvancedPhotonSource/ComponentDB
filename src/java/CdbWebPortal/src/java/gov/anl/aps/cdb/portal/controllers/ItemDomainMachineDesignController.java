@@ -41,6 +41,7 @@ import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.DragDropEvent;
+import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -1601,6 +1602,15 @@ public class ItemDomainMachineDesignController
     public ItemDomainMachineDesign getNewMdInventoryItem() {
         return newMdInventoryItem;
     } 
+    
+    public void templateToCreateNewItemSelected(NodeSelectEvent nodeSelection) {
+        TreeNode treeNode = nodeSelection.getTreeNode();
+        
+        ItemElement element = (ItemElement) treeNode.getData();
+        Item parentItem = element.getContainedItem();
+        
+        templateToCreateNewItem = (ItemDomainMachineDesign) parentItem; 
+    }
 
     @Override
     public String prepareCreateTemplate() {
