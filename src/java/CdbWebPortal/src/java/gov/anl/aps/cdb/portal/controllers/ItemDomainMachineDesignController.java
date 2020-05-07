@@ -2137,6 +2137,7 @@ public class ItemDomainMachineDesignController
             Integer idParam = Integer.parseInt(paramValue);
             ItemDomainMachineDesign item = itemDomainMachineDesignFacade.findById(idParam);
             if (item != null) {
+                currentViewIsTemplate = isItemMachineDesignAndTemplate(item);
                 expandToSpecificMachineDesignItem(item);
             } else {
                 SessionUtility.addErrorMessage("Error", "Machine design with id " + idParam + " couldn't be found.");
@@ -2179,22 +2180,17 @@ public class ItemDomainMachineDesignController
     protected void prepareEntityView(ItemDomainMachineDesign entity) {
         super.prepareEntityView(entity);
 
-        processPreRenderList();
-
-        currentViewIsTemplate = isItemMachineDesignAndTemplate(entity);
         // Cannot only show favorites when specific node is selected by id.
-        favoritesShown = false;
-        // Need to grab the correct list for expanding. 
-        currentMachineDesignListRootTreeNode = null;
+        favoritesShown = false;        
+        
+        processPreRenderList();        
 
         String redirect = "/list";
 
         if (isInventory(entity)) {
             redirect = "/subAssembly";
             currentViewIsSubAssembly = true; 
-        } 
-        
-        expandToSpecificMachineDesignItem(getCurrent());
+        }
 
         String viewMode = SessionUtility.getRequestParameterValue("mode");
         if (viewMode != null) {
