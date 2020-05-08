@@ -7,10 +7,12 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import java.util.HashMap;
@@ -37,12 +39,12 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         columns.add(new ImportHelperBase.IdRefColumnModel("Container Id", "importContainerString", "setImportContainerItem", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
         columns.add(new ImportHelperBase.StringColumnModel("Path", "importPath", "setImportPath", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container.", 700));
         columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "Machine design item name.", 128));
+        columns.add(new ImportHelperBase.IdOrNameRefColumnModel("Project", "itemProjectString", "setProjectValue", true, "Numeric ID or name of CDB project.", ItemProjectController.getInstance(), ItemProject.class, null));
         columns.add(new ImportHelperBase.StringColumnModel("Alt Name", "alternateName", "setAlternateName", false, "Alternate machine design item name.", 32));
         columns.add(new ImportHelperBase.StringColumnModel("Description", "description", "setDescription", false, "Textual description of machine design item.", 256));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Assigned Catalog Item Id", "assignedItemString", "setAssignedCatalogItem", false, "Numeric ID of assigned catalog item.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Assigned Inventory Item Id", "assignedItemString", "setAssignedInventoryItem", false, "Numeric ID of assigned inventory item.", ItemDomainInventoryController.getInstance(), ItemDomainInventory.class));
-        columns.add(new ImportHelperBase.StringColumnModel("Location", "locationString", "setLocationString", false, "CDB location string.", 0));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Project", "itemProjectString", "setProjectValue", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Assigned Catalog Item Id", "importAssignedCatalogItemString", "setImportAssignedCatalogItem", false, "Numeric ID of assigned catalog item.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class));
+        columns.add(new ImportHelperBase.IdRefColumnModel("Assigned Inventory Item Id", "importAssignedInventoryItemString", "setImportAssignedInventoryItem", false, "Numeric ID of assigned inventory item.", ItemDomainInventoryController.getInstance(), ItemDomainInventory.class));
+        columns.add(new ImportHelperBase.IdOrNameRefColumnModel("Location", "importLocationItemString", "setImportLocationItem", false, "Numeric Id or name of CDB location item, for top-level non-template items only.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
     }
     
     @Override
@@ -90,6 +92,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             } else {
                 parentItem = container;
             }
+            
         } else {
             // path is specified
             String[] nodeNames = path.split("/");
@@ -97,7 +100,8 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 // path is invalid after tokenization
                 String msg = "invalid path specified: " + path;
                 LOGGER.info(methodLogName + msg);
-                return new ValidInfo(false, msg);                
+                return new ValidInfo(false, msg);
+                
             } else {
                 // path contains valid tokens, find parent whose name matches
                 // last token
@@ -112,15 +116,43 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             }
         }
         
+        // check for template restrictions
+        if (item.getIsItemTemplate()) {
+            
+            if ((item.getImportAssignedCatalogItem() != null) || 
+                    (item.getImportAssignedInventoryItem() != null)) {
+                // template not allowed to have assigned catalog/inventory
+                String msg = "Template cannot have assigned catalog/inventory item";
+                LOGGER.info(methodLogName + msg);
+                return new ValidInfo(false, msg);
+            }
+            
+            if (item.getImportLocationItem() != null) {
+                // template not allowed to have location
+                String msg = "Template cannot have location item";
+                LOGGER.info(methodLogName + msg);
+                return new ValidInfo(false, msg);
+            }
+        }
+        
         if (parentItem != null) {
+            
             if (!Objects.equals(item.getIsItemTemplate(), parentItem.getIsItemTemplate())) {
                 // parent and child must both be templates or both not be
                 String msg = "parent and child must both be templates or both not be templates";
                 LOGGER.info(methodLogName + msg);
                 return new ValidInfo(false, msg);
             }
+            
+            if (item.getImportLocationItem() != null) {
+                // only top-level item can have location
+                String msg = "Only top-level item can have location";
+                LOGGER.info(methodLogName + msg);
+                return new ValidInfo(false, msg);
+            }
+            
             // establish parent/child relationship
-            parentItem.addChildMachineDesign(item);
+            item.applyImportValues(parentItem);
         }
         
         // add entry to name map for new item

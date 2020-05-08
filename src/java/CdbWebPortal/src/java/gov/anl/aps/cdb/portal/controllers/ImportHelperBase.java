@@ -728,7 +728,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             message = "Import succeeded, created " + rows.size() + " instances";
         } catch (CdbException | RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
-            return new ImportInfo(false, "Import failed. " + ex.getMessage() + ": " + t.getMessage() + ".");
+            return new ImportInfo(false, "Import failed. " + ex.getClass().getName());
         }
         
         ValidInfo result = postImport();

@@ -10,10 +10,8 @@ import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
-import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +36,9 @@ public class ItemDomainMachineDesign extends LocatableItem {
     
     private transient ItemDomainMachineDesign importContainerItem = null;
     private transient String importPath = "";
+    private transient ItemDomainCatalog importAssignedCatalogItem = null;
+    private transient ItemDomainInventory importAssignedInventoryItem = null;
+    private transient ItemDomainLocation importLocationItem = null;
 
     @Override
     public Item createInstance() {
@@ -137,96 +138,6 @@ public class ItemDomainMachineDesign extends LocatableItem {
         }
     }
     
-    public ItemDomainMachineDesign getImportContainerItem() {
-        return importContainerItem;
-    }
-
-    public String getImportContainerString() {
-        ItemDomainMachineDesign itemContainer = this.getImportContainerItem();
-        if (itemContainer != null) {
-            return itemContainer.getName();
-        } else {
-            return "";
-        }
-    }
-    
-    public void setImportContainerItem(ItemDomainMachineDesign item) {
-        importContainerItem = item;
-    }
-
-    public void setImportContainerItemId(String id) {
-        ItemDomainMachineDesign itemContainer = (ItemDomainMachineDesign)(getEntityById(ItemDomainMachineDesignController.getInstance(), id));
-        if (itemContainer != null) {
-            setImportContainerItem(itemContainer);
-        } else {
-            LOGGER.error("setImportContainerItemId() unknown machine design item id " + id);
-        }
-    }
-
-    public String getImportPath() {
-        return importPath;
-    }
-
-    public void setImportPath(String importPath) {
-        this.importPath = importPath;
-    }
-
-    public String getAlternateName() {
-        return getItemIdentifier1();
-    }
-
-    public void setAlternateName(String n) {
-        setItemIdentifier1(n);
-    }
-
-    public void setAssignedItem(Item item) {
-        // "assign" catalog or inventory item
-        ItemElement selfElement = this.getSelfElement();
-        selfElement.setContainedItem2(item);
-    }
-
-    public Item getAssignedItem() {
-        ItemElement selfElement = this.getSelfElement();
-        return selfElement.getContainedItem2();
-    }
-
-    public String getAssignedItemString() {
-        Item assignedItem = this.getAssignedItem();
-        if (assignedItem != null) {
-            return assignedItem.getName();
-        } else {
-            return "";
-        }
-    }
-
-    public void setAssignedCatalogItem(ItemDomainCatalog item) {
-        if (item != null) {
-            setAssignedItem(item);
-        }
-    }
-
-    public void setAssignedInventoryItem(ItemDomainInventory item) {
-        if (item != null) {
-            setAssignedItem(item);
-        }
-    }
-    
-    public void setProjectId(String projectId) {
-        
-        ItemProject project = 
-                (ItemProject) (getEntityById(ItemProjectController.getInstance(), projectId));
-        
-        setProjectValue(project);
-    }
-    
-    public void setProjectValue(ItemProject project) {
-        if (project != null) {
-            List<ItemProject> projectList = new ArrayList<>();
-            projectList.add(project);
-            this.setItemProjectList(projectList);
-        }
-    }
-    
     /**
      * Marks this machine design item as a template EntityType.
      */
@@ -239,44 +150,153 @@ public class ItemDomainMachineDesign extends LocatableItem {
             entityTypeList.add(templateEntity);
             setEntityTypeList(entityTypeList);
         } catch (CdbException ex) {
-            String msg = "Exception setting template entity type for: " + getName();
-            LOGGER.error("setIsTemplate() " + ex);
+            String msg = "Exception setting template entity type for: " + getName() + 
+                    " reason: " + ex.getMessage();
+            LOGGER.error("setIsTemplate() " + msg);
+        }
+    }
+    
+    public ItemDomainMachineDesign getImportContainerItem() {
+        return importContainerItem;
+    }
+
+    public void setImportContainerItem(ItemDomainMachineDesign item) {
+        importContainerItem = item;
+    }
+
+    public String getImportContainerString() {
+        ItemDomainMachineDesign itemContainer = this.getImportContainerItem();
+        if (itemContainer != null) {
+            return itemContainer.getName();
+        } else {
+            return "";
+        }
+    }
+    
+    public String getImportPath() {
+        return importPath;
+    }
+
+    public void setImportPath(String importPath) {
+        this.importPath = importPath;
+    }
+
+    public void setProjectValue(ItemProject project) {
+        if (project != null) {
+            List<ItemProject> projectList = new ArrayList<>();
+            projectList.add(project);
+            this.setItemProjectList(projectList);
+        }
+    }
+    
+    public String getAlternateName() {
+        return getItemIdentifier1();
+    }
+
+    public void setAlternateName(String n) {
+        setItemIdentifier1(n);
+    }
+
+    public void setImportAssignedCatalogItem(ItemDomainCatalog item) {
+        importAssignedCatalogItem = item;
+    }
+    
+    public ItemDomainCatalog getImportAssignedCatalogItem() {
+        return importAssignedCatalogItem;
+    }
+
+    public String getImportAssignedCatalogItemString() {
+        if (importAssignedCatalogItem != null) {
+            return importAssignedCatalogItem.getName();
+        } else {
+            return "";
+        }
+    }
+
+    public void setImportAssignedInventoryItem(ItemDomainInventory item) {
+        importAssignedInventoryItem = item;
+    }
+    
+    public ItemDomainInventory getImportAssignedInventoryItem() {
+        return importAssignedInventoryItem;
+    }
+
+    public String getImportAssignedInventoryItemString() {
+        if (importAssignedInventoryItem != null) {
+            return importAssignedInventoryItem.getName();
+        } else {
+            return "";
+        }
+    }
+
+    public void setImportLocationItem(ItemDomainLocation locationItem) {
+        LocatableItemController.getInstance().setItemLocationInfo(this);
+        setLocation(locationItem);
+        importLocationItem = locationItem;
+
+//        setLocation(locationItem);
+//        LocatableItemController.getInstance().getLocationStringForItem(this);
+
+//        LocatableItemController.getInstance().setItemLocationInfo(this);
+//        LocatableItemController.getInstance().updateLocationForItem(this, locationItem, null);
+    }
+    
+    public ItemDomainLocation getImportLocationItem() {
+        return importLocationItem;
+    }
+    
+    public String getImportLocationItemString() {
+        if (importLocationItem != null) {
+            return importLocationItem.getName();
+        } else {
+            return "";
         }
     }
     
     /**
-     * Establishes parent/child relationship, with this item as parent of supplied
-     * childItem.
+     * Applies the import column values to this machine design item. Establishes 
+     * parent/child relationship, with this item as child of specified parentItem.
+     * Adds assigned catalog/inventory item
      * 
      * @param childItem 
      */
-    public void addChildMachineDesign(ItemDomainMachineDesign childItem) {
+    public void applyImportValues(ItemDomainMachineDesign parentItem) {
         
         // create ItemElement for new relationship
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         ItemElement itemElement = new ItemElement();
         itemElement.setEntityInfo(entityInfo);
-        itemElement.setParentItem(this);
+        itemElement.setParentItem(parentItem);
         String elementName = 
                 ItemDomainMachineDesignController.getInstance().
-                        generateUniqueElementNameForItem(this);
+                        generateUniqueElementNameForItem(parentItem);
         itemElement.setName(elementName);
         
-        int elementSize = this.getItemElementDisplayList().size();
+        int elementSize = parentItem.getItemElementDisplayList().size();
         float sortOrder = elementSize;
         itemElement.setSortOrder(sortOrder);
         
-        itemElement.setContainedItem(childItem);
+        // set parent-child relationship
+        itemElement.setContainedItem(this);
+        
+        // for non-template item, add assigned catalog/inventory item (if any)
+        if (!this.getIsItemTemplate()) {
+            if (importAssignedInventoryItem != null) {
+                itemElement.setContainedItem2(importAssignedInventoryItem);
+            } else if (importAssignedCatalogItem != null) {
+                itemElement.setContainedItem2(importAssignedCatalogItem);
+            }
+        }
         
         // add ItemElement to parent
-        getFullItemElementList().add(itemElement);
-        getItemElementDisplayList().add(0, itemElement);
+        parentItem.getFullItemElementList().add(itemElement);
+        parentItem.getItemElementDisplayList().add(0, itemElement);
 
         // add ItemElement to child
-        if (childItem.getItemElementMemberList() == null) {
-            childItem.setItemElementMemberList(new ArrayList<>());
+        if (this.getItemElementMemberList() == null) {
+            this.setItemElementMemberList(new ArrayList<>());
         }
-        childItem.getItemElementMemberList().add(itemElement);
+        this.getItemElementMemberList().add(itemElement);
     }
     
 }
