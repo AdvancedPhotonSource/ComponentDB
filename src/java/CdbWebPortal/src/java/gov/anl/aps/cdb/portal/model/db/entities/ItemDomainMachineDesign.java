@@ -39,6 +39,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
     private transient ItemDomainCatalog importAssignedCatalogItem = null;
     private transient ItemDomainInventory importAssignedInventoryItem = null;
     private transient ItemDomainLocation importLocationItem = null;
+    private transient String importLocationItemString = "";
 
     @Override
     public Item createInstance() {
@@ -230,15 +231,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
     }
 
     public void setImportLocationItem(ItemDomainLocation locationItem) {
-        LocatableItemController.getInstance().setItemLocationInfo(this);
-        setLocation(locationItem);
         importLocationItem = locationItem;
-
-//        setLocation(locationItem);
-//        LocatableItemController.getInstance().getLocationStringForItem(this);
-
-//        LocatableItemController.getInstance().setItemLocationInfo(this);
-//        LocatableItemController.getInstance().updateLocationForItem(this, locationItem, null);
     }
     
     public ItemDomainLocation getImportLocationItem() {
@@ -246,11 +239,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
     }
     
     public String getImportLocationItemString() {
-        if (importLocationItem != null) {
-            return importLocationItem.getName();
-        } else {
-            return "";
-        }
+        return importLocationItemString;
     }
     
     /**
@@ -260,43 +249,72 @@ public class ItemDomainMachineDesign extends LocatableItem {
      * 
      * @param childItem 
      */
-    public void applyImportValues(ItemDomainMachineDesign parentItem) {
+    public void applyImportValues(ItemDomainMachineDesign parentItem, 
+            boolean isValidAssignedItem,
+            boolean isValidLocation) {
         
-        // create ItemElement for new relationship
-        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-        ItemElement itemElement = new ItemElement();
-        itemElement.setEntityInfo(entityInfo);
-        itemElement.setParentItem(parentItem);
-        String elementName = 
-                ItemDomainMachineDesignController.getInstance().
-                        generateUniqueElementNameForItem(parentItem);
-        itemElement.setName(elementName);
-        
-        int elementSize = parentItem.getItemElementDisplayList().size();
-        float sortOrder = elementSize;
-        itemElement.setSortOrder(sortOrder);
-        
-        // set parent-child relationship
-        itemElement.setContainedItem(this);
-        
-        // for non-template item, add assigned catalog/inventory item (if any)
-        if (!this.getIsItemTemplate()) {
-            if (importAssignedInventoryItem != null) {
-                itemElement.setContainedItem2(importAssignedInventoryItem);
-            } else if (importAssignedCatalogItem != null) {
-                itemElement.setContainedItem2(importAssignedCatalogItem);
-            }
-        }
-        
-        // add ItemElement to parent
-        parentItem.getFullItemElementList().add(itemElement);
-        parentItem.getItemElementDisplayList().add(0, itemElement);
+        if (getImportLocationItem() != null) {
+        // location was specified for item
+            
+            if (isValidLocation) {
+            // if valid for this item, update it and use hierarchical location
+            // string for import location string
+            
+//            LocatableItemController.getInstance().setItemLocationInfo(this);
+//            setLocation(locationItem);
 
-        // add ItemElement to child
-        if (this.getItemElementMemberList() == null) {
-            this.setItemElementMemberList(new ArrayList<>());
+//        setLocation(locationItem);
+//        LocatableItemController.getInstance().getLocationStringForItem(this);
+
+                LocatableItemController.getInstance().setItemLocationInfo(this);
+                LocatableItemController.getInstance().updateLocationForItem(
+                        this, getImportLocationItem(), null);
+                importLocationItemString = getLocationString();
+            } else {
+            // if location is not valid for this item, just use item name for
+            // import location string
+                importLocationItemString = getImportLocationItem().getName();
+            }
+            
         }
-        this.getItemElementMemberList().add(itemElement);
+        
+        if (parentItem != null) {
+            // create ItemElement for new relationship
+            EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+            ItemElement itemElement = new ItemElement();
+            itemElement.setEntityInfo(entityInfo);
+            itemElement.setParentItem(parentItem);
+            String elementName
+                    = ItemDomainMachineDesignController.getInstance().
+                            generateUniqueElementNameForItem(parentItem);
+            itemElement.setName(elementName);
+
+            int elementSize = parentItem.getItemElementDisplayList().size();
+            float sortOrder = elementSize;
+            itemElement.setSortOrder(sortOrder);
+
+            // set parent-child relationship
+            itemElement.setContainedItem(this);
+
+            // for non-template item, add assigned catalog/inventory item (if any)
+            if (isValidAssignedItem) {
+                if (importAssignedInventoryItem != null) {
+                    itemElement.setContainedItem2(importAssignedInventoryItem);
+                } else if (importAssignedCatalogItem != null) {
+                    itemElement.setContainedItem2(importAssignedCatalogItem);
+                }
+            }
+
+            // add ItemElement to parent
+            parentItem.getFullItemElementList().add(itemElement);
+            parentItem.getItemElementDisplayList().add(0, itemElement);
+
+            // add ItemElement to child
+            if (this.getItemElementMemberList() == null) {
+                this.setItemElementMemberList(new ArrayList<>());
+            }
+            this.getItemElementMemberList().add(itemElement);
+        }
     }
     
 }

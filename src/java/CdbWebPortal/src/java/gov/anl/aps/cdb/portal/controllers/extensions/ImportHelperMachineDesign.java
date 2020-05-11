@@ -78,6 +78,10 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         
         String methodLogName = "postParseRow() ";
         ItemDomainMachineDesign parentItem = null;
+        boolean isValid = true;
+        boolean isValidLocation = true;
+        boolean isValidAssignedItem = true;
+        String validString = "";
         
         // find parent item
         String path = item.getImportPath();
@@ -100,7 +104,8 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 // path is invalid after tokenization
                 String msg = "invalid path specified: " + path;
                 LOGGER.info(methodLogName + msg);
-                return new ValidInfo(false, msg);
+                validString = appendToString(validString, msg);
+                isValid = false;
                 
             } else {
                 // path contains valid tokens, find parent whose name matches
@@ -111,7 +116,8 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     // no item with that name
                     String msg = "no parent with name: " + parentNodeName;
                     LOGGER.info(methodLogName + msg);
-                    return new ValidInfo(false, msg);
+                    validString = appendToString(validString, msg);
+                    isValid = false;
                 }
             }
         }
@@ -124,14 +130,43 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 // template not allowed to have assigned catalog/inventory
                 String msg = "Template cannot have assigned catalog/inventory item";
                 LOGGER.info(methodLogName + msg);
-                return new ValidInfo(false, msg);
+                validString = appendToString(validString, msg);
+                isValid = false;
+                isValidAssignedItem = false;
             }
             
             if (item.getImportLocationItem() != null) {
                 // template not allowed to have location
                 String msg = "Template cannot have location item";
                 LOGGER.info(methodLogName + msg);
-                return new ValidInfo(false, msg);
+                validString = appendToString(validString, msg);
+                isValid = false;
+                isValidLocation = false;
+            }
+            
+        } else {
+            if (parentItem != null) {
+                
+                if (item.getImportLocationItem() != null) {
+                    // only top-level non-template item can have location
+                    String msg = "Only top-level item can have location";
+                    LOGGER.info(methodLogName + msg);
+                    validString = appendToString(validString, msg);
+                    isValid = false;
+                    isValidLocation = false;
+                }
+                
+            } else {
+            
+                if ((item.getImportAssignedCatalogItem() != null)
+                        || (item.getImportAssignedInventoryItem() != null)) {
+                    // top-level item cannot have assigned item
+                    String msg = "Top-level item cannot have assigned catalog/inventory item";
+                    LOGGER.info(methodLogName + msg);
+                    validString = appendToString(validString, msg);
+                    isValid = false;
+                    isValidAssignedItem = false;
+                }
             }
         }
         
@@ -141,24 +176,18 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 // parent and child must both be templates or both not be
                 String msg = "parent and child must both be templates or both not be templates";
                 LOGGER.info(methodLogName + msg);
-                return new ValidInfo(false, msg);
+                validString = appendToString(validString, msg);
+                isValid = false;
             }
-            
-            if (item.getImportLocationItem() != null) {
-                // only top-level item can have location
-                String msg = "Only top-level item can have location";
-                LOGGER.info(methodLogName + msg);
-                return new ValidInfo(false, msg);
-            }
-            
-            // establish parent/child relationship
-            item.applyImportValues(parentItem);
         }
+                        
+        // establish parent/child relationship, set location info etc
+        item.applyImportValues(parentItem, isValidAssignedItem, isValidLocation);
         
         // add entry to name map for new item
         itemByNameMap.put(item.getName(), item);
         
-        return new ValidInfo(true, "");
+        return new ValidInfo(isValid, validString);
     }
 
 }

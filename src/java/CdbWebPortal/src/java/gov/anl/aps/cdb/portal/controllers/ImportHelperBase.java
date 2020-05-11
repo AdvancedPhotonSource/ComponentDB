@@ -417,7 +417,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         reset_();
     }
 
-    private String appendToString(String toString, String s) {
+    protected String appendToString(String toString, String s) {
         String result = "";
         if (!toString.isEmpty()) {
             result = toString + ". ";
