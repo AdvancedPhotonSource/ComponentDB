@@ -18,8 +18,18 @@ See LICENSE file.
         <p:panel header="Review imported file content, then click Next Step to import.">
             <p:outputPanel id="#{rootViewId}ValidatePanel">
                 
-                <div class="actionButton">
+                <p:panelGrid columns="3" layout="grid" styleClass="importTreeTablePanelGrid">
+                    <p:selectOneRadio id="viewStyle" 
+                                      value="#{wizardController.viewStyle}" 
+                                      unselectable="true"
+                                      onchange="selectedViewStyleChanged()">
+                        <f:selectItem itemLabel="Table" itemValue="table" />
+                        <f:selectItem itemLabel="Tree" itemValue="tree" />
+                    </p:selectOneRadio>
                     
+                    <p:remoteCommand name="selectedViewStyleChanged"
+                                     update="#{rootViewId}ValidatePanel"/>
+                   
                     <p:commandButton id="#{rootViewid}ExportXlsButton" 
                                      styleClass="actionButtonRight" 
                                      ajax="false" 
@@ -43,12 +53,14 @@ See LICENSE file.
                                             fileName="ValidationReport" />
                         </p:commandButton>  
                     </ui:remove>
-                    
-                </div>
+
+                </p:panelGrid>
+
                 <p:panelGrid columns="2">
                     
                     <p:dataTable id="#{rootViewId}TableContent"
                                  value="#{wizardController.rows}"
+                                 rendered="#{wizardController.renderTableView}"
                                  var="row"
                                  rows="#{resources.SelectDataTableNumberOfRows}"
                                  paginator="true">    
@@ -63,6 +75,38 @@ See LICENSE file.
                         </p:columns>
 
                     </p:dataTable>
+                    
+                    <p:treeTable id="#{rootViewId}TreeContent"
+                                 value="#{wizardController.rootTreeNode}"
+                                 rendered="#{wizardController.renderTreeView}"
+                                 var="row"
+                                 rows="#{resources.SelectDataTableNumberOfRows}"
+                                 paginator="true"
+                                 resizableColumns="true"
+                                 liveResize="true"
+                                 style="word-break: break-word"
+                                 styleClass="machineDesignListTreeTable">    
+                        
+                        <p:columns value="#{wizardController.columns}" 
+                                   var="column" 
+                                   columnIndexVar="colIndex">
+                            <f:facet name="header">
+                                <h:outputText value="#{column.header}" />
+                            </f:facet>
+                            <h:outputText value="#{row[column.property]}" />
+                        </p:columns>
+
+                    </p:treeTable>
+                    
+                    <ui:remove>
+                    <p:tree value="#{wizardController.rootTreeNode}" 
+                            var="node"
+                            rendered="#{wizardController.renderTreeView}">
+                        <p:treeNode>
+                            <h:outputText value="#{node}" />
+                        </p:treeNode>
+                    </p:tree>
+                    </ui:remove>
 
                 </p:panelGrid>
                 

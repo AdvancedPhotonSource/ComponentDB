@@ -972,6 +972,10 @@ h2 {
     border-radius: 4px;
 }
 
+.importTreeTablePanelGrid .ui-panelgrid-cell {
+    background-color: rgba(242, 250, 255, 0.93) !important;
+}
+
 .catalogItemThumbnailInfoPanelGrid .ui-panelgrid-cell{
     border: 1px solid !important; 
     border-color: black;         

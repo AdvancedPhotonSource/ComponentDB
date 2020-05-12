@@ -16,6 +16,7 @@ import javax.inject.Named;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.UploadedFile;
 
 /**
@@ -44,6 +45,8 @@ public class ItemDomainImportWizard implements Serializable {
     // models for select file tab
     private Boolean disableButtonUpload = true;
     protected UploadedFile uploadfileData = null;
+    
+    private String viewStyle = "table";
 
     protected boolean importSuccessful = true;
     protected String importResult = "";
@@ -84,6 +87,26 @@ public class ItemDomainImportWizard implements Serializable {
 
     public void setUploadfileData(UploadedFile uploadfileData) {
         this.uploadfileData = uploadfileData;
+    }
+
+    public String getViewStyle() {
+        return viewStyle;
+    }
+
+    public void setViewStyle(String viewStyle) {
+        this.viewStyle = viewStyle;
+    }
+    
+    public Boolean getRenderTableView() {
+        return !viewStyle.equals("tree");
+    }
+    
+    public Boolean getRenderTreeView() {
+        return viewStyle.equals("tree");
+    }
+    
+    public TreeNode getRootTreeNode() {
+        return importHelper.getRootTreeNode();
     }
 
     public Boolean getDisableButtonUpload() {
@@ -191,6 +214,7 @@ public class ItemDomainImportWizard implements Serializable {
         importHelper = null;
         importSuccessful = true;
         importResult = "";
+        viewStyle = "table";
     }
 
     /**

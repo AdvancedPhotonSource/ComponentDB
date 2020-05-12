@@ -34,7 +34,9 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.StreamedContent;
+import org.primefaces.model.TreeNode;
 import org.primefaces.model.UploadedFile;
 
 /**
@@ -369,6 +371,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected byte[] templateExcelFile = null;
     protected boolean validInput = true;
     protected String validationMessage = "";
+    protected TreeNode rootTreeNode = new DefaultTreeNode("Root", null);
 
     public ImportHelperBase() {
         createColumnModels();
@@ -412,6 +415,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         rows.clear();
         validInput = true;
         validationMessage = "";
+        rootTreeNode = new DefaultTreeNode("Root", null);
 
         // allow subclass to reset
         reset_();
@@ -757,6 +761,18 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      */
     protected boolean ignoreDuplicates() {
         return false;
+    }
+    
+    /**
+     * Specifies whether the subclass will provide a tree view.  Default is false,
+     * subclass should override to customize.
+     */
+    public boolean hasTreeView() {
+        return false;
+    }
+    
+    public TreeNode getRootTreeNode() {
+        return rootTreeNode;
     }
 
     protected abstract void createColumnModels_();

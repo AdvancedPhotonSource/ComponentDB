@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -32,6 +34,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     protected static String completionUrlValue = "/views/itemDomainMachineDesign/list?faces-redirect=true";
     
     protected Map<String, ItemDomainMachineDesign> itemByNameMap = new HashMap<>();
+    protected Map<String, TreeNode> treeNodeMap = new HashMap<>();
     
     @Override
     protected void createColumnModels_() {
@@ -67,6 +70,20 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         return getEntityController().createEntityInstance();
     }
     
+    @Override
+    protected void reset_() {
+        itemByNameMap = new HashMap<>();
+        treeNodeMap = new HashMap<>();
+    }
+    
+    /**
+     * Specifies whether the subclass will provide a tree view.  Default is false,
+     * subclass should override to customize.
+     */
+    public boolean hasTreeView() {
+        return true;
+    }
+
     /**
      * Set parent/child relationships between items, and create new item at
      * specified path within container item.  The path contains the names of 
@@ -184,10 +201,52 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         // establish parent/child relationship, set location info etc
         item.applyImportValues(parentItem, isValidAssignedItem, isValidLocation);
         
+        // update tree view with item and parent
+        updateTreeView(item, parentItem);
+        
         // add entry to name map for new item
         itemByNameMap.put(item.getName(), item);
         
         return new ValidInfo(isValid, validString);
     }
 
+    protected void updateTreeView(ItemDomainMachineDesign item, 
+            ItemDomainMachineDesign parent) {
+        
+        TreeNode itemNode = new DefaultTreeNode(item);
+        itemNode.setExpanded(true);
+        treeNodeMap.put(item.getName(), itemNode);
+        
+        if (parent != null) {
+            TreeNode parentNode = treeNodeMap.get(parent.getName());
+            if (parentNode != null) {
+                // parent tree node already exists so add child to it
+                parentNode.getChildren().add(itemNode);
+                
+            } else {
+                // parent tree node doesn't exist, so create new tree nodes for
+                // parent and its ancestors, and add child to parent
+                parentNode = new DefaultTreeNode(parent);
+                parentNode.setExpanded(true);
+                parentNode.getChildren().add(itemNode);
+                treeNodeMap.put(parent.getName(), parentNode);
+                ItemDomainMachineDesign ancestor = parent.getParentMachineDesign();
+                TreeNode childNode = parentNode;
+                while (ancestor != null) {
+                    TreeNode ancestorNode = new DefaultTreeNode(ancestor);
+                    ancestorNode.setExpanded(true);
+                    treeNodeMap.put(ancestor.getName(), ancestorNode);
+                    ancestorNode.getChildren().add(childNode);
+                    ancestor = ancestor.getParentMachineDesign();
+                    childNode = ancestorNode;
+                }
+                rootTreeNode.getChildren().add(childNode);
+            }
+            
+        } else {
+            // top level machine design item, so add to root tree node
+            rootTreeNode.getChildren().add(itemNode);
+        }
+        
+    }
 }

@@ -254,25 +254,19 @@ public class ItemDomainMachineDesign extends LocatableItem {
             boolean isValidLocation) {
         
         if (getImportLocationItem() != null) {
-        // location was specified for item
-            
+            // location was specified for item
+
             if (isValidLocation) {
-            // if valid for this item, update it and use hierarchical location
-            // string for import location string
-            
-//            LocatableItemController.getInstance().setItemLocationInfo(this);
-//            setLocation(locationItem);
-
-//        setLocation(locationItem);
-//        LocatableItemController.getInstance().getLocationStringForItem(this);
-
+                // if valid for this item, update it and use hierarchical location
+                // string for import location string
                 LocatableItemController.getInstance().setItemLocationInfo(this);
                 LocatableItemController.getInstance().updateLocationForItem(
                         this, getImportLocationItem(), null);
                 importLocationItemString = getLocationString();
+                
             } else {
-            // if location is not valid for this item, just use item name for
-            // import location string
+                // if location is not valid for this item, just use item name for
+                // import location string
                 importLocationItemString = getImportLocationItem().getName();
             }
             
