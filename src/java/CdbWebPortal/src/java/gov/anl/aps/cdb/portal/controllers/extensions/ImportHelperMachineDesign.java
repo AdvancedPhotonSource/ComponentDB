@@ -214,7 +214,6 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             ItemDomainMachineDesign parent) {
         
         TreeNode itemNode = new DefaultTreeNode(item);
-        itemNode.setExpanded(true);
         treeNodeMap.put(item.getName(), itemNode);
         
         if (parent != null) {
@@ -227,14 +226,12 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 // parent tree node doesn't exist, so create new tree nodes for
                 // parent and its ancestors, and add child to parent
                 parentNode = new DefaultTreeNode(parent);
-                parentNode.setExpanded(true);
                 parentNode.getChildren().add(itemNode);
                 treeNodeMap.put(parent.getName(), parentNode);
                 ItemDomainMachineDesign ancestor = parent.getParentMachineDesign();
                 TreeNode childNode = parentNode;
                 while (ancestor != null) {
                     TreeNode ancestorNode = new DefaultTreeNode(ancestor);
-                    ancestorNode.setExpanded(true);
                     treeNodeMap.put(ancestor.getName(), ancestorNode);
                     ancestorNode.getChildren().add(childNode);
                     ancestor = ancestor.getParentMachineDesign();

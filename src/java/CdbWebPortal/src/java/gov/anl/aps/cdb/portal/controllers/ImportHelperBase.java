@@ -365,9 +365,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected static String isValidProperty = "isValidImport";
     protected static String validStringHeader = "Valid String";
     protected static String validStringProperty = "validStringImport";
+    protected static String togglerProperty = "togglerImport";
 
     protected List<EntityType> rows = new ArrayList<>();
     protected List<ColumnModel> columns = new ArrayList<>();
+    protected List<ColumnModel> treeTableColumns = new ArrayList<>();
     protected byte[] templateExcelFile = null;
     protected boolean validInput = true;
     protected String validationMessage = "";
@@ -383,6 +385,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
     public List<ColumnModel> getColumns() {
         return columns;
+    }
+    
+    public List<ColumnModel> getTreeTableColumns() {
+        return treeTableColumns;
     }
     
     public boolean isValidInput() {
@@ -405,6 +411,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         // these are special columns just for displaying validation info for each row, they are not parsed so treated specially in parsing code
         columns.add(new StringColumnModel(isValidHeader, isValidProperty, "isValidImport", false, "", 0));
         columns.add(new StringColumnModel(validStringHeader, validStringProperty, "setValidStringImport", false, "", 0));
+
+        treeTableColumns.addAll(columns);
+        treeTableColumns.add(0, new StringColumnModel("", togglerProperty, "", false, "", 0));
     }
 
     protected void reset_() {

@@ -169,6 +169,14 @@ public class ItemDomainImportWizard implements Serializable {
             return new ArrayList<>();
         }
     }
+    
+    public List<ColumnModel> getTreeTableColumns() {
+        if (importHelper != null) {
+            return importHelper.getTreeTableColumns();
+        } else {
+            return new ArrayList<>();
+        }
+    }
 
     public StreamedContent getTemplateExcelFile() {
         return importHelper.getTemplateExcelFile();
