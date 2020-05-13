@@ -764,11 +764,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
     
     /**
-     * Specifies whether the subclass will provide a tree view.  Default is false,
-     * subclass should override to customize.
+     * Specifies whether the subclass will provide a tree view. Returns true if
+     * there are children of the root tree node, meaning that the subclass built
+     * the tree model during parsing.
      */
     public boolean hasTreeView() {
-        return false;
+        return getRootTreeNode().getChildCount() > 0;
     }
     
     public TreeNode getRootTreeNode() {

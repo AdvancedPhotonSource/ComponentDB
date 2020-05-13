@@ -88,6 +88,14 @@ public class ItemDomainImportWizard implements Serializable {
     public void setUploadfileData(UploadedFile uploadfileData) {
         this.uploadfileData = uploadfileData;
     }
+    
+    public boolean hasTreeView() {
+        if (importHelper != null) {
+            return importHelper.hasTreeView();
+        } else {
+            return false;
+        }
+    }
 
     public String getViewStyle() {
         return viewStyle;
@@ -98,11 +106,15 @@ public class ItemDomainImportWizard implements Serializable {
     }
     
     public Boolean getRenderTableView() {
-        return !viewStyle.equals("tree");
+        return (!viewStyle.equals("tree")) && (!viewStyle.equals("treeTable"));
     }
     
     public Boolean getRenderTreeView() {
         return viewStyle.equals("tree");
+    }
+    
+    public Boolean getRenderTreeTableView() {
+        return viewStyle.equals("treeTable");
     }
     
     public TreeNode getRootTreeNode() {
