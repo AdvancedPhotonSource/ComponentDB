@@ -45,20 +45,14 @@ import org.primefaces.model.UploadedFile;
  */
 public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityControllerType extends CdbEntityController> {
 
-    public abstract class ColumnModel implements Serializable {
-
+    public class OutputColumnModel implements Serializable {
+        
         protected String header;
         protected String property;
-        protected boolean required = false;
-        protected String setterMethod;
-        protected String description;
-
-        public ColumnModel(String h, String p, String s, boolean r, String d) {
+        
+        public OutputColumnModel(String h, String p) {
             this.header = h;
             this.property = p;
-            this.setterMethod = s;
-            this.description = d;
-            this.required = r;
         }
 
         public String getHeader() {
@@ -67,6 +61,26 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         public String getProperty() {
             return property;
+        }
+
+    }
+    
+    public abstract class InputSpec implements Serializable {
+
+        protected String header;
+        protected boolean required = false;
+        protected String setterMethod;
+        protected String description;
+
+        public InputSpec(String h, String s, boolean r, String d) {
+            this.header = h;
+            this.setterMethod = s;
+            this.description = d;
+            this.required = r;
+        }
+
+        public String getHeader() {
+            return header;
         }
 
         public String getSetterMethod() {
@@ -100,12 +114,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
 
-    public class StringColumnModel extends ColumnModel {
+    public class StringInputSpec extends InputSpec {
 
         protected int maxLength = 0;
         
-        public StringColumnModel(String h, String p, String s, boolean r, String v, int l) {
-            super(h, p, s, r, v);
+        public StringInputSpec(String h, String s, boolean r, String v, int l) {
+            super(h, s, r, v);
             maxLength = l;
         }
 
@@ -131,10 +145,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
 
-    public class NumericColumnModel extends ColumnModel {
+    public class NumericInputSpec extends InputSpec {
 
-        public NumericColumnModel(String h, String p, String s, boolean r, String v) {
-            super(h, p, s, r, v);
+        public NumericInputSpec(String h, String s, boolean r, String v) {
+            super(h, s, r, v);
         }
 
         @Override
@@ -162,10 +176,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
 
-    public class BooleanColumnModel extends ColumnModel {
+    public class BooleanInputSpec extends InputSpec {
 
-        public BooleanColumnModel(String h, String p, String s, boolean r, String v) {
-            super(h, p, s, r, v);
+        public BooleanInputSpec(String h, String s, boolean r, String v) {
+            super(h, s, r, v);
         }
 
         @Override
@@ -207,13 +221,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
     
-    public abstract class RefColumnModel extends ColumnModel {
+    public abstract class RefInputSpec extends InputSpec {
         
         protected CdbEntityController controller;
         protected Class paramType;
 
-        public RefColumnModel(String h, String p, String s, boolean r, String v, CdbEntityController c, Class pType) {
-            super(h, p, s, r, v);
+        public RefInputSpec(String h, String s, boolean r, String v, CdbEntityController c, Class pType) {
+            super(h, s, r, v);
             controller = c;
             paramType = pType;
         }
@@ -224,10 +238,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
 
-    public class IdRefColumnModel extends RefColumnModel {
+    public class IdRefInputSpec extends RefInputSpec {
         
-        public IdRefColumnModel(String h, String p, String s, boolean r, String v, CdbEntityController c, Class pType) {
-            super(h, p, s, r, v, c, pType);
+        public IdRefInputSpec(String h, String s, boolean r, String v, CdbEntityController c, Class pType) {
+            super(h, s, r, v, c, pType);
         }
 
         @Override
@@ -248,12 +262,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
 
-    public class IdOrNameRefColumnModel extends RefColumnModel {
+    public class IdOrNameRefInputSpec extends RefInputSpec {
         
         String domainName = null;
         
-        public IdOrNameRefColumnModel(String h, String p, String s, boolean r, String v, CdbEntityController c, Class pType, String domainName) {
-            super(h, p, s, r, v, c, pType);
+        public IdOrNameRefInputSpec(String h, String s, boolean r, String v, CdbEntityController c, Class pType, String domainName) {
+            super(h, s, r, v, c, pType);
             this.domainName = domainName;
         }
 
@@ -368,27 +382,36 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected static String togglerProperty = "togglerImport";
 
     protected List<EntityType> rows = new ArrayList<>();
-    protected List<ColumnModel> columns = new ArrayList<>();
-    protected List<ColumnModel> treeTableColumns = new ArrayList<>();
+    
+    protected List<InputSpec> inputSpecs = null;
+    
+    protected List<OutputColumnModel> tableViewColumns = null;
+    protected List<OutputColumnModel> treeViewColumns = new ArrayList<>();
+    
     protected byte[] templateExcelFile = null;
     protected boolean validInput = true;
     protected String validationMessage = "";
     protected TreeNode rootTreeNode = new DefaultTreeNode("Root", null);
 
     public ImportHelperBase() {
-        createColumnModels();
+        initializeInputSpecs();
+        initializeViewColumns();
     }
 
     public List<EntityType> getRows() {
         return rows;
     }
 
-    public List<ColumnModel> getColumns() {
-        return columns;
+    public List<InputSpec> getInputSpecs() {
+        return inputSpecs;
     }
     
-    public List<ColumnModel> getTreeTableColumns() {
-        return treeTableColumns;
+    public List<OutputColumnModel> getTableViewColumns() {
+        return tableViewColumns;
+    }
+    
+    public List<OutputColumnModel> getTreeViewColumns() {
+        return treeViewColumns;
     }
     
     public boolean isValidInput() {
@@ -402,18 +425,23 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public String getCompletionUrl() {
         return getCompletionUrlValue();
     }
+    
+    protected void initializeInputSpecs() {
+        List<InputSpec> specs = initializeInputSpecs_();
+        inputSpecs = specs;
+    }
+    
+    protected void initializeViewColumns() {
+        List<OutputColumnModel> columns = initializeTableViewColumns_();
 
-    protected void createColumnModels() {
-
-        // allow subclass to create column models
-        createColumnModels_();
-
-        // these are special columns just for displaying validation info for each row, they are not parsed so treated specially in parsing code
-        columns.add(new StringColumnModel(isValidHeader, isValidProperty, "isValidImport", false, "", 0));
-        columns.add(new StringColumnModel(validStringHeader, validStringProperty, "setValidStringImport", false, "", 0));
-
-        treeTableColumns.addAll(columns);
-        treeTableColumns.add(0, new StringColumnModel("", togglerProperty, "", false, "", 0));
+        // these are special inputSpecs just for displaying validation info for each row, they are not parsed so treated specially in parsing code
+        columns.add(new OutputColumnModel(isValidHeader, isValidProperty));
+        columns.add(new OutputColumnModel(validStringHeader, validStringProperty));    
+        
+        tableViewColumns = columns;
+        
+        treeViewColumns.addAll(tableViewColumns);
+        treeViewColumns.add(0, new OutputColumnModel("", togglerProperty));
     }
 
     protected void reset_() {
@@ -454,8 +482,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         Sheet sheet = wb.createSheet("template");
         Drawing drawing = sheet.createDrawingPatriarch();
         Row headerRow = sheet.createRow(0);
-        for (int i = 0; i < columns.size() - 2; i++) {
-            ColumnModel col = columns.get(i);
+        for (int i = 0; i < inputSpecs.size() - 2; i++) {
+            InputSpec col = inputSpecs.get(i);
 
             Cell headerCell = headerRow.createCell(i);
             headerCell.setCellValue(col.getHeader());
@@ -572,7 +600,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     /**
      * Checks that the number of values present in the header row matches the
-     * expected number of columns.
+ expected number of inputSpecs.
      * @param row
      * @return 
      */
@@ -581,7 +609,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         String validMessage = "";
         
         int headerValues = 0;
-        for (int i = 0; i < columns.size() - 2; i++) {
+        for (int i = 0; i < inputSpecs.size(); i++) {
             // check if header value present for each column
             Cell cell;
             cell = row.getCell(i);        
@@ -592,14 +620,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 headerValues = headerValues + 1;
             }
         }        
-        if (headerValues != columns.size() - 2) {
+        if (headerValues != inputSpecs.size()) {
             isValid = false;
             validMessage = "Header row contains fewer column values than number of columns in template format";
         }
         
         int extraValues = 0;
-        for (int i = columns.size() - 2; i < columns.size() + 3; i++) {
-            // check for extra values beyond the expected columns
+        for (int i = inputSpecs.size(); i < inputSpecs.size() + 5; i++) {
+            // check for extra values beyond the expected inputSpecs
             Cell cell;
             cell = row.getCell(i);  
             if (cell != null) {
@@ -627,9 +655,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         String uniqueId = importName + "-" + entityNum;
         boolean isDuplicate = false;
 
-        for (int i = 0; i < columns.size() - 2; i++) {
+        for (int i = 0; i < inputSpecs.size(); i++) {
             
-            ColumnModel col = columns.get(i);
+            InputSpec col = inputSpecs.get(i);
             String colName = col.getHeader();
             boolean required = col.isRequired();
             String setterMethodName = col.getSetterMethod();
@@ -785,7 +813,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return rootTreeNode;
     }
 
-    protected abstract void createColumnModels_();
+    protected abstract List<InputSpec> initializeInputSpecs_();
+    
+    protected abstract List<OutputColumnModel> initializeTableViewColumns_();
 
     protected abstract String getCompletionUrlValue();
 

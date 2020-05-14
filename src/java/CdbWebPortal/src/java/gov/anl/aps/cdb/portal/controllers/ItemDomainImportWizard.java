@@ -4,8 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ColumnModel;
+import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.InputSpec;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ImportInfo;
+import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.OutputColumnModel;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
@@ -162,17 +163,17 @@ public class ItemDomainImportWizard implements Serializable {
         }
     }
 
-    public List<ColumnModel> getColumns() {
+    public List<OutputColumnModel> getColumns() {
         if (importHelper != null) {
-            return importHelper.getColumns();
+            return importHelper.getTableViewColumns();
         } else {
             return new ArrayList<>();
         }
     }
     
-    public List<ColumnModel> getTreeTableColumns() {
+    public List<OutputColumnModel> getTreeTableColumns() {
         if (importHelper != null) {
-            return importHelper.getTreeTableColumns();
+            return importHelper.getTreeViewColumns();
         } else {
             return new ArrayList<>();
         }

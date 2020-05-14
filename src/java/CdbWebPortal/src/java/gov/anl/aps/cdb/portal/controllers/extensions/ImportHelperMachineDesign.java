@@ -15,7 +15,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
@@ -37,17 +39,39 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     protected Map<String, TreeNode> treeNodeMap = new HashMap<>();
     
     @Override
-    protected void createColumnModels_() {
-        columns.add(new ImportHelperBase.BooleanColumnModel("Is Template", "isItemTemplate", "setImportIsTemplate", true, "Specifies whether this item is a template (true or false)."));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Container Id", "importContainerString", "setImportContainerItem", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
-        columns.add(new ImportHelperBase.StringColumnModel("Path", "importPath", "setImportPath", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container.", 700));
-        columns.add(new ImportHelperBase.StringColumnModel("Name", "name", "setName", true, "Machine design item name.", 128));
-        columns.add(new ImportHelperBase.IdOrNameRefColumnModel("Project", "itemProjectString", "setProjectValue", true, "Numeric ID or name of CDB project.", ItemProjectController.getInstance(), ItemProject.class, null));
-        columns.add(new ImportHelperBase.StringColumnModel("Alt Name", "alternateName", "setAlternateName", false, "Alternate machine design item name.", 32));
-        columns.add(new ImportHelperBase.StringColumnModel("Description", "description", "setDescription", false, "Textual description of machine design item.", 256));
-        columns.add(new ImportHelperBase.IdOrNameRefColumnModel("Assigned Catalog Item Id", "importAssignedCatalogItemString", "setImportAssignedCatalogItem", false, "Numeric ID of assigned catalog item.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
-        columns.add(new ImportHelperBase.IdRefColumnModel("Assigned Inventory Item Id", "importAssignedInventoryItemString", "setImportAssignedInventoryItem", false, "Numeric ID of assigned inventory item.", ItemDomainInventoryController.getInstance(), ItemDomainInventory.class));
-        columns.add(new ImportHelperBase.IdOrNameRefColumnModel("Location", "importLocationItemString", "setImportLocationItem", false, "Numeric Id or name of CDB location item, for top-level non-template items only.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
+    protected List<InputSpec> initializeInputSpecs_() {
+        List<InputSpec> specs = new ArrayList<>();
+        
+        specs.add(new ImportHelperBase.BooleanInputSpec("Is Template", "setImportIsTemplate", true, "Specifies whether this item is a template (true or false)."));
+        specs.add(new ImportHelperBase.IdRefInputSpec("Container Id", "setImportContainerItem", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
+        specs.add(new ImportHelperBase.StringInputSpec("Path", "setImportPath", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container.", 700));
+        specs.add(new ImportHelperBase.StringInputSpec("Name", "setName", true, "Machine design item name.", 128));
+        specs.add(new ImportHelperBase.IdOrNameRefInputSpec("Project", "setProjectValue", true, "Numeric ID or name of CDB project.", ItemProjectController.getInstance(), ItemProject.class, null));
+        specs.add(new ImportHelperBase.StringInputSpec("Alt Name", "setAlternateName", false, "Alternate machine design item name.", 32));
+        specs.add(new ImportHelperBase.StringInputSpec("Description", "setDescription", false, "Textual description of machine design item.", 256));
+        specs.add(new ImportHelperBase.IdOrNameRefInputSpec("Assigned Catalog Item Id", "setImportAssignedCatalogItem", false, "Numeric ID of assigned catalog item.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
+        specs.add(new ImportHelperBase.IdRefInputSpec("Assigned Inventory Item Id", "setImportAssignedInventoryItem", false, "Numeric ID of assigned inventory item.", ItemDomainInventoryController.getInstance(), ItemDomainInventory.class));
+        specs.add(new ImportHelperBase.IdOrNameRefInputSpec("Location", "setImportLocationItem", false, "Numeric Id or name of CDB location item, for top-level non-template items only.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
+
+        return specs;
+    }
+    
+    @Override
+    protected List<OutputColumnModel> initializeTableViewColumns_() {
+        List<OutputColumnModel> columns = new ArrayList<>();
+        
+        columns.add(new OutputColumnModel("Is Template", "isItemTemplate"));
+        columns.add(new OutputColumnModel("Container Id", "importContainerString"));
+        columns.add(new OutputColumnModel("Path", "importPath"));
+        columns.add(new OutputColumnModel("Name", "name"));
+        columns.add(new OutputColumnModel("Project", "itemProjectString"));
+        columns.add(new OutputColumnModel("Alt Name", "alternateName"));
+        columns.add(new OutputColumnModel("Description", "description"));
+        columns.add(new OutputColumnModel("Assigned Catalog Item Id", "importAssignedCatalogItemString"));
+        columns.add(new OutputColumnModel("Assigned Inventory Item Id", "importAssignedInventoryItemString"));
+        columns.add(new OutputColumnModel("Location", "importLocationItemString"));
+
+        return columns;
     }
     
     @Override
