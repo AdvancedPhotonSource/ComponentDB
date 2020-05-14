@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -257,12 +258,12 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
             return;
         }
 
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByChildItem = (String) filters.get("childItem");
-        filterByComponent = (String) filters.get("component");
-        filterByComponentType = (String) filters.get("componentType");
-        filterByLocation = (String) filters.get("location");
-        filterBySortOrder = (String) filters.get("sortOrder");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByChildItem = (String) filters.get("childItem").getFilterField();
+        filterByComponent = (String) filters.get("component").getFilterField();
+        filterByComponentType = (String) filters.get("componentType").getFilterField();
+        filterByLocation = (String) filters.get("location").getFilterField();
+        filterBySortOrder = (String) filters.get("sortOrder").getFilterField();
     }
     
     @Override

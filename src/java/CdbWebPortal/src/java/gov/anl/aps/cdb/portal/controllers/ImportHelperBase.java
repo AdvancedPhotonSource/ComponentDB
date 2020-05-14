@@ -35,7 +35,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
-import org.primefaces.model.UploadedFile;
+import org.primefaces.model.file.UploadedFile;
+
 
 /**
  *
@@ -359,7 +360,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         InputStream inputStream;
         HSSFWorkbook workbook = null;
         try {
-            inputStream = f.getInputstream();
+            inputStream = f.getInputStream();
             workbook = new HSSFWorkbook(inputStream);
         } catch (IOException e) {
             return false;
@@ -379,7 +380,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         InputStream inputStream;
         XSSFWorkbook workbook = null;
         try {
-            inputStream = f.getInputstream();
+            inputStream = f.getInputStream();
             workbook = new XSSFWorkbook(inputStream);
         } catch (IOException e) {
             return false;

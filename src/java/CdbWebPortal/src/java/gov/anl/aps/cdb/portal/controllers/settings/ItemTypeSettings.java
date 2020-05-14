@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -83,8 +84,8 @@ public class ItemTypeSettings extends CdbEntitySettingsBase<ItemTypeController> 
             return;
         }
 
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByCategory = (String) filters.get("itemTypeCategory.name");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByCategory = (String) filters.get("itemTypeCategory.name").getFilterField();
     }
     
     public String getFilterByCategory() {
