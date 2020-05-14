@@ -24,8 +24,8 @@ import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
 
-import org.primefaces.model.UploadedFile;
 
 /**
  * JSF bean for log attachment uploads.
@@ -61,7 +61,7 @@ public class LogAttachmentUploadBean implements Serializable {
 
                 String originalExtension = "." + uploadedExtension;
                 File originalFile = File.createTempFile("attachment.", originalExtension, uploadDir);
-                InputStream input = uploadedFile.getInputstream();
+                InputStream input = uploadedFile.getInputStream();
                 Files.copy(input, originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 logger.debug("Saved file: " + originalFile.toPath());
                 Attachment attachment = new Attachment();

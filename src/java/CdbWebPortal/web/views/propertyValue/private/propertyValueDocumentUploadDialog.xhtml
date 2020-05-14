@@ -16,7 +16,7 @@ See LICENSE file.
               styleClass="dialog">
         <div class="dialog">
 
-            <p:fileUpload fileUploadListener="${propertyValueDocumentUploadBean.handleSingleFileUpload}"
+            <p:fileUpload listener="#{propertyValueDocumentUploadBean.handleSingleFileUpload}"
                           fileLimit="1" oncomplete="propertyValueDocumentUploadDialogFileUploadOnComplete()"/>
             
             <p:remoteCommand name="propertyValueDocumentUploadDialogFileUploadOnComplete"

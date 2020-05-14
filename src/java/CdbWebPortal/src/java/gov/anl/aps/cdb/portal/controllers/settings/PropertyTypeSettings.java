@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -137,11 +138,11 @@ public class PropertyTypeSettings extends CdbEntitySettingsBase<PropertyTypeCont
         if (dataTable == null) {
             return;
         }
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByCategory = (String) filters.get("propertyTypeCategory.name");
-        filterByDefaultUnits = (String) filters.get("defaultUnits");
-        filterByDefaultValue = (String) filters.get("defaultValue");
-        filterByHandler = (String) filters.get("handlerName");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByCategory = (String) filters.get("propertyTypeCategory.name").getFilterField();
+        filterByDefaultUnits = (String) filters.get("defaultUnits").getFilterField();
+        filterByDefaultValue = (String) filters.get("defaultValue").getFilterField();
+        filterByHandler = (String) filters.get("handlerName").getFilterField();
     }
     
     public Boolean getDisplayCategory() {
