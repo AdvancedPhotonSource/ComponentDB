@@ -918,13 +918,8 @@ h2 {
     table-layout: auto !important;
 }
 
-.importWizardTreeTable .ui-treetable table {
+.importWizardTreeTable table {
     table-layout: auto !important;
-}
-
-.importWizardTreeTable .ui-treetable-data td {
-    white-space: normal !important;
-    word-break: keep-all !important;
 }
 
 .importWizardTreeTable .ui-treetable-toggler {

@@ -77,6 +77,14 @@ public class CdbEntity implements Serializable, Cloneable {
         return isValidImport;
     }
     
+    public String getIsValidImportString() {
+        if (isValidImport) {
+            return "yes";
+        } else {
+            return "no";
+        }
+    }
+    
     public void setIsValidImport(boolean b) {
         isValidImport = b;
     }
@@ -88,13 +96,4 @@ public class CdbEntity implements Serializable, Cloneable {
     public void setValidStringImport(String s) {
         validStringImport = s;
     }
-    
-    /**
-     * Returns an empty string to use as the column model for the treeTable
-     * toggler in the import wizard tree table component.  I'm sorry.
-     */
-    public String getTogglerImport() {
-        return "";
-    }
-    
 }

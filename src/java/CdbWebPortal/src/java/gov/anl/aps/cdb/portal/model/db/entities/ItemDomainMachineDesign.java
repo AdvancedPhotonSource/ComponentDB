@@ -35,11 +35,11 @@ public class ItemDomainMachineDesign extends LocatableItem {
     private transient ItemElement currentItemElement; 
     
     private transient ItemDomainMachineDesign importContainerItem = null;
-    private transient String importPath = "";
+    private transient String importPath = null;
     private transient ItemDomainCatalog importAssignedCatalogItem = null;
     private transient ItemDomainInventory importAssignedInventoryItem = null;
     private transient ItemDomainLocation importLocationItem = null;
-    private transient String importLocationItemString = "";
+    private transient String importLocationItemString = null;
 
     @Override
     public Item createInstance() {
@@ -136,6 +136,14 @@ public class ItemDomainMachineDesign extends LocatableItem {
         if (importIsTemplate) {
             // mark this item as template entity type
             setIsTemplate();
+        }
+    }
+    
+    public String getImportIsTemplateString() {
+        if (isItemTemplate(this)) {
+            return "yes";
+        } else {
+            return "no";
         }
     }
     
@@ -279,7 +287,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
             itemElement.setEntityInfo(entityInfo);
             itemElement.setParentItem(parentItem);
             String elementName
-                    = ItemDomainMachineDesignController.getInstance().
+                    = getItemDomainController().
                             generateUniqueElementNameForItem(parentItem);
             itemElement.setName(elementName);
 

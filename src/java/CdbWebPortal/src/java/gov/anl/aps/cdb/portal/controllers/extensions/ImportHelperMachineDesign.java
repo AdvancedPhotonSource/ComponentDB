@@ -44,7 +44,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         
         specs.add(new ImportHelperBase.BooleanInputSpec("Is Template", "setImportIsTemplate", true, "Specifies whether this item is a template (true or false)."));
         specs.add(new ImportHelperBase.IdRefInputSpec("Container Id", "setImportContainerItem", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
-        specs.add(new ImportHelperBase.StringInputSpec("Path", "setImportPath", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container.", 700));
+        specs.add(new ImportHelperBase.StringInputSpec("Parent Path", "setImportPath", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container.", 700));
         specs.add(new ImportHelperBase.StringInputSpec("Name", "setName", true, "Machine design item name.", 128));
         specs.add(new ImportHelperBase.IdOrNameRefInputSpec("Project", "setProjectValue", true, "Numeric ID or name of CDB project.", ItemProjectController.getInstance(), ItemProject.class, null));
         specs.add(new ImportHelperBase.StringInputSpec("Alt Name", "setAlternateName", false, "Alternate machine design item name.", 32));
@@ -60,10 +60,10 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     protected List<OutputColumnModel> initializeTableViewColumns_() {
         List<OutputColumnModel> columns = new ArrayList<>();
         
-        columns.add(new OutputColumnModel("Is Template", "isItemTemplate"));
-        columns.add(new OutputColumnModel("Container Id", "importContainerString"));
-        columns.add(new OutputColumnModel("Path", "importPath"));
         columns.add(new OutputColumnModel("Name", "name"));
+        columns.add(new OutputColumnModel("Is Template", "importIsTemplateString"));
+        columns.add(new OutputColumnModel("Container Id", "importContainerString"));
+        columns.add(new OutputColumnModel("Parent Path", "importPath"));
         columns.add(new OutputColumnModel("Project", "itemProjectString"));
         columns.add(new OutputColumnModel("Alt Name", "alternateName"));
         columns.add(new OutputColumnModel("Description", "description"));
@@ -238,6 +238,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             ItemDomainMachineDesign parent) {
         
         TreeNode itemNode = new DefaultTreeNode(item);
+        itemNode.setExpanded(true);
         treeNodeMap.put(item.getName(), itemNode);
         
         if (parent != null) {
@@ -250,12 +251,14 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 // parent tree node doesn't exist, so create new tree nodes for
                 // parent and its ancestors, and add child to parent
                 parentNode = new DefaultTreeNode(parent);
+                parentNode.setExpanded(true);
                 parentNode.getChildren().add(itemNode);
                 treeNodeMap.put(parent.getName(), parentNode);
                 ItemDomainMachineDesign ancestor = parent.getParentMachineDesign();
                 TreeNode childNode = parentNode;
                 while (ancestor != null) {
                     TreeNode ancestorNode = new DefaultTreeNode(ancestor);
+                    ancestorNode.setExpanded(true);
                     treeNodeMap.put(ancestor.getName(), ancestorNode);
                     ancestorNode.getChildren().add(childNode);
                     ancestor = ancestor.getParentMachineDesign();

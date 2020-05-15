@@ -376,10 +376,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
 
     protected static String isValidHeader = "Is Valid";
-    protected static String isValidProperty = "isValidImport";
+    protected static String isValidProperty = "isValidImportString";
     protected static String validStringHeader = "Valid String";
     protected static String validStringProperty = "validStringImport";
-    protected static String togglerProperty = "togglerImport";
 
     protected List<EntityType> rows = new ArrayList<>();
     
@@ -441,7 +440,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         tableViewColumns = columns;
         
         treeViewColumns.addAll(tableViewColumns);
-        treeViewColumns.add(0, new OutputColumnModel("", togglerProperty));
     }
 
     protected void reset_() {
