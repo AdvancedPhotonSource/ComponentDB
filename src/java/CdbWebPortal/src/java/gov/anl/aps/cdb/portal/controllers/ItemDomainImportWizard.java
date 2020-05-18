@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.InputSpec;
+import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.SimpleInputHandler;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ImportInfo;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.OutputColumnModel;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;

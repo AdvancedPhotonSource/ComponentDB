@@ -20,13 +20,25 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     protected static String completionUrlValue = "/views/source/list?faces-redirect=true";
     
     @Override
-    protected List<InputSpec> initializeInputSpecs_() {
-        List<InputSpec> specs = new ArrayList<>();
+    protected List<InputColumnModel> initializeInputColumns_() {
+        List<InputColumnModel> cols = new ArrayList<>();
         
-        specs.add(new StringInputSpec("Name", "setName", true, "Name of vendor/manufacturer", 64));
-        specs.add(new StringInputSpec("Description", "setDescription", false, "Description of vendor/manufacturer", 256));
-        specs.add(new StringInputSpec("Contact Info", "setContactInfo", false, "Contact name and phone number etc", 64));
-        specs.add(new StringInputSpec("URL", "setUrl", false, "URL for vendor/manufacturer", 256));
+        cols.add(new InputColumnModel(0, "Name", true, "Name of vendor/manufacturer"));
+        cols.add(new InputColumnModel(1, "Description", false, "Description of vendor/manufacturer"));
+        cols.add(new InputColumnModel(2, "Contact Info", false, "Contact name and phone number etc"));
+        cols.add(new InputColumnModel(3, "URL", false, "URL for vendor/manufacturer"));
+        
+        return cols;
+    }
+    
+    @Override
+    protected List<InputHandler> initializeInputHandlers_() {
+        List<InputHandler> specs = new ArrayList<>();
+        
+        specs.add(new StringInputHandler(0, "setName", 64));
+        specs.add(new StringInputHandler(1, "setDescription", 256));
+        specs.add(new StringInputHandler(2, "setContactInfo", 64));
+        specs.add(new StringInputHandler(3, "setUrl", 256));
         
         return specs;
     }

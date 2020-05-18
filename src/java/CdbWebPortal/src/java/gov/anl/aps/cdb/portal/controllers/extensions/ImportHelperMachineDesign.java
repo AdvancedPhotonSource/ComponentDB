@@ -39,19 +39,37 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     protected Map<String, TreeNode> treeNodeMap = new HashMap<>();
     
     @Override
-    protected List<InputSpec> initializeInputSpecs_() {
-        List<InputSpec> specs = new ArrayList<>();
+    protected List<InputColumnModel> initializeInputColumns_() {
+        List<InputColumnModel> cols = new ArrayList<>();
         
-        specs.add(new ImportHelperBase.BooleanInputSpec("Is Template", "setImportIsTemplate", true, "Specifies whether this item is a template (true or false)."));
-        specs.add(new ImportHelperBase.IdRefInputSpec("Container Id", "setImportContainerItem", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
-        specs.add(new ImportHelperBase.StringInputSpec("Parent Path", "setImportPath", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container.", 700));
-        specs.add(new ImportHelperBase.StringInputSpec("Name", "setName", true, "Machine design item name.", 128));
-        specs.add(new ImportHelperBase.IdOrNameRefInputSpec("Project", "setProjectValue", true, "Numeric ID or name of CDB project.", ItemProjectController.getInstance(), ItemProject.class, null));
-        specs.add(new ImportHelperBase.StringInputSpec("Alt Name", "setAlternateName", false, "Alternate machine design item name.", 32));
-        specs.add(new ImportHelperBase.StringInputSpec("Description", "setDescription", false, "Textual description of machine design item.", 256));
-        specs.add(new ImportHelperBase.IdOrNameRefInputSpec("Assigned Catalog Item Id", "setImportAssignedCatalogItem", false, "Numeric ID of assigned catalog item.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
-        specs.add(new ImportHelperBase.IdRefInputSpec("Assigned Inventory Item Id", "setImportAssignedInventoryItem", false, "Numeric ID of assigned inventory item.", ItemDomainInventoryController.getInstance(), ItemDomainInventory.class));
-        specs.add(new ImportHelperBase.IdOrNameRefInputSpec("Location", "setImportLocationItem", false, "Numeric Id or name of CDB location item, for top-level non-template items only.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
+        cols.add(new InputColumnModel(0, "Is Template", true, "Specifies whether this item is a template (true or false)."));
+        cols.add(new InputColumnModel(1, "Container Id", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy."));
+        cols.add(new InputColumnModel(2, "Parent Path", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container."));
+        cols.add(new InputColumnModel(3, "Name", true, "Machine design item name."));
+        cols.add(new InputColumnModel(4, "Project", true, "Numeric ID or name of CDB project."));
+        cols.add(new InputColumnModel(5, "Alt Name", false, "Alternate machine design item name."));
+        cols.add(new InputColumnModel(6, "Description", false, "Textual description of machine design item."));
+        cols.add(new InputColumnModel(7, "Assigned Catalog Item Id", false, "Numeric ID of assigned catalog item."));
+        cols.add(new InputColumnModel(8, "Assigned Inventory Item Id", false, "Numeric ID of assigned inventory item."));
+        cols.add(new InputColumnModel(9, "Location", false, "Numeric Id or name of CDB location item, for top-level non-template items only."));
+
+        return cols;
+    }
+    
+    @Override
+    protected List<InputHandler> initializeInputHandlers_() {
+        List<InputHandler> specs = new ArrayList<>();
+        
+        specs.add(new ImportHelperBase.BooleanInputHandler(0, "setImportIsTemplate"));
+        specs.add(new ImportHelperBase.IdRefInputHandler(1, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
+        specs.add(new ImportHelperBase.StringInputHandler(2, "setImportPath", 700));
+        specs.add(new ImportHelperBase.StringInputHandler(3, "setName", 128));
+        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(4, "setProjectValue", ItemProjectController.getInstance(), ItemProject.class, null));
+        specs.add(new ImportHelperBase.StringInputHandler(5, "setAlternateName", 32));
+        specs.add(new ImportHelperBase.StringInputHandler(6, "setDescription", 256));
+        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(7, "setImportAssignedCatalogItem", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
+        specs.add(new ImportHelperBase.IdRefInputHandler(8, "setImportAssignedInventoryItem", ItemDomainInventoryController.getInstance(), ItemDomainInventory.class));
+        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(9, "setImportLocationItem", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
 
         return specs;
     }
@@ -115,7 +133,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
      * Unix style slashes.
      */
     @Override
-    protected ValidInfo postParseRow(ItemDomainMachineDesign item, String id) {
+    protected ValidInfo postParseRow(ItemDomainMachineDesign item) {
         
         String methodLogName = "postParseRow() ";
         ItemDomainMachineDesign parentItem = null;
