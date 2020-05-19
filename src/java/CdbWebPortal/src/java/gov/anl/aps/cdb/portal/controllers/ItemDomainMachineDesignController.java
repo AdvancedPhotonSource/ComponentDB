@@ -664,6 +664,7 @@ public class ItemDomainMachineDesignController
     public void prepareAddMdFromPlaceholder() {
         prepareAddNewMachineDesignListConfiguration();
         displayAddMDFromTemplateConfigurationPanel = true;
+        currentEditItemElementSaveButtonEnabled=true;
     }
 
     public void prepareAddMdFromCatalog() {
@@ -1969,21 +1970,6 @@ public class ItemDomainMachineDesignController
 
             firstVar = name.indexOf('{');
         }
-    }
-
-    public void titleGenerationValueChange() {
-        generateMachineDesignName();
-
-        currentEditItemElementSaveButtonEnabled = allValuesForTitleGenerationsFilledIn();
-    }
-
-    private boolean allValuesForTitleGenerationsFilledIn() {
-        for (KeyValueObject keyValue : machineDesignNameList) {
-            if (keyValue.getValue() == null || keyValue.getValue().equals("")) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public void generateMachineDesignName() {
