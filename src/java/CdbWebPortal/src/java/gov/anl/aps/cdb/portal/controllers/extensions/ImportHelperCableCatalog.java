@@ -26,7 +26,10 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
     protected static String completionUrlValue = "/views/itemDomainCableCatalog/list?faces-redirect=true";
     
     @Override
-    protected List<InputColumnModel> initializeInputColumns_() {
+    protected List<InputColumnModel> initializeInputColumns_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
         List<InputColumnModel> cols = new ArrayList<>();
         
         cols.add(new InputColumnModel(0, "Name", true, "Cable type name, uniquely identifies cable type."));
@@ -81,7 +84,10 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
     }
     
     @Override
-    protected List<OutputColumnModel> initializeTableViewColumns_() {
+    protected List<OutputColumnModel> initializeTableViewColumns_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
         List<OutputColumnModel> columns = new ArrayList<>();
         
         columns.add(new OutputColumnModel("Name", "name"));

@@ -21,7 +21,10 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     protected static String completionUrlValue = "/views/source/list?faces-redirect=true";
     
     @Override
-    protected List<InputColumnModel> initializeInputColumns_() {
+    protected List<InputColumnModel> initializeInputColumns_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
         List<InputColumnModel> cols = new ArrayList<>();
         
         cols.add(new InputColumnModel(0, "Name", true, "Name of vendor/manufacturer"));
@@ -48,7 +51,10 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     }
     
     @Override
-    protected List<OutputColumnModel> initializeTableViewColumns_() {
+    protected List<OutputColumnModel> initializeTableViewColumns_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
         List<OutputColumnModel> columns = new ArrayList<>();
         
         columns.add(new OutputColumnModel("Name", "name"));

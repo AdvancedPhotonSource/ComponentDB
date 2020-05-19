@@ -39,7 +39,10 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     protected Map<String, TreeNode> treeNodeMap = new HashMap<>();
     
     @Override
-    protected List<InputColumnModel> initializeInputColumns_() {
+    protected List<InputColumnModel> initializeInputColumns_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
         List<InputColumnModel> cols = new ArrayList<>();
         
         cols.add(new InputColumnModel(0, "Is Template", true, "Specifies whether this item is a template (true or false)."));
@@ -78,7 +81,10 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     }
     
     @Override
-    protected List<OutputColumnModel> initializeTableViewColumns_() {
+    protected List<OutputColumnModel> initializeTableViewColumns_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
         List<OutputColumnModel> columns = new ArrayList<>();
         
         columns.add(new OutputColumnModel("Name", "name"));

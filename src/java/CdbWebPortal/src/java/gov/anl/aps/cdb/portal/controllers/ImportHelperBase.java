@@ -472,8 +472,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected TreeNode rootTreeNode = new DefaultTreeNode("Root", null);
 
     public ImportHelperBase() {
-        initializeInputColumns();
-        initializeViewColumns();
     }
 
     public List<EntityType> getRows() {
@@ -504,8 +502,21 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return getCompletionUrlValue();
     }
     
-    protected void initializeInputColumns() {
-        List<InputColumnModel> columns = initializeInputColumns_();
+    protected void initializeHelper(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
+        initializeInputColumns(actualColumnCount, headerValueMap);
+        initializeInputHandlers(actualColumnCount, headerValueMap);
+        initializeViewColumns(actualColumnCount, headerValueMap);
+    }
+    
+    protected void initializeInputColumns(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
+        List<InputColumnModel> columns = 
+                initializeInputColumns_(actualColumnCount, headerValueMap);
         for (InputColumnModel col : columns) {
             inputColumnMap.put(col.getColumnIndex(), col);
         }
@@ -522,8 +533,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         inputHandlers = specs;
     }
     
-    protected void initializeViewColumns() {
-        List<OutputColumnModel> columns = initializeTableViewColumns_();
+    protected void initializeViewColumns(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
+        List<OutputColumnModel> columns = 
+                initializeTableViewColumns_(actualColumnCount, headerValueMap);
 
         // these are special inputHandlers just for displaying validation info for each row, they are not parsed so treated specially in parsing code
         columns.add(new OutputColumnModel(isValidHeader, isValidProperty));
@@ -720,15 +735,27 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      * @param row
      * @return 
      */
-    protected ValidInfo parseHeader(Row row) {
+    private ValidInfo parseHeader(Row row) {
         
         boolean isValid = true;
         String validMessage = "";
         
+        // get number of actual columns and read header row 
+        // into map (columnIndex -> cellValue)
+        int actualColumns = row.getLastCellNum();
+        Map<Integer, String> headerValueMap = new HashMap<>();
+        for (int colIndex = 0 ; colIndex < actualColumns ; ++colIndex) {
+            Cell cell = row.getCell(colIndex);
+            String cellValue = parseStringCell(cell);
+            headerValueMap.put(colIndex, cellValue);
+        }
+        
+        // initialize helper data structures
+        initializeHelper(actualColumns, headerValueMap);
+        
         // check actual number of columns against expected number
         int maxColIndex = Collections.max(inputColumnMap.keySet());
         int expectedColumns = maxColIndex + 1;
-        int actualColumns = row.getLastCellNum();
         if (expectedColumns != actualColumns) {
             isValid = false;
             validMessage = 
@@ -736,24 +763,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     ") does not contain expected number of columns (" + 
                     expectedColumns + ")";
             
-        } else {
-            // build map of (columnIndex -> cellValue) for column headers
-            int colIndex = 0;
-            Map<Integer, String> cellValueMap = new HashMap<>();
-            for (InputColumnModel col : inputColumnMap.values()) {
-                colIndex = col.getColumnIndex();
-                Cell cell = row.getCell(colIndex);
-                String cellValue = parseStringCell(cell);
-                cellValueMap.put(colIndex, cellValue);
-            }
-
-            initializeInputHandlers(actualColumns, cellValueMap);
         }
         
         return new ValidInfo(isValid, validMessage);
     }
-
-    protected ValidInfo parseRow(Row row) {
+    
+    private ValidInfo parseRow(Row row) {
 
         EntityType newEntity = createEntityInstance();
         boolean isValid = true;
@@ -885,13 +900,17 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return rootTreeNode;
     }
     
-    protected abstract List<InputColumnModel> initializeInputColumns_();
+    protected abstract List<InputColumnModel> initializeInputColumns_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap);
 
     protected abstract List<InputHandler> initializeInputHandlers_(
             int actualColumnCount, 
             Map<Integer, String> headerValueMap);
     
-    protected abstract List<OutputColumnModel> initializeTableViewColumns_();
+    protected abstract List<OutputColumnModel> initializeTableViewColumns_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap);
 
     protected abstract String getCompletionUrlValue();
 

@@ -90,7 +90,10 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     protected static String completionUrlValue = "/views/itemDomainCableDesign/list?faces-redirect=true";
     
     @Override
-    protected List<InputColumnModel> initializeInputColumns_() {
+    protected List<InputColumnModel> initializeInputColumns_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
         List<InputColumnModel> cols = new ArrayList<>();
         
         cols.add(new InputColumnModel(0, "Name", true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer)."));
@@ -139,7 +142,10 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     }
     
     @Override
-    protected List<OutputColumnModel> initializeTableViewColumns_() {
+    protected List<OutputColumnModel> initializeTableViewColumns_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
         List<OutputColumnModel> columns = new ArrayList<>();
         
         columns.add(new OutputColumnModel("Name", "name"));
