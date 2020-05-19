@@ -30,7 +30,7 @@ import org.apache.poi.ss.usermodel.Row;
  */
 public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDesign, ItemDomainCableDesignController> {
 
-    public class NameHandler extends InputHandler {
+    public class NameHandler extends SingleColumnInputHandler {
         
         protected int maxLength = 0;
         protected String importName = null;

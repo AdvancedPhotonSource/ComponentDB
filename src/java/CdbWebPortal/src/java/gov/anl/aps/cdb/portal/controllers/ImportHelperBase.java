@@ -111,16 +111,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     public abstract class InputHandler {
         
-        protected int columnIndex;
-        
-        public InputHandler(int columnIndex) {
-            this.columnIndex = columnIndex;
-        }
-        
-        public int getColumnIndex() {
-            return columnIndex;
-        }
-
         public abstract ValidInfo handleInput(
                 Row row, 
                 Map<Integer, String> cellValueMap, 
@@ -128,7 +118,40 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
     }
     
-    public abstract class SimpleInputHandler extends InputHandler {
+    public abstract class SingleColumnInputHandler extends InputHandler {
+        
+        protected int columnIndex;
+        
+        public SingleColumnInputHandler(int columnIndex) {
+            this.columnIndex = columnIndex;
+        }
+        
+        public int getColumnIndex() {
+            return columnIndex;
+        }
+    }
+    
+    public abstract class ColumnRangeInputHandler extends InputHandler {
+
+        private int firstColumnIndex;
+        private int lastColumnIndex;
+        
+        public ColumnRangeInputHandler(int firstColumnIndex, int lastColumnIndex) {
+            this.firstColumnIndex = firstColumnIndex;
+            this.lastColumnIndex = lastColumnIndex;
+        }
+        
+        public int getFirstColumnIndex() {
+            return firstColumnIndex;
+        }
+
+        public int getLastColumnIndex() {
+            return lastColumnIndex;
+        }
+                
+    }
+    
+    public abstract class SimpleInputHandler extends SingleColumnInputHandler {
         
         protected String setterMethod = null;
 
