@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -51,7 +52,10 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
     }
     
     @Override
-    protected List<InputHandler> initializeInputHandlers_() {
+    protected List<InputHandler> initializeInputHandlers_(
+            int actualColumnCount, 
+            Map<Integer, String> headerValueMap) {
+        
         List<InputHandler> specs = new ArrayList<>();
         
         specs.add(new StringInputHandler(0, "setName", 128));

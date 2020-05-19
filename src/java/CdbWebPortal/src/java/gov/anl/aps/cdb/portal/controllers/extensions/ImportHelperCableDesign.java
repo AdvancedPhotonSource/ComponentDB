@@ -113,7 +113,10 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     }
     
     @Override
-    protected List<InputHandler> initializeInputHandlers_() {
+    protected List<InputHandler> initializeInputHandlers_(
+            int actualColumnCount, 
+            Map<Integer, String> headerValueMap) {
+        
         List<InputHandler> specs = new ArrayList<>();
         
         specs.add(new NameHandler(0, 128));

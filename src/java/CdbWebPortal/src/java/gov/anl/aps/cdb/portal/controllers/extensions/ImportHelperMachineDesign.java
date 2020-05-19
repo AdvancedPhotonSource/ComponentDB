@@ -57,7 +57,10 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     }
     
     @Override
-    protected List<InputHandler> initializeInputHandlers_() {
+    protected List<InputHandler> initializeInputHandlers_(
+            int actualColumnCount, 
+            Map<Integer, String> headerValueMap) {
+        
         List<InputHandler> specs = new ArrayList<>();
         
         specs.add(new ImportHelperBase.BooleanInputHandler(0, "setImportIsTemplate"));

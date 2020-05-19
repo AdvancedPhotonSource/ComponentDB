@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.controllers.SourceController;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -32,7 +33,10 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     }
     
     @Override
-    protected List<InputHandler> initializeInputHandlers_() {
+    protected List<InputHandler> initializeInputHandlers_(
+            int actualColumnCount, 
+            Map<Integer, String> headerValueMap) {
+        
         List<InputHandler> specs = new ArrayList<>();
         
         specs.add(new StringInputHandler(0, "setName", 64));
