@@ -679,14 +679,20 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             Row row = rowIterator.next();
 
             if (rowCount == 0) {
-                // parse name row
+                // parse and validate header row
                 ValidInfo headerValidInfo = parseHeader(row);
+                
                 if (!headerValidInfo.isValid()) {
+                    // don't parse the spreadsheet if the format is invalid
                     validInput = false;
-                    validationMessage = "Warning: " + headerValidInfo.getValidString() + 
+                    validationMessage = 
+                            "Warning: " + headerValidInfo.getValidString() + 
                             ". Please make sure spreadsheet format is correct and enter values in all header rows before proceeding";
+                    return;
                 }
+                
             } else {
+                // parse spreadsheet data row
                 ValidInfo rowValidInfo = parseRow(row);
                 if (!rowValidInfo.isValid()) {
                     validInput = false;
@@ -727,20 +733,22 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             isValid = false;
             validMessage = 
                     "header row (" + actualColumns + 
-                    ") does not contain expected number of columns (" + expectedColumns + ")";
+                    ") does not contain expected number of columns (" + 
+                    expectedColumns + ")";
+            
+        } else {
+            // build map of (columnIndex -> cellValue) for column headers
+            int colIndex = 0;
+            Map<Integer, String> cellValueMap = new HashMap<>();
+            for (InputColumnModel col : inputColumnMap.values()) {
+                colIndex = col.getColumnIndex();
+                Cell cell = row.getCell(colIndex);
+                String cellValue = parseStringCell(cell);
+                cellValueMap.put(colIndex, cellValue);
+            }
+
+            initializeInputHandlers(actualColumns, cellValueMap);
         }
-        
-        // build map of (columnIndex -> cellValue) for column headers
-        int colIndex = 0;
-        Map<Integer, String> cellValueMap = new HashMap<>();
-        for (InputColumnModel col : inputColumnMap.values()) {
-            colIndex = col.getColumnIndex();
-            Cell cell = row.getCell(colIndex);
-            String cellValue = parseStringCell(cell);
-            cellValueMap.put(colIndex, cellValue);
-        }
-        
-        initializeInputHandlers(actualColumns, cellValueMap);
         
         return new ValidInfo(isValid, validMessage);
     }
