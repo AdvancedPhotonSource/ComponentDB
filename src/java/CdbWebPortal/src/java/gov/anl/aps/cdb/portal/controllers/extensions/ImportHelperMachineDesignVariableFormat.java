@@ -4,13 +4,23 @@
  */
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
@@ -84,7 +94,6 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             
             // set item info
             entity.setName(itemName);
-            entity.setImportIsTemplate(itemName.contains("{"));
             ImportInfo itemInfo = new ImportInfo();
             itemInfo.indentLevel = itemIndentLevel;
             itemInfoMap.put(entity, itemInfo);
@@ -109,6 +118,19 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
     protected Map<ItemDomainMachineDesign, ImportInfo> itemInfoMap = new HashMap<>();
     protected Map<Integer, ItemDomainMachineDesign> parentIndentMap = new HashMap<>();
     
+    private ItemProject projectItem = null;
+    
+    private ItemProject getProjectItem() {
+        if (projectItem == null) {
+            try {
+                projectItem = ItemProjectController.getInstance().findUniqueByName("APS-U Production", "");
+            } catch (CdbException ex) {
+                LOGGER.error("getProjectItem() exception retriveing project: " + ex);
+            }
+        }
+        return projectItem;
+    }
+    
     @Override
     protected List<InputColumnModel> initializeInputColumns_(
             int actualColumnCount,
@@ -116,9 +138,17 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         
         List<InputColumnModel> cols = new ArrayList<>();
         
-        for (int i = 0 ; i < actualColumnCount ; ++i) {
+        // TODO: use actualColumnCount and headerValueMap to set up input columns
+        // column indexes might change if path/name columns move to right side of sheet
+        
+        for (int i = 0 ; i < 4/*actualColumnCount*/ ; ++i) {
             cols.add(new InputColumnModel(i, "Name " + i, false, "Machine design hierarchy column " + i));
         }
+        cols.add(new InputColumnModel(4, "Alt Name", false, "Alternate machine design item name."));
+        cols.add(new InputColumnModel(5, "Description", false, "Textual description of machine design item."));
+        cols.add(new InputColumnModel(6, "Assigned Catalog Item Id", false, "Numeric ID of assigned catalog item."));
+        cols.add(new InputColumnModel(7, "Assigned Inventory Item Id", false, "Numeric ID of assigned inventory item."));
+        cols.add(new InputColumnModel(8, "Location", false, "Numeric Id or name of CDB location item, for top-level non-template items only."));
         
         return cols;
     }
@@ -130,7 +160,16 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         
         List<InputHandler> specs = new ArrayList<>();
         
-        specs.add(new NameHandler(0, actualColumnCount - 1, 128));
+        // TODO: rework once format is established, column indexes might change
+        // if path/name columns move to right side of sheet
+        
+        specs.add(new NameHandler(0, 3/*actualColumnCount - 1*/, 128));
+        specs.add(new ImportHelperBase.StringInputHandler(4, "setAlternateName", 32));
+        specs.add(new ImportHelperBase.StringInputHandler(5, "setDescription", 256));
+        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(6, "setImportAssignedCatalogItem", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
+        specs.add(new ImportHelperBase.IdRefInputHandler(7, "setImportAssignedInventoryItem", ItemDomainInventoryController.getInstance(), ItemDomainInventory.class));
+        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(8, "setImportLocationItem", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
+
             
         return specs;
     }
@@ -144,8 +183,6 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         
         columns.add(new OutputColumnModel("Name", "name"));
         columns.add(new OutputColumnModel("Is Template", "importIsTemplateString"));
-        columns.add(new OutputColumnModel("Container Id", "importContainerString"));
-        columns.add(new OutputColumnModel("Parent Path", "importPath"));
         columns.add(new OutputColumnModel("Project", "itemProjectString"));
         columns.add(new OutputColumnModel("Alt Name", "alternateName"));
         columns.add(new OutputColumnModel("Description", "description"));
@@ -187,7 +224,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
      * subclass should override to customize.
      */
     public boolean hasTreeView() {
-        return false;
+        return true;
     }
 
     /**
@@ -204,11 +241,21 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         boolean isValid = true;
         String validString = "";
         
+        boolean isValidLocation = true;
+        boolean isValidAssignedItem = true;
+        
         ImportInfo itemInfo = itemInfoMap.get(item);
         if (itemInfo == null) {
             String msg = "helper error for " + item.getName();
             LOGGER.debug(methodLogName + msg);
         }
+        
+        // TODO: don't :-)
+        // set hardwired project for now
+        item.setProjectValue(getProjectItem());
+        
+        // TODO: confirm approach for "is template"
+        item.setImportIsTemplate(item.getName().contains("{"));
         
         int itemIndentLevel = itemInfo.indentLevel;
         
@@ -219,14 +266,69 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             
             // find parent at previous indent level
             itemParent = parentIndentMap.get(itemIndentLevel - 1);
-            if (itemParent != null) {
-                System.out.println("parent for: " + item.getName() + " is: " + itemParent.getName());
+        }
+        
+        // check for template restrictions
+        if (item.getIsItemTemplate()) {
+            
+            if ((item.getImportAssignedCatalogItem() != null) || 
+                    (item.getImportAssignedInventoryItem() != null)) {
+                
+                // template not allowed to have assigned catalog/inventory
+                String msg = "Template cannot have assigned catalog/inventory item";
+                LOGGER.info(methodLogName + msg);
+                validString = appendToString(validString, msg);
+                isValid = false;
+                isValidAssignedItem = false;
             }
-        }        
-         
+            
+            if (item.getImportLocationItem() != null) {
+                // template not allowed to have location
+                String msg = "Template cannot have location item";
+                LOGGER.info(methodLogName + msg);
+                validString = appendToString(validString, msg);
+                isValid = false;
+                isValidLocation = false;
+            }
+            
+        } else {
+            if (itemParent != null) {
+                
+                if (item.getImportLocationItem() != null) {
+                    // only top-level non-template item can have location
+                    String msg = "Only top-level item can have location";
+                    LOGGER.info(methodLogName + msg);
+                    validString = appendToString(validString, msg);
+                    isValid = false;
+                    isValidLocation = false;
+                }
+                
+            } else {
+            
+                if ((item.getImportAssignedCatalogItem() != null)
+                        || (item.getImportAssignedInventoryItem() != null)) {
+                    // top-level item cannot have assigned item
+                    String msg = "Top-level item cannot have assigned catalog/inventory item";
+                    LOGGER.info(methodLogName + msg);
+                    validString = appendToString(validString, msg);
+                    isValid = false;
+                    isValidAssignedItem = false;
+                }
+            }
+        }
+        
+        // establish parent/child relationship, set location info etc
+        item.applyImportValues(itemParent, isValidAssignedItem, isValidLocation);
+                 
         // set current item as last parent at its indent level
         parentIndentMap.put(itemIndentLevel, item);
         
+        // update tree view with item and parent
+        updateTreeView(item, itemParent);
+        
+        // add entry to name map for new item
+        itemByNameMap.put(item.getName(), item);
+               
         return new ValidInfo(true, "");
     }
 
