@@ -791,6 +791,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                         "Required value missing for " + columnNameForIndex(col.getColumnIndex()));
             }
         }
+        
+        // skip blank rows
+        if (isBlankRow(cellValueMap)) {
+            return new ValidInfo(true, "");
+        }
 
         // invoke each input handler with valueMap
         for (InputHandler handler : inputHandlers) {
@@ -832,6 +837,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         } else {
             return new ValidInfo(true, newEntity.toString(), true);
         }
+    }
+    
+    protected boolean isBlankRow(Map<Integer, String> cellValues) {
+        for (String value : cellValues.values()) {
+            if ((value != null) && (!value.isEmpty())) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
