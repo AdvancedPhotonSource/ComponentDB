@@ -21,48 +21,31 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     protected static String completionUrlValue = "/views/source/list?faces-redirect=true";
     
     @Override
-    protected List<InputColumnModel> initializeInputColumns_(
+    protected InitializeInfo initialize_(
             int actualColumnCount,
             Map<Integer, String> headerValueMap) {
+
+        List<InputColumnModel> inputColumns = new ArrayList<>();        
+        inputColumns.add(new InputColumnModel(0, "Name", true, "Name of vendor/manufacturer"));
+        inputColumns.add(new InputColumnModel(1, "Description", false, "Description of vendor/manufacturer"));
+        inputColumns.add(new InputColumnModel(2, "Contact Info", false, "Contact name and phone number etc"));
+        inputColumns.add(new InputColumnModel(3, "URL", false, "URL for vendor/manufacturer"));
         
-        List<InputColumnModel> cols = new ArrayList<>();
+        List<InputHandler> handlers = new ArrayList<>();        
+        handlers.add(new StringInputHandler(0, "setName", 64));
+        handlers.add(new StringInputHandler(1, "setDescription", 256));
+        handlers.add(new StringInputHandler(2, "setContactInfo", 64));
+        handlers.add(new StringInputHandler(3, "setUrl", 256));
+
+        List<OutputColumnModel> outputColumns = new ArrayList<>();        
+        outputColumns.add(new OutputColumnModel("Name", "name"));
+        outputColumns.add(new OutputColumnModel("Description", "description"));
+        outputColumns.add(new OutputColumnModel("Contact Info", "contactInfo"));
+        outputColumns.add(new OutputColumnModel("URL", "url"));
         
-        cols.add(new InputColumnModel(0, "Name", true, "Name of vendor/manufacturer"));
-        cols.add(new InputColumnModel(1, "Description", false, "Description of vendor/manufacturer"));
-        cols.add(new InputColumnModel(2, "Contact Info", false, "Contact name and phone number etc"));
-        cols.add(new InputColumnModel(3, "URL", false, "URL for vendor/manufacturer"));
+        ValidInfo validInfo = new ValidInfo(true, "");
         
-        return cols;
-    }
-    
-    @Override
-    protected List<InputHandler> initializeInputHandlers_(
-            int actualColumnCount, 
-            Map<Integer, String> headerValueMap) {
-        
-        List<InputHandler> specs = new ArrayList<>();
-        
-        specs.add(new StringInputHandler(0, "setName", 64));
-        specs.add(new StringInputHandler(1, "setDescription", 256));
-        specs.add(new StringInputHandler(2, "setContactInfo", 64));
-        specs.add(new StringInputHandler(3, "setUrl", 256));
-        
-        return specs;
-    }
-    
-    @Override
-    protected List<OutputColumnModel> initializeTableViewColumns_(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
-        
-        List<OutputColumnModel> columns = new ArrayList<>();
-        
-        columns.add(new OutputColumnModel("Name", "name"));
-        columns.add(new OutputColumnModel("Description", "description"));
-        columns.add(new OutputColumnModel("Contact Info", "contactInfo"));
-        columns.add(new OutputColumnModel("URL", "url"));
-        
-        return columns;
+        return new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
     }
     
     @Override

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -132,65 +133,98 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
     }
     
     @Override
-    protected List<InputColumnModel> initializeInputColumns_(
+    protected InitializeInfo initialize_(
             int actualColumnCount,
             Map<Integer, String> headerValueMap) {
         
-        List<InputColumnModel> cols = new ArrayList<>();
+        boolean isValid = true;
+        String validString = "";
         
-        // TODO: use actualColumnCount and headerValueMap to set up input columns
-        // column indexes might change if path/name columns move to right side of sheet
+        List<InputColumnModel> inputColumns = new ArrayList<>();
+        List<InputHandler> handlers = new ArrayList<>();
+        List<OutputColumnModel> outputColumns = new ArrayList<>();
+                
+        boolean foundLevel = false;
+        int firstLevelIndex = -1;
+        int lastLevelIndex = -1;
         
-        for (int i = 0 ; i < 4/*actualColumnCount*/ ; ++i) {
-            cols.add(new InputColumnModel(i, "Name " + i, false, "Machine design hierarchy column " + i));
-        }
-        cols.add(new InputColumnModel(4, "Alt Name", false, "Alternate machine design item name."));
-        cols.add(new InputColumnModel(5, "Description", false, "Textual description of machine design item."));
-        cols.add(new InputColumnModel(6, "Assigned Catalog Item Id", false, "Numeric ID of assigned catalog item."));
-        cols.add(new InputColumnModel(7, "Assigned Inventory Item Id", false, "Numeric ID of assigned inventory item."));
-        cols.add(new InputColumnModel(8, "Location", false, "Numeric Id or name of CDB location item, for top-level non-template items only."));
-        
-        return cols;
-    }
-    
-    @Override
-    protected List<InputHandler> initializeInputHandlers_(
-            int actualColumnCount, 
-            Map<Integer, String> headerValueMap) {
-        
-        List<InputHandler> specs = new ArrayList<>();
-        
-        // TODO: rework once format is established, column indexes might change
-        // if path/name columns move to right side of sheet
-        
-        specs.add(new NameHandler(0, 3/*actualColumnCount - 1*/, 128));
-        specs.add(new ImportHelperBase.StringInputHandler(4, "setAlternateName", 32));
-        specs.add(new ImportHelperBase.StringInputHandler(5, "setDescription", 256));
-        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(6, "setImportAssignedCatalogItem", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
-        specs.add(new ImportHelperBase.IdRefInputHandler(7, "setImportAssignedInventoryItem", ItemDomainInventoryController.getInstance(), ItemDomainInventory.class));
-        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(8, "setImportLocationItem", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
-
+        for (Entry<Integer, String> entry : headerValueMap.entrySet()) {
             
-        return specs;
-    }
-    
-    @Override
-    protected List<OutputColumnModel> initializeTableViewColumns_(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
+            int columnIndex = entry.getKey();
+            String columnHeader = entry.getValue();
+            
+            // check to see if this is a "level" column
+            if (columnHeader.startsWith("Level")) {
+                inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Machine design hierarchy column " + columnHeader));
+                foundLevel = true;
+                if (firstLevelIndex == -1) {
+                    firstLevelIndex = columnIndex;
+                }
+                lastLevelIndex = columnIndex;
+            }
+            
+            switch (columnHeader) {
+                
+                case "Parent ID":
+                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID of parent machine design item."));
+                    // TODO: handler for parent id
+                    break;
+                    
+                case "Machine Design Alternate Name":
+                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Alternate machine design item name."));
+                    handlers.add(new StringInputHandler(columnIndex, "setAlternateName", 32));
+                    break;
+                    
+                case "Machine Design Item Description":
+                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Textual description of machine design item."));
+                    handlers.add(new ImportHelperBase.StringInputHandler(columnIndex, "setDescription", 256));
+                    break;
+                    
+                case "Assigned Catalog/Inventory Item":
+                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID of assigned catalog or inventory item."));
+                    // TODO: one handler for both catalog and inventory, setter method, etc - custom handler?
+                    handlers.add(new ImportHelperBase.IdOrNameRefInputHandler(columnIndex, "setImportAssignedCatalogItem", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
+                    break;
+                    
+                case "Location":
+                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID or name of CDB location item."));
+                    // TODO: custom handler to ignore "parent" etc?
+                    handlers.add(new ImportHelperBase.IdOrNameRefInputHandler(8, "setImportLocationItem", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
+                    break;
+                    
+                case "Project ID":
+                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID or name of item project."));
+                    // TODO: handler for project id
+                    break;
+                    
+                case "Is Template?":
+                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "TRUE if item is template, false otherwise."));
+                    // TODO: handler for is template column
+                    break;
+                    
+                default:
+                    // TODO: unexpected column, complain
+            }
+        }
         
-        List<OutputColumnModel> columns = new ArrayList<>();
+        // add handler for multiple "level" columns
+        handlers.add(new NameHandler(firstLevelIndex, lastLevelIndex, 128));
         
-        columns.add(new OutputColumnModel("Name", "name"));
-        columns.add(new OutputColumnModel("Is Template", "importIsTemplateString"));
-        columns.add(new OutputColumnModel("Project", "itemProjectString"));
-        columns.add(new OutputColumnModel("Alt Name", "alternateName"));
-        columns.add(new OutputColumnModel("Description", "description"));
-        columns.add(new OutputColumnModel("Assigned Catalog Item Id", "importAssignedCatalogItemString"));
-        columns.add(new OutputColumnModel("Assigned Inventory Item Id", "importAssignedInventoryItemString"));
-        columns.add(new OutputColumnModel("Location", "importLocationItemString"));
-
-        return columns;
+        // output columns are fixed
+        // TODO: what about parent item?
+        outputColumns.add(new OutputColumnModel("Name", "name"));
+        outputColumns.add(new OutputColumnModel("Is Template", "importIsTemplateString"));
+        outputColumns.add(new OutputColumnModel("Project", "itemProjectString"));
+        outputColumns.add(new OutputColumnModel("Alt Name", "alternateName"));
+        outputColumns.add(new OutputColumnModel("Description", "description"));
+        outputColumns.add(new OutputColumnModel("Assigned Catalog Item Id", "importAssignedCatalogItemString"));
+        outputColumns.add(new OutputColumnModel("Assigned Inventory Item Id", "importAssignedInventoryItemString"));
+        outputColumns.add(new OutputColumnModel("Location", "importLocationItemString"));
+        
+        ValidInfo validInfo = new ValidInfo(isValid, validString);
+        InitializeInfo initInfo = new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
+                
+        return initInfo;
     }
     
     @Override

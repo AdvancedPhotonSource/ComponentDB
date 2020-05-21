@@ -39,66 +39,49 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     protected Map<String, TreeNode> treeNodeMap = new HashMap<>();
     
     @Override
-    protected List<InputColumnModel> initializeInputColumns_(
+    protected InitializeInfo initialize_(
             int actualColumnCount,
             Map<Integer, String> headerValueMap) {
         
-        List<InputColumnModel> cols = new ArrayList<>();
+        List<InputColumnModel> inputColumns = new ArrayList<>();
+        inputColumns.add(new InputColumnModel(0, "Is Template", true, "Specifies whether this item is a template (true or false)."));
+        inputColumns.add(new InputColumnModel(1, "Container Id", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy."));
+        inputColumns.add(new InputColumnModel(2, "Parent Path", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container."));
+        inputColumns.add(new InputColumnModel(3, "Name", true, "Machine design item name."));
+        inputColumns.add(new InputColumnModel(4, "Project", true, "Numeric ID or name of CDB project."));
+        inputColumns.add(new InputColumnModel(5, "Alt Name", false, "Alternate machine design item name."));
+        inputColumns.add(new InputColumnModel(6, "Description", false, "Textual description of machine design item."));
+        inputColumns.add(new InputColumnModel(7, "Assigned Catalog Item Id", false, "Numeric ID of assigned catalog item."));
+        inputColumns.add(new InputColumnModel(8, "Assigned Inventory Item Id", false, "Numeric ID of assigned inventory item."));
+        inputColumns.add(new InputColumnModel(9, "Location", false, "Numeric Id or name of CDB location item, for top-level non-template items only."));
         
-        cols.add(new InputColumnModel(0, "Is Template", true, "Specifies whether this item is a template (true or false)."));
-        cols.add(new InputColumnModel(1, "Container Id", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy."));
-        cols.add(new InputColumnModel(2, "Parent Path", false, "Path to new machine design item within container (/ separated). If path is empty, new item will be created directly in specified container."));
-        cols.add(new InputColumnModel(3, "Name", true, "Machine design item name."));
-        cols.add(new InputColumnModel(4, "Project", true, "Numeric ID or name of CDB project."));
-        cols.add(new InputColumnModel(5, "Alt Name", false, "Alternate machine design item name."));
-        cols.add(new InputColumnModel(6, "Description", false, "Textual description of machine design item."));
-        cols.add(new InputColumnModel(7, "Assigned Catalog Item Id", false, "Numeric ID of assigned catalog item."));
-        cols.add(new InputColumnModel(8, "Assigned Inventory Item Id", false, "Numeric ID of assigned inventory item."));
-        cols.add(new InputColumnModel(9, "Location", false, "Numeric Id or name of CDB location item, for top-level non-template items only."));
-
-        return cols;
-    }
-    
-    @Override
-    protected List<InputHandler> initializeInputHandlers_(
-            int actualColumnCount, 
-            Map<Integer, String> headerValueMap) {
+        List<InputHandler> handlers = new ArrayList<>();
+        handlers.add(new BooleanInputHandler(0, "setImportIsTemplate"));
+        handlers.add(new IdRefInputHandler(1, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
+        handlers.add(new StringInputHandler(2, "setImportPath", 700));
+        handlers.add(new StringInputHandler(3, "setName", 128));
+        handlers.add(new IdOrNameRefInputHandler(4, "setProjectValue", ItemProjectController.getInstance(), ItemProject.class, null));
+        handlers.add(new StringInputHandler(5, "setAlternateName", 32));
+        handlers.add(new StringInputHandler(6, "setDescription", 256));
+        handlers.add(new IdOrNameRefInputHandler(7, "setImportAssignedCatalogItem", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
+        handlers.add(new IdRefInputHandler(8, "setImportAssignedInventoryItem", ItemDomainInventoryController.getInstance(), ItemDomainInventory.class));
+        handlers.add(new IdOrNameRefInputHandler(9, "setImportLocationItem", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
         
-        List<InputHandler> specs = new ArrayList<>();
+        List<OutputColumnModel> outputColumns = new ArrayList<>();
+        outputColumns.add(new OutputColumnModel("Name", "name"));
+        outputColumns.add(new OutputColumnModel("Is Template", "importIsTemplateString"));
+        outputColumns.add(new OutputColumnModel("Container Id", "importContainerString"));
+        outputColumns.add(new OutputColumnModel("Parent Path", "importPath"));
+        outputColumns.add(new OutputColumnModel("Project", "itemProjectString"));
+        outputColumns.add(new OutputColumnModel("Alt Name", "alternateName"));
+        outputColumns.add(new OutputColumnModel("Description", "description"));
+        outputColumns.add(new OutputColumnModel("Assigned Catalog Item Id", "importAssignedCatalogItemString"));
+        outputColumns.add(new OutputColumnModel("Assigned Inventory Item Id", "importAssignedInventoryItemString"));
+        outputColumns.add(new OutputColumnModel("Location", "importLocationItemString"));
         
-        specs.add(new ImportHelperBase.BooleanInputHandler(0, "setImportIsTemplate"));
-        specs.add(new ImportHelperBase.IdRefInputHandler(1, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
-        specs.add(new ImportHelperBase.StringInputHandler(2, "setImportPath", 700));
-        specs.add(new ImportHelperBase.StringInputHandler(3, "setName", 128));
-        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(4, "setProjectValue", ItemProjectController.getInstance(), ItemProject.class, null));
-        specs.add(new ImportHelperBase.StringInputHandler(5, "setAlternateName", 32));
-        specs.add(new ImportHelperBase.StringInputHandler(6, "setDescription", 256));
-        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(7, "setImportAssignedCatalogItem", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
-        specs.add(new ImportHelperBase.IdRefInputHandler(8, "setImportAssignedInventoryItem", ItemDomainInventoryController.getInstance(), ItemDomainInventory.class));
-        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(9, "setImportLocationItem", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
-
-        return specs;
-    }
-    
-    @Override
-    protected List<OutputColumnModel> initializeTableViewColumns_(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
+        ValidInfo validInfo = new ValidInfo(true, "");
         
-        List<OutputColumnModel> columns = new ArrayList<>();
-        
-        columns.add(new OutputColumnModel("Name", "name"));
-        columns.add(new OutputColumnModel("Is Template", "importIsTemplateString"));
-        columns.add(new OutputColumnModel("Container Id", "importContainerString"));
-        columns.add(new OutputColumnModel("Parent Path", "importPath"));
-        columns.add(new OutputColumnModel("Project", "itemProjectString"));
-        columns.add(new OutputColumnModel("Alt Name", "alternateName"));
-        columns.add(new OutputColumnModel("Description", "description"));
-        columns.add(new OutputColumnModel("Assigned Catalog Item Id", "importAssignedCatalogItemString"));
-        columns.add(new OutputColumnModel("Assigned Inventory Item Id", "importAssignedInventoryItemString"));
-        columns.add(new OutputColumnModel("Location", "importLocationItemString"));
-
-        return columns;
+        return new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
     }
     
     @Override

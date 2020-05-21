@@ -90,81 +90,64 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     protected static String completionUrlValue = "/views/itemDomainCableDesign/list?faces-redirect=true";
     
     @Override
-    protected List<InputColumnModel> initializeInputColumns_(
+    protected InitializeInfo initialize_(
             int actualColumnCount,
             Map<Integer, String> headerValueMap) {
         
-        List<InputColumnModel> cols = new ArrayList<>();
-        
-        cols.add(new InputColumnModel(0, "Name", true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer)."));
-        cols.add(new InputColumnModel(1, "Alt Name", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer)."));
-        cols.add(new InputColumnModel(2, "Ext Cable Name", false, "Cable name in external system (e.g., CAD, routing tool) e.g., SR_R_401_D1109_RR8G[low] | SR_M_A02_C61_64_02-00[high]"));
-        cols.add(new InputColumnModel(3, "Import Cable ID", false, "Import cable identifier."));
-        cols.add(new InputColumnModel(4, "Alternate Cable ID", false, "Alternate (e.g., group-specific) cable identifier."));
-        cols.add(new InputColumnModel(5, "Description", false, "Description of cable."));
-        cols.add(new InputColumnModel(6, "Laying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle"));
-        cols.add(new InputColumnModel(7, "Voltage", false, "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage"));
-        cols.add(new InputColumnModel(8, "Owner", false, "Numeric ID of CDB technical system."));
-        cols.add(new InputColumnModel(9, "Project", true, "Numeric ID of CDB project."));
-        cols.add(new InputColumnModel(10, "Type", false, "Numeric ID of CDB cable type catalog item."));
-        cols.add(new InputColumnModel(11, "Endpoint1", false, "Numeric ID of CDB machine design item for first endpoint."));
-        cols.add(new InputColumnModel(12, "Endpoint1 Desc", false, "Endpoint details useful for external editing."));
-        cols.add(new InputColumnModel(13, "Endpoint2", false, "Numeric ID of CDB machine design item for second endpoint."));
-        cols.add(new InputColumnModel(14, "Endpoint2 Desc", false, "Endpoint details useful for external editing."));
+        List<InputColumnModel> inputColumns = new ArrayList<>();        
+        inputColumns.add(new InputColumnModel(0, "Name", true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer)."));
+        inputColumns.add(new InputColumnModel(1, "Alt Name", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer)."));
+        inputColumns.add(new InputColumnModel(2, "Ext Cable Name", false, "Cable name in external system (e.g., CAD, routing tool) e.g., SR_R_401_D1109_RR8G[low] | SR_M_A02_C61_64_02-00[high]"));
+        inputColumns.add(new InputColumnModel(3, "Import Cable ID", false, "Import cable identifier."));
+        inputColumns.add(new InputColumnModel(4, "Alternate Cable ID", false, "Alternate (e.g., group-specific) cable identifier."));
+        inputColumns.add(new InputColumnModel(5, "Description", false, "Description of cable."));
+        inputColumns.add(new InputColumnModel(6, "Laying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle"));
+        inputColumns.add(new InputColumnModel(7, "Voltage", false, "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage"));
+        inputColumns.add(new InputColumnModel(8, "Owner", false, "Numeric ID of CDB technical system."));
+        inputColumns.add(new InputColumnModel(9, "Project", true, "Numeric ID of CDB project."));
+        inputColumns.add(new InputColumnModel(10, "Type", false, "Numeric ID of CDB cable type catalog item."));
+        inputColumns.add(new InputColumnModel(11, "Endpoint1", false, "Numeric ID of CDB machine design item for first endpoint."));
+        inputColumns.add(new InputColumnModel(12, "Endpoint1 Desc", false, "Endpoint details useful for external editing."));
+        inputColumns.add(new InputColumnModel(13, "Endpoint2", false, "Numeric ID of CDB machine design item for second endpoint."));
+        inputColumns.add(new InputColumnModel(14, "Endpoint2 Desc", false, "Endpoint details useful for external editing."));
 
-        return cols;
-    }
-    
-    @Override
-    protected List<InputHandler> initializeInputHandlers_(
-            int actualColumnCount, 
-            Map<Integer, String> headerValueMap) {
-        
-        List<InputHandler> specs = new ArrayList<>();
-        
-        specs.add(new NameHandler(0, 128));
-        specs.add(new ImportHelperBase.StringInputHandler(1, "setAlternateName", 32));
-        specs.add(new ImportHelperBase.StringInputHandler(2, "setExternalCableName", 256));
-        specs.add(new ImportHelperBase.StringInputHandler(3, "setImportCableId", 256));
-        specs.add(new ImportHelperBase.StringInputHandler(4, "setAlternateCableId", 256));
-        specs.add(new ImportHelperBase.StringInputHandler(5, "setDescription", 256));
-        specs.add(new ImportHelperBase.StringInputHandler(6, "setLaying", 256));
-        specs.add(new ImportHelperBase.StringInputHandler(7, "setVoltage", 256));
-        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(8, "setTeam", ItemCategoryController.getInstance(), ItemCategory.class, ItemDomainName.cableDesign.getValue()));
-        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(9, "setProject", ItemProjectController.getInstance(), ItemProject.class, null));
-        specs.add(new ImportHelperBase.IdOrNameRefInputHandler(10, "setCatalogItem", ItemDomainCableCatalogController.getInstance(), Item.class, null));
-        specs.add(new ImportHelperBase.IdRefInputHandler(11, "setEndpoint1", ItemDomainMachineDesignController.getInstance(), Item.class));
-        specs.add(new ImportHelperBase.StringInputHandler(12, "setEndpoint1Description", 256));
-        specs.add(new ImportHelperBase.IdRefInputHandler(13, "setEndpoint2", ItemDomainMachineDesignController.getInstance(), Item.class));
-        specs.add(new ImportHelperBase.StringInputHandler(14, "setEndpoint2Description", 256));
+        List<InputHandler> handlers = new ArrayList<>();        
+        handlers.add(new NameHandler(0, 128));
+        handlers.add(new ImportHelperBase.StringInputHandler(1, "setAlternateName", 32));
+        handlers.add(new ImportHelperBase.StringInputHandler(2, "setExternalCableName", 256));
+        handlers.add(new ImportHelperBase.StringInputHandler(3, "setImportCableId", 256));
+        handlers.add(new ImportHelperBase.StringInputHandler(4, "setAlternateCableId", 256));
+        handlers.add(new ImportHelperBase.StringInputHandler(5, "setDescription", 256));
+        handlers.add(new ImportHelperBase.StringInputHandler(6, "setLaying", 256));
+        handlers.add(new ImportHelperBase.StringInputHandler(7, "setVoltage", 256));
+        handlers.add(new ImportHelperBase.IdOrNameRefInputHandler(8, "setTeam", ItemCategoryController.getInstance(), ItemCategory.class, ItemDomainName.cableDesign.getValue()));
+        handlers.add(new ImportHelperBase.IdOrNameRefInputHandler(9, "setProject", ItemProjectController.getInstance(), ItemProject.class, null));
+        handlers.add(new ImportHelperBase.IdOrNameRefInputHandler(10, "setCatalogItem", ItemDomainCableCatalogController.getInstance(), Item.class, null));
+        handlers.add(new ImportHelperBase.IdRefInputHandler(11, "setEndpoint1", ItemDomainMachineDesignController.getInstance(), Item.class));
+        handlers.add(new ImportHelperBase.StringInputHandler(12, "setEndpoint1Description", 256));
+        handlers.add(new ImportHelperBase.IdRefInputHandler(13, "setEndpoint2", ItemDomainMachineDesignController.getInstance(), Item.class));
+        handlers.add(new ImportHelperBase.StringInputHandler(14, "setEndpoint2Description", 256));
 
-        return specs;
-    }
-    
-    @Override
-    protected List<OutputColumnModel> initializeTableViewColumns_(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
-        
-        List<OutputColumnModel> columns = new ArrayList<>();
-        
-        columns.add(new OutputColumnModel("Name", "name"));
-        columns.add(new OutputColumnModel("Alt Name", "alternateName"));
-        columns.add(new OutputColumnModel("Ext Cable Name", "externalCableName"));
-        columns.add(new OutputColumnModel("Import Cable ID", "importCableId"));
-        columns.add(new OutputColumnModel("Alternate Cable ID", "alternateCableId"));
-        columns.add(new OutputColumnModel("Description", "description"));
-        columns.add(new OutputColumnModel("Laying", "laying"));
-        columns.add(new OutputColumnModel("Voltage", "voltage"));
-        columns.add(new OutputColumnModel("Owner", "team"));
-        columns.add(new OutputColumnModel("Project", "itemProjectString"));
-        columns.add(new OutputColumnModel("Type", "catalogItemString"));
-        columns.add(new OutputColumnModel("Endpoint1", "endpoint1String"));
-        columns.add(new OutputColumnModel("Endpoint1 Desc", "endpoint1Description"));
-        columns.add(new OutputColumnModel("Endpoint2", "endpoint2String"));
-        columns.add(new OutputColumnModel("Endpoint2 Desc", "endpoint2Description"));
+        List<OutputColumnModel> outputColumns = new ArrayList<>();        
+        outputColumns.add(new OutputColumnModel("Name", "name"));
+        outputColumns.add(new OutputColumnModel("Alt Name", "alternateName"));
+        outputColumns.add(new OutputColumnModel("Ext Cable Name", "externalCableName"));
+        outputColumns.add(new OutputColumnModel("Import Cable ID", "importCableId"));
+        outputColumns.add(new OutputColumnModel("Alternate Cable ID", "alternateCableId"));
+        outputColumns.add(new OutputColumnModel("Description", "description"));
+        outputColumns.add(new OutputColumnModel("Laying", "laying"));
+        outputColumns.add(new OutputColumnModel("Voltage", "voltage"));
+        outputColumns.add(new OutputColumnModel("Owner", "team"));
+        outputColumns.add(new OutputColumnModel("Project", "itemProjectString"));
+        outputColumns.add(new OutputColumnModel("Type", "catalogItemString"));
+        outputColumns.add(new OutputColumnModel("Endpoint1", "endpoint1String"));
+        outputColumns.add(new OutputColumnModel("Endpoint1 Desc", "endpoint1Description"));
+        outputColumns.add(new OutputColumnModel("Endpoint2", "endpoint2String"));
+        outputColumns.add(new OutputColumnModel("Endpoint2 Desc", "endpoint2Description"));
 
-        return columns;
+        ValidInfo validInfo = new ValidInfo(true, "");
+        
+        return new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
     }
     
     @Override

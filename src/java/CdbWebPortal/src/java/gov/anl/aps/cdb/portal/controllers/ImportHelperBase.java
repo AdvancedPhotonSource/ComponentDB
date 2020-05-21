@@ -370,6 +370,25 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return new ParseInfo<>(objValue, true, "");
         }
     }
+    
+    public class InitializeInfo {
+        public List<InputColumnModel> inputColumns;
+        public List<InputHandler> inputHandlers;
+        public List<OutputColumnModel> outputColumns;
+        public ValidInfo validInfo;
+        
+        public InitializeInfo(
+                List<InputColumnModel> inputColumns,
+                List<InputHandler> inputHandlers,
+                List<OutputColumnModel> outputColumns,
+                ValidInfo validInfo) {
+            
+            this.inputColumns = inputColumns;
+            this.inputHandlers = inputHandlers;
+            this.outputColumns = outputColumns;
+            this.validInfo = validInfo;            
+        }
+    }
 
     static public class ValidInfo {
 
@@ -502,50 +521,40 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return getCompletionUrlValue();
     }
     
-    protected void initializeHelper(
+    private void initializeHelper(
             int actualColumnCount,
             Map<Integer, String> headerValueMap) {
         
-        initializeInputColumns(actualColumnCount, headerValueMap);
-        initializeInputHandlers(actualColumnCount, headerValueMap);
-        initializeViewColumns(actualColumnCount, headerValueMap);
+        InitializeInfo initInfo = initialize_(actualColumnCount, headerValueMap);
+        
+        ValidInfo initValidInfo = initInfo.validInfo;
+        if (!initValidInfo.isValid()) {
+            // TODO: helper initialization was invalid
+            
+        } else {        
+            initializeInputColumns(initInfo.inputColumns);
+            initializeInputHandlers(initInfo.inputHandlers);
+            initializeViewColumns(initInfo.outputColumns);
+        }
     }
     
-    protected void initializeInputColumns(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
-        
-        List<InputColumnModel> columns = 
-                initializeInputColumns_(actualColumnCount, headerValueMap);
+    private void initializeInputColumns(List<InputColumnModel> columns) {
         for (InputColumnModel col : columns) {
             inputColumnMap.put(col.getColumnIndex(), col);
         }
     }
     
-    protected void initializeInputHandlers(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
-        
-        List<InputHandler> specs = initializeInputHandlers_(
-                actualColumnCount,
-                headerValueMap);
-        
+    protected void initializeInputHandlers(List<InputHandler> specs) {        
         inputHandlers = specs;
     }
     
-    protected void initializeViewColumns(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
+    protected void initializeViewColumns(List<OutputColumnModel> columns) {
         
-        List<OutputColumnModel> columns = 
-                initializeTableViewColumns_(actualColumnCount, headerValueMap);
-
-        // these are special inputHandlers just for displaying validation info for each row, they are not parsed so treated specially in parsing code
+        // these are special columns for displaying validation info for each row
         columns.add(new OutputColumnModel(isValidHeader, isValidProperty));
-        columns.add(new OutputColumnModel(validStringHeader, validStringProperty));    
+        columns.add(new OutputColumnModel(validStringHeader, validStringProperty));  
         
-        tableViewColumns = columns;
-        
+        tableViewColumns = columns;        
         treeViewColumns.addAll(tableViewColumns);
     }
 
@@ -914,15 +923,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return rootTreeNode;
     }
     
-    protected abstract List<InputColumnModel> initializeInputColumns_(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap);
-
-    protected abstract List<InputHandler> initializeInputHandlers_(
-            int actualColumnCount, 
-            Map<Integer, String> headerValueMap);
-    
-    protected abstract List<OutputColumnModel> initializeTableViewColumns_(
+    protected abstract InitializeInfo initialize_(
             int actualColumnCount,
             Map<Integer, String> headerValueMap);
 
