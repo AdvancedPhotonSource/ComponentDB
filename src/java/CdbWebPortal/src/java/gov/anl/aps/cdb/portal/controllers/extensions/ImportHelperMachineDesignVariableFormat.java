@@ -271,11 +271,10 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         // check for template restrictions
         if (item.getIsItemTemplate()) {
             
-            if ((item.getImportAssignedCatalogItem() != null) || 
-                    (item.getImportAssignedInventoryItem() != null)) {
+            if ((item.getImportAssignedInventoryItem() != null)) {
                 
-                // template not allowed to have assigned catalog/inventory
-                String msg = "Template cannot have assigned catalog/inventory item";
+                // template not allowed to have assigned inventory
+                String msg = "Template cannot have assigned inventory item";
                 LOGGER.info(methodLogName + msg);
                 validString = appendToString(validString, msg);
                 isValid = false;
