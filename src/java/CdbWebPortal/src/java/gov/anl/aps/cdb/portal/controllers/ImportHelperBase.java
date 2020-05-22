@@ -521,21 +521,20 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return getCompletionUrlValue();
     }
     
-    private void initializeHelper(
+    private ValidInfo initializeHelper(
             int actualColumnCount,
             Map<Integer, String> headerValueMap) {
         
         InitializeInfo initInfo = initialize_(actualColumnCount, headerValueMap);
         
         ValidInfo initValidInfo = initInfo.validInfo;
-        if (!initValidInfo.isValid()) {
-            // TODO: helper initialization was invalid
-            
-        } else {        
+        if (initValidInfo.isValid()) {
             initializeInputColumns(initInfo.inputColumns);
             initializeInputHandlers(initInfo.inputHandlers);
             initializeViewColumns(initInfo.outputColumns);
         }
+        
+        return initValidInfo;
     }
     
     private void initializeInputColumns(List<InputColumnModel> columns) {
@@ -760,18 +759,23 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         
         // initialize helper data structures
-        initializeHelper(actualColumns, headerValueMap);
+        ValidInfo initInfo = initializeHelper(actualColumns, headerValueMap);
         
-        // check actual number of columns against expected number
-        int maxColIndex = Collections.max(inputColumnMap.keySet());
-        int expectedColumns = maxColIndex + 1;
-        if (expectedColumns != actualColumns) {
+        if (!initInfo.isValid()) {
             isValid = false;
-            validMessage = 
-                    "header row (" + actualColumns + 
-                    ") does not contain expected number of columns (" + 
-                    expectedColumns + ")";
+            validMessage = initInfo.getValidString();
             
+        } else {
+            // check actual number of columns against expected number
+            int maxColIndex = Collections.max(inputColumnMap.keySet());
+            int expectedColumns = maxColIndex + 1;
+            if (expectedColumns != actualColumns) {
+                isValid = false;
+                validMessage
+                        = "header row (" + actualColumns
+                        + ") does not contain expected number of columns ("
+                        + expectedColumns + ")";
+            }
         }
         
         return new ValidInfo(isValid, validMessage);

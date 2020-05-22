@@ -238,6 +238,8 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             int actualColumnCount,
             Map<Integer, String> headerValueMap) {
         
+        String methodLogName = "initialize_() ";
+
         boolean isValid = true;
         String validString = "";
         
@@ -262,59 +264,72 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     firstLevelIndex = columnIndex;
                 }
                 lastLevelIndex = columnIndex;
-            }
+            } else {
             
-            switch (columnHeader) {
-                
-                case "Parent ID":
-                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID of parent machine design item."));
-                    handlers.add(new IdRefInputHandler(columnIndex, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
-                    break;
-                    
-                case "Machine Design Alternate Name":
-                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Alternate machine design item name."));
-                    handlers.add(new StringInputHandler(columnIndex, "setAlternateName", 32));
-                    break;
-                    
-                case "Machine Design Item Description":
-                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Textual description of machine design item."));
-                    handlers.add(new StringInputHandler(columnIndex, "setDescription", 256));
-                    break;
-                    
-                case "Assigned Catalog/Inventory Item":
-                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Name of assigned catalog or inventory item (optional, for reference only)."));
-                    break;
-                    
-                case "Assigned Catalog/Inventory Item ID":
-                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID of assigned catalog or inventory item."));
-                    handlers.add(new AssignedItemHandler(columnIndex));
-                    break;
-                    
-                case "Location":
-                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored."));
-                    handlers.add(new LocationHandler(columnIndex));
-                    break;
-                    
-                case "Project ID":
-                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, true, "CDB ID or name of item project."));
-                    handlers.add(new IdRefInputHandler(columnIndex, "setProjectValue", ItemProjectController.getInstance(), ItemProject.class));
-                    break;
-                    
-                case "Is Template?":
-                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "TRUE if item is template, false otherwise."));
-                    handlers.add(new BooleanInputHandler(columnIndex, "setImportIsTemplate"));
-                    break;
-                    
-                default:
-                    // TODO: unexpected column, complain
+                switch (columnHeader) {
+
+                    case "Parent ID":
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID of parent machine design item."));
+                        handlers.add(new IdRefInputHandler(columnIndex, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
+                        break;
+
+                    case "Machine Design Alternate Name":
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Alternate machine design item name."));
+                        handlers.add(new StringInputHandler(columnIndex, "setAlternateName", 32));
+                        break;
+
+                    case "Machine Design Item Description":
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Textual description of machine design item."));
+                        handlers.add(new StringInputHandler(columnIndex, "setDescription", 256));
+                        break;
+
+                    case "Assigned Catalog/Inventory Item":
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Name of assigned catalog or inventory item (optional, for reference only)."));
+                        break;
+
+                    case "Assigned Catalog/Inventory Item ID":
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID of assigned catalog or inventory item."));
+                        handlers.add(new AssignedItemHandler(columnIndex));
+                        break;
+
+                    case "Location":
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored."));
+                        handlers.add(new LocationHandler(columnIndex));
+                        break;
+
+                    case "Project ID":
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, true, "CDB ID or name of item project."));
+                        handlers.add(new IdRefInputHandler(columnIndex, "setProjectValue", ItemProjectController.getInstance(), ItemProject.class));
+                        break;
+
+                    case "Is Template?":
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "TRUE if item is template, false otherwise."));
+                        handlers.add(new BooleanInputHandler(columnIndex, "setImportIsTemplate"));
+                        break;
+
+                    default:
+                        // unexpected column found, so fail
+                        isValid = false;
+                        String msg = "found unexpected column header: " + columnHeader;
+                        validString = msg;
+                        LOGGER.info(methodLogName + msg);
+                }
             }
         }
         
-        // add handler for multiple "level" columns
-        handlers.add(new NameHandler(firstLevelIndex, lastLevelIndex, 128));
+        if (!foundLevel) {
+            // didn't find any "Level" columns, so fail
+            isValid = false;
+            String msg = "one or more 'Level' columns is required";
+            validString = msg;
+            LOGGER.info(methodLogName + msg);
+            
+        } else {
+            // add handler for multiple "level" columns
+            handlers.add(new NameHandler(firstLevelIndex, lastLevelIndex, 128));
+        }
         
         // output columns are fixed
-        // TODO: what about parent item?
         outputColumns.add(new OutputColumnModel("Name", "name"));
         outputColumns.add(new OutputColumnModel("Is Template", "importIsTemplateString"));
         outputColumns.add(new OutputColumnModel("Project", "itemProjectString"));
