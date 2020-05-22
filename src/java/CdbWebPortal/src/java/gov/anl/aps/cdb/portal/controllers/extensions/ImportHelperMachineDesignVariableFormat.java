@@ -5,11 +5,14 @@
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
+import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -44,6 +47,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             return maxLength;
         }
 
+        @Override
         public ValidInfo handleInput(
                 Row row,
                 Map<Integer, String> cellValueMap,
@@ -96,6 +100,55 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             itemInfo.indentLevel = itemIndentLevel;
             itemInfoMap.put(entity, itemInfo);
                 
+            return new ValidInfo(isValid, validString);
+        }
+    }
+    
+    public class AssignedItemHandler extends SingleColumnInputHandler {
+        
+        public AssignedItemHandler(int columnIndex) {
+            super(columnIndex);
+        }
+        
+        @Override
+        public ValidInfo handleInput(
+                Row row,
+                Map<Integer, String> cellValueMap,
+                ItemDomainMachineDesign entity) {
+            
+            boolean isValid = true;
+            String validString = "";
+            
+            String parsedValue = cellValueMap.get(columnIndex);
+            
+            Item assignedItem = null;
+            if ((parsedValue != null) && (!parsedValue.isEmpty())) {
+                // assigned item is specified
+                
+                assignedItem = ItemFacade.getInstance().findById(Integer.valueOf(parsedValue));
+                
+                if (assignedItem == null) {
+                    String msg = "Unable to find object for: " + columnNameForIndex(columnIndex)
+                            + " with id: " + parsedValue;
+                    isValid = false;
+                    validString = msg;
+                    LOGGER.info("AssignedItemHandler.handleInput() " + msg);
+                    
+                } else {
+                    // set assigned item
+                    if (assignedItem instanceof ItemDomainCatalog) {
+                        entity.setImportAssignedCatalogItem((ItemDomainCatalog) assignedItem);
+                    } else if (assignedItem instanceof ItemDomainInventory) {
+                        entity.setImportAssignedInventoryItem((ItemDomainInventory) assignedItem);
+                    } else {
+                        String msg = "Invalid object type for assigned item: " + assignedItem.getClass().getName();
+                        isValid = false;
+                        validString = msg;
+                        LOGGER.info("AssignedItemHandler.handleInput() " + msg);
+                    }
+                }
+            }
+
             return new ValidInfo(isValid, validString);
         }
     }
@@ -161,19 +214,22 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     
                 case "Machine Design Item Description":
                     inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Textual description of machine design item."));
-                    handlers.add(new ImportHelperBase.StringInputHandler(columnIndex, "setDescription", 256));
+                    handlers.add(new StringInputHandler(columnIndex, "setDescription", 256));
                     break;
                     
                 case "Assigned Catalog/Inventory Item":
+                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Name of assigned catalog or inventory item (optional, for reference only)."));
+                    break;
+                    
+                case "Assigned Catalog/Inventory Item ID":
                     inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID of assigned catalog or inventory item."));
-                    // TODO: one handler for both catalog and inventory, setter method, etc - custom handler?
-                    handlers.add(new ImportHelperBase.IdOrNameRefInputHandler(columnIndex, "setImportAssignedCatalogItem", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
+                    handlers.add(new AssignedItemHandler(columnIndex));
                     break;
                     
                 case "Location":
                     inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID or name of CDB location item."));
                     // TODO: custom handler to ignore "parent" etc?
-                    handlers.add(new ImportHelperBase.IdOrNameRefInputHandler(8, "setImportLocationItem", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
+                    handlers.add(new IdOrNameRefInputHandler(columnIndex, "setImportLocationItem", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
                     break;
                     
                 case "Project ID":
@@ -202,8 +258,8 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         outputColumns.add(new OutputColumnModel("Alt Name", "alternateName"));
         outputColumns.add(new OutputColumnModel("Description", "description"));
         outputColumns.add(new OutputColumnModel("Parent Item", "importContainerString"));
-        outputColumns.add(new OutputColumnModel("Assigned Catalog Item Id", "importAssignedCatalogItemString"));
-        outputColumns.add(new OutputColumnModel("Assigned Inventory Item Id", "importAssignedInventoryItemString"));
+        outputColumns.add(new OutputColumnModel("Assigned Catalog Item", "importAssignedCatalogItemString"));
+        outputColumns.add(new OutputColumnModel("Assigned Inventory Item", "importAssignedInventoryItemString"));
         outputColumns.add(new OutputColumnModel("Location", "importLocationItemString"));
         
         ValidInfo validInfo = new ValidInfo(isValid, validString);
