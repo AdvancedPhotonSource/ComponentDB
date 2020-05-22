@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -167,7 +168,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                 
                 case "Parent ID":
                     inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID of parent machine design item."));
-                    // TODO: handler for parent id
+                    handlers.add(new IdRefInputHandler(columnIndex, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
                     break;
                     
                 case "Machine Design Alternate Name":
@@ -217,6 +218,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         outputColumns.add(new OutputColumnModel("Project", "itemProjectString"));
         outputColumns.add(new OutputColumnModel("Alt Name", "alternateName"));
         outputColumns.add(new OutputColumnModel("Description", "description"));
+        outputColumns.add(new OutputColumnModel("Parent Item", "importContainerString"));
         outputColumns.add(new OutputColumnModel("Assigned Catalog Item Id", "importAssignedCatalogItemString"));
         outputColumns.add(new OutputColumnModel("Assigned Inventory Item Id", "importAssignedInventoryItemString"));
         outputColumns.add(new OutputColumnModel("Location", "importLocationItemString"));
@@ -280,8 +282,10 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         
         ImportInfo itemInfo = itemInfoMap.get(item);
         if (itemInfo == null) {
-            String msg = "helper error for " + item.getName();
-            LOGGER.debug(methodLogName + msg);
+            String msg = "No ImportInfo found for item";
+            LOGGER.info(methodLogName + msg);
+            validString = appendToString(validString, msg);
+            isValid = false;
         }
         
         // TODO: don't :-)
@@ -296,10 +300,29 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         // find parent for this item
         ItemDomainMachineDesign itemParent = null;
         if (itemIndentLevel > 1) {
-            // indent level 1 is top-level, so parent is null
+            
+            // not allowed to specify parent for non level 0 item
+            if (item.getImportContainerItem() != null) {
+                String msg = "Can only specify existing parent for level 0 item";
+                LOGGER.info(methodLogName + msg);
+                validString = appendToString(validString, msg);
+                isValid = false;
+            }
             
             // find parent at previous indent level
             itemParent = parentIndentMap.get(itemIndentLevel - 1);
+            
+        } else {
+            // this is either a top-level item, or a parent item is explicitly specified for it
+            ItemDomainMachineDesign container = item.getImportContainerItem();
+            if (container == null) {
+                // new item is a top-level machine design with no parent
+                String msg = "creating top-level machine design item: " + item.getName();
+                LOGGER.debug(methodLogName + msg);
+                itemParent = null;
+            } else {
+                itemParent = container;
+            }
         }
         
         // check for template restrictions
@@ -350,6 +373,17 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             }
         }
         
+        if (itemParent != null) {
+
+            if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
+                // parent and child must both be templates or both not be
+                String msg = "parent and child must both be templates or both not be templates";
+                LOGGER.info(methodLogName + msg);
+                validString = appendToString(validString, msg);
+                isValid = false;
+            }
+        }
+                                
         // establish parent/child relationship, set location info etc
         item.applyImportValues(itemParent, isValidAssignedItem, isValidLocation);
                  
@@ -362,7 +396,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         // add entry to name map for new item
         itemByNameMap.put(item.getName(), item);
                
-        return new ValidInfo(true, "");
+        return new ValidInfo(isValid, validString);
     }
 
     protected void updateTreeView(ItemDomainMachineDesign item, 
