@@ -34,7 +34,16 @@ import org.primefaces.model.TreeNode;
  */
 public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
     
-    public class NameHandler extends ColumnRangeInputHandler {
+    /**
+     * Using custom handler so that we can have the machine design hierarchy
+     * in multiple (variable numbered) columns in the import spreadsheet.
+     * We expect columns like "Level 0", "Level 1" etc and then have to figure
+     * out the parent for each item in the spreadsheet by looking for an item
+     * at the previous indent level in the spreadsheet.  E.g., the parent of 
+     * an item whose name appears in column "Level 1" is the last item whose
+     * name was in "Level 0", etc.
+     */
+    private class NameHandler extends ColumnRangeInputHandler {
         
         protected int maxLength = 0;
         
@@ -104,7 +113,13 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         }
     }
     
-    public class AssignedItemHandler extends SingleColumnInputHandler {
+    /**
+     * Using a custom handler so that we can use catalog or inventory item id's
+     * in a single column.  There is not a way to do this with IdRef handler, as
+     * it needs a particular controller instance to use for the lookup.  The
+     * query we need here is on the ItemFacade.
+     */
+    private class AssignedItemHandler extends SingleColumnInputHandler {
         
         public AssignedItemHandler(int columnIndex) {
             super(columnIndex);
@@ -145,6 +160,55 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                         isValid = false;
                         validString = msg;
                         LOGGER.info("AssignedItemHandler.handleInput() " + msg);
+                    }
+                }
+            }
+
+            return new ValidInfo(isValid, validString);
+        }
+    }
+    
+    /**
+     * Using a custom handler for location so we can ignore the word "parent"
+     * in a column that otherwise expects location item id's.  We could use the
+     * standard IdRef handler if we didn't need to worry about "parent".
+     */
+    private class LocationHandler extends SingleColumnInputHandler {
+        
+        public LocationHandler(int columnIndex) {
+            super(columnIndex);
+        }
+        
+        @Override
+        public ValidInfo handleInput(
+                Row row,
+                Map<Integer, String> cellValueMap,
+                ItemDomainMachineDesign entity) {
+            
+            boolean isValid = true;
+            String validString = "";
+            
+            String parsedValue = cellValueMap.get(columnIndex);
+            
+            ItemDomainLocation itemLocation = null;
+            if ((parsedValue != null) && (!parsedValue.isEmpty())) {
+                // location is specified
+                
+                // ignore word "parent"
+                if (!parsedValue.equalsIgnoreCase("parent")) {
+                
+                    itemLocation = ItemDomainLocationController.getInstance().findById(Integer.valueOf(parsedValue));
+
+                    if (itemLocation == null) {
+                        String msg = "Unable to find object for: " + columnNameForIndex(columnIndex)
+                                + " with id: " + parsedValue;
+                        isValid = false;
+                        validString = msg;
+                        LOGGER.info("LocationHandler.handleInput() " + msg);
+
+                    } else {
+                        // set location
+                        entity.setImportLocationItem(itemLocation);
                     }
                 }
             }
@@ -227,9 +291,8 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     break;
                     
                 case "Location":
-                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID or name of CDB location item."));
-                    // TODO: custom handler to ignore "parent" etc?
-                    handlers.add(new IdOrNameRefInputHandler(columnIndex, "setImportLocationItem", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, null));
+                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored."));
+                    handlers.add(new LocationHandler(columnIndex));
                     break;
                     
                 case "Project ID":
@@ -392,22 +455,12 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             }
             
         } else {
-            if (itemParent != null) {
-                
-                if (item.getImportLocationItem() != null) {
-                    // only top-level non-template item can have location
-                    String msg = "Only top-level item can have location";
-                    LOGGER.info(methodLogName + msg);
-                    validString = appendToString(validString, msg);
-                    isValid = false;
-                    isValidLocation = false;
-                }
-                
-            } else {
+            // non-template item restrictions
             
-                if ((item.getImportAssignedCatalogItem() != null)
+            if (itemParent == null) {
+                    if ((item.getImportAssignedCatalogItem() != null)
                         || (item.getImportAssignedInventoryItem() != null)) {
-                    // top-level item cannot have assigned item
+                        // top-level item cannot have assigned item
                     String msg = "Top-level item cannot have assigned catalog/inventory item";
                     LOGGER.info(methodLogName + msg);
                     validString = appendToString(validString, msg);
@@ -418,6 +471,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         }
         
         if (itemParent != null) {
+            // restrictions for all items with parent, template or non-template
 
             if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
                 // parent and child must both be templates or both not be
