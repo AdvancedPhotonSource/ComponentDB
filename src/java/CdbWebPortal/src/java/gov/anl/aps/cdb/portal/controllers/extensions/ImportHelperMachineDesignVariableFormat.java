@@ -4,7 +4,6 @@
  */
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
@@ -117,19 +116,6 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
     protected Map<ItemDomainMachineDesign, ImportInfo> itemInfoMap = new HashMap<>();
     protected Map<Integer, ItemDomainMachineDesign> parentIndentMap = new HashMap<>();
     
-    private ItemProject projectItem = null;
-    
-    private ItemProject getProjectItem() {
-        if (projectItem == null) {
-            try {
-                projectItem = ItemProjectController.getInstance().findUniqueByName("APS-U Production", "");
-            } catch (CdbException ex) {
-                LOGGER.error("getProjectItem() exception retriveing project: " + ex);
-            }
-        }
-        return projectItem;
-    }
-    
     @Override
     protected InitializeInfo initialize_(
             int actualColumnCount,
@@ -191,8 +177,8 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     break;
                     
                 case "Project ID":
-                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID or name of item project."));
-                    // TODO: handler for project id
+                    inputColumns.add(new InputColumnModel(columnIndex, columnHeader, true, "CDB ID or name of item project."));
+                    handlers.add(new IdRefInputHandler(columnIndex, "setProjectValue", ItemProjectController.getInstance(), ItemProject.class));
                     break;
                     
                 case "Is Template?":
@@ -279,16 +265,17 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         
         ImportInfo itemInfo = itemInfoMap.get(item);
         if (itemInfo == null) {
-            String msg = "No ImportInfo found for item";
+            String msg = "Unable to find indent level for item";
             LOGGER.info(methodLogName + msg);
             validString = appendToString(validString, msg);
             isValid = false;
+            
+            // invalidate parent map, it is probably messed up by missing item
+            parentIndentMap.clear();
+            LOGGER.info(methodLogName + "Invalidating parentIndentMap");
+            return new ValidInfo(isValid, validString);
         }
         
-        // TODO: don't :-)
-        // set hardwired project for now
-        item.setProjectValue(getProjectItem());
-                
         // find parent for this item
         int itemIndentLevel = itemInfo.indentLevel;
         ItemDomainMachineDesign itemParent = null;
@@ -304,6 +291,14 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             
             // find parent at previous indent level
             itemParent = parentIndentMap.get(itemIndentLevel - 1);
+            
+            if (itemParent == null) {
+                // should have a parent for this item in map
+                String msg = "Unable to determine parent for item";
+                LOGGER.info(methodLogName + msg);
+                validString = appendToString(validString, msg);
+                isValid = false;
+            }
             
         } else {
             // this is either a top-level item, or a parent item is explicitly specified for it
