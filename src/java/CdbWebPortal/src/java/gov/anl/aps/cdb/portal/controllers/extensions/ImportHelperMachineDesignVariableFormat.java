@@ -7,12 +7,10 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -22,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
@@ -200,7 +197,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     
                 case "Is Template?":
                     inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "TRUE if item is template, false otherwise."));
-                    // TODO: handler for is template column
+                    handlers.add(new BooleanInputHandler(columnIndex, "setImportIsTemplate"));
                     break;
                     
                 default:
@@ -291,13 +288,9 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         // TODO: don't :-)
         // set hardwired project for now
         item.setProjectValue(getProjectItem());
-        
-        // TODO: confirm approach for "is template"
-        item.setImportIsTemplate(item.getName().contains("{"));
-        
-        int itemIndentLevel = itemInfo.indentLevel;
-        
+                
         // find parent for this item
+        int itemIndentLevel = itemInfo.indentLevel;
         ItemDomainMachineDesign itemParent = null;
         if (itemIndentLevel > 1) {
             
