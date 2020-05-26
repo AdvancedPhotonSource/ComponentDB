@@ -20,17 +20,25 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
 
     protected static String completionUrlValue = "/views/source/list?faces-redirect=true";
     
-    @Override
-    protected InitializeInfo initialize_(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
-
+    private List<InputColumnModel> getInputColumns() {
         List<InputColumnModel> inputColumns = new ArrayList<>();        
         inputColumns.add(new InputColumnModel(0, "Name", true, "Name of vendor/manufacturer"));
         inputColumns.add(new InputColumnModel(1, "Description", false, "Description of vendor/manufacturer"));
         inputColumns.add(new InputColumnModel(2, "Contact Info", false, "Contact name and phone number etc"));
         inputColumns.add(new InputColumnModel(3, "URL", false, "URL for vendor/manufacturer"));
-        
+        return inputColumns;
+    }
+    
+    @Override
+    protected List<InputColumnModel> getTemplateColumns() {
+        return getInputColumns();
+    }
+    
+    @Override
+    protected InitializeInfo initialize_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+
         List<InputHandler> handlers = new ArrayList<>();        
         handlers.add(new StringInputHandler(0, "setName", 64));
         handlers.add(new StringInputHandler(1, "setDescription", 256));
@@ -45,7 +53,7 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
         
         ValidInfo validInfo = new ValidInfo(true, "");
         
-        return new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
+        return new InitializeInfo(getInputColumns(), handlers, outputColumns, validInfo);
     }
     
     @Override

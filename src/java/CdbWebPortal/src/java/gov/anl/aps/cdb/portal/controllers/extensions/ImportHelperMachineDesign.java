@@ -38,11 +38,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     protected Map<String, ItemDomainMachineDesign> itemByNameMap = new HashMap<>();
     protected Map<String, TreeNode> treeNodeMap = new HashMap<>();
     
-    @Override
-    protected InitializeInfo initialize_(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
-        
+    private List<InputColumnModel> getInputColumns() {
         List<InputColumnModel> inputColumns = new ArrayList<>();
         inputColumns.add(new InputColumnModel(0, "Is Template", true, "Specifies whether this item is a template (true or false)."));
         inputColumns.add(new InputColumnModel(1, "Container Id", false, "Numeric ID of CDB machine design item that contains this new machine design hierarchy."));
@@ -54,6 +50,18 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         inputColumns.add(new InputColumnModel(7, "Assigned Catalog Item Id", false, "Numeric ID of assigned catalog item."));
         inputColumns.add(new InputColumnModel(8, "Assigned Inventory Item Id", false, "Numeric ID of assigned inventory item."));
         inputColumns.add(new InputColumnModel(9, "Location", false, "Numeric Id or name of CDB location item, for top-level non-template items only."));
+        return inputColumns;
+    }
+    
+    @Override
+    protected List<InputColumnModel> getTemplateColumns() {
+        return getInputColumns();
+    }
+    
+    @Override
+    protected InitializeInfo initialize_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
         
         List<InputHandler> handlers = new ArrayList<>();
         handlers.add(new BooleanInputHandler(0, "setImportIsTemplate"));
@@ -81,7 +89,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         
         ValidInfo validInfo = new ValidInfo(true, "");
         
-        return new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
+        return new InitializeInfo(getInputColumns(), handlers, outputColumns, validInfo);
     }
     
     @Override

@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
-import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
@@ -223,16 +222,149 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         
     }
     
+    private class InputColumnInfo {
+        public String name;
+        public boolean isRequired;
+        public String description;
+        
+        public InputColumnInfo(String name, boolean isRequired, String description) {
+            this.name = name;
+            this.isRequired = isRequired;
+            this.description = description;
+        }
+    }
+    
 
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineDesignVariableFormat.class.getName());
+    
+    private static final String HEADER_PARENT = "Parent ID";
+    private static final String HEADER_BASE_LEVEL = "Level";
+    private static final String HEADER_ALT_NAME = "Machine Design Alternate Name";
+    private static final String HEADER_DESCRIPTION = "Machine Design Item Description";
+    private static final String HEADER_ASSIGNED_ITEM = "Assigned Catalog/Inventory Item";
+    private static final String HEADER_ASSIGNED_ITEM_ID = "Assigned Catalog/Inventory Item ID";
+    private static final String HEADER_LOCATION = "Location";
+    private static final String HEADER_PROJECT = "Project ID";
+    private static final String HEADER_TEMPLATE = "Is Template?";
 
     protected static String completionUrlValue = "/views/itemDomainMachineDesign/list?faces-redirect=true";
     
+    private Map<String, InputColumnInfo> columnInfoMap = null;
     protected Map<String, ItemDomainMachineDesign> itemByNameMap = new HashMap<>();
     protected Map<String, TreeNode> treeNodeMap = new HashMap<>();
     protected Map<ItemDomainMachineDesign, ImportInfo> itemInfoMap = new HashMap<>();
     protected Map<Integer, ItemDomainMachineDesign> parentIndentMap = new HashMap<>();
     
+    private void initColumnInfoMap() {
+        
+        columnInfoMap = new HashMap<>();
+        
+        columnInfoMap.put(HEADER_PARENT, new InputColumnInfo(
+                HEADER_PARENT, 
+                false, 
+                "CDB ID of parent machine design item.  Can only be provided for level 0 item."));
+        
+        columnInfoMap.put(HEADER_BASE_LEVEL, new InputColumnInfo(
+                HEADER_BASE_LEVEL, 
+                false, 
+                "Machine design hierarchy column level"));
+        
+        columnInfoMap.put(HEADER_ALT_NAME, new InputColumnInfo(
+                HEADER_ALT_NAME, 
+                false, 
+                "Alternate machine design item name."));
+        
+        columnInfoMap.put(HEADER_DESCRIPTION, new InputColumnInfo(
+                HEADER_DESCRIPTION, 
+                false, 
+                "Textual description of machine design item."));
+        
+        columnInfoMap.put(HEADER_ASSIGNED_ITEM, new InputColumnInfo(
+                HEADER_ASSIGNED_ITEM, 
+                false, 
+                "Name of assigned catalog or inventory item (optional, for reference only)."));
+        
+        columnInfoMap.put(HEADER_ASSIGNED_ITEM_ID, new InputColumnInfo(
+                HEADER_ASSIGNED_ITEM_ID, 
+                false, 
+                "CDB ID of assigned catalog or inventory item."));
+        
+        columnInfoMap.put(HEADER_LOCATION, new InputColumnInfo(
+                HEADER_LOCATION, 
+                false, 
+                "CDB ID of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored)."));
+        
+        columnInfoMap.put(HEADER_PROJECT, new InputColumnInfo(
+                HEADER_PROJECT, 
+                true, 
+                "CDB ID or name of item project."));
+        
+        columnInfoMap.put(HEADER_TEMPLATE, new InputColumnInfo(
+                HEADER_TEMPLATE, 
+                true, 
+                "TRUE if item is template, false otherwise."));
+        
+    }
+    
+    private Map<String, InputColumnInfo> getColumnInfoMap() {
+        if (columnInfoMap == null) {
+            initColumnInfoMap();
+        }
+        return columnInfoMap;
+    }
+    
+    /**
+     * Returns list of columns for download template file feature.  Because
+     * initialize_() creates the columns dynamically after the spreadsheet file
+     * is opened and read, the sample list of columns is hardwired here.
+     * The number of "Level" columns is variable, and depends on the levels of
+     * hierarchy to be added for a particular import.  Updates to input columns
+     * must unfortunately be made in two places, here and in initialize_().
+     */
+    @Override
+    protected List<InputColumnModel> getTemplateColumns() {
+        
+        List<InputColumnModel> inputColumns = new ArrayList<>();
+        
+        InputColumnInfo colInfo = getColumnInfoMap().get(HEADER_PARENT);
+        inputColumns.add(new InputColumnModel(0, HEADER_PARENT, colInfo.isRequired, colInfo.description));
+        
+        colInfo = getColumnInfoMap().get(HEADER_BASE_LEVEL);
+        inputColumns.add(new InputColumnModel(1, HEADER_BASE_LEVEL + " 0", true, colInfo.description + " 0"));
+        inputColumns.add(new InputColumnModel(2, HEADER_BASE_LEVEL + " 1", false, colInfo.description + " 1"));
+        inputColumns.add(new InputColumnModel(3, HEADER_BASE_LEVEL + " 2", false, colInfo.description + " 2"));
+        
+        colInfo = getColumnInfoMap().get(HEADER_ALT_NAME);
+        inputColumns.add(new InputColumnModel(4, HEADER_ALT_NAME, colInfo.isRequired, colInfo.description));
+        
+        colInfo = getColumnInfoMap().get(HEADER_DESCRIPTION);
+        inputColumns.add(new InputColumnModel(5, HEADER_DESCRIPTION, colInfo.isRequired, colInfo.description));
+
+        colInfo = getColumnInfoMap().get(HEADER_ASSIGNED_ITEM);
+        inputColumns.add(new InputColumnModel(6, HEADER_ASSIGNED_ITEM, colInfo.isRequired, colInfo.description));
+
+        colInfo = getColumnInfoMap().get(HEADER_ASSIGNED_ITEM_ID);
+        inputColumns.add(new InputColumnModel(7, HEADER_ASSIGNED_ITEM_ID, colInfo.isRequired, colInfo.description));
+
+        colInfo = getColumnInfoMap().get(HEADER_LOCATION);
+        inputColumns.add(new InputColumnModel(8, HEADER_LOCATION, colInfo.isRequired, colInfo.description));
+
+        colInfo = getColumnInfoMap().get(HEADER_PROJECT);
+        inputColumns.add(new InputColumnModel(9, HEADER_PROJECT, colInfo.isRequired, colInfo.description));
+
+        colInfo = getColumnInfoMap().get(HEADER_TEMPLATE);
+        inputColumns.add(new InputColumnModel(10, HEADER_TEMPLATE, colInfo.isRequired, colInfo.description));
+
+        return inputColumns;
+    }
+    
+    /**
+     * Builds the input columns, handlers, and output columns for the helper
+     * framework.  Note that because the number of "Level" columns is variable
+     * the column layout is not fixed as is the case for some of the other
+     * helpers.  Changes to input columns, therefore, must be made in two places,
+     * here and in getTemplateColumns().
+     */
     @Override
     protected InitializeInfo initialize_(
             int actualColumnCount,
@@ -251,14 +383,17 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         int firstLevelIndex = -1;
         int lastLevelIndex = -1;
         
+        InputColumnInfo colInfo;
+        
         for (Entry<Integer, String> entry : headerValueMap.entrySet()) {
             
             int columnIndex = entry.getKey();
             String columnHeader = entry.getValue();
             
             // check to see if this is a "level" column
-            if (columnHeader.startsWith("Level")) {
-                inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Machine design hierarchy column " + columnHeader));
+            if (columnHeader.startsWith(HEADER_BASE_LEVEL)) {
+                colInfo = getColumnInfoMap().get(HEADER_BASE_LEVEL);
+                inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, colInfo.description));
                 foundLevel = true;
                 if (firstLevelIndex == -1) {
                     firstLevelIndex = columnIndex;
@@ -268,42 +403,50 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             
                 switch (columnHeader) {
 
-                    case "Parent ID":
-                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID of parent machine design item."));
+                    case HEADER_PARENT:
+                        colInfo = getColumnInfoMap().get(HEADER_PARENT);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
                         handlers.add(new IdRefInputHandler(columnIndex, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
                         break;
 
-                    case "Machine Design Alternate Name":
-                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Alternate machine design item name."));
+                    case HEADER_ALT_NAME:
+                        colInfo = getColumnInfoMap().get(HEADER_ALT_NAME);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
                         handlers.add(new StringInputHandler(columnIndex, "setAlternateName", 32));
                         break;
 
-                    case "Machine Design Item Description":
-                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Textual description of machine design item."));
+                    case HEADER_DESCRIPTION:
+                        colInfo = getColumnInfoMap().get(HEADER_DESCRIPTION);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
                         handlers.add(new StringInputHandler(columnIndex, "setDescription", 256));
                         break;
 
-                    case "Assigned Catalog/Inventory Item":
-                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "Name of assigned catalog or inventory item (optional, for reference only)."));
+                    case HEADER_ASSIGNED_ITEM:
+                        colInfo = getColumnInfoMap().get(HEADER_ASSIGNED_ITEM);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
                         break;
 
-                    case "Assigned Catalog/Inventory Item ID":
-                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID of assigned catalog or inventory item."));
+                    case HEADER_ASSIGNED_ITEM_ID:
+                        colInfo = getColumnInfoMap().get(HEADER_ASSIGNED_ITEM_ID);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
                         handlers.add(new AssignedItemHandler(columnIndex));
                         break;
 
-                    case "Location":
-                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored."));
+                    case HEADER_LOCATION:
+                        colInfo = getColumnInfoMap().get(HEADER_LOCATION);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
                         handlers.add(new LocationHandler(columnIndex));
                         break;
 
-                    case "Project ID":
-                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, true, "CDB ID or name of item project."));
+                    case HEADER_PROJECT:
+                        colInfo = getColumnInfoMap().get(HEADER_PROJECT);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
                         handlers.add(new IdRefInputHandler(columnIndex, "setProjectValue", ItemProjectController.getInstance(), ItemProject.class));
                         break;
 
-                    case "Is Template?":
-                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, false, "TRUE if item is template, false otherwise."));
+                    case HEADER_TEMPLATE:
+                        colInfo = getColumnInfoMap().get(HEADER_TEMPLATE);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
                         handlers.add(new BooleanInputHandler(columnIndex, "setImportIsTemplate"));
                         break;
 

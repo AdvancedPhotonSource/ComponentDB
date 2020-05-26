@@ -618,7 +618,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         Sheet sheet = wb.createSheet("template");
         Drawing drawing = sheet.createDrawingPatriarch();
         Row headerRow = sheet.createRow(0);
-        for (InputColumnModel col : inputColumnMap.values()) {
+        List<InputColumnModel> columns = getTemplateColumns();
+        for (InputColumnModel col : columns) {
             
             Cell headerCell = headerRow.createCell(col.getColumnIndex());
             headerCell.setCellValue(col.getName());
@@ -926,6 +927,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public TreeNode getRootTreeNode() {
         return rootTreeNode;
     }
+    
+    /**
+     * Returns the list of input columns for the download empty template file
+     * feature.
+     */
+    protected abstract List<InputColumnModel> getTemplateColumns();
     
     protected abstract InitializeInfo initialize_(
             int actualColumnCount,

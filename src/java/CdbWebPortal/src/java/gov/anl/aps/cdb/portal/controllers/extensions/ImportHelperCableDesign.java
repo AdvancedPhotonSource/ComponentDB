@@ -89,11 +89,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
 
     protected static String completionUrlValue = "/views/itemDomainCableDesign/list?faces-redirect=true";
     
-    @Override
-    protected InitializeInfo initialize_(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
-        
+    private List<InputColumnModel> getInputColumns() {
         List<InputColumnModel> inputColumns = new ArrayList<>();        
         inputColumns.add(new InputColumnModel(0, "Name", true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer)."));
         inputColumns.add(new InputColumnModel(1, "Alt Name", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer)."));
@@ -110,7 +106,19 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         inputColumns.add(new InputColumnModel(12, "Endpoint1 Desc", false, "Endpoint details useful for external editing."));
         inputColumns.add(new InputColumnModel(13, "Endpoint2", false, "Numeric ID of CDB machine design item for second endpoint."));
         inputColumns.add(new InputColumnModel(14, "Endpoint2 Desc", false, "Endpoint details useful for external editing."));
-
+        return inputColumns;
+    }
+    
+    @Override
+    protected List<InputColumnModel> getTemplateColumns() {
+        return getInputColumns();
+    }
+    
+    @Override
+    protected InitializeInfo initialize_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+        
         List<InputHandler> handlers = new ArrayList<>();        
         handlers.add(new NameHandler(0, 128));
         handlers.add(new ImportHelperBase.StringInputHandler(1, "setAlternateName", 32));
@@ -147,7 +155,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
 
         ValidInfo validInfo = new ValidInfo(true, "");
         
-        return new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
+        return new InitializeInfo(getInputColumns(), handlers, outputColumns, validInfo);
     }
     
     @Override

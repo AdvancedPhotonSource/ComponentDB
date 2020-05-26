@@ -25,11 +25,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
 
     protected static String completionUrlValue = "/views/itemDomainCableCatalog/list?faces-redirect=true";
     
-    @Override
-    protected InitializeInfo initialize_(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
-
+    private List<InputColumnModel> getInputColumns() {
         List<InputColumnModel> inputColumns = new ArrayList<>();        
         inputColumns.add(new InputColumnModel(0, "Name", true, "Cable type name, uniquely identifies cable type."));
         inputColumns.add(new InputColumnModel(1, "Description", false, "Textual description of cable type."));
@@ -49,7 +45,19 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
         inputColumns.add(new InputColumnModel(15, "Bend Radius", false, "Bend radius in inches."));
         inputColumns.add(new InputColumnModel(16, "Rad Tolerance", false, "Radiation tolerance rating."));
         inputColumns.add(new InputColumnModel(17, "Owner", false, "Numeric ID of CDB technical system."));
-        
+        return inputColumns;
+    }
+    
+    @Override
+    protected List<InputColumnModel> getTemplateColumns() {
+        return getInputColumns();
+    }
+    
+    @Override
+    protected InitializeInfo initialize_(
+            int actualColumnCount,
+            Map<Integer, String> headerValueMap) {
+
         List<InputHandler> handlers = new ArrayList<>();        
         handlers.add(new StringInputHandler(0, "setName", 128));
         handlers.add(new StringInputHandler(1, "setDescription", 256));
@@ -92,7 +100,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
 
         ValidInfo validInfo = new ValidInfo(true, "");
         
-        return new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
+        return new InitializeInfo(getInputColumns(), handlers, outputColumns, validInfo);
     }
     
     @Override
