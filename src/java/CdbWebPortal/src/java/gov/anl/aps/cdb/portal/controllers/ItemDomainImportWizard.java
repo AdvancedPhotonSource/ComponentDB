@@ -16,6 +16,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
+import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.UploadedFile;
@@ -47,10 +48,11 @@ public class ItemDomainImportWizard implements Serializable {
     private Boolean disableButtonUpload = true;
     protected UploadedFile uploadfileData = null;
     
-    private String viewStyle = "table";
-
     protected boolean importSuccessful = true;
     protected String importResult = "";
+    
+    private CdbEntity selectedTableRow = null;
+    private TreeNode selectedTreeNode = null;
 
     public static ItemDomainImportWizard getInstance() {
         return (ItemDomainImportWizard) SessionUtility.findBean(
@@ -98,30 +100,30 @@ public class ItemDomainImportWizard implements Serializable {
         }
     }
 
-    public String getViewStyle() {
-        return viewStyle;
-    }
-
-    public void setViewStyle(String viewStyle) {
-        this.viewStyle = viewStyle;
-    }
-    
-    public Boolean getRenderTableView() {
-        return (!viewStyle.equals("tree")) && (!viewStyle.equals("treeTable"));
-    }
-    
-    public Boolean getRenderTreeView() {
-        return viewStyle.equals("tree");
-    }
-    
-    public Boolean getRenderTreeTableView() {
-        return viewStyle.equals("treeTable");
-    }
-    
     public TreeNode getRootTreeNode() {
         return importHelper.getRootTreeNode();
     }
 
+    public TreeNode getSelectedTreeNode() {
+        return selectedTreeNode;
+    }
+ 
+    public void setSelectedTreeNode(TreeNode selectedNode) {
+        this.selectedTreeNode = selectedNode;
+    }
+    
+    public void treeSelectionChanged(NodeSelectEvent event) {
+        setSelectedTableRow((CdbEntity)event.getTreeNode().getData());
+    }
+    
+    public CdbEntity getSelectedTableRow() {
+        return selectedTableRow;
+    }
+    
+    public void setSelectedTableRow(CdbEntity entity) {
+        selectedTableRow = entity;
+    }
+ 
     public Boolean getDisableButtonUpload() {
         return disableButtonUpload;
     }
@@ -235,7 +237,8 @@ public class ItemDomainImportWizard implements Serializable {
         importHelper = null;
         importSuccessful = true;
         importResult = "";
-        viewStyle = "table";
+        selectedTableRow = null;
+        selectedTreeNode = null;
     }
 
     /**

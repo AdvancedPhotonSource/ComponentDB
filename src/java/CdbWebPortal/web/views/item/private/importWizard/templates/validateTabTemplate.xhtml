@@ -21,20 +21,8 @@ See LICENSE file.
                 <p:panelGrid>
                     
                     <p:row>
-                        <p:column colspan="1">
-                            <p:selectOneRadio id="viewStyle" 
-                                              value="#{wizardController.viewStyle}" 
-                                              unselectable="true"
-                                              onchange="selectedViewStyleChanged()"
-                                              rendered="#{wizardController.hasTreeView()}">
-                                <f:selectItem itemLabel="Table" itemValue="table" />
-                                <f:selectItem itemLabel="Tree" itemValue="tree" />
-                                <f:selectItem itemLabel="Tree Table" itemValue="treeTable" />
-
-                            </p:selectOneRadio>
-                        </p:column>
                         
-                        <p:column colspan="1">
+                        <p:column colspan="4">
                             <p:commandButton id="#{rootViewid}ExportXlsButton" 
                                              styleClass="actionButtonRight" 
                                              ajax="false" 
@@ -66,15 +54,40 @@ See LICENSE file.
                                      update="#{rootViewId}ValidatePanel"/>
                     
                     <p:row>
+                        
+                        <p:column colspan="1" styleClass="topAlignedDataCell">
+                            
+                            <p:outputLabel value="Select an item in tree view to highlight item in table" 
+                                           rendered="#{wizardController.hasTreeView()}"
+                                           styleClass="entityDataEmphasizedLabel"/>
+                            
+                            <p:tree value="#{wizardController.rootTreeNode}" 
+                                    var="node"
+                                    rendered="#{wizardController.hasTreeView()}"
+                                    selectionMode="single"
+                                    selection="#{wizardController.selectedTreeNode}">
+                                
+                                <p:ajax event="select" 
+                                        listener="#{wizardController.treeSelectionChanged}" 
+                                        update="@form:#{rootViewId}ValidatePanel"
+                                        oncomplete="scrollToSelectedNode();"/>
 
-                        <p:column colspan="2">
+                                <p:treeNode>
+                                    <h:outputText value="#{node}" />
+                                </p:treeNode>
+                            </p:tree>
+
+                        </p:column>
+
+                        <p:column colspan="3" styleClass="topAlignedDataCell">
 
                             <p:dataTable id="#{rootViewId}TableContent"
                                          value="#{wizardController.rows}"
-                                         rendered="#{wizardController.renderTableView}"
+                                         rendered="true"
                                          var="row"
-                                         rows="#{resources.SelectDataTableNumberOfRows}"
-                                         paginator="true">    
+                                         rowKey="#{row.name}"
+                                         selectionMode="single"
+                                         selection="#{wizardController.selectedTableRow}">    
 
                                 <p:columns value="#{wizardController.columns}" 
                                            var="column" 
@@ -87,37 +100,18 @@ See LICENSE file.
 
                             </p:dataTable>
 
-                            <p:tree value="#{wizardController.rootTreeNode}" 
-                                    var="node"
-                                    rendered="#{wizardController.renderTreeView}">
-                                <p:treeNode>
-                                    <h:outputText value="#{node}" />
-                                </p:treeNode>
-                            </p:tree>
-
-                            <p:treeTable id="#{rootViewId}TreeContent"
-                                         value="#{wizardController.rootTreeNode}"
-                                         rendered="#{wizardController.renderTreeTableView}"
-                                         var="row"
-                                         rows="#{resources.SelectDataTableNumberOfRows}"
-                                         paginator="true"
-                                         resizableColumns="true"
-                                         liveResize="true"
-                                         styleClass="importWizardTreeTable">    
-
-                                <p:columns value="#{wizardController.treeTableColumns}" 
-                                           var="column" 
-                                           columnIndexVar="colIndex">
-                                    <f:facet name="header">
-                                        <h:outputText value="#{column.header}" />
-                                    </f:facet>
-                                    <h:outputText value="#{row[column.domainProperty]}" />
-                                </p:columns>
-
-                            </p:treeTable>
-
                         </p:column>
                     </p:row>
+                    
+                    <script type="text/javascript">
+                        function scrollToSelectedNode() {
+                            selectedRows = document.getElementsByClassName('ui-widget-content ui-datatable-selectable ui-state-highlight');
+                            if (selectedRows.length > 0) {
+                                row = selectedRows[0];
+                                row.scrollIntoView({'behavior': 'smooth', 'block': 'center'});
+                            }
+                        }
+                    </script>
                 
                 </p:panelGrid>
 
@@ -131,5 +125,5 @@ See LICENSE file.
             </p:outputPanel>
         </p:panel>
     </p:tab>
-
+    
 </ui:composition>
