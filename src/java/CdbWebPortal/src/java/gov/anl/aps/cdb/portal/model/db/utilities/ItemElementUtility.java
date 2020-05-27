@@ -196,7 +196,7 @@ public class ItemElementUtility {
             nullMenuItem.setCommand(onClick);
             nullMenuItem.setUpdate(updateTarget);
             nullMenuItem.setProcess(processTarget);
-            defaultSubMenu.addElement(nullMenuItem);
+            defaultSubMenu.getElements().add(nullMenuItem);
 
             generateItemSelectionMenuModel(defaultSubMenu, firstLevelItemList, selectionController, selectionMethod, activeItemList, updateTarget, processTarget);
         } else {
@@ -252,7 +252,7 @@ public class ItemElementUtility {
                     }
                 }
 
-                submenu.addElement(childSubmenu);
+                submenu.getElements().add(childSubmenu);
                 addMenuItemToSubmenu(childSubmenu, item,
                         setLocationController, setLocationMethod,
                         applyLocationActiveStyle, updateTarget, processTarget);
@@ -301,7 +301,7 @@ public class ItemElementUtility {
             menuItem.setUpdate(updateTarget);
             menuItem.setProcess(processTarget);
         }
-        currentSubmenu.addElement(menuItem);
+        currentSubmenu.getElements().add(menuItem);
     }
 
 }

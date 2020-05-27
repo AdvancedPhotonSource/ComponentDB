@@ -34,8 +34,7 @@ import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.primefaces.json.JSONObject;
-
+import org.primefaces.shaded.json.JSONObject;
 
 /**
  * CDB REST Web Service API class.

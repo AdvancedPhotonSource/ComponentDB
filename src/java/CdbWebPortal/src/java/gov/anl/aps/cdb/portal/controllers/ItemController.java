@@ -145,10 +145,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     private List<ItemDomainEntity> selectItemElementItemCandidateList;
 
     protected DataModel templateItemsListDataModel = null;
-    protected ItemDomainEntity templateToCreateNewItem = null;
-    protected boolean templateInformationLoadedForCurrent = false;
-    protected Item createdFromTemplateForCurrentItem = null;
-    protected List<Item> itemsCreatedFromCurrentTemplateItem = null;
+    protected ItemDomainEntity templateToCreateNewItem = null;        
 
     protected DataModel itemsWithNoParentsListDataModel = null;
     protected TreeNode itemsWithNoParentsRootNode = null;
@@ -423,10 +420,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         currentEditItemElement = null;
         currentEditItemSource = null;
         currentEditItemElementSaveButtonEnabled = false;
-        hasElementReorderChangesForCurrent = false;
-        templateInformationLoadedForCurrent = false;
-        createdFromTemplateForCurrentItem = null;
-        itemsCreatedFromCurrentTemplateItem = null;
+        hasElementReorderChangesForCurrent = false;        
         getItemElementController().resetCurrentItemVariables();
     }
 
@@ -2326,7 +2320,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
-    public String prepareView(Item item) {
+    public String prepareView(Item item) {        
         prepareItemElementListTreeTable(item);
         return "/views/item/view.xhtml?faces-redirect=true&id=" + item.getId();
     }
@@ -2388,8 +2382,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public void setTemplateToCreateNewItem(ItemDomainEntity templateToCreateNewItem) {
-        this.templateToCreateNewItem = templateToCreateNewItem;
-        this.createdFromTemplateForCurrentItem = templateToCreateNewItem;
+        this.templateToCreateNewItem = templateToCreateNewItem;        
     }
 
     public void completeSelectionOfTemplate() {
@@ -2422,23 +2415,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public Item getCreatedFromTemplateForCurrentItem() {
-        if (!templateInformationLoadedForCurrent) {
-            if (!isCurrentItemTemplate()) {
-                if (current != null) {
-                    String machineDesignTemplateRelationshipTypeName = getItemCreatedFromTemplateRelationshipName();
-                    if (current.getItemElementRelationshipList() != null) {
-                        for (ItemElementRelationship ier : current.getItemElementRelationshipList()) {
-                            if (ier.getRelationshipType().getName().equals(machineDesignTemplateRelationshipTypeName)) {
-                                createdFromTemplateForCurrentItem = ier.getSecondItemElement().getParentItem();
-                            }
-                        }
-                    }
-
-                }
-                templateInformationLoadedForCurrent = true;
-            }
-        }
-        return createdFromTemplateForCurrentItem;
+        return current.getCreatedFromTemplate(); 
     }
 
     public List<Item> getItemsCreatedFromCurrentTemplateItem() {
@@ -2446,24 +2423,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public List<Item> getItemsCreatedFromTemplateItem(Item templateItem) {
-        if (!templateInformationLoadedForCurrent) {
-            if (isCurrentItemTemplate()) {
-                if (templateItem != null) {
-                    String machineDesignTemplateRelationshipTypeName = getItemCreatedFromTemplateRelationshipName();
-                    itemsCreatedFromCurrentTemplateItem = new ArrayList<>();
-                    if (templateItem.getItemElementRelationshipList1() != null) {
-                        for (ItemElementRelationship ier : templateItem.getItemElementRelationshipList1()) {
-                            if (ier.getRelationshipType().getName().equals(machineDesignTemplateRelationshipTypeName)) {
-                                Item parentItem = ier.getFirstItemElement().getParentItem();
-                                itemsCreatedFromCurrentTemplateItem.add(parentItem);
-                            }
-                        }
-                    }
-                }
-                templateInformationLoadedForCurrent = true;
-            }
-        }
-        return itemsCreatedFromCurrentTemplateItem;
+        return templateItem.getItemsCreatedFromThisTemplateItem(); 
     }
 
     public boolean getDisplayContentsOfCreatedFromTemplateItem() {

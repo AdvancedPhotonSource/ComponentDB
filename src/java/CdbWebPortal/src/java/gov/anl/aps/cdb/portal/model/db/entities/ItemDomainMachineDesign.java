@@ -121,6 +121,22 @@ public class ItemDomainMachineDesign extends LocatableItem {
     }
 
     @Override
+    public Item getActiveLocation() {        
+        if (location != null) {
+            return location;            
+        }
+        return membershipLocation; 
+    }
+
+    @Override
+    public String getLocationDetails() {
+        if (location != null) {
+            return locationDetails; 
+        }
+        return super.getLocationDetails(); 
+    }
+
+    @Override
     public String toString() {
         // Only top level machine design will get the special derived from formatting... DerivedItem - [name]
         if (this.getDerivedFromItem() != null) {

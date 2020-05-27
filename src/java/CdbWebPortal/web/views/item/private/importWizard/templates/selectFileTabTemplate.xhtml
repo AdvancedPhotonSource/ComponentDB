@@ -19,7 +19,7 @@ See LICENSE file.
             <p:outputPanel id="#{rootViewId}SelectFilePanel">
                 <p:panelGrid columns="2">
                 
-                    <p:fileUpload fileUploadListener="#{wizardController.fileUploadListenerData}" 
+                    <p:fileUpload listener="#{wizardController.fileUploadListenerData}" 
                                   auto="true" 
                                   allowTypes="/(\.|\/)([xX][lL][sS][xX]?)$/"
                                   rendered="#{wizardController.renderFileuploadData}"

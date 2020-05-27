@@ -680,38 +680,6 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     }
 
     /**
-     * Clear all list filters.
-     */
-    public void clearAllListFilters() {
-        if (listDataTable == null) {
-            return;
-        }
-        Map<String, Object> filterMap = listDataTable.getFilters();
-        for (String filterName : filterMap.keySet()) {
-            filterMap.put(filterName, "");
-        }
-    }
-
-    /**
-     * Check if any list filter is set.
-     *
-     * @return true if filter is set, false otherwise
-     */
-    public boolean isAnyListFilterSet() {
-        if (listDataTable == null) {
-            return false;
-        }
-        Map<String, Object> filterMap = listDataTable.getFilters();
-        for (Object filterValue : filterMap.values()) {
-            String filter = (String) filterValue;
-            if (filter != null && !filter.isEmpty()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Customize view display and reload current page.
      *
      * @return URL for the current view
@@ -1589,7 +1557,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
 
     public void clearSelectFiltersAndResetSelectDataModel() {
         if (selectDataTable != null) {
-            selectDataTable.getFilters().clear();
+            selectDataTable.getFilterBy().clear();
         }
         settingObject.clearSelectFilters();
         resetSelectDataModel();

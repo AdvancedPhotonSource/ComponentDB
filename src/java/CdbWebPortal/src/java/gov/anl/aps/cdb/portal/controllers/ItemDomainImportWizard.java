@@ -19,7 +19,7 @@ import org.primefaces.event.FlowEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
-import org.primefaces.model.UploadedFile;
+import org.primefaces.model.file.UploadedFile;
 
 /**
  *

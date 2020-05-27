@@ -18,7 +18,7 @@ See LICENSE file.
     <ui:define name="additionalInformationAboutAllConfigurations" />
 
     <ui:define name="entitySpecificCustomizeOptionsTab">
-        <p:tab title="Display Item Columns">            
+        <p:tab title="Display Item Columns">
             <p:panelGrid columns="2">                
                 <ui:include src="templateDefaults/customizeDisplayDialog/displayItemElementItemIdentifier1.xhtml" />
 
@@ -29,7 +29,7 @@ See LICENSE file.
                                rendered="#{currentItemController.entityDisplayItemIdentifier2}"
                                value="Display #{currentItemController.itemIdentifier2Title}"
                                styleClass="dialogDataLabel"/>
-                
+
                 <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemType" 
                                          rendered="#{currentItemController.entityDisplayItemType}"
                                          value="#{currentItemSettingObject.displayItemElementListItemType}"/>
@@ -37,7 +37,7 @@ See LICENSE file.
                                rendered="#{currentItemController.entityDisplayItemType}"
                                value="Display #{currentItemController.itemItemTypeTitle}"
                                styleClass="dialogDataLabel"/>
-                
+
                 <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemCategory" 
                                          rendered="#{currentItemController.entityDisplayItemCategory}"
                                          value="#{currentItemSettingObject.displayItemElementListItemCategory}"/>
@@ -45,7 +45,7 @@ See LICENSE file.
                                rendered="#{currentItemController.entityDisplayItemCategory}"
                                value="Display #{currentItemController.itemItemCategoryTitle}"
                                styleClass="dialogDataLabel"/>
-                
+
                 <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemProject" 
                                          rendered="#{currentItemController.entityDisplayItemProject}"
                                          value="#{currentItemSettingObject.displayItemElementListProject}"/>
@@ -53,7 +53,7 @@ See LICENSE file.
                                rendered="#{currentItemController.entityDisplayItemProject}"
                                value="Display Project"
                                styleClass="dialogDataLabel"/>
-                
+
                 <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemSource" 
                                          rendered="#{currentItemController.entityDisplayItemSources}"
                                          value="#{currentItemSettingObject.displayItemElementListSource}"/>
@@ -61,13 +61,13 @@ See LICENSE file.
                                rendered="#{currentItemController.entityDisplayItemSources}"
                                value="Display Source"
                                styleClass="dialogDataLabel"/>
-                
+
                 <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemDescription"                                          
                                          value="#{currentItemSettingObject.displayItemElementListDescription}"/>
                 <h:outputLabel for="#{entityTypeName}DisplayItemElementItemDescription" 
                                value="Display Description"
                                styleClass="dialogDataLabel"/>
-                
+
                 <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementItemQrId"         
                                          rendered="#{currentItemController.entityDisplayQrId}"
                                          value="#{currentItemSettingObject.displayItemElementListQrId}"/>
@@ -79,8 +79,20 @@ See LICENSE file.
             </p:panelGrid>
 
         </p:tab>
+
+        <p:tab title="Display Assembly Reference Columns">
+            <ui:param name="itemElementSettingObject"
+                      value="#{itemElementController.settingObject}"/> 
+            <p:panelGrid columns="2">   
+                <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementPartName"                                              
+                                         value="#{itemElementSettingObject.displayPartName}"/>
+                <h:outputLabel for="#{entityTypeName}DisplayItemElementPartName" 
+                               value="Display Part Name"                           
+                               styleClass="dialogDataLabel"/>
+            </p:panelGrid>
+        </p:tab>
     </ui:define>
-    
+
     <ui:define name="customizeDisplayDialogAdditionalFooterContent">
         <ui:include src="templateDefaults/customizeDisplayDialog/toggleSimpleComplexElementsListCommandButton.xhtml" >
             <ui:param name="commandButtonText" value="Complex View" />

@@ -801,6 +801,7 @@ h2 {
     background-position: center;
     background-size: contain;     
     animation: transition-ui-icon-machine-design 0.25s;
+    filter: grayscale(100%) brightness(500%) brightness(10%);
 }
 
 @keyframes transition-ui-icon-machine-design {
@@ -817,7 +818,8 @@ h2 {
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
-    animation: transition-ui-icon-machine-design 0.25s;
+    animation: transition-ui-icon-machine-design 0.25s;    
+    filter: grayscale(100%) brightness(500%) brightness(10%);
 }
 
 @keyframes transition-ui-icon-machine-design-template {

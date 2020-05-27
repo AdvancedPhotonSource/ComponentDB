@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+    
+    <ui:insert name="partNameColumnUIParams">
+        <ui:param name="partNameColumnValue"
+                  value="#{itemElementObject.name}" />
+    </ui:insert>
+    
+    <ui:insert name="partNameColumn">
+        <p:column headerText="Part Name"
+                  rendered="#{rendered and itemElementSettingObject.displayPartName}"
+                  filterBy="#{partNameColumnValue}"
+                  filterable="#{itemElementListFilterable}">            
+            <h:outputText value="#{partNameColumnValue}"/>            
+        </p:column>
+    </ui:insert>
+    
+    <ui:include src="../../../item/private/itemListObject.xhtml">
+        <ui:param name="itemListDisplayItemIdentifier1" value="#{currentItemController.entityDisplayItemIdentifier1 and currentItemSettingObject.displayItemElementListItemIdentifier1}" />
+        <ui:param name="itemListDisplayItemIdentifier2" value="#{currentItemController.entityDisplayItemIdentifier2 and currentItemSettingObject.displayItemElementListItemIdentifier2}" />                        
+        <ui:param name="itemListDisplayItemType" value="#{currentItemController.entityDisplayItemType and currentItemSettingObject.displayItemElementListItemType}" /> 
+        <ui:param name="itemListDisplayItemCategory" value="#{currentItemController.entityDisplayItemCategory and currentItemSettingObject.displayItemElementListItemCategory}" /> 
+        <ui:param name="itemListDisplayDescription" value="#{currentItemSettingObject.displayItemElementListDescription}" />
+        <ui:param name="itemListDisplayItemProject" value="#{currentItemController.entityDisplayItemProject and currentItemSettingObject.displayItemElementListProject}" />
+        <ui:param name="itemListDisplayItemSource" value="#{currentItemController.entityDisplayItemSources and currentItemSettingObject.displayItemElementListSource}" />
+        <ui:param name="itemListDisplayQrId" value="#{currentItemController.entityDisplayQrId and currentItemSettingObject.displayItemElementListQrId}" />
+        <ui:param name="filterable" value="#{itemElementListFilterable}" />         
+    </ui:include>
+
+</ui:composition>

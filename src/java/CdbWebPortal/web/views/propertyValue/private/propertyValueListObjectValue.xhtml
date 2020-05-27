@@ -121,9 +121,19 @@ See LICENSE file.
                     <p:tooltip for="#{entityTypeName}propertyValueDownloadButton"
                                value="Download file" />
                     <p:fileDownload value="#{propertyValueController.executeFileDownloadActionCommandForPropertyValue(propertyValueObject)}"
-                                    contentDisposition="inline"/>                
+                                    contentDisposition="inline"/>                                                    
                 </p:commandLink>
-
+                
+                <p:commandLink id="#{entityTypeName}propertyValueDownloadExcelPDFButton"
+                               rendered="#{propertyValueController.displayDownloadActionExcelPDFValue(propertyValueObject)}"
+                               target="_blank"
+                               ajax="false"
+                               styleClass="fa fa-link-icon fa-file-pdf-o">                    
+                    <p:tooltip for="#{entityTypeName}propertyValueDownloadExcelPDFButton"
+                               value="Download generated PDF preview" />
+                    <p:fileDownload value="#{propertyValueController.executeFileDownloadExcelPDFActionCommandForPropertyValue(propertyValueObject)}"
+                                    contentDisposition="inline"/>
+                </p:commandLink>
                 <h:outputText value="#{displayValue}"/> 
             </p:outputPanel>
         </p:outputPanel>

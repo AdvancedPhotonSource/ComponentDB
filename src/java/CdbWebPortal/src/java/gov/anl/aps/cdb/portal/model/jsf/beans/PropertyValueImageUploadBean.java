@@ -35,8 +35,8 @@ import javax.naming.NamingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
 
-import org.primefaces.model.UploadedFile;
 
 /**
  * JSF bean for property value image upload.
@@ -71,7 +71,7 @@ public class PropertyValueImageUploadBean implements Serializable {
             String fileName = localUploadedFile.getFileName();
 
             try {
-                InputStream input = localUploadedFile.getInputstream();
+                InputStream input = localUploadedFile.getInputStream();
                 uploadImage(propertyValue, fileName, input);
                 SessionUtility.addInfoMessage("Success", "Uploaded file " + fileName + ".");
             } catch (IOException ex) {

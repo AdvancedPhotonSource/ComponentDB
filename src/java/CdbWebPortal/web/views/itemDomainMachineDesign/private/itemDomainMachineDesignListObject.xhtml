@@ -34,6 +34,9 @@ See LICENSE file.
     <ui:param name="topLevelItem"
               value="#{itemElementListObject.name == null}" />
     
+    <ui:param name="createdFromTemplate"
+              value="#{itemListObject.createdFromTemplate}" /> 
+    
     <p:column headerText="Machine Design Item Name" styleClass="draggableTreeTableDataCell">
         <p:outputPanel id="draggableMachineDesign#{itemListObject.id}"
                        styleClass="inlineOutputPanel">                           
@@ -44,7 +47,13 @@ See LICENSE file.
                       value="#{itemTreeListObject != null 
                                ? itemDomainMachineDesignController.getItemRepIcon(itemTreeListObject)
                                : itemDomainMachineDesignController.getItemRepIcon(itemElementParentItem)}" />
-            <span class="ui-treenode-icon ui-icon #{domainIcon}"/>
+            <span class="ui-treenode-icon ui-icon #{domainIcon}"/>            
+            <p:commandLink styleClass="ui-treenode-icon ui-icon ui-icon-machine-design-template custom-icon-blue" 
+                           action="#{entityController.prepareView(createdFromTemplate)}" 
+                           onclick="PF('loadingDialog').show()"
+                           title="View Template Item"
+                           rendered="#{createdFromTemplate != null}"/> 
+            
             <ui:fragment rendered="#{itemTreeListObject != null}">
                 <span>#{itemTreeListObject}</span>
             </ui:fragment>
@@ -75,6 +84,12 @@ See LICENSE file.
                   value="#{itemDomainMachineDesignController.getPrimaryImageThumbnailForMachineDesignItem(itemElementListObject)}" /> 
         <ui:param name="primaryImageValueForItem"
                   value="#{itemDomainMachineDesignController.getPrimaryImageValueForMachineDesignItem(itemElementListObject)}" /> 
+    </ui:include>
+    
+    <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemQrId.xhtml">
+        <ui:param name="rendered" value="#{entityController.entityDisplayQrId 
+                                           and settingObject.displayQrId
+                                           and hideOptionalColumns}" />
     </ui:include>
 
     <p:column headerText="Machine Design Item Description"

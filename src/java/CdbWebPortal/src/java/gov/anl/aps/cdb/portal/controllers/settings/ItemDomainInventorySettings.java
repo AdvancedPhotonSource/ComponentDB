@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -294,20 +295,20 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         if (dataTable == null) {
             return;
         }
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByComponent = (String) filters.get("component.name");
-        filterByLocation = (String) filters.get("location.name");
-        filterByLocationDetails = (String) filters.get("locationDetails");
-        filterByQrId = (String) filters.get("qrId");
-        filterBySerialNumber = (String) filters.get("serialNumber");
-        filterByTag = (String) filters.get("tag");
-        filterByDomain = (String) filters.get("domain"); 
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByComponent = (String) filters.get("component.name").getFilterField();
+        filterByLocation = (String) filters.get("location.name").getFilterField();
+        filterByLocationDetails = (String) filters.get("locationDetails").getFilterField();
+        filterByQrId = (String) filters.get("qrId").getFilterField();
+        filterBySerialNumber = (String) filters.get("serialNumber").getFilterField();
+        filterByTag = (String) filters.get("tag").getFilterField();
+        filterByDomain = (String) filters.get("domain").getFilterField(); 
 
-        filterByPropertyValue1 = (String) filters.get("propertyValue1");
-        filterByPropertyValue2 = (String) filters.get("propertyValue2");
-        filterByPropertyValue3 = (String) filters.get("propertyValue3");
-        filterByPropertyValue4 = (String) filters.get("propertyValue4");
-        filterByPropertyValue5 = (String) filters.get("propertyValue5");
+        filterByPropertyValue1 = (String) filters.get("propertyValue1").getFilterField();
+        filterByPropertyValue2 = (String) filters.get("propertyValue2").getFilterField();
+        filterByPropertyValue3 = (String) filters.get("propertyValue3").getFilterField();
+        filterByPropertyValue4 = (String) filters.get("propertyValue4").getFilterField();
+        filterByPropertyValue5 = (String) filters.get("propertyValue5").getFilterField();
     }
     
     @Override

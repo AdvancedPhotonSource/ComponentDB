@@ -4,12 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.controllers.settings;
 
-import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -92,9 +92,9 @@ public class SourceSettings extends CdbEntitySettingsBase<SourceController> {
         if (dataTable == null) {
             return;
         }
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByContactInfo = (String) filters.get("contactInfo");
-        filterByUrl = (String) filters.get("url");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByContactInfo = (String) filters.get("contactInfo").getFilterField();
+        filterByUrl = (String) filters.get("url").getFilterField();
     }
     
     public Boolean getDisplayContactInfo() {
