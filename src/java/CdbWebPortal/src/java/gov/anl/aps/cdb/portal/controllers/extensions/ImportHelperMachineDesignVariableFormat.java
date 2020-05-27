@@ -473,12 +473,13 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         }
         
         // output columns are fixed
+        outputColumns.add(new OutputColumnModel("Parent Item", "importContainerString"));
+        outputColumns.add(new OutputColumnModel("Parent Path", "importPath"));
         outputColumns.add(new OutputColumnModel("Name", "name"));
         outputColumns.add(new OutputColumnModel("Is Template", "importIsTemplateString"));
         outputColumns.add(new OutputColumnModel("Project", "itemProjectString"));
         outputColumns.add(new OutputColumnModel("Alt Name", "alternateName"));
         outputColumns.add(new OutputColumnModel("Description", "description"));
-        outputColumns.add(new OutputColumnModel("Parent Item", "importContainerString"));
         outputColumns.add(new OutputColumnModel("Assigned Catalog Item", "importAssignedCatalogItemString"));
         outputColumns.add(new OutputColumnModel("Assigned Inventory Item", "importAssignedInventoryItemString"));
         outputColumns.add(new OutputColumnModel("Location", "importLocationItemString"));
@@ -576,6 +577,14 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                 validString = appendToString(validString, msg);
                 isValid = false;
             }
+            
+            // create "parent path" to display item hierarchy in validation table
+            String path = "";
+            for (int i = 1 ; i < itemIndentLevel ; i++) {
+                ItemDomainMachineDesign pathItem = parentIndentMap.get(i);
+                path = path + pathItem.getName() + "/ ";
+            }
+            item.setImportPath(path);
             
         } else {
             // this is either a top-level item, or a parent item is explicitly specified for it
