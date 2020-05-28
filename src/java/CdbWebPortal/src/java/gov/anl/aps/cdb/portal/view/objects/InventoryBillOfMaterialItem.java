@@ -12,7 +12,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.DataModel;
@@ -23,8 +22,6 @@ import javax.faces.model.ListDataModel;
  * assembly inventory item.
  */
 public class InventoryBillOfMaterialItem {
-
-    private final String INVENTORY_DOMAIN_CONTROLLER_NAME = "itemDomainInventoryController";
 
     // Defined as a constant in InventoryBillOfMaterialItemStates
     protected String state = null;
@@ -194,7 +191,7 @@ public class InventoryBillOfMaterialItem {
 
     public void loadItemDomainInventoryController() {
         if (itemDomainInventoryController == null) {
-            itemDomainInventoryController = ItemDomainInventoryController.getInstance(); 
+            itemDomainInventoryController = ItemDomainInventoryController.getInstance();
         }
     }
 

@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -102,11 +103,11 @@ public class LogSettings extends CdbEntitySettingsBase<LogController>{
         if (dataTable == null) {
             return;
         }
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByEnteredByUser = (String) filters.get("enteredByUser");
-        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime");
-        filterByText = (String) filters.get("text");
-        filterByTopic = (String) filters.get("topic");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByEnteredByUser = (String) filters.get("enteredByUser").getFilterField();
+        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime").getFilterField();
+        filterByText = (String) filters.get("text").getFilterField();
+        filterByTopic = (String) filters.get("topic").getFilterField();
     }
     
     @Override

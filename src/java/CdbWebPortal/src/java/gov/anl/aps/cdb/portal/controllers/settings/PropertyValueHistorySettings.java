@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -125,12 +126,12 @@ public class PropertyValueHistorySettings extends CdbEntitySettingsBase<Property
         if (dataTable == null) {
             return;
         }
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByEnteredByUser = (String) filters.get("enteredByUser");
-        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime");
-        filterByTag = (String) filters.get("tag");
-        filterByUnits = (String) filters.get("units");
-        filterByValue = (String) filters.get("value");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByEnteredByUser = (String) filters.get("enteredByUser").getFilterField();
+        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime").getFilterField();
+        filterByTag = (String) filters.get("tag").getFilterField();
+        filterByUnits = (String) filters.get("units").getFilterField();
+        filterByValue = (String) filters.get("value").getFilterField();
     }
 
     public Boolean getDisplayEffectiveFromDateTime() {

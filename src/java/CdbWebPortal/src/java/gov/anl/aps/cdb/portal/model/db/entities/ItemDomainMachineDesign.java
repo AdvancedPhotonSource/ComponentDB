@@ -86,13 +86,15 @@ public class ItemDomainMachineDesign extends LocatableItem {
     public ItemDomainMachineDesign getParentMachineDesign() {
         List<ItemElement> itemElementMemberList = this.getItemElementMemberList();        
         
-        for (ItemElement memberElement : itemElementMemberList) {
-            Item parentItem = memberElement.getParentItem();
-            if (parentItem instanceof ItemDomainMachineDesign) {
-                // Should only be one. 
-                return (ItemDomainMachineDesign) parentItem;                
+        if (itemElementMemberList != null) {
+            for (ItemElement memberElement : itemElementMemberList) {
+                Item parentItem = memberElement.getParentItem();
+                if (parentItem instanceof ItemDomainMachineDesign) {
+                    // Should only be one. 
+                    return (ItemDomainMachineDesign) parentItem;                
+                }
             }
-        }        
+        }
        
        return null;
     }
@@ -118,4 +120,15 @@ public class ItemDomainMachineDesign extends LocatableItem {
         return super.getLocationDetails(); 
     }
 
+    @Override
+    public String toString() {
+        // Only top level machine design will get the special derived from formatting... DerivedItem - [name]
+        if (this.getDerivedFromItem() != null) {
+            if (this.getParentMachineDesign() != null) {
+                return this.getName();
+            }
+        }
+        
+        return super.toString();
+    }
 }

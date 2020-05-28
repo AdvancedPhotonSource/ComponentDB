@@ -14,7 +14,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Search controller.
@@ -25,7 +26,7 @@ public class SearchController implements Serializable {
         
     public static final String controllerNamed = "searchController";       
 
-    private static final Logger logger = Logger.getLogger(SearchController.class.getName());
+    private static final Logger logger = LogManager.getLogger(SearchController.class.getName());
     private String searchString = null;       
 
     private Boolean performSearch = false;

@@ -12,7 +12,8 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -21,7 +22,7 @@ import org.primefaces.model.StreamedContent;
  */
 public class IcmsLinkPropertyTypeHandler extends AbstractPropertyTypeHandler {
     
-    private static final Logger logger = Logger.getLogger(IcmsLinkPropertyTypeHandler.class.getName());
+    private static final Logger logger = LogManager.getLogger(IcmsLinkPropertyTypeHandler.class.getName());
 
     public static final String HANDLER_NAME = "ICMS Link";
     public static final String MIME_CONENT_TYPE = "application/octet-stream";

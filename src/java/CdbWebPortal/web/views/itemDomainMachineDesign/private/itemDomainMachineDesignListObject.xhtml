@@ -34,6 +34,9 @@ See LICENSE file.
     <ui:param name="topLevelItem"
               value="#{itemElementListObject.name == null}" />
     
+    <ui:param name="createdFromTemplate"
+              value="#{itemListObject.createdFromTemplate}" /> 
+    
     <p:column headerText="Machine Design Item Name" styleClass="draggableTreeTableDataCell">
         <p:outputPanel id="draggableMachineDesign#{itemListObject.id}"
                        styleClass="inlineOutputPanel">                           
@@ -42,9 +45,15 @@ See LICENSE file.
             
             <ui:param name="domainIcon" 
                       value="#{itemTreeListObject != null 
-                               ? itemTreeListObject.domain.domainRepIcon
-                               : itemElementParentItem.domain.domainRepIcon}" />
-            <span class="ui-treenode-icon ui-icon #{domainIcon}"/>
+                               ? itemDomainMachineDesignController.getItemRepIcon(itemTreeListObject)
+                               : itemDomainMachineDesignController.getItemRepIcon(itemElementParentItem)}" />
+            <span class="ui-treenode-icon ui-icon #{domainIcon}"/>            
+            <p:commandLink styleClass="ui-treenode-icon ui-icon ui-icon-machine-design-template custom-icon-blue" 
+                           action="#{entityController.prepareView(createdFromTemplate)}" 
+                           onclick="PF('loadingDialog').show()"
+                           title="View Template Item"
+                           rendered="#{createdFromTemplate != null}"/> 
+            
             <ui:fragment rendered="#{itemTreeListObject != null}">
                 <span>#{itemTreeListObject}</span>
             </ui:fragment>

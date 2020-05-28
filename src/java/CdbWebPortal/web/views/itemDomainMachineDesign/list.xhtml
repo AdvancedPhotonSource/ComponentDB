@@ -31,7 +31,9 @@ See LICENSE file.
                                    onIcon="fa fa-star" offIcon="fa fa-star-o"
                                    value="#{itemDomainMachineDesignController.favoritesShown}"
                                    onchange="onChangeFavoritesEnabled()"
-                                   rendered="#{!itemDomainMachineDesignController.displayListConfigurationView and loginController.loggedIn}">
+                                   rendered="#{!itemDomainMachineDesignController.displayListConfigurationView 
+                                               and loginController.loggedIn
+                                               and itemDomainMachineDesignController.currentViewIsStandard}">
                 <p:remoteCommand name="onChangeFavoritesEnabled"                         
                                  action="#{itemDomainMachineDesignController.list()}"
                                  onstart="PF('loadingDialog').show()"/> 
@@ -78,6 +80,8 @@ See LICENSE file.
             <ui:include src="../item/private/itemListActionButtons.xhtml" >
                 <ui:param name="listExportable"
                           value="#{false}" /> 
+                <ui:param name="templateIcon"
+                          value="ui-icon-machine-design-template" />
             </ui:include>
         </p:outputPanel>
     </ui:define>

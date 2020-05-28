@@ -4,12 +4,17 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperSource;
 import gov.anl.aps.cdb.portal.controllers.settings.SourceSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 import javax.ejb.EJB;
 import javax.inject.Named;
 import javax.enterprise.context.SessionScoped;
@@ -17,18 +22,26 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-@Named("sourceController")
+@Named(SourceController.CONTROLLER_NAMED)
 @SessionScoped
 public class SourceController extends CdbEntityController<Source, SourceFacade, SourceSettings> implements Serializable {    
 
-    private static final Logger logger = Logger.getLogger(SourceController.class.getName());   
+    private static final Logger logger = LogManager.getLogger(SourceController.class.getName());   
+    public static final String CONTROLLER_NAMED = "sourceController";
 
     @EJB
     private SourceFacade sourceFacade;
+    
+    protected ImportHelperSource importHelper = new ImportHelperSource();
 
     public SourceController() {
+    }
+    
+    public static SourceController getInstance() {
+        return (SourceController) SessionUtility.findBean(SourceController.CONTROLLER_NAMED);
     }
 
     @Override
@@ -37,7 +50,7 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
     }
 
     @Override
-    protected Source createEntityInstance() {
+    public Source createEntityInstance() {
         Source source = new Source();
         return source;
     }
@@ -58,6 +71,10 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
     @Override
     public Source findById(Integer id) {
         return sourceFacade.findById(id);
+    }
+    
+    public Source findByName(String name) {
+        return getEntityDbFacade().findByName(name);
     }
 
     @Override
@@ -144,6 +161,40 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
         return true;
     }    
 
-    
+    /**
+     * Prepares import wizard.
+     */
+    public String prepareWizardImport() {
+        importHelper.reset();
+        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
+        return "/views/source/import?faces-redirect=true";
+    }
+
+    @Override
+    public void checkItemUniqueness(Source item) throws CdbException {
+        String name = item.getName();
+
+        if (name != null && name.isEmpty()) {
+            throw new CdbException("No Name has been specified for item.");
+        }
+
+        if (verifyItemNameUniqueness(item) == false) {
+            throw new ObjectAlreadyExists("Duplicate found in database with same name.");
+        }
+
+    }
+
+    protected boolean verifyItemNameUniqueness(Source item) {
+        String name = item.getName();
+
+        Source existingItem = getEntityDbFacade().findByName(name);
+
+        if (existingItem != null) {
+            if (Objects.equals(item.getId(), existingItem.getId()) == false) {
+                return false;
+            }
+        }
+        return true;
+    }
     
 }

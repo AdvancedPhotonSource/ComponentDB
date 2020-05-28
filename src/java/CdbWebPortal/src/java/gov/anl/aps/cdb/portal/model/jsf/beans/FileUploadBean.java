@@ -11,9 +11,10 @@ import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.primefaces.model.file.UploadedFile;
 
-import org.primefaces.model.UploadedFile;
 
 /**
  * JSF file upload bean.
@@ -22,7 +23,7 @@ import org.primefaces.model.UploadedFile;
 @RequestScoped
 public class FileUploadBean {
 
-    private static final Logger logger = Logger.getLogger(FileUploadBean.class.getName());
+    private static final Logger logger = LogManager.getLogger(FileUploadBean.class.getName());
 
     private UploadedFile uploadedFile;
 
@@ -41,7 +42,7 @@ public class FileUploadBean {
             logger.debug("Uploading file: " + uploadedFile.getFileName()
                     + " (size: " + uploadedFile.getSize() + ")");
             File file = new File("/tmp/xyz");
-            try (InputStream input = uploadedFile.getInputstream()) {
+            try (InputStream input = uploadedFile.getInputStream()) {
                 Files.copy(input, file.toPath());
                 logger.debug("Saved file: " + file.toPath());
             } catch (Exception ex) {

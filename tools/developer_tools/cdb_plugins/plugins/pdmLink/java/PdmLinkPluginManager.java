@@ -7,14 +7,15 @@ package gov.anl.aps.cdb.portal.plugins.support.pdmLink;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.plugins.PluginManagerBase;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 /**
  *
  * @author djarosz
  */
 public class PdmLinkPluginManager extends PluginManagerBase {
     
-    private static final Logger logger = Logger.getLogger(PdmLinkPluginManager.class.getName());
+    private static final Logger logger = LogManager.getLogger(PdmLinkPluginManager.class.getName());
 
     @Override
     public PropertyTypeHandlerInterface getPluginPropertyTypeHandler() {

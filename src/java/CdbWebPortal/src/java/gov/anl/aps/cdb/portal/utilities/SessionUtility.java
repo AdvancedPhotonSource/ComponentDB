@@ -14,7 +14,8 @@ import javax.faces.context.FacesContext;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpSession;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.PrimeFaces;
 
 /**
@@ -35,7 +36,7 @@ public class SessionUtility {
     private static final String JAVA_LOOKUP_START = "java:global/";
     private static String FACADE_LOOKUP_STRING_START = null; 
     
-    private static final Logger logger = org.apache.log4j.Logger.getLogger(SessionUtility.class.getName());          
+    private static final Logger logger = LogManager.getLogger(SessionUtility.class.getName());          
 
     public SessionUtility() {
     }

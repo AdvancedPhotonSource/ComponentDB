@@ -90,7 +90,15 @@ See LICENSE file.
                 </p:panel>
                 <ui:insert name="itemPropertiesSupport" />
 
-                <ui:insert name="additonalPluginSections" />
+                <p:panel header="#{entityController.coreMetadataPropertyTitle}" 
+                         id="#{entityTypeName}ViewCoreMetadataPropertyPanel"
+                         rendered="#{entityController.renderCoreMetadataProperty}"
+                         toggleable="true" 
+                         collapsed="#{!entityController.displayCoreMetadataProperty}">
+                    <ui:insert name="coreMetadataProperty" />
+                </p:panel>           
+
+            <ui:insert name="additonalPluginSections" />
 
                 <p:panel header="#{currentItemController.itemElementsListTitle}"
                          id="#{entityTypeName}ViewElementsPanel"

@@ -67,6 +67,12 @@ See LICENSE file.
                         <ui:insert name="itemProperties" />
                     </p:tab>
 
+                    <p:tab title="#{entityController.coreMetadataPropertyTitle}"
+                           id="coreMetadataPropertyEditPageAccordion"
+                           rendered="#{entityController.renderCoreMetadataProperty}">
+                        <ui:insert name="coreMetadataProperty" />
+                    </p:tab>
+
                     <p:tab title="Sources"
                            id="sourcesEditPageAccordion"
                            rendered="#{entityController.entityDisplayItemSources}">

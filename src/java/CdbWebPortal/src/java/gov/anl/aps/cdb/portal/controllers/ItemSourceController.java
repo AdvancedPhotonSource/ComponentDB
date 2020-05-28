@@ -16,7 +16,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Named("itemSourceController")
 @SessionScoped
@@ -25,7 +26,7 @@ public class ItemSourceController extends CdbEntityController<ItemSource, ItemSo
 
     @EJB
     private ItemSourceFacade itemSourceFacade;
-    private static final Logger logger = Logger.getLogger(ItemSourceController.class.getName());   
+    private static final Logger logger = LogManager.getLogger(ItemSourceController.class.getName());   
 
     public ItemSourceController() {
     }

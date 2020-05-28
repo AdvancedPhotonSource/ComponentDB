@@ -9,7 +9,8 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">   
 
     <p:submenu icon="ui-icon-cable-design" label="Cable"
-               disabled="#{disabledEditContextMenuItemForSelection}">
+               disabled="#{disabledEditContextMenuItemForSelection}"
+               rendered="#{itemDomainMachineDesignController.currentViewIsStandard}">
         <ui:include src="addCableSubMenu.xhtml" />
         <ui:include src="performCableMappingContextMenuItem.xhtml"/>                
     </p:submenu>

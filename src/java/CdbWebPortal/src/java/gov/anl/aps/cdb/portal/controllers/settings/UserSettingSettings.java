@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -55,9 +56,9 @@ public class UserSettingSettings extends CdbEntitySettingsBase<UserSettingContro
             return;
         }
 
-        Map<String, Object> filters = dataTable.getFilters();
-        filterBySettingType = (String) filters.get("settingType");
-        filterByValue = (String) filters.get("value");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterBySettingType = (String) filters.get("settingType").getFilterField();
+        filterByValue = (String) filters.get("value").getFilterField();
     }
 
     public String getFilterBySettingType() {

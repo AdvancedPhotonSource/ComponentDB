@@ -35,6 +35,12 @@ public abstract class CdbEntityFacade<T> {
         return getEntityManager().merge(entity);
     }
 
+    public void edit(List<T> entities) {
+        for (T entity : entities) {
+            edit(entity);
+        }
+    }
+
     public void remove(T entity) {
         getEntityManager().remove(getEntityManager().merge(entity));
     }

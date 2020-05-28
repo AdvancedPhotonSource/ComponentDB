@@ -32,10 +32,11 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
 
-import org.primefaces.model.UploadedFile;
 
 /**
  * JSF bean for property value image upload.
@@ -44,7 +45,7 @@ import org.primefaces.model.UploadedFile;
 @SessionScoped
 public class PropertyValueImageUploadBean implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(PropertyValueImageUploadBean.class.getName());
+    private static final Logger logger = LogManager.getLogger(PropertyValueImageUploadBean.class.getName());
 
     private UploadedFile uploadedFile;
     private CdbEntityController cdbEntityController;
@@ -70,7 +71,7 @@ public class PropertyValueImageUploadBean implements Serializable {
             String fileName = localUploadedFile.getFileName();
 
             try {
-                InputStream input = localUploadedFile.getInputstream();
+                InputStream input = localUploadedFile.getInputStream();
                 uploadImage(propertyValue, fileName, input);
                 SessionUtility.addInfoMessage("Success", "Uploaded file " + fileName + ".");
             } catch (IOException ex) {

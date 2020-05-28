@@ -110,10 +110,10 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     @ManyToOne
     private ItemElement derivedFromItemElement;
     @JoinColumn(name = "contained_item_id1", referencedColumnName = "id")
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne()
     private Item containedItem1;
     @JoinColumn(name = "contained_item_id2", referencedColumnName = "id")
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne()
     private Item containedItem2;
     @JoinColumn(name = "entity_info_id", referencedColumnName = "id")
     @OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
@@ -155,17 +155,28 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public ItemElement() {
     }
+    
+    public void init(Item parentItem, ItemElement derivedFromItemElement) {        
+        init(parentItem, derivedFromItemElement, null);        
+    }
 
-    public void init(Item parentItem, ItemElement derivedFromItemElement) {
-        EntityInfo newEntityInfo = EntityInfoUtility.createEntityInfo();
-        this.setEntityInfo(newEntityInfo);
+    public void init(Item parentItem, ItemElement derivedFromItemElement, EntityInfo entityInfo) {
+        if (entityInfo == null) {
+            entityInfo = EntityInfoUtility.createEntityInfo();
+        }
+        this.setEntityInfo(entityInfo);
         this.setParentItem(parentItem);
         this.setDerivedFromItemElement(derivedFromItemElement);
 
     }
+    
+    public void init(Item parentItem, EntityInfo entityInfo) {
+        init(parentItem, null, entityInfo);
+    }
 
     public void init(Item parentItem) {
-        init(parentItem, null);
+        EntityInfo ei = null; 
+        init(parentItem, ei);
     }
 
     public ItemElement(Item parentItem) {

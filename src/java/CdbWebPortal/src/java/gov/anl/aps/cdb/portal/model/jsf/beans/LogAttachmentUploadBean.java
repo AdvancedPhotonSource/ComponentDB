@@ -21,10 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.file.UploadedFile;
 
-import org.primefaces.model.UploadedFile;
 
 /**
  * JSF bean for log attachment uploads.
@@ -33,7 +34,7 @@ import org.primefaces.model.UploadedFile;
 @SessionScoped
 public class LogAttachmentUploadBean implements Serializable {
 
-    private static final Logger logger = Logger.getLogger(LogAttachmentUploadBean.class.getName());
+    private static final Logger logger = LogManager.getLogger(LogAttachmentUploadBean.class.getName());
 
     private Log logEntry;
 
@@ -60,7 +61,7 @@ public class LogAttachmentUploadBean implements Serializable {
 
                 String originalExtension = "." + uploadedExtension;
                 File originalFile = File.createTempFile("attachment.", originalExtension, uploadDir);
-                InputStream input = uploadedFile.getInputstream();
+                InputStream input = uploadedFile.getInputStream();
                 Files.copy(input, originalFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 logger.debug("Saved file: " + originalFile.toPath());
                 Attachment attachment = new Attachment();

@@ -9,7 +9,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import javax.faces.event.ActionEvent;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -20,7 +21,7 @@ import org.apache.log4j.Logger;
 public abstract class CdbDomainEntitySettings<DomainEntityController extends CdbDomainEntityController> extends CdbEntitySettingsBase<DomainEntityController> {
     
     private static final String DisplayGalleryViewableDocumentsSettingTypeKey = "DomainEntity.Detail.Display.GalleryViewableDocuments";
-    private static final Logger logger = Logger.getLogger(CdbDomainEntitySettings.class.getName());
+    private static final Logger logger = LogManager.getLogger(CdbDomainEntitySettings.class.getName());
     
     protected Integer displayPropertyTypeId1 = null;
     protected Integer displayPropertyTypeId2 = null;

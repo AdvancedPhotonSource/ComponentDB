@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -88,10 +89,10 @@ public class AllowedPropertyValueSettings extends CdbEntitySettingsBase<AllowedP
             return;
         }
 
-        Map<String, Object> filters = dataTable.getFilters();
-        filterBySortOrder = (String) filters.get("sortOrder");
-        filterByUnits = (String) filters.get("units");
-        filterByValue = (String) filters.get("value");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterBySortOrder = (String) filters.get("sortOrder").getFilterField();
+        filterByUnits = (String) filters.get("units").getFilterField();
+        filterByValue = (String) filters.get("value").getFilterField();
     }
     
     @Override

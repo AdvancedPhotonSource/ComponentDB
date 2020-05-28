@@ -17,13 +17,14 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Named("propertyTypeCategoryController")
 @SessionScoped
 public class PropertyTypeCategoryController extends CdbEntityController<PropertyTypeCategory, PropertyTypeCategoryFacade, PropertyTypeCategorySettings> implements Serializable {        
 
-    private static final Logger logger = Logger.getLogger(PropertyTypeCategoryController.class.getName());
+    private static final Logger logger = LogManager.getLogger(PropertyTypeCategoryController.class.getName());
 
     @EJB
     private PropertyTypeCategoryFacade propertyTypeCategoryFacade;

@@ -48,12 +48,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class ItemTravelerController extends ItemControllerExtensionHelper {
 
     protected TravelerApi travelerApi;
-    private static final Logger logger = Logger.getLogger(ItemTravelerController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemTravelerController.class.getName());
 
     protected static final double FORM_ARCHIVED_STATUS = 2;
     protected static final String FORM_TYPE_DISCREPANCY = "discrepancy";
