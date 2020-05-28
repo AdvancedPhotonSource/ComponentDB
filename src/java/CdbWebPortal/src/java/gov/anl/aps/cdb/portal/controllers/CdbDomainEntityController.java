@@ -116,6 +116,10 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
         }
 
         cdbDomainEntity.resetPropertyValueLists();
+        
+        // Get method called by GUI populates metadata
+        // Needed for multi-edit or API to also populate metadata
+        propertyValue.getPropertyValueMetadataList(); 
 
         return propertyValue;
     }
