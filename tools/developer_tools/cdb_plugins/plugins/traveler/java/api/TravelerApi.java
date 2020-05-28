@@ -223,6 +223,10 @@ public class TravelerApi extends TravelerRestApi  {
     }
     
     public Traveler updateTraveler(String travelerId, String userName, String title, String description, Date deadline, Double status) throws InvalidArgument, CdbException {
+        return updateTraveler(travelerId, userName, title, description, deadline, status, null); 
+    }
+    
+    public Traveler updateTraveler(String travelerId, String userName, String title, String description, Date deadline, Double status, String devices) throws InvalidArgument, CdbException {
         ArgumentUtility.verifyNonEmptyString("Traveler Id", travelerId);
         ArgumentUtility.verifyNonEmptyString("Traveler Title", title);
         ArgumentUtility.verifyNonEmptyString("User Name", userName);
@@ -242,6 +246,10 @@ public class TravelerApi extends TravelerRestApi  {
         
         Map data = new HashMap(); 
         
+        if (devices != null) {
+            data.put("devices", devices); 
+        }
+         
         data.put("userName", userName); 
         data.put("title", title);
         data.put("description", description);
