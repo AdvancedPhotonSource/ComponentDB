@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
@@ -15,6 +16,11 @@ import javax.ejb.Stateless;
 
 @Stateless
 public class ItemDomainLocationFacade extends ItemFacadeBase<ItemDomainLocation> {
+    
+    @Override
+    public String getDomainName() {
+        return ItemDomainName.location.getValue();
+    }
     
     public ItemDomainLocationFacade() {
         super(ItemDomainLocation.class);

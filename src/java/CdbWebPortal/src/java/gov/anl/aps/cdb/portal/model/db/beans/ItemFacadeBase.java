@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -35,6 +36,11 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
     private final String QUERY_STRING_START = "SELECT i FROM Item i ";
     private final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"};
+    
+    /**
+     * Returns Item domain for subclass implementation. 
+     */
+    public abstract String getDomainName();
 
     public ItemFacadeBase(Class<ItemDomainEntity> entityClass) {
         super(entityClass);
@@ -254,6 +260,35 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         }
         return null;
+    }
+    
+    /**
+     * Find unique entity by name.  Returns null if none is found, or raises
+     * CdbException if multiple instances are found.
+     */
+    public ItemDomainEntity findUniqueByName(String name, String filterDomainName) throws CdbException {
+        
+        if ((name == null) || (name.isEmpty())) {
+            return null;
+        }
+        
+        String domainName = getDomainName();
+        
+        if ((domainName == null) || domainName.isEmpty()) {
+            throw new CdbException("findUniqueByName() not implemented by facade");
+        }
+        
+        List<ItemDomainEntity> items = findByDomainAndName(domainName, name);
+        if (items.size() > 1) {
+            // ambiguous result, throw exception
+            throw new CdbException("findUniqueByName() returns multiple instances");
+        } else if (items.size() == 0) {
+            // no items found
+            return null;
+        } else {
+            // return single item returned by query
+            return items.get(0);
+        }
     }
     
     public List<ItemDomainEntity> findByDomainAndName(String domainName, String name) {

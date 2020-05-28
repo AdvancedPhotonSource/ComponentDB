@@ -25,6 +25,20 @@ See LICENSE file.
                        : templateIcon }" />
 
     <ui:define name="additonalListButtons" >
+        
+        <ui:param name="importEntityActionFunctionName" 
+                  value="#{importEntityActionFunctionName != null 
+                       ? importEntityActionFunctionName 
+                       : 'prepareImport'}" /> 
+
+        <p:commandButton value="Import"
+                         icon="fa fa-plus"
+                         action="#{entityController[importEntityActionFunctionName]}"
+                         rendered="#{loginController.loggedInAsAdmin
+                                     and entityController.entityDisplayImportButton}"
+                         onstart="PF('loadingDialog').show();"
+                         oncomplete="PF('loadingDialog').hide();"/> 
+        
         <ui:param name="itemMultiEditController"
                   value="#{entityController.itemMultiEditController}" />
         <p:commandButton value="Create Multiple Items"
