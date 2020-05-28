@@ -8,6 +8,14 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:param name="defaultPropertySelectionDblSelectEvent"
+              value="#{entityTypeName}propertySelectionMade" /> 
+    
+    <ui:param name="propertySelectionDblSelectEvent"
+              value="#{propertySelectionDblSelectEvent != null 
+                       ? propertySelectionDblSelectEvent 
+                       : defaultPropertySelectionDblSelectEvent}" /> 
 
     <div class="actionButton">
         <p:commandButton id="#{childEntityTypeName}SelectCustomizeDisplay" 
@@ -31,7 +39,7 @@ See LICENSE file.
                  paginatorAlwaysVisible="true"
                  rows="#{resources.SelectDataTableNumberOfRows}"
                  emptyMessage="No available property types found.">
-        <p:ajax event="rowDblselect" oncomplete="#{entityTypeName}propertySelectionMade()" />
+        <p:ajax event="rowDblselect" oncomplete="#{propertySelectionDblSelectEvent}()" />
 
         <ui:include src="../../propertyType/private/propertyTypeFilterViewSelectObject.xhtml"/>
     </p:dataTable>
