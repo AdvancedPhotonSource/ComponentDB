@@ -109,6 +109,18 @@ public class ItemRoute extends BaseRoute {
         LOGGER.debug("Fetching item by id: " + id); 
         return getItemByIdBase(id); 
     }
+    
+    @GET
+    @Path("/HierarchyById/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Fetch an item by its id.")
+    public ItemHierarchy getItemHierarchyById(@PathParam("id") int id) throws ObjectNotFound {
+        Item itemByIdBase = getItemByIdBase(id);
+        
+        ItemHierarchy hierarchy = new ItemHierarchy(itemByIdBase, true);
+        
+        return hierarchy; 
+    }        
         
     public Item getItemByIdBase(@PathParam("id") int id) throws ObjectNotFound {        
         Item findById = itemFacade.findById(id);
