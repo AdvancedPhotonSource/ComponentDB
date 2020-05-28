@@ -16,7 +16,7 @@ import org.primefaces.model.TreeNode;
  */
 public class ItemHierarchy {
 
-    private Item parentItem;
+    private Item item;
     private Item derivedItem;
     private List<ItemHierarchy> childItems;
     private Integer elementId;
@@ -28,7 +28,7 @@ public class ItemHierarchy {
     }
     
     public ItemHierarchy(Item parentItem, boolean autocreateHierarchy) {
-        this.parentItem = parentItem;
+        this.item = parentItem;
         childItems = new ArrayList<>();
 
         if (autocreateHierarchy) {
@@ -85,13 +85,18 @@ public class ItemHierarchy {
         }
         return singleNodeHierarchy;
     }
-
+    
+    @Deprecated
     public Item getParentItem() {
-        return parentItem;
+        return getItem(); 
     }
 
-    public void setParentItem(Item parentItem) {
-        this.parentItem = parentItem;
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
     }
 
     public List<ItemHierarchy> getChildItems() {
@@ -139,3 +144,4 @@ public class ItemHierarchy {
     }
 
 }
+

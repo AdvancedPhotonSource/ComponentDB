@@ -1284,7 +1284,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
      * @return device name for traveler application.
      * @throws CdbException when non valid object was submitted for device name.
      */
-    private String getDeviceName(Object deviceObject) throws CdbException {
+    protected String getDeviceName(Object deviceObject) throws CdbException {
         if (deviceObject instanceof Item) {
             return "item:" + ((Item) deviceObject).getId();
         } else if (deviceObject instanceof ItemElement) {

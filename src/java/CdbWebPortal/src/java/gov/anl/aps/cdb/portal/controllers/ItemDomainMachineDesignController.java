@@ -11,6 +11,8 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperMachineDesign;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperMachineDesignVariableFormat;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -626,6 +628,12 @@ public class ItemDomainMachineDesignController
         catalogItemsDraggedAsChildren = null;
         newCatalogItemsInMachineDesignModel = null;
         currentMachineDesignListRootTreeNode = null;
+    }
+
+    @Override
+    public ItemDomainMachineDesign createEntityInstance() {
+        ItemDomainMachineDesign item = super.createEntityInstance();
+        return item;
     }
 
     public ItemDomainMachineDesign createEntityInstanceForDualTreeView() {
@@ -2520,5 +2528,15 @@ public class ItemDomainMachineDesignController
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected ImportHelperBase createImportHelperInstance() throws CdbException {
+        return new ImportHelperMachineDesignVariableFormat();
+    }
+    
     // </editor-fold>       
 }

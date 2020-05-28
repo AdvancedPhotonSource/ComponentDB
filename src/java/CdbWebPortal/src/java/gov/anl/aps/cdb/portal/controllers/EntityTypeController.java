@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.controllers.settings.EntityTypeSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import javax.ejb.EJB;
@@ -23,6 +24,12 @@ public class EntityTypeController extends CdbEntityController<EntityType, Entity
 
     @EJB
     EntityTypeFacade entityTypeFacade;
+    
+    public static final String CONTROLLER_NAMED = "entityTypeController";
+
+    public static EntityTypeController getInstance() {
+        return (EntityTypeController) SessionUtility.findBean(EntityTypeController.CONTROLLER_NAMED);
+    }
     
     @Override
     protected EntityTypeFacade getEntityDbFacade() {
@@ -49,6 +56,10 @@ public class EntityTypeController extends CdbEntityController<EntityType, Entity
     public EntityType findById(Integer id) {
         return entityTypeFacade.find(id);
     }    
+    
+    public EntityType findByName(String name) {
+        return entityTypeFacade.findByName(name);
+    }
 
     @Override
     protected EntityTypeSettings createNewSettingObject() {

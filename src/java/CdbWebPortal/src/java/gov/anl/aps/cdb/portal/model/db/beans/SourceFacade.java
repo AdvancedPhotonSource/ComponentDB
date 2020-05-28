@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -55,6 +56,21 @@ public class SourceFacade extends CdbEntityFacade<Source> {
         }
         return null;
     }
+    
+    /**
+     * Find unique entity by name.  Returns null if none is found, or raises
+     * CdbException if multiple instances are found.
+     */
+    public Source findUniqueByName(String name, String filterDomainName) throws CdbException {
+        
+        if ((name == null) || (name.isEmpty())) {
+            return null;
+        }
+        
+        // uses findByName() since that method already finds a unique instance by name
+        return findByName(name);       
+    }
+
 
     public List<Source> findAllSortedByName() {
         javax.persistence.criteria.CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();

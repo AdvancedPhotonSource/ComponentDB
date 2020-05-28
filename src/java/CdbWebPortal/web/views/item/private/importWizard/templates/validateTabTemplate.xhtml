@@ -11,70 +11,119 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">   
 
     <!-- Must provide params "viewId", "wizardController"-->
-    
+
     <ui:param name="rootViewId" value="#{viewId}"/>
-    
+
     <p:tab id="#{rootViewId}ValidateTab">
         <p:panel header="Review imported file content, then click Next Step to import.">
             <p:outputPanel id="#{rootViewId}ValidatePanel">
                 
-                <div class="actionButton">
+                <p:panelGrid>
                     
-                    <p:commandButton id="#{rootViewid}ExportXlsButton" 
-                                     styleClass="actionButtonRight" 
-                                     ajax="false" 
-                                     icon="fa fa-file-excel-o">
-                        <p:tooltip for="#{rootViewid}ExportXlsButton" 
-                                   value="Export table to Excel file."/>
-                        <p:dataExporter type="xls" 
-                                        target="#{rootViewId}TableContent" 
-                                        fileName="ValidationReport" />
-                    </p:commandButton>  
-
-                    <ui:remove>
-                        <p:commandButton id="#{rootViewid}ExportPdfButton"
-                                         styleClass="actionButtonRight" 
-                                         ajax="false" 
-                                         icon="fa fa-file-pdf-o">
-                            <p:tooltip for="#{rootViewid}ExportPdfButton" 
-                                       value="Export table to pdf file."/>
-                            <p:dataExporter type="pdf" 
-                                            target="#{rootViewId}TableContent" 
-                                            fileName="ValidationReport" />
-                        </p:commandButton>  
-                    </ui:remove>
-                    
-                </div>
-                <p:panelGrid columns="2">
-                    
-                    <p:dataTable id="#{rootViewId}TableContent"
-                                 value="#{wizardController.rows}"
-                                 var="row"
-                                 rows="#{resources.SelectDataTableNumberOfRows}"
-                                 paginator="true">    
+                    <p:row>
                         
-                        <p:columns value="#{wizardController.columns}" 
-                                   var="column" 
-                                   columnIndexVar="colIndex">
-                            <f:facet name="header">
-                                <h:outputText value="#{column.header}" />
-                            </f:facet>
-                            <h:outputText value="#{row[column.property]}" />
-                        </p:columns>
+                        <p:column colspan="4">
+                            <p:commandButton id="#{rootViewid}ExportXlsButton" 
+                                             styleClass="actionButtonRight" 
+                                             ajax="false" 
+                                             icon="fa fa-file-excel-o">
+                                <p:tooltip for="#{rootViewid}ExportXlsButton" 
+                                           value="Export table to Excel file."/>
+                                <p:dataExporter type="xls" 
+                                                target="#{rootViewId}TableContent" 
+                                                fileName="ValidationReport" />
+                            </p:commandButton>  
 
-                    </p:dataTable>
+                            <ui:remove>
+                                <p:commandButton id="#{rootViewid}ExportPdfButton"
+                                                 styleClass="actionButtonRight" 
+                                                 ajax="false" 
+                                                 icon="fa fa-file-pdf-o">
+                                    <p:tooltip for="#{rootViewid}ExportPdfButton" 
+                                               value="Export table to pdf file."/>
+                                    <p:dataExporter type="pdf" 
+                                                    target="#{rootViewId}TableContent" 
+                                                    fileName="ValidationReport" />
+                                </p:commandButton>  
+                            </ui:remove>
+                        </p:column>
 
-                </p:panelGrid>
+                    </p:row>
+
+                    <p:remoteCommand name="selectedViewStyleChanged"
+                                     update="#{rootViewId}ValidatePanel"/>
+                    
+                    <p:row>
+                        
+                        <p:column colspan="1" styleClass="topAlignedDataCell">
+                            
+                            <p:outputLabel value="Select an item in tree view to highlight item in table" 
+                                           rendered="#{wizardController.hasTreeView()}"
+                                           styleClass="entityDataEmphasizedLabel"/>
+                            
+                            <p:tree value="#{wizardController.rootTreeNode}" 
+                                    var="node"
+                                    rendered="#{wizardController.hasTreeView()}"
+                                    selectionMode="single"
+                                    selection="#{wizardController.selectedTreeNode}">
+                                
+                                <p:ajax event="select" 
+                                        listener="#{wizardController.treeSelectionChanged}" 
+                                        update="@form:#{rootViewId}ValidatePanel"
+                                        oncomplete="scrollToSelectedNode();"/>
+
+                                <p:treeNode>
+                                    <h:outputText value="#{node}" />
+                                </p:treeNode>
+                            </p:tree>
+
+                        </p:column>
+
+                        <p:column colspan="3" styleClass="topAlignedDataCell">
+
+                            <p:dataTable id="#{rootViewId}TableContent"
+                                         value="#{wizardController.rows}"
+                                         rendered="true"
+                                         var="row"
+                                         rowKey="#{row.name}"
+                                         selectionMode="single"
+                                         selection="#{wizardController.selectedTableRow}">    
+
+                                <p:columns value="#{wizardController.columns}" 
+                                           var="column" 
+                                           columnIndexVar="colIndex">
+                                    <f:facet name="header">
+                                        <h:outputText value="#{column.header}" />
+                                    </f:facet>
+                                    <h:outputText value="#{row[column.domainProperty]}" />
+                                </p:columns>
+
+                            </p:dataTable>
+
+                        </p:column>
+                    </p:row>
+                    
+                    <script type="text/javascript">
+                        function scrollToSelectedNode() {
+                            selectedRows = document.getElementsByClassName('ui-widget-content ui-datatable-selectable ui-state-highlight');
+                            if (selectedRows.length > 0) {
+                                row = selectedRows[0];
+                                row.scrollIntoView({'behavior': 'smooth', 'block': 'center'});
+                            }
+                        }
+                    </script>
                 
+                </p:panelGrid>
+
                 <div class="userNotification">
                     <h3>#{wizardController.validationMessage}</h3>
                     <ui:remove><h:outputText value="#{wizardController.validationMessage}"
-                                  rendered ="#{wizardController.showValidationMessage}"
-                                  styleClass="userNotification"/></ui:remove>
+                                             rendered ="#{wizardController.showValidationMessage}"
+                                             styleClass="userNotification"/></ui:remove>
                 </div>
 
             </p:outputPanel>
         </p:panel>
     </p:tab>
-
+    
 </ui:composition>

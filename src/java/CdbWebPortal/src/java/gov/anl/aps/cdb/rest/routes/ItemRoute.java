@@ -176,8 +176,6 @@ public class ItemRoute extends BaseRoute {
         
         return getItemHierarchyById(parentItem.getId());         
     }
-    
-    
         
     public Item getItemByIdBase(@PathParam("id") int id) throws ObjectNotFound {        
         Item findById = itemFacade.findById(id);

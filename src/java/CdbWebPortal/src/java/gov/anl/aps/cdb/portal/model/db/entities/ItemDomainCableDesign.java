@@ -395,14 +395,14 @@ public class ItemDomainCableDesign extends Item {
         return team;
     }
 
-    public void setTeamId(String categoryId) throws CdbException {
-        ItemCategory category = (ItemCategory) (getEntityById(ItemCategoryController.getInstance(), categoryId));
-
+    public void setTeam(ItemCategory category) throws CdbException {
         if (category != null) {
             String domainName = category.getDomain().getName();
             if (!domainName.equals(this.getDomain().getName())) {
-                LOGGER.error("setTeamId() invalid domain for specified categoryId: " + domainName);
-                throw new CdbException("Invalid domain: " + domainName + " for specified categoryId: " + categoryId);
+                String msg = "invalid domain: " + domainName +
+                        " expected: " + this.getDomain().getName();
+                LOGGER.error("setTeam() " + msg);
+                throw new CdbException(msg);
             }
 
             List<ItemCategory> categoryList = new ArrayList<>();
@@ -410,16 +410,15 @@ public class ItemDomainCableDesign extends Item {
             this.setItemCategoryList(categoryList);
             team = this.getItemCategoryString();
         } else {
-            LOGGER.error("setTeamId() unknown item category id " + categoryId);
+            LOGGER.error("setTeamId() null item category");
         }
     }
-
+    
     public void setTechnicalSystemList(List<ItemCategory> technicalSystemList) {
         setItemCategoryList(technicalSystemList);
     }
 
-    public void setProjectId(String projectId) {
-        ItemProject project = (ItemProject) (getEntityById(ItemProjectController.getInstance(), projectId));
+    public void setProject(ItemProject project) {
         if (project != null) {
             List<ItemProject> projectList = new ArrayList<>();
             projectList.add(project);

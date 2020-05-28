@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCableCatalog;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
@@ -32,8 +33,6 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     @EJB
     ItemDomainCableCatalogFacade itemDomainCableCatalogFacade;
     
-    protected ImportHelperCableCatalog importHelper = new ImportHelperCableCatalog();
-    
     public static ItemDomainCableCatalogController getInstance() {
         if (SessionUtility.runningFaces()) {
             return (ItemDomainCableCatalogController) SessionUtility.findBean(ItemDomainCableCatalogController.CONTROLLER_NAMED);
@@ -60,15 +59,6 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_BEND_RADIUS_KEY, "Bend Radius", "Bend radius in inches.", ItemCoreMetadataFieldType.NUMERIC, "");
         info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_RAD_TOLERANCE_KEY, "Radiation Tolearance", "Radiation tolerance rating.", ItemCoreMetadataFieldType.NUMERIC, "");
         return info;
-    }
-    
-    /**
-     * Prepares import wizard.
-     */
-    public String prepareWizardImport() {   
-        importHelper.reset();
-        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
-        return "/views/itemDomainCableCatalog/import?faces-redirect=true";
     }
     
     @Override
@@ -203,4 +193,15 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     public String getDefaultDomainDerivedToDomainName() {
         return ItemDomainName.cableInventory.getValue(); 
     } 
+    
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected ImportHelperBase createImportHelperInstance() throws CdbException {
+        return new ImportHelperCableCatalog();
+    }
+    
 }

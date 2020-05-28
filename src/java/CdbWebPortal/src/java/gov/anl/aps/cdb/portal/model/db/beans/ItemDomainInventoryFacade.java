@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -19,6 +20,11 @@ import javax.persistence.StoredProcedureQuery;
 @Stateless
 public class ItemDomainInventoryFacade extends ItemFacadeBase<ItemDomainInventory> {
 
+    @Override
+    public String getDomainName() {
+        return ItemDomainName.inventory.getValue();
+    }
+    
     public ItemDomainInventoryFacade() {
         super(ItemDomainInventory.class);
     }
