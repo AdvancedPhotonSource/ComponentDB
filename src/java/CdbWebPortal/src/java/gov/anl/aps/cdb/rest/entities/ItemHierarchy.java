@@ -85,6 +85,11 @@ public class ItemHierarchy {
         }
         return singleNodeHierarchy;
     }
+    
+    @Deprecated
+    public Item getParentItem() {
+        return getItem(); 
+    }
 
     public Item getItem() {
         return item;
