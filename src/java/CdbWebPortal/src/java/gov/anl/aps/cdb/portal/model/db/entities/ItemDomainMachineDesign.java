@@ -40,6 +40,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
     private transient ItemDomainInventory importAssignedInventoryItem = null;
     private transient ItemDomainLocation importLocationItem = null;
     private transient String importLocationItemString = null;
+    private transient String importTemplateAndParameters = null;
 
     @Override
     public Item createInstance() {
@@ -264,6 +265,14 @@ public class ItemDomainMachineDesign extends LocatableItem {
     
     public String getImportLocationItemString() {
         return importLocationItemString;
+    }
+
+    public String getImportTemplateAndParameters() {
+        return importTemplateAndParameters;
+    }
+
+    public void setImportTemplateAndParameters(String importTemplateAndParameters) {
+        this.importTemplateAndParameters = importTemplateAndParameters;
     }
     
     /**

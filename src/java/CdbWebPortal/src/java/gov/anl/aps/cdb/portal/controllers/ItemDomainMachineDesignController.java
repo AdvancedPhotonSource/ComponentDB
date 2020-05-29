@@ -1887,7 +1887,7 @@ public class ItemDomainMachineDesignController
         }
     }
 
-    private void generateMachineDesignTemplateNameVarsRecursivelly(ItemDomainMachineDesign template) {
+    public void generateMachineDesignTemplateNameVarsRecursivelly(ItemDomainMachineDesign template) {
         generateMachineDesignTemplateNameVars(template);
 
         for (ItemElement ie : template.getItemElementDisplayList()) {
@@ -2073,6 +2073,10 @@ public class ItemDomainMachineDesignController
 
     public List<KeyValueObject> getMachineDesignNameList() {
         return machineDesignNameList;
+    }
+    
+    public void setMachineDesignNameList(List<KeyValueObject> list) {
+        this.machineDesignNameList = list;
     }
 
     public Item getInventoryForElement() {

@@ -4,10 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
@@ -15,12 +17,14 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
@@ -87,27 +91,23 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                 currentIndentLevel = currentIndentLevel + 1;                
             }
             
-            if (itemName == null) {
-                // didn't find a non-empty name column for this row
-                isValid = false;
-                validString = "name columns are all empty";
-                return new ValidInfo(isValid, validString);
-            }
-            
-            // check column length is valid
-            if ((getMaxLength() > 0) && (itemName.length() > getMaxLength())) {
-                isValid = false;
-                validString = appendToString(validString, 
-                        "Invalid name, length exceeds " + getMaxLength());
-                return new ValidInfo(isValid, validString);
-            }
-            
-            // set item info
-            entity.setName(itemName);
-            ImportInfo itemInfo = new ImportInfo();
-            itemInfo.indentLevel = itemIndentLevel;
-            itemInfoMap.put(entity, itemInfo);
+            if (itemName != null) {
                 
+                // check column length is valid
+                if ((getMaxLength() > 0) && (itemName.length() > getMaxLength())) {
+                    isValid = false;
+                    validString = appendToString(validString, 
+                            "Invalid name, length exceeds " + getMaxLength());
+                    return new ValidInfo(isValid, validString);
+                }
+                
+                // set item info
+                entity.setName(itemName);
+                ImportInfo itemInfo = new ImportInfo();
+                itemInfo.indentLevel = itemIndentLevel;
+                itemInfoMap.put(entity, itemInfo);
+            }
+            
             return new ValidInfo(isValid, validString);
         }
     }
@@ -222,6 +222,16 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         
     }
     
+    private class TemplateInvocationInfo {
+        public String templateName;
+        public Map<String, String> varNameValueMap;
+        
+        public TemplateInvocationInfo(String templateName, Map<String, String> varMap) {
+            this.templateName = templateName;
+            this.varNameValueMap = varMap;
+        }
+    }
+    
     private class InputColumnInfo {
         public String name;
         public boolean isRequired;
@@ -239,6 +249,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
     
     private static final String HEADER_PARENT = "Parent ID";
     private static final String HEADER_BASE_LEVEL = "Level";
+    private static final String HEADER_TEMPLATE_INVOCATION = "Template and Parameters";
     private static final String HEADER_ALT_NAME = "Machine Design Alternate Name";
     private static final String HEADER_DESCRIPTION = "Machine Design Item Description";
     private static final String HEADER_ASSIGNED_ITEM = "Assigned Catalog/Inventory Item";
@@ -268,6 +279,11 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                 HEADER_BASE_LEVEL, 
                 false, 
                 "Machine design hierarchy column level"));
+        
+        columnInfoMap.put(HEADER_TEMPLATE_INVOCATION, new InputColumnInfo(
+                HEADER_TEMPLATE_INVOCATION, 
+                false, 
+                "Template to instantiate with required parameters, e.g., 'PS-SR-S{nn}-CAB1(nn=24)'."));
         
         columnInfoMap.put(HEADER_ALT_NAME, new InputColumnInfo(
                 HEADER_ALT_NAME, 
@@ -334,26 +350,29 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         inputColumns.add(new InputColumnModel(2, HEADER_BASE_LEVEL + " 1", false, colInfo.description + " 1"));
         inputColumns.add(new InputColumnModel(3, HEADER_BASE_LEVEL + " 2", false, colInfo.description + " 2"));
         
-        colInfo = getColumnInfoMap().get(HEADER_ALT_NAME);
+        colInfo = getColumnInfoMap().get(HEADER_TEMPLATE_INVOCATION);
         inputColumns.add(new InputColumnModel(4, HEADER_ALT_NAME, colInfo.isRequired, colInfo.description));
         
+        colInfo = getColumnInfoMap().get(HEADER_ALT_NAME);
+        inputColumns.add(new InputColumnModel(5, HEADER_ALT_NAME, colInfo.isRequired, colInfo.description));
+        
         colInfo = getColumnInfoMap().get(HEADER_DESCRIPTION);
-        inputColumns.add(new InputColumnModel(5, HEADER_DESCRIPTION, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(6, HEADER_DESCRIPTION, colInfo.isRequired, colInfo.description));
 
         colInfo = getColumnInfoMap().get(HEADER_ASSIGNED_ITEM);
-        inputColumns.add(new InputColumnModel(6, HEADER_ASSIGNED_ITEM, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(7, HEADER_ASSIGNED_ITEM, colInfo.isRequired, colInfo.description));
 
         colInfo = getColumnInfoMap().get(HEADER_ASSIGNED_ITEM_ID);
-        inputColumns.add(new InputColumnModel(7, HEADER_ASSIGNED_ITEM_ID, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(8, HEADER_ASSIGNED_ITEM_ID, colInfo.isRequired, colInfo.description));
 
         colInfo = getColumnInfoMap().get(HEADER_LOCATION);
-        inputColumns.add(new InputColumnModel(8, HEADER_LOCATION, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(9, HEADER_LOCATION, colInfo.isRequired, colInfo.description));
 
         colInfo = getColumnInfoMap().get(HEADER_PROJECT);
-        inputColumns.add(new InputColumnModel(9, HEADER_PROJECT, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(10, HEADER_PROJECT, colInfo.isRequired, colInfo.description));
 
         colInfo = getColumnInfoMap().get(HEADER_TEMPLATE);
-        inputColumns.add(new InputColumnModel(10, HEADER_TEMPLATE, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(11, HEADER_TEMPLATE, colInfo.isRequired, colInfo.description));
 
         return inputColumns;
     }
@@ -407,6 +426,12 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                         colInfo = getColumnInfoMap().get(HEADER_PARENT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
                         handlers.add(new IdRefInputHandler(columnIndex, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
+                        break;
+
+                    case HEADER_TEMPLATE_INVOCATION:
+                        colInfo = getColumnInfoMap().get(HEADER_TEMPLATE_INVOCATION);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
+                        handlers.add(new StringInputHandler(columnIndex, "setImportTemplateAndParameters", 0));
                         break;
 
                     case HEADER_ALT_NAME:
@@ -478,6 +503,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         outputColumns.add(new OutputColumnModel("Name", "name"));
         outputColumns.add(new OutputColumnModel("Is Template", "importIsTemplateString"));
         outputColumns.add(new OutputColumnModel("Project", "itemProjectString"));
+        outputColumns.add(new OutputColumnModel("Template and Parameters", "importTemplateAndParameters"));
         outputColumns.add(new OutputColumnModel("Alt Name", "alternateName"));
         outputColumns.add(new OutputColumnModel("Description", "description"));
         outputColumns.add(new OutputColumnModel("Assigned Catalog Item", "importAssignedCatalogItemString"));
@@ -541,126 +567,247 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         boolean isValidLocation = true;
         boolean isValidAssignedItem = true;
         
-        ImportInfo itemInfo = itemInfoMap.get(item);
-        if (itemInfo == null) {
-            String msg = "Unable to find indent level for item";
-            LOGGER.info(methodLogName + msg);
-            validString = appendToString(validString, msg);
-            isValid = false;
-            
-            // invalidate parent map, it is probably messed up by missing item
-            parentIndentMap.clear();
-            LOGGER.info(methodLogName + "Invalidating parentIndentMap");
-            return new ValidInfo(isValid, validString);
-        }
-        
-        // find parent for this item
-        int itemIndentLevel = itemInfo.indentLevel;
         ItemDomainMachineDesign itemParent = null;
-        if (itemIndentLevel > 1) {
-            
-            // not allowed to specify parent for non level 0 item
-            if (item.getImportContainerItem() != null) {
-                String msg = "Can only specify existing parent for level 0 item";
-                LOGGER.info(methodLogName + msg);
-                validString = appendToString(validString, msg);
-                isValid = false;
-            }
-            
-            // find parent at previous indent level
-            itemParent = parentIndentMap.get(itemIndentLevel - 1);
-            
-            if (itemParent == null) {
-                // should have a parent for this item in map
-                String msg = "Unable to determine parent for item";
-                LOGGER.info(methodLogName + msg);
-                validString = appendToString(validString, msg);
-                isValid = false;
-            }
-            
-            // create "parent path" to display item hierarchy in validation table
-            String path = "";
-            for (int i = 1 ; i < itemIndentLevel ; i++) {
-                ItemDomainMachineDesign pathItem = parentIndentMap.get(i);
-                path = path + pathItem.getName() + "/ ";
-            }
-            item.setImportPath(path);
-            
-        } else {
-            // this is either a top-level item, or a parent item is explicitly specified for it
-            ItemDomainMachineDesign container = item.getImportContainerItem();
-            if (container == null) {
-                // new item is a top-level machine design with no parent
-                String msg = "creating top-level machine design item: " + item.getName();
-                LOGGER.debug(methodLogName + msg);
-                itemParent = null;
-            } else {
-                itemParent = container;
-            }
-        }
         
-        // check for template restrictions
-        if (item.getIsItemTemplate()) {
+        String templateParms = item.getImportTemplateAndParameters();
+        if ((templateParms != null) && (!templateParms.isEmpty())) {
+            // TODO: consider adding methods like handleTemplateInvocation(),
+            // handleTemplateItem(), handleRegularItem()
             
-            if ((item.getImportAssignedInventoryItem() != null)) {
+            // check that cell value matches pattern, basically of the form "*(*)"
+            String templateRegex = "[^\\(]*\\([^\\)]*\\)";
+            if (!templateParms.matches(templateRegex)) {
+                // invalid cell value doesn't match pattern
+                isValid = false;
+                validString = "invalid format for template and parameters: " + templateParms;
+                LOGGER.info(methodLogName + validString);
+                return new ValidInfo(isValid, validString);
                 
-                // template not allowed to have assigned inventory
-                String msg = "Template cannot have assigned inventory item";
-                LOGGER.info(methodLogName + msg);
-                validString = appendToString(validString, msg);
+            }
+
+            int indexOpenParen = templateParms.indexOf('(');
+            int indexCloseParen = templateParms.indexOf(')');
+
+            // parse and validate template name
+            String templateName = templateParms.substring(0, indexOpenParen);
+            if ((templateName == null) || (templateName.isEmpty())) {
+                // unspecified template name
                 isValid = false;
-                isValidAssignedItem = false;
+                validString = "template name not provided: " + templateParms;
+                LOGGER.info(methodLogName + validString);
+                return new ValidInfo(isValid, validString);
+            }
+
+            // parse and validate variable string
+            String templateVarString = templateParms.substring(indexOpenParen + 1, indexCloseParen);
+            Map<String, String> varNameValueMap = new HashMap<>();
+            // iterate through comma separated list of "varName=value" pairs
+            String[] varArray = templateVarString.split(",");
+            for (String varNameValue : varArray) {
+                String[] nameValueArray = varNameValue.split("=");
+                if (nameValueArray.length != 2) {
+                    // invalid format
+                    isValid = false;
+                    validString = "invalid format for template parameters: " + templateVarString;
+                    LOGGER.info(methodLogName + validString);
+                    return new ValidInfo(isValid, validString);
+                }
+
+                String varName = nameValueArray[0];
+                String varValue = nameValueArray[1];
+                varNameValueMap.put(varName, varValue);
+            }
+
+            // save template name and variable name/values in TemplateInvocationInfo object
+            TemplateInvocationInfo templateInfo = new TemplateInvocationInfo(templateName, varNameValueMap);
+            
+            // check for and set parent item
+            itemParent = item.getImportContainerItem();
+            if (itemParent == null) {
+                // must specify parent for template invocation
+                isValid = false;
+                validString = "parent ID must be specified for template invocation";
+                LOGGER.info(methodLogName + validString);
+                return new ValidInfo(isValid, validString);
+            }
+
+            // retrieve specified template
+            ItemDomainMachineDesign templateItem;
+            try {
+                templateItem = 
+                        ItemDomainMachineDesignFacade.getInstance().findUniqueByName(templateName, null);                
+            } catch (CdbException ex) {
+                isValid = false;
+                validString = 
+                        "exception retrieving specified template, possibly non-unique name: " + 
+                        templateName + ": " + ex;
+                LOGGER.info(methodLogName + validString);
+                return new ValidInfo(isValid, validString);
             }
             
-            if (item.getImportLocationItem() != null) {
-                // template not allowed to have location
-                String msg = "Template cannot have location item";
-                LOGGER.info(methodLogName + msg);
-                validString = appendToString(validString, msg);
+            if (templateItem == null) {
                 isValid = false;
-                isValidLocation = false;
+                validString = "no template found for name: " + templateName;
+                LOGGER.info(methodLogName + validString);
+                return new ValidInfo(isValid, validString);
             }
+            
+            // check that it's a template
+            if (!templateItem.getIsItemTemplate()) {
+                isValid = false;
+                validString = "specified template name is not a template: " + templateName;
+                LOGGER.info(methodLogName + validString);
+                return new ValidInfo(isValid, validString);
+            }
+            
+            // generate list of variable name/value pairs
+            getEntityController().setMachineDesignNameList(new ArrayList<>());
+            getEntityController().generateMachineDesignTemplateNameVarsRecursivelly(templateItem);
+            List<KeyValueObject> varNameList = getEntityController().getMachineDesignNameList();
+            for (KeyValueObject obj : varNameList) {
+                // check that all params in template are specified in import params
+                if (!varNameValueMap.containsKey(obj.getKey())) {
+                    // import params do not include a param specified for template
+                    isValid = false;
+                    validString = "specified template parameters missing required variable: " + obj.getKey();
+                    LOGGER.info(methodLogName + validString);
+                    return new ValidInfo(isValid, validString);
+                }
+            }
+            
+            // TODO: generate machine design item name for item
+            
+            // TODO: instantiate the machine design items from the template and params            
             
         } else {
-            // non-template item restrictions
-            
-            if (itemParent == null) {
-                    if ((item.getImportAssignedCatalogItem() != null)
-                        || (item.getImportAssignedInventoryItem() != null)) {
-                        // top-level item cannot have assigned item
-                    String msg = "Top-level item cannot have assigned catalog/inventory item";
+        
+            if ((item.getName() == null) || (item.getName().isEmpty())) {
+                // didn't find a non-empty name column for this row
+                isValid = false;
+                validString = "name columns are all empty";
+                return new ValidInfo(isValid, validString);
+            }
+
+            ImportInfo itemInfo = itemInfoMap.get(item);
+            if (itemInfo == null) {
+                String msg = "Unable to find indent level for item";
+                LOGGER.info(methodLogName + msg);
+                validString = appendToString(validString, msg);
+                isValid = false;
+
+                // invalidate parent map, it is probably messed up by missing item
+                parentIndentMap.clear();
+                LOGGER.info(methodLogName + "Invalidating parentIndentMap");
+                return new ValidInfo(isValid, validString);
+            }
+
+            // find parent for this item
+            int itemIndentLevel = itemInfo.indentLevel;
+            if (itemIndentLevel > 1) {
+
+                // not allowed to specify parent for non level 0 item
+                if (item.getImportContainerItem() != null) {
+                    String msg = "Can only specify existing parent for level 0 item";
+                    LOGGER.info(methodLogName + msg);
+                    validString = appendToString(validString, msg);
+                    isValid = false;
+                }
+
+                // find parent at previous indent level
+                itemParent = parentIndentMap.get(itemIndentLevel - 1);
+
+                if (itemParent == null) {
+                    // should have a parent for this item in map
+                    String msg = "Unable to determine parent for item";
+                    LOGGER.info(methodLogName + msg);
+                    validString = appendToString(validString, msg);
+                    isValid = false;
+                }
+
+                // create "parent path" to display item hierarchy in validation table
+                String path = "";
+                for (int i = 1; i < itemIndentLevel; i++) {
+                    ItemDomainMachineDesign pathItem = parentIndentMap.get(i);
+                    path = path + pathItem.getName() + "/ ";
+                }
+                item.setImportPath(path);
+
+            } else {
+                // this is either a top-level item, or a parent item is explicitly specified for it
+                ItemDomainMachineDesign container = item.getImportContainerItem();
+                if (container == null) {
+                    // new item is a top-level machine design with no parent
+                    String msg = "creating top-level machine design item: " + item.getName();
+                    LOGGER.debug(methodLogName + msg);
+                    itemParent = null;
+                } else {
+                    itemParent = container;
+                }
+            }
+
+            // check for template restrictions
+            if (item.getIsItemTemplate()) {
+
+                if ((item.getImportAssignedInventoryItem() != null)) {
+
+                    // template not allowed to have assigned inventory
+                    String msg = "Template cannot have assigned inventory item";
                     LOGGER.info(methodLogName + msg);
                     validString = appendToString(validString, msg);
                     isValid = false;
                     isValidAssignedItem = false;
                 }
-            }
-        }
-        
-        if (itemParent != null) {
-            // restrictions for all items with parent, template or non-template
 
-            if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
-                // parent and child must both be templates or both not be
-                String msg = "parent and child must both be templates or both not be templates";
-                LOGGER.info(methodLogName + msg);
-                validString = appendToString(validString, msg);
-                isValid = false;
+                if (item.getImportLocationItem() != null) {
+                    // template not allowed to have location
+                    String msg = "Template cannot have location item";
+                    LOGGER.info(methodLogName + msg);
+                    validString = appendToString(validString, msg);
+                    isValid = false;
+                    isValidLocation = false;
+                }
+
+            } else {
+                // non-template item restrictions
+
+                if (itemParent == null) {
+                    if ((item.getImportAssignedCatalogItem() != null)
+                            || (item.getImportAssignedInventoryItem() != null)) {
+                        // top-level item cannot have assigned item
+                        String msg = "Top-level item cannot have assigned catalog/inventory item";
+                        LOGGER.info(methodLogName + msg);
+                        validString = appendToString(validString, msg);
+                        isValid = false;
+                        isValidAssignedItem = false;
+                    }
+                }
             }
+
+            if (itemParent != null) {
+                // restrictions for all items with parent, template or non-template
+
+                if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
+                    // parent and child must both be templates or both not be
+                    String msg = "parent and child must both be templates or both not be templates";
+                    LOGGER.info(methodLogName + msg);
+                    validString = appendToString(validString, msg);
+                    isValid = false;
+                }
+            }
+
+            // establish parent/child relationship, set location info etc
+            item.applyImportValues(itemParent, isValidAssignedItem, isValidLocation);
+
+            // set current item as last parent at its indent level
+            parentIndentMap.put(itemIndentLevel, item);
         }
-                                
-        // establish parent/child relationship, set location info etc
-        item.applyImportValues(itemParent, isValidAssignedItem, isValidLocation);
-                 
-        // set current item as last parent at its indent level
-        parentIndentMap.put(itemIndentLevel, item);
-        
+
         // update tree view with item and parent
         updateTreeView(item, itemParent);
-        
+
         // add entry to name map for new item
         itemByNameMap.put(item.getName(), item);
-               
+
         return new ValidInfo(isValid, validString);
     }
 
