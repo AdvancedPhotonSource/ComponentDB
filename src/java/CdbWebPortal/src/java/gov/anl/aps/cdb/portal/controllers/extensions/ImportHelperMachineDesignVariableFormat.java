@@ -673,9 +673,13 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     LOGGER.info(methodLogName + validString);
                     return new ValidInfo(isValid, validString);
                 }
+                
+                obj.setValue(varNameValueMap.get(obj.getKey()));
             }
             
             // TODO: generate machine design item name for item
+            String itemName = getEntityController().generateMachineDesignNameForTemplateItem(templateItem);
+            item.setName(itemName);
             
             // TODO: instantiate the machine design items from the template and params            
             
