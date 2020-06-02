@@ -11,7 +11,6 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
-import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperMachineDesign;
 import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperMachineDesignVariableFormat;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
@@ -2004,7 +2003,17 @@ public class ItemDomainMachineDesignController
         super.beforeValidateItemElement();
 
         if (displayAddMDFromTemplateConfigurationPanel) {
-            createMachineDesignFromTemplateForEditItemElement();
+            if (currentViewIsTemplate == false) {
+                createMachineDesignFromTemplateForEditItemElement();
+            } else {
+                // Template link in multiple places        
+                currentEditItemElement.setContainedItem(templateToCreateNewItem);
+                
+                // Add from top level only 
+                if (templateToCreateNewItem.getParentMachineDesign() == null) {
+                    throw new CdbException("Top level machine design templates will be moved into selected machine design. Use add top machine design.");
+                }
+            }
         }
 
         ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) currentEditItemElement.getContainedItem();
