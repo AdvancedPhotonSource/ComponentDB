@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
@@ -63,7 +62,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         public ValidInfo handleInput(
                 Row row,
                 Map<Integer, String> cellValueMap,
-                ItemDomainMachineDesign entity) {
+                Map<String, Object> rowMap) {
             
             boolean isValid = true;
             String validString = "";
@@ -102,10 +101,8 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                 }
                 
                 // set item info
-                entity.setName(itemName);
-                ImportInfo itemInfo = new ImportInfo();
-                itemInfo.indentLevel = itemIndentLevel;
-                itemInfoMap.put(entity, itemInfo);
+                rowMap.put(KEY_NAME, itemName);
+                rowMap.put(KEY_INDENT, itemIndentLevel);                
             }
             
             return new ValidInfo(isValid, validString);
@@ -128,7 +125,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         public ValidInfo handleInput(
                 Row row,
                 Map<Integer, String> cellValueMap,
-                ItemDomainMachineDesign entity) {
+                Map<String, Object> rowMap) {
             
             boolean isValid = true;
             String validString = "";
@@ -146,21 +143,10 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                             + " with id: " + parsedValue;
                     isValid = false;
                     validString = msg;
-                    LOGGER.info("AssignedItemHandler.handleInput() " + msg);
-                    
-                } else {
-                    // set assigned item
-                    if (assignedItem instanceof ItemDomainCatalog) {
-                        entity.setImportAssignedCatalogItem((ItemDomainCatalog) assignedItem);
-                    } else if (assignedItem instanceof ItemDomainInventory) {
-                        entity.setImportAssignedInventoryItem((ItemDomainInventory) assignedItem);
-                    } else {
-                        String msg = "Invalid object type for assigned item: " + assignedItem.getClass().getName();
-                        isValid = false;
-                        validString = msg;
-                        LOGGER.info("AssignedItemHandler.handleInput() " + msg);
-                    }
+                    LOGGER.info("AssignedItemHandler.handleInput() " + msg);                    
                 }
+                
+                rowMap.put(KEY_ASSIGNED_ITEM, assignedItem);
             }
 
             return new ValidInfo(isValid, validString);
@@ -182,7 +168,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         public ValidInfo handleInput(
                 Row row,
                 Map<Integer, String> cellValueMap,
-                ItemDomainMachineDesign entity) {
+                Map<String, Object> rowMap) {
             
             boolean isValid = true;
             String validString = "";
@@ -207,19 +193,13 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
 
                     } else {
                         // set location
-                        entity.setImportLocationItem(itemLocation);
+                        rowMap.put(KEY_LOCATION, itemLocation);
                     }
                 }
             }
 
             return new ValidInfo(isValid, validString);
         }
-    }
-    
-    public class ImportInfo {
-        
-        public int indentLevel;
-        
     }
     
     private class TemplateInvocationInfo {
@@ -244,8 +224,13 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         }
     }
     
-
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineDesignVariableFormat.class.getName());
+    
+    private static final String KEY_NAME = "name";
+    private static final String KEY_INDENT = "indentLevel";
+    private static final String KEY_ASSIGNED_ITEM = "assignedItem";
+    private static final String KEY_LOCATION = "location";
+    private static final String KEY_CONTAINER = "importContainerItem";
     
     private static final String HEADER_PARENT = "Parent ID";
     private static final String HEADER_BASE_LEVEL = "Level";
@@ -377,6 +362,10 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         return inputColumns;
     }
     
+    protected List<ColumnSpec> getColumnSpecs() {
+        return new ArrayList<>();
+    }
+    
     /**
      * Builds the input columns, handlers, and output columns for the helper
      * framework.  Note that because the number of "Level" columns is variable
@@ -385,19 +374,18 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
      * here and in getTemplateColumns().
      */
     @Override
-    protected InitializeInfo initialize_(
+    protected ValidInfo initialize_(
             int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
+            Map<Integer, String> headerValueMap,
+            List<InputColumnModel> inputColumns,
+            List<InputHandler> inputHandlers,
+            List<OutputColumnModel> outputColumns) {
         
         String methodLogName = "initialize_() ";
 
         boolean isValid = true;
         String validString = "";
         
-        List<InputColumnModel> inputColumns = new ArrayList<>();
-        List<InputHandler> handlers = new ArrayList<>();
-        List<OutputColumnModel> outputColumns = new ArrayList<>();
-                
         boolean foundLevel = false;
         int firstLevelIndex = -1;
         int lastLevelIndex = -1;
@@ -418,6 +406,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     firstLevelIndex = columnIndex;
                 }
                 lastLevelIndex = columnIndex;
+                
             } else {
             
                 switch (columnHeader) {
@@ -425,25 +414,25 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     case HEADER_PARENT:
                         colInfo = getColumnInfoMap().get(HEADER_PARENT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        handlers.add(new IdRefInputHandler(columnIndex, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
+                        inputHandlers.add(new IdRefInputHandler(columnIndex, KEY_CONTAINER, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
                         break;
 
                     case HEADER_TEMPLATE_INVOCATION:
                         colInfo = getColumnInfoMap().get(HEADER_TEMPLATE_INVOCATION);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        handlers.add(new StringInputHandler(columnIndex, "setImportTemplateAndParameters", 0));
+                        inputHandlers.add(new StringInputHandler(columnIndex, "importTemplateAndParameters", "setImportTemplateAndParameters", 0));
                         break;
 
                     case HEADER_ALT_NAME:
                         colInfo = getColumnInfoMap().get(HEADER_ALT_NAME);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        handlers.add(new StringInputHandler(columnIndex, "setAlternateName", 32));
+                        inputHandlers.add(new StringInputHandler(columnIndex, "alternateName", "setAlternateName", 32));
                         break;
 
                     case HEADER_DESCRIPTION:
                         colInfo = getColumnInfoMap().get(HEADER_DESCRIPTION);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        handlers.add(new StringInputHandler(columnIndex, "setDescription", 256));
+                        inputHandlers.add(new StringInputHandler(columnIndex, "description", "setDescription", 256));
                         break;
 
                     case HEADER_ASSIGNED_ITEM:
@@ -454,25 +443,25 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     case HEADER_ASSIGNED_ITEM_ID:
                         colInfo = getColumnInfoMap().get(HEADER_ASSIGNED_ITEM_ID);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        handlers.add(new AssignedItemHandler(columnIndex));
+                        inputHandlers.add(new AssignedItemHandler(columnIndex));
                         break;
 
                     case HEADER_LOCATION:
                         colInfo = getColumnInfoMap().get(HEADER_LOCATION);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        handlers.add(new LocationHandler(columnIndex));
+                        inputHandlers.add(new LocationHandler(columnIndex));
                         break;
 
                     case HEADER_PROJECT:
                         colInfo = getColumnInfoMap().get(HEADER_PROJECT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        handlers.add(new IdRefInputHandler(columnIndex, "setProjectValue", ItemProjectController.getInstance(), ItemProject.class));
+                        inputHandlers.add(new IdRefInputHandler(columnIndex, "project", "setProjectValue", ItemProjectController.getInstance(), ItemProject.class));
                         break;
 
                     case HEADER_TEMPLATE:
                         colInfo = getColumnInfoMap().get(HEADER_TEMPLATE);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        handlers.add(new BooleanInputHandler(columnIndex, "setImportIsTemplate"));
+                        inputHandlers.add(new BooleanInputHandler(columnIndex, "importIsTemplate", "setImportIsTemplate"));
                         break;
 
                     default:
@@ -494,26 +483,23 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             
         } else {
             // add handler for multiple "level" columns
-            handlers.add(new NameHandler(firstLevelIndex, lastLevelIndex, 128));
+            inputHandlers.add(new NameHandler(firstLevelIndex, lastLevelIndex, 128));
         }
         
         // output columns are fixed
-        outputColumns.add(new OutputColumnModel("Parent Item", "importContainerString"));
-        outputColumns.add(new OutputColumnModel("Parent Path", "importPath"));
-        outputColumns.add(new OutputColumnModel("Name", "name"));
-        outputColumns.add(new OutputColumnModel("Is Template", "importIsTemplateString"));
-        outputColumns.add(new OutputColumnModel("Project", "itemProjectString"));
-        outputColumns.add(new OutputColumnModel("Template and Parameters", "importTemplateAndParameters"));
-        outputColumns.add(new OutputColumnModel("Alt Name", "alternateName"));
-        outputColumns.add(new OutputColumnModel("Description", "description"));
-        outputColumns.add(new OutputColumnModel("Assigned Catalog Item", "importAssignedCatalogItemString"));
-        outputColumns.add(new OutputColumnModel("Assigned Inventory Item", "importAssignedInventoryItemString"));
-        outputColumns.add(new OutputColumnModel("Location", "importLocationItemString"));
+        outputColumns.add(new OutputColumnModel(0, "Parent Item", "importContainerString"));
+        outputColumns.add(new OutputColumnModel(1, "Parent Path", "importPath"));
+        outputColumns.add(new OutputColumnModel(2, "Name", "name"));
+        outputColumns.add(new OutputColumnModel(3, "Is Template", "importIsTemplateString"));
+        outputColumns.add(new OutputColumnModel(4, "Project", "itemProjectString"));
+        outputColumns.add(new OutputColumnModel(5, "Template and Parameters", "importTemplateAndParameters"));
+        outputColumns.add(new OutputColumnModel(6, "Alt Name", "alternateName"));
+        outputColumns.add(new OutputColumnModel(7, "Description", "description"));
+        outputColumns.add(new OutputColumnModel(8, "Assigned Catalog Item", "importAssignedCatalogItemString"));
+        outputColumns.add(new OutputColumnModel(9, "Assigned Inventory Item", "importAssignedInventoryItemString"));
+        outputColumns.add(new OutputColumnModel(10, "Location", "importLocationItemString"));
         
-        ValidInfo validInfo = new ValidInfo(isValid, validString);
-        InitializeInfo initInfo = new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
-                
-        return initInfo;
+        return new ValidInfo(isValid, validString);
     }
     
     @Override
@@ -532,11 +518,6 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
     }
     
     @Override
-    protected ItemDomainMachineDesign createEntityInstance() {
-        return getEntityController().createEntityInstance();
-    }
-    
-    @Override
     protected void reset_() {
         itemByNameMap = new HashMap<>();
         treeNodeMap = new HashMap<>();
@@ -550,22 +531,19 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         return true;
     }
 
-    /**
-     * Set parent/child relationships between items, and create new item at
-     * specified path within container item.  The path contains the names of 
-     * the parent nodes between the new item and the container item, separated by
-     * Unix style slashes.
-     */
     @Override
-    protected ImportHelperBase.ValidInfo postParseRow(ItemDomainMachineDesign item) {
+    protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
 
         String methodLogName = "postParseRow() ";
 
         boolean isValid = true;
         String validString = "";
+        ItemDomainMachineDesign invalidInstance = getEntityController().createEntityInstance();
         
         boolean isValidLocation = true;
         boolean isValidAssignedItem = true;
+        
+        ItemDomainMachineDesign item = null;
         
         ItemDomainMachineDesign itemParent = null;
         
@@ -581,8 +559,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                 isValid = false;
                 validString = "invalid format for template and parameters: " + templateParms;
                 LOGGER.info(methodLogName + validString);
-                return new ValidInfo(isValid, validString);
-                
+                return new CreateInfo(invalidInstance, isValid, validString);
             }
 
             int indexOpenParen = templateParms.indexOf('(');
@@ -595,7 +572,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                 isValid = false;
                 validString = "template name not provided: " + templateParms;
                 LOGGER.info(methodLogName + validString);
-                return new ValidInfo(isValid, validString);
+                return new CreateInfo(invalidInstance, isValid, validString);
             }
 
             // parse and validate variable string
@@ -610,7 +587,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     isValid = false;
                     validString = "invalid format for template parameters: " + templateVarString;
                     LOGGER.info(methodLogName + validString);
-                    return new ValidInfo(isValid, validString);
+                    return new CreateInfo(invalidInstance, isValid, validString);
                 }
 
                 String varName = nameValueArray[0];
@@ -622,13 +599,13 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             TemplateInvocationInfo templateInfo = new TemplateInvocationInfo(templateName, varNameValueMap);
             
             // check for and set parent item
-            itemParent = item.getImportContainerItem();
+            itemParent = (ItemDomainMachineDesign)rowMap.get(KEY_CONTAINER);
             if (itemParent == null) {
                 // must specify parent for template invocation
                 isValid = false;
                 validString = "parent ID must be specified for template invocation";
                 LOGGER.info(methodLogName + validString);
-                return new ValidInfo(isValid, validString);
+                return new CreateInfo(invalidInstance, isValid, validString);
             }
 
             // retrieve specified template
@@ -642,14 +619,14 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                         "exception retrieving specified template, possibly non-unique name: " + 
                         templateName + ": " + ex;
                 LOGGER.info(methodLogName + validString);
-                return new ValidInfo(isValid, validString);
+                return new CreateInfo(invalidInstance, isValid, validString);
             }
             
             if (templateItem == null) {
                 isValid = false;
                 validString = "no template found for name: " + templateName;
                 LOGGER.info(methodLogName + validString);
-                return new ValidInfo(isValid, validString);
+                return new CreateInfo(invalidInstance, isValid, validString);
             }
             
             // check that it's a template
@@ -657,7 +634,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                 isValid = false;
                 validString = "specified template name is not a template: " + templateName;
                 LOGGER.info(methodLogName + validString);
-                return new ValidInfo(isValid, validString);
+                return new CreateInfo(invalidInstance, isValid, validString);
             }
             
             // generate list of variable name/value pairs
@@ -671,42 +648,55 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     isValid = false;
                     validString = "specified template parameters missing required variable: " + obj.getKey();
                     LOGGER.info(methodLogName + validString);
-                    return new ValidInfo(isValid, validString);
+                    return new CreateInfo(invalidInstance, isValid, validString);
                 }
                 
                 obj.setValue(varNameValueMap.get(obj.getKey()));
             }
             
             // TODO: generate machine design item name for item
+            item = getEntityController().createEntityInstance();
             String itemName = getEntityController().generateMachineDesignNameForTemplateItem(templateItem);
             item.setName(itemName);
+            return new CreateInfo(item, isValid, validString);
             
             // TODO: instantiate the machine design items from the template and params            
             
         } else {
-        
+            // create regular item
+            
+            item = getEntityController().createEntityInstance();
+            
+            item.setName((String)rowMap.get(KEY_NAME));
             if ((item.getName() == null) || (item.getName().isEmpty())) {
                 // didn't find a non-empty name column for this row
                 isValid = false;
                 validString = "name columns are all empty";
-                return new ValidInfo(isValid, validString);
+                return new CreateInfo(item, isValid, validString);
             }
-
-            ImportInfo itemInfo = itemInfoMap.get(item);
-            if (itemInfo == null) {
-                String msg = "Unable to find indent level for item";
-                LOGGER.info(methodLogName + msg);
-                validString = appendToString(validString, msg);
-                isValid = false;
-
-                // invalidate parent map, it is probably messed up by missing item
-                parentIndentMap.clear();
-                LOGGER.info(methodLogName + "Invalidating parentIndentMap");
-                return new ValidInfo(isValid, validString);
+            
+            // set assigned item
+            Item assignedItem = (Item)rowMap.get(KEY_ASSIGNED_ITEM);
+            if (assignedItem != null) {
+                if (assignedItem instanceof ItemDomainCatalog) {
+                    item.setImportAssignedCatalogItem((ItemDomainCatalog) assignedItem);
+                } else if (assignedItem instanceof ItemDomainInventory) {
+                    item.setImportAssignedInventoryItem((ItemDomainInventory) assignedItem);
+                } else {
+                    String msg = "Invalid object type for assigned item: " + assignedItem.getClass().getName();
+                    isValid = false;
+                    validString = msg;
+                    LOGGER.info("AssignedItemHandler.handleInput() " + msg);
+                }
             }
-
+            
+            ItemDomainLocation itemLocation = (ItemDomainLocation)rowMap.get(KEY_LOCATION);
+            if (itemLocation != null) {
+                item.setImportLocationItem(itemLocation);
+            }
+        
             // find parent for this item
-            int itemIndentLevel = itemInfo.indentLevel;
+            int itemIndentLevel = (int)rowMap.get(KEY_INDENT);
             if (itemIndentLevel > 1) {
 
                 // not allowed to specify parent for non level 0 item
@@ -812,7 +802,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         // add entry to name map for new item
         itemByNameMap.put(item.getName(), item);
 
-        return new ValidInfo(isValid, validString);
+        return new CreateInfo(item, isValid, validString);
     }
 
     protected void updateTreeView(ItemDomainMachineDesign item, 
