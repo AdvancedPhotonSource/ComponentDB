@@ -34,7 +34,7 @@ import org.primefaces.model.TreeNode;
  *
  * @author craig
  */
-public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
+public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
     
     /**
      * Using custom handler so that we can have the machine design hierarchy
@@ -224,13 +224,15 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         }
     }
     
-    private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineDesignVariableFormat.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineDesign.class.getName());
     
     private static final String KEY_NAME = "name";
     private static final String KEY_INDENT = "indentLevel";
     private static final String KEY_ASSIGNED_ITEM = "assignedItem";
     private static final String KEY_LOCATION = "location";
     private static final String KEY_CONTAINER = "importContainerItem";
+    private static final String KEY_TEMPLATE_INVOCATION = "importTemplateAndParameters";
+    private static final String KEY_IS_TEMPLATE = "importIsTemplate";
     
     private static final String HEADER_PARENT = "Parent ID";
     private static final String HEADER_BASE_LEVEL = "Level";
@@ -420,7 +422,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     case HEADER_TEMPLATE_INVOCATION:
                         colInfo = getColumnInfoMap().get(HEADER_TEMPLATE_INVOCATION);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new StringInputHandler(columnIndex, "importTemplateAndParameters", "setImportTemplateAndParameters", 0));
+                        inputHandlers.add(new StringInputHandler(columnIndex, KEY_TEMPLATE_INVOCATION, "setImportTemplateAndParameters", 0));
                         break;
 
                     case HEADER_ALT_NAME:
@@ -461,7 +463,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
                     case HEADER_TEMPLATE:
                         colInfo = getColumnInfoMap().get(HEADER_TEMPLATE);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new BooleanInputHandler(columnIndex, "importIsTemplate", "setImportIsTemplate"));
+                        inputHandlers.add(new BooleanInputHandler(columnIndex, KEY_IS_TEMPLATE, "setImportIsTemplate"));
                         break;
 
                     default:
@@ -547,7 +549,7 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
         
         ItemDomainMachineDesign itemParent = null;
         
-        String templateParms = item.getImportTemplateAndParameters();
+        String templateParms = (String)rowMap.get(KEY_TEMPLATE_INVOCATION);
         if ((templateParms != null) && (!templateParms.isEmpty())) {
             // TODO: consider adding methods like handleTemplateInvocation(),
             // handleTemplateItem(), handleRegularItem()
@@ -694,13 +696,18 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
             if (itemLocation != null) {
                 item.setImportLocationItem(itemLocation);
             }
+            
+            boolean itemIsTemplate = (Boolean)rowMap.get(KEY_IS_TEMPLATE); 
+            item.setImportIsTemplate(itemIsTemplate);
         
             // find parent for this item
             int itemIndentLevel = (int)rowMap.get(KEY_INDENT);
+            ItemDomainMachineDesign itemContainer
+                    = (ItemDomainMachineDesign) rowMap.get(KEY_CONTAINER);
             if (itemIndentLevel > 1) {
 
                 // not allowed to specify parent for non level 0 item
-                if (item.getImportContainerItem() != null) {
+                if (itemContainer != null) {
                     String msg = "Can only specify existing parent for level 0 item";
                     LOGGER.info(methodLogName + msg);
                     validString = appendToString(validString, msg);
@@ -728,14 +735,13 @@ public class ImportHelperMachineDesignVariableFormat extends ImportHelperBase<It
 
             } else {
                 // this is either a top-level item, or a parent item is explicitly specified for it
-                ItemDomainMachineDesign container = item.getImportContainerItem();
-                if (container == null) {
+                if (itemContainer == null) {
                     // new item is a top-level machine design with no parent
                     String msg = "creating top-level machine design item: " + item.getName();
                     LOGGER.debug(methodLogName + msg);
                     itemParent = null;
                 } else {
-                    itemParent = container;
+                    itemParent = itemContainer;
                 }
             }
 

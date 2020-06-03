@@ -11,7 +11,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
-import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperMachineDesignVariableFormat;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperMachineDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -2487,7 +2487,7 @@ public class ItemDomainMachineDesignController
 
     @Override
     protected ImportHelperBase createImportHelperInstance() throws CdbException {
-        return new ImportHelperMachineDesignVariableFormat();
+        return new ImportHelperMachineDesign();
     }
     
     // </editor-fold>       

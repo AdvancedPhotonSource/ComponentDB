@@ -194,7 +194,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
     
-    protected class OutputColumnModel implements Serializable {
+    public class OutputColumnModel implements Serializable {
         
         private int columnIndex;
         private String header = null;
@@ -372,27 +372,22 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             
             // get row dictionary value
             Object parsedValue = rowMap.get(getPropertyName());
-            if (parsedValue == null) {
-                isValid = false;
-                validString = "Missing row dictionary key: " + getPropertyName();
-                LOGGER.info(methodLogName + validString);
-                return new ValidInfo(isValid, validString);
-            }
-            
-            try {
-                // use reflection to invoke setter method on entity instance
-                Method setterMethod;
-                Class paramType = getParamType();
-                setterMethod = entity.getClass().getMethod(getSetterMethod(), paramType);
-                setterMethod.invoke(entity, parsedValue);
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                isValid = false;
-                validString = 
-                        "Unable to invoke setter method: " + getSetterMethod() +
-                        " for column: " + columnNameForIndex(columnIndex) +
-                        " reason: " + ex.getClass().getName();
-                LOGGER.info(methodLogName + validString);
-                return new ValidInfo(isValid, validString);
+            if (parsedValue != null) {
+                try {
+                    // use reflection to invoke setter method on entity instance
+                    Method setterMethod;
+                    Class paramType = getParamType();
+                    setterMethod = entity.getClass().getMethod(getSetterMethod(), paramType);
+                    setterMethod.invoke(entity, parsedValue);
+                } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    isValid = false;
+                    validString
+                            = "Unable to invoke setter method: " + getSetterMethod()
+                            + " for column: " + columnNameForIndex(columnIndex)
+                            + " reason: " + ex.getClass().getName();
+                    LOGGER.info(methodLogName + validString);
+                    return new ValidInfo(isValid, validString);
+                }
             }
             
             return new ValidInfo(isValid, validString);
@@ -511,18 +506,25 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         @Override
         public ParseInfo parseCellValue(String strValue) {
+            boolean isValid = true;
+            String validString = "";
             Object objValue = null;
             if (strValue.length() > 0) {
-                objValue = controller.findById(Integer.valueOf(strValue));
-                if (objValue == null) {
-                    String msg = "Unable to find object for: " + columnNameForIndex(columnIndex) + 
-                            " with id: " + strValue;
-                    return new ParseInfo<>(objValue, false, msg);
-                } else {
-                    return new ParseInfo<>(objValue, true, "");
+                try {
+                    objValue = controller.findById(Integer.valueOf(strValue));
+                    if (objValue == null) {
+                        isValid = false;
+                        validString = 
+                                "Unable to find object for: " + 
+                                columnNameForIndex(columnIndex) + 
+                                " with id: " + strValue;
+                    }
+                } catch (NumberFormatException ex) {
+                    isValid = false;
+                    validString = "invalid id number format: " + strValue;
                 }
             }
-            return new ParseInfo<>(objValue, true, "");
+            return new ParseInfo<>(objValue, isValid, validString);
         }
     }
 
