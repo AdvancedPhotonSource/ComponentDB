@@ -307,21 +307,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
         
         if (parentItem != null) {
             // create ItemElement for new relationship
-            EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-            ItemElement itemElement = new ItemElement();
-            itemElement.setEntityInfo(entityInfo);
-            itemElement.setParentItem(parentItem);
-            String elementName
-                    = getItemDomainController().
-                            generateUniqueElementNameForItem(parentItem);
-            itemElement.setName(elementName);
-
-            int elementSize = parentItem.getItemElementDisplayList().size();
-            float sortOrder = elementSize;
-            itemElement.setSortOrder(sortOrder);
-
-            // set parent-child relationship
-            itemElement.setContainedItem(this);
+            ItemElement itemElement = createItemElementForParent(parentItem);
 
             // for non-template item, add assigned catalog/inventory item (if any)
             if (isValidAssignedItem) {
@@ -342,6 +328,56 @@ public class ItemDomainMachineDesign extends LocatableItem {
             }
             this.getItemElementMemberList().add(itemElement);
         }
+    }
+    
+    private static ItemElement createItemElementForParent(
+            ItemDomainMachineDesign parentItem) {
+        
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        ItemElement itemElement = new ItemElement();
+        itemElement.setEntityInfo(entityInfo);
+        itemElement.setParentItem(parentItem);
+        String elementName
+                = ItemDomainMachineDesignController.getInstance().
+                        generateUniqueElementNameForItem(parentItem);
+        itemElement.setName(elementName);
+
+        int elementSize = parentItem.getItemElementDisplayList().size();
+        float sortOrder = elementSize;
+        itemElement.setSortOrder(sortOrder);
+
+        return itemElement;
+    }  
+    
+    public static ItemDomainMachineDesign instantiateTemplateUnderParent(
+            ItemDomainMachineDesign templateItem,
+            ItemDomainMachineDesign parentItem) {
+        
+        String logMethodName = "instantiateTemplateUnderParent() ";
+        
+        if (templateItem == null || parentItem == null) {
+            LOGGER.error(logMethodName + "must specify both template and parent items");
+            return null;
+        }
+        
+        ItemElement itemElement = createItemElementForParent(parentItem);
+        
+        ItemDomainMachineDesignController controller = 
+                ItemDomainMachineDesignController.getInstance();
+        
+        ItemDomainMachineDesign newItem;
+        try {
+            
+            newItem = controller.createMachineDesignFromTemplate(itemElement, templateItem);
+            controller.createMachineDesignFromTemplateHierachically(itemElement);
+            
+        } catch (CdbException | CloneNotSupportedException ex) {
+            LOGGER.error(logMethodName + "failed to instantiate template " + 
+                    templateItem.getName() + ": " + ex.toString());
+            return null;
+        }
+
+        return newItem;
     }
     
 }

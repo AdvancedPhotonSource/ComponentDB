@@ -657,15 +657,10 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             obj.setValue(varNameValueMap.get(obj.getKey()));
         }
 
-        // TODO: generate machine design item name for item (probably not a
-        // separate task, as instantiating the template sets the name of the item
-        // as part of that process
-        ItemDomainMachineDesign item = getEntityController().createEntityInstance();
-        String itemName = getEntityController().generateMachineDesignNameForTemplateItem(templateItem);
-        item.setName(itemName);
+        ItemDomainMachineDesign item = 
+                ItemDomainMachineDesign.instantiateTemplateUnderParent(
+                        templateItem, itemParent);
         
-        // TODO: instantiate the machine design items from the template and params                
-
         // update tree view with item and parent
         updateTreeView(item, itemParent);
 

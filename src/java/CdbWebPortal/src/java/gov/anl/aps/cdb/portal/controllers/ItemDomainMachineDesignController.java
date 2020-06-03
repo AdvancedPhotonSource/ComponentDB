@@ -1988,7 +1988,7 @@ public class ItemDomainMachineDesignController
         createMachineDesignFromTemplateHierachically(currentEditItemElement);
     }
 
-    private void createMachineDesignFromTemplateHierachically(ItemElement itemElement) throws CdbException, CloneNotSupportedException {
+    public void createMachineDesignFromTemplateHierachically(ItemElement itemElement) throws CdbException, CloneNotSupportedException {
         Item containedItem = itemElement.getContainedItem();
         ItemDomainMachineDesign subTemplate = (ItemDomainMachineDesign) containedItem;
         createMachineDesignFromTemplateHierachically(subTemplate);
@@ -2006,7 +2006,7 @@ public class ItemDomainMachineDesignController
 
     }
 
-    private void createMachineDesignFromTemplate(ItemElement itemElement, ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
+    public ItemDomainMachineDesign createMachineDesignFromTemplate(ItemElement itemElement, ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
         cloneProperties = true;
         cloneCreateItemElementPlaceholders = false;
 
@@ -2029,6 +2029,8 @@ public class ItemDomainMachineDesignController
 
         // No longer needed. Skip the standard template relationship process. 
         templateToCreateNewItem = null;
+        
+        return createItemFromTemplate;
     }
 
     private ItemDomainMachineDesign createItemFromTemplate(ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
