@@ -20,42 +20,19 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
 
     protected static String completionUrlValue = "/views/source/list?faces-redirect=true";
     
-    private List<InputColumnModel> getInputColumns() {
-        List<InputColumnModel> inputColumns = new ArrayList<>();        
-        inputColumns.add(new InputColumnModel(0, "Name", true, "Name of vendor/manufacturer"));
-        inputColumns.add(new InputColumnModel(1, "Description", false, "Description of vendor/manufacturer"));
-        inputColumns.add(new InputColumnModel(2, "Contact Info", false, "Contact name and phone number etc"));
-        inputColumns.add(new InputColumnModel(3, "URL", false, "URL for vendor/manufacturer"));
-        return inputColumns;
-    }
-    
     @Override
-    protected List<InputColumnModel> getTemplateColumns() {
-        return getInputColumns();
-    }
-    
-    @Override
-    protected InitializeInfo initialize_(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap) {
-
-        List<InputHandler> handlers = new ArrayList<>();        
-        handlers.add(new StringInputHandler(0, "setName", 64));
-        handlers.add(new StringInputHandler(1, "setDescription", 256));
-        handlers.add(new StringInputHandler(2, "setContactInfo", 64));
-        handlers.add(new StringInputHandler(3, "setUrl", 256));
-
-        List<OutputColumnModel> outputColumns = new ArrayList<>();        
-        outputColumns.add(new OutputColumnModel("Name", "name"));
-        outputColumns.add(new OutputColumnModel("Description", "description"));
-        outputColumns.add(new OutputColumnModel("Contact Info", "contactInfo"));
-        outputColumns.add(new OutputColumnModel("URL", "url"));
+    protected List<ColumnSpec> getColumnSpecs() {
         
-        ValidInfo validInfo = new ValidInfo(true, "");
+        List<ColumnSpec> specs = new ArrayList<>();
         
-        return new InitializeInfo(getInputColumns(), handlers, outputColumns, validInfo);
-    }
-    
+        specs.add(new StringColumnSpec(0, "Name", "name", "setName", true, "Name of vendor/manufacturer", 64));
+        specs.add(new StringColumnSpec(1, "Description", "description", "setDescription", false, "Description of vendor/manufacturer", 256));
+        specs.add(new StringColumnSpec(2, "Contact Info", "contactInfo", "setContactInfo", false, "Contact name and phone number etc", 64));
+        specs.add(new StringColumnSpec(3, "URL", "url", "setUrl", false, "URL for vendor/manufacturer", 256));
+        
+        return specs;
+    } 
+   
     @Override
     protected String getCompletionUrlValue() {
         return completionUrlValue;
@@ -72,8 +49,9 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     }
 
     @Override
-    protected Source createEntityInstance() {
-        return getEntityController().createEntityInstance();
+    protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
+        Source entity = getEntityController().createEntityInstance();
+        return new CreateInfo(entity, true, "");
     }  
 
     protected boolean ignoreDuplicates() {
