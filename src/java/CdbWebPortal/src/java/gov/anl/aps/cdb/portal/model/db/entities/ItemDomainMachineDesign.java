@@ -266,6 +266,10 @@ public class ItemDomainMachineDesign extends LocatableItem {
     public String getImportLocationItemString() {
         return importLocationItemString;
     }
+    
+    public void setImportLocationItemString(String str) {
+        importLocationItemString = str;
+    }
 
     public String getImportTemplateAndParameters() {
         return importTemplateAndParameters;
@@ -273,6 +277,13 @@ public class ItemDomainMachineDesign extends LocatableItem {
 
     public void setImportTemplateAndParameters(String importTemplateAndParameters) {
         this.importTemplateAndParameters = importTemplateAndParameters;
+    }
+    
+    public void applyImportLocation() {
+        LocatableItemController.getInstance().setItemLocationInfo(this);
+        LocatableItemController.getInstance().updateLocationForItem(
+                this, getImportLocationItem(), null);
+        importLocationItemString = getLocationString();
     }
     
     /**
@@ -292,10 +303,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
             if (isValidLocation) {
                 // if valid for this item, update it and use hierarchical location
                 // string for import location string
-                LocatableItemController.getInstance().setItemLocationInfo(this);
-                LocatableItemController.getInstance().updateLocationForItem(
-                        this, getImportLocationItem(), null);
-                importLocationItemString = getLocationString();
+                applyImportLocation();
                 
             } else {
                 // if location is not valid for this item, just use item name for

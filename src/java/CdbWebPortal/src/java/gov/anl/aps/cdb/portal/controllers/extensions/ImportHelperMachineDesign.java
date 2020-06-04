@@ -548,7 +548,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             Map<String, Object> rowMap,
             String templateParams) {
 
-        String methodLogName = "postParseRow() ";
+        String methodLogName = "createEntityFromTemplateInstantiation() ";
         boolean isValid = true;
         String validString = "";
         ItemDomainMachineDesign invalidInstance = getEntityController().createEntityInstance();
@@ -661,6 +661,42 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 ItemDomainMachineDesign.instantiateTemplateUnderParent(
                         templateItem, itemParent);
         
+        // name should not be specified explicitly in spreadsheet
+        String itemName = (String) rowMap.get(KEY_NAME);
+        if ((itemName != null) && (!itemName.isEmpty())) {
+            isValid = false;
+            String msg = "Level column values should not be specified for template instantiation: " + itemName;
+            validString = appendToString(validString, msg);
+            LOGGER.info(methodLogName + msg);
+            return new CreateInfo(item, isValid, validString);
+        }
+
+        // don't allow location
+        ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(KEY_LOCATION);
+        if (itemLocation != null) {
+            item.setImportLocationItem(itemLocation);
+            item.setImportLocationItemString(itemLocation.getName());
+            isValid = false;
+            String msg = "Location item not supported for template instantiation";
+            validString = appendToString(validString, msg);
+            LOGGER.info(methodLogName + msg);
+        }
+        
+        // don't allow assigned item
+        Item assignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
+        if (assignedItem != null) {
+            // set assigned item in domain property for validation table display
+            if (assignedItem instanceof ItemDomainCatalog) {
+                item.setImportAssignedCatalogItem((ItemDomainCatalog) assignedItem);
+            } else if (assignedItem instanceof ItemDomainInventory) {
+                item.setImportAssignedInventoryItem((ItemDomainInventory) assignedItem);
+            }
+            isValid = false;
+            String msg = "Assigned item not supported for template instantiation";
+            validString = appendToString(validString, msg);
+            LOGGER.info(methodLogName + msg);
+        }
+
         // update tree view with item and parent
         updateTreeView(item, itemParent);
 
@@ -672,7 +708,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     
     private CreateInfo createEntityForRegularItem(Map<String, Object> rowMap) {
         
-        String methodLogName = "postParseRow() ";
+        String methodLogName = "createEntityForRegularItem() ";
         boolean isValid = true;
         String validString = "";
 
@@ -703,7 +739,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 String msg = "Invalid object type for assigned item: " + assignedItem.getClass().getName();
                 isValid = false;
                 validString = msg;
-                LOGGER.info("AssignedItemHandler.handleInput() " + msg);
+                LOGGER.info(methodLogName + msg);
             }
         }
 
