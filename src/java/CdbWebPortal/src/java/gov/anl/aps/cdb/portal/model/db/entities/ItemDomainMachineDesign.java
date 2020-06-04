@@ -315,8 +315,9 @@ public class ItemDomainMachineDesign extends LocatableItem {
         
         if (parentItem != null) {
             // create ItemElement for new relationship
-            ItemElement itemElement = createItemElementForParent(parentItem);
-
+            ItemElement itemElement = createItemElementForParent(parentItem);            
+            setChildParentRelationship(this, parentItem, itemElement);
+            
             // for non-template item, add assigned catalog/inventory item (if any)
             if (isValidAssignedItem) {
                 if (importAssignedInventoryItem != null) {
@@ -325,17 +326,27 @@ public class ItemDomainMachineDesign extends LocatableItem {
                     itemElement.setContainedItem2(importAssignedCatalogItem);
                 }
             }
-
-            // add ItemElement to parent
-            parentItem.getFullItemElementList().add(itemElement);
-            parentItem.getItemElementDisplayList().add(0, itemElement);
-
-            // add ItemElement to child
-            if (this.getItemElementMemberList() == null) {
-                this.setItemElementMemberList(new ArrayList<>());
-            }
-            this.getItemElementMemberList().add(itemElement);
         }
+    }
+    
+    private static void setChildParentRelationship(
+            ItemDomainMachineDesign childItem,
+            ItemDomainMachineDesign parentItem,
+            ItemElement itemElement) {
+        
+        // set parent-child relationship
+        itemElement.setContainedItem(childItem);
+
+        // add ItemElement to parent
+        parentItem.getFullItemElementList().add(itemElement);
+        parentItem.getItemElementDisplayList().add(0, itemElement);
+
+        // add ItemElement to child
+        if (childItem.getItemElementMemberList() == null) {
+            childItem.setItemElementMemberList(new ArrayList<>());
+        }
+        childItem.getItemElementMemberList().add(itemElement);
+            
     }
     
     private static ItemElement createItemElementForParent(
@@ -377,8 +388,11 @@ public class ItemDomainMachineDesign extends LocatableItem {
         try {
             
             newItem = controller.createMachineDesignFromTemplate(itemElement, templateItem);
+
             controller.createMachineDesignFromTemplateHierachically(itemElement);
             
+            setChildParentRelationship(newItem, parentItem, itemElement);
+
         } catch (CdbException | CloneNotSupportedException ex) {
             LOGGER.error(logMethodName + "failed to instantiate template " + 
                     templateItem.getName() + ": " + ex.toString());

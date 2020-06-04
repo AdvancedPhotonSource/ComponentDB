@@ -475,6 +475,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         protected CdbEntityController controller;
         protected Class paramType;
+        
+        protected Map<Object, CdbEntity> objectIdMap = new HashMap<>();
 
         public RefInputHandler(
                 int columnIndex, 
@@ -508,16 +510,24 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         public ParseInfo parseCellValue(String strValue) {
             boolean isValid = true;
             String validString = "";
-            Object objValue = null;
+            CdbEntity objValue = null;
             if (strValue.length() > 0) {
                 try {
-                    objValue = controller.findById(Integer.valueOf(strValue));
-                    if (objValue == null) {
-                        isValid = false;
-                        validString = 
-                                "Unable to find object for: " + 
-                                columnNameForIndex(columnIndex) + 
-                                " with id: " + strValue;
+                    int id = Integer.valueOf(strValue);
+                    if (objectIdMap.containsKey(id)) {
+                        objValue = objectIdMap.get(id);
+                        LOGGER.debug("found object in cache with id: " + id);
+                    } else {
+                        objValue = controller.findById(id);
+                        if (objValue == null) {
+                            isValid = false;
+                            validString
+                                    = "Unable to find object for: "
+                                    + columnNameForIndex(columnIndex)
+                                    + " with id: " + strValue;
+                        } else {
+                            objectIdMap.put(objValue.getId(), objValue);
+                        }
                     }
                 } catch (NumberFormatException ex) {
                     isValid = false;
