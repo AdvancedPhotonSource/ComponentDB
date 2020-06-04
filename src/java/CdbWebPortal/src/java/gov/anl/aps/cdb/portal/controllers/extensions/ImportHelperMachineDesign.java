@@ -236,7 +236,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     
     private static final String HEADER_PARENT = "Parent ID";
     private static final String HEADER_BASE_LEVEL = "Level";
-    private static final String HEADER_TEMPLATE_INVOCATION = "Template and Parameters";
+    private static final String HEADER_TEMPLATE_INVOCATION = "Template Instantiation";
     private static final String HEADER_ALT_NAME = "Machine Design Alternate Name";
     private static final String HEADER_DESCRIPTION = "Machine Design Item Description";
     private static final String HEADER_ASSIGNED_ITEM = "Assigned Catalog/Inventory Item";
@@ -338,7 +338,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         inputColumns.add(new InputColumnModel(3, HEADER_BASE_LEVEL + " 2", false, colInfo.description + " 2"));
         
         colInfo = getColumnInfoMap().get(HEADER_TEMPLATE_INVOCATION);
-        inputColumns.add(new InputColumnModel(4, HEADER_ALT_NAME, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(4, HEADER_TEMPLATE_INVOCATION, colInfo.isRequired, colInfo.description));
         
         colInfo = getColumnInfoMap().get(HEADER_ALT_NAME);
         inputColumns.add(new InputColumnModel(5, HEADER_ALT_NAME, colInfo.isRequired, colInfo.description));
