@@ -48,6 +48,17 @@ See LICENSE file.
             <p:tooltip for="#{entityTypeName}TravelerRemoveFromBinder" value="Remove traveler from binder."/>                      
         </p:commandLink>
 
+         <p:commandLink id="#{entityTypeName}TravelerMove"
+                       styleClass="fa-link-icon fa-icon fa fa-arrows"                       
+                       onstart="PF('loadingDialog').show()"
+                       oncomplete="PF('loadingDialog').hide(); PF('travelerInstanceMoveDialogWidget').show()"
+                       update="@form:travelerInstanceMoveDialog"
+                       action="#{itemTravelerDomainInventoryController.prepareTravelerInstanceMove()}"
+                       rendered="#{isEntityWriteable and travelerObject.traveler and loginController.loggedInAsAdmin}">
+            <p:tooltip for="#{entityTypeName}TravelerMove" value="Move the traveler to another item."/>
+            <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
+                                         value="#{travelerObject}" />
+        </p:commandLink>
 
         <p:commandLink id="#{entityTypeName}TravelerArchive"
                        styleClass="fa-link-icon fa-icon-warning fa fa-archive"                       
@@ -60,7 +71,7 @@ See LICENSE file.
             <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
                                          value="#{travelerObject}" />
         </p:commandLink>
-
+        
     </p:column>
 
 </ui:composition>
