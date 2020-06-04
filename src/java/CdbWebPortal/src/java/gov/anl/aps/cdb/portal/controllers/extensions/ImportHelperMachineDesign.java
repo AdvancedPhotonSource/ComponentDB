@@ -877,29 +877,15 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 parentNode.getChildren().add(itemNode);
                 
             } else {
-                // parent tree node doesn't exist, so create new tree nodes for
-                // parent and its ancestors, and add child to parent
-                parentNode = new DefaultTreeNode(parent);
-                parentNode.setExpanded(true);
+                // recursively walk up towards root node
+                updateTreeView(parent, parent.getParentMachineDesign());
+                parentNode = treeNodeMap.get(parent.getName());
                 parentNode.getChildren().add(itemNode);
-                treeNodeMap.put(parent.getName(), parentNode);
-                ItemDomainMachineDesign ancestor = parent.getParentMachineDesign();
-                TreeNode childNode = parentNode;
-                while (ancestor != null) {
-                    TreeNode ancestorNode = new DefaultTreeNode(ancestor);
-                    ancestorNode.setExpanded(true);
-                    treeNodeMap.put(ancestor.getName(), ancestorNode);
-                    ancestorNode.getChildren().add(childNode);
-                    ancestor = ancestor.getParentMachineDesign();
-                    childNode = ancestorNode;
-                }
-                rootTreeNode.getChildren().add(childNode);
             }
             
         } else {
             // top level machine design item, so add to root tree node
             rootTreeNode.getChildren().add(itemNode);
         }
-        
     }
 }
