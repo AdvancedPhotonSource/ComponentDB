@@ -113,7 +113,10 @@ public class ItemDomainImportWizard implements Serializable {
     }
     
     public void treeSelectionChanged(NodeSelectEvent event) {
-        setSelectedTableRow((CdbEntity)event.getTreeNode().getData());
+        CdbEntity selectedItem = (CdbEntity)event.getTreeNode().getData();
+        if (getRows().contains(selectedItem)) {
+            setSelectedTableRow(selectedItem);
+        }
     }
     
     public CdbEntity getSelectedTableRow() {

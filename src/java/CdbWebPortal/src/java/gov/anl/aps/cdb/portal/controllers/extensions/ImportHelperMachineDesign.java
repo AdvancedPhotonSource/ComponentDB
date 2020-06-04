@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
@@ -698,7 +699,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         }
 
         // update tree view with item and parent
-        updateTreeView(item, itemParent);
+        updateTreeView(item, itemParent, true);
 
         // add entry to name map for new item
         itemByNameMap.put(item.getName(), item);
@@ -855,7 +856,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         parentIndentMap.put(itemIndentLevel, item);
 
         // update tree view with item and parent
-        updateTreeView(item, itemParent);
+        updateTreeView(item, itemParent, false);
 
         // add entry to name map for new item
         itemByNameMap.put(item.getName(), item);
@@ -863,29 +864,49 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         return new CreateInfo(item, isValid, validString);
     }
 
-    protected void updateTreeView(ItemDomainMachineDesign item, 
-            ItemDomainMachineDesign parent) {
+    private void updateTreeView(
+            ItemDomainMachineDesign item, 
+            ItemDomainMachineDesign parent,
+            boolean addChildren) {
         
         TreeNode itemNode = new DefaultTreeNode(item);
         itemNode.setExpanded(true);
         treeNodeMap.put(item.getName(), itemNode);
         
+        if (addChildren) {
+            addChildrenForItemToTreeNode(item, itemNode);
+        }
+        
         if (parent != null) {
+            
+            // create parent nodes recursively if they don't exist
             TreeNode parentNode = treeNodeMap.get(parent.getName());
-            if (parentNode != null) {
-                // parent tree node already exists so add child to it
-                parentNode.getChildren().add(itemNode);
-                
-            } else {
-                // recursively walk up towards root node
-                updateTreeView(parent, parent.getParentMachineDesign());
+            if (parentNode == null) {
+                updateTreeView(parent, parent.getParentMachineDesign(), false);
                 parentNode = treeNodeMap.get(parent.getName());
-                parentNode.getChildren().add(itemNode);
             }
+            
+            parentNode.getChildren().add(itemNode);
             
         } else {
             // top level machine design item, so add to root tree node
             rootTreeNode.getChildren().add(itemNode);
+        }
+    }
+    
+    private void addChildrenForItemToTreeNode(
+            ItemDomainMachineDesign item, 
+            TreeNode itemNode) {
+        
+        itemNode.setExpanded(false);
+        List<ItemElement> children = item.getItemElementDisplayList();
+        for (ItemElement child : children) {
+            ItemDomainMachineDesign childItem = 
+                    (ItemDomainMachineDesign) child.getContainedItem();
+            TreeNode childNode = new DefaultTreeNode(childItem);
+            childNode.setExpanded(false);
+            itemNode.getChildren().add(childNode);
+            addChildrenForItemToTreeNode(childItem, childNode);
         }
     }
 }
