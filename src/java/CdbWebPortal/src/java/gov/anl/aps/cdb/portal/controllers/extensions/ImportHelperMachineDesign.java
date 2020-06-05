@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
@@ -592,8 +593,8 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 return new CreateInfo(invalidInstance, isValid, validString);
             }
 
-            String varName = nameValueArray[0];
-            String varValue = nameValueArray[1];
+            String varName = nameValueArray[0].strip();
+            String varValue = nameValueArray[1].strip();
             varNameValueMap.put(varName, varValue);
         }
 
@@ -616,7 +617,10 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         ItemDomainMachineDesign templateItem;
         try {
             templateItem
-                    = ItemDomainMachineDesignFacade.getInstance().findUniqueByName(templateName, null);
+                    = ItemDomainMachineDesignFacade.getInstance().findUniqueByDomainAndEntityTypeAndName(
+                            templateName, 
+                            EntityTypeName.template.getValue(),
+                            null);
         } catch (CdbException ex) {
             isValid = false;
             validString

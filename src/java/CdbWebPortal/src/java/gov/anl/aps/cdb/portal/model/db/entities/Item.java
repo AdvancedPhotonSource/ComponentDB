@@ -76,6 +76,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM Item i WHERE i.name = :name"),
     @NamedQuery(name = "Item.findByDomainNameAndName",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName AND i.name = :name"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndName",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName AND i.name = :name and etl.name = :entityTypeName"),
     @NamedQuery(name = "Item.findByItemIdentifier1",
             query = "SELECT i FROM Item i WHERE i.itemIdentifier1 = :itemIdentifier1"),
     @NamedQuery(name = "Item.findByItemIdentifier2",
