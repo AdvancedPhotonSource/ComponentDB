@@ -113,7 +113,10 @@ public class ItemDomainImportWizard implements Serializable {
     }
     
     public void treeSelectionChanged(NodeSelectEvent event) {
-        setSelectedTableRow((CdbEntity)event.getTreeNode().getData());
+        CdbEntity selectedItem = (CdbEntity)event.getTreeNode().getData();
+        if (getRows().contains(selectedItem)) {
+            setSelectedTableRow(selectedItem);
+        }
     }
     
     public CdbEntity getSelectedTableRow() {
@@ -173,14 +176,6 @@ public class ItemDomainImportWizard implements Serializable {
         }
     }
     
-    public List<OutputColumnModel> getTreeTableColumns() {
-        if (importHelper != null) {
-            return importHelper.getTreeViewColumns();
-        } else {
-            return new ArrayList<>();
-        }
-    }
-
     public StreamedContent getTemplateExcelFile() {
         return importHelper.getTemplateExcelFile();
     }

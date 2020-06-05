@@ -11,7 +11,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
-import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperMachineDesignVariableFormat;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperMachineDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -1945,7 +1945,7 @@ public class ItemDomainMachineDesignController
         }
     }
 
-    private void generateMachineDesignTemplateNameVarsRecursivelly(ItemDomainMachineDesign template) {
+    public void generateMachineDesignTemplateNameVarsRecursivelly(ItemDomainMachineDesign template) {
         generateMachineDesignTemplateNameVars(template);
 
         for (ItemElement ie : template.getItemElementDisplayList()) {
@@ -2042,7 +2042,7 @@ public class ItemDomainMachineDesignController
         createMachineDesignFromTemplateHierachically(currentEditItemElement);
     }
 
-    private void createMachineDesignFromTemplateHierachically(ItemElement itemElement) throws CdbException, CloneNotSupportedException {
+    public void createMachineDesignFromTemplateHierachically(ItemElement itemElement) throws CdbException, CloneNotSupportedException {
         Item containedItem = itemElement.getContainedItem();
         ItemDomainMachineDesign subTemplate = (ItemDomainMachineDesign) containedItem;
         createMachineDesignFromTemplateHierachically(subTemplate);
@@ -2060,7 +2060,7 @@ public class ItemDomainMachineDesignController
 
     }
 
-    private void createMachineDesignFromTemplate(ItemElement itemElement, ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
+    public ItemDomainMachineDesign createMachineDesignFromTemplate(ItemElement itemElement, ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
         cloneProperties = true;
         cloneCreateItemElementPlaceholders = false;
 
@@ -2083,6 +2083,8 @@ public class ItemDomainMachineDesignController
 
         // No longer needed. Skip the standard template relationship process. 
         templateToCreateNewItem = null;
+        
+        return createItemFromTemplate;
     }
 
     private ItemDomainMachineDesign createItemFromTemplate(ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
@@ -2125,6 +2127,10 @@ public class ItemDomainMachineDesignController
 
     public List<KeyValueObject> getMachineDesignNameList() {
         return machineDesignNameList;
+    }
+    
+    public void setMachineDesignNameList(List<KeyValueObject> list) {
+        this.machineDesignNameList = list;
     }
 
     public Item getInventoryForElement() {
@@ -2544,7 +2550,7 @@ public class ItemDomainMachineDesignController
 
     @Override
     protected ImportHelperBase createImportHelperInstance() throws CdbException {
-        return new ImportHelperMachineDesignVariableFormat();
+        return new ImportHelperMachineDesign();
     }
     
     // </editor-fold>       
