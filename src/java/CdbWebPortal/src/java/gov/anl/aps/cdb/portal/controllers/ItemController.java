@@ -1315,7 +1315,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return itemElement;
     }
 
-    protected String generateUniqueElementNameForItem(ItemDomainEntity item) {
+    public String generateUniqueElementNameForItem(ItemDomainEntity item) {
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
         int elementNumber = itemElementsDisplayList.size() + 1;
         String elementNameSuffix = "E";

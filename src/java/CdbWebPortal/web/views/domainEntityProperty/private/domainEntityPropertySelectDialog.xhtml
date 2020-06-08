@@ -31,6 +31,8 @@ See LICENSE file.
             <ui:include src="domainEntitySelectionFilterView.xhtml">
                 <ui:param name="propertySelectDataTableSelectionValue" value="#{propertySelectDataTableSelectionValue}" />
                 <ui:param name="propertySelectionMode" value="multiple" />
+                <ui:param name="propertySelectionDblSelectEvent"
+                          value="#{propertySelectDialogPropertySelectionMadeCommandName}" />
             </ui:include>
 
             <f:facet name="footer" class="dialog">

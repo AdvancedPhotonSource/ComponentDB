@@ -4,7 +4,7 @@
 # See LICENSE file.
 
 #
-# Script used to generate the required API client from the running cdb server instance
+# Script used to generate the required API client from the running cdbCli server instance
 #
 # Usage:
 #
@@ -14,7 +14,7 @@
 MY_DIR=`dirname $0` && cd $MY_DIR && MY_DIR=`pwd`
 ROOT_DIR=$MY_DIR
 
-OPEN_API_VERSION="4.1.2"
+OPEN_API_VERSION="4.3.1"
 OPEN_API_GENERATOR_JAR="openapi-generator-cli-$OPEN_API_VERSION.jar"
 OPEN_API_GENERATOR_JAR_URL="https://repo1.maven.org/maven2/org/openapitools/openapi-generator-cli/$OPEN_API_VERSION/$OPEN_API_GENERATOR_JAR" 
 

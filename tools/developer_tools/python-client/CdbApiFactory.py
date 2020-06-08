@@ -64,7 +64,13 @@ class CdbApiFactory:
 		response = self.authApi.authenticate_user_with_http_info(username=username, password=password)
 
 		token = response[-1][self.HEADER_TOKEN_KEY]
+		self.setAuthenticateToken(token)
+
+	def setAuthenticateToken(self, token):
 		self.apiClient.set_default_header(self.HEADER_TOKEN_KEY, token)
+
+	def getAuthenticateToken(self):
+		return self.apiClient.default_headers[self.HEADER_TOKEN_KEY]
 
 	def testAuthenticated(self):
 		self.authApi.verify_authenticated()

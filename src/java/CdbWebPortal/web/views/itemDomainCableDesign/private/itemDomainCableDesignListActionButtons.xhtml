@@ -13,7 +13,7 @@ See LICENSE file.
     <ui:define name="listAddButton">
 
         <p:menuButton value="Add"
-                      icon="ui-icon-plus"
+                      icon="fa fa-plus"
                       styleClass="actionButtonLeft"
                       rendered="#{loginController.loggedInAsAdmin}">
             <p:menuitem value="Cable"
@@ -42,16 +42,6 @@ See LICENSE file.
         </p:menuButton>
 
     </ui:define>    
-
-    <ui:define name ="additonalListButtons">
-        <p:commandButton value="Import"
-                         icon="ui-icon-plus"
-                         action="#{itemDomainCableDesignController.prepareWizardImport()}"
-                         rendered="#{loginController.loggedInAsAdmin}"
-                         onstart="PF('loadingDialog').show();"
-                         oncomplete="PF('loadingDialog').hide();"/> 
-
-    </ui:define>
 
 </ui:composition>
 

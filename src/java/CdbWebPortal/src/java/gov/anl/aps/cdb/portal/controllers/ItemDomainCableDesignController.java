@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
@@ -468,15 +469,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return "/views/itemDomainCableDesign/createBundle?faces-redirect=true";
     }
 
-    /**
-     * Prepares import wizard.
-     */
-    public String prepareWizardImport() {  
-        importHelper.reset();
-        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
-        return "/views/itemDomainCableDesign/import?faces-redirect=true";
-    }
-    
     @Override
     public ItemDomainCableDesign createEntityInstance() {
         ItemDomainCableDesign item = super.createEntityInstance();
@@ -608,4 +600,15 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public String getDefaultDomainDerivedToDomainName() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+    
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected ImportHelperBase createImportHelperInstance() throws CdbException {
+        return new ImportHelperCableDesign();
+    }
+    
 }

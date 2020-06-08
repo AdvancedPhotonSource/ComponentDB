@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dialog id="travelerInstanceMoveDialog" 
+              widgetVar="travelerInstanceMoveDialogWidget" 
+              header="Move Traveler Instance to Different Item" 
+              modal="true"
+              resizable="false"
+              styleClass="viewTransparentBackgroundDialog">
+        
+        <p:outputPanel id="travelerInstanceMoveDialogOutputPanel"
+                       rendered="#{itemTravelerDomainInventoryController.renderMoveTravelerContents}">
+            <ui:include src="../../../../item/private/itemSelectDataTable.xhtml">
+                <ui:param name="updateTarget" value="travelerInstanceMoveDialogOutputPanel" /> 
+                <ui:param name="selectionValue" value="#{itemTravelerDomainInventoryController.inventoryItemToMoveCurrentTraveler}" />
+                <ui:param name="selectionTarget" value="#{itemTravelerDomainInventoryController.inventoryItemToMoveCurrentTraveler}" />
+                <ui:param name="entityController" value="#{itemDomainInventoryController}" />                           
+            </ui:include>
+        </p:outputPanel>
+       
+        <f:facet name="footer" class="dialog">
+            <p:commandButton value="Close" alt="Close" 
+                             oncomplete="PF('travelerInstanceMoveDialogWidget').hide()" 
+                             icon="ui-icon-arrowreturnthick-1-w"/>
+            
+            <p:commandButton value="Move" alt="Move"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             action="#{itemTravelerDomainInventoryController.moveTravelerInstanceToNewItem('successTravelerMoveCommand()')}"
+                             icon="fa fa-arrows" />                              
+            
+            <p:remoteCommand name="successTravelerMoveCommand"
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('travelerInstanceMoveDialogWidget').hide(); PF('loadingDialog').hide();" 
+                             update="@form" /> 
+        </f:facet>
+
+    </p:dialog>
+
+</ui:composition>
+
