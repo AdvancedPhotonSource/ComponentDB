@@ -107,6 +107,7 @@ if [ -z $PYTHONPATH ]; then
 else
     PYTHONPATH=$CDB_ROOT_DIR/src/python:$PYTHONPATH
 fi
+PYTHONPATH=$CDB_ROOT_DIR/tools/developer_tools/python-client:$PYTHONPATH
 export PYTHONPATH
 
 # Done
