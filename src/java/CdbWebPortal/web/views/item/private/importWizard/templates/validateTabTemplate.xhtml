@@ -87,7 +87,8 @@ See LICENSE file.
                                          var="row"
                                          rowKey="#{row.name}"
                                          selectionMode="single"
-                                         selection="#{wizardController.selectedTableRow}">    
+                                         selection="#{wizardController.selectedTableRow}"
+                                         rowStyleClass="#{row.isValidImport ? null : 'invalidTableData'}">    
 
                                 <p:columns value="#{wizardController.columns}" 
                                            var="column" 

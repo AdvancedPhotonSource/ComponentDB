@@ -928,6 +928,10 @@ h2 {
     margin-left: -10px;
 }
 
+.invalidTableData {
+    color: red !important;
+}
+
 .ui-panelgrid > tbody > tr.ui-widget-content, .ui-panelgrid-even, .ui-panelgrid-odd {
     background: transparent;
 }
