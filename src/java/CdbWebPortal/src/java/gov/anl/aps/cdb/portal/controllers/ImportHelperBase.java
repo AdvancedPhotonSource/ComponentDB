@@ -716,7 +716,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     protected byte[] templateExcelFile = null;
     protected boolean validInput = true;
-    protected String validationMessage = "";
+    private String validationMessage = "";
+    private String summaryMessage = "";
     protected TreeNode rootTreeNode = new DefaultTreeNode("Root", null);
 
     public ImportHelperBase() {
@@ -742,6 +743,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     public String getValidationMessage() {
         return validationMessage;
+    }
+
+    public String getSummaryMessage() {
+        return summaryMessage;
     }
 
     public String getCompletionUrl() {
@@ -992,6 +997,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         int rowCount = -1;
         int entityNum = 0;
         int dupCount = 0;
+        int invalidCount = 0;
         String dupString = "";
         
         while (rowIterator.hasNext()) {
@@ -1017,6 +1023,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 ValidInfo rowValidInfo = parseRow(row);
                 if (!rowValidInfo.isValid()) {
                     validInput = false;
+                    invalidCount = invalidCount + 1;
                 }
                 if (rowValidInfo.isDuplicate()) {
                     dupCount = dupCount + 1;
@@ -1026,13 +1033,45 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         
         if (dupCount > 0) {
-            validationMessage = appendToString(validationMessage, "Note: removed " + dupCount + " rows that already exist in database: (" + dupString + ")");
+            validationMessage = appendToString(
+                    validationMessage, 
+                    "Removed " + dupCount + 
+                            " rows that already exist in database: (" + dupString + ")");
         }
         if (rows.size() == 0) {
             // nothing to import, this will disable the "next" button
             validInput = false;
-            validationMessage = appendToString(validationMessage, "Note: nothing to import");
+            validationMessage = appendToString(
+                    validationMessage, 
+                    "Nothing to import");
         }
+        if (validInput) {
+            String summaryDetails = rows.size() + " new items ";
+            String customSummaryDetails = getCustomSummaryDetails();
+            if (!customSummaryDetails.isEmpty()) {
+                summaryDetails = customSummaryDetails;
+            }
+            summaryMessage = 
+                    "Press 'Next Step' to complete the import process. " +
+                    "This will create " + 
+                    summaryDetails +
+                    " displayed in table above.";
+        } else {
+            validationMessage = appendToString(
+                    validationMessage, 
+                    "Spreadsheet includes " + invalidCount + " invalid rows.");
+            summaryMessage = 
+                    "Press 'Cancel' to terminate the import process and fix " +
+                    "problems with import spreadsheet." +
+                    " No new items will be created.";
+        }
+    }
+    
+    /**
+     * Allows subclass to customize summary details message.
+     */
+    protected String getCustomSummaryDetails() {
+        return "";
     }
     
     /**

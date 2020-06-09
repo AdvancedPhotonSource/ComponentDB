@@ -155,9 +155,8 @@ public class ItemDomainImportWizard implements Serializable {
         return importHelper.getValidationMessage();
     }
 
-    public boolean getShowValidationMessage() {
-        String validationMessage = importHelper.getValidationMessage();
-        return (validationMessage != null) && (!validationMessage.isEmpty());
+    public String getSummaryMessage() {
+        return importHelper.getSummaryMessage();
     }
 
     public List<CdbEntity> getRows() {

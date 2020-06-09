@@ -115,11 +115,12 @@ See LICENSE file.
                 
                 </p:panelGrid>
 
-                <div class="userNotification">
-                    <h3>#{wizardController.validationMessage}</h3>
-                    <ui:remove><h:outputText value="#{wizardController.validationMessage}"
-                                             rendered ="#{wizardController.showValidationMessage}"
-                                             styleClass="userNotification"/></ui:remove>
+                <div>
+                    <h3 style="color: red">#{wizardController.validationMessage}</h3>
+                </div>
+
+                <div>
+                    <h3>#{wizardController.summaryMessage}</h3>
                 </div>
 
             </p:outputPanel>
