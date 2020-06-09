@@ -744,6 +744,19 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             // didn't find a non-empty name column for this row
             isValid = false;
             validString = "name columns are all empty";
+            LOGGER.info(methodLogName + validString);
+            return new CreateInfo(item, isValid, validString);
+        }
+
+        // set flag indicating item is template
+        Boolean itemIsTemplate = (Boolean) rowMap.get(KEY_IS_TEMPLATE);
+        if (itemIsTemplate != null) {
+            item.setImportIsTemplate(itemIsTemplate);
+        } else {
+            // return because we need this value to continue
+            isValid = false;
+            validString = ""; // we don't need a message because this is already flagged as invalid because it is a required column"
+            LOGGER.info(methodLogName + validString);
             return new CreateInfo(item, isValid, validString);
         }
 
@@ -768,11 +781,15 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             item.setImportLocationItem(itemLocation);
         }
 
-        // set flag indicating item is template
-        boolean itemIsTemplate = (Boolean) rowMap.get(KEY_IS_TEMPLATE);
-        item.setImportIsTemplate(itemIsTemplate);
-
         // find parent for this item
+        if (!rowMap.containsKey(KEY_INDENT)) {
+            // return because we need this value to continue
+            isValid = false;
+            validString = "missing indent level map entry";
+            LOGGER.info(methodLogName + validString);
+            return new CreateInfo(item, isValid, validString);
+        }
+        
         int itemIndentLevel = (int) rowMap.get(KEY_INDENT);
         ItemDomainMachineDesign itemContainer
                 = (ItemDomainMachineDesign) rowMap.get(KEY_CONTAINER);

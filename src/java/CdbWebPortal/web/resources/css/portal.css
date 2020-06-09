@@ -920,14 +920,6 @@ h2 {
     table-layout: auto !important;
 }
 
-.importWizardTreeTable table {
-    table-layout: auto !important;
-}
-
-.importWizardTreeTable .ui-treetable-toggler {
-    margin-left: -10px;
-}
-
 .invalidTableData {
     color: red !important;
 }
