@@ -826,19 +826,9 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             }
 
         } else {
-            // non-template item restrictions
+            
+            // non-template item restrictions - currently none
 
-            if (itemParent == null) {
-                if ((item.getImportAssignedCatalogItem() != null)
-                        || (item.getImportAssignedInventoryItem() != null)) {
-                    // top-level item cannot have assigned item
-                    String msg = "Top-level item cannot have assigned catalog/inventory item";
-                    LOGGER.info(methodLogName + msg);
-                    validString = appendToString(validString, msg);
-                    isValid = false;
-                    isValidAssignedItem = false;
-                }
-            }
         }
 
         if (itemParent != null) {
@@ -850,6 +840,22 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 LOGGER.info(methodLogName + msg);
                 validString = appendToString(validString, msg);
                 isValid = false;
+            }
+            
+        } else {
+            // restrictions for all top-level items (no parent), 
+            // template or non-template
+            
+            if (itemParent == null) {
+                if ((item.getImportAssignedCatalogItem() != null)
+                        || (item.getImportAssignedInventoryItem() != null)) {
+                    // top-level item cannot have assigned item
+                    String msg = "Top-level item cannot have assigned catalog/inventory item";
+                    LOGGER.info(methodLogName + msg);
+                    validString = appendToString(validString, msg);
+                    isValid = false;
+                    isValidAssignedItem = false;
+                }
             }
         }
 
