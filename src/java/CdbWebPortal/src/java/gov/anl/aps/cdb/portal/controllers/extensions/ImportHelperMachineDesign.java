@@ -782,17 +782,19 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         }
 
         // find parent for this item
+        
         if (!rowMap.containsKey(KEY_INDENT)) {
             // return because we need this value to continue
             isValid = false;
             validString = "missing indent level map entry";
             LOGGER.info(methodLogName + validString);
             return new CreateInfo(item, isValid, validString);
-        }
-        
+        }        
         int itemIndentLevel = (int) rowMap.get(KEY_INDENT);
+        
         ItemDomainMachineDesign itemContainer
                 = (ItemDomainMachineDesign) rowMap.get(KEY_CONTAINER);
+        
         if (itemIndentLevel > 1) {
 
             // not allowed to specify parent for non level 0 item
