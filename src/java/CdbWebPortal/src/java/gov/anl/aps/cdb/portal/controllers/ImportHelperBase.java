@@ -967,7 +967,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return true;
     }
 
-    protected boolean readXlsxFileData(UploadedFile f) {
+    protected boolean readXlsxFileData(UploadedFile f, String sheetName) {
 
         InputStream inputStream;
         XSSFWorkbook workbook = null;
@@ -978,7 +978,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return false;
         }
 
-        XSSFSheet sheet = workbook.getSheetAt(0);
+        XSSFSheet sheet = workbook.getSheet(sheetName);
         if (sheet == null) {
             return false;
         }
@@ -990,6 +990,75 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         parseSheet(rowIterator);
         return true;
+    }
+    
+    public List<String> getSheetNames(UploadedFile f) {
+        
+        List<String> sheetNames = new ArrayList<>();
+        
+        InputStream inputStream;
+        XSSFWorkbook workbook = null;
+        try {
+            inputStream = f.getInputStream();
+            workbook = new XSSFWorkbook(inputStream);
+        } catch (IOException e) {
+            LOGGER.info("error opening excel file: " + e);
+            return sheetNames;
+        }
+        
+        int numSheets = workbook.getNumberOfSheets();
+        for (int i = 0 ; i < numSheets ; i++) {
+            String sheetName = workbook.getSheetName(i);
+            sheetNames.add(sheetName);
+            System.out.println(sheetName);
+        }
+        
+        return sheetNames;
+    }
+    
+    public ValidInfo validateSheet(UploadedFile f, String sheetName) {
+        
+        boolean isValid = true;
+        String validString = "";
+        String logMethodName = "validateSheet() ";
+        
+        InputStream inputStream;
+        XSSFWorkbook workbook = null;
+        try {
+            inputStream = f.getInputStream();
+            workbook = new XSSFWorkbook(inputStream);
+        } catch (IOException e) {
+            isValid = false;
+            validString = "error opening excel file: " + e;
+            LOGGER.info(logMethodName + validString);
+            return new ValidInfo(isValid, validString);
+        }        
+        
+        XSSFSheet sheet = workbook.getSheet(sheetName);
+        if (sheet == null) {
+            isValid = false;
+            validString = "no sheet found with name: " + sheetName;
+            LOGGER.info(logMethodName + validString);
+            return new ValidInfo(isValid, validString);
+        }
+        
+        Row headerRow = sheet.getRow(0);
+        if (headerRow == null) {
+            isValid = false;
+            validString = "no header row found in file";
+            LOGGER.info(logMethodName + validString);
+            return new ValidInfo(isValid, validString);            
+        }          
+        
+        ValidInfo headerValidInfo = parseHeader(headerRow);
+        if (!headerValidInfo.isValid()) {
+            isValid = false;
+            validString = headerValidInfo.getValidString();
+            LOGGER.info(logMethodName + validString);
+            return new ValidInfo(isValid, validString);
+        }      
+        
+        return new ValidInfo(isValid, validString);
     }
 
     protected void parseSheet(Iterator<Row> rowIterator) {
@@ -1059,7 +1128,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         } else {
             validationMessage = appendToString(
                     validationMessage, 
-                    "Spreadsheet includes " + invalidCount + " invalid rows.");
+                    "Spreadsheet includes " + invalidCount + " invalid row(s).");
             summaryMessage = 
                     "Press 'Cancel' to terminate the import process and fix " +
                     "problems with import spreadsheet." +
