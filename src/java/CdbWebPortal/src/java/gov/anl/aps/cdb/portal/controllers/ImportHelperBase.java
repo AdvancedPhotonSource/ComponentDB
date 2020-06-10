@@ -558,17 +558,40 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             
             Object objValue = null;
             if ((strValue != null) && (!strValue.isEmpty())) {
-                try {
-                    objValue = controller.findUniqueByIdOrName(strValue, domainNameFilter);
-                } catch (CdbException ex) {
-                    String msg = "Unable to find object by id or name: " + strValue
-                            + " reason: " + ex.getMessage();
-                    return new ParseInfo<>(objValue, false, msg);
-                }
-                if (objValue == null) {
-                    String msg = "Unable to find object for: " + columnNameForIndex(columnIndex)
-                            + " with id or name: " + strValue;
-                    return new ParseInfo<>(objValue, false, msg);
+                
+                if (strValue.charAt(0) == '#') {
+                    // process cell as name if first char is #
+                    if (strValue.length() < 2) {
+                        String msg = "invalid object name reference: " + strValue;
+                        return new ParseInfo<>(objValue, false, msg);
+                    }
+                    String name = strValue.substring(1);
+                    try {
+                        objValue = controller.findUniqueByName(name, domainNameFilter);
+                        if (objValue == null) {
+                            String msg = "Unable to find object with name: " + name;
+                            return new ParseInfo<>(objValue, false, msg);
+                        }
+                    } catch (CdbException ex) {
+                        String msg = "Exception searching for object with name: " + name
+                                + " reason: " + ex.getMessage();
+                        return new ParseInfo<>(objValue, false, msg);
+                    }
+
+                } else {
+                    // process cell as numeric
+                    int id = 0;
+                    try {
+                        id = Integer.parseInt(strValue);
+                    } catch (NumberFormatException ex) {
+                        String msg = "invalid number format in id: " + strValue;
+                        return new ParseInfo<>(objValue, false, msg);
+                    }
+                    objValue = controller.findById(id);
+                    if (objValue == null) {
+                        String msg = "Unable to find object with id: " + id;
+                        return new ParseInfo<>(objValue, false, msg);
+                    }
                 }
             }
             return new ParseInfo<>(objValue, true, "");
