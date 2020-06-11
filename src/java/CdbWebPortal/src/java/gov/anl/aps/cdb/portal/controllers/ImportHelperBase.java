@@ -511,7 +511,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             boolean isValid = true;
             String validString = "";
             CdbEntity objValue = null;
-            if (strValue.length() > 0) {
+            if (strValue != null && strValue.length() > 0) {
                 try {
                     int id = Integer.valueOf(strValue);
                     if (objectIdMap.containsKey(id)) {
@@ -556,7 +556,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         @Override
         public ParseInfo parseCellValue(String strValue) {
             
-            Object objValue = null;
+            CdbEntity objValue = null;
             if ((strValue != null) && (!strValue.isEmpty())) {
                 
                 if (strValue.charAt(0) == '#') {
@@ -571,6 +571,16 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                         if (objValue == null) {
                             String msg = "Unable to find object with name: " + name;
                             return new ParseInfo<>(objValue, false, msg);
+                        } else {
+                            // check cache for object so different references use same instance
+                            int id = (Integer) objValue.getId();
+                            if (objectIdMap.containsKey(id)) {
+                                objValue = objectIdMap.get(id);
+                                LOGGER.debug("found object in cache with id: " + id);
+                            } else {
+                                // add this instance to cache
+                                objectIdMap.put(id, objValue);
+                            }
                         }
                     } catch (CdbException ex) {
                         String msg = "Exception searching for object with name: " + name
@@ -583,17 +593,27 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     int id = 0;
                     try {
                         id = Integer.parseInt(strValue);
+                        // check cache for object so different references use same instance
+                        if (objectIdMap.containsKey(id)) {
+                            objValue = objectIdMap.get(id);
+                            LOGGER.debug("found object in cache with id: " + id);
+                        } else {
+                            objValue = controller.findById(id);
+                            if (objValue == null) {
+                                String msg = "Unable to find object with id: " + id;
+                                return new ParseInfo<>(objValue, false, msg);
+                            } else {
+                                // add to cache
+                                objectIdMap.put(id, objValue);
+                            }
+                        }
                     } catch (NumberFormatException ex) {
                         String msg = "invalid number format in id: " + strValue;
                         return new ParseInfo<>(objValue, false, msg);
                     }
-                    objValue = controller.findById(id);
-                    if (objValue == null) {
-                        String msg = "Unable to find object with id: " + id;
-                        return new ParseInfo<>(objValue, false, msg);
-                    }
                 }
             }
+            
             return new ParseInfo<>(objValue, true, "");
         }
     }

@@ -423,7 +423,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     case HEADER_PARENT:
                         colInfo = getColumnInfoMap().get(HEADER_PARENT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new IdRefInputHandler(columnIndex, KEY_CONTAINER, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
+                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, KEY_CONTAINER, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, ""));
                         break;
 
                     case HEADER_TEMPLATE_INVOCATION:
@@ -464,7 +464,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     case HEADER_PROJECT:
                         colInfo = getColumnInfoMap().get(HEADER_PROJECT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new IdRefInputHandler(columnIndex, "project", "setProjectValue", ItemProjectController.getInstance(), ItemProject.class));
+                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, "project", "setProjectValue", ItemProjectController.getInstance(), ItemProject.class, ""));
                         break;
 
                     case HEADER_TEMPLATE:
