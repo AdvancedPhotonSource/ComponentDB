@@ -1053,7 +1053,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         for (int i = 0 ; i < numSheets ; i++) {
             String sheetName = workbook.getSheetName(i);
             sheetNames.add(sheetName);
-            System.out.println(sheetName);
         }
         
         return sheetNames;

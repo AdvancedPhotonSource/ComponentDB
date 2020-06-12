@@ -287,7 +287,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private List<ItemElement> fullItemElementList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "containedItem1")
     private List<ItemElement> itemElementMemberList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "containedItem2")
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "containedItem2")
     private List<ItemElement> itemElementMemberList2;
     @JoinColumn(name = "domain_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
