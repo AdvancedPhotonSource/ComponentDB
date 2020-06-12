@@ -108,16 +108,17 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         specs.add(new StringColumnSpec(2, "Ext Cable Name", "externalCableName", "setExternalCableName", false, "Cable name in external system (e.g., CAD, routing tool) e.g., SR_R_401_D1109_RR8G[low] | SR_M_A02_C61_64_02-00[high]", 256));
         specs.add(new StringColumnSpec(3, "Import Cable ID", "importCableId", "setImportCableId", false, "Import cable identifier.", 256));
         specs.add(new StringColumnSpec(4, "Alternate Cable ID", "alternateCableId", "setAlternateCableId", false, "Alternate (e.g., group-specific) cable identifier.", 256));
-        specs.add(new StringColumnSpec(5, "Description", "description", "setDescription", false, "Description of cable.", 256));
-        specs.add(new StringColumnSpec(6, "Laying", "laying", "setLaying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 256));
-        specs.add(new StringColumnSpec(7, "Voltage", "voltage", "setVoltage", false, "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 256));
-        specs.add(new IdOrNameRefColumnSpec(8, "Owner", "team", "setTeam", false, "Numeric ID of CDB technical system.", ItemCategoryController.getInstance(), ItemCategory.class, ItemDomainName.cableDesign.getValue()));
-        specs.add(new IdOrNameRefColumnSpec(9, "Project", "itemProjectString", "setProject", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class, ""));
-        specs.add(new IdOrNameRefColumnSpec(10, "Type", "catalogItemString", "setCatalogItem", false, "Numeric ID of CDB cable type catalog item.", ItemDomainCableCatalogController.getInstance(), Item.class, ""));
-        specs.add(new IdOrNameRefColumnSpec(11, "Endpoint1", "endpoint1String", "setEndpoint1", false, "Numeric ID of CDB machine design item for first endpoint.", ItemDomainMachineDesignController.getInstance(), Item.class, ""));
-        specs.add(new StringColumnSpec(12, "Endpoint1 Desc", "endpoint1Description", "setEndpoint1Description", false, "Endpoint details useful for external editing.", 256));
-        specs.add(new IdOrNameRefColumnSpec(13, "Endpoint2", "endpoint2String", "setEndpoint2", false, "Numeric ID of CDB machine design item for second endpoint.", ItemDomainMachineDesignController.getInstance(), Item.class, ""));
-        specs.add(new StringColumnSpec(14, "Endpoint2 Desc", "endpoint2Description", "setEndpoint2Description", false, "Endpoint details useful for external editing.", 256));
+        specs.add(new StringColumnSpec(5, "Legacy QR ID", "legacyQrId", "setLegacyQrId", false, "Legacy QR identifier, e.g., for cables that have already been assigned a QR code.", 256));
+        specs.add(new StringColumnSpec(6, "Description", "description", "setDescription", false, "Description of cable.", 256));
+        specs.add(new StringColumnSpec(7, "Laying", "laying", "setLaying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 256));
+        specs.add(new StringColumnSpec(8, "Voltage", "voltage", "setVoltage", false, "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 256));
+        specs.add(new IdOrNameRefColumnSpec(9, "Owner", "team", "setTeam", false, "Numeric ID of CDB technical system.", ItemCategoryController.getInstance(), ItemCategory.class, ItemDomainName.cableDesign.getValue()));
+        specs.add(new IdOrNameRefColumnSpec(10, "Project", "itemProjectString", "setProject", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class, ""));
+        specs.add(new IdOrNameRefColumnSpec(11, "Type", "catalogItemString", "setCatalogItem", false, "Numeric ID of CDB cable type catalog item.", ItemDomainCableCatalogController.getInstance(), Item.class, ""));
+        specs.add(new IdOrNameRefColumnSpec(12, "Endpoint1", "endpoint1String", "setEndpoint1", false, "Numeric ID of CDB machine design item for first endpoint.", ItemDomainMachineDesignController.getInstance(), Item.class, ""));
+        specs.add(new StringColumnSpec(13, "Endpoint1 Desc", "endpoint1Description", "setEndpoint1Description", false, "Endpoint details useful for external editing.", 256));
+        specs.add(new IdOrNameRefColumnSpec(14, "Endpoint2", "endpoint2String", "setEndpoint2", false, "Numeric ID of CDB machine design item for second endpoint.", ItemDomainMachineDesignController.getInstance(), Item.class, ""));
+        specs.add(new StringColumnSpec(15, "Endpoint2 Desc", "endpoint2Description", "setEndpoint2Description", false, "Endpoint details useful for external editing.", 256));
 
         return specs;
     }

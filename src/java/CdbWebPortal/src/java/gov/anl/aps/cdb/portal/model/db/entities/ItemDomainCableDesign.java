@@ -34,6 +34,7 @@ public class ItemDomainCableDesign extends Item {
     private transient String externalCableName = null;
     private transient String importCableId = null;
     private transient String alternateCableId = null;
+    private transient String legacyQrId = null;
     private transient String laying = null;
     private transient String voltage = null;
     private transient String team = null;
@@ -44,6 +45,7 @@ public class ItemDomainCableDesign extends Item {
     public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName";
     public final static String CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY = "importCableId";
     public final static String CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY = "alternateCableId";
+    public final static String CABLE_DESIGN_PROPERTY_LEGACY_QR_ID_KEY = "legacyQrId";
     public final static String CABLE_DESIGN_PROPERTY_LAYING_KEY = "laying";
     public final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage";
     public final static String CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY = "endpoint1Description";
@@ -338,6 +340,18 @@ public class ItemDomainCableDesign extends Item {
     public void setAlternateCableId(String id) throws CdbException {
         alternateCableId = id;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY, id);
+    }
+
+    public String getLegacyQrId() throws CdbException {
+        if (legacyQrId == null) {
+            legacyQrId = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LEGACY_QR_ID_KEY);
+        }
+        return legacyQrId;
+    }
+
+    public void setLegacyQrId(String id) throws CdbException {
+        legacyQrId = id;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LEGACY_QR_ID_KEY, id);
     }
 
     public String getLaying() throws CdbException {
