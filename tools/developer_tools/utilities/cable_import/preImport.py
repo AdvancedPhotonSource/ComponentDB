@@ -242,6 +242,10 @@ class PreImportHelper(ABC):
         logging.debug("index: %d method: %s value: %s" % (index, self.output_columns[index].method, val))
         return val
 
+    # Complete helper processing after all output objects are processed.  Subclass overrides to customize.
+    def close(self):
+        pass
+
 
 class InputColumnModel:
 
@@ -526,6 +530,10 @@ class CableDesignHelper(PreImportHelper):
         self.cable_type_dict = {}
         self.endpoint_dict = {}
         self.md_root = None
+        self.missing_cable_types = set()
+        self.missing_endpoints = set()
+        self.nonunique_endpoints = set()
+        self.info_file = None
 
     # Adds helper specific command line args.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
@@ -534,13 +542,16 @@ class CableDesignHelper(PreImportHelper):
         parser.add_argument("--ownerId", help="CDB technical system ID for owner (item_category table)", required=True)
         parser.add_argument("--projectId", help="CDB item category ID for project (item_project table)", required=True)
         parser.add_argument("--mdRoot", help="CDB top-level parent machine design node name", required=True)
+        parser.add_argument("--infoFile", help="debugging info xlsx file for missing endpoints etc.", required=True)
 
     def set_args(self, args):
         super().set_args(args)
         print("owner CDB technical system (owner) id: %s" % args.ownerId)
         print("owner CDB item category (project) id: %s" % args.projectId)
         print("top-level parent machine design node name: %s" % args.mdRoot)
+        print("debugging info xlsx file: %s" % args.infoFile)
         self.md_root = args.mdRoot
+        self.info_file = args.infoFile
 
     @staticmethod
     def tag():
@@ -633,6 +644,40 @@ class CableDesignHelper(PreImportHelper):
     def set_id_for_endpoint(self, endpoint, id):
         self.endpoint_dict[endpoint] = id
 
+    def add_missing_cable_type(self, cable_type_name):
+        self.missing_cable_types.add(cable_type_name)
+
+    def add_missing_endpoint(self, endpoint_name):
+        self.missing_endpoints.add(endpoint_name)
+
+    def add_nonunique_endpoint(self, endpoint_name):
+        self.nonunique_endpoints.add(endpoint_name)
+
+    def close(self):
+        output_book = xlsxwriter.Workbook(self.info_file)
+        output_sheet = output_book.add_worksheet()
+
+        output_sheet.write(0, 0, "missing cable types")
+        output_sheet.write(0, 1, "missing endpoints")
+        output_sheet.write(0, 2, "non-unique endpoints")
+
+        row_index = 1
+        for cable_type_name in self.missing_cable_types:
+            output_sheet.write(row_index, 0, cable_type_name)
+            row_index = row_index + 1
+
+        row_index = 1
+        for endpoint_name in self.missing_endpoints:
+            output_sheet.write(row_index, 1, endpoint_name)
+            row_index = row_index + 1
+
+        row_index = 1
+        for endpoint_name in self.nonunique_endpoints:
+            output_sheet.write(row_index, 2, endpoint_name)
+            row_index = row_index + 1
+
+        output_book.close()
+
 
 class CableDesignOutputObject(OutputObject):
 
@@ -683,7 +728,10 @@ class CableDesignOutputObject(OutputObject):
     def get_project_id(self):
         return self.helper.get_args().projectId
 
-    def get_cable_type_id(self):        
+    def get_cable_type_id(self):
+
+        global isValid
+
         cable_type_name = self.input_dict[CABLE_DESIGN_TYPE_KEY]
 
         if cable_type_name == "" or cable_type_name is None:
@@ -697,17 +745,31 @@ class CableDesignOutputObject(OutputObject):
             try:
                 cable_type_object = self.helper.api.getCableCatalogItemApi().get_cable_catalog_item_by_name(cable_type_name)
             except ApiException as ex:
-                sys.exit("exception retrieving cable catalog item: %s - %s" % (cable_type_name, ex.body))
-    
+                if "ObjectNotFound" not in ex.body:
+                    error_msg = "exception retrieving cable catalog item: %s - %s" % (cable_type_name, ex.body)
+                    logging.error(error_msg)
+                    sys.exit(msg)
+                else:
+                    isValid = False
+                    self.helper.add_missing_cable_type(cable_type_name)
+                    logging.error("ObjectNotFound exception for cable type with name: %s" % cable_type_name)
+                    return None
+
             if cable_type_object:
                 cable_type_id = cable_type_object.id
                 logging.debug("found cable type with name: %s, id: %s" % (cable_type_name, cable_type_id))
                 self.helper.set_id_for_cable_type(cable_type_name, cable_type_id)
                 return cable_type_id
             else:
-                sys.exit("no cable type found with name: %s" % cable_type_name)
+                isValid = False
+                self.helper.add_missing_cable_type(cable_type_name)
+                logging.error("cable_type_object from API result is None for name: %s" % cable_type_name)
+                return None
 
     def get_endpoint_id(self, input_column_key):
+
+        global isValid
+
         endpoint_name = self.input_dict[input_column_key]
 
         if endpoint_name == "" or endpoint_name is None:
@@ -721,10 +783,16 @@ class CableDesignOutputObject(OutputObject):
             result_list = self.helper.api.getMachineDesignItemApi().get_md_in_hierarchy_by_name(self.helper.get_md_root(), endpoint_name)
 
             if len(result_list) == 0:
-                sys.exit("no endpoint machine design item found with name: %s in specified hierarchy, exiting" % (endpoint_name))
+                isValid = False
+                self.helper.add_missing_endpoint(endpoint_name)
+                logging.error("no endpoint machine design item found with name: %s in specified hierarchy" % (endpoint_name))
+                return None
 
             elif len(result_list) > 1:
-                sys.exit("non-unique endpoint name: %s in specified hierarchy, exiting")
+                isValid = False
+                self.helper.add_nonunique_endpoint(endpoint_name)
+                logging.error("non-unique endpoint name: %s in specified hierarchy" % (endpoint_name))
+                return None
 
             else:
                 endpoint_object = result_list[0]
@@ -895,6 +963,9 @@ def main():
     if isValid:
         output_book.close()
 
+    # clean up helper
+    helper.close()
+
     # close CDB connection
     try:
         api.logOutUser()
@@ -902,7 +973,10 @@ def main():
         sys.exit("CDB logout failed")
 
     # print summary
-    summary_msg = "SUMMARY: processed %d input rows and wrote %d output rows" % (num_input_rows, num_output_rows)
+    if isValid:
+        summary_msg = "SUMMARY: processed %d input rows and wrote %d output rows" % (num_input_rows, num_output_rows)
+    else:
+        summary_msg = "ERROR: processed %d input rows but no output spreadsheet generated, see log for errors" % num_input_rows
     print()
     print(summary_msg)
     logging.info(summary_msg)
