@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">  
+
+
+    <p:dialog id="itemDomainMachineDesignTemplateReassignMacrosDialog"
+              widgetVar="itemDomainMachineDesignTemplateReassignMacrosDialogWidget"
+              modal="true"
+              closable="false"
+              resizable="false"
+              header="Reassgin name macros for template" 
+              styleClass="viewTransparentBackgroundDialog">      
+        
+        <p:panelGrid columns="2">
+            <ui:include src="itemDomainMachineDesignTemplateVarsForEach.xhtml" />
+        </p:panelGrid>
+
+       
+        <f:facet name="footer">
+            <p:commandButton value="Save"
+                             icon="fa fa-save"
+                             onclick="PF('loadingDialog').show()"
+                             ajax="false"
+                             oncomplete="PF('itemDomainMachineDesignTemplateReassignMacrosDialogWidget').hide();"
+                             action="#{itemDomainMachineDesignController.reassignTemplateVarsForSelectedMdCreatedFromTemplate()}" />
+            <p:commandButton value="Close"
+                             icon="fa fa-close"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('itemDomainMachineDesignTemplateReassignMacrosDialogWidget').hide();
+                             PF('loadingDialog').hide();"/>
+        </f:facet>
+    </p:dialog>
+        
+    <p:remoteCommand name="showItemDomainMachineDesignTemplateReassignMacrosDialog"
+                     onstart="PF('loadingDialog').show()"                    
+                     oncomplete="PF('loadingDialog').hide();
+                                 PF('itemDomainMachineDesignTemplateReassignMacrosDialogWidget').initPosition();
+                                 PF('itemDomainMachineDesignTemplateReassignMacrosDialogWidget').show();"
+                     update="itemDomainMachineDesignTemplateReassignMacrosDialog" />                     
+
+</ui:composition>
+
+
