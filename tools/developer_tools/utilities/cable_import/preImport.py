@@ -94,6 +94,9 @@ CABLE_DESIGN_FROM_DEVICE_NAME_KEY = "fromDeviceName"
 CABLE_DESIGN_TO_DEVICE_NAME_KEY = "toDeviceName"
 CABLE_DESIGN_MBA_ID_KEY = "mbaId"
 CABLE_DESIGN_IMPORT_ID_KEY = "importId"
+CABLE_DESIGN_QR_ID_KEY = "qrId"
+
+isValid = True
 
 
 def register(helper_class):
@@ -545,7 +548,7 @@ class CableDesignHelper(PreImportHelper):
 
     @classmethod
     def num_input_cols(cls):
-        return 20
+        return 21
 
     @classmethod
     def input_column_list(cls):
@@ -570,6 +573,7 @@ class CableDesignHelper(PreImportHelper):
             InputColumnModel(col_index=17, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
             InputColumnModel(col_index=18, key=CABLE_DESIGN_MBA_ID_KEY),
             InputColumnModel(col_index=19, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
+            InputColumnModel(col_index=20, key=CABLE_DESIGN_QR_ID_KEY, required=False),
         ]
         return column_list
 
@@ -581,16 +585,17 @@ class CableDesignHelper(PreImportHelper):
             OutputColumnModel(col_index=2, method="get_ext_name", label="ext cable name"),
             OutputColumnModel(col_index=3, method="get_import_id", label="import cable id"),
             OutputColumnModel(col_index=4, method="get_alt_id", label="alt cable id"),
-            OutputColumnModel(col_index=5, method="get_description", label="description"),
-            OutputColumnModel(col_index=6, method="get_laying", label="laying"),
-            OutputColumnModel(col_index=7, method="get_voltage", label="voltage"),
-            OutputColumnModel(col_index=8, method="get_owner_id", label="owner id"),
-            OutputColumnModel(col_index=9, method="get_project_id", label="project id"),
-            OutputColumnModel(col_index=10, method="get_cable_type_id", label="cable type id"),
-            OutputColumnModel(col_index=11, method="get_endpoint1_id", label="endpoint1 id"),
-            OutputColumnModel(col_index=12, method="get_endpoint1_description", label="endpoint1 description"),
-            OutputColumnModel(col_index=13, method="get_endpoint2_id", label="endpoint2 id"),
-            OutputColumnModel(col_index=14, method="get_endpoint2_description", label="endpoint2 description"),
+            OutputColumnModel(col_index=5, method="get_qr_id", label="legacy qr id"),
+            OutputColumnModel(col_index=6, method="get_description", label="description"),
+            OutputColumnModel(col_index=7, method="get_laying", label="laying"),
+            OutputColumnModel(col_index=8, method="get_voltage", label="voltage"),
+            OutputColumnModel(col_index=9, method="get_owner_id", label="owner id"),
+            OutputColumnModel(col_index=10, method="get_project_id", label="project id"),
+            OutputColumnModel(col_index=11, method="get_cable_type_id", label="cable type id"),
+            OutputColumnModel(col_index=12, method="get_endpoint1_id", label="endpoint1 id"),
+            OutputColumnModel(col_index=13, method="get_endpoint1_description", label="endpoint1 description"),
+            OutputColumnModel(col_index=14, method="get_endpoint2_id", label="endpoint2 id"),
+            OutputColumnModel(col_index=15, method="get_endpoint2_description", label="endpoint2 description"),
         ]
         return column_list
 
@@ -659,6 +664,9 @@ class CableDesignOutputObject(OutputObject):
 
     def get_alt_id(self):
         return self.input_dict[CABLE_DESIGN_LEGACY_ID_KEY]
+
+    def get_qr_id(self):
+        return self.input_dict[CABLE_DESIGN_QR_ID_KEY]
 
     def get_description(self):
         return ""
@@ -884,7 +892,8 @@ def main():
                 output_sheet.write(row_ind, col_ind, val)
 
     # save output spreadsheet
-    output_book.close()
+    if isValid:
+        output_book.close()
 
     # close CDB connection
     try:
