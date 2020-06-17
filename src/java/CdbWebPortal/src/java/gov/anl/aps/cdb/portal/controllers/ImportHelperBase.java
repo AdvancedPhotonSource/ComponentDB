@@ -511,7 +511,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             boolean isValid = true;
             String validString = "";
             CdbEntity objValue = null;
-            if (strValue.length() > 0) {
+            if (strValue != null && strValue.length() > 0) {
                 try {
                     int id = Integer.valueOf(strValue);
                     if (objectIdMap.containsKey(id)) {
@@ -556,21 +556,64 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         @Override
         public ParseInfo parseCellValue(String strValue) {
             
-            Object objValue = null;
+            CdbEntity objValue = null;
             if ((strValue != null) && (!strValue.isEmpty())) {
-                try {
-                    objValue = controller.findUniqueByIdOrName(strValue, domainNameFilter);
-                } catch (CdbException ex) {
-                    String msg = "Unable to find object by id or name: " + strValue
-                            + " reason: " + ex.getMessage();
-                    return new ParseInfo<>(objValue, false, msg);
-                }
-                if (objValue == null) {
-                    String msg = "Unable to find object for: " + columnNameForIndex(columnIndex)
-                            + " with id or name: " + strValue;
-                    return new ParseInfo<>(objValue, false, msg);
+                
+                if (strValue.charAt(0) == '#') {
+                    // process cell as name if first char is #
+                    if (strValue.length() < 2) {
+                        String msg = "invalid object name reference: " + strValue;
+                        return new ParseInfo<>(objValue, false, msg);
+                    }
+                    String name = strValue.substring(1);
+                    try {
+                        objValue = controller.findUniqueByName(name, domainNameFilter);
+                        if (objValue == null) {
+                            String msg = "Unable to find object with name: " + name;
+                            return new ParseInfo<>(objValue, false, msg);
+                        } else {
+                            // check cache for object so different references use same instance
+                            int id = (Integer) objValue.getId();
+                            if (objectIdMap.containsKey(id)) {
+                                objValue = objectIdMap.get(id);
+                                LOGGER.debug("found object in cache with id: " + id);
+                            } else {
+                                // add this instance to cache
+                                objectIdMap.put(id, objValue);
+                            }
+                        }
+                    } catch (CdbException ex) {
+                        String msg = "Exception searching for object with name: " + name
+                                + " reason: " + ex.getMessage();
+                        return new ParseInfo<>(objValue, false, msg);
+                    }
+
+                } else {
+                    // process cell as numeric
+                    int id = 0;
+                    try {
+                        id = Integer.parseInt(strValue);
+                        // check cache for object so different references use same instance
+                        if (objectIdMap.containsKey(id)) {
+                            objValue = objectIdMap.get(id);
+                            LOGGER.debug("found object in cache with id: " + id);
+                        } else {
+                            objValue = controller.findById(id);
+                            if (objValue == null) {
+                                String msg = "Unable to find object with id: " + id;
+                                return new ParseInfo<>(objValue, false, msg);
+                            } else {
+                                // add to cache
+                                objectIdMap.put(id, objValue);
+                            }
+                        }
+                    } catch (NumberFormatException ex) {
+                        String msg = "invalid number format in id: " + strValue;
+                        return new ParseInfo<>(objValue, false, msg);
+                    }
                 }
             }
+            
             return new ParseInfo<>(objValue, true, "");
         }
     }
@@ -716,7 +759,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     protected byte[] templateExcelFile = null;
     protected boolean validInput = true;
-    protected String validationMessage = "";
+    private String validationMessage = "";
+    private String summaryMessage = "";
     protected TreeNode rootTreeNode = new DefaultTreeNode("Root", null);
 
     public ImportHelperBase() {
@@ -742,6 +786,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     public String getValidationMessage() {
         return validationMessage;
+    }
+
+    public String getSummaryMessage() {
+        return summaryMessage;
     }
 
     public String getCompletionUrl() {
@@ -962,7 +1010,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return true;
     }
 
-    protected boolean readXlsxFileData(UploadedFile f) {
+    protected boolean readXlsxFileData(UploadedFile f, String sheetName) {
 
         InputStream inputStream;
         XSSFWorkbook workbook = null;
@@ -973,7 +1021,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return false;
         }
 
-        XSSFSheet sheet = workbook.getSheetAt(0);
+        XSSFSheet sheet = workbook.getSheet(sheetName);
         if (sheet == null) {
             return false;
         }
@@ -986,12 +1034,81 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         parseSheet(rowIterator);
         return true;
     }
+    
+    public List<String> getSheetNames(UploadedFile f) {
+        
+        List<String> sheetNames = new ArrayList<>();
+        
+        InputStream inputStream;
+        XSSFWorkbook workbook = null;
+        try {
+            inputStream = f.getInputStream();
+            workbook = new XSSFWorkbook(inputStream);
+        } catch (IOException e) {
+            LOGGER.info("error opening excel file: " + e);
+            return sheetNames;
+        }
+        
+        int numSheets = workbook.getNumberOfSheets();
+        for (int i = 0 ; i < numSheets ; i++) {
+            String sheetName = workbook.getSheetName(i);
+            sheetNames.add(sheetName);
+        }
+        
+        return sheetNames;
+    }
+    
+    public ValidInfo validateSheet(UploadedFile f, String sheetName) {
+        
+        boolean isValid = true;
+        String validString = "";
+        String logMethodName = "validateSheet() ";
+        
+        InputStream inputStream;
+        XSSFWorkbook workbook = null;
+        try {
+            inputStream = f.getInputStream();
+            workbook = new XSSFWorkbook(inputStream);
+        } catch (IOException e) {
+            isValid = false;
+            validString = "error opening excel file: " + e;
+            LOGGER.info(logMethodName + validString);
+            return new ValidInfo(isValid, validString);
+        }        
+        
+        XSSFSheet sheet = workbook.getSheet(sheetName);
+        if (sheet == null) {
+            isValid = false;
+            validString = "no sheet found with name: " + sheetName;
+            LOGGER.info(logMethodName + validString);
+            return new ValidInfo(isValid, validString);
+        }
+        
+        Row headerRow = sheet.getRow(0);
+        if (headerRow == null) {
+            isValid = false;
+            validString = "no header row found in file";
+            LOGGER.info(logMethodName + validString);
+            return new ValidInfo(isValid, validString);            
+        }          
+        
+        ValidInfo headerValidInfo = parseHeader(headerRow);
+        if (!headerValidInfo.isValid()) {
+            isValid = false;
+            validString = headerValidInfo.getValidString();
+            LOGGER.info(logMethodName + validString);
+            return new ValidInfo(isValid, validString);
+        }      
+        
+        return new ValidInfo(isValid, validString);
+    }
 
     protected void parseSheet(Iterator<Row> rowIterator) {
 
         int rowCount = -1;
         int entityNum = 0;
         int dupCount = 0;
+        int invalidCount = 0;
         String dupString = "";
         
         while (rowIterator.hasNext()) {
@@ -1017,6 +1134,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 ValidInfo rowValidInfo = parseRow(row);
                 if (!rowValidInfo.isValid()) {
                     validInput = false;
+                    invalidCount = invalidCount + 1;
                 }
                 if (rowValidInfo.isDuplicate()) {
                     dupCount = dupCount + 1;
@@ -1026,13 +1144,45 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         
         if (dupCount > 0) {
-            validationMessage = appendToString(validationMessage, "Note: removed " + dupCount + " rows that already exist in database: (" + dupString + ")");
+            validationMessage = appendToString(
+                    validationMessage, 
+                    "Removed " + dupCount + 
+                            " rows that already exist in database: (" + dupString + ")");
         }
         if (rows.size() == 0) {
             // nothing to import, this will disable the "next" button
             validInput = false;
-            validationMessage = appendToString(validationMessage, "Note: nothing to import");
+            validationMessage = appendToString(
+                    validationMessage, 
+                    "Nothing to import");
         }
+        if (validInput) {
+            String summaryDetails = rows.size() + " new items ";
+            String customSummaryDetails = getCustomSummaryDetails();
+            if (!customSummaryDetails.isEmpty()) {
+                summaryDetails = customSummaryDetails;
+            }
+            summaryMessage = 
+                    "Press 'Next Step' to complete the import process. " +
+                    "This will create " + 
+                    summaryDetails +
+                    " displayed in table above.";
+        } else {
+            validationMessage = appendToString(
+                    validationMessage, 
+                    "Spreadsheet includes " + invalidCount + " invalid row(s).");
+            summaryMessage = 
+                    "Press 'Cancel' to terminate the import process and fix " +
+                    "problems with import spreadsheet." +
+                    " No new items will be created.";
+        }
+    }
+    
+    /**
+     * Allows subclass to customize summary details message.
+     */
+    protected String getCustomSummaryDetails() {
+        return "";
     }
     
     /**

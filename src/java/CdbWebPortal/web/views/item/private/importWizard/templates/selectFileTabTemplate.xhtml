@@ -28,24 +28,43 @@ See LICENSE file.
                     
                     <p:commandLink id="#{rootViewId}DownloadTemplateLink"
                                    value="Download Excel template"
-                                   ajax="false">
+                                   ajax="false"
+                                   rendered="#{wizardController.renderFileuploadData}">
                         <p:fileDownload value="#{wizardController.templateExcelFile}" />
                     </p:commandLink>
 
                     <p:panelGrid columns="2">
-                        <p:outputLabel value="Successfully uploaded file:" 
+                       
+                        <p:outputLabel value="Successfully opened file:" 
                                        styleClass="entityDataEmphasizedLabel"
                                        rendered="#{wizardController.renderOutputData}"/>
                         <h:outputText value="#{wizardController.getUploadfileDataString()}" 
                                       title="Uploaded file" 
                                       styleClass="entityDataEmphasizedText" />
+                        
+                        <p:outputLabel value="Select sheet" 
+                                       styleClass="entityDataEmphasizedLabel"
+                                       rendered="#{wizardController.renderSelectSheet}"/>
+                        <p:selectOneMenu id="sheetMenu" 
+                                         value="#{wizardController.selectedSheet}"
+                                         rendered="#{wizardController.renderSelectSheet}"
+>                           <f:selectItem itemLabel="Select Sheet" itemValue="" />
+                            <f:selectItems value="#{wizardController.sheetNames}" />
+                            <p:ajax update="#{rootViewId}SelectFilePanel"
+                                    oncomplete="update#{rootViewId}WizardButtons();"/>
+                        </p:selectOneMenu>
+                        
                     </p:panelGrid>
-                    
-                    <p:outputLabel value="Click next to continue." 
-                                   styleClass="entityDataEmphasizedLabel"
-                                   rendered="#{wizardController.renderOutputData}"/>
-
                 </p:panelGrid>
+                
+                <div>
+                    <h3 style="color: red">#{wizardController.selectFileErrorMessage}</h3>
+                </div>
+
+                <div>
+                    <h3>#{wizardController.selectFileSummaryMessage}</h3>
+                </div>
+
             </p:outputPanel>
         </p:panel>
     </p:tab>
