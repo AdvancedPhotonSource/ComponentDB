@@ -116,9 +116,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected UserInfoFacade userInfoFacade;
 
     @EJB
-    protected PropertyTypeCategoryFacade propertyTypeCategoryFacade;
-
-    @EJB
     protected RelationshipTypeFacade relationshipTypeFacade;
 
     @EJB
@@ -165,8 +162,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected Boolean cloneCreateItemElementPlaceholders = false;
     protected Boolean cloneSources = false;
     protected Item itemToClone;
-
-    protected List<PropertyTypeCategory> relevantPropertyTypeCategories = null;
 
     // Globalized item project functionality. 
     protected ItemProjectController itemProjectController = null;
@@ -962,13 +957,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
 
         return PortalStyles.favoritesOff.getValue();
-    }
-
-    public List<PropertyTypeCategory> getRelevantPropertyTypeCategories() {
-        if (relevantPropertyTypeCategories == null) {
-            relevantPropertyTypeCategories = propertyTypeCategoryFacade.findRelevantCategoriesByDomainId(getDefaultDomainName());
-        }
-        return relevantPropertyTypeCategories;
     }
 
     private List<ListTbl> getSettingEntityItemElementLists(SettingEntity settingEntity) {

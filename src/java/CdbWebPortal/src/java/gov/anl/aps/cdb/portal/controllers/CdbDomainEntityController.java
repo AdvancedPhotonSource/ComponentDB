@@ -7,13 +7,16 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.controllers.settings.CdbDomainEntitySettings;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueBase;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -47,8 +50,12 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     @EJB
     private PropertyValueFacade propertyValueDbFacade;
+    
     @EJB
     private PropertyTypeFacade propertyTypeFacade;   
+    
+    @EJB
+    protected PropertyTypeCategoryFacade propertyTypeCategoryFacade;
 
     protected List<Integer> loadedDisplayPropertyTypes = null;
 
@@ -60,6 +67,8 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     protected Integer preProcessLoadedListDataModelHashCode = null;
     protected DataModel preProcessDomainEntityListDataModel = null;
+    
+    protected List<PropertyTypeCategory> relevantPropertyTypeCategories = null;
 
     public void selectPropertyTypes(List<PropertyType> propertyTypeList) {
         for (PropertyType propertyType : propertyTypeList) {
@@ -606,5 +615,28 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     public void setFilteredPropertyValueList(List<PropertyValue> filteredPropertyValueList) {
         this.filteredPropertyValueList = filteredPropertyValueList;
+    }
+    
+    public List<PropertyTypeCategory> getRelevantPropertyTypeCategories() {
+        if (relevantPropertyTypeCategories == null) {
+            if (getDefaultDomain() != null) {
+                String domainName = getDefaultDomainName();
+                relevantPropertyTypeCategories = propertyTypeCategoryFacade.findRelevantCategoriesByDomainId(domainName);
+            } else {
+                relevantPropertyTypeCategories = propertyTypeCategoryFacade.findAll();
+            }
+        }
+        return relevantPropertyTypeCategories;
+    }
+    
+    public Domain getDefaultDomain() {
+        return null; 
+    }
+    
+    public String getDefaultDomainName() {
+        if (getDefaultDomain() != null) {
+            return getDefaultDomain().getName(); 
+        }
+        return null; 
     }
 }
