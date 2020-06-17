@@ -122,6 +122,9 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     private transient List<PropertyValueMetadata> propertyValueMetadataList;    
     @JsonIgnore
     private transient Boolean isHasPropertyMetadata = null;
+    
+    @JsonIgnore
+    private transient AllowedPropertyValue selectedAllowedPropertyValue = null; 
 
     public PropertyValue() {
     }
@@ -592,6 +595,26 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
             // will not happen 
         }
         return copied;
+    }
+
+    public AllowedPropertyValue getSelectedAllowedPropertyValue() {
+        if (value != null) {
+            for (AllowedPropertyValue apv : getPropertyType().getAllowedPropertyValueList()) {
+                String value = apv.getValue();
+                if (value.equals(this.value)) {
+                    selectedAllowedPropertyValue = apv;
+                    break; 
+                }
+            }
+        }
+        return selectedAllowedPropertyValue;
+    }
+
+    public void setSelectedAllowedPropertyValue(AllowedPropertyValue selectedAllowedPropertyValue) {
+        this.selectedAllowedPropertyValue = selectedAllowedPropertyValue;
+        if (selectedAllowedPropertyValue != null) {
+            this.value = selectedAllowedPropertyValue.getValue(); 
+        }
     }
 
     @Override
