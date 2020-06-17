@@ -32,6 +32,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     private static final String DisplayExternalCableNameSettingTypeKey = "ItemDomainCableDesign.List.Display.ExternalCableName";
     private static final String DisplayImportCableIdSettingTypeKey = "ItemDomainCableDesign.List.Display.ImportCableId";
     private static final String DisplayAlternateCableIdSettingTypeKey = "ItemDomainCableDesign.List.Display.AlternateCableId";
+    private static final String DisplayLegacyQrIdSettingTypeKey = "ItemDomainCableDesign.List.Display.LegacyQrId";
     private static final String DisplayVoltageSettingTypeKey = "ItemDomainCableDesign.List.Display.Voltage";
     private static final String DisplayLayingSettingTypeKey = "ItemDomainCableDesign.List.Display.Laying";
     private static final String DisplayTechnicalSystemSettingTypeKey = "ItemDomainCableDesign.List.Display.ItemCategory";
@@ -42,6 +43,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     private static final String FilterCatalogItemSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.CatalogItem";
     private static final String FilterExternalCableNameSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.ExternalCableName";
     private static final String FilterImportCableIdSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.ImportCableId";
+    private static final String FilterLegacyQrIdSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.LegacyQrId";
     private static final String FilterAlternateCableIdSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.AlternateCableId";
     private static final String FilterVoltageSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Voltage";
     private static final String FilterLayingSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Laying";
@@ -61,6 +63,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     protected Boolean externalCableNameDisplay = null;
     protected Boolean importCableIdDisplay = null;
     protected Boolean alternateCableIdDisplay = null;
+    protected Boolean legacyQrIdDisplay = null;
     protected Boolean endpoint1DescriptionDisplay = null;
     protected Boolean endpoint2DescriptionDisplay = null;
     
@@ -73,6 +76,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     protected String externalCableNameFilter = null;
     protected String importCableIdFilter = null;
     protected String alternateCableIdFilter = null;
+    protected String legacyQrIdFilter = null;
     protected String endpoint1DescriptionFilter = null;
     protected String endpoint2DescriptionFilter = null;
 
@@ -152,6 +156,14 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         this.alternateCableIdDisplay = alternateCableIdDisplay;
     }
 
+    public boolean isLegacyQrIdDisplay() {
+        return legacyQrIdDisplay;
+    }
+
+    public void setLegacyQrIdDisplay(boolean legacyQrIdDisplay) {
+        this.legacyQrIdDisplay = legacyQrIdDisplay;
+    }
+
     public boolean isEndpoint1DescriptionDisplay() {
         return endpoint1DescriptionDisplay;
     }
@@ -224,6 +236,14 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         this.alternateCableIdFilter = alternateCableIdFilter;
     }
 
+    public String getLegacyQrIdFilter() {
+        return legacyQrIdFilter;
+    }
+
+    public void setLegacyQrIdFilter(String legacyQrIdFilter) {
+        this.legacyQrIdFilter = legacyQrIdFilter;
+    }
+
     public String getEndpoint1DescriptionFilter() {
         return endpoint1DescriptionFilter;
     }
@@ -264,6 +284,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         externalCableNameDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayExternalCableNameSettingTypeKey).getDefaultValue());
         importCableIdDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayImportCableIdSettingTypeKey).getDefaultValue());
         alternateCableIdDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayAlternateCableIdSettingTypeKey).getDefaultValue());
+        legacyQrIdDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayLegacyQrIdSettingTypeKey).getDefaultValue());
         endpoint1DescriptionDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayEndpoint1DescriptionSettingTypeKey).getDefaultValue());
         endpoint2DescriptionDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayEndpoint2DescriptionSettingTypeKey).getDefaultValue());
 
@@ -274,6 +295,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         externalCableNameFilter = settingTypeMap.get(FilterExternalCableNameSettingTypeKey).getDefaultValue();
         importCableIdFilter = settingTypeMap.get(FilterImportCableIdSettingTypeKey).getDefaultValue();
         alternateCableIdFilter = settingTypeMap.get(FilterAlternateCableIdSettingTypeKey).getDefaultValue();
+        legacyQrIdFilter = settingTypeMap.get(FilterLegacyQrIdSettingTypeKey).getDefaultValue();
         endpoint1DescriptionFilter = settingTypeMap.get(FilterEndpoint1DescriptionSettingTypeKey).getDefaultValue();
         endpoint2DescriptionFilter = settingTypeMap.get(FilterEndpoint2DescriptionSettingTypeKey).getDefaultValue();
 
@@ -304,6 +326,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         externalCableNameDisplay = settingEntity.getSettingValueAsBoolean(DisplayExternalCableNameSettingTypeKey, externalCableNameDisplay);
         importCableIdDisplay = settingEntity.getSettingValueAsBoolean(DisplayImportCableIdSettingTypeKey, importCableIdDisplay);
         alternateCableIdDisplay = settingEntity.getSettingValueAsBoolean(DisplayAlternateCableIdSettingTypeKey, alternateCableIdDisplay);
+        legacyQrIdDisplay = settingEntity.getSettingValueAsBoolean(DisplayLegacyQrIdSettingTypeKey, legacyQrIdDisplay);
         endpoint1DescriptionDisplay = settingEntity.getSettingValueAsBoolean(DisplayEndpoint1DescriptionSettingTypeKey, endpoint1DescriptionDisplay);
         endpoint2DescriptionDisplay = settingEntity.getSettingValueAsBoolean(DisplayEndpoint2DescriptionSettingTypeKey, endpoint2DescriptionDisplay);
 
@@ -314,6 +337,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         externalCableNameFilter = settingEntity.getSettingValueAsString(FilterExternalCableNameSettingTypeKey, externalCableNameFilter);
         importCableIdFilter = settingEntity.getSettingValueAsString(FilterImportCableIdSettingTypeKey, importCableIdFilter);
         alternateCableIdFilter = settingEntity.getSettingValueAsString(FilterAlternateCableIdSettingTypeKey, alternateCableIdFilter);
+        legacyQrIdFilter = settingEntity.getSettingValueAsString(FilterLegacyQrIdSettingTypeKey, legacyQrIdFilter);
         endpoint1DescriptionFilter = settingEntity.getSettingValueAsString(FilterEndpoint1DescriptionSettingTypeKey, endpoint1DescriptionFilter);
         endpoint2DescriptionFilter = settingEntity.getSettingValueAsString(FilterEndpoint2DescriptionSettingTypeKey, endpoint2DescriptionFilter);
 
@@ -344,6 +368,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         settingEntity.setSettingValue(DisplayExternalCableNameSettingTypeKey, externalCableNameDisplay);
         settingEntity.setSettingValue(DisplayImportCableIdSettingTypeKey, importCableIdDisplay);
         settingEntity.setSettingValue(DisplayAlternateCableIdSettingTypeKey, alternateCableIdDisplay);
+        settingEntity.setSettingValue(DisplayLegacyQrIdSettingTypeKey, legacyQrIdDisplay);
         settingEntity.setSettingValue(DisplayEndpoint1DescriptionSettingTypeKey, endpoint1DescriptionDisplay);
         settingEntity.setSettingValue(DisplayEndpoint2DescriptionSettingTypeKey, endpoint2DescriptionDisplay);
 
@@ -354,6 +379,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         settingEntity.setSettingValue(FilterExternalCableNameSettingTypeKey, externalCableNameFilter);
         settingEntity.setSettingValue(FilterImportCableIdSettingTypeKey, importCableIdFilter);
         settingEntity.setSettingValue(FilterAlternateCableIdSettingTypeKey, alternateCableIdFilter);
+        settingEntity.setSettingValue(FilterLegacyQrIdSettingTypeKey, legacyQrIdFilter);
         settingEntity.setSettingValue(FilterEndpoint1DescriptionSettingTypeKey, endpoint1DescriptionFilter);
         settingEntity.setSettingValue(FilterEndpoint2DescriptionSettingTypeKey, endpoint2DescriptionFilter);
 

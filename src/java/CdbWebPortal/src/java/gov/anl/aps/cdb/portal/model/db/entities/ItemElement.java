@@ -124,7 +124,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList1;
     @OneToMany(mappedBy = "linkItemElement")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList2;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstItemElement")
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "firstItemElement")
     private List<ItemElementRelationship> itemElementRelationshipList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondItemElement")
     private List<ItemElementRelationship> itemElementRelationshipList1;

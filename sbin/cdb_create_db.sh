@@ -48,7 +48,7 @@ echo "Using DB name: $CDB_DB_NAME"
 
 # Look for deployment file in etc directory, and use it to override
 # default entries
-deployConfigFile=$CDB_ROOT_DIR/etc/${CDB_DB_NAME}.deploy.conf
+deployConfigFile=$CDB_INSTALL_DIR/etc/${CDB_DB_NAME}.deploy.conf
 if [ -f $deployConfigFile ]; then
     echo "Using deployment config file: $deployConfigFile"
     . $deployConfigFile

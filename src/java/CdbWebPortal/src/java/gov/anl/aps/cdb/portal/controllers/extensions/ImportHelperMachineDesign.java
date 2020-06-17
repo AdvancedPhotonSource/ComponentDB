@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
@@ -249,10 +250,15 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     protected static String completionUrlValue = "/views/itemDomainMachineDesign/list?faces-redirect=true";
     
     private Map<String, InputColumnInfo> columnInfoMap = null;
-    protected Map<String, ItemDomainMachineDesign> itemByNameMap = new HashMap<>();
-    protected Map<String, TreeNode> treeNodeMap = new HashMap<>();
-    protected Map<ItemDomainMachineDesign, ImportInfo> itemInfoMap = new HashMap<>();
-    protected Map<Integer, ItemDomainMachineDesign> parentIndentMap = new HashMap<>();
+    private Map<String, ItemDomainMachineDesign> itemByNameMap = new HashMap<>();
+    private Map<String, TreeNode> treeNodeMap = new HashMap<>();
+    private Map<ItemDomainMachineDesign, ImportInfo> itemInfoMap = new HashMap<>();
+    private Map<Integer, ItemDomainMachineDesign> parentIndentMap = new HashMap<>();
+    
+    private int templateInstantiationCount = 0;
+    private int templateInstantiationChildCount = 0;
+    private int nonTemplateItemCount = 0;
+    private int templateItemCount = 0;
     
     private void initColumnInfoMap() {
         
@@ -417,7 +423,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     case HEADER_PARENT:
                         colInfo = getColumnInfoMap().get(HEADER_PARENT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new IdRefInputHandler(columnIndex, KEY_CONTAINER, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class));
+                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, KEY_CONTAINER, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, ""));
                         break;
 
                     case HEADER_TEMPLATE_INVOCATION:
@@ -458,7 +464,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     case HEADER_PROJECT:
                         colInfo = getColumnInfoMap().get(HEADER_PROJECT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new IdRefInputHandler(columnIndex, "project", "setProjectValue", ItemProjectController.getInstance(), ItemProject.class));
+                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, "project", "setProjectValue", ItemProjectController.getInstance(), ItemProject.class, ""));
                         break;
 
                     case HEADER_TEMPLATE:
@@ -524,6 +530,13 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     protected void reset_() {
         itemByNameMap = new HashMap<>();
         treeNodeMap = new HashMap<>();
+        columnInfoMap = null;
+        itemInfoMap = new HashMap<>();
+        parentIndentMap = new HashMap<>();
+        templateInstantiationCount = 0;
+        templateInstantiationChildCount = 0;
+        nonTemplateItemCount = 0;
+        templateItemCount = 0;
     }
     
     /**
@@ -592,8 +605,8 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                 return new CreateInfo(invalidInstance, isValid, validString);
             }
 
-            String varName = nameValueArray[0];
-            String varValue = nameValueArray[1];
+            String varName = nameValueArray[0].strip();
+            String varValue = nameValueArray[1].strip();
             varNameValueMap.put(varName, varValue);
         }
 
@@ -616,7 +629,10 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         ItemDomainMachineDesign templateItem;
         try {
             templateItem
-                    = ItemDomainMachineDesignFacade.getInstance().findUniqueByName(templateName, null);
+                    = ItemDomainMachineDesignFacade.getInstance().findUniqueByDomainAndEntityTypeAndName(
+                            templateName, 
+                            EntityTypeName.template.getValue(),
+                            null);
         } catch (CdbException ex) {
             isValid = false;
             validString
@@ -703,6 +719,8 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
 
         // add entry to name map for new item
         itemByNameMap.put(item.getName(), item);
+        
+        templateInstantiationCount = templateInstantiationCount + 1;
 
         return new CreateInfo(item, isValid, validString);
     }
@@ -726,6 +744,19 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             // didn't find a non-empty name column for this row
             isValid = false;
             validString = "name columns are all empty";
+            LOGGER.info(methodLogName + validString);
+            return new CreateInfo(item, isValid, validString);
+        }
+
+        // set flag indicating item is template
+        Boolean itemIsTemplate = (Boolean) rowMap.get(KEY_IS_TEMPLATE);
+        if (itemIsTemplate != null) {
+            item.setImportIsTemplate(itemIsTemplate);
+        } else {
+            // return because we need this value to continue
+            isValid = false;
+            validString = ""; // we don't need a message because this is already flagged as invalid because it is a required column"
+            LOGGER.info(methodLogName + validString);
             return new CreateInfo(item, isValid, validString);
         }
 
@@ -750,14 +781,20 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             item.setImportLocationItem(itemLocation);
         }
 
-        // set flag indicating item is template
-        boolean itemIsTemplate = (Boolean) rowMap.get(KEY_IS_TEMPLATE);
-        item.setImportIsTemplate(itemIsTemplate);
-
         // find parent for this item
+        
+        if (!rowMap.containsKey(KEY_INDENT)) {
+            // return because we need this value to continue
+            isValid = false;
+            validString = "missing indent level map entry";
+            LOGGER.info(methodLogName + validString);
+            return new CreateInfo(item, isValid, validString);
+        }        
         int itemIndentLevel = (int) rowMap.get(KEY_INDENT);
+        
         ItemDomainMachineDesign itemContainer
                 = (ItemDomainMachineDesign) rowMap.get(KEY_CONTAINER);
+        
         if (itemIndentLevel > 1) {
 
             // not allowed to specify parent for non level 0 item
@@ -799,8 +836,10 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             }
         }
 
-        // check for template restrictions
         if (item.getIsItemTemplate()) {
+            // template item handling
+            
+            templateItemCount = templateItemCount + 1;
 
             if ((item.getImportAssignedInventoryItem() != null)) {
 
@@ -822,8 +861,27 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             }
 
         } else {
-            // non-template item restrictions
+            
+            // non-template item handling
+            nonTemplateItemCount = nonTemplateItemCount + 1;
 
+        }
+
+        if (itemParent != null) {
+            // hanlding for all items with parent, template or non-template
+
+            if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
+                // parent and child must both be templates or both not be
+                String msg = "parent and child must both be templates or both not be templates";
+                LOGGER.info(methodLogName + msg);
+                validString = appendToString(validString, msg);
+                isValid = false;
+            }
+            
+        } else {
+            // handling for all top-level items (no parent), 
+            // template or non-template
+            
             if (itemParent == null) {
                 if ((item.getImportAssignedCatalogItem() != null)
                         || (item.getImportAssignedInventoryItem() != null)) {
@@ -834,18 +892,6 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     isValid = false;
                     isValidAssignedItem = false;
                 }
-            }
-        }
-
-        if (itemParent != null) {
-            // restrictions for all items with parent, template or non-template
-
-            if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
-                // parent and child must both be templates or both not be
-                String msg = "parent and child must both be templates or both not be templates";
-                LOGGER.info(methodLogName + msg);
-                validString = appendToString(validString, msg);
-                isValid = false;
             }
         }
 
@@ -898,7 +944,10 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             ItemDomainMachineDesign item, 
             TreeNode itemNode) {
         
+        templateInstantiationChildCount = templateInstantiationChildCount + 1;
+        
         itemNode.setExpanded(false);
+        
         List<ItemElement> children = item.getItemElementDisplayList();
         for (ItemElement child : children) {
             ItemDomainMachineDesign childItem = 
@@ -908,5 +957,36 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             itemNode.getChildren().add(childNode);
             addChildrenForItemToTreeNode(childItem, childNode);
         }
+    }
+    
+    protected String getCustomSummaryDetails() {
+        
+        String summaryDetails = "";
+        
+        if (templateInstantiationCount > 0) {
+            summaryDetails = 
+                    templateInstantiationCount + " template instantiations including " +
+                    templateInstantiationChildCount + "  items";                    
+        }
+        
+        if (templateItemCount > 0) {
+            String templateItemDetails = templateItemCount + " template items";
+            if (summaryDetails.isEmpty()) {
+                summaryDetails = templateItemDetails;                        
+            } else {
+                summaryDetails = summaryDetails + ", " + templateItemDetails;
+            }
+        }
+        
+        if (nonTemplateItemCount > 0) {
+            String nontemplateItemDetails = nonTemplateItemCount + " regular items";
+            if (summaryDetails.isEmpty()) {
+                summaryDetails = nontemplateItemDetails;
+            } else {
+                summaryDetails = summaryDetails + ", " + nontemplateItemDetails;
+            }
+        }
+        
+        return summaryDetails;
     }
 }

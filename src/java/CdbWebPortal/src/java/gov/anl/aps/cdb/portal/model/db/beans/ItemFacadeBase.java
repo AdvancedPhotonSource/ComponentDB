@@ -303,6 +303,47 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
     }
 
+    public ItemDomainEntity findUniqueByDomainAndEntityTypeAndName(
+            String name, 
+            String entityType, 
+            String filterDomainName) throws CdbException {
+        
+        if ((name == null) || (name.isEmpty()) || (entityType == null) || (entityType.isEmpty())) {
+            return null;
+        }
+        
+        String domainName = getDomainName();
+        
+        if ((domainName == null) || domainName.isEmpty()) {
+            throw new CdbException("findUniqueByEntityTypeAndName() not implemented by facade");
+        }
+        
+        List<ItemDomainEntity> items = findByDomainAndEntityTypeAndName(domainName, entityType, name);
+        if (items.size() > 1) {
+            // ambiguous result, throw exception
+            throw new CdbException("findUniqueByEntityTypeAndName() returns multiple instances");
+        } else if (items.size() == 0) {
+            // no items found
+            return null;
+        } else {
+            // return single item returned by query
+            return items.get(0);
+        }
+    }
+    
+    public List<ItemDomainEntity> findByDomainAndEntityTypeAndName(String domainName, String entityType, String name) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndName")
+                    .setParameter("domainName", domainName)
+                    .setParameter("entityTypeName", entityType)
+                    .setParameter("name", name)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
+
     public ItemDomainEntity findByUniqueAttributes(Item derivedFromItem, Domain domain,
             String name, String itemIdentifier1, String itemIdentifier2) {
         String queryString = QUERY_STRING_START + "WHERE ";
