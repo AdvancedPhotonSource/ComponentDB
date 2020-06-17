@@ -1,0 +1,22 @@
+{
+  "Unknown": "Unknown",
+  "RequisitionSubmitted": "Requisition Submitted",
+  "Delivered": "Delivered",
+  "AcceptanceInProgress": "Acceptance In Progress",
+  "Accepted": "Accepted",
+  "Rejected": "Rejected",
+  "PostAcceptanceInPrgress": "Post-Acceptance/Test/Certification in Progress",
+  "PostAcceptanceInProgress": "Post-Acceptance/Test/Certification in Progress",
+  "ReadyForUse": "Ready For Use",
+  "Installed": "Installed",
+  "Spare": "Spare",
+  "SpareCritical": "Spare - Critical",
+  "Failed": "Failed",
+  "Returned": "Returned",
+  "Discarded": "Discarded",
+  "Requisition Submitted": "Requisition Submitted",
+  "Acceptance In Progress": "Acceptance In Progress",
+  "Post-Acceptance/Test/Certification in Progress": "Post-Acceptance/Test/Certification in Progress",
+  "Ready For Use": "Ready For Use",
+  "Spare - Critical": "Spare - Critical"
+}
