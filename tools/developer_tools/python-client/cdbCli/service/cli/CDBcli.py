@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import re
-import json
 import click
 
 from cdbApi import SimpleLocationInformation
@@ -58,21 +57,27 @@ def set_item_status_by_id(item_id, status):
     """
 
     factory = cli.require_authenticated_api()
-    itemApi = factory.getItemApi()
+    item_api = factory.getItemApi()
+    prop_api = factory.getPropertyApi()
 
-    with open('statusDict.json', 'r') as file:
-        statusDict = json.load(file)
+    status_prop = prop_api.get_inventory_status_property_type()
+
+    status_list = [status.to_dict()['value'] for status in status_prop.sorted_allowed_property_value_list]
 
     try:
-        item_status = ItemStatusBasicObject(statusDict[status])
+        item_status = ItemStatusBasicObject(status)
         for _id in item_id.split(','):
             try:
-                result = itemApi.update_item_status(item_id=_id.strip(' '), item_status_basic_object=item_status)
-                log = "Status updated to " + statusDict[status] + " by CDB CLI"
+                result = item_api.update_item_status(item_id=_id.strip(' '), item_status_basic_object=item_status)
+                log = "Status updated to " + status + " by CDB CLI"
                 add_log_to_item_by_id(_id, log)
 
             except ApiException:
-                click.echo("error updating status")
+                click.echo("Error updating status")
+                if status not in status_list:
+                    click.echo("Please enter valid status from status list:")
+                    for stat in status_list:
+                        click.echo(stat)
 
     except KeyError:
         click.echo("Error: invalid status entered")
@@ -100,17 +105,17 @@ def get_inventory_info_by_catalog_id(catalog_id, field):
     """
 
     factory = cli.require_api()
-    itemApi = factory.getItemApi()
+    item_api = factory.getItemApi()
 
-    derived_items = itemApi.get_items_derived_from_item_by_item_id(catalog_id)
+    derived_items = item_api.get_items_derived_from_item_by_item_id(catalog_id)
     for item in derived_items:
 
         # Get info for inventory items
         if field == "status":
-            status = (itemApi.get_item_status(item.to_dict()['id'])).to_dict()['value']
+            status = (item_api.get_item_status(item.to_dict()['id'])).to_dict()['value']
             info = str(status)
         elif field == "location":
-            location = (itemApi.get_item_location(item.to_dict()['id'])).to_dict()['location_string']
+            location = (item_api.get_item_location(item.to_dict()['id'])).to_dict()['location_string']
             info = str(location)
         else:
             info = str((item.to_dict())[field])
@@ -133,9 +138,9 @@ def get_catalog_items_by_name(name, field, inventory):
     """
 
     factory = cli.require_api()
-    itemApi = factory.getItemApi()
+    item_api = factory.getItemApi()
 
-    catalogItems = itemApi.get_catalog_items()
+    catalog_items = item_api.get_catalog_items()
     found = False
 
     # expression must be at beginning of name
@@ -149,9 +154,9 @@ def get_catalog_items_by_name(name, field, inventory):
     if '*' in name:
         r = r.replace('*', '.*')
 
-    for i in range(len(catalogItems)):
+    for i in range(len(catalog_items)):
 
-        matches = re.findall(r, (catalogItems[i]['name']).lower())
+        matches = re.findall(r, (catalog_items[i]['name']).lower())
 
         if matches:
 
@@ -159,18 +164,18 @@ def get_catalog_items_by_name(name, field, inventory):
             if field == "status" or field == "location":
                 info = "info not available for catalog items"
             else:
-                info = str(catalogItems[i][field])
+                info = str(catalog_items[i][field])
             click.echo("Catalog Item:")
 
             # Print info to user
             try:
-                click.echo("\t" + catalogItems[i]['name'] + ":" + info)
+                click.echo("\t" + catalog_items[i]['name'] + ":" + info)
             except KeyError:
                 click.echo("invalid domain")
 
             if inventory:
                 click.echo("Inventory Items:")
-                get_inventory_info_by_catalog_id(catalogItems[i]['id'], field)
+                get_inventory_info_by_catalog_id(catalog_items[i]['id'], field)
 
             found = True
 
@@ -201,12 +206,12 @@ def set_qr_id(item_id, qrid):
     """
 
     factory = cli.require_authenticated_api()
-    itemApi = factory.getItemApi()
+    item_api = factory.getItemApi()
 
     try:
-        item = itemApi.get_item_by_id(item_id)
+        item = item_api.get_item_by_id(item_id)
         item.qr_id = qrid
-        itemApi.update_item_details(item=item)
+        item_api.update_item_details(item=item)
 
     except ApiException:
         click.echo("Error setting QR ID")
@@ -233,9 +238,9 @@ def get_locatable_item_id_by_name(location_name):
     """
 
     factory = cli.require_authenticated_api()
-    itemApi = factory.getItemApi()
+    item_api = factory.getItemApi()
 
-    locations = itemApi.get_items_by_domain("location")
+    locations = item_api.get_items_by_domain("location")
 
     for i in range(len(locations)):
 
@@ -255,17 +260,18 @@ def set_location_by_id(item_id, location_id):
     """
 
     factory = cli.require_authenticated_api()
-    itemApi = factory.getItemApi()
+    item_api = factory.getItemApi()
 
     location = SimpleLocationInformation(locatable_item_id=item_id, location_item_id=location_id)
-    itemApi.update_item_location(simple_location_information=location)
+    item_api.update_item_location(simple_location_information=location)
 
     log = "Location updated by CDB CLI"
     add_log_to_item_by_id(item_id, log)
 
 
 @main.command()
-@click.option('--item-id', required=True, prompt='Item ID', help='ID of inventory item - single id or comma separated list')
+@click.option('--item-id', required=True, prompt='Item ID',
+              help='ID of inventory item - single id or comma separated list')
 @click.option('--location', default=None, help='new location of the item')
 @click.option('--location-id', default=None, help='ID of the new location item')
 def set_location_cli(item_id, location, location_id):
@@ -273,9 +279,12 @@ def set_location_cli(item_id, location, location_id):
     _ids = item_id.split(",")
     for _id in _ids:
         if location_id is None:
-            location_id = get_locatable_item_id_by_name(location)
+            try:
+                location_id = get_locatable_item_id_by_name(location)
+                set_location_by_id(_id.strip(" "), location_id)
 
-        set_location_by_id(_id.strip(" "), location_id)
+            except ApiException:
+                click.echo("Location Not Found")
 
 
 if __name__ == "__main__":
