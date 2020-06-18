@@ -87,7 +87,8 @@ See LICENSE file.
                                          var="row"
                                          rowKey="#{row.name}"
                                          selectionMode="single"
-                                         selection="#{wizardController.selectedTableRow}">    
+                                         selection="#{wizardController.selectedTableRow}"
+                                         rowStyleClass="#{row.isValidImport ? null : 'invalidTableData'}">    
 
                                 <p:columns value="#{wizardController.columns}" 
                                            var="column" 
@@ -115,11 +116,12 @@ See LICENSE file.
                 
                 </p:panelGrid>
 
-                <div class="userNotification">
-                    <h3>#{wizardController.validationMessage}</h3>
-                    <ui:remove><h:outputText value="#{wizardController.validationMessage}"
-                                             rendered ="#{wizardController.showValidationMessage}"
-                                             styleClass="userNotification"/></ui:remove>
+                <div>
+                    <h3 style="color: red">#{wizardController.validationMessage}</h3>
+                </div>
+
+                <div>
+                    <h3>#{wizardController.summaryMessage}</h3>
                 </div>
 
             </p:outputPanel>

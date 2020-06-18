@@ -11,7 +11,11 @@ See LICENSE file.
     <p:outputPanel rendered="#{inventoryStatusValue != null or inventoryStatusPropertyValue != null}">
         <ui:param name="inventoryStatusValue"
                   value="#{inventoryStatusValue != null ? inventoryStatusValue : inventoryStatusPropertyValue.value}" /> 
-        <ui:include src="itemDomainInventoryStatusSelectOneMenu.xhtml"/>
+        
+        <ui:include src="../../../../propertyValue/private/propertyValueEditObjectValueSelectOneAllowedValue.xhtml">
+            <ui:param name="propertyValueObject" value="#{inventoryStatusPropertyValue}"/> 
+        </ui:include>
+        
         <p:outputPanel rendered="#{inventoryStatusPropertyValue != null}">
             Effective Date:
             <ui:include src="itemDomainInventoryStatusEffectiveDate.xhtml" />         

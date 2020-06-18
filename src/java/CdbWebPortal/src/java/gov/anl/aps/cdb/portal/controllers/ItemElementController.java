@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemElementSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
@@ -756,6 +757,16 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     @Override
     protected ItemElementSettings createNewSettingObject() {
         return new ItemElementSettings(this);
+    }
+    
+    public Domain getDefaultDomain() {
+        if (current != null) {
+            Item parentItem = current.getParentItem();
+            if (parentItem != null) {
+                return parentItem.getDomain(); 
+            }
+        }
+        return null; 
     }
 
 }

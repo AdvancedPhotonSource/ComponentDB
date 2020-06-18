@@ -108,7 +108,7 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     /**
      * Converter class for allowed property value objects.
      */
-    @FacesConverter(forClass = AllowedPropertyValue.class)
+    @FacesConverter(value = "allowedPropertyValueConverter", forClass = AllowedPropertyValue.class)
     public static class AllowedPropertyValueControllerConverter implements Converter {
 
         @Override

@@ -220,6 +220,8 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
         if (currentApplyValuesToColumn == currentApplyValuesToColumn.inventoryStatus) {
             // Mock property value will hold value and effective date.
             this.currentObjectValueToColumn = new PropertyValue(); 
+            PropertyType statusType = getItemDomainInventoryController().getInventoryStatusPropertyType();
+            ((PropertyValue)this.currentObjectValueToColumn).setPropertyType(statusType);
         }
     }
 

@@ -76,6 +76,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM Item i WHERE i.name = :name"),
     @NamedQuery(name = "Item.findByDomainNameAndName",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName AND i.name = :name"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndName",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName AND i.name = :name and etl.name = :entityTypeName"),
     @NamedQuery(name = "Item.findByItemIdentifier1",
             query = "SELECT i FROM Item i WHERE i.itemIdentifier1 = :itemIdentifier1"),
     @NamedQuery(name = "Item.findByItemIdentifier2",
@@ -285,7 +287,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     private List<ItemElement> fullItemElementList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "containedItem1")
     private List<ItemElement> itemElementMemberList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "containedItem2")
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "containedItem2")
     private List<ItemElement> itemElementMemberList2;
     @JoinColumn(name = "domain_id", referencedColumnName = "id")
     @ManyToOne(optional = false)

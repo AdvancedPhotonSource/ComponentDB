@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.SimpleInputHandler;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ImportInfo;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.OutputColumnModel;
+import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
@@ -47,13 +48,19 @@ public class ItemDomainImportWizard implements Serializable {
     // models for select file tab
     private Boolean disableButtonUpload = true;
     protected UploadedFile uploadfileData = null;
+    private List<String> sheetNames = new ArrayList<>();
+    private String selectedSheet = null;
+    private boolean renderSelectSheet = false;
+    private String selectFileSummaryMessage = null;
+    private String selectFileErrorMessage = null;
+    private boolean isValidSheet = false;
     
+    // models for validation tab
     protected boolean importSuccessful = true;
     protected String importResult = "";
-    
     private CdbEntity selectedTableRow = null;
     private TreeNode selectedTreeNode = null;
-
+    
     public static ItemDomainImportWizard getInstance() {
         return (ItemDomainImportWizard) SessionUtility.findBean(
                 ItemDomainImportWizard.CONTROLLER_NAMED);
@@ -92,6 +99,104 @@ public class ItemDomainImportWizard implements Serializable {
         this.uploadfileData = uploadfileData;
     }
     
+    public Boolean getDisableButtonUpload() {
+        return disableButtonUpload;
+    }
+
+    public Boolean getRenderFileuploadData() {
+        return uploadfileData == null;
+    }
+
+    public Boolean getRenderOutputData() {
+        return uploadfileData != null;
+    }
+    
+    public Boolean getRenderSelectSheet() {
+        return renderSelectSheet;
+    }
+    
+    public Boolean getRenderFileSummaryMessage() {
+        return selectFileSummaryMessage != null;
+    }
+    
+    public Boolean getRenderFileErrorMessage() {
+        return selectFileErrorMessage != null;
+    }
+
+    public String getUploadfileDataString() {
+        if (uploadfileData == null) {
+            return "";
+        } else {
+            return uploadfileData.getFileName();
+        }
+    }
+
+    public List<String> getSheetNames() {
+        return sheetNames;
+    }
+
+    public String getSelectedSheet() {
+        return selectedSheet;
+    }
+    
+    public String getSelectFileSummaryMessage() {
+        return selectFileSummaryMessage;
+    }
+    
+    public String getSelectFileErrorMessage() {
+        return selectFileErrorMessage;
+    }
+    
+    public void setSelectedSheet(String selectedSheet) {
+        
+        if (selectedSheet == null) {
+            return;
+        }
+        
+        this.selectedSheet = selectedSheet;
+        
+        ValidInfo validInfo = importHelper.validateSheet(uploadfileData, selectedSheet);
+        if (validInfo.isValid()) {
+            isValidSheet = true;
+            selectFileSummaryMessage = 
+                    "Selected sheet is valid for import. " +
+                    "Click 'Next Step' to continue.";
+            selectFileErrorMessage = null;
+        } else {
+            isValidSheet = false;
+            selectFileSummaryMessage = 
+                    "Selected sheet is not valid for import. " +
+                    "Select a different sheet or press cancel to terminate.";
+            selectFileErrorMessage = 
+                    "Validation error: " + validInfo.getValidString() + ".";
+        }
+        
+        setEnablementForCurrentTab();
+    }
+    
+    public boolean isValidSheet() {
+        return isValidSheet;
+    }
+    
+    public void fileUploadListenerData(FileUploadEvent event) {
+
+        uploadfileData = event.getFile();
+        
+        sheetNames = importHelper.getSheetNames(uploadfileData);
+        
+        renderSelectSheet = false;
+        if (sheetNames.size() > 0) {
+            renderSelectSheet = true;
+        } else {
+            // workbook contains no sheets so not valid for import
+            selectFileErrorMessage =
+                    "Selected file contains no worksheets. " +
+                    "Click cancel to terminate and try again.";
+        }
+        
+        setEnablementForCurrentTab();
+    }
+
     public boolean hasTreeView() {
         if (importHelper != null) {
             return importHelper.hasTreeView();
@@ -127,26 +232,6 @@ public class ItemDomainImportWizard implements Serializable {
         selectedTableRow = entity;
     }
  
-    public Boolean getDisableButtonUpload() {
-        return disableButtonUpload;
-    }
-
-    public Boolean getRenderFileuploadData() {
-        return uploadfileData == null;
-    }
-
-    public Boolean getRenderOutputData() {
-        return uploadfileData != null;
-    }
-
-    public String getUploadfileDataString() {
-        if (uploadfileData == null) {
-            return "";
-        } else {
-            return uploadfileData.getFileName();
-        }
-    }
-
     public String getImportResultString() {
         return importResult;
     }
@@ -155,9 +240,8 @@ public class ItemDomainImportWizard implements Serializable {
         return importHelper.getValidationMessage();
     }
 
-    public boolean getShowValidationMessage() {
-        String validationMessage = importHelper.getValidationMessage();
-        return (validationMessage != null) && (!validationMessage.isEmpty());
+    public String getSummaryMessage() {
+        return importHelper.getSummaryMessage();
     }
 
     public List<CdbEntity> getRows() {
@@ -179,18 +263,7 @@ public class ItemDomainImportWizard implements Serializable {
     public StreamedContent getTemplateExcelFile() {
         return importHelper.getTemplateExcelFile();
     }
-
-    public void fileUploadListenerData(FileUploadEvent event) {
-
-        uploadfileData = event.getFile();
-        boolean result = importHelper.readXlsxFileData(uploadfileData);
-        if (!result) {
-            uploadfileData = null;
-        }
-
-        setEnablementForCurrentTab();
-    }
-
+    
     /**
      * Handles FlowEvents generated by the wizard component. Determines next tab
      * based on current tab, defaults to visiting all tabs but implements
@@ -201,6 +274,16 @@ public class ItemDomainImportWizard implements Serializable {
 
         String nextStep = event.getNewStep();
         String currStep = event.getOldStep();
+        
+        // parse file if moving from select file tab to validate tab
+        if ((currStep.endsWith(tabSelectFile))
+                && (nextStep.endsWith(tabValidate))) {
+            boolean result = 
+                    importHelper.readXlsxFileData(uploadfileData, selectedSheet);
+            if (!result) {
+                uploadfileData = null;
+            }
+        }
 
         // trigger import process if moving from validate tab to results tab
         if ((currStep.endsWith(tabValidate))
@@ -234,6 +317,12 @@ public class ItemDomainImportWizard implements Serializable {
         importResult = "";
         selectedTableRow = null;
         selectedTreeNode = null;
+        sheetNames = new ArrayList<>();
+        selectedSheet = null;
+        renderSelectSheet = false;
+        selectFileErrorMessage = null;
+        selectFileSummaryMessage = null;
+        isValidSheet = false;
     }
 
     /**
@@ -281,11 +370,12 @@ public class ItemDomainImportWizard implements Serializable {
             disableButtonCancel = false;
             disableButtonFinish = true;
 
-            if (uploadfileData != null) {
+            if (isValidSheet) {
                 disableButtonNext = false;
             } else {
                 disableButtonNext = true;
             }
+            
         } else if (tab.endsWith(tabValidate)) {
             disableButtonPrev = true;
             disableButtonCancel = false;
@@ -296,6 +386,7 @@ public class ItemDomainImportWizard implements Serializable {
             if (importHelper.isValidInput()) {
                 disableButtonNext = false;
             }
+            
         } else if (tab.endsWith(tabResults)) {
             disableButtonPrev = true;
             disableButtonCancel = true;
