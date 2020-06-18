@@ -23,7 +23,7 @@ def main():
 #                           Add log to item given the item's ID                              #
 #                                                                                            #
 ##############################################################################################
-def add_log_to_item_by_id(item_id, log_entry, effective_date=None):
+def add_log_to_item_by_id_help(item_id, log_entry, effective_date=None):
 
     factory = cli.require_authenticated_api()
     itemApi = factory.getItemApi()
@@ -38,9 +38,9 @@ def add_log_to_item_by_id(item_id, log_entry, effective_date=None):
 @click.option('--item-id', required=True, prompt='Item ID', help='Id of item to fetch.')
 @click.option('--log-entry', required=True, prompt='Log Entry', help='Log entry text')
 @click.option('--effective-date', help='Effective date of log entry')
-def add_log_to_item_by_id_cli(item_id, log_entry, effective_date=None):
+def add_log_to_item_by_id(item_id, log_entry, effective_date=None):
     """Adds log to item with given ID"""
-    add_log_to_item_by_id(item_id, log_entry, effective_date=None)
+    add_log_to_item_by_id_help(item_id, log_entry, effective_date=None)
 
 
 ##############################################################################################
@@ -48,7 +48,7 @@ def add_log_to_item_by_id_cli(item_id, log_entry, effective_date=None):
 #                              Update item status given item ID                              #
 #                                                                                            #
 ##############################################################################################
-def set_item_status_by_id(item_id, status):
+def set_item_status_by_id_help(item_id, status):
     """
     This function updates the status of a given item.
 
@@ -86,9 +86,9 @@ def set_item_status_by_id(item_id, status):
 @main.command()
 @click.option('--item-id', required=True, prompt='Item ID', help='Single item ID or list of item IDs', type=str)
 @click.option('--status', required=True, prompt='Item Status', help='New Status of Item')
-def set_item_status_by_id_cli(item_id, status):
+def set_item_status_by_id(item_id, status):
     """Updates item status of item with the given ID and updates item log"""
-    set_item_status_by_id(item_id, status)
+    set_item_status_by_id_help(item_id, status)
 
 
 #############################################################################################
@@ -129,7 +129,7 @@ def get_inventory_info_by_catalog_id(catalog_id, field):
             break
 
 
-def get_catalog_items_by_name(name, field, inventory):
+def get_catalog_items_by_name_help(name, field, inventory):
     """
     This function prints info about catalog items given the catalog item name. Supports wildcard characters for names.
 
@@ -187,9 +187,9 @@ def get_catalog_items_by_name(name, field, inventory):
 @click.option('--name', required=True, prompt='Item Name', help='name of the item (use wildcards * and ?)')
 @click.option('--field', default='id', prompt='Domain Name', help='field to be returned')
 @click.option('--inventory/--no-inventory', default=False, help='Flag for including inventory items')
-def get_catalog_items_by_name_cli(name, field, inventory):
+def get_catalog_items_by_name(name, field, inventory):
     """ Gets given domain for item of given name"""
-    get_catalog_items_by_name(name, field, inventory)
+    get_catalog_items_by_name_help(name, field, inventory)
 
 
 ##############################################################################################
@@ -197,7 +197,7 @@ def get_catalog_items_by_name_cli(name, field, inventory):
 #                                        Set the QR ID                                       #
 #                                                                                            #
 ##############################################################################################
-def set_qr_id(item_id, qrid):
+def set_qr_id_help(item_id, qrid):
     """
     This function sets a new QR ID for a given item
 
@@ -220,9 +220,9 @@ def set_qr_id(item_id, qrid):
 @main.command()
 @click.option('--item-id', required=True, prompt='Item ID', help='ID of the item (NOT the qr ID')
 @click.option('--qr-id', required=True, prompt='QR ID', help='new QR ID', type=int)
-def set_qr_id_cli(item_id, qr_id):
+def set_qr_id(item_id, qr_id):
     """ Sets new qr ID for given item ID """
-    set_qr_id(item_id, qr_id)
+    set_qr_id_help(item_id, qr_id)
 
 
 ################################################################################################
@@ -274,7 +274,7 @@ def set_location_by_id(item_id, location_id):
               help='ID of inventory item - single id or comma separated list')
 @click.option('--location', default=None, help='new location of the item')
 @click.option('--location-id', default=None, help='ID of the new location item')
-def set_location_cli(item_id, location, location_id):
+def set_location(item_id, location, location_id):
     """Set new location for single or multiple items"""
     _ids = item_id.split(",")
     for _id in _ids:
