@@ -85,7 +85,6 @@ public class ItemDomainMachineDesignController
     private DataModel topLevelMachineDesignSelectionList;
     private List<KeyValueObject> machineDesignNameList = null;
     private String machineDesignName = null;
-    private String machineDesignAlternateName = null;
     private boolean displayCreateMachineDesignFromTemplateContent = false;
     // </editor-fold>   
 
@@ -671,7 +670,7 @@ public class ItemDomainMachineDesignController
     public void prepareAddMdFromPlaceholder() {
         prepareAddNewMachineDesignListConfiguration();
         displayAddMDFromTemplateConfigurationPanel = true;
-        currentEditItemElementSaveButtonEnabled=true;
+        currentEditItemElementSaveButtonEnabled = true;
     }
 
     public void prepareAddMdFromCatalog() {
@@ -1859,7 +1858,6 @@ public class ItemDomainMachineDesignController
         topLevelMachineDesignSelectionList = null;
         machineDesignNameList = null;
         machineDesignName = null;
-        machineDesignAlternateName = null;
     }
 
     @Override
@@ -1888,7 +1886,7 @@ public class ItemDomainMachineDesignController
             updateList(itemsToUpdate);
         } catch (Exception ex) {
             LOGGER.error(ex);
-        } 
+        }
 
         expandToSpecificMachineDesignItem(itemFromSelectedItemInTreeTable);
     }
@@ -1897,8 +1895,7 @@ public class ItemDomainMachineDesignController
         ItemDomainMachineDesign createdFromTemplate = (ItemDomainMachineDesign) item.getCreatedFromTemplate();
 
         if (createdFromTemplate != null) {
-            String newName = generateMachineDesignNameForTemplateItem(createdFromTemplate);
-            item.setName(newName);
+            setMachineDesginIdentifiersFromTemplateItem(createdFromTemplate, item);
             itemsToUpdate.add(item);
         }
 
@@ -1958,14 +1955,23 @@ public class ItemDomainMachineDesignController
 
     private void generateMachineDesignTemplateNameVars(ItemDomainMachineDesign template) {
         String name = template.getName();
-        int firstVar = name.indexOf('{');
+        String alternateName = template.getItemIdentifier1();
+        appendMachineDesignNameList(name);
+        appendMachineDesignNameList(alternateName);
+    }
+
+    private void appendMachineDesignNameList(String templateIdentifier) {
+        if (templateIdentifier == null) {
+            return;
+        }
+        int firstVar = templateIdentifier.indexOf('{');
         int secondVar;
 
         while (firstVar != -1) {
-            name = name.substring(firstVar);
-            secondVar = name.indexOf('}');
+            templateIdentifier = templateIdentifier.substring(firstVar);
+            secondVar = templateIdentifier.indexOf('}');
 
-            String key = name.substring(1, secondVar);
+            String key = templateIdentifier.substring(1, secondVar);
 
             KeyValueObject keyValue = new KeyValueObject(key);
 
@@ -1973,29 +1979,37 @@ public class ItemDomainMachineDesignController
                 machineDesignNameList.add(keyValue);
             }
 
-            name = name.substring(secondVar + 1);
+            templateIdentifier = templateIdentifier.substring(secondVar + 1);
 
-            firstVar = name.indexOf('{');
+            firstVar = templateIdentifier.indexOf('{');
         }
-    }
+    }        
 
     public void generateMachineDesignName() {
-        machineDesignName = generateMachineDesignNameForTemplateItem(templateToCreateNewItem);
+        machineDesignName = generateMachineDesignNameForTemplateItem(templateToCreateNewItem.getName());
+    }
+    
+    private void setMachineDesginIdentifiersFromTemplateItem(ItemDomainMachineDesign templateItem, ItemDomainMachineDesign mdItem) {        
+        String machineDesignName = generateMachineDesignNameForTemplateItem(templateItem.getName());
+        mdItem.setName(machineDesignName);
+        String alternateName = generateMachineDesignNameForTemplateItem(templateItem.getItemIdentifier1());         
+        mdItem.setItemIdentifier1(alternateName);        
     }
 
-    public String generateMachineDesignNameForTemplateItem(ItemDomainMachineDesign templateItem) {
-        String machineDesignName = templateItem.getName();
-
+    public String generateMachineDesignNameForTemplateItem(String templateIdentifier) {
+        if (templateIdentifier == null) {
+            return templateIdentifier; 
+        }
         if (machineDesignNameList != null) {
             for (KeyValueObject kv : machineDesignNameList) {
                 if (kv.getValue() != null && !kv.getValue().equals("")) {
                     String originalText = "{" + kv.getKey() + "}";
-                    machineDesignName = machineDesignName.replace(originalText, kv.getValue());
+                    templateIdentifier = templateIdentifier.replace(originalText, kv.getValue());
                 }
             }
         }
 
-        return machineDesignName;
+        return templateIdentifier;
     }
 
     @Override
@@ -2008,7 +2022,7 @@ public class ItemDomainMachineDesignController
             } else {
                 // Template link in multiple places        
                 currentEditItemElement.setContainedItem(templateToCreateNewItem);
-                
+
                 // Add from top level only 
                 if (templateToCreateNewItem.getParentMachineDesign() == null) {
                     throw new CdbException("Top level machine design templates will be moved into selected machine design. Use add top machine design.");
@@ -2083,16 +2097,14 @@ public class ItemDomainMachineDesignController
 
         // No longer needed. Skip the standard template relationship process. 
         templateToCreateNewItem = null;
-        
+
         return createItemFromTemplate;
     }
 
     private ItemDomainMachineDesign createItemFromTemplate(ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
         ItemDomainMachineDesign clone = (ItemDomainMachineDesign) templateItem.clone();
         cloneCreateItemElements(clone, templateItem, true, true);
-        String machineDesignName = generateMachineDesignNameForTemplateItem(templateItem);
-        clone.setName(machineDesignName);
-        clone.setItemIdentifier1(machineDesignAlternateName);
+        setMachineDesginIdentifiersFromTemplateItem(templateItem, clone);        
 
         // ensure uniqueness of template creation.
         String viewUUID = clone.getViewUUID();
@@ -2117,18 +2129,10 @@ public class ItemDomainMachineDesignController
         return machineDesignName;
     }
 
-    public String getMachineDesignAlternateName() {
-        return machineDesignAlternateName;
-    }
-
-    public void setMachineDesignAlternateName(String machineDesignAlternateName) {
-        this.machineDesignAlternateName = machineDesignAlternateName;
-    }
-
     public List<KeyValueObject> getMachineDesignNameList() {
         return machineDesignNameList;
     }
-    
+
     public void setMachineDesignNameList(List<KeyValueObject> list) {
         this.machineDesignNameList = list;
     }
@@ -2552,6 +2556,6 @@ public class ItemDomainMachineDesignController
     protected ImportHelperBase createImportHelperInstance() throws CdbException {
         return new ImportHelperMachineDesign();
     }
-    
+
     // </editor-fold>       
 }
