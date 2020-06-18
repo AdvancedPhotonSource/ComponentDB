@@ -70,7 +70,7 @@ def set_item_status_by_id_help(item_id, status):
             try:
                 result = item_api.update_item_status(item_id=_id.strip(' '), item_status_basic_object=item_status)
                 log = "Status updated to " + status + " by CDB CLI"
-                add_log_to_item_by_id(_id, log)
+                add_log_to_item_by_id_help(_id, log)
 
             except ApiException:
                 click.echo("Error updating status")
@@ -251,7 +251,7 @@ def get_locatable_item_id_by_name(location_name):
     return -1
 
 
-def set_location_by_id(item_id, location_id):
+def set_location_by_id_help(item_id, location_id):
     """
     This function sets a new location for a given inventory item
 
@@ -262,29 +262,36 @@ def set_location_by_id(item_id, location_id):
     factory = cli.require_authenticated_api()
     item_api = factory.getItemApi()
 
-    location = SimpleLocationInformation(locatable_item_id=item_id, location_item_id=location_id)
-    item_api.update_item_location(simple_location_information=location)
+    _ids = item_id.split(",")
+    for _id in _ids:
+        location = SimpleLocationInformation(locatable_item_id=_id.strip(" "), location_item_id=location_id)
+        item_api.update_item_location(simple_location_information=location)
 
     log = "Location updated by CDB CLI"
-    add_log_to_item_by_id(item_id, log)
+    add_log_to_item_by_id_help(item_id, log)
 
 
 @main.command()
 @click.option('--item-id', required=True, prompt='Item ID',
               help='ID of inventory item - single id or comma separated list')
-@click.option('--location', default=None, help='new location of the item')
-@click.option('--location-id', default=None, help='ID of the new location item')
-def set_location(item_id, location, location_id):
-    """Set new location for single or multiple items"""
-    _ids = item_id.split(",")
-    for _id in _ids:
-        if location_id is None:
-            try:
-                location_id = get_locatable_item_id_by_name(location)
-                set_location_by_id(_id.strip(" "), location_id)
+@click.option('--location_id', required=True, prompt='Item Location ID', help='New location ID for item' )
+def set_location_by_id(item_id, location_id):
+    """Set new location for single or multiple items using location ID"""
+    set_location_by_id_help(item_id, location_id)
 
-            except ApiException:
-                click.echo("Location Not Found")
+
+@main.command()
+@click.option('--item-id', required=True, prompt='Item ID',
+              help='ID of inventory item - single id or comma separated list')
+@click.option('--location', required=True, prompt='Item Location', help='New location of the item')
+def set_location_by_name(item_id, location):
+    """Set new location for single or multiple items using location name"""
+    try:
+        location_id = get_locatable_item_id_by_name(location)
+        set_location_by_id(item_id, location_id)
+
+    except ApiException:
+        click.echo("Location Not Found")
 
 
 if __name__ == "__main__":
