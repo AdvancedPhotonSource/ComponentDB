@@ -77,12 +77,26 @@ See LICENSE file.
 
     <ui:define name="listActionButtons">
         <p:outputPanel rendered="#{!itemDomainMachineDesignController.displayListConfigurationView}">
-            <ui:include src="../item/private/itemListActionButtons.xhtml" >
+            <ui:decorate template="../item/private/templates/itemListActionButtonsTemplate.xhtml">                
                 <ui:param name="listExportable"
                           value="#{false}" /> 
                 <ui:param name="templateIcon"
                           value="ui-icon-machine-design-template" />
-            </ui:include>
+                <ui:define name="additionalListTypeCategoryActionButtons">
+                    <p:commandButton id="#{entityTypeName}#{viewName}reorderTopLevel"
+                                     icon="fa fa-sort"
+                                     styleClass="actionButtonRight"
+                                     action="#{entityController.prepareReorderTopLevelMachineDesignElements()}"
+                                     rendered="#{loginController.loggedInAsAdmin}"
+                                     onclick="PF('loadingDialog').show()"
+                                     oncomplete="PF('itemDomainMachineDesignReorderOverlayPanelWidget').show();
+                                                 PF('loadingDialog').hide()"
+                                     update="itemDomainMachineDesignReorderOverlayPanel">
+                        <p:tooltip for="#{entityTypeName}#{viewName}reorderTopLevel" 
+                                   value="Reorder top level machine designs."/>
+                    </p:commandButton>
+                </ui:define>
+            </ui:decorate>
         </p:outputPanel>
     </ui:define>
 

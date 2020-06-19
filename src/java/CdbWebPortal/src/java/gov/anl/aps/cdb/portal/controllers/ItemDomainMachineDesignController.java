@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
@@ -30,6 +31,7 @@ import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -391,7 +393,10 @@ public class ItemDomainMachineDesignController
 
     private void expandTreeChildren(Item item, TreeNode rootTreeNode) {
         ItemElement element = new ItemElement();
+        ItemElement selfElement = item.getSelfElement();
+        Float sortOrder = selfElement.getSortOrder();
         element.setContainedItem(item);
+        element.setSortOrder(sortOrder);
         TreeNode parent = new DefaultTreeNode(element);
         rootTreeNode.getChildren().add(parent);
         parent.setParent(rootTreeNode);
@@ -1103,6 +1108,55 @@ public class ItemDomainMachineDesignController
         displayListConfigurationView = true;
         displayAddCatalogItemListConfigurationPanel = true;
     }
+    
+    public void prepareReorderTopLevelMachineDesignElements() {
+        ItemDomainMachineDesign mockTopLevelMachineDesign = new ItemDomainMachineDesign(); 
+        mockTopLevelMachineDesign.setFullItemElementList(new ArrayList<>());
+        mockTopLevelMachineDesign.setDomain(getDefaultDomain());
+        
+        TreeNode currentMachineDesignListRootTreeNode = getCurrentMachineDesignListRootTreeNode();
+                
+        List<TreeNode> currentTopLevels = currentMachineDesignListRootTreeNode.getChildren();
+        
+        for (TreeNode node : currentTopLevels) {
+            ItemElement data = (ItemElement) node.getData();
+            ItemElement mockItemElement = new ItemElement(); 
+            mockItemElement.setName("MOCK element");
+            mockItemElement.setContainedItem(data.getContainedItem());
+            mockItemElement.setParentItem(mockTopLevelMachineDesign);
+            
+            mockTopLevelMachineDesign.getFullItemElementList().add(mockItemElement);
+        }
+        
+        mockTopLevelMachineDesign.getFullItemElementList().sort(new Comparator<ItemElement>() {
+            @Override
+            public int compare(ItemElement o1, ItemElement o2) {
+                Float sortOrder = o1.getSortOrder();
+                Float sortOrder1 = o2.getSortOrder();
+                
+                if (ObjectUtility.equals(o1, o2)) {
+                    return 0;
+                }
+                
+                if (sortOrder == null && sortOrder1 != null) {
+                    return -1; 
+                } 
+                
+                if (sortOrder != null && sortOrder1 == null) {
+                    return 1; 
+                }
+                
+                if (sortOrder > sortOrder1) {
+                    return 1;
+                }
+                return -1; 
+            }
+        });
+        
+        setCurrent(mockTopLevelMachineDesign); 
+        
+        displayMachineDesignReorderOverlayPanel = true;
+    }
 
     public void prepareReorderMachineDesignElements() {
         updateCurrentUsingSelectedItemInTreeTable();
@@ -1120,6 +1174,31 @@ public class ItemDomainMachineDesignController
     }
 
     public String saveReorderMachineDesignElement() {
+        ItemDomainMachineDesign current = getCurrent();
+        if (current.getId() == null) {
+            // not in DB. Simulated list. Set sort order on self element. Perform multi-item save
+            List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
+            List<ItemElement> itemElements = current.getItemElementDisplayList();
+            for (ItemElement itemElement : itemElements) {
+                Float sortOrder = itemElement.getSortOrder();
+                
+                ItemDomainMachineDesign sortedItem = (ItemDomainMachineDesign) itemElement.getContainedItem();
+                ItemElement selfElement = sortedItem.getSelfElement();
+                selfElement.setSortOrder(sortOrder);
+                
+                itemsToUpdate.add(sortedItem);
+            }
+            
+            try {
+                updateList(itemsToUpdate);
+            } catch (CdbException ex) {
+                LOGGER.error(ex);
+                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+            }
+            
+            return currentDualViewList();
+        }
+        
         if (isItemMachineDesignAndTemplate(getCurrent())) {
             ItemDomainMachineDesign template = getCurrent();
             for (ItemElement ie : template.getItemElementDisplayList()) {
