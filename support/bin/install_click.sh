@@ -11,7 +11,7 @@ cd `dirname $0`/.. && topDir=`pwd`
 
 srcDir=$topDir/src
 buildDir=$topDir/build
-pythonInstallDir=$topDir/python/$CDB_HOST_ARCH
+pythonInstallDir=$topDir/anaconda/$CDB_HOST_ARCH
 
 mkdir -p $buildDir
 
@@ -20,5 +20,5 @@ export PATH=$pythonInstallDir/bin:$PATH
 export PATH=$pythonInstallDir/lib:$PATH
 export LD_LIBRARY_PATH=$pythonInstallDir/lib:$LD_LIBRARY_PATH
 cd $buildDir
-echo Installing twine
+echo Installing click
 pip install click || exit 1

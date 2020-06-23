@@ -31,10 +31,8 @@ if [ -f $anacondaFileName ]; then
     help=-h
     batch=-b
     skip=-s
-    path="-p /mnt/c/Users/liamj/CDBDevEnv/support-DESKTOP-PIDH0CC/anaconda/linux-x86_64/"
+    path="-p $anacondaInstallDir"
 
     echo "Installing anaconda"
-    ./$anacondaFileName $batch $skip $path
-    #./Anaconda3-2020.02-Linux-x86_64.sh $batch $skip $path
-    #./Anaconda3-2020.02-Linux-x86_64.sh $help
+    sh $anacondaFileName $batch $skip $path
 fi
