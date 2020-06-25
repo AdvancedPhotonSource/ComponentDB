@@ -654,29 +654,30 @@ class CableDesignHelper(PreImportHelper):
         self.nonunique_endpoints.add(endpoint_name)
 
     def close(self):
-        output_book = xlsxwriter.Workbook(self.info_file)
-        output_sheet = output_book.add_worksheet()
+        if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
+            output_book = xlsxwriter.Workbook(self.info_file)
+            output_sheet = output_book.add_worksheet()
 
-        output_sheet.write(0, 0, "missing cable types")
-        output_sheet.write(0, 1, "missing endpoints")
-        output_sheet.write(0, 2, "non-unique endpoints")
+            output_sheet.write(0, 0, "missing cable types")
+            output_sheet.write(0, 1, "missing endpoints")
+            output_sheet.write(0, 2, "non-unique endpoints")
 
-        row_index = 1
-        for cable_type_name in self.missing_cable_types:
-            output_sheet.write(row_index, 0, cable_type_name)
-            row_index = row_index + 1
+            row_index = 1
+            for cable_type_name in self.missing_cable_types:
+                output_sheet.write(row_index, 0, cable_type_name)
+                row_index = row_index + 1
 
-        row_index = 1
-        for endpoint_name in self.missing_endpoints:
-            output_sheet.write(row_index, 1, endpoint_name)
-            row_index = row_index + 1
+            row_index = 1
+            for endpoint_name in self.missing_endpoints:
+                output_sheet.write(row_index, 1, endpoint_name)
+                row_index = row_index + 1
 
-        row_index = 1
-        for endpoint_name in self.nonunique_endpoints:
-            output_sheet.write(row_index, 2, endpoint_name)
-            row_index = row_index + 1
+            row_index = 1
+            for endpoint_name in self.nonunique_endpoints:
+                output_sheet.write(row_index, 2, endpoint_name)
+                row_index = row_index + 1
 
-        output_book.close()
+            output_book.close()
 
 
 class CableDesignOutputObject(OutputObject):
