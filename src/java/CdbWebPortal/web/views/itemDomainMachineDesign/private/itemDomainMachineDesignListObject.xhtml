@@ -44,24 +44,33 @@ See LICENSE file.
             <div class="mdName" style="display: none">#{itemListObject.name}</div>
             
             <ui:param name="domainIcon" 
-                      value="#{itemTreeListObject != null 
-                               ? itemDomainMachineDesignController.getItemRepIcon(itemTreeListObject)
-                               : itemDomainMachineDesignController.getItemRepIcon(itemElementParentItem)}" />
-            <span class="ui-treenode-icon ui-icon #{domainIcon}"/>            
-            <p:commandLink styleClass="ui-treenode-icon ui-icon ui-icon-machine-design-template custom-icon-blue" 
-                           action="#{entityController.prepareView(createdFromTemplate)}" 
-                           onclick="PF('loadingDialog').show()"
-                           title="View Template Item"
-                           rendered="#{createdFromTemplate != null}"/> 
+                      value="#{itemDomainMachineDesignController.getMdNodeRepIcon(itemElementListObject)}" />
             
-            <ui:fragment rendered="#{itemTreeListObject != null}">
-                <span>#{itemTreeListObject}</span>
-            </ui:fragment>
+            <span class="ui-treenode-icon ui-icon #{domainIcon}"/>      
+            
+            <ui:fragment rendered="#{itemElementListObject.mdConnector == null}">
+                <p:commandLink styleClass="ui-treenode-icon ui-icon ui-icon-machine-design-template custom-icon-blue" 
+                               action="#{entityController.prepareView(createdFromTemplate)}" 
+                               onclick="PF('loadingDialog').show()"
+                               title="View Template Item"
+                               rendered="#{createdFromTemplate != null}"/> 
 
-            <ui:fragment rendered="#{itemTreeListObject == null 
-                                     and itemDomainMachineDesignController.isItemInventory(itemElementParentItem)}">                
-                <span>#{itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementListObject)}</span>
+                <ui:fragment rendered="#{itemTreeListObject != null}">
+                    <span>#{itemTreeListObject}</span>
+                </ui:fragment>
+
+                <ui:fragment rendered="#{itemTreeListObject == null 
+                                         and itemDomainMachineDesignController.isItemInventory(itemElementParentItem)}">                
+                    <span>#{itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementListObject)}</span>
+                </ui:fragment>
             </ui:fragment>
+            <ui:fragment rendered="#{itemElementListObject.mdConnector != null}">
+                <ui:include src="../../connector/private/connectorNameObject.xhtml">
+                    <ui:param name="connector"
+                              value="#{itemElementListObject.mdConnector.connector}"/>
+                </ui:include>
+            </ui:fragment>
+            
             <p:draggable scope="organizeMachineDesign" revert="true"
                          rendered="#{enableDragDropToMoveMD}"/>
             <p:droppable scope="organizeMachineDesign" onDrop="handleDrop" 

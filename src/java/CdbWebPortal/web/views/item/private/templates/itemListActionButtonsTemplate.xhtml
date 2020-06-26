@@ -60,6 +60,8 @@ See LICENSE file.
     <ui:define name="listTypeCategoryActionButtons">        
         <ui:include src="../templateDefaults/common/itemListCategoryTypeActionButtons.xhtml" />
         
+        <ui:insert name="additionalListTypeCategoryActionButtons"/> 
+        
         <p:commandButton id="#{entityTypeName}#{viewName}ViewItemProperties" 
                          alt="View #{entityController.entityEntityTypeName}s" 
                          action="#{propertyTypeController.prepareItemPropertyList(entityController.defaultDomainName)}"
@@ -75,7 +77,7 @@ See LICENSE file.
                          rendered="#{displayAvailableTemplatesButton}">
             <p:tooltip for="#{entityTypeName}#{viewName}ViewItemTemplates" 
                        value="View Available Templates."/>
-        </p:commandButton>
+        </p:commandButton>                
     </ui:define>  
 
 </ui:composition>
