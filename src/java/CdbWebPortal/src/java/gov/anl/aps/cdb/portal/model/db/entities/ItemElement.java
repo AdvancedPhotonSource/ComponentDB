@@ -124,7 +124,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList1;
     @OneToMany(mappedBy = "linkItemElement")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList2;
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "firstItemElement")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstItemElement")
     private List<ItemElementRelationship> itemElementRelationshipList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondItemElement")
     private List<ItemElementRelationship> itemElementRelationshipList1;
@@ -148,6 +148,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private transient boolean loadedCatalogInventoryMachineDesignItem = false;
     private transient boolean itemCanHaveInventoryItem = false; 
     private transient String rowStyle; 
+    private transient ItemConnector mdConnector; 
     // </editor-fold>
 
     // Helper variable used to ensure proper procedure is executed if the attribute changes. 
@@ -524,6 +525,14 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public void setRowStyle(String rowStyle) {
         this.rowStyle = rowStyle;
+    }
+
+    public ItemConnector getMdConnector() {
+        return mdConnector;
+    }
+
+    public void setMdConnector(ItemConnector mdConnector) {
+        this.mdConnector = mdConnector;
     }
     
     // </editor-fold>

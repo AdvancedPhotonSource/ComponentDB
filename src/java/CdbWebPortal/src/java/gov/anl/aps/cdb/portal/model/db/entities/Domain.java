@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import java.io.Serializable;
 import java.util.List;
@@ -201,6 +202,9 @@ public class Domain extends CdbEntity implements Serializable {
                     break;
                 case "Maarc":
                     domainRepIcon = PortalStyles.maarcIcon.getValue();
+                    break;
+                case "Cable Design":
+                    domainRepIcon = PortalStyles.cableDesignIcon.getValue();
                     break;
                 default:
                     domainRepIcon = ""; 
