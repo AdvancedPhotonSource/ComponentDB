@@ -700,7 +700,9 @@ class CableDesignOutputObject(OutputObject):
         return "CA " + self.get_import_id()
 
     def get_alt_name(self):
-        return "<" + self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + "><" + self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ">:" + self.get_name()
+        return "<" + self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + "><" + \
+               self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ">:" + \
+               self.get_name()
 
     def get_ext_name(self):
         return self.input_dict[CABLE_DESIGN_NAME_KEY]
@@ -806,21 +808,21 @@ class CableDesignOutputObject(OutputObject):
         return self.get_endpoint_id(CABLE_DESIGN_FROM_DEVICE_NAME_KEY)
 
     def get_endpoint1_description(self):
-        return self.input_dict[CABLE_DESIGN_SRC_LOCATION_KEY] + ":" + \
-               self.input_dict[CABLE_DESIGN_SRC_ANS_KEY] + ":" + \
-               self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + ":" + \
-               self.input_dict[CABLE_DESIGN_SRC_ADDRESS_KEY] + ":" + \
-               self.input_dict[CABLE_DESIGN_SRC_DESCRIPTION_KEY]
+        return str(self.input_dict[CABLE_DESIGN_SRC_LOCATION_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_SRC_ANS_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_SRC_ADDRESS_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_SRC_DESCRIPTION_KEY])
 
     def get_endpoint2_id(self):
         return self.get_endpoint_id(CABLE_DESIGN_TO_DEVICE_NAME_KEY)
 
     def get_endpoint2_description(self):
-        return self.input_dict[CABLE_DESIGN_DEST_LOCATION_KEY] + ":" + \
-               self.input_dict[CABLE_DESIGN_DEST_ANS_KEY] + ":" + \
-               self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY] + ":" + \
-               self.input_dict[CABLE_DESIGN_DEST_ADDRESS_KEY] + ":" + \
-               self.input_dict[CABLE_DESIGN_DEST_DESCRIPTION_KEY]
+        return str(self.input_dict[CABLE_DESIGN_DEST_LOCATION_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_DEST_ANS_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_DEST_ETPM_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_DEST_ADDRESS_KEY]) + ":" + \
+               str(self.input_dict[CABLE_DESIGN_DEST_DESCRIPTION_KEY])
 
 
 def main():

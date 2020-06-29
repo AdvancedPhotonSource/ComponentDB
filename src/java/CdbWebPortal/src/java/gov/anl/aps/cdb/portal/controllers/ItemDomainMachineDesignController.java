@@ -464,7 +464,7 @@ public class ItemDomainMachineDesignController
         searchCollapsed = true;
     }
 
-    private void searchMachineDesign(TreeNode parentNode, Pattern searchPattern, List<TreeNode> results) {
+    public void searchMachineDesign(TreeNode parentNode, Pattern searchPattern, List<TreeNode> results) {
         Object data = parentNode.getData();
         parentNode.setExpanded(false);
         if (data != null) {

@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
@@ -104,6 +105,8 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected ItemDomainCableDesignWizardClient client;
     protected TreeNode machineDesignTreeEndpoint1 = null;
     protected TreeNode machineDesignTreeEndpoint2 = null;
+    private String inputValueEndpoint1Search;
+    private String inputValueEndpoint2Search;
     protected String inputValueName = "";
     protected List<ItemProject> selectionProjectList = new ArrayList<>();
     protected List<ItemCategory> selectionTechnicalSystemList = new ArrayList<>();
@@ -164,6 +167,22 @@ public abstract class ItemDomainCableDesignWizardBase {
      */
     public void setMachineDesignTreeEndpoint2(TreeNode machineDesignTree) {
         this.machineDesignTreeEndpoint2 = machineDesignTree;
+    }
+
+    public String getInputValueEndpoint1Search() {
+        return inputValueEndpoint1Search;
+    }
+
+    public void setInputValueEndpoint1Search(String inputValueEndpoint1Search) {
+        this.inputValueEndpoint1Search = inputValueEndpoint1Search;
+    }
+
+    public String getInputValueEndpoint2Search() {
+        return inputValueEndpoint2Search;
+    }
+
+    public void setInputValueEndpoint2Search(String inputValueEndpoint2Search) {
+        this.inputValueEndpoint2Search = inputValueEndpoint2Search;
     }
 
     /**
@@ -465,7 +484,7 @@ public abstract class ItemDomainCableDesignWizardBase {
             disableButtonPrev = true;
             disableButtonCancel = false;
             disableButtonSave = true;
-            if (selectionEndpoint2 != null) {
+            if ((selectionEndpoint1 != null) && (selectionEndpoint2 != null)) {
                 disableButtonNext = false;
             } else {
                 disableButtonNext = true;
@@ -526,6 +545,8 @@ public abstract class ItemDomainCableDesignWizardBase {
         currentTab = "EndpointTab";
         machineDesignTreeEndpoint1 = null;
         machineDesignTreeEndpoint2 = null;
+        inputValueEndpoint1Search = null;
+        inputValueEndpoint2Search = null;
         inputValueName = "";
         selectionEndpoint1 = null;
         selectionEndpoint2 = null;
@@ -556,6 +577,72 @@ public abstract class ItemDomainCableDesignWizardBase {
         
     protected Domain getDomain() {
         return ItemDomainCableDesignController.getInstance().getDefaultDomain();
+    }
+    
+    public void searchEndpoint1() {
+        
+        Pattern searchPattern = 
+                Pattern.compile(Pattern.quote(
+                        this.getInputValueEndpoint1Search()), 
+                        Pattern.CASE_INSENSITIVE);
+        
+        List<TreeNode> searchResultsList = new ArrayList<>();
+        
+        ItemDomainMachineDesignController.getInstance().searchMachineDesign(
+                getMachineDesignTreeEndpoint1(), 
+                searchPattern,
+                searchResultsList);
+        
+        if (searchResultsList.size() > 0) {
+            for (TreeNode node : searchResultsList) {
+                TreeNode parent = node.getParent();
+                while (parent != null) {
+                    parent.setExpanded(true);
+                    parent = parent.getParent();
+                }
+            }
+
+            TreeNode newSelection = searchResultsList.get(0);
+            TreeNode selectedItemInListTreeTable = getSelectionEndpoint1();
+            if (selectedItemInListTreeTable != null) {
+                selectedItemInListTreeTable.setSelected(false);
+            }
+            newSelection.setSelected(true);
+            setSelectionEndpoint1(newSelection);
+        }
+    }
+    
+    public void searchEndpoint2() {
+        
+        Pattern searchPattern = 
+                Pattern.compile(Pattern.quote(
+                        this.getInputValueEndpoint2Search()), 
+                        Pattern.CASE_INSENSITIVE);
+        
+        List<TreeNode> searchResultsList = new ArrayList<>();
+        
+        ItemDomainMachineDesignController.getInstance().searchMachineDesign(
+                getMachineDesignTreeEndpoint2(), 
+                searchPattern,
+                searchResultsList);
+        
+        if (searchResultsList.size() > 0) {
+            for (TreeNode node : searchResultsList) {
+                TreeNode parent = node.getParent();
+                while (parent != null) {
+                    parent.setExpanded(true);
+                    parent = parent.getParent();
+                }
+            }
+
+            TreeNode newSelection = searchResultsList.get(0);
+            TreeNode selectedItemInListTreeTable = getSelectionEndpoint2();
+            if (selectedItemInListTreeTable != null) {
+                selectedItemInListTreeTable.setSelected(false);
+            }
+            newSelection.setSelected(true);
+            setSelectionEndpoint2(newSelection);
+        }
     }
     
     /**
