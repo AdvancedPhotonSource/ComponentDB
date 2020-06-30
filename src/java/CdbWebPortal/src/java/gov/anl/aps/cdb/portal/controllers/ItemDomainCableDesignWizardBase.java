@@ -8,6 +8,8 @@ import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -81,7 +83,7 @@ public abstract class ItemDomainCableDesignWizardBase {
          * Handles selected cables for members dialog's select button.
          */
         public String select(String remoteCommandSuccess) {
-            
+
             // process selected cables
             if (!selectionModelCables.isEmpty()) {
                 addMembers(selectionModelCables);
@@ -118,7 +120,7 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected String redirectSuccess = "";
     protected MembersDialog dialogMembers = new MembersDialog();
     protected List<ItemCategory> availableTechnicalSystems = null;
-    
+
     public ItemDomainCableDesignWizardBase() {
     }
 
@@ -216,7 +218,7 @@ public abstract class ItemDomainCableDesignWizardBase {
     public String getTechnicalSystemsString() {
         return StringUtility.getStringifyCdbList(selectionTechnicalSystemList);
     }
-    
+
     public List<ItemCategory> getAvailableTechnicalSystems() {
         if (availableTechnicalSystems == null) {
             availableTechnicalSystems = ItemCategoryController.getInstance().getItemTypeCategoryEntityListByDomainName(getDomain().getName());
@@ -302,7 +304,7 @@ public abstract class ItemDomainCableDesignWizardBase {
         }
         setEnablementForCurrentTab();
     }
-    
+
     public void removeMember(Item member) {
         if (members.contains(member)) {
             members.remove(member);
@@ -466,7 +468,31 @@ public abstract class ItemDomainCableDesignWizardBase {
             disableButtonCancel = false;
             disableButtonSave = true;
             if (selectionEndpoint2 != null) {
-                disableButtonNext = false;
+                Object data = selectionEndpoint2.getData();
+                if (data instanceof ItemElement) {
+                    ItemElement ie = (ItemElement) data;
+                    Item containedItem = ie.getContainedItem();
+                    if (containedItem != null) {
+                        if (containedItem instanceof ItemDomainMachineDesign) {
+                            // TODO: Check if same as endpoint 1
+                            disableButtonNext = false;
+                        } else {
+                            disableButtonNext = true;
+                            SessionUtility.addWarningMessage("Invalid Selection", "New connections can only be made directly to machine designs item.");
+                        }
+                    } else {
+                        ItemConnector mdConnector = ie.getMdConnector();
+                        if (mdConnector != null) {
+                            SessionUtility.addWarningMessage("Select Machine design", "Use port mapping utility after the cable has been created.");
+                            disableButtonNext = true;
+                        } else {
+                            SessionUtility.addWarningMessage("Invalid Selection", "New connections can only be made directly to machine designs item.");
+                            disableButtonNext = true;
+                        }
+                    }
+                } else {
+                    disableButtonNext = false;
+                }
             } else {
                 disableButtonNext = true;
             }
@@ -553,11 +579,11 @@ public abstract class ItemDomainCableDesignWizardBase {
         cancel_();
         return "list";
     }
-        
+
     protected Domain getDomain() {
         return ItemDomainCableDesignController.getInstance().getDefaultDomain();
     }
-    
+
     /**
      * Allows custom enablement behavior, called on tab change. Subclasses
      * should override for custom behavior. Default implementation does nothing.
