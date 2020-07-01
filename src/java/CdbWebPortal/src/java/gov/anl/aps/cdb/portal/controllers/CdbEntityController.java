@@ -1229,6 +1229,11 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      */
     protected void completeEntityDestroy(EntityType entity) {
     }
+    
+    public synchronized void destroyFromApi(EntityType entity, UserInfo updateUser) throws CdbException {
+        setApiUser(updateUser);
+        performDestroyOperations(entity);
+    }
 
     /**
      * Remove entity instance from the database.
@@ -1305,7 +1310,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             Throwable t = ExceptionUtils.getRootCause(ex);
             logger.error("Could not delete " + getDisplayEntityTypeName() + " "
                     + getCurrentEntityInstanceName() + ": " + t.getMessage());
-            SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + t.getMessage());
+                SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + t.getMessage());
             addCdbEntityWarningSystemLog("Failed to delete", ex, current);
             return null;
         }
