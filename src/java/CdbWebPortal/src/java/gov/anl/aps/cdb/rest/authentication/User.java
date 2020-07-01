@@ -10,7 +10,9 @@ import java.util.Date;
  
 public class User implements Principal {
     
-    public static final long EXPIRATION_DURATION = 24 * (3600*1000); 
+    // 30 Day expiration (30 days * ( 24 hours * (60 minues)))     
+    public static final long SIXTY_MINUTES = 3600*1000;
+    public static final Long EXPIRATION_DURATION = (30 * (24 * (SIXTY_MINUTES)));         
             
     private UserInfo user;
     private Date expirationDate;
