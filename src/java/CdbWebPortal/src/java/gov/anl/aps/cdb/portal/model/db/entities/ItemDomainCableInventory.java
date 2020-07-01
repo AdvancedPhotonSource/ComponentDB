@@ -14,15 +14,32 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_INVENTORY_ID + "")   
-public class ItemDomainCableInventory extends ItemDomainInventoryBase {
+public class ItemDomainCableInventory extends ItemDomainInventoryBase<ItemDomainCableCatalog> {
 
+    private transient String length;
+    
     @Override
     public Item createInstance() {
         return new ItemDomainCableInventory(); 
     }
-
-    public ItemDomainCableCatalog getCableCatalogItem() {
-        return (ItemDomainCableCatalog) getDerivedFromItem();
-    }
     
+    /**
+     * This method is redundant to the generic method defined in the superclass,
+     * ItemDomainInventoryBase.  It is needed here because the import wizard
+     * uses reflection to invoke the setter method, and apparently the generic
+     * method is not a valid match for invocation by reflection.
+     * @param catalogItem 
+     */
+    public void setCatalogItem(ItemDomainCableCatalog catalogItem) {
+        super.setCatalogItem(catalogItem);
+    }
+
+    public String getLength() {
+        return length;
+    }
+
+    public void setLength(String length) {
+        this.length = length;
+    }
+
 }

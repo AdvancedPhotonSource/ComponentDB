@@ -4,7 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCableInventory;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCableInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableInventorySettings;
@@ -51,6 +53,13 @@ public class ItemDomainCableInventoryController extends ItemController<ItemDomai
     }        
 
     @Override
+    public ItemDomainCableInventory createEntityInstance() {
+        ItemDomainCableInventory item = super.createEntityInstance();
+        setCurrent(item);
+        return item;
+    }
+    
+    @Override
     protected ItemCreateWizardController getItemCreateWizardController() {
         return ItemCreateWizardDomainCableInventoryController.getInstance();
     }
@@ -75,7 +84,7 @@ public class ItemDomainCableInventoryController extends ItemController<ItemDomai
         ItemDomainCableInventory cableInventoryItem = getCurrent();
         if (cableInventoryItem != null) {
             ItemDomainCableCatalog cableCatalogItem = 
-                    cableInventoryItem.getCableCatalogItem();
+                    cableInventoryItem.getCatalogItem();
             if (cableCatalogItem != null) {
                 
                 // set the project list for inventory to that for catalog item
@@ -242,4 +251,13 @@ public class ItemDomainCableInventoryController extends ItemController<ItemDomai
         return null;
     } 
 
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected ImportHelperBase createImportHelperInstance() throws CdbException {
+        return new ImportHelperCableInventory();
+    }
 }

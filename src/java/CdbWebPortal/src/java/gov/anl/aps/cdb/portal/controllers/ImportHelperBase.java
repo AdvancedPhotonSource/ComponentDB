@@ -147,6 +147,19 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
     
+    protected class IntegerColumnSpec extends ColumnSpec {
+        
+        public IntegerColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description) {
+            super(columnIndex, header, propertyName, entitySetterMethod, required, description);
+        }
+        
+        @Override
+        public InputHandler createInputHandlerInstance() {
+            return new IntegerInputHandler(
+                    getColumnIndex(), getPropertyName(), getEntitySetterMethod());
+        }
+    }
+    
     protected class IdRefColumnSpec extends ColumnSpec {
         
         private CdbEntityController controller;
@@ -468,6 +481,41 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         @Override
         public Class getParamType() {
             return Boolean.class;
+        }
+    }
+    
+    public class IntegerInputHandler extends SimpleInputHandler {
+
+        public IntegerInputHandler(int columnIndex, String propertyName, String setterMethod) {
+            super(columnIndex, propertyName, setterMethod);
+        }
+
+        @Override
+        public ParseInfo parseCellValue(String stringValue) {
+            
+            Integer parsedValue = null;
+            boolean isValid = true;
+            String validString = "";
+
+            if (stringValue.length() == 0) {
+                parsedValue = null;
+                isValid = true;
+                validString = "";
+            } else {
+                try {
+                    parsedValue = Integer.valueOf(stringValue);
+                } catch (NumberFormatException ex) {
+                    isValid = false;
+                    validString = "invalid integer format: " + stringValue;
+                }
+            }
+
+            return new ParseInfo<>(parsedValue, isValid, validString);
+        }
+        
+        @Override
+        public Class getParamType() {
+            return Integer.class;
         }
     }
     

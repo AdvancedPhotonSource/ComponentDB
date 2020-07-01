@@ -48,7 +48,7 @@ import org.primefaces.model.TreeNode;
                 )
             }
     ),})
-public class ItemDomainInventory extends ItemDomainInventoryBase {
+public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatalog> {
 
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare";
@@ -70,10 +70,6 @@ public class ItemDomainInventory extends ItemDomainInventoryBase {
     public Item createInstance() {
         return new ItemDomainInventory();
     }
-
-    public ItemDomainCatalog getCatalogItem() {
-        return (ItemDomainCatalog) getDerivedFromItem();
-    } 
 
     @Override
     // TODO API Change back to json ignore and utilize the catalog item 
