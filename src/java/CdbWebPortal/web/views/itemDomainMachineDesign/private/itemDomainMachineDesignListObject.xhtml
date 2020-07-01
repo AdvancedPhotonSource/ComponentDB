@@ -37,7 +37,8 @@ See LICENSE file.
     <ui:param name="createdFromTemplate"
               value="#{itemListObject.createdFromTemplate}" /> 
     
-    <p:column headerText="Machine Design Item Name" styleClass="draggableTreeTableDataCell">
+    <p:column headerText="Machine Design Item Name" styleClass="draggableTreeTableDataCell"
+              colspan="3">
         <p:outputPanel id="draggableMachineDesign#{itemListObject.id}"
                        styleClass="inlineOutputPanel">                           
             <div class="mdId" style="display: none">#{itemListObject.id}</div>
