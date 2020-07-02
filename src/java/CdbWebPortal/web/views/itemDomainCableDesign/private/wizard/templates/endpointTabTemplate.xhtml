@@ -22,16 +22,6 @@ See LICENSE file.
                     
                     <p:panelGrid columns="1">
                         
-                        <ui:decorate template="./endpointSearchTemplate.xhtml">
-                            <ui:param name="viewId" value="#{rootViewId}Endpoint1" />
-                            <ui:param name="wizardController" value="#{wizardController}" />
-                            <ui:param name="prompt" value="endpoint1" />
-                            <ui:param name="valueModel" value="inputValueEndpoint1Search" />                            
-                            <ui:param name="widget" value="itemMachineDesignListDataTable#{rootViewId}Endpoint1TreeWidget" />                            
-                            <ui:param name="updateId" value="@form:itemMachineDesignListDataTable#{rootViewId}Endpoint1Tree" />                            
-                            <ui:param name="searchAction" value="searchEndpoint1" />                            
-                        </ui:decorate>
-
                         <ui:decorate template="../../../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
 
                             <ui:param name="viewId" value="#{rootViewId}Endpoint1Tree" />
@@ -60,16 +50,6 @@ See LICENSE file.
 
                     <p:panelGrid columns="1">
                         
-                        <ui:decorate template="./endpointSearchTemplate.xhtml">
-                            <ui:param name="viewId" value="#{rootViewId}Endpoint2" />
-                            <ui:param name="wizardController" value="#{wizardController}" />
-                            <ui:param name="prompt" value="endpoint2" />
-                            <ui:param name="valueModel" value="inputValueEndpoint2Search" />                            
-                            <ui:param name="widget" value="itemMachineDesignListDataTable#{rootViewId}Endpoint2TreeWidget" />                            
-                            <ui:param name="updateId" value="@form:itemMachineDesignListDataTable#{rootViewId}Endpoint2Tree" />                            
-                            <ui:param name="searchAction" value="searchEndpoint2" />                            
-                        </ui:decorate>
-
                         <ui:decorate template="../../../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
                             <ui:param name="viewId" value="#{rootViewId}Endpoint2Tree" />
                             <!-- false means true for the hideOptionalColumns and hideSearchColumns parameters-->
@@ -92,23 +72,6 @@ See LICENSE file.
 
                     </p:panelGrid>
                 </p:column>
-
-                <script type="text/javascript">
-                    function scrollToSelectedNode(treeWidgetVar) {
-                        var selectedElement = treeWidgetVar.jq.find('.ui-state-highlight');
-                        if ((selectedElement.position() != undefined)) {
-                             var scrollPanel = treeWidgetVar.jq.find('.ui-treetable-scrollable-body');
-                             var scrollTopPos = selectedElement.position().top;
-                             //console.log(treeWidgetVar);
-                             //console.log(scrollPanel);
-                             //console.log(scrollTopPos);
-                             //console.log(scrollPanel.scrollTop());
-                             //scrollPanel.scrollTop(scrollTopPos);
-                             scrollPanel.animate({ scrollTop: scrollTopPos});
-                             //console.log(scrollPanel.scrollTop());
-                        }
-                    }
-                </script>
 
             </p:panelGrid>
 
