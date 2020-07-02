@@ -33,6 +33,7 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
     private static final String DisplayQrIdSettingTypeKey = "ItemDomainCableInventory.List.Display.QrId";
     private static final String DisplaySerialNumberSettingTypeKey = "ItemDomainCableInventory.List.Display.SerialNumber";
     private static final String DisplayItemProjectSettingTypeKey = "ItemDomainCableInventory.List.Display.Project";   
+    private static final String DisplayLengthSettingTypeKey = "ItemDomainCableInventory.List.Display.Length";
     private static final String AutoLoadListFilterValuesSettingTypeKey = "ItemDomainCableInventory.List.Load.FilterDataTable"; 
     private static final String FilterByCreatedByUserSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.CreatedByUser";
     private static final String FilterByCreatedOnDateTimeSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.CreatedOnDateTime";
@@ -49,13 +50,33 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
     private static final String FilterByQrIdSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.QrId";
     private static final String FilterBySerialNumberSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.SerialNumber";
     private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainCableInventory.List.AutoLoad.FilterBy.Properties";
+    private static final String FilterLengthSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.Length";
     
     private Boolean displaySerialNumber = null;
 
     private String filterBySerialNumber = null;
+    
+    protected Boolean lengthDisplay = null;
+    protected String lengthFilter = null;
 
     public ItemDomainCableInventorySettings(ItemDomainCableInventoryController parentController) {
         super(parentController);
+    }
+    
+    public boolean isLengthDisplay() {
+        return lengthDisplay;
+    }
+
+    public void setLengthDisplay(boolean lengthDisplay) {
+        this.lengthDisplay = lengthDisplay;
+    }
+
+    public String getLengthFilter() {
+        return lengthFilter;
+    }
+
+    public void setLengthFilter(String lengthFilter) {
+        this.lengthFilter = lengthFilter;
     }
     
     @Override
@@ -103,6 +124,10 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
         filterByPropertiesAutoLoad = Boolean.parseBoolean(settingTypeMap.get(FilterByPropertiesAutoLoadTypeKey).getDefaultValue());
 
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
+
+        // core metadata fields
+        lengthDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayLengthSettingTypeKey).getDefaultValue());
+        lengthFilter = settingTypeMap.get(FilterLengthSettingTypeKey).getDefaultValue();
     }
     
     @Override
@@ -149,6 +174,10 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
         filterByPropertiesAutoLoad = settingEntity.getSettingValueAsBoolean(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
 
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);        
+
+        // core metadata fields
+        lengthDisplay = settingEntity.getSettingValueAsBoolean(DisplayLengthSettingTypeKey, lengthDisplay);
+        lengthFilter = settingEntity.getSettingValueAsString(FilterLengthSettingTypeKey, lengthFilter);
     }
 
     @Override
@@ -195,5 +224,9 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
         settingEntity.setSettingValue(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
 
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
+        
+        // core metadata fields
+        settingEntity.setSettingValue(DisplayLengthSettingTypeKey, lengthDisplay);
+        settingEntity.setSettingValue(FilterLengthSettingTypeKey, lengthFilter);
     }
 }
