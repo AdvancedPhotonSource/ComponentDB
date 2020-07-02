@@ -503,6 +503,13 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         loadCatalogInventoryMachineDesignItems();
         return machineDesignItem;
     } 
+    
+    public Item getMdTypeContainedItem() {
+        if (getContainedItem() instanceof ItemDomainMachineDesign) {
+            return getContainedItem();
+        }
+        return null; 
+    }
 
     public String getCatalogDisplayString() {
         loadCatalogInventoryMachineDesignItems();

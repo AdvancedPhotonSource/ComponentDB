@@ -37,7 +37,12 @@ See LICENSE file.
     <ui:param name="createdFromTemplate"
               value="#{itemListObject.createdFromTemplate}" /> 
     
+    <ui:param name="filterable"
+                  value="#{true}"/>
+    
     <p:column headerText="Machine Design Item Name" styleClass="draggableTreeTableDataCell"
+              filterBy="#{itemTreeListObject.name}"
+              filterMatchMode="contains"
               colspan="3">
         <p:outputPanel id="draggableMachineDesign#{itemListObject.id}"
                        styleClass="inlineOutputPanel">                           
@@ -108,14 +113,18 @@ See LICENSE file.
 
     <p:column headerText="Machine Design Item Description"
               rendered="#{hideOptionalColumns 
-                          and settingObject.displayDescription}">
+                          and settingObject.displayDescription}"
+              filterBy="#{itemListObject.description}"
+              filterMatchMode="contains">
         <h:outputText value="#{itemListObject.description}" /> 
     </p:column>
 
     <ui:param name="assignedItem"
               value="#{itemElementListObject.containedItem2}"/> 
 
-    <p:column headerText="Assigned Catalog &#38; Inventory Item" >
+    <p:column headerText="Assigned Catalog &#38; Inventory Item"
+              filterBy="#{itemElementListObject.containedItem2}"
+              filterMatchMode="contains">
         <ui:fragment rendered="#{!topLevelItem}">            
             <p:commandLink id="#{entityTypeName}AssignedItemHistory" 
                            onstart="PF('loadingDialog').show();"
@@ -138,12 +147,14 @@ See LICENSE file.
               value="#{itemDomainMachineDesignController.currentViewIsTemplate 
                        ? '../../common/private/commonEmptyPage.xhtml' 
                        : '../../locatableItem/private/locatableItemListLocationObject.xhtml'}" />
-
+    
     <ui:include src="#{locationObjectSrc}" > 
         <ui:param name="alternateLocationString"
                   value="#{topLevelItem ? '' : '&#60; parent &#62;'}" />
         <ui:param name="renderedLocation"
                   value="#{hideOptionalColumns}" />
+        <ui:param name="itemListObject"
+                  value="#{itemElementListObject.mdTypeContainedItem}"/> 
     </ui:include>
 
     <p:column headerText="Project"
