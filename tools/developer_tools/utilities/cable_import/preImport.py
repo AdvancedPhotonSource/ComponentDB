@@ -74,6 +74,8 @@ CABLE_TYPE_HEAT_LIMIT_KEY = "heatLimit"
 CABLE_TYPE_BEND_RADIUS_KEY = "bendRadius"
 CABLE_TYPE_RAD_TOLERANCE_KEY = "radTolerance"
 
+CABLE_INVENTORY_NAME_KEY = "name"
+
 CABLE_DESIGN_NAME_KEY = "name"
 CABLE_DESIGN_LAYING_KEY = "laying"
 CABLE_DESIGN_VOLTAGE_KEY = "voltage"
@@ -523,14 +525,77 @@ class CableTypeOutputObject(OutputObject):
 
 
 @register
+class CableInventoryHelper(PreImportHelper):
+
+    def __init__(self):
+        super().__init__()
+
+    @staticmethod
+    def tag():
+        return "CableInventory"
+
+    @classmethod
+    def num_input_cols(cls):
+        return 21
+
+    @classmethod
+    def input_column_list(cls):
+        column_list = [
+            InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
+            InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
+            InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, required=True),
+            InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
+            InputColumnModel(col_index=18, key=CABLE_DESIGN_MBA_ID_KEY),
+            InputColumnModel(col_index=19, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
+            InputColumnModel(col_index=20, key=CABLE_DESIGN_QR_ID_KEY, required=False),
+        ]
+        return column_list
+
+    @staticmethod
+    def output_column_list():
+        column_list = [
+            OutputColumnModel(col_index=0, method="get_cable_type_id", label="Catalog Item"),
+            OutputColumnModel(col_index=1, method="get_name", label="Name"),
+            OutputColumnModel(col_index=2, method="get_qr_id", label="QR ID"),
+            OutputColumnModel(col_index=3, method="get_description", label="Description"),
+            OutputColumnModel(col_index=4, method="get_length", label="Length"),
+        ]
+        return column_list
+
+    def get_output_object(self, input_dict):
+
+        logging.debug("adding output object for: %s" % input_dict[CABLE_INVENTORY_NAME_KEY])
+        return CableInventoryOutputObject(helper=self, input_dict=input_dict)
+
+
+class CableInventoryOutputObject(OutputObject):
+
+    def __init__(self, helper, input_dict):
+        super().__init__(helper, input_dict)
+
+    def get_cable_type_id(self):
+        return CableDesignOutputObject.get_cable_type_id_cls(self.input_dict, self.helper.api)
+
+    def get_name(self):
+        return CableDesignOutputObject.get_name_cls(self.input_dict)
+
+    def get_qr_id(self):
+        return self.input_dict[CABLE_DESIGN_QR_ID_KEY]
+
+    def get_description(self):
+        return None
+
+    def get_length(self):
+        return None
+
+
+@register
 class CableDesignHelper(PreImportHelper):
 
     def __init__(self):
         super().__init__()
-        self.cable_type_dict = {}
         self.endpoint_dict = {}
         self.md_root = None
-        self.missing_cable_types = set()
         self.missing_endpoints = set()
         self.nonunique_endpoints = set()
         self.info_file = None
@@ -623,17 +688,8 @@ class CableDesignHelper(PreImportHelper):
 
     def get_output_object(self, input_dict):
 
-        logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
+        logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
         return CableDesignOutputObject(helper=self, input_dict=input_dict)
-
-    def has_cable_type(self, cable_type):
-        return cable_type in self.cable_type_dict
-
-    def get_id_for_cable_type(self, cable_type):
-        return self.cable_type_dict[cable_type]
-
-    def set_id_for_cable_type(self, cable_type, id):
-        self.cable_type_dict[cable_type] = id
 
     def has_endpoint(self, endpoint):
         return endpoint in self.endpoint_dict
@@ -644,9 +700,6 @@ class CableDesignHelper(PreImportHelper):
     def set_id_for_endpoint(self, endpoint, id):
         self.endpoint_dict[endpoint] = id
 
-    def add_missing_cable_type(self, cable_type_name):
-        self.missing_cable_types.add(cable_type_name)
-
     def add_missing_endpoint(self, endpoint_name):
         self.missing_endpoints.add(endpoint_name)
 
@@ -654,7 +707,7 @@ class CableDesignHelper(PreImportHelper):
         self.nonunique_endpoints.add(endpoint_name)
 
     def close(self):
-        if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
+        if len(CableDesignOutputObject.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
             output_book = xlsxwriter.Workbook(self.info_file)
             output_sheet = output_book.add_worksheet()
 
@@ -663,7 +716,7 @@ class CableDesignHelper(PreImportHelper):
             output_sheet.write(0, 2, "non-unique endpoints")
 
             row_index = 1
-            for cable_type_name in self.missing_cable_types:
+            for cable_type_name in CableDesignOutputObject.missing_cable_types:
                 output_sheet.write(row_index, 0, cable_type_name)
                 row_index = row_index + 1
 
@@ -682,22 +735,34 @@ class CableDesignHelper(PreImportHelper):
 
 class CableDesignOutputObject(OutputObject):
 
+    cable_type_dict = {}
+    missing_cable_types = set()
+
     def __init__(self, helper, input_dict):
         super().__init__(helper, input_dict)
 
-    def get_name(self):
+    @classmethod
+    def get_name_cls(cls, row_dict):
+
         # use legacy_id if specified
-        legacy_id = self.input_dict[CABLE_DESIGN_LEGACY_ID_KEY]
+        legacy_id = row_dict[CABLE_DESIGN_LEGACY_ID_KEY]
         if len(legacy_id) > 0:
             return legacy_id
 
         # next try MBA cable id
-        mba_id = self.input_dict[CABLE_DESIGN_MBA_ID_KEY]
+        mba_id = row_dict[CABLE_DESIGN_MBA_ID_KEY]
         if len(mba_id) > 0:
             return mba_id
 
         # otherwise use import_id prefixed with "CA "
-        return "CA " + self.get_import_id()
+        return "CA " + cls.get_import_id_cls(row_dict)
+
+    @classmethod
+    def get_import_id_cls(cls, row_dict):
+        return str(int(row_dict[CABLE_DESIGN_IMPORT_ID_KEY]))
+
+    def get_name(self):
+        return self.get_name_cls(self.input_dict)
 
     def get_alt_name(self):
         return "<" + self.input_dict[CABLE_DESIGN_SRC_ETPM_KEY] + "><" + \
@@ -708,7 +773,7 @@ class CableDesignOutputObject(OutputObject):
         return self.input_dict[CABLE_DESIGN_NAME_KEY]
 
     def get_import_id(self):
-        return str(int(self.input_dict[CABLE_DESIGN_IMPORT_ID_KEY]))
+        return self.get_import_id_cls(self.input_dict);
 
     def get_alt_id(self):
         return self.input_dict[CABLE_DESIGN_LEGACY_ID_KEY]
@@ -731,43 +796,63 @@ class CableDesignOutputObject(OutputObject):
     def get_project_id(self):
         return self.helper.get_args().projectId
 
-    def get_cable_type_id(self):
+    @classmethod
+    def has_cable_type(cls, cable_type):
+        return cable_type in cls.cable_type_dict
+
+    @classmethod
+    def get_id_for_cable_type(cls, cable_type):
+        return cls.cable_type_dict[cable_type]
+
+    @classmethod
+    def set_id_for_cable_type(cls, cable_type, id):
+        cls.cable_type_dict[cable_type] = id
+
+    @classmethod
+    def add_missing_cable_type(cls, cable_type_name):
+        cls.missing_cable_types.add(cable_type_name)
+
+    @classmethod
+    def get_cable_type_id_cls(cls, row_dict, api):
 
         global isValid
 
-        cable_type_name = self.input_dict[CABLE_DESIGN_TYPE_KEY]
+        cable_type_name = row_dict[CABLE_DESIGN_TYPE_KEY]
 
         if cable_type_name == "" or cable_type_name is None:
             return ""
         
-        if self.helper.has_cable_type(cable_type_name):
-            return self.helper.get_id_for_cable_type(cable_type_name)
+        if cls.has_cable_type(cable_type_name):
+            return cls.get_id_for_cable_type(cable_type_name)
         else:
             # check to see if cable type exists in CDB by name
             cable_type_object = None
             try:
-                cable_type_object = self.helper.api.getCableCatalogItemApi().get_cable_catalog_item_by_name(cable_type_name)
+                cable_type_object = api.getCableCatalogItemApi().get_cable_catalog_item_by_name(cable_type_name)
             except ApiException as ex:
                 if "ObjectNotFound" not in ex.body:
                     error_msg = "exception retrieving cable catalog item: %s - %s" % (cable_type_name, ex.body)
                     logging.error(error_msg)
-                    sys.exit(msg)
+                    sys.exit(error_msg)
                 else:
                     isValid = False
-                    self.helper.add_missing_cable_type(cable_type_name)
+                    cls.add_missing_cable_type(cable_type_name)
                     logging.error("ObjectNotFound exception for cable type with name: %s" % cable_type_name)
                     return None
 
             if cable_type_object:
                 cable_type_id = cable_type_object.id
                 logging.debug("found cable type with name: %s, id: %s" % (cable_type_name, cable_type_id))
-                self.helper.set_id_for_cable_type(cable_type_name, cable_type_id)
+                cls.set_id_for_cable_type(cable_type_name, cable_type_id)
                 return cable_type_id
             else:
                 isValid = False
-                self.helper.add_missing_cable_type(cable_type_name)
+                cls.add_missing_cable_type(cable_type_name)
                 logging.error("cable_type_object from API result is None for name: %s" % cable_type_name)
                 return None
+
+    def get_cable_type_id(self):
+        return self.get_cable_type_id_cls(self.input_dict, self.helper.api)
 
     def get_endpoint_id(self, input_column_key):
 
