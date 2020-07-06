@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import javax.persistence.DiscriminatorValue;
@@ -15,12 +16,18 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_INVENTORY_ID + "")   
+@JsonIgnoreProperties(value = {
+    // Transient
+    "length",
+    "coreMetadataPropertyValue",
+    "coreMetadataPropertyInfo"
+})
 public class ItemDomainCableInventory extends ItemDomainInventoryBase<ItemDomainCableCatalog> {
 
     public final static String CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE = "cable_inventory_internal_property_type";
     public final static String CABLE_INVENTORY_PROPERTY_LENGTH_KEY = "length";
     
-    private transient String length;
+    private transient String length = null;
     
     @Override
     public Item createInstance() {
