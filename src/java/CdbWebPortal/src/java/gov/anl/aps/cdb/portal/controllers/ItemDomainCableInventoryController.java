@@ -182,6 +182,11 @@ public class ItemDomainCableInventoryController extends ItemController<ItemDomai
     }
 
     @Override
+    public String getNameTitle() {
+        return "Tag";
+    }
+
+    @Override
     public boolean getEntityDisplayItemGallery() {
         return true;
     }
