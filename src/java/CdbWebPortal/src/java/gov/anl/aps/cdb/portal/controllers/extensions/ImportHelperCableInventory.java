@@ -7,8 +7,10 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableInventoryController;
+import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +33,8 @@ public class ImportHelperCableInventory extends ImportHelperBase<ItemDomainCable
         specs.add(new StringColumnSpec(1, "Name", "name", "setName", true, "Name for inventory unit.", 64));
         specs.add(new IntegerColumnSpec(2, "QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
         specs.add(new StringColumnSpec(3, "Description", "description", "setDescription", false, "Description of inventory unit.", 256));
-        specs.add(new StringColumnSpec(4, "Length", "length", "setLength", false, "Installed length of cable inventory unit.", 256));
+        specs.add(new IdOrNameRefColumnSpec(4, "Project", "itemProjectString", "setProject", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class, ""));
+        specs.add(new StringColumnSpec(5, "Length", "length", "setLength", false, "Installed length of cable inventory unit.", 256));
         
         return specs;
     } 

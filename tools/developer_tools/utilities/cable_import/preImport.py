@@ -536,6 +536,16 @@ class CableInventoryHelper(PreImportHelper):
     def __init__(self):
         super().__init__()
 
+    # Adds helper specific command line args.
+    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
+    @staticmethod
+    def add_parser_args(parser):
+        parser.add_argument("--projectId", help="CDB item category ID for project (item_project table)", required=True)
+
+    def set_args(self, args):
+        super().set_args(args)
+        print("CDB item category (project) id: %s" % args.projectId)
+
     @staticmethod
     def tag():
         return "CableInventory"
@@ -564,7 +574,8 @@ class CableInventoryHelper(PreImportHelper):
             OutputColumnModel(col_index=1, method="get_name", label="Name"),
             OutputColumnModel(col_index=2, method="get_qr_id", label="QR ID"),
             OutputColumnModel(col_index=3, method="get_description", label="Description"),
-            OutputColumnModel(col_index=4, method="get_length", label="Length"),
+            OutputColumnModel(col_index=4, method="get_project_id", label="project id"),
+            OutputColumnModel(col_index=5, method="get_length", label="Length"),
         ]
         return column_list
 
@@ -590,6 +601,9 @@ class CableInventoryOutputObject(OutputObject):
 
     def get_description(self):
         return None
+
+    def get_project_id(self):
+        return self.helper.get_args().projectId
 
     def get_length(self):
         return None

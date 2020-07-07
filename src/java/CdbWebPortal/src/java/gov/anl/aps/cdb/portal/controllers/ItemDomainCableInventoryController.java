@@ -223,7 +223,7 @@ public class ItemDomainCableInventoryController extends ItemController<ItemDomai
 
     @Override
     public boolean getEntityDisplayItemProject() {
-        return false; 
+        return true; 
     }
 
     @Override
