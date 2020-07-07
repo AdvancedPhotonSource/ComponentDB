@@ -447,11 +447,4 @@ public class ItemDomainCableDesign extends Item {
         setItemCategoryList(technicalSystemList);
     }
 
-    public void setProject(ItemProject project) {
-        if (project != null) {
-            List<ItemProject> projectList = new ArrayList<>();
-            projectList.add(project);
-            this.setItemProjectList(projectList);
-        }
-    }
 }

@@ -368,10 +368,12 @@ class CableTypeHelper(PreImportHelper):
     @staticmethod
     def add_parser_args(parser):
         parser.add_argument("--ownerId", help="CDB technical system ID for owner", required=True)
+        parser.add_argument("--projectId", help="CDB item category ID for project (item_project table)", required=True)
 
     def set_args(self, args):
         super().set_args(args)
-        print("owner CDB technical system id: %s" % args.ownerId)
+        print("CDB technical system id (owner): %s" % args.ownerId)
+        print("CDB item category (project) id: %s" % args.projectId)
 
     @staticmethod
     def tag():
@@ -414,17 +416,18 @@ class CableTypeHelper(PreImportHelper):
             OutputColumnModel(col_index=4, method="get_manufacturer_id", label=CABLE_TYPE_MANUFACTURER_KEY),
             OutputColumnModel(col_index=5, method="get_part_number", label=CABLE_TYPE_PART_NUMBER_KEY),
             OutputColumnModel(col_index=6, method="get_alt_part_number", label=CABLE_TYPE_ALT_PART_NUMBER_KEY),
-            OutputColumnModel(col_index=7, method="get_diameter", label=CABLE_TYPE_DIAMETER_KEY),
-            OutputColumnModel(col_index=8, method="get_weight", label=CABLE_TYPE_WEIGHT_KEY),
-            OutputColumnModel(col_index=9, method="get_conductors", label=CABLE_TYPE_CONDUCTORS_KEY),
-            OutputColumnModel(col_index=10, method="get_insulation", label=CABLE_TYPE_INSULATION_KEY),
-            OutputColumnModel(col_index=11, method="get_jacket_color", label=CABLE_TYPE_JACKET_COLOR_KEY),
-            OutputColumnModel(col_index=12, method="get_voltage_rating", label=CABLE_TYPE_VOLTAGE_RATING_KEY),
-            OutputColumnModel(col_index=13, method="get_fire_load", label=CABLE_TYPE_FIRE_LOAD_KEY),
-            OutputColumnModel(col_index=14, method="get_heat_limit", label=CABLE_TYPE_HEAT_LIMIT_KEY),
-            OutputColumnModel(col_index=15, method="get_bend_radius", label=CABLE_TYPE_BEND_RADIUS_KEY),
-            OutputColumnModel(col_index=16, method="get_rad_tolerance", label=CABLE_TYPE_RAD_TOLERANCE_KEY),
-            OutputColumnModel(col_index=17, method="get_owner_id", label="owner"),
+            OutputColumnModel(col_index=7, method="get_owner_id", label="owner"),
+            OutputColumnModel(col_index=8, method="get_project_id", label="project id"),
+            OutputColumnModel(col_index=9, method="get_diameter", label=CABLE_TYPE_DIAMETER_KEY),
+            OutputColumnModel(col_index=10, method="get_weight", label=CABLE_TYPE_WEIGHT_KEY),
+            OutputColumnModel(col_index=11, method="get_conductors", label=CABLE_TYPE_CONDUCTORS_KEY),
+            OutputColumnModel(col_index=12, method="get_insulation", label=CABLE_TYPE_INSULATION_KEY),
+            OutputColumnModel(col_index=13, method="get_jacket_color", label=CABLE_TYPE_JACKET_COLOR_KEY),
+            OutputColumnModel(col_index=14, method="get_voltage_rating", label=CABLE_TYPE_VOLTAGE_RATING_KEY),
+            OutputColumnModel(col_index=15, method="get_fire_load", label=CABLE_TYPE_FIRE_LOAD_KEY),
+            OutputColumnModel(col_index=16, method="get_heat_limit", label=CABLE_TYPE_HEAT_LIMIT_KEY),
+            OutputColumnModel(col_index=17, method="get_bend_radius", label=CABLE_TYPE_BEND_RADIUS_KEY),
+            OutputColumnModel(col_index=18, method="get_rad_tolerance", label=CABLE_TYPE_RAD_TOLERANCE_KEY),
         ]
         return column_list
 
@@ -490,6 +493,12 @@ class CableTypeOutputObject(OutputObject):
     def get_alt_part_number(self):
         return self.input_dict[CABLE_TYPE_ALT_PART_NUMBER_KEY]
 
+    def get_owner_id(self):
+        return self.helper.get_args().ownerId
+
+    def get_project_id(self):
+        return self.helper.get_args().projectId
+
     def get_diameter(self):
         return self.input_dict[CABLE_TYPE_DIAMETER_KEY]
 
@@ -519,9 +528,6 @@ class CableTypeOutputObject(OutputObject):
 
     def get_rad_tolerance(self):
         return self.input_dict[CABLE_TYPE_RAD_TOLERANCE_KEY]
-
-    def get_owner_id(self):
-        return self.helper.get_args().ownerId
 
 
 @register
@@ -611,8 +617,8 @@ class CableDesignHelper(PreImportHelper):
 
     def set_args(self, args):
         super().set_args(args)
-        print("owner CDB technical system (owner) id: %s" % args.ownerId)
-        print("owner CDB item category (project) id: %s" % args.projectId)
+        print("CDB technical system (owner) id: %s" % args.ownerId)
+        print("CDB item category (project) id: %s" % args.projectId)
         print("top-level parent machine design node name: %s" % args.mdRoot)
         print("debugging info xlsx file: %s" % args.infoFile)
         self.md_root = args.mdRoot

@@ -51,11 +51,17 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
     private static final String FilterBySerialNumberSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.SerialNumber";
     private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainCableInventory.List.AutoLoad.FilterBy.Properties";
     private static final String FilterLengthSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.Length";
+    private static final String DisplayLocationDetailsSettingTypeKey = "ItemDomainCableInventory.List.Display.LocationDetails";
+    private static final String DisplayLocationSettingTypeKey = "ItemDomainCableInventory.List.Display.Location";
     
     private Boolean displaySerialNumber = null;
 
     private String filterBySerialNumber = null;
     
+    private Boolean displayLocationDetails = null;
+    private Boolean displayLocation = null;
+    
+    // metadata fields
     protected Boolean lengthDisplay = null;
     protected String lengthFilter = null;
 
@@ -63,6 +69,30 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
         super(parentController);
     }
     
+    public Boolean getDisplaySerialNumber() {
+        return displaySerialNumber;
+    } 
+
+    public void setDisplaySerialNumber(Boolean displaySerialNumber) {
+        this.displaySerialNumber = displaySerialNumber;
+    }
+
+    public Boolean getDisplayLocationDetails() {
+        return displayLocationDetails;
+    }
+
+    public void setDisplayLocationDetails(Boolean displayLocationDetails) {
+        this.displayLocationDetails = displayLocationDetails;
+    }
+
+    public Boolean getDisplayLocation() {
+        return displayLocation;
+    }
+
+    public void setDisplayLocation(Boolean displayLocation) {
+        this.displayLocation = displayLocation;
+    }
+
     public boolean isLengthDisplay() {
         return lengthDisplay;
     }
@@ -125,6 +155,9 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
 
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
 
+        displayLocationDetails = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationDetailsSettingTypeKey).getDefaultValue());
+        displayLocation = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue());
+
         // core metadata fields
         lengthDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayLengthSettingTypeKey).getDefaultValue());
         lengthFilter = settingTypeMap.get(FilterLengthSettingTypeKey).getDefaultValue();
@@ -174,6 +207,9 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
         filterByPropertiesAutoLoad = settingEntity.getSettingValueAsBoolean(FilterByPropertiesAutoLoadTypeKey, filterByPropertiesAutoLoad);
 
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);        
+
+        displayLocationDetails = settingEntity.getSettingValueAsBoolean(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+        displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
 
         // core metadata fields
         lengthDisplay = settingEntity.getSettingValueAsBoolean(DisplayLengthSettingTypeKey, lengthDisplay);
@@ -225,6 +261,9 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
 
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
         
+        settingEntity.setSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+        settingEntity.setSettingValue(DisplayLocationSettingTypeKey, displayLocation);
+
         // core metadata fields
         settingEntity.setSettingValue(DisplayLengthSettingTypeKey, lengthDisplay);
         settingEntity.setSettingValue(FilterLengthSettingTypeKey, lengthFilter);

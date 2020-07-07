@@ -723,6 +723,19 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.itemProjectList = itemProjectList;
     }
 
+    public void setProject(ItemProject project) {
+        if (project != null) {
+            List<ItemProject> projectList = null;
+            if (this.getItemProjectList() == null) {
+                projectList = new ArrayList<>();
+                this.setItemProjectList(projectList);
+            } else {
+                projectList = getItemProjectList();
+            }
+            projectList.add(project);
+        }
+    }
+    
     public String getItemProjectString() {
         if (itemProjectString == null) {
             itemProjectString = StringUtility.getStringifyCdbList(itemProjectList);
