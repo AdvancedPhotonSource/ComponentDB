@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCableInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableInventorySettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableInventoryFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -144,6 +145,31 @@ public class ItemDomainCableInventoryController extends ItemController<ItemDomai
     @Override
     protected ItemDomainCableInventoryFacade getEntityDbFacade() {
         return itemDomainCableInventoryFacade; 
+    }
+
+    @Override
+    public String getItemDisplayString(Item item) {
+        if (item != null) {
+            if (item instanceof ItemDomainCableInventory) {
+                if (item.getDerivedFromItem() != null) {
+                    String result = item.getDerivedFromItem().getName();
+
+                    //Tag to help user identify the item
+                    String tag = item.getName();
+                    if (tag != null && !tag.isEmpty()) {
+                        result += " - [" + tag + "]";
+                    }
+
+                    return result;
+                } else {
+                    return "No cable inventory item defied";
+                }
+            } else {
+                return getItemItemController(item).getItemDisplayString(item);
+            }
+        }
+        return null;
+
     }
 
     @Override
