@@ -81,8 +81,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     if (itemName != null) {
                         // invalid, we have a value in 2 columns
                         isValid = false;
-                        validString = "found name value in multiple columns";
-                        return new ValidInfo(isValid, validString);
+                        validString = "Found value in multiple 'Level' columns, only one allowed";
                     } else {
                         itemName = parsedValue;
                         itemIndentLevel = currentIndentLevel;
@@ -99,7 +98,6 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     isValid = false;
                     validString = appendToString(validString, 
                             "Invalid name, length exceeds " + getMaxLength());
-                    return new ValidInfo(isValid, validString);
                 }
                 
                 // set item info
