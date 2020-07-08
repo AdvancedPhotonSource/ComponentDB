@@ -15,7 +15,17 @@ See LICENSE file.
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainCableInventoryController.processPreRenderList()}" />
     </f:metadata>
+        
+    <ui:define name="helpFragment">
+    </ui:define>
     
+    <ui:define name="customizeDisplayDialog">
+        <ui:include src="private/itemDomainCableInventoryListCustomizeDisplayDialog.xhtml"/>
+    </ui:define>
+    
+    <ui:define name="listDataTable">
+        <ui:include src="private/itemDomainCableInventoryListDataTable.xhtml"/>
+    </ui:define>
     
 </ui:composition>
 
