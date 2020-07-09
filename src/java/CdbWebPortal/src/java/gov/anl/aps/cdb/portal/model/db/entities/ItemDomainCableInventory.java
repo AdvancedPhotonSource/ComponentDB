@@ -27,6 +27,8 @@ public class ItemDomainCableInventory extends ItemDomainInventoryBase<ItemDomain
     public final static String CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE = "cable_inventory_internal_property_type";
     public final static String CABLE_INVENTORY_PROPERTY_LENGTH_KEY = "length";
     
+    public static final String ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Cable Instance Status";
+    
     private transient String length = null;
     
     @Override
@@ -34,6 +36,10 @@ public class ItemDomainCableInventory extends ItemDomainInventoryBase<ItemDomain
         return new ItemDomainCableInventory(); 
     }
     
+    public String getStatusPropertyTypeName() {
+        return ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
+    }
+
     /**
      * This method is redundant to the generic method defined in the superclass,
      * ItemDomainInventoryBase.  It is needed here because the import wizard
