@@ -29,6 +29,7 @@ See LICENSE file.
     <ui:decorate template="templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
 
         <ui:param name="hideOptionalColumns" value="#{!dualConfigurationViewEnabled}" /> 
+        <ui:param name="hideSearchColumns" value="#{true}" /> 
         <ui:param name="valueModel" value="#{entityController.currentMachineDesignListRootTreeNode}" />
         <ui:param name="selectionModel" value="#{entityController.selectedItemInListTreeTable}" />
         <ui:param name="rendered" value="#{true}" />

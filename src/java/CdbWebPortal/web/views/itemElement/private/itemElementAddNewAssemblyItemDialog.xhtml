@@ -57,6 +57,7 @@ See LICENSE file.
                 <h2>Select Item</h2>
 
                 <ui:include src="../../item/private/itemSelectDataTable.xhtml">
+                    <ui:param name="viewName" value="travelerInstanceMoveDialog"/>
                     <ui:param name="updateTarget" value="#{updateAddNewAssemblyItemDialogIds}" />
                     <ui:param name="selectionValue" value="#{newItemElement.containedItem}" />
                     <ui:param name="selectionTarget" value="#{newItemElement.containedItem}" />                    

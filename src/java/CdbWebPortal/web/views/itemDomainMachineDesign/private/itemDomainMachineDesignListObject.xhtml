@@ -15,6 +15,11 @@ See LICENSE file.
                        ? hideOptionalColumns 
                        : false}" />
     
+    <ui:param name="hideSearchColumns"
+              value="#{hideSearchColumns != null 
+                       ? hideSearchColumns 
+                       : false}" />
+    
     <ui:param name="enableDragDropToMoveMD"
               value="#{enableDragDropToMoveMD == null ? false : enableDragDropToMoveMD}" />
 
@@ -96,6 +101,8 @@ See LICENSE file.
     <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemThumbnailColumn.xhtml" >             
         <ui:param name="thumbnailColumnName"
                   value=" " /> 
+        
+        <ui:param name="rendered" value="#{hideOptionalColumns and hideSearchColumns}"/>
 
         <ui:param name="itemHasPrimaryImage"
                   value="#{itemDomainMachineDesignController.isMachineDesignItemHasPrimaryImage(itemElementListObject)}"/>             
@@ -108,11 +115,13 @@ See LICENSE file.
     <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemQrId.xhtml">
         <ui:param name="rendered" value="#{entityController.entityDisplayQrId 
                                            and settingObject.displayQrId
-                                           and hideOptionalColumns}" />
+                                           and hideOptionalColumns
+                                           and hideSearchColumns}" />
     </ui:include>
 
     <p:column headerText="Machine Design Item Description"
               rendered="#{hideOptionalColumns 
+                          and hideSearchColumns
                           and settingObject.displayDescription}"
               filterBy="#{itemListObject.description}"
               filterMatchMode="contains">
@@ -122,7 +131,9 @@ See LICENSE file.
     <ui:param name="assignedItem"
               value="#{itemElementListObject.containedItem2}"/> 
 
-    <p:column headerText="Assigned Catalog &#38; Inventory Item"
+    <p:column headerText="Assigned Catalog &#38; Inventory Item" 
+              rendered="#{hideOptionalColumns 
+                          and hideSearchColumns}"
               filterBy="#{itemElementListObject.containedItem2}"
               filterMatchMode="contains">
         <ui:fragment rendered="#{!topLevelItem}">            
@@ -152,19 +163,21 @@ See LICENSE file.
         <ui:param name="alternateLocationString"
                   value="#{topLevelItem ? '' : '&#60; parent &#62;'}" />
         <ui:param name="renderedLocation"
-                  value="#{hideOptionalColumns}" />
+                  value="#{hideOptionalColumns and hideSearchColumns}" />
         <ui:param name="itemListObject"
                   value="#{itemElementListObject.mdTypeContainedItem}"/> 
     </ui:include>
 
     <p:column headerText="Project"
               rendered="#{hideOptionalColumns 
+                          and hideSearchColumns
                           and settingObject.displayItemProject}">
         <h:outputText value="#{itemListObject.itemProjectString}" />            
     </p:column>
 
     <p:column headerText="Id"
               rendered="#{hideOptionalColumns 
+                          and hideSearchColumns
                           and settingObject.displayId}">
         <h:outputText value="#{itemListObject.id}" />
     </p:column>
@@ -172,16 +185,18 @@ See LICENSE file.
     <ui:include src="../../entityInfo/private/entityInfoListObject.xhtml">
         <ui:param name="entityInfoObject" value="#{itemListObject.entityInfo}"/>
         <ui:param name="entityInfoObjectFilterable" value="true" />
-        <ui:param name="rendered" value="#{hideOptionalColumns}" /> 
+        <ui:param name="rendered" value="#{hideOptionalColumns and hideSearchColumns}" /> 
     </ui:include>
 
-    <p:column styleClass="narrowColumn">
+    <p:column styleClass="narrowColumn"
+              rendered="#{hideOptionalColumns 
+                          and hideSearchColumns}">
         <f:facet name="header">
             <span class="favorite" />
         </f:facet>
 
         <ui:include src="../../common/private/reusedParts/listActionLinksFavoritesLink.xhtml" >
-            <ui:param name="renderFavorites" value="#{settingController.userHaveUpdateFavoritesPermission}" />
+            <ui:param name="renderFavorites" value="#{settingController.userHaveUpdateFavoritesPermission and hideSearchColumns}" />
             <ui:param name="toggleFavoritesAction" value="toggleItemInFavoritesList" />
             <ui:param name="toggleFavoritesParameter" value="#{itemListObject}" />
             <ui:param name="currentFavoritesIconStyle" value="#{entityController.getItemFavoritesIconStyle(itemListObject)}" />

@@ -9,6 +9,7 @@
 
 # Enable part number as item_identifier1 for cable catalog domain
 UPDATE `domain` SET item_identifier1_label = 'Part Number' where id = 7;
+UPDATE `domain` SET item_identifier2_label = 'Alternate Name' where id = 7;
 
 # Prepopulate list of categories for cable catalog. 
 INSERT INTO `item_category` (name, description, domain_id) (select name,description, 9 AS domain_id FROM item_category WHERE domain_id = 2);

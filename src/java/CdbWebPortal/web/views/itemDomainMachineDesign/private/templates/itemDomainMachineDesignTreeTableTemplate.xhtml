@@ -8,7 +8,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
     
-    <!-- Must provide params "viewId", "valueModel", "selectionModel", "hideOptionalColumns", "scrollable".-->
+    <!-- Must provide params "viewId", "valueModel", "selectionModel", "hideOptionalColumns", "hideSearchColumns", "scrollable".-->
     
     <ui:param name="scrollHeight"
               value="#{scrollable ? '65vh' : ''}" />
@@ -31,6 +31,8 @@ See LICENSE file.
         <ui:include src="../itemDomainMachineDesignListObject.xhtml">
             <ui:param name="hideOptionalColumns"
                       value="#{hideOptionalColumns}" /> 
+            <ui:param name="hideSearchColumns"
+                      value="#{hideSearchColumns}" /> 
             <ui:param name="itemElementListObject"
                       value="#{itemElementTreeListObject}" /> 
         </ui:include>
