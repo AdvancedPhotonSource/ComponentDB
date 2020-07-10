@@ -249,10 +249,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Basic(optional = false)
     @Size(max = 128)
     private String name;
-    @Size(max = 32)
+    @Size(max = 128)
     @Column(name = "item_identifier1")
     private String itemIdentifier1;
-    @Size(max = 32)
+    @Size(max = 128)
     @Column(name = "item_identifier2")
     private String itemIdentifier2;
     @Column(name = "qr_id")
@@ -723,6 +723,19 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.itemProjectList = itemProjectList;
     }
 
+    public void setProject(ItemProject project) {
+        if (project != null) {
+            List<ItemProject> projectList = null;
+            if (this.getItemProjectList() == null) {
+                projectList = new ArrayList<>();
+                this.setItemProjectList(projectList);
+            } else {
+                projectList = getItemProjectList();
+            }
+            projectList.add(project);
+        }
+    }
+    
     public String getItemProjectString() {
         if (itemProjectString == null) {
             itemProjectString = StringUtility.getStringifyCdbList(itemProjectList);
