@@ -249,10 +249,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Basic(optional = false)
     @Size(max = 128)
     private String name;
-    @Size(max = 32)
+    @Size(max = 128)
     @Column(name = "item_identifier1")
     private String itemIdentifier1;
-    @Size(max = 32)
+    @Size(max = 128)
     @Column(name = "item_identifier2")
     private String itemIdentifier2;
     @Column(name = "qr_id")
