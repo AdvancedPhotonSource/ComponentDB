@@ -57,6 +57,7 @@ from cdbApi import ApiException
 # constants
 
 CABLE_TYPE_NAME_KEY = "name"
+CABLE_TYPE_ALT_NAME_KEY = "altName"
 CABLE_TYPE_DESCRIPTION_KEY = "description"
 CABLE_TYPE_LINK_URL_KEY = "linkUrl"
 CABLE_TYPE_IMAGE_URL_KEY = "imageUrl"
@@ -410,24 +411,25 @@ class CableTypeHelper(PreImportHelper):
     def output_column_list():
         column_list = [
             OutputColumnModel(col_index=0, method="get_name", label=CABLE_TYPE_NAME_KEY),
-            OutputColumnModel(col_index=1, method="get_description", label=CABLE_TYPE_DESCRIPTION_KEY),
-            OutputColumnModel(col_index=2, method="get_link_url", label=CABLE_TYPE_LINK_URL_KEY),
-            OutputColumnModel(col_index=3, method="get_image_url", label=CABLE_TYPE_IMAGE_URL_KEY),
-            OutputColumnModel(col_index=4, method="get_manufacturer_id", label=CABLE_TYPE_MANUFACTURER_KEY),
-            OutputColumnModel(col_index=5, method="get_part_number", label=CABLE_TYPE_PART_NUMBER_KEY),
-            OutputColumnModel(col_index=6, method="get_alt_part_number", label=CABLE_TYPE_ALT_PART_NUMBER_KEY),
-            OutputColumnModel(col_index=7, method="get_owner_id", label="owner"),
-            OutputColumnModel(col_index=8, method="get_project_id", label="project id"),
-            OutputColumnModel(col_index=9, method="get_diameter", label=CABLE_TYPE_DIAMETER_KEY),
-            OutputColumnModel(col_index=10, method="get_weight", label=CABLE_TYPE_WEIGHT_KEY),
-            OutputColumnModel(col_index=11, method="get_conductors", label=CABLE_TYPE_CONDUCTORS_KEY),
-            OutputColumnModel(col_index=12, method="get_insulation", label=CABLE_TYPE_INSULATION_KEY),
-            OutputColumnModel(col_index=13, method="get_jacket_color", label=CABLE_TYPE_JACKET_COLOR_KEY),
-            OutputColumnModel(col_index=14, method="get_voltage_rating", label=CABLE_TYPE_VOLTAGE_RATING_KEY),
-            OutputColumnModel(col_index=15, method="get_fire_load", label=CABLE_TYPE_FIRE_LOAD_KEY),
-            OutputColumnModel(col_index=16, method="get_heat_limit", label=CABLE_TYPE_HEAT_LIMIT_KEY),
-            OutputColumnModel(col_index=17, method="get_bend_radius", label=CABLE_TYPE_BEND_RADIUS_KEY),
-            OutputColumnModel(col_index=18, method="get_rad_tolerance", label=CABLE_TYPE_RAD_TOLERANCE_KEY),
+            OutputColumnModel(col_index=1, method="get_alt_name", label=CABLE_TYPE_ALT_NAME_KEY),
+            OutputColumnModel(col_index=2, method="get_description", label=CABLE_TYPE_DESCRIPTION_KEY),
+            OutputColumnModel(col_index=3, method="get_link_url", label=CABLE_TYPE_LINK_URL_KEY),
+            OutputColumnModel(col_index=4, method="get_image_url", label=CABLE_TYPE_IMAGE_URL_KEY),
+            OutputColumnModel(col_index=5, method="get_manufacturer_id", label=CABLE_TYPE_MANUFACTURER_KEY),
+            OutputColumnModel(col_index=6, method="get_part_number", label=CABLE_TYPE_PART_NUMBER_KEY),
+            OutputColumnModel(col_index=7, method="get_alt_part_number", label=CABLE_TYPE_ALT_PART_NUMBER_KEY),
+            OutputColumnModel(col_index=8, method="get_owner_id", label="owner"),
+            OutputColumnModel(col_index=9, method="get_project_id", label="project id"),
+            OutputColumnModel(col_index=10, method="get_diameter", label=CABLE_TYPE_DIAMETER_KEY),
+            OutputColumnModel(col_index=11, method="get_weight", label=CABLE_TYPE_WEIGHT_KEY),
+            OutputColumnModel(col_index=12, method="get_conductors", label=CABLE_TYPE_CONDUCTORS_KEY),
+            OutputColumnModel(col_index=13, method="get_insulation", label=CABLE_TYPE_INSULATION_KEY),
+            OutputColumnModel(col_index=14, method="get_jacket_color", label=CABLE_TYPE_JACKET_COLOR_KEY),
+            OutputColumnModel(col_index=15, method="get_voltage_rating", label=CABLE_TYPE_VOLTAGE_RATING_KEY),
+            OutputColumnModel(col_index=16, method="get_fire_load", label=CABLE_TYPE_FIRE_LOAD_KEY),
+            OutputColumnModel(col_index=17, method="get_heat_limit", label=CABLE_TYPE_HEAT_LIMIT_KEY),
+            OutputColumnModel(col_index=18, method="get_bend_radius", label=CABLE_TYPE_BEND_RADIUS_KEY),
+            OutputColumnModel(col_index=19, method="get_rad_tolerance", label=CABLE_TYPE_RAD_TOLERANCE_KEY),
         ]
         return column_list
 
@@ -453,6 +455,9 @@ class CableTypeOutputObject(OutputObject):
 
     def get_name(self):
         return self.input_dict[CABLE_TYPE_NAME_KEY]
+
+    def get_alt_name(self):
+        return None
 
     def get_description(self):
         return self.input_dict[CABLE_TYPE_DESCRIPTION_KEY]

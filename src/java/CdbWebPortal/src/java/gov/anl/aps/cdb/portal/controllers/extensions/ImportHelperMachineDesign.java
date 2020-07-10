@@ -433,7 +433,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     case HEADER_ALT_NAME:
                         colInfo = getColumnInfoMap().get(HEADER_ALT_NAME);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new StringInputHandler(columnIndex, "alternateName", "setAlternateName", 32));
+                        inputHandlers.add(new StringInputHandler(columnIndex, "alternateName", "setAlternateName", 128));
                         break;
 
                     case HEADER_DESCRIPTION:

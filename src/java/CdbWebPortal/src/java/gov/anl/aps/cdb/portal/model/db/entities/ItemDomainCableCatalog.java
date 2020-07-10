@@ -97,6 +97,14 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
     }
     
+    public String getAlternateName() {
+        return getItemIdentifier2();
+    }
+
+    public void setAlternateName(String n) {
+        setItemIdentifier2(n);
+    }
+
     public String getUrl() throws CdbException {
         if (url == null) {
             url = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY);
