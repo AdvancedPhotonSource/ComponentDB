@@ -42,31 +42,46 @@ See LICENSE file.
     <ui:param name="createdFromTemplate"
               value="#{itemListObject.createdFromTemplate}" /> 
     
-    <p:column headerText="Machine Design Item Name" styleClass="draggableTreeTableDataCell">
+    <ui:param name="filterable"
+                  value="#{true}"/>
+    
+    <p:column headerText="Machine Design Item Name" styleClass="draggableTreeTableDataCell"
+              filterBy="#{itemTreeListObject.name}"
+              filterMatchMode="contains"
+              colspan="3">
         <p:outputPanel id="draggableMachineDesign#{itemListObject.id}"
                        styleClass="inlineOutputPanel">                           
             <div class="mdId" style="display: none">#{itemListObject.id}</div>
             <div class="mdName" style="display: none">#{itemListObject.name}</div>
             
             <ui:param name="domainIcon" 
-                      value="#{itemTreeListObject != null 
-                               ? itemDomainMachineDesignController.getItemRepIcon(itemTreeListObject)
-                               : itemDomainMachineDesignController.getItemRepIcon(itemElementParentItem)}" />
-            <span class="ui-treenode-icon ui-icon #{domainIcon}"/>            
-            <p:commandLink styleClass="ui-treenode-icon ui-icon ui-icon-machine-design-template custom-icon-blue" 
-                           action="#{entityController.prepareView(createdFromTemplate)}" 
-                           onclick="PF('loadingDialog').show()"
-                           title="View Template Item"
-                           rendered="#{createdFromTemplate != null}"/> 
+                      value="#{itemDomainMachineDesignController.getMdNodeRepIcon(itemElementListObject)}" />
             
-            <ui:fragment rendered="#{itemTreeListObject != null}">
-                <span>#{itemTreeListObject}</span>
-            </ui:fragment>
+            <span class="ui-treenode-icon ui-icon #{domainIcon}"/>      
+            
+            <ui:fragment rendered="#{itemElementListObject.mdConnector == null}">
+                <p:commandLink styleClass="ui-treenode-icon ui-icon ui-icon-machine-design-template custom-icon-blue" 
+                               action="#{entityController.prepareView(createdFromTemplate)}" 
+                               onclick="PF('loadingDialog').show()"
+                               title="View Template Item"
+                               rendered="#{createdFromTemplate != null}"/> 
 
-            <ui:fragment rendered="#{itemTreeListObject == null 
-                                     and itemDomainMachineDesignController.isItemInventory(itemElementParentItem)}">                
-                <span>#{itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementListObject)}</span>
+                <ui:fragment rendered="#{itemTreeListObject != null}">
+                    <span>#{itemTreeListObject}</span>
+                </ui:fragment>
+
+                <ui:fragment rendered="#{itemTreeListObject == null 
+                                         and itemDomainMachineDesignController.isItemInventory(itemElementParentItem)}">                
+                    <span>#{itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementListObject)}</span>
+                </ui:fragment>
             </ui:fragment>
+            <ui:fragment rendered="#{itemElementListObject.mdConnector != null}">
+                <ui:include src="../../connector/private/connectorNameObject.xhtml">
+                    <ui:param name="connector"
+                              value="#{itemElementListObject.mdConnector.connector}"/>
+                </ui:include>
+            </ui:fragment>
+            
             <p:draggable scope="organizeMachineDesign" revert="true"
                          rendered="#{enableDragDropToMoveMD}"/>
             <p:droppable scope="organizeMachineDesign" onDrop="handleDrop" 
@@ -77,7 +92,11 @@ See LICENSE file.
         
     </p:column>
 
-    <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemItemIdentifier1.xhtml" /> 
+    <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemItemIdentifier1.xhtml" >
+        <ui:param name="rendered"
+                  value="#{settingObject.displayItemIdentifier1}"/>
+    </ui:include>
+        
 
     <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemThumbnailColumn.xhtml" >             
         <ui:param name="thumbnailColumnName"
@@ -103,7 +122,9 @@ See LICENSE file.
     <p:column headerText="Machine Design Item Description"
               rendered="#{hideOptionalColumns 
                           and hideSearchColumns
-                          and settingObject.displayDescription}">
+                          and settingObject.displayDescription}"
+              filterBy="#{itemListObject.description}"
+              filterMatchMode="contains">
         <h:outputText value="#{itemListObject.description}" /> 
     </p:column>
 
@@ -112,7 +133,9 @@ See LICENSE file.
 
     <p:column headerText="Assigned Catalog &#38; Inventory Item" 
               rendered="#{hideOptionalColumns 
-                          and hideSearchColumns}">
+                          and hideSearchColumns}"
+              filterBy="#{itemElementListObject.containedItem2}"
+              filterMatchMode="contains">
         <ui:fragment rendered="#{!topLevelItem}">            
             <p:commandLink id="#{entityTypeName}AssignedItemHistory" 
                            onstart="PF('loadingDialog').show();"
@@ -135,12 +158,14 @@ See LICENSE file.
               value="#{itemDomainMachineDesignController.currentViewIsTemplate 
                        ? '../../common/private/commonEmptyPage.xhtml' 
                        : '../../locatableItem/private/locatableItemListLocationObject.xhtml'}" />
-
+    
     <ui:include src="#{locationObjectSrc}" > 
         <ui:param name="alternateLocationString"
                   value="#{topLevelItem ? '' : '&#60; parent &#62;'}" />
         <ui:param name="renderedLocation"
                   value="#{hideOptionalColumns and hideSearchColumns}" />
+        <ui:param name="itemListObject"
+                  value="#{itemElementListObject.mdTypeContainedItem}"/> 
     </ui:include>
 
     <p:column headerText="Project"

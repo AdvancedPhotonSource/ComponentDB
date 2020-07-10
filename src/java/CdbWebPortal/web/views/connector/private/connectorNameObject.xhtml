@@ -8,22 +8,22 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                
                 xmlns:p="http://primefaces.org/ui">        
 
-    <p:outputPanel>
+    <ui:fragment>
         <ui:param name="renderPort"
                   value="#{connector != null}"/> 
-        <p:outputPanel rendered="#{renderPort}"> 
+        <ui:fragment rendered="#{renderPort}"> 
             <ui:param name="renderNamedPort"
                       value="#{connector.name != null and connector.name != ''}"/>
 
-            <p:outputPanel rendered="#{renderNamedPort}">
+            <ui:fragment rendered="#{renderNamedPort}">
                 #{connector.name}
-            </p:outputPanel>
-            <p:outputPanel rendered="#{!renderNamedPort}">
+            </ui:fragment>
+            <ui:fragment rendered="#{!renderNamedPort}">
                 Unnamed Port
-            </p:outputPanel>
-        </p:outputPanel>
-        <p:outputPanel rendered="#{!renderedPort}"> </p:outputPanel>
-    </p:outputPanel>
+            </ui:fragment>
+        </ui:fragment>
+        <ui:fragment rendered="#{!renderedPort}"/>
+    </ui:fragment>
 
 </ui:composition>
 
