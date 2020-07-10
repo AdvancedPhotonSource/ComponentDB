@@ -12,8 +12,11 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -24,13 +27,21 @@ public class ImportHelperCableInventory extends ImportHelperBase<ItemDomainCable
 
     protected static String completionUrlValue = "/views/itemDomainCableInventory/list?faces-redirect=true";
     
+    private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineDesign.class.getName());
+    
+    private static final String KEY_NAME = "name";
+    private static final String KEY_CATALOG_ITEM = "catalogItem";
+    private static final String AUTO_VALUE = "auto";
+    
+    private Map<ItemDomainCableCatalog, Integer> newItemCountMap = new HashMap<>();
+    
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(0, "Cable Catalog Item", "catalogItem", "setCatalogItem", true, "ID or name of cable catalog item for inventory unit", ItemDomainCableCatalogController.getInstance(), ItemDomainCableCatalog.class, null));
-        specs.add(new StringColumnSpec(1, "Name", "name", "setName", true, "Name for inventory unit.", 64));
+        specs.add(new IdOrNameRefColumnSpec(0, "Cable Catalog Item", KEY_CATALOG_ITEM, "setCatalogItem", true, "ID or name of cable catalog item for inventory unit", ItemDomainCableCatalogController.getInstance(), ItemDomainCableCatalog.class, null));
+        specs.add(new StringColumnSpec(1, "Name", KEY_NAME, "", true, "Name for inventory unit.", 64));
         specs.add(new IntegerColumnSpec(2, "QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
         specs.add(new StringColumnSpec(3, "Description", "description", "setDescription", false, "Description of inventory unit.", 256));
         specs.add(new IdOrNameRefColumnSpec(4, "Project", "itemProjectString", "setProject", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class, ""));
@@ -53,11 +64,43 @@ public class ImportHelperCableInventory extends ImportHelperBase<ItemDomainCable
     public String getTemplateFilename() {
         return "Cable Inventory Template";
     }
+    
+    private String generateItemName(
+            ItemDomainCableInventory item,
+            Map<String, Object> rowMap) {
+        
+        ItemDomainCableCatalog catalogItem = 
+                (ItemDomainCableCatalog)rowMap.get(KEY_CATALOG_ITEM);
+        
+        if (!newItemCountMap.containsKey(catalogItem)) {
+            newItemCountMap.put(catalogItem, catalogItem.getInventoryItemList().size());
+        }
+        
+        int newItemCount = newItemCountMap.get(catalogItem) + 1;
+        newItemCountMap.put(catalogItem, newItemCount);
+        
+        return "Unit: " + newItemCount + "";
+    }
 
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
-        ItemDomainCableInventory entity = getEntityController().createEntityInstance();
-        return new CreateInfo(entity, true, "");
+        
+        ItemDomainCableInventory item = getEntityController().createEntityInstance();
+        
+        String methodLogName = "createEntityInstance() ";
+        boolean isValid = true;
+        String validString = "";
+        
+        // get item name
+        String itemName = (String) rowMap.get(KEY_NAME);
+        if (itemName.equals(AUTO_VALUE)) {
+            String autoName = generateItemName(item, rowMap);
+            item.setName(autoName);
+        } else {
+            item.setName(itemName);
+        }
+
+        return new CreateInfo(item, true, "");
     }  
 
     protected boolean ignoreDuplicates() {

@@ -599,7 +599,7 @@ class CableInventoryOutputObject(OutputObject):
         return CableDesignOutputObject.get_cable_type_id_cls(self.input_dict, self.helper.api)
 
     def get_name(self):
-        return CableDesignOutputObject.get_name_cls(self.input_dict)
+        return "auto"
 
     def get_qr_id(self):
         return self.input_dict[CABLE_DESIGN_QR_ID_KEY]

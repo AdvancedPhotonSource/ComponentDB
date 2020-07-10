@@ -115,6 +115,26 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
 
         return createResult;
     }
+    
+    public String generateItemName(
+            ItemDomainCableInventory cableInventoryItem,
+            ItemDomainCableCatalog cableCatalogItem) {
+        
+        List<ItemDomainCableInventory> ItemInventoryItemList
+                = cableCatalogItem.getCableInventoryItemList();
+        // Copy list to not update actual derived from item list. 
+        List<ItemDomainCableInventory> inventoryItemList
+                = new ArrayList<>(ItemInventoryItemList);
+        if (isItemExistInDb(cableInventoryItem) == false) {
+            if (inventoryItemList.contains(cableInventoryItem)) {
+                // Remove since it is not yet existing. 
+                inventoryItemList.remove(cableInventoryItem);
+            }
+        }
+        DataModel cableInventoryDataModel
+                = new ListDataModel(inventoryItemList);
+        return ("Unit: " + (cableInventoryDataModel.getRowCount() + 1) + "");
+    }
 
     public void setDefaultValuesForCurrentItem() {
         
@@ -137,21 +157,11 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
                 // derive name of inventory from catalog item
                 if (cableInventoryItem.getName() == null || 
                         cableInventoryItem.getName().isEmpty()) {
-                    List<ItemDomainCableInventory> ItemInventoryItemList = 
-                            cableCatalogItem.getCableInventoryItemList();
-                    // Copy list to not update actual derived from item list. 
-                    List<ItemDomainCableInventory> inventoryItemList = 
-                            new ArrayList<>(ItemInventoryItemList);
-                    if (isItemExistInDb(cableInventoryItem) == false) {
-                        if (inventoryItemList.contains(cableInventoryItem)) {
-                            // Remove since it is not yet existing. 
-                            inventoryItemList.remove(cableInventoryItem);
-                        }
-                    }
-                    DataModel cableInventoryDataModel = 
-                            new ListDataModel(inventoryItemList);
-                    cableInventoryItem.setName("Unit: " + 
-                            (cableInventoryDataModel.getRowCount() + 1) + "");
+                    
+                    String generatedName = generateItemName(
+                            cableInventoryItem, cableCatalogItem);
+                    
+                    cableInventoryItem.setName(generatedName);
                 }
             }
         }

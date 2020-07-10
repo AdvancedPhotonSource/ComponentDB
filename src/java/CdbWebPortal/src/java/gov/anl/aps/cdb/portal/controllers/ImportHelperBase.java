@@ -387,11 +387,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             Object parsedValue = rowMap.get(getPropertyName());
             if (parsedValue != null) {
                 try {
-                    // use reflection to invoke setter method on entity instance
-                    Method setterMethod;
-                    Class paramType = getParamType();
-                    setterMethod = entity.getClass().getMethod(getSetterMethod(), paramType);
-                    setterMethod.invoke(entity, parsedValue);
+                    String setterMethodName = getSetterMethod();
+                    if ((setterMethodName != null) && (!setterMethodName.equals(""))) {
+                        // use reflection to invoke setter method on entity instance
+                        Method method;
+                        Class paramType = getParamType();
+                        method = entity.getClass().getMethod(getSetterMethod(), paramType);
+                        method.invoke(entity, parsedValue);
+                    }
                 } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     isValid = false;
                     validString
