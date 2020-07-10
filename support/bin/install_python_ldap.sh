@@ -4,7 +4,7 @@
 # See LICENSE file.
 
 
-CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+CDB_HOST_ARCH=$(uname -s | tr [:uppercase:] [:lowercase:])-$(uname -m)
 
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`

@@ -44,7 +44,7 @@ else
 fi
 
 CDB_DOMAIN_NAME="production"
-CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+CDB_HOST_ARCH=$(uname -s | tr [:uppercase:] [:lowercase:])-$(uname -m)
 CDB_CONTEXT_ROOT=${CDB_CONTEXT_ROOT:=cdb}
 GLASSFISH_DIR=$CDB_SUPPORT_DIR/payara/$CDB_HOST_ARCH
 CDB_APP_DIR=$GLASSFISH_DIR/glassfish/domains/$CDB_DOMAIN_NAME/applications/$CDB_CONTEXT_ROOT
