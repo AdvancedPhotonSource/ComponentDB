@@ -262,7 +262,7 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
 
     @Override
     public boolean getEntityDisplayItemElements() {
-        return true; 
+        return false; 
     }
 
     @Override
@@ -272,7 +272,7 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
 
     @Override
     public boolean getEntityDisplayItemMemberships() {
-        return true; 
+        return false; 
     }
 
     @Override
