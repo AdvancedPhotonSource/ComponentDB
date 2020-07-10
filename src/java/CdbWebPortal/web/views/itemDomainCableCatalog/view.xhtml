@@ -24,4 +24,8 @@ See LICENSE file.
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
 
+    <ui:define name="additonalPluginSections" >
+        <ui:include src="../plugins/private/catalogDetailsViewSections.xhtml"/>
+    </ui:define>
+    
 </ui:composition>

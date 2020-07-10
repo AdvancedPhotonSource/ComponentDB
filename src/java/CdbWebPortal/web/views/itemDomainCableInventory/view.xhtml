@@ -30,6 +30,10 @@ See LICENSE file.
         <ui:include src="private/cableInventoryViewPanelGrid.xhtml"/>
     </ui:define>
     
+    <ui:define name="additonalPluginSections" >
+        <ui:include src="../plugins/private/inventoryDetailsViewSections.xhtml"/>
+    </ui:define>
+
     <ui:define name="additionalRightItemPanels">        
         <p:panel header="Cable Catalog Item Properties" 
                  toggleable="true" 
