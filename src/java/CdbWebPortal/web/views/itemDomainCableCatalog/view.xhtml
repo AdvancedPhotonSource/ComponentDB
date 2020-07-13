@@ -24,6 +24,10 @@ See LICENSE file.
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
 
+    <ui:define name="derivedFromItems">
+        <ui:include src="private/itemDomainCableCatalogInventoryList.xhtml"/>
+    </ui:define>
+    
     <ui:remove>
         <ui:define name="additonalPluginSections" >
             <ui:include src="../plugins/private/catalogDetailsViewSections.xhtml"/>
