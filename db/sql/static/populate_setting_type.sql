@@ -495,6 +495,6 @@ description.','true'),
 (25043,'ItemDomainCableInventory.List.Scope.Display.PropertyTypeId','Setting used along side a display scope of property type.',NULL),
 (25045,'ItemDomainCableInventory.List.Load.FilterDataTable','Automatically load list filter values in data table on page load.','true');
 (25046,'ItemDomainCableInventory.List.Display.Length','Display column for length in cable inventory list.','true'),
-(25047,'ItemDomainCableInventory.List.FilterBy.Length','Filter for components by length.',NULL),
+(25047,'ItemDomainCableInventory.List.FilterBy.Length','Filter for components by length.',NULL);
 /*!40000 ALTER TABLE `setting_type` ENABLE KEYS */;
 UNLOCK TABLES;
