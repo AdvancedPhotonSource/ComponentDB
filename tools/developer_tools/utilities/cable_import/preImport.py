@@ -584,6 +584,14 @@ class CableInventoryHelper(PreImportHelper):
         ]
         return column_list
 
+    # Treat a row that contains a single non-empty value in the "import id" column as an empty row.
+    def input_row_is_empty_custom(self, input_dict, row_num):
+        non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
+        if non_empty_count == 1 and len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0:
+            logging.debug("skipping empty row with non-empty import id: %s row: %d" %
+                          (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
+            return True
+
     def get_output_object(self, input_dict):
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_INVENTORY_NAME_KEY])

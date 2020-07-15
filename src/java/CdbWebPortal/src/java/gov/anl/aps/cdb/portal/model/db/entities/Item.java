@@ -96,6 +96,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainNameOrderByDerivedFromItem",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.derivedFromItem DESC"),
+    @NamedQuery(name = "Item.findByDomainNameOrderByDerivedFromItemAndItemName",
+            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.derivedFromItem ASC, i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameAndProjectOrderByQrId",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl WHERE i.domain.name = :domainName and ipl.name = :projectName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndProjectOrderByDerivedFromItem",

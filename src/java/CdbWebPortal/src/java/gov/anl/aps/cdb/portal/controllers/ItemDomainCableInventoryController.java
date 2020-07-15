@@ -211,13 +211,18 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     }
 
     @Override
+    public List<ItemDomainCableInventory> getItemList() {
+        return itemDomainCableInventoryFacade.findByDomainOrderByDerivedFromItemAndItemName(getDefaultDomainName());
+    }
+
+    @Override
     public String getEntityTypeName() {
         return "cableInventory"; 
     } 
 
     @Override
     public String getDisplayEntityTypeName() {
-        return "Cable Inventory";
+        return "Cable Inventory Item";
     }
 
     @Override
