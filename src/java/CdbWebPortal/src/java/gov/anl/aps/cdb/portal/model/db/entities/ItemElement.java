@@ -449,32 +449,36 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     private void loadCatalogInventoryMachineDesignItems() {
         if (!loadedCatalogInventoryMachineDesignItem) {
-            if (containedItem2 != null) {
-                Domain domain = containedItem2.getDomain();
-                switch (domain.getId()) {
-                    case ItemDomainName.CATALOG_ID:
-                        catalogItem = containedItem2;
-                        machineDesignDisplayString = "N/A";
-                        catalogDisplayString = catalogItem.toString();
-                        itemCanHaveInventoryItem = true;
-                        break;
-                    case ItemDomainName.INVENTORY_ID:
-                        inventoryItem = containedItem2;
-                        catalogItem = containedItem2.getDerivedFromItem();
-                        machineDesignDisplayString = "N/A";
-                        catalogDisplayString = catalogItem.toString();
-                        inventoryDisplayString = inventoryItem.getName(); 
-                        itemCanHaveInventoryItem = true;
-                        break;
-                    case ItemDomainName.MACHINE_DESIGN_ID:
-                        machineDesignItem = (ItemDomainMachineDesign) containedItem1;
-                        machineDesignDisplayString = machineDesignItem.toString(); 
-                        catalogDisplayString = "N/A";
-                        inventoryDisplayString = "N/A";
-                        itemCanHaveInventoryItem = false;                         
-                        break;
-                    default:
-                        break;
+            if (containedItem1 != null) {
+                if (containedItem1 instanceof ItemDomainMachineDesign) {
+                    ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) containedItem1;
+                    Item assignedItem = mdItem.getAssignedItem();
+                    Domain domain = assignedItem.getDomain();
+                    switch (domain.getId()) {
+                        case ItemDomainName.CATALOG_ID:
+                            catalogItem = assignedItem;
+                            machineDesignDisplayString = "N/A";
+                            catalogDisplayString = catalogItem.toString();
+                            itemCanHaveInventoryItem = true;
+                            break;
+                        case ItemDomainName.INVENTORY_ID:
+                            inventoryItem = assignedItem;
+                            catalogItem = assignedItem.getDerivedFromItem();
+                            machineDesignDisplayString = "N/A";
+                            catalogDisplayString = catalogItem.toString();
+                            inventoryDisplayString = inventoryItem.getName(); 
+                            itemCanHaveInventoryItem = true;
+                            break;
+                        case ItemDomainName.MACHINE_DESIGN_ID:
+                            machineDesignItem = (ItemDomainMachineDesign) containedItem1;
+                            machineDesignDisplayString = machineDesignItem.toString(); 
+                            catalogDisplayString = "N/A";
+                            inventoryDisplayString = "N/A";
+                            itemCanHaveInventoryItem = false;                         
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
             loadedCatalogInventoryMachineDesignItem = true;
