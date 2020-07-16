@@ -61,7 +61,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
             combinedItemElementList = new ArrayList<>();
             combinedItemElementListParentElement = element; 
             
-            Item containedItem2 = combinedItemElementListParentElement.getContainedItem2();
+            Item containedItem2 = getAssignedItem();
             if (containedItem2 != null) {
                 combinedItemElementList.addAll(containedItem2.getItemElementDisplayList());
             }
@@ -221,6 +221,16 @@ public class ItemDomainMachineDesign extends LocatableItem {
 
     public void setAlternateName(String n) {
         setItemIdentifier1(n);
+    }
+    
+    public Item getAssignedItem() {
+        ItemElement selfElement = getSelfElement();
+        return selfElement.getContainedItem2(); 
+    }
+    
+    public void setAssignedItem(Item item) {
+        ItemElement selfElement = getSelfElement();
+        selfElement.setContainedItem2(item);
     }
 
     public void setImportAssignedCatalogItem(ItemDomainCatalog item) {
