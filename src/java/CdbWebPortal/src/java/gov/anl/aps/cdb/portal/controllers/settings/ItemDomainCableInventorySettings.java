@@ -9,6 +9,8 @@ import static gov.anl.aps.cdb.portal.controllers.settings.SettingBase.parseSetti
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
+import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -53,13 +55,22 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
     private static final String FilterLengthSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.Length";
     private static final String DisplayLocationDetailsSettingTypeKey = "ItemDomainCableInventory.List.Display.LocationDetails";
     private static final String DisplayLocationSettingTypeKey = "ItemDomainCableInventory.List.Display.Location";
+    private static final String FilterByLocationSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.Location";
+    private static final String FilterByLocationDetailsSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.LocationDetails";
+    private static final String FilterByTagSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.Tag";
+    private static final String DisplayStatusSettingTypeKey = "ItemDomainCableInventory.List.Display.Status";
+    private static final String FilterByStatusSettingTypeKey = "ItemDomainCableInventory.List.FilterBy.Status";
     
     private Boolean displaySerialNumber = null;
-
-    private String filterBySerialNumber = null;
-    
     private Boolean displayLocationDetails = null;
     private Boolean displayLocation = null;
+    private Boolean displayStatus = null;
+
+    private String filterBySerialNumber = null;
+    private String filterByLocation = null;
+    private String filterByLocationDetails = null;    
+    private String filterByTag = null;
+    private String filterByStatus = null;
     
     // metadata fields
     protected Boolean lengthDisplay = null;
@@ -93,6 +104,56 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
         this.displayLocation = displayLocation;
     }
 
+    public String getFilterByLocation() {
+        return filterByLocation;
+    }
+
+    public void setFilterByLocation(String filterByLocation) {
+        this.filterByLocation = filterByLocation;
+    }
+
+    public String getFilterByLocationDetails() {
+        return filterByLocationDetails;
+    }
+
+    public void setFilterByLocationDetails(String filterByLocationDetails) {
+        this.filterByLocationDetails = filterByLocationDetails;
+    }
+
+    @Override
+    public String getFilterByItemIdentifier2() {
+        return filterByTag;
+    }
+
+    @Override
+    public void setFilterByItemIdentifier2(String filterByItemIdentifier2) {
+        this.filterByTag = filterByItemIdentifier2;
+    }
+    
+    public String getFilterByTag() {
+        return filterByTag;
+    }
+
+    public void setFilterByTag(String filterByTag) {
+        this.filterByTag = filterByTag;
+   }
+
+    public Boolean getDisplayStatus() {
+        return displayStatus;
+    }
+
+    public void setDisplayStatus(Boolean displayStatus) {
+        this.displayStatus = displayStatus;
+    }
+
+    public String getFilterByStatus() {
+        return filterByStatus;
+    }
+
+    public void setFilterByStatus(String filterByStatus) {
+        this.filterByStatus = filterByStatus;
+    }
+
     public boolean isLengthDisplay() {
         return lengthDisplay;
     }
@@ -107,6 +168,43 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
 
     public void setLengthFilter(String lengthFilter) {
         this.lengthFilter = lengthFilter;
+    }
+    
+    @Override
+    public void clearListFilters() {
+        super.clearListFilters();
+        filterByLocation = null;
+        filterByLocationDetails = null;
+        filterByQrId = null;
+        filterBySerialNumber = null;
+        filterByTag = null;
+        filterByPropertyValue1 = null;
+        filterByPropertyValue2 = null;
+        filterByPropertyValue3 = null;
+        filterByPropertyValue4 = null;
+        filterByPropertyValue5 = null;
+        filterByStatus = null;
+    }
+    
+    @Override
+    public void updateListSettingsFromListDataTable(DataTable dataTable) {
+        super.updateListSettingsFromListDataTable(dataTable);
+        if (dataTable == null) {
+            return;
+        }
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByLocation = (String) filters.get("location.name").getFilterField();
+        filterByLocationDetails = (String) filters.get("locationDetails").getFilterField();
+        filterByQrId = (String) filters.get("qrId").getFilterField();
+        filterBySerialNumber = (String) filters.get("serialNumber").getFilterField();
+        filterByTag = (String) filters.get("tag").getFilterField();
+        filterByStatus = (String) filters.get("status").getFilterField();
+
+        filterByPropertyValue1 = (String) filters.get("propertyValue1").getFilterField();
+        filterByPropertyValue2 = (String) filters.get("propertyValue2").getFilterField();
+        filterByPropertyValue3 = (String) filters.get("propertyValue3").getFilterField();
+        filterByPropertyValue4 = (String) filters.get("propertyValue4").getFilterField();
+        filterByPropertyValue5 = (String) filters.get("propertyValue5").getFilterField();
     }
     
     @Override
@@ -157,6 +255,11 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
 
         displayLocationDetails = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationDetailsSettingTypeKey).getDefaultValue());
         displayLocation = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue());
+        filterByLocation = settingTypeMap.get(FilterByLocationSettingTypeKey).getDefaultValue();
+        filterByLocationDetails = settingTypeMap.get(FilterByLocationDetailsSettingTypeKey).getDefaultValue();
+        filterByTag = settingTypeMap.get(FilterByTagSettingTypeKey).getDefaultValue();
+        displayStatus = Boolean.parseBoolean(settingTypeMap.get(DisplayStatusSettingTypeKey).getDefaultValue());
+        filterByStatus = settingTypeMap.get(FilterByStatusSettingTypeKey).getDefaultValue();
 
         // core metadata fields
         lengthDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayLengthSettingTypeKey).getDefaultValue());
@@ -210,6 +313,11 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
 
         displayLocationDetails = settingEntity.getSettingValueAsBoolean(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
         displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
+        filterByLocation = settingEntity.getSettingValueAsString(FilterByLocationSettingTypeKey, filterByLocation);
+        filterByLocationDetails = settingEntity.getSettingValueAsString(FilterByLocationDetailsSettingTypeKey, filterByLocationDetails);
+        filterByTag = settingEntity.getSettingValueAsString(FilterByTagSettingTypeKey, filterByTag);
+        displayStatus = settingEntity.getSettingValueAsBoolean(DisplayStatusSettingTypeKey, displayStatus);
+        filterByStatus = settingEntity.getSettingValueAsString(FilterByStatusSettingTypeKey, filterByStatus);
 
         // core metadata fields
         lengthDisplay = settingEntity.getSettingValueAsBoolean(DisplayLengthSettingTypeKey, lengthDisplay);
@@ -263,6 +371,12 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
         
         settingEntity.setSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
         settingEntity.setSettingValue(DisplayLocationSettingTypeKey, displayLocation);
+        settingEntity.setSettingValue(FilterByLocationSettingTypeKey, filterByLocation);
+        settingEntity.setSettingValue(FilterByLocationDetailsSettingTypeKey, filterByLocationDetails);
+        settingEntity.setSettingValue(FilterByTagSettingTypeKey, filterByTag);        
+
+        settingEntity.setSettingValue(DisplayStatusSettingTypeKey, displayStatus);
+        settingEntity.setSettingValue(FilterByStatusSettingTypeKey, filterByStatus);
 
         // core metadata fields
         settingEntity.setSettingValue(DisplayLengthSettingTypeKey, lengthDisplay);
