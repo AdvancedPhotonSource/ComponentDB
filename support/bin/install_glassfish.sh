@@ -5,7 +5,7 @@
 
 # Usage install_glassfish.sh [Install_DIR] [CONFIGURE 0/1]
 
-CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 CDB_HOSTNAME=`hostname -f`
 PAYARA_VERSION=5.192
 PAYARA_ZIP_FILE=payara-$PAYARA_VERSION.zip
