@@ -85,7 +85,7 @@ See LICENSE file.
                                          value="#{wizardController.rows}"
                                          rendered="true"
                                          var="row"
-                                         rowKey="#{row.name}"
+                                         rowKey="#{row.viewUUID}"
                                          selectionMode="single"
                                          selection="#{wizardController.selectedTableRow}"
                                          rowStyleClass="#{row.isValidImport ? null : 'invalidTableData'}">    

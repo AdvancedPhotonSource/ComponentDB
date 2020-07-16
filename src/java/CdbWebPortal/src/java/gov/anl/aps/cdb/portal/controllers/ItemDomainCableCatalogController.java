@@ -104,67 +104,12 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     }
 
     @Override
-    public boolean getEntityDisplayItemConnectors() {
-        return true; 
-    }
-
-    @Override
-    public boolean getEntityDisplayItemName() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayDerivedFromItem() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
-        return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemGallery() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemLogs() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemSources() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemProperties() {
-        return true; 
-    }
-
-    @Override
     public boolean getEntityDisplayItemElements() {
         return false; 
     }
 
     @Override
-    public boolean getEntityDisplayItemsDerivedFromItem() {
-        return false; 
-    }
-
-    @Override
     public boolean getEntityDisplayItemMemberships() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayItemProject() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayItemEntityTypes() {
         return false; 
     }
 
@@ -184,16 +129,15 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     }
 
     @Override
-    public String getDefaultDomainDerivedFromDomainName() {
-        return null; 
-               
-    }
-
-    @Override
     public String getDefaultDomainDerivedToDomainName() {
         return ItemDomainName.cableInventory.getValue(); 
     } 
     
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        return false; 
+    }    
+
     @Override
     public boolean getEntityDisplayImportButton() {
         return true;

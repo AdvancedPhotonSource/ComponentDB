@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
@@ -91,10 +92,19 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return new ItemDomainCableCatalog(); 
     }
     
+    @JsonIgnore
     public List<ItemDomainCableInventory> getCableInventoryItemList() {
         return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
     }
     
+    public String getAlternateName() {
+        return getItemIdentifier2();
+    }
+
+    public void setAlternateName(String n) {
+        setItemIdentifier2(n);
+    }
+
     public String getUrl() throws CdbException {
         if (url == null) {
             url = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY);

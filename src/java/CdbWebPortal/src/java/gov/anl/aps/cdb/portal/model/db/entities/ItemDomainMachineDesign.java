@@ -207,14 +207,6 @@ public class ItemDomainMachineDesign extends LocatableItem {
         this.importPath = importPath;
     }
 
-    public void setProjectValue(ItemProject project) {
-        if (project != null) {
-            List<ItemProject> projectList = new ArrayList<>();
-            projectList.add(project);
-            this.setItemProjectList(projectList);
-        }
-    }
-    
     public String getAlternateName() {
         return getItemIdentifier1();
     }

@@ -147,6 +147,19 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
     
+    protected class IntegerColumnSpec extends ColumnSpec {
+        
+        public IntegerColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description) {
+            super(columnIndex, header, propertyName, entitySetterMethod, required, description);
+        }
+        
+        @Override
+        public InputHandler createInputHandlerInstance() {
+            return new IntegerInputHandler(
+                    getColumnIndex(), getPropertyName(), getEntitySetterMethod());
+        }
+    }
+    
     protected class IdRefColumnSpec extends ColumnSpec {
         
         private CdbEntityController controller;
@@ -374,11 +387,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             Object parsedValue = rowMap.get(getPropertyName());
             if (parsedValue != null) {
                 try {
-                    // use reflection to invoke setter method on entity instance
-                    Method setterMethod;
-                    Class paramType = getParamType();
-                    setterMethod = entity.getClass().getMethod(getSetterMethod(), paramType);
-                    setterMethod.invoke(entity, parsedValue);
+                    String setterMethodName = getSetterMethod();
+                    if ((setterMethodName != null) && (!setterMethodName.equals(""))) {
+                        // use reflection to invoke setter method on entity instance
+                        Method method;
+                        Class paramType = getParamType();
+                        method = entity.getClass().getMethod(getSetterMethod(), paramType);
+                        method.invoke(entity, parsedValue);
+                    }
                 } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     isValid = false;
                     validString
@@ -471,6 +487,41 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
     
+    public class IntegerInputHandler extends SimpleInputHandler {
+
+        public IntegerInputHandler(int columnIndex, String propertyName, String setterMethod) {
+            super(columnIndex, propertyName, setterMethod);
+        }
+
+        @Override
+        public ParseInfo parseCellValue(String stringValue) {
+            
+            Integer parsedValue = null;
+            boolean isValid = true;
+            String validString = "";
+
+            if (stringValue.length() == 0) {
+                parsedValue = null;
+                isValid = true;
+                validString = "";
+            } else {
+                try {
+                    parsedValue = Integer.valueOf(stringValue);
+                } catch (NumberFormatException ex) {
+                    isValid = false;
+                    validString = "invalid integer format: " + stringValue;
+                }
+            }
+
+            return new ParseInfo<>(parsedValue, isValid, validString);
+        }
+        
+        @Override
+        public Class getParamType() {
+            return Integer.class;
+        }
+    }
+    
     public abstract class RefInputHandler extends SimpleInputHandler {
         
         protected CdbEntityController controller;
@@ -531,7 +582,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     }
                 } catch (NumberFormatException ex) {
                     isValid = false;
-                    validString = "invalid id number format: " + strValue;
+                    validString = "Invalid id number format: " + strValue +
+                            " for: " + columnNameForIndex(columnIndex);
                 }
             }
             return new ParseInfo<>(objValue, isValid, validString);
@@ -562,14 +614,20 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 if (strValue.charAt(0) == '#') {
                     // process cell as name if first char is #
                     if (strValue.length() < 2) {
-                        String msg = "invalid object name reference: " + strValue;
+                        String msg = 
+                                "Invalid name format for: "
+                                    + columnNameForIndex(columnIndex)
+                                    + " name: " + strValue;
                         return new ParseInfo<>(objValue, false, msg);
                     }
                     String name = strValue.substring(1);
                     try {
                         objValue = controller.findUniqueByName(name, domainNameFilter);
                         if (objValue == null) {
-                            String msg = "Unable to find object with name: " + name;
+                            String msg = 
+                                    "Unable to find object for: "
+                                    + columnNameForIndex(columnIndex)
+                                    + " with name: " + name;
                             return new ParseInfo<>(objValue, false, msg);
                         } else {
                             // check cache for object so different references use same instance
@@ -584,6 +642,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                         }
                     } catch (CdbException ex) {
                         String msg = "Exception searching for object with name: " + name
+                                + " for: " + columnNameForIndex(columnIndex)
                                 + " reason: " + ex.getMessage();
                         return new ParseInfo<>(objValue, false, msg);
                     }
@@ -600,7 +659,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                         } else {
                             objValue = controller.findById(id);
                             if (objValue == null) {
-                                String msg = "Unable to find object with id: " + id;
+                                String msg = 
+                                    "Unable to find object for: "
+                                    + columnNameForIndex(columnIndex)
+                                    + " with id: " + id;
                                 return new ParseInfo<>(objValue, false, msg);
                             } else {
                                 // add to cache
@@ -608,7 +670,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                             }
                         }
                     } catch (NumberFormatException ex) {
-                        String msg = "invalid number format in id: " + strValue;
+                        String msg = "Invalid number format"
+                                + " for: " + columnNameForIndex(columnIndex)
+                                + " id: " + strValue;
                         return new ParseInfo<>(objValue, false, msg);
                     }
                 }

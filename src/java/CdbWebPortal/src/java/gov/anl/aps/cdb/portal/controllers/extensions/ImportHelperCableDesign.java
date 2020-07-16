@@ -104,7 +104,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new StringColumnSpec(1, "Alt Name", "alternateName", "setAlternateName", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 32));
+        specs.add(new StringColumnSpec(1, "Alt Name", "alternateName", "setAlternateName", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 128));
         specs.add(new StringColumnSpec(2, "Ext Cable Name", "externalCableName", "setExternalCableName", false, "Cable name in external system (e.g., CAD, routing tool) e.g., SR_R_401_D1109_RR8G[low] | SR_M_A02_C61_64_02-00[high]", 256));
         specs.add(new StringColumnSpec(3, "Import Cable ID", "importCableId", "setImportCableId", false, "Import cable identifier.", 256));
         specs.add(new StringColumnSpec(4, "Alternate Cable ID", "alternateCableId", "setAlternateCableId", false, "Alternate (e.g., group-specific) cable identifier.", 256));

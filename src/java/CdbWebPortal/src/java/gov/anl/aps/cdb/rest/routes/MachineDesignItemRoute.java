@@ -90,11 +90,17 @@ public class MachineDesignItemRoute extends BaseRoute {
             
             // walk up hierarchy to top-level "root" parent
             ItemDomainMachineDesign parent = item.getParentMachineDesign();
+            
+            if (parent == null) {
+                // item is top-level so this is not a match
+                continue;
+            }
+            
             while (parent.getParentMachineDesign() != null) {
                 parent = parent.getParentMachineDesign();
             }
             
-            if (parent.getName().equals(root)) {
+            if ((parent != null) && (parent.getName().equals(root))) {
                 // add item to result if top-level parent is specified root
                 result.add(item);
             }
