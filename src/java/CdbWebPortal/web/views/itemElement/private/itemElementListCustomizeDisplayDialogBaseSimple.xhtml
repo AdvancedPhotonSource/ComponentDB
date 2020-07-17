@@ -89,6 +89,12 @@ See LICENSE file.
                 <h:outputLabel for="#{entityTypeName}DisplayItemElementPartName" 
                                value="Display Part Name"                           
                                styleClass="dialogDataLabel"/>
+                
+                <p:selectBooleanCheckbox id="#{entityTypeName}DisplayItemElementPartDescription"                                              
+                                         value="#{itemElementSettingObject.displayPartDescription}"/>
+                <h:outputLabel for="#{entityTypeName}DisplayItemElementPartDescription" 
+                               value="Display Part Description"                           
+                               styleClass="dialogDataLabel"/>
             </p:panelGrid>
         </p:tab>
     </ui:define>
