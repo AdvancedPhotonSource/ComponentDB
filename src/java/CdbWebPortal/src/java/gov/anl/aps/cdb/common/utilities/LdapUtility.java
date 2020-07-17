@@ -27,6 +27,8 @@ public class LdapUtility {
     private static final String LdapLookupDnPropertyName = "cdb.portal.ldapLookupDn";
     private static final String LdapLookupDnBindPasswordPropertyName = "cdb.portal.ldapLookupBindDnPassword";
     private static final String LdapLookupDnUsernameFilterPropertyName = "cdb.portal.ldapLookupDnUsernameFilter";
+    
+    private static final String SecureLdapProtocol = "ldaps";
 
     private static final String ldapUrl = ConfigurationUtility.getPortalProperty(LdapUrlPropertyName);
     private static final String ldapDnString = ConfigurationUtility.getPortalProperty(LdapDnStringPropertyName);
@@ -70,7 +72,9 @@ public class LdapUtility {
             env.put(Context.SECURITY_PRINCIPAL, bindDn);
             env.put(Context.SECURITY_CREDENTIALS, password);
             // the below property allows us to circumvent server certificate checks
-            env.put("java.naming.ldap.factory.socket", "gov.anl.aps.cdb.common.utilities.NoServerVerificationSSLSocketFactory");
+            if (ldapUrl.startsWith(SecureLdapProtocol)) {
+                env.put("java.naming.ldap.factory.socket", "gov.anl.aps.cdb.common.utilities.NoServerVerificationSSLSocketFactory");
+            }
             try {
                 ctx = new InitialDirContext(env);
             } catch (NamingException ex) {
