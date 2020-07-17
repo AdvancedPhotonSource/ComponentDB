@@ -81,6 +81,7 @@ public class ItemElementUtility {
             if (useChildItem) {
                 if (childItem != null) {
                     String nodeType = childItem.getDomain().getName().replace(" ", "");;
+                    childItem.setHierarchyItemElement(itemElement);
                     childItemElementNode = new DefaultTreeNode(nodeType, childItem, itemElementNode);
                 } else {
                     // no child item is linked to item element. 

@@ -8,7 +8,8 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                template="itemListFilterViewTemplateBase.xhtml">  
+                template="itemListFilterViewTemplateBase.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">  
 
     <ui:define name="resultsDataTable">
         <p:dataTable value="#{filterViewListDataModel}"
@@ -26,14 +27,35 @@ See LICENSE file.
                 <ui:repeat value="#{filterViewItemResultObject.filterViewExpansionList}"
                            var="resultExpansionObject">
                     <p:panel header="#{resultExpansionObject.headerTitle}">
-                        <p:treeTable value="#{resultExpansionObject.rootTreeNode}"
-                                     var="itemTreeNode">                        
+                        <f:facet name="header">
+                            <p:commandButton id="itemFilterViewRowExpansionToggler" 
+                                             type="button" icon="fa fa-columns" style="float:right" />
+                            <p:columnToggler datasource="itemFilterViewRowExpansion" trigger="itemFilterViewRowExpansionToggler" />
+                        </f:facet>
+
+                        <p:treeTable id="itemFilterViewRowExpansion"
+                                     value="#{resultExpansionObject.rootTreeNode}"
+                                     var="itemTreeNode">                                    
+                            
+                            <ui:insert name="partItemElementReference">
+                                <ui:param name="itemElementObject"
+                                          value="#{itemTreeNode.hierarchyItemElement}"/> 
+                            </ui:insert>
+
+                            <p:column headerText="Part Name" >
+                                <h:outputText value="#{itemElementObject.name}" /> 
+                            </p:column>
+
+                            <p:column headerText="Part Description">
+                                <h:outputText value="#{itemElementObject.description}" /> 
+                            </p:column>
+
                             <ui:insert name="itemFilterViewListTreeObject">
                                 <ui:include src="../itemListFilterViewObject.xhtml" >
                                     <ui:param name="itemListObject"
                                               value="#{itemTreeNode}"/>
                                 </ui:include>
-                            </ui:insert>
+                            </ui:insert>                                                                                             
                         </p:treeTable>
                     </p:panel>
                 </ui:repeat>
