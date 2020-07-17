@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.utilities.GeneralUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
@@ -119,21 +120,21 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     public String generateItemName(
             ItemDomainCableInventory cableInventoryItem,
             ItemDomainCableCatalog cableCatalogItem) {
+        return generateItemName(cableInventoryItem, cableCatalogItem, 1);
+    }
+    
+    public String generateItemName(
+            ItemDomainCableInventory cableInventoryItem,
+            ItemDomainCableCatalog cableCatalogItem,
+            int newInstanceCount) {
         
-        List<ItemDomainCableInventory> ItemInventoryItemList
-                = cableCatalogItem.getCableInventoryItemList();
-        // Copy list to not update actual derived from item list. 
-        List<ItemDomainCableInventory> inventoryItemList
-                = new ArrayList<>(ItemInventoryItemList);
-        if (isItemExistInDb(cableInventoryItem) == false) {
-            if (inventoryItemList.contains(cableInventoryItem)) {
-                // Remove since it is not yet existing. 
-                inventoryItemList.remove(cableInventoryItem);
-            }
+        int numExistingItems = 0;
+        if (cableCatalogItem != null) {
+            numExistingItems = cableCatalogItem.getCableInventoryItemList().size();
         }
-        DataModel cableInventoryDataModel
-                = new ListDataModel(inventoryItemList);
-        return ("Unit: " + (cableInventoryDataModel.getRowCount() + 1) + "");
+        
+        int itemNumber = numExistingItems + newInstanceCount;
+        return GeneralUtility.generatePaddedUnitName(itemNumber);
     }
 
     public void setDefaultValuesForCurrentItem() {

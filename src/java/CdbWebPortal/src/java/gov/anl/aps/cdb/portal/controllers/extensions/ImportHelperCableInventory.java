@@ -65,6 +65,11 @@ public class ImportHelperCableInventory extends ImportHelperBase<ItemDomainCable
         return "Cable Inventory Template";
     }
     
+    @Override
+    protected void reset_() {
+        newItemCountMap = new HashMap<>();
+    }
+    
     private String generateItemName(
             ItemDomainCableInventory item,
             Map<String, Object> rowMap) {
@@ -73,13 +78,13 @@ public class ImportHelperCableInventory extends ImportHelperBase<ItemDomainCable
                 (ItemDomainCableCatalog)rowMap.get(KEY_CATALOG_ITEM);
         
         if (!newItemCountMap.containsKey(catalogItem)) {
-            newItemCountMap.put(catalogItem, catalogItem.getInventoryItemList().size());
+            newItemCountMap.put(catalogItem, 0);
         }
         
         int newItemCount = newItemCountMap.get(catalogItem) + 1;
         newItemCountMap.put(catalogItem, newItemCount);
         
-        return "Unit: " + newItemCount + "";
+        return getEntityController().generateItemName(item, catalogItem, newItemCount);
     }
 
     @Override
