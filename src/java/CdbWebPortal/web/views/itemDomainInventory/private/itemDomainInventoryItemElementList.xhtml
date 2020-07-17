@@ -27,6 +27,7 @@ See LICENSE file.
     </ui:define>
     
     <ui:param name="redneredIsRequired" value="#{false}" />
+    <ui:param name="itemElementAssemblyStartCount" value="0" /> 
 
     <!-- simple view list object overrides --> 
     <ui:define name="customItemIdentifierColumn">
@@ -41,6 +42,11 @@ See LICENSE file.
     <ui:define name="partNameColumnUIParams">
         <ui:param name="partNameColumnValue"
                   value="#{itemElementObject.derivedFromItemElement.name}" />
+    </ui:define>
+    
+    <ui:define name="partDescriptionColumnUIParams">
+        <ui:param name="partDescriptionColumnValue"
+                  value="#{itemElementObject.derivedFromItemElement.description}" />
     </ui:define>
     
     <ui:define name="nameColumn"/>

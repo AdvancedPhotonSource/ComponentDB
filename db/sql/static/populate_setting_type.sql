@@ -190,7 +190,8 @@ INSERT INTO `setting_type` VALUES
 (8035,'ItemElement.List.FilterBy.OwnerUser','Filter for design elements by owner username.',NULL),
 (8036,'ItemElement.List.FilterBy.OwnerGroup','Filter for design elements by owner group name.',NULL),
 (8037,'ItemElement.List.FilterBy.SortOrder','Filter for design elements by sort order.',NULL),
-(8038,'ItemElement.List.Display.SimpleViewPartName','Display part name (element name) on the simple view.','false'),
+(8038,'ItemElement.List.Display.SimpleViewPartName','Display part name (element name) on the simple view.','true'),
+(8039,'ItemElement.List.Display.SimpleViewPartDescription','Display part description (element description) on the simple view.','true'),
 (9000,'Log.List.Display.Attachments','Display log entry attachments.','true'),
 (9001,'Log.List.Display.EnteredOnDateTime','Display log entry entered on date/time.','false'),
 (9002,'Log.List.Display.EnteredByUser','Display log entry entered by user.','true'),
@@ -493,7 +494,7 @@ description.','true'),
 (25041,'ItemDomainCableInventory.Help.ListPage.Display.Fragment','Display Help guide to the user on the main list page of the Component Instance entity.','true'),
 (25042,'ItemDomainCableInventory.List.Scope.Display','Show list page with a scope applied.','All'),
 (25043,'ItemDomainCableInventory.List.Scope.Display.PropertyTypeId','Setting used along side a display scope of property type.',NULL),
-(25045,'ItemDomainCableInventory.List.Load.FilterDataTable','Automatically load list filter values in data table on page load.','true');
+(25045,'ItemDomainCableInventory.List.Load.FilterDataTable','Automatically load list filter values in data table on page load.','true'),
 (25046,'ItemDomainCableInventory.List.Display.Length','Display column for length in cable inventory list.','true'),
 (25047,'ItemDomainCableInventory.List.FilterBy.Length','Filter for components by length.',NULL);
 /*!40000 ALTER TABLE `setting_type` ENABLE KEYS */;

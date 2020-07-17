@@ -19,8 +19,9 @@ import org.primefaces.model.FilterMeta;
  * @author djarosz
  */
 public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementController> {
-            
-    private static final String DisplayPartNameSettingTypeKey = "ItemElement.List.Display.SimpleViewPartName"; 
+
+    private static final String DisplayPartNameSettingTypeKey = "ItemElement.List.Display.SimpleViewPartName";
+    private static final String DisplayPartDescriptionSettingTypeKey = "ItemElement.List.Display.SimpleViewPartDescription";
     private static final String DisplayChildItemSettingTypeKey = "ItemElement.List.Display.ChildDesign";
     private static final String DisplayComponentSettingTypeKey = "ItemElement.List.Display.Component";
     private static final String DisplayComponentTypeSettingTypeKey = "ItemElement.List.Display.ComponentType";
@@ -59,8 +60,9 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
     private static final String FilterByOwnerUserSettingTypeKey = "ItemElement.List.FilterBy.OwnerUser";
     private static final String FilterByOwnerGroupSettingTypeKey = "ItemElement.List.FilterBy.OwnerGroup";
     private static final String FilterBySortOrderSettingTypeKey = "ItemElement.List.FilterBy.SortOrder";
-    
-    private Boolean displayPartName = null; 
+
+    private Boolean displayPartName = null;
+    private Boolean displayPartDescription = false;
     private Boolean displayChildItem = null;
     private Boolean displayComponent = null;
     private Boolean displayComponentType = null;
@@ -68,9 +70,9 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
     private Boolean displayLocation = null;
     private Boolean displaySortOrder = null;
     private Boolean displayItemElementRowColor = null;
-    private Boolean displayBillOfMaterialsActionColumn = null;   
+    private Boolean displayBillOfMaterialsActionColumn = null;
 
-    private Boolean displayGlobalItemElementSimpleView = true; 
+    private Boolean displayGlobalItemElementSimpleView = true;
 
     private Integer sortByPropertyTypeId = null;
 
@@ -79,11 +81,11 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
     private String filterByComponentType = null;
     private String filterByLocation = null;
     private String filterBySortOrder = null;
-    
+
     public ItemElementSettings(ItemElementController parentController) {
         super(parentController);
     }
-    
+
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
@@ -110,7 +112,8 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
 
         sortByPropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(SortByPropertyTypeIdSettingTypeKey).getDefaultValue());
 
-        displayPartName = Boolean.parseBoolean(settingTypeMap.get(DisplayPartNameSettingTypeKey).getDefaultValue()); 
+        displayPartName = Boolean.parseBoolean(settingTypeMap.get(DisplayPartNameSettingTypeKey).getDefaultValue());
+        displayPartDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayPartDescriptionSettingTypeKey).getDefaultValue());
         displayChildItem = Boolean.parseBoolean(settingTypeMap.get(DisplayChildItemSettingTypeKey).getDefaultValue());
         displayComponent = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentSettingTypeKey).getDefaultValue());
         displayComponentType = Boolean.parseBoolean(settingTypeMap.get(DisplayComponentTypeSettingTypeKey).getDefaultValue());
@@ -163,7 +166,8 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
 
         sortByPropertyTypeId = settingEntity.getSettingValueAsInteger(SortByPropertyTypeIdSettingTypeKey, sortByPropertyTypeId);
 
-        displayPartName = settingEntity.getSettingValueAsBoolean(DisplayPartNameSettingTypeKey, displayPartName); 
+        displayPartName = settingEntity.getSettingValueAsBoolean(DisplayPartNameSettingTypeKey, displayPartName);
+        displayPartDescription = settingEntity.getSettingValueAsBoolean(DisplayPartDescriptionSettingTypeKey, displayPartDescription);
         displayChildItem = settingEntity.getSettingValueAsBoolean(DisplayChildItemSettingTypeKey, displayChildItem);
         displayComponent = settingEntity.getSettingValueAsBoolean(DisplayComponentSettingTypeKey, displayComponent);
         displayComponentType = settingEntity.getSettingValueAsBoolean(DisplayComponentTypeSettingTypeKey, displayComponentType);
@@ -189,11 +193,11 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
 
         parentController.resetDomainEntityPropertyTypeIdIndexMappings();
     }
-    
+
     @Override
     public void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
         super.saveSettingsForSessionSettingEntity(settingEntity);
- 
+
         settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
         settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
@@ -217,6 +221,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
         settingEntity.setSettingValue(SortByPropertyTypeIdSettingTypeKey, sortByPropertyTypeId);
 
         settingEntity.setSettingValue(DisplayPartNameSettingTypeKey, displayPartName);
+        settingEntity.setSettingValue(DisplayPartDescriptionSettingTypeKey, displayPartDescription);
         settingEntity.setSettingValue(DisplayChildItemSettingTypeKey, displayChildItem);
         settingEntity.setSettingValue(DisplayComponentSettingTypeKey, displayComponent);
         settingEntity.setSettingValue(DisplayComponentTypeSettingTypeKey, displayComponentType);
@@ -239,18 +244,18 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
         settingEntity.setSettingValue(FilterByComponentTypeSettingTypeKey, filterByComponentType);
         settingEntity.setSettingValue(FilterByLocationSettingTypeKey, filterByLocation);
         settingEntity.setSettingValue(FilterBySortOrderSettingTypeKey, filterBySortOrder);
-                
+
         // Update related external setting values. 
         ItemController itemController = parentController.getCurrentSettingsItemController();
         if (itemController != null) {
-            ICdbSettings settings = itemController.getSettingObject(); 
+            ICdbSettings settings = itemController.getSettingObject();
             if (settings instanceof ItemSettings) {
-                ItemSettings itemSettings = (ItemSettings) settings; 
-                itemSettings.saveItemElementListSettingsForSessionSettingEntity(settingEntity);            
+                ItemSettings itemSettings = (ItemSettings) settings;
+                itemSettings.saveItemElementListSettingsForSessionSettingEntity(settingEntity);
             }
         }
     }
-    
+
     @Override
     public void updateListSettingsFromListDataTable(DataTable dataTable) {
         super.updateListSettingsFromListDataTable(dataTable);
@@ -265,7 +270,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
         filterByLocation = (String) filters.get("location").getFilterField();
         filterBySortOrder = (String) filters.get("sortOrder").getFilterField();
     }
-    
+
     @Override
     public void clearListFilters() {
         super.clearListFilters();
@@ -274,19 +279,19 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
         filterByComponentType = null;
         filterByLocation = null;
         filterBySortOrder = null;
-    }        
-    
-    public void toggleGlobalSimpleComplexElementsList() {
-        displayGlobalItemElementSimpleView = !displayGlobalItemElementSimpleView;         
-        
-        SettingController settingController = SettingController.getInstance();
-        settingController.saveSettingListForSettingEntity(); 
     }
-    
+
+    public void toggleGlobalSimpleComplexElementsList() {
+        displayGlobalItemElementSimpleView = !displayGlobalItemElementSimpleView;
+
+        SettingController settingController = SettingController.getInstance();
+        settingController.saveSettingListForSettingEntity();
+    }
+
     public Boolean getGlobalDisplayItemElementSimpleView() {
         return displayGlobalItemElementSimpleView;
     }
-    
+
     public Boolean getDisplayItemElementRowColor() {
         return displayItemElementRowColor;
     }
@@ -367,6 +372,29 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
         this.displayPartName = displayPartName;
     }
 
+    public Boolean getDisplayPartDescription() {
+        return displayPartDescription;
+    }
+
+    public void setDisplayPartDescription(Boolean displayPartDescription) {
+        this.displayPartDescription = displayPartDescription;
+    }
+
+    public int getAssemblyColumnCount(int startCount) {
+        int count = startCount;
+        if (getDisplayPartName()) {
+            count++;
+        }
+        if (getDisplayPartDescription()) {
+            count++;
+        }
+        return count;
+    }
+    
+    public boolean getDisplayAssemblySubHeader(int startCount) {
+        return getAssemblyColumnCount(startCount) > 0; 
+    }
+
     public String getFilterByChildItem() {
         return filterByChildItem;
     }
@@ -406,13 +434,13 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
     public void setFilterBySortOrder(String filterBySortOrder) {
         this.filterBySortOrder = filterBySortOrder;
     }
-    
+
     public PropertyType getCoreMetadataPropertyType() {
         return null;
     }
-         
+
     public PropertyType getCoreMetadataPropertyInfo() {
         return null;
     }
-         
+
 }
