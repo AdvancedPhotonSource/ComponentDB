@@ -62,6 +62,14 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     public ItemDomainCableInventory createEntityInstance() {
         ItemDomainCableInventory item = super.createEntityInstance();
         setCurrent(item);
+        
+        // set default value for status property
+        String defaultValue = this.getInventoryStatusPropertyType().getDefaultValue();
+        if (defaultValue != null && !defaultValue.isEmpty()) {
+            prepareEditInventoryStatus();
+            item.setInventoryStatusValue(defaultValue);
+        }
+        
         return item;
     }
     
@@ -176,7 +184,7 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
 
     @Override
     protected ItemDomainCableInventory instenciateNewItemDomainEntity() {
-        return new ItemDomainCableInventory(); 
+        return new ItemDomainCableInventory();
     }
 
     @Override
