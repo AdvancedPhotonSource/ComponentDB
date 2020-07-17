@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyAllowedValue;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
@@ -58,7 +59,11 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
         PropertyType propertyType = propertyTypeController.createEntityInstance();
         propertyType.setIsInternal(true);
         propertyType.setName(getStatusPropertyTypeName());
-        //propertyType.setDescription(propInfo.getDisplayName());
+        
+        PropertyTypeCategory category = PropertyTypeCategoryController.getInstance().findByName("Status");
+        if (category != null) {
+            propertyType.setPropertyTypeCategory(category);
+        }
         
         List<Domain> allowedDomainList = new ArrayList<>();
         allowedDomainList.add(getDefaultDomain());
@@ -73,6 +78,8 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
             apvList.add(apv);
         }
         propertyType.setAllowedPropertyValueList(apvList);
+        
+        propertyType.setDefaultValue(propInfo.getDefaultValue());
 
         propertyTypeController.setCurrent(propertyType);
         propertyTypeController.create(true, false); 

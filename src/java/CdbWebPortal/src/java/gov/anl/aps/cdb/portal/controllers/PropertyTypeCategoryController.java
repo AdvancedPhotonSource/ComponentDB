@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.controllers.settings.PropertyTypeCategorySettings;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.ejb.EJB;
@@ -20,12 +21,13 @@ import javax.faces.convert.FacesConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Named("propertyTypeCategoryController")
+@Named(PropertyTypeCategoryController.CONTROLLER_NAMED)
 @SessionScoped
 public class PropertyTypeCategoryController extends CdbEntityController<PropertyTypeCategory, PropertyTypeCategoryFacade, PropertyTypeCategorySettings> implements Serializable {        
 
     private static final Logger logger = LogManager.getLogger(PropertyTypeCategoryController.class.getName());
-
+    public static final String CONTROLLER_NAMED = "propertyTypeCategoryController";
+    
     @EJB
     private PropertyTypeCategoryFacade propertyTypeCategoryFacade;
 
@@ -35,6 +37,11 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
     @Override
     protected PropertyTypeCategoryFacade getEntityDbFacade() {
         return propertyTypeCategoryFacade;
+    }
+
+    public static PropertyTypeCategoryController getInstance() {
+        return (PropertyTypeCategoryController) SessionUtility.findBean(
+                PropertyTypeCategoryController.CONTROLLER_NAMED);
     }
 
     @Override
@@ -64,6 +71,10 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
     @Override
     public PropertyTypeCategory findById(Integer id) {
         return propertyTypeCategoryFacade.findById(id);
+    }
+    
+    public PropertyTypeCategory findByName(String name) {
+        return propertyTypeCategoryFacade.findByName(name);
     }
 
     @Override
