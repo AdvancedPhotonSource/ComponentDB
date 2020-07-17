@@ -347,6 +347,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient Boolean templateInfoLoaded = false;
     private transient Item createdFromTemplate = null;
     private transient List<Item> itemsCreatedFromThisTemplateItem = null;
+    
+    // Item element from which it was added to in the hierarchy. 
+    private transient ItemElement hierarchyItemElement = null;
 
     // API generation variables    
     private transient String descriptionFromAPI;
@@ -1068,6 +1071,14 @@ public class Item extends CdbDomainEntity implements Serializable {
             }
         }
         return itemsCreatedFromThisTemplateItem;
+    }
+
+    public ItemElement getHierarchyItemElement() {
+        return hierarchyItemElement;
+    }
+
+    public void setHierarchyItemElement(ItemElement hierarchyItemElement) {
+        this.hierarchyItemElement = hierarchyItemElement;
     }
 
     @Override
