@@ -12,6 +12,8 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -90,6 +92,20 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     @Override
     public Item createInstance() {
         return new ItemDomainCableCatalog(); 
+    }
+    
+    @Override
+    public List<Item> getDerivedFromItemList() {
+        List<Item> itemList = super.getDerivedFromItemList();
+        // copy list so we are not modifying original list
+        List<Item> itemListCopy = new ArrayList<>(itemList);
+        Collections.sort(itemListCopy, new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        return itemListCopy;        
     }
     
     @JsonIgnore
