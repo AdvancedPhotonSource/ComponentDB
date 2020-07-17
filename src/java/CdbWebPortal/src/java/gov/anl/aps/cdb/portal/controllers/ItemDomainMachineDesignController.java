@@ -26,7 +26,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
-import gov.anl.aps.cdb.portal.utilities.GeneralUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
@@ -1695,7 +1694,7 @@ public class ItemDomainMachineDesignController
 
         List<Item> inventoryForCurrentTemplate = current.getDerivedFromItemList();
         int unitNum = inventoryForCurrentTemplate.size() + 1;
-        newMdInventoryItem.setName(GeneralUtility.generatePaddedUnitName(unitNum));
+        newMdInventoryItem.setName(ItemDomainInventory.generatePaddedUnitName(unitNum));
 
         assignInventoryAttributes(newMdInventoryItem, current);
     }

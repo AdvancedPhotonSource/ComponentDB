@@ -16,7 +16,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.utilities.GeneralUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
@@ -134,7 +133,7 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
         }
         
         int itemNumber = numExistingItems + newInstanceCount;
-        return GeneralUtility.generatePaddedUnitName(itemNumber);
+        return ItemDomainCableInventory.generatePaddedUnitName(itemNumber);
     }
 
     public void setDefaultValuesForCurrentItem() {

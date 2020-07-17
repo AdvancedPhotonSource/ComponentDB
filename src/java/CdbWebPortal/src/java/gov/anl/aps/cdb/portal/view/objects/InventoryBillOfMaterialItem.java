@@ -12,7 +12,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.utilities.GeneralUtility;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.DataModel;
@@ -140,7 +139,7 @@ public class InventoryBillOfMaterialItem {
                 
                 // Add one for user readability. No use of 0 for first item.
                 int itemNumber = getExistingInventoryItemSelectDataModel().getRowCount() + newItemCount + 1;
-                inventoryItem.setName(GeneralUtility.generatePaddedUnitName(itemNumber));
+                inventoryItem.setName(ItemDomainInventory.generatePaddedUnitName(itemNumber));
             }
         }
     }

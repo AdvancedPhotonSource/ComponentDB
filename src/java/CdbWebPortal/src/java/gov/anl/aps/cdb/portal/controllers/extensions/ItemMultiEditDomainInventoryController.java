@@ -14,7 +14,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.utilities.GeneralUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -92,7 +91,7 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
             unitCount = derivedFromItemForNewItems.getDerivedFromItemList().size() + 1 ;
         }
         
-        item.setName(GeneralUtility.generatePaddedUnitName(unitCount));
+        item.setName(ItemDomainInventory.generatePaddedUnitName(unitCount));
         unitCount ++; 
         
         return item; 
