@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  *
  * @author djarosz
  */
-public abstract class ItemDomainInventoryBase <CatalogItemType extends Item> extends LocatableItem {
+public abstract class ItemDomainInventoryBase <CatalogItemType extends ItemDomainCatalogBase> extends LocatableItem {
     
     // Inventory status variables
     protected transient PropertyValue inventoryStatusPropertyValue;
