@@ -55,7 +55,7 @@ if [ -z $CDB_VAR_DIR ]; then
 fi
 
 # Establish machine architecture and host name
-CDB_HOST_ARCH="`uname | tr '[:upper:]' '[:lower:]'`-`uname -m`"
+CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 CDB_SHORT_HOSTNAME=`hostname -s`
 
 # Check support setup

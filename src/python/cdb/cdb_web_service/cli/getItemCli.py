@@ -14,6 +14,9 @@ class GetItemCli(CdbWebServiceCli):
         self.addOption('', '--qr-id', dest='qrId', help='Item QR id')
         self.addOption('', '--id', dest='id', help='Item id')
         self.addOption('', '--item-name', dest='itemName', help='Item name')
+        self.addOption('', '--item-identifier-1', dest='itemIdentifier1', help='Item identifier 1')
+        self.addOption('', '--item-identifier-2', dest='itemIdentifier2', help='Item identifier 2')
+        self.addOption('', '--derived-from-item-id', dest='derivedFromItemId', help='Id of item this item derived from')
         self.addOption('', '--domain-name', dest='domainName', help='Domain name')
 
     def checkArgs(self):
@@ -35,7 +38,10 @@ Description:
         elif self.options.qrId:
             item = api.getItemByQrId(self.options.qrId)
         elif self.options.itemName and self.options.domainName:
-            item = api.getItemByUniqueAttributes(self.options.domainName, self.options.itemName)
+            item = api.getItemByUniqueAttributes(self.options.domainName, self.options.itemName,
+                                                 itemIdentifier1=self.options.itemIdentifier1,
+                                                 itemIdentifier2=self.options.itemIdentifier2,
+                                                 derivedFromItemId=self.options.derivedFromItemId)
         print(item.getDisplayString(self.getDisplayKeys(), self.getDisplayFormat()))
 
 #######################################################################

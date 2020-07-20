@@ -14,7 +14,7 @@ See LICENSE file.
                      styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
         <f:facet name="message">
             All the machine design children will become top level machine design items. 
-            children will lose assigned item information and their histories.
+            First level children will lose parent membership histories.
             <br/><b>Proceed with removal of selected Machine Design?</b>
         </f:facet>
         <p:commandButton value="Yes" 
@@ -31,7 +31,7 @@ See LICENSE file.
                      widgetVar="detachMachineDesignWidget"
                      styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
         <f:facet name="message">
-            When detaching machine design from hierarchy the assigned item information and its history is lost.           
+            When detaching machine design from hierarchy the parent history is lost.           
             <br/><b>Proceed with Detaching?</b>
         </f:facet>
         <p:commandButton value="Yes" 

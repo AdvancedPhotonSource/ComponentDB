@@ -1949,12 +1949,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             for (ItemElement itemElement : itemElementList) {
                 Item memberItem = itemElement.getParentItem();
 
-                if (!ItemDomainMachineDesignController.isItemMachineDesign(itemEntity)) {
-                    if (ItemDomainMachineDesignController.isItemMachineDesign(memberItem)) {
-                        memberItem = itemElement.getContainedItem();
-                    }
-                }
-
                 if (itemList.contains(memberItem) == false) {
                     itemList.add(memberItem);
                 }
@@ -2545,6 +2539,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         // Prepare history 
         Item originalItem = getEntityDbFacade().findById(item.getId());
         // Compare elements with what is in the db 
+        ItemElement originalSelf = originalItem.getSelfElement();
+        ItemElement currentSelf = item.getSelfElement();
+        
+        ItemElementUtility.prepareItemElementHistory(originalSelf, currentSelf, entityInfo);
+        
         List<ItemElement> originalElementList = originalItem.getItemElementDisplayList();
         List<ItemElement> newElementList = item.getItemElementDisplayList();
         LOGGER.debug("Verifying elements for item " + item);
