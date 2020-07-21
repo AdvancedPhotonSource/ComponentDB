@@ -116,6 +116,8 @@ INSERT INTO `setting_type` VALUES
 (3048,'ItemDomainInventory.ItemElementList.Display.QrId','Display column for qrid in the item elements list.','false'),
 (3049,'ItemDomainInventory.List.Display.Domain','Display column for domain in the item list.','false'),
 (3050,'ItemDomainInventory.List.FilterBy.Domain','Filter for domain in the item list.',''),
+(3051,'ItemDomainInventory.List.FilterBy.Status','Filter for components by status.',NULL),
+(3052,'ItemDomainInventory.List.Display.Status','Display column for status in inventory list.','true'),
 (4000,'ItemSource.List.Display.ContactInfo','Display component source contact info.','false'),
 (4001,'ItemSource.List.Display.Cost','Display component cost.','true'),
 (4002,'ItemSource.List.Display.Description','Display component source description.','true'),
@@ -496,6 +498,8 @@ description.','true'),
 (25043,'ItemDomainCableInventory.List.Scope.Display.PropertyTypeId','Setting used along side a display scope of property type.',NULL),
 (25045,'ItemDomainCableInventory.List.Load.FilterDataTable','Automatically load list filter values in data table on page load.','true'),
 (25046,'ItemDomainCableInventory.List.Display.Length','Display column for length in cable inventory list.','true'),
-(25047,'ItemDomainCableInventory.List.FilterBy.Length','Filter for components by length.',NULL);
+(25047,'ItemDomainCableInventory.List.FilterBy.Length','Filter for components by length.',NULL),
+(25048,'ItemDomainCableInventory.List.FilterBy.Status','Filter for components by status.',NULL),
+(25049,'ItemDomainCableInventory.List.Display.Status','Display column for status in cable inventory list.','true');
 /*!40000 ALTER TABLE `setting_type` ENABLE KEYS */;
 UNLOCK TABLES;

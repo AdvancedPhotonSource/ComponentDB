@@ -6,7 +6,7 @@
 
 # Need to update pypi Download URL manually upon version update
 MYSQL_PYTHON_VERSION=1.2.5
-CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`

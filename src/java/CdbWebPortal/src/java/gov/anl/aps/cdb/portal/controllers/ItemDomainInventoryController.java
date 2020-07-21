@@ -139,6 +139,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     protected InventoryStatusPropertyTypeInfo initializeInventoryStatusPropertyTypeInfo() {
         InventoryStatusPropertyTypeInfo info = new InventoryStatusPropertyTypeInfo();
         info.addValue("Unknown", new Float(1.0));
+        info.addValue("Planned", new Float(1.1));
         info.addValue("Requisition Submitted", new Float(2.0));
         info.addValue("Delivered", new Float(3.0));
         info.addValue("Acceptance In Progress", new Float(4.0));
@@ -152,6 +153,9 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         info.addValue("Failed", new Float(12.0));
         info.addValue("Returned", new Float(13.0));
         info.addValue("Discarded", new Float(14.0));
+        
+        info.setDefaultValue("Unknown");
+        
         return info;
     }
             

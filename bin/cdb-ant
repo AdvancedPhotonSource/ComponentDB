@@ -15,7 +15,7 @@ if [ -z $CDB_ROOT_DIR ]; then
     source $setupFile
 fi
 
-CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 export JAVA_HOME=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
 export ANT_HOME=$CDB_SUPPORT_DIR/ant
 export PATH=$ANT_HOME/bin:$PATH

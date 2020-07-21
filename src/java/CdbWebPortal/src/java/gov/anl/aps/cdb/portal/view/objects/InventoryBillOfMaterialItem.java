@@ -136,8 +136,10 @@ public class InventoryBillOfMaterialItem {
                     // Remove this item from the count. 
                     newItemCount -= 1;
                 }
-                // Add one for user readability. No use of 0 for first item. 
-                inventoryItem.setName("Unit: " + (getExistingInventoryItemSelectDataModel().getRowCount() + newItemCount + 1) + "");
+                
+                // Add one for user readability. No use of 0 for first item.
+                int itemNumber = getExistingInventoryItemSelectDataModel().getRowCount() + newItemCount + 1;
+                inventoryItem.setName(ItemDomainInventory.generatePaddedUnitName(itemNumber));
             }
         }
     }

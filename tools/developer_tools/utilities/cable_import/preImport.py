@@ -580,7 +580,8 @@ class CableInventoryHelper(PreImportHelper):
             OutputColumnModel(col_index=2, method="get_qr_id", label="QR ID"),
             OutputColumnModel(col_index=3, method="get_description", label="Description"),
             OutputColumnModel(col_index=4, method="get_project_id", label="project id"),
-            OutputColumnModel(col_index=5, method="get_length", label="Length"),
+            OutputColumnModel(col_index=5, method="get_status", label="status"),
+            OutputColumnModel(col_index=6, method="get_length", label="Length"),
         ]
         return column_list
 
@@ -617,6 +618,9 @@ class CableInventoryOutputObject(OutputObject):
 
     def get_project_id(self):
         return self.helper.get_args().projectId
+
+    def get_status(self):
+        return "Planned"
 
     def get_length(self):
         return None

@@ -17,6 +17,7 @@ public class InventoryStatusPropertyTypeInfo {
     
     private List<InventoryStatusPropertyAllowedValue> valueList = new ArrayList<>();
     protected Map<String, InventoryStatusPropertyAllowedValue> valueMap = new HashMap<>();
+    private String defaultValue;
     
     public void addValue(String value, Float sortOrder) {
         InventoryStatusPropertyAllowedValue av = new InventoryStatusPropertyAllowedValue(value, sortOrder);
@@ -34,5 +35,13 @@ public class InventoryStatusPropertyTypeInfo {
     
     public boolean hasValue(String key) {
         return valueMap.containsKey(key);
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
     }
 }
