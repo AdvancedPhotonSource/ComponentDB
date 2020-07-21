@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -30,6 +31,7 @@ public class ImportHelperCableInventory extends ImportHelperBase<ItemDomainCable
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineDesign.class.getName());
     
     private static final String KEY_NAME = "name";
+    private static final String KEY_STATUS = "inventoryStatusValue";
     private static final String KEY_CATALOG_ITEM = "catalogItem";
     private static final String AUTO_VALUE = "auto";
     
@@ -45,7 +47,8 @@ public class ImportHelperCableInventory extends ImportHelperBase<ItemDomainCable
         specs.add(new IntegerColumnSpec(2, "QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
         specs.add(new StringColumnSpec(3, "Description", "description", "setDescription", false, "Description of inventory unit.", 256));
         specs.add(new IdOrNameRefColumnSpec(4, "Project", "itemProjectString", "setProject", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class, ""));
-        specs.add(new StringColumnSpec(5, "Length", "length", "setLength", false, "Installed length of cable inventory unit.", 256));
+        specs.add(new StringColumnSpec(5, "Status", KEY_STATUS, "setInventoryStatusValue", false, "Status of inventory item.", 256));
+        specs.add(new StringColumnSpec(6, "Length", "length", "setLength", false, "Installed length of cable inventory unit.", 256));
         
         return specs;
     } 
@@ -65,6 +68,11 @@ public class ImportHelperCableInventory extends ImportHelperBase<ItemDomainCable
         return "Cable Inventory Template";
     }
     
+    @Override
+    protected void reset_() {
+        newItemCountMap = new HashMap<>();
+    }
+    
     private String generateItemName(
             ItemDomainCableInventory item,
             Map<String, Object> rowMap) {
@@ -73,19 +81,20 @@ public class ImportHelperCableInventory extends ImportHelperBase<ItemDomainCable
                 (ItemDomainCableCatalog)rowMap.get(KEY_CATALOG_ITEM);
         
         if (!newItemCountMap.containsKey(catalogItem)) {
-            newItemCountMap.put(catalogItem, catalogItem.getInventoryItemList().size());
+            newItemCountMap.put(catalogItem, 0);
         }
         
         int newItemCount = newItemCountMap.get(catalogItem) + 1;
         newItemCountMap.put(catalogItem, newItemCount);
         
-        return "Unit: " + newItemCount + "";
+        return getEntityController().generateItemName(item, catalogItem, newItemCount);
     }
 
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         
         ItemDomainCableInventory item = getEntityController().createEntityInstance();
+        getEntityController().prepareEditInventoryStatus();
         
         String methodLogName = "createEntityInstance() ";
         boolean isValid = true;
@@ -99,8 +108,28 @@ public class ImportHelperCableInventory extends ImportHelperBase<ItemDomainCable
         } else {
             item.setName(itemName);
         }
+        
+        // validate status value is in set of allowed values
+        String itemStatus = (String) rowMap.get(KEY_STATUS);
+        if (itemStatus != null && !itemStatus.isEmpty()) {
+            List<AllowedPropertyValue> allowedValues = 
+                    getEntityController().getInventoryStatusPropertyType().getAllowedPropertyValueList();
+            boolean found = false;
+            for (AllowedPropertyValue value : allowedValues) {
+                if (itemStatus.equals(value.getValue())) {
+                    found = true;
+                    break;
+                }                    
+            }
+            if (!found) {
+                // illegal status value
+                isValid = false;
+                validString = "invalid status value: " + itemStatus;
+                LOGGER.info(methodLogName + validString);
+            }
+        }
 
-        return new CreateInfo(item, true, "");
+        return new CreateInfo(item, isValid, validString);
     }  
 
     protected boolean ignoreDuplicates() {

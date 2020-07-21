@@ -39,6 +39,10 @@ public class ItemDomainCableInventory extends ItemDomainInventoryBase<ItemDomain
     public String getStatusPropertyTypeName() {
         return ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
     }
+    
+    public static String generatePaddedUnitName(int itemNumber) {
+        return String.format("Unit: %09d", itemNumber);
+    }
 
     /**
      * This method is redundant to the generic method defined in the superclass,

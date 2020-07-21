@@ -62,6 +62,14 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     public ItemDomainCableInventory createEntityInstance() {
         ItemDomainCableInventory item = super.createEntityInstance();
         setCurrent(item);
+        
+        // set default value for status property
+        String defaultValue = this.getInventoryStatusPropertyType().getDefaultValue();
+        if (defaultValue != null && !defaultValue.isEmpty()) {
+            prepareEditInventoryStatus();
+            item.setInventoryStatusValue(defaultValue);
+        }
+        
         return item;
     }
     
@@ -74,6 +82,7 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     protected InventoryStatusPropertyTypeInfo initializeInventoryStatusPropertyTypeInfo() {
         InventoryStatusPropertyTypeInfo info = new InventoryStatusPropertyTypeInfo();
         info.addValue("Unknown", new Float(1.0));
+        info.addValue("Planned", new Float(1.1));
         info.addValue("Requisition Submitted", new Float(2.0));
         info.addValue("Delivered", new Float(3.0));
         info.addValue("Acceptance In Progress", new Float(4.0));
@@ -87,6 +96,9 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
         info.addValue("Failed", new Float(12.0));
         info.addValue("Returned", new Float(13.0));
         info.addValue("Discarded", new Float(14.0));
+        
+        info.setDefaultValue("Planned");
+        
         return info;
     }
             
@@ -119,21 +131,21 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     public String generateItemName(
             ItemDomainCableInventory cableInventoryItem,
             ItemDomainCableCatalog cableCatalogItem) {
+        return generateItemName(cableInventoryItem, cableCatalogItem, 1);
+    }
+    
+    public String generateItemName(
+            ItemDomainCableInventory cableInventoryItem,
+            ItemDomainCableCatalog cableCatalogItem,
+            int newInstanceCount) {
         
-        List<ItemDomainCableInventory> ItemInventoryItemList
-                = cableCatalogItem.getCableInventoryItemList();
-        // Copy list to not update actual derived from item list. 
-        List<ItemDomainCableInventory> inventoryItemList
-                = new ArrayList<>(ItemInventoryItemList);
-        if (isItemExistInDb(cableInventoryItem) == false) {
-            if (inventoryItemList.contains(cableInventoryItem)) {
-                // Remove since it is not yet existing. 
-                inventoryItemList.remove(cableInventoryItem);
-            }
+        int numExistingItems = 0;
+        if (cableCatalogItem != null) {
+            numExistingItems = cableCatalogItem.getCableInventoryItemList().size();
         }
-        DataModel cableInventoryDataModel
-                = new ListDataModel(inventoryItemList);
-        return ("Unit: " + (cableInventoryDataModel.getRowCount() + 1) + "");
+        
+        int itemNumber = numExistingItems + newInstanceCount;
+        return ItemDomainCableInventory.generatePaddedUnitName(itemNumber);
     }
 
     public void setDefaultValuesForCurrentItem() {
@@ -172,7 +184,7 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
 
     @Override
     protected ItemDomainCableInventory instenciateNewItemDomainEntity() {
-        return new ItemDomainCableInventory(); 
+        return new ItemDomainCableInventory();
     }
 
     @Override

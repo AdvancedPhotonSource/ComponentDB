@@ -1816,7 +1816,7 @@ public class ItemDomainMachineDesignController
 
         List<Item> inventoryForCurrentTemplate = current.getDerivedFromItemList();
         int unitNum = inventoryForCurrentTemplate.size() + 1;
-        newMdInventoryItem.setName("Unit: " + unitNum);
+        newMdInventoryItem.setName(ItemDomainInventory.generatePaddedUnitName(unitNum));
 
         assignInventoryAttributes(newMdInventoryItem, current);
     }

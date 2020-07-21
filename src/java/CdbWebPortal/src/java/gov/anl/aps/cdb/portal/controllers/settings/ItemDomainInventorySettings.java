@@ -68,11 +68,14 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
     private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainInventory.List.AutoLoad.FilterBy.Properties";
     private static final String DisplayListDataModelScopeSettingTypeKey = "ItemDomainInventory.List.Scope.Display";
     private static final String DisplayListDataModelScopePropertyTypeIdSettingTypeKey = "ItemDomainInventory.List.Scope.Display.PropertyTypeId";
+    private static final String DisplayStatusSettingTypeKey = "ItemDomainInventory.List.Display.Status";
+    private static final String FilterByStatusSettingTypeKey = "ItemDomainInventory.List.FilterBy.Status";
     
     private Boolean displayLocationDetails = null;
     private Boolean displayLocation = null;
     private Boolean displaySerialNumber = null;    
     private Boolean displayDomain;  
+    private Boolean displayStatus = null;
 
     private String filterByComponent = null;
     private String filterByLocation = null;
@@ -80,6 +83,7 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
     private String filterBySerialNumber = null;
     private String filterByTag = null;
     private String filterByDomain = null;
+    private String filterByStatus = null;
     
     public ItemDomainInventorySettings(ItemDomainInventoryController parentController) {
         super(parentController);
@@ -145,6 +149,9 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
         displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue());
         
+        displayStatus = Boolean.parseBoolean(settingTypeMap.get(DisplayStatusSettingTypeKey).getDefaultValue());
+        filterByStatus = settingTypeMap.get(FilterByStatusSettingTypeKey).getDefaultValue();
+
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
     }
     
@@ -208,6 +215,9 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         displayListDataModelScope = settingEntity.getSettingValueAsString(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
         displayListDataModelScopePropertyTypeId = settingEntity.getSettingValueAsInteger(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
         
+        displayStatus = settingEntity.getSettingValueAsBoolean(DisplayStatusSettingTypeKey, displayStatus);
+        filterByStatus = settingEntity.getSettingValueAsString(FilterByStatusSettingTypeKey, filterByStatus);
+
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);        
     }
 
@@ -269,6 +279,9 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         settingEntity.setSettingValue(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
         settingEntity.setSettingValue(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
         
+        settingEntity.setSettingValue(DisplayStatusSettingTypeKey, displayStatus);
+        settingEntity.setSettingValue(FilterByStatusSettingTypeKey, filterByStatus);
+
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
     }
     
@@ -287,6 +300,7 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         filterByPropertyValue4 = null;
         filterByPropertyValue5 = null;
         filterByDomain = null;
+        filterByStatus = null;
     }
     
     @Override
@@ -303,6 +317,7 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         filterBySerialNumber = (String) filters.get("serialNumber").getFilterField();
         filterByTag = (String) filters.get("tag").getFilterField();
         filterByDomain = (String) filters.get("domain").getFilterField(); 
+        filterByStatus = (String) filters.get("status").getFilterField();
 
         filterByPropertyValue1 = (String) filters.get("propertyValue1").getFilterField();
         filterByPropertyValue2 = (String) filters.get("propertyValue2").getFilterField();
@@ -441,6 +456,22 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         this.filterByDomain = filterByDomain;
     }
     
+    public Boolean getDisplayStatus() {
+        return displayStatus;
+    }
+
+    public void setDisplayStatus(Boolean displayStatus) {
+        this.displayStatus = displayStatus;
+    }
+
+    public String getFilterByStatus() {
+        return filterByStatus;
+    }
+
+    public void setFilterByStatus(String filterByStatus) {
+        this.filterByStatus = filterByStatus;
+    }
+
     @Override
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
         // No help fragment yet exists for cdb 3.0 Inventory. 
