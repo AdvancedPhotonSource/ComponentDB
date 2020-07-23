@@ -149,6 +149,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
         return super.toString();
     }
 
+    @JsonIgnore
     public void setImportIsTemplate(Boolean importIsTemplate) {
         if (importIsTemplate) {
             // mark this item as template entity type
@@ -156,6 +157,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
         }
     }
     
+    @JsonIgnore
     public String getImportIsTemplateString() {
         if (isItemTemplate(this)) {
             return "yes";
@@ -182,6 +184,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
         }
     }
     
+    @JsonIgnore
     public ItemDomainMachineDesign getImportContainerItem() {
         return importContainerItem;
     }
@@ -190,6 +193,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
         importContainerItem = item;
     }
 
+    @JsonIgnore
     public String getImportContainerString() {
         ItemDomainMachineDesign itemContainer = this.getImportContainerItem();
         if (itemContainer != null) {
@@ -199,6 +203,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
         }
     }
     
+    @JsonIgnore
     public String getImportPath() {
         return importPath;
     }
@@ -229,10 +234,12 @@ public class ItemDomainMachineDesign extends LocatableItem {
         importAssignedCatalogItem = item;
     }
     
+    @JsonIgnore
     public ItemDomainCatalog getImportAssignedCatalogItem() {
         return importAssignedCatalogItem;
     }
 
+    @JsonIgnore
     public String getImportAssignedCatalogItemString() {
         if (importAssignedCatalogItem != null) {
             return importAssignedCatalogItem.getName();
@@ -245,10 +252,12 @@ public class ItemDomainMachineDesign extends LocatableItem {
         importAssignedInventoryItem = item;
     }
     
+    @JsonIgnore
     public ItemDomainInventory getImportAssignedInventoryItem() {
         return importAssignedInventoryItem;
     }
 
+    @JsonIgnore
     public String getImportAssignedInventoryItemString() {
         if (importAssignedInventoryItem != null) {
             return importAssignedInventoryItem.getName();
@@ -261,10 +270,12 @@ public class ItemDomainMachineDesign extends LocatableItem {
         importLocationItem = locationItem;
     }
     
+    @JsonIgnore
     public ItemDomainLocation getImportLocationItem() {
         return importLocationItem;
     }
     
+    @JsonIgnore
     public String getImportLocationItemString() {
         return importLocationItemString;
     }
@@ -273,6 +284,7 @@ public class ItemDomainMachineDesign extends LocatableItem {
         importLocationItemString = str;
     }
 
+    @JsonIgnore
     public String getImportTemplateAndParameters() {
         return importTemplateAndParameters;
     }

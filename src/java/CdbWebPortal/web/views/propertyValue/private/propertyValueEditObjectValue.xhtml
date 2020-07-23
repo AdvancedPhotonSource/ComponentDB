@@ -36,9 +36,7 @@ See LICENSE file.
 
                 <h:inputText id="DownloadActionValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
                              rendered="#{propertyValueController.displayDownloadActionValue(propertyValueObject)}" />
-                <p:tooltip for="DownloadActionValue" value="Enter identifier property value."/>
-
-                <p:tooltip for="selectedTextValue" value="Select property value."/>
+                <p:tooltip for="DownloadActionValue" value="Enter identifier property value."/>              
 
                 <p:panelGrid columns="2" rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"
                              styleClass="inlineOutputPanel">

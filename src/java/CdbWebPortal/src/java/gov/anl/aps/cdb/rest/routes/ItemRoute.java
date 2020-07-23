@@ -615,16 +615,15 @@ public class ItemRoute extends BaseRoute {
         ItemController itemController = dbItem.getItemDomainController();
         PropertyValue dbPropertyValue = null;
         
-        PropertyType propertyType = propertyValue.getPropertyType();
-        if(propertyType.getId() == null) {
-            //Find property type object by name
-            propertyType = getPropertyTypeByName(propertyType.getName());
-            if (propertyType == null) {
-                InvalidArgument invalidArgument = new InvalidArgument("Property type name must be correct or give property type id");
-                LOGGER.error(invalidArgument);
-                throw invalidArgument; 
-            }
+        PropertyType propertyType = propertyValue.getPropertyType();        
+        //Find property type object by name
+        propertyType = getPropertyTypeByName(propertyType.getName());
+        if (propertyType == null) {
+            InvalidArgument invalidArgument = new InvalidArgument("Property type name must be correct or give property type id");
+            LOGGER.error(invalidArgument);
+            throw invalidArgument; 
         }
+        
         propertyValue.setPropertyType(propertyType);
         
         propertyValueInternalCheck(propertyValue);

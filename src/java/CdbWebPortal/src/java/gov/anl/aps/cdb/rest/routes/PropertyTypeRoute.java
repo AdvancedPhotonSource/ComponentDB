@@ -7,11 +7,13 @@ package gov.anl.aps.cdb.rest.routes;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.logging.log4j.LogManager;
@@ -22,7 +24,7 @@ import org.apache.logging.log4j.Logger;
  * @author djarosz
  */
 @Path("/PropertyTypes")
-@Tag(name = "Property")
+@Tag(name = "PropertyType")
 public class PropertyTypeRoute extends BaseRoute {
     
     private static final Logger LOGGER = LogManager.getLogger(PropertyType.class.getName());
@@ -36,6 +38,24 @@ public class PropertyTypeRoute extends BaseRoute {
     public List<PropertyType> getAll() {        
         LOGGER.debug("Fetching all property types.");
         return propertyTypeFacade.findAll();
+    }
+    
+    @GET
+    @Path("/ById/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Fetch an property type by its id.")
+    public PropertyType getPropertyTypeById(@PathParam("id") int id) {
+        LOGGER.debug("Fetching property type by id: " + id); 
+        return propertyTypeFacade.findById(id); 
+    }
+    
+    @GET
+    @Path("/ByName/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Fetch an property type by its name.")
+    public PropertyType getPropertyTypeByName(@PathParam("name") String name) {
+        LOGGER.debug("Fetching property type by name: " + name); 
+        return propertyTypeFacade.findByName(name); 
     }
     
     @GET
