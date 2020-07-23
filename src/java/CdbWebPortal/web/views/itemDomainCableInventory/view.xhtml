@@ -7,10 +7,15 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
                 template="../item/private/templates/itemViewTemplate.xhtml">
     
     <ui:param name="entityController" value="#{itemDomainCableInventoryController}" />        
     
+    <ui:define name="pageTitle">
+        #{itemDomainCableInventoryController.getItemDisplayString(itemObject)} 
+    </ui:define>
+
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainCableInventoryController.processViewRequestParams}"/>
@@ -18,8 +23,34 @@ See LICENSE file.
         <f:viewAction action="#{logController.processPreRender()}"/>
         <f:viewAction action="#{itemElementController.processPreRender()}"/>
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
+        <f:viewAction action="#{itemDomainMAARCController.processPreRender()}"/>
     </f:metadata>
+    
+    <ui:define name="viewPanelGrid">
+        <ui:include src="private/cableInventoryViewPanelGrid.xhtml"/>
+    </ui:define>
+    
+    <ui:remove>
+        <ui:define name="additonalPluginSections" >
+            <ui:include src="../plugins/private/inventoryDetailsViewSections.xhtml"/>
+        </ui:define>
+    </ui:remove>
+
+    <ui:define name="additionalRightItemPanels">        
+        <p:panel header="Cable Catalog Item Properties" 
+                 toggleable="true" 
+                 styleClass="catalogItemPropertiesPanel"
+                 collapsed="#{!entityController.displayDerivedFromPropertyList}">
+            <ui:include src="../domainEntityProperty/private/domainEntityAdditionalPropertyList.xhtml">
+                <ui:param name="additionalEntityController" value="#{itemDomainCableCatalogController}"/>
+                <ui:param name="entityObject" value="#{domainEntityObject.derivedFromItem}" />
+            </ui:include>            
+        </p:panel>
+    </ui:define>
+
+    <ui:define name="additionalViewItemContent">
+        <ui:include src="../locatableItem/private/locatableItemLocationHistoryDialog.xhtml" /> 
+        <ui:include src="../itemDomainInventory/private/itemDomainInventoryStatusHistoryDialog.xhtml" />
+    </ui:define>
 
 </ui:composition>
-
-

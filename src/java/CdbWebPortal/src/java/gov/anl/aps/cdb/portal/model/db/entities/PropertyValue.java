@@ -452,8 +452,11 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     public List<PropertyValueMetadata> getPropertyValueMetadataList() {
         if (propertyValueMetadataList == null) {
             if (propertyType != null) {
-
                 List<PropertyTypeMetadata> propertyTypeMetadataList = propertyType.getPropertyTypeMetadataList();
+                if (propertyTypeMetadataList == null) {
+                    return propertyValueMetadataList; 
+                }
+                
                 propertyValueMetadataList = new ArrayList<>();
 
                 for (PropertyTypeMetadata ptm : propertyTypeMetadataList) {

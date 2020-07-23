@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
@@ -11,6 +12,8 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -91,10 +94,33 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return new ItemDomainCableCatalog(); 
     }
     
+    @Override
+    public List<Item> getDerivedFromItemList() {
+        List<Item> itemList = super.getDerivedFromItemList();
+        // copy list so we are not modifying original list
+        List<Item> itemListCopy = new ArrayList<>(itemList);
+        Collections.sort(itemListCopy, new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        return itemListCopy;        
+    }
+    
+    @JsonIgnore
     public List<ItemDomainCableInventory> getCableInventoryItemList() {
         return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
     }
     
+    public String getAlternateName() {
+        return getItemIdentifier2();
+    }
+
+    public void setAlternateName(String n) {
+        setItemIdentifier2(n);
+    }
+
     public String getUrl() throws CdbException {
         if (url == null) {
             url = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY);

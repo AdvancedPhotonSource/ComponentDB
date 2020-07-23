@@ -91,7 +91,7 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
             unitCount = derivedFromItemForNewItems.getDerivedFromItemList().size() + 1 ;
         }
         
-        item.setName("Unit: " + unitCount);
+        item.setName(ItemDomainInventory.generatePaddedUnitName(unitCount));
         unitCount ++; 
         
         return item; 

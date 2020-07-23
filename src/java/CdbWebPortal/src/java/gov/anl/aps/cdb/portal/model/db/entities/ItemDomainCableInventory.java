@@ -4,6 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -14,15 +16,54 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_INVENTORY_ID + "")   
-public class ItemDomainCableInventory extends ItemDomainInventoryBase {
+@JsonIgnoreProperties(value = {
+    // Transient
+    "length",
+    "coreMetadataPropertyValue",
+    "coreMetadataPropertyInfo"
+})
+public class ItemDomainCableInventory extends ItemDomainInventoryBase<ItemDomainCableCatalog> {
 
+    public final static String CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE = "cable_inventory_internal_property_type";
+    public final static String CABLE_INVENTORY_PROPERTY_LENGTH_KEY = "length";
+    
+    public static final String ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Cable Instance Status";
+    
+    private transient String length = null;
+    
     @Override
     public Item createInstance() {
         return new ItemDomainCableInventory(); 
     }
-
-    public ItemDomainCableCatalog getCableCatalogItem() {
-        return (ItemDomainCableCatalog) getDerivedFromItem();
+    
+    public String getStatusPropertyTypeName() {
+        return ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
     }
     
+    public static String generatePaddedUnitName(int itemNumber) {
+        return String.format("Unit: %09d", itemNumber);
+    }
+
+    /**
+     * This method is redundant to the generic method defined in the superclass,
+     * ItemDomainInventoryBase.  It is needed here because the import wizard
+     * uses reflection to invoke the setter method, and apparently the generic
+     * method is not a valid match for invocation by reflection.
+     * @param catalogItem 
+     */
+    public void setCatalogItem(ItemDomainCableCatalog catalogItem) {
+        super.setCatalogItem(catalogItem);
+    }
+
+    public String getLength() throws CdbException {
+        if (length == null) {
+            length = getCoreMetadataPropertyFieldValue(CABLE_INVENTORY_PROPERTY_LENGTH_KEY);
+        }
+        return length;
+    }
+
+    public void setLength(String l) throws CdbException {
+        length = l;
+        setCoreMetadataPropertyFieldValue(CABLE_INVENTORY_PROPERTY_LENGTH_KEY, l);
+    }
 }

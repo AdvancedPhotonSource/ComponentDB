@@ -10,15 +10,28 @@ See LICENSE file.
                 template="../item/private/templates/itemViewTemplate.xhtml">
 
     <ui:param name="entityController" value="#{itemDomainCableCatalogController}" /> 
+    <ui:param name="itemDerivedController" value="#{itemDomainCableInventoryController}" />
     <ui:param name="rootViewId" value="cableCatalogView" />
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainCableCatalogController.processViewRequestParams}"/>
+        <f:viewAction action="#{itemElementController.processPreRender()}"/>
         <f:viewAction action="#{propertyValueController.processPreRender()}"/>
         <f:viewAction action="#{logController.processPreRender()}"/>
-        <f:viewAction action="#{itemElementController.processPreRender()}"/>
+        <f:viewAction action="#{itemSourceController.processPreRender()}"/>
+        <f:viewAction action="#{itemDomainCableInventoryController.processPreRender()}"/>
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
     </f:metadata>
+
+    <ui:define name="derivedFromItems">
+        <ui:include src="private/itemDomainCableCatalogInventoryList.xhtml"/>
+    </ui:define>
+    
+    <ui:remove>
+        <ui:define name="additonalPluginSections" >
+            <ui:include src="../plugins/private/catalogDetailsViewSections.xhtml"/>
+        </ui:define>
+    </ui:remove>
 
 </ui:composition>

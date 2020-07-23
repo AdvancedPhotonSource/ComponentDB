@@ -14,6 +14,8 @@ See LICENSE file.
     <ui:param name="itemElementListFilterable" value="#{facesUtility.displayFiltersForList(itemElementDataList, resources.DisplayFiltersForViewDataTablesWithNumberOfRows)}" />
     <ui:param name="itemElementSettingObject" value="#{itemElementController.settingObject}" />
     <ui:param name="currentItemSettingObject" value="#{currentItemController.settingObject}" />
+    
+    <ui:param name="itemElementAssemblyStartCount" value="#{itemElementAssemblyStartCount != null ? itemElementAssemblyStartCount : 1}" /> 
 
     <p:dataTable id="#{childEntityTypeName}ListDataTable"
                  widgetVar="#{childEntityTypeName}ListDataTableWidget"
@@ -68,13 +70,48 @@ See LICENSE file.
             <ui:param name="rendered" value="#{!simpleView}" />
         </ui:include>
         
+        <p:columnGroup type="header"
+                       rendered="#{simpleView}"> 
+            <p:row>
+                <p:column rowspan="2" headerText="" /> 
+                <p:column colspan="#{itemElementSettingObject.getAssemblyColumnCount(itemElementAssemblyStartCount)}" 
+                          rendered="#{itemElementSettingObject.getDisplayAssemblySubHeader(itemElementAssemblyStartCount)}"
+                          headerText="Assembly" />
+                <p:column colspan="#{currentItemSettingObject.itemElementItemColumnCount}" headerText="Assigned Item" />
+            </p:row>
+            
+            <p:row>                
+                <p:column headerText="Part Name"
+                          rendered="#{itemElementSettingObject.displayPartName}"/> 
+                <p:column headerText="Part Description" 
+                          rendered="#{itemElementSettingObject.displayPartDescription}"/> 
+                <p:column headerText="Required"
+                          rendered="#{redneredIsRequired != null ? redneredIsRequired : true}"/> 
+                
+                <p:column headerText="" />
+                <p:column headerText="Name" /> 
+                <p:column headerText="QrId" 
+                          rendered="#{currentItemSettingObject.displayItemElementListQrId}"/>
+                <p:column headerText="#{itemDomainCatalogController.itemIdentifier1Title}" 
+                          rendered="#{currentItemSettingObject.displayItemElementListItemIdentifier1}"/>
+                <p:column headerText="#{itemDomainCatalogController.itemIdentifier2Title}" 
+                          rendered="#{currentItemSettingObject.displayItemElementListItemIdentifier2}"/>
+                <p:column headerText="Project" 
+                          rendered="#{currentItemSettingObject.displayItemElementListProject}"/>
+                <p:column headerText="#{itemDomainCatalogController.itemItemTypeTitle}" 
+                          rendered="#{currentItemSettingObject.displayItemElementListItemType}"/>
+                <p:column headerText="#{itemDomainCatalogController.itemItemCategoryTitle}" 
+                          rendered="#{currentItemSettingObject.displayItemElementListItemCategory}"/>
+                <p:column headerText="Source" 
+                          rendered="#{currentItemSettingObject.displayItemElementListSource}"/>
+                <p:column headerText="Description" 
+                          rendered="#{currentItemSettingObject.displayItemElementListDescription}"/>               
+            </p:row>
+        </p:columnGroup>                
+        
         <ui:decorate template="templates/itemElementSimpleViewListObjectTemplate.xhtml">
             <ui:param name="rendered" value="#{simpleView}" />
-        </ui:decorate>        
-        
-        <ui:include src="templateDefaults/itemElementObject/itemElementIsRequiredColumn.xhtml" >
-            <ui:param name="rendered" value="#{simpleView}" />
-        </ui:include>
+        </ui:decorate>
 
         <p:rowExpansion styleClass="domainEntityRowExpansion">
             <p:outputPanel rendered="#{itemElementSettingObject.displayRowExpansion}">

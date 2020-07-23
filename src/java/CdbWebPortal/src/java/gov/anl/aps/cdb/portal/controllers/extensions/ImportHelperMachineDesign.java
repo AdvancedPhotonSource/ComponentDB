@@ -81,8 +81,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     if (itemName != null) {
                         // invalid, we have a value in 2 columns
                         isValid = false;
-                        validString = "found name value in multiple columns";
-                        return new ValidInfo(isValid, validString);
+                        validString = "Found value in multiple 'Level' columns, only one allowed";
                     } else {
                         itemName = parsedValue;
                         itemIndentLevel = currentIndentLevel;
@@ -99,7 +98,6 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     isValid = false;
                     validString = appendToString(validString, 
                             "Invalid name, length exceeds " + getMaxLength());
-                    return new ValidInfo(isValid, validString);
                 }
                 
                 // set item info
@@ -435,7 +433,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     case HEADER_ALT_NAME:
                         colInfo = getColumnInfoMap().get(HEADER_ALT_NAME);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new StringInputHandler(columnIndex, "alternateName", "setAlternateName", 32));
+                        inputHandlers.add(new StringInputHandler(columnIndex, "alternateName", "setAlternateName", 128));
                         break;
 
                     case HEADER_DESCRIPTION:
@@ -464,7 +462,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
                     case HEADER_PROJECT:
                         colInfo = getColumnInfoMap().get(HEADER_PROJECT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, "project", "setProjectValue", ItemProjectController.getInstance(), ItemProject.class, ""));
+                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, "project", "setProject", ItemProjectController.getInstance(), ItemProject.class, ""));
                         break;
 
                     case HEADER_TEMPLATE:

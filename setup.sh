@@ -55,7 +55,7 @@ if [ -z $CDB_VAR_DIR ]; then
 fi
 
 # Establish machine architecture and host name
-CDB_HOST_ARCH="`uname | tr '[:upper:]' '[:lower:]'`-`uname -m`"
+CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 CDB_SHORT_HOSTNAME=`hostname -s`
 
 # Check support setup
@@ -87,6 +87,7 @@ prependPathIfDirExists $CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/ant/bin
 prependPathIfDirExists $CDB_SUPPORT_DIR/netbeans/currentNetbeans/bin
 prependPathIfDirExists $CDB_ROOT_DIR/bin
+prependPathIfDirExists $CDB_SUPPORT_DIR/anaconda/$CDB_HOST_ARCH/bin
 
 # Check if we have  local python
 if [ -z $CDB_PYTHON_DIR ]; then

@@ -96,6 +96,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainNameOrderByDerivedFromItem",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.derivedFromItem DESC"),
+    @NamedQuery(name = "Item.findByDomainNameOrderByDerivedFromItemAndItemName",
+            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.derivedFromItem ASC, i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameAndProjectOrderByQrId",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl WHERE i.domain.name = :domainName and ipl.name = :projectName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndProjectOrderByDerivedFromItem",
@@ -249,10 +251,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Basic(optional = false)
     @Size(max = 128)
     private String name;
-    @Size(max = 32)
+    @Size(max = 128)
     @Column(name = "item_identifier1")
     private String itemIdentifier1;
-    @Size(max = 32)
+    @Size(max = 128)
     @Column(name = "item_identifier2")
     private String itemIdentifier2;
     @Column(name = "qr_id")
@@ -345,6 +347,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient Boolean templateInfoLoaded = false;
     private transient Item createdFromTemplate = null;
     private transient List<Item> itemsCreatedFromThisTemplateItem = null;
+    
+    // Item element from which it was added to in the hierarchy. 
+    private transient ItemElement hierarchyItemElement = null;
 
     // API generation variables    
     private transient String descriptionFromAPI;
@@ -723,6 +728,19 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.itemProjectList = itemProjectList;
     }
 
+    public void setProject(ItemProject project) {
+        if (project != null) {
+            List<ItemProject> projectList = null;
+            if (this.getItemProjectList() == null) {
+                projectList = new ArrayList<>();
+                this.setItemProjectList(projectList);
+            } else {
+                projectList = getItemProjectList();
+            }
+            projectList.add(project);
+        }
+    }
+    
     public String getItemProjectString() {
         if (itemProjectString == null) {
             itemProjectString = StringUtility.getStringifyCdbList(itemProjectList);
@@ -1053,6 +1071,14 @@ public class Item extends CdbDomainEntity implements Serializable {
             }
         }
         return itemsCreatedFromThisTemplateItem;
+    }
+
+    public ItemElement getHierarchyItemElement() {
+        return hierarchyItemElement;
+    }
+
+    public void setHierarchyItemElement(ItemElement hierarchyItemElement) {
+        this.hierarchyItemElement = hierarchyItemElement;
     }
 
     @Override

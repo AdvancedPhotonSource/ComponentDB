@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
@@ -19,17 +20,22 @@ import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -74,6 +80,8 @@ public class ItemDomainMachineDesignController
     // <editor-fold defaultstate="collapsed" desc="Favorites toggle variables">
     private boolean favoritesShown = false;
     private TreeNode favoriteMachineDesignTreeRootTreeNode;
+
+    private boolean cablesShown = false;
     // </editor-fold>   
 
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
@@ -85,7 +93,6 @@ public class ItemDomainMachineDesignController
     private DataModel topLevelMachineDesignSelectionList;
     private List<KeyValueObject> machineDesignNameList = null;
     private String machineDesignName = null;
-    private String machineDesignAlternateName = null;
     private boolean displayCreateMachineDesignFromTemplateContent = false;
     // </editor-fold>   
 
@@ -222,6 +229,23 @@ public class ItemDomainMachineDesignController
         return false;
     }
 
+    public String getMdNodeRepIcon(ItemElement ie) {
+        Item containedItem = ie.getContainedItem();
+        if (containedItem != null) {
+            return getItemRepIcon(containedItem);
+        }
+        Item parentItem = ie.getParentItem();
+        if (parentItem != null) {
+            return getItemRepIcon(parentItem);
+        }
+        ItemConnector conn = ie.getMdConnector();
+        if (conn != null) {
+            return PortalStyles.itemConnectorIcon.getValue();
+        }
+
+        return "";
+    }
+
     public String getItemRepIcon(Item item) {
         if (isItemMachineDesignAndTemplate(item)) {
             return PortalStyles.machineDesingTemplateIcon.getValue();
@@ -257,6 +281,10 @@ public class ItemDomainMachineDesignController
         Object data = treeNode.getData();
         ItemElement ie = (ItemElement) data;
         Item item = ie.getContainedItem();
+        ItemDomainMachineDesign mdItem = null;
+        if (item instanceof ItemDomainMachineDesign) {
+            mdItem = (ItemDomainMachineDesign) item;
+        }
         String domain = item.getDomain().getName();
         int itemDomainId = item.getDomain().getId();
         String defaultDomainAssignment = domain.replace(" ", "");
@@ -264,10 +292,7 @@ public class ItemDomainMachineDesignController
             defaultDomainAssignment += "Template";
         }
 
-        if (treeNode.getParent().getData() == null) {
-            treeNode.setType(defaultDomainAssignment);
-            return;
-        } else {
+        if (treeNode.getParent().getData() != null) {
             Object parentData = treeNode.getParent().getData();
             ItemElement parentIe = (ItemElement) parentData;
             Item parentItem = parentIe.getContainedItem();
@@ -299,19 +324,18 @@ public class ItemDomainMachineDesignController
                         defaultDomainAssignment += "TemplateMember";
                     }
                 }
-
-                if (isMDMember) {
-                    // Verify if contains an item in secondary contained item
-                    Item containedItem2 = ie.getContainedItem2();
-                    if (containedItem2 != null) {
-                        String ci2Domain = containedItem2.getDomain().getName();
-                        ci2Domain = ci2Domain.replace(" ", "");
-                        defaultDomainAssignment += ci2Domain;
-                    }
-                }
             }
-            treeNode.setType(defaultDomainAssignment);
         }
+        if (mdItem != null) {
+            // Verify if contains an item in secondary contained item
+            Item assignedItem = mdItem.getAssignedItem();
+            if (assignedItem != null) {
+                String ci2Domain = assignedItem.getDomain().getName();
+                ci2Domain = ci2Domain.replace(" ", "");
+                defaultDomainAssignment += ci2Domain;
+            }
+        }
+        treeNode.setType(defaultDomainAssignment);
     }
 
     public TreeNode getCurrentMachineDesignListRootTreeNode() {
@@ -392,7 +416,10 @@ public class ItemDomainMachineDesignController
 
     private void expandTreeChildren(Item item, TreeNode rootTreeNode) {
         ItemElement element = new ItemElement();
+        ItemElement selfElement = item.getSelfElement();
+        Float sortOrder = selfElement.getSortOrder();
         element.setContainedItem(item);
+        element.setSortOrder(sortOrder);
         TreeNode parent = new DefaultTreeNode(element);
         rootTreeNode.getChildren().add(parent);
         parent.setParent(rootTreeNode);
@@ -405,6 +432,7 @@ public class ItemDomainMachineDesignController
         ItemElement ie = (ItemElement) data;
         Item item = ie.getContainedItem();
 
+        // TODO do not check for cables when in template view 
         boolean parentIsTemplate = isItemMachineDesignAndTemplate(item);
 
         if (item != null) {
@@ -418,6 +446,37 @@ public class ItemDomainMachineDesignController
             for (ItemElement itemElement : itemElementList) {
                 TreeNode newTreeNode = new DefaultTreeNode(itemElement);
                 Item containedItem = itemElement.getContainedItem();
+
+                if (cablesShown) {
+                    if (containedItem instanceof ItemDomainMachineDesign) {
+                        List<MachineDesignConnectorListObject> connList = getMdConnectorListForItem((ItemDomainMachineDesign) containedItem);
+
+                        for (MachineDesignConnectorListObject connObj : connList) {
+                            TreeNode parentNode = newTreeNode;
+
+                            if (connObj.getItemConnector() != null) {
+                                ItemConnector itemConnector = connObj.getItemConnector();
+                                ItemElement mockIE = new ItemElement();
+                                mockIE.setMdConnector(itemConnector);
+                                TreeNode connectorNode = new DefaultTreeNode(mockIE);
+                                connectorNode.setType("Connector");
+
+                                parentNode.getChildren().add(connectorNode);
+                                parentNode = connectorNode;
+                            }
+
+                            if (connObj.getCableItem() != null) {
+                                ItemDomainCableDesign cableItem = connObj.getCableItem();
+                                ItemElement mockIE = new ItemElement();
+                                mockIE.setContainedItem(cableItem);
+
+                                TreeNode cableNode = new DefaultTreeNode(mockIE);
+                                cableNode.setType(ItemDomainName.cableDesign.getValue());
+                                parentNode.getChildren().add(cableNode);
+                            }
+                        }
+                    }
+                }
 
                 treeNode.getChildren().add(newTreeNode);
                 newTreeNode.setParent(treeNode);
@@ -465,7 +524,7 @@ public class ItemDomainMachineDesignController
         searchCollapsed = true;
     }
 
-    private void searchMachineDesign(TreeNode parentNode, Pattern searchPattern, List<TreeNode> results) {
+    public void searchMachineDesign(TreeNode parentNode, Pattern searchPattern, List<TreeNode> results) {
         Object data = parentNode.getData();
         parentNode.setExpanded(false);
         if (data != null) {
@@ -589,10 +648,13 @@ public class ItemDomainMachineDesignController
     public boolean isParentOfSelectedItemInListTreeViewWriteable() {
         if (selectedItemInListTreeTable != null) {
             ItemElement itemElement = (ItemElement) selectedItemInListTreeTable.getData();
-            Item containedItem = itemElement.getParentItem();
-            if (containedItem != null) {
+            Item parentItem = itemElement.getParentItem();
+            if (parentItem != null) {
                 LoginController instance = LoginController.getInstance();
-                return instance.isEntityWriteable(containedItem.getEntityInfo());
+                return instance.isEntityWriteable(parentItem.getEntityInfo());
+            } else {
+                // Top level
+                return isSelectedItemInListTreeViewWriteable();
             }
         }
         return false;
@@ -671,7 +733,7 @@ public class ItemDomainMachineDesignController
     public void prepareAddMdFromPlaceholder() {
         prepareAddNewMachineDesignListConfiguration();
         displayAddMDFromTemplateConfigurationPanel = true;
-        currentEditItemElementSaveButtonEnabled=true;
+        currentEditItemElementSaveButtonEnabled = true;
     }
 
     public void prepareAddMdFromCatalog() {
@@ -760,12 +822,16 @@ public class ItemDomainMachineDesignController
     public void unlinkContainedItem2ToDerivedFromItem() {
         ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
 
-        Item containedItem2 = element.getContainedItem2();
-        Item derivedFromItem = containedItem2.getDerivedFromItem();
+        ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) element.getContainedItem();
 
-        element.setContainedItem2(derivedFromItem);
+        Item assignedItem = mdItem.getAssignedItem();
+        Item derivedFromItem = assignedItem.getDerivedFromItem();
 
-        updateItemElement(element);
+        mdItem.setAssignedItem(derivedFromItem);
+
+        setCurrent(mdItem);
+        update();
+
         resetListDataModel();
         expandToSpecificTreeNode(selectedItemInListTreeTable);
     }
@@ -773,11 +839,15 @@ public class ItemDomainMachineDesignController
     public void unlinkContainedItem2FromSelectedItem() {
         ItemElement element = (ItemElement) selectedItemInListTreeTable.getData();
 
-        Item originalContainedItem = element.getContainedItem2();
-        element.setContainedItem2(null);
-        updateItemElement(element);
+        ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) element.getContainedItem();
+        Item originalContainedItem = mdItem.getAssignedItem();
+
+        mdItem.setAssignedItem(null);
 
         updateTemplateReferenceElementContainedItem2(element, originalContainedItem, null);
+
+        setCurrent(mdItem);
+        update();
 
         resetListDataModel();
         expandToSpecificTreeNode(selectedItemInListTreeTable);
@@ -1105,6 +1175,55 @@ public class ItemDomainMachineDesignController
         displayAddCatalogItemListConfigurationPanel = true;
     }
 
+    public void prepareReorderTopLevelMachineDesignElements() {
+        ItemDomainMachineDesign mockTopLevelMachineDesign = new ItemDomainMachineDesign();
+        mockTopLevelMachineDesign.setFullItemElementList(new ArrayList<>());
+        mockTopLevelMachineDesign.setDomain(getDefaultDomain());
+
+        TreeNode currentMachineDesignListRootTreeNode = getCurrentMachineDesignListRootTreeNode();
+
+        List<TreeNode> currentTopLevels = currentMachineDesignListRootTreeNode.getChildren();
+
+        for (TreeNode node : currentTopLevels) {
+            ItemElement data = (ItemElement) node.getData();
+            ItemElement mockItemElement = new ItemElement();
+            mockItemElement.setName("MOCK element");
+            mockItemElement.setContainedItem(data.getContainedItem());
+            mockItemElement.setParentItem(mockTopLevelMachineDesign);
+
+            mockTopLevelMachineDesign.getFullItemElementList().add(mockItemElement);
+        }
+
+        mockTopLevelMachineDesign.getFullItemElementList().sort(new Comparator<ItemElement>() {
+            @Override
+            public int compare(ItemElement o1, ItemElement o2) {
+                Float sortOrder = o1.getSortOrder();
+                Float sortOrder1 = o2.getSortOrder();
+
+                if (ObjectUtility.equals(o1, o2)) {
+                    return 0;
+                }
+
+                if (sortOrder == null && sortOrder1 != null) {
+                    return -1;
+                }
+
+                if (sortOrder != null && sortOrder1 == null) {
+                    return 1;
+                }
+
+                if (sortOrder > sortOrder1) {
+                    return 1;
+                }
+                return -1;
+            }
+        });
+
+        setCurrent(mockTopLevelMachineDesign);
+
+        displayMachineDesignReorderOverlayPanel = true;
+    }
+
     public void prepareReorderMachineDesignElements() {
         updateCurrentUsingSelectedItemInTreeTable();
 
@@ -1121,6 +1240,31 @@ public class ItemDomainMachineDesignController
     }
 
     public String saveReorderMachineDesignElement() {
+        ItemDomainMachineDesign current = getCurrent();
+        if (current.getId() == null) {
+            // not in DB. Simulated list. Set sort order on self element. Perform multi-item save
+            List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
+            List<ItemElement> itemElements = current.getItemElementDisplayList();
+            for (ItemElement itemElement : itemElements) {
+                Float sortOrder = itemElement.getSortOrder();
+
+                ItemDomainMachineDesign sortedItem = (ItemDomainMachineDesign) itemElement.getContainedItem();
+                ItemElement selfElement = sortedItem.getSelfElement();
+                selfElement.setSortOrder(sortOrder);
+
+                itemsToUpdate.add(sortedItem);
+            }
+
+            try {
+                updateList(itemsToUpdate);
+            } catch (CdbException ex) {
+                LOGGER.error(ex);
+                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+            }
+
+            return currentDualViewList();
+        }
+
         if (isItemMachineDesignAndTemplate(getCurrent())) {
             ItemDomainMachineDesign template = getCurrent();
             for (ItemElement ie : template.getItemElementDisplayList()) {
@@ -1146,12 +1290,15 @@ public class ItemDomainMachineDesignController
         if (currentEditItemElement != null
                 && catalogForElement != null) {
 
-            Item originalItem = currentEditItemElement.getContainedItem2();
-            currentEditItemElement.setContainedItem2(catalogForElement);
+            ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) currentEditItemElement.getContainedItem();
 
-            updateItemElement(currentEditItemElement);
+            Item assignedItem = mdItem.getAssignedItem();
+            mdItem.setAssignedItem(catalogForElement);
 
-            updateTemplateReferenceElementContainedItem2(currentEditItemElement, originalItem, catalogForElement);
+            updateTemplateReferenceElementContainedItem2(currentEditItemElement, assignedItem, catalogForElement);
+
+            setCurrent(mdItem);
+            update();
 
             resetListConfigurationVariables();
             resetListDataModel();
@@ -1167,27 +1314,34 @@ public class ItemDomainMachineDesignController
      * Updates contained item on elements created from template if update is
      * valid.
      *
-     * @param templateElement
-     * @param newContainedItem
+     * @param currentElement
+     * @param newAssignedItem
      */
-    private void updateTemplateReferenceElementContainedItem2(ItemElement templateElement,
+    private void updateTemplateReferenceElementContainedItem2(ItemElement currentElement,
             Item originalContainedItem,
-            Item newContainedItem) {
-        if (currentViewIsTemplate) {
-            for (ItemElement ie : templateElement.getDerivedFromItemElementList()) {
-                boolean updateContainedItem2 = false;
-                if (originalContainedItem == null) {
-                    if (ie.getContainedItem2() == null) {
-                        updateContainedItem2 = true;
-                    }
-                } else if (originalContainedItem.equals(ie.getContainedItem2())) {
-                    updateContainedItem2 = true;
-                }
+            Item newAssignedItem) {
 
-                if (updateContainedItem2) {
-                    ie.setContainedItem2(newContainedItem);
-                    updateItemElement(ie);
+        Item mdItem = currentElement.getContainedItem();
+
+        if (currentViewIsTemplate && isItemMachineDesignAndTemplate(mdItem)) {
+            List<ItemDomainMachineDesign> itemsCreatedFromThisTemplateItem = (List<ItemDomainMachineDesign>) (List<?>) mdItem.getItemsCreatedFromThisTemplateItem();
+            List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
+
+            for (ItemDomainMachineDesign item : itemsCreatedFromThisTemplateItem) {
+                Item assignedItem = item.getAssignedItem();
+
+                // Verify if in sync with template
+                if (ObjectUtility.equals(originalContainedItem, assignedItem)) {
+                    item.setAssignedItem(newAssignedItem);
+                    itemsToUpdate.add(item);
                 }
+            }
+
+            try {
+                updateList(itemsToUpdate);
+            } catch (CdbException ex) {
+                LOGGER.error(ex);
+                SessionUtility.addErrorMessage("Error", ex.getMessage());
             }
         }
     }
@@ -1236,13 +1390,13 @@ public class ItemDomainMachineDesignController
         // Add new items
         List<ItemElement> newlyAddedItemElementList = new ArrayList<>();
         for (int i = 0; i < catalogItemsDraggedAsChildren.size(); i++) {
-            Item mdItem = idmList.get(i);
+            ItemDomainMachineDesign mdItem = idmList.get(i);
             Item catalogItem = catalogItemsDraggedAsChildren.get(i);
 
             ItemElement newItemElement = createItemElement(current);
 
             newItemElement.setContainedItem(mdItem);
-            newItemElement.setContainedItem2(catalogItem);
+            mdItem.setAssignedItem(catalogItem);
 
             prepareAddItemElement(current, newItemElement);
 
@@ -1514,14 +1668,117 @@ public class ItemDomainMachineDesignController
         if (mdConnectorList == null) {
             //Generate connector list
             ItemDomainMachineDesign item = getCurrent();
-            syncMachineDesignConnectors(item);
-            mdConnectorList = MachineDesignConnectorListObject.createMachineDesignConnectorList(item);
+            mdConnectorList = getMdConnectorListForItem(item);
         }
         return mdConnectorList;
     }
 
+    public List<MachineDesignConnectorListObject> getMdConnectorListForItem(ItemDomainMachineDesign item) {
+        syncMachineDesignConnectors(item);
+        return MachineDesignConnectorListObject.createMachineDesignConnectorList(item);
+    }
+
     public boolean getDisplayMdConnectorList() {
         return getMdConnectorListForCurrent().size() > 0;
+    }
+
+    public List<ItemElementHistory> getCombinedItemElementHistory(ItemElement ie) {
+        List<ItemElementHistory> itemElementHistories = new ArrayList<>();
+        Item mdItem = ie.getContainedItem();
+        ItemElement selfElement = mdItem.getSelfElement();
+
+        List<ItemElementHistory> assignedItemHistory = selfElement.getItemElementHistoryList();
+        List<ItemElementHistory> parentItemHistory = ie.getItemElementHistoryList();
+
+        int currentAssignedItemInx = incrementValidIndxForHistory(-1, assignedItemHistory);
+        int currentParentItemInx = incrementValidIndxForHistory(-1, parentItemHistory);
+
+        int size = assignedItemHistory.size();
+        if (parentItemHistory != null) {
+            size = size + parentItemHistory.size();
+        }
+
+        Date lastParentDate = null;
+
+        for (int i = 0; i < size; i++) {
+            ItemElementHistory aih = null;
+            if (currentAssignedItemInx != -1) {
+                aih = assignedItemHistory.get(currentAssignedItemInx);
+            }
+            
+            ItemElementHistory pih = null;
+            if (currentParentItemInx != -1) {
+                pih = parentItemHistory.get(currentParentItemInx);
+            }
+
+            // default 1 is to use the assigned item history. Parent item history is optional.
+            int result = 1;
+            if (currentAssignedItemInx != -1 && currentParentItemInx != -1) {
+                // Both histories must be valid
+                result = aih.getEnteredOnDateTime().compareTo(pih.getEnteredOnDateTime());
+            } else if (currentParentItemInx != -1) {
+                // parent item must be valid
+                result = -1; 
+            }
+
+            ItemElementHistory ieh = new ItemElementHistory();
+
+            Item currentAssignedItem = null; 
+            Item currentParentItem = null;
+            if (aih != null) {                
+                currentAssignedItem = aih.getContainedItem2();
+            }
+            if (pih != null) {
+                currentParentItem = pih.getParentItem();
+            }
+
+            if (result == 0) {
+                ieh.setEnteredOnDateTime(aih.getEnteredOnDateTime());
+                ieh.setEnteredByUser(aih.getEnteredByUser());
+
+                currentAssignedItemInx = incrementValidIndxForHistory(currentAssignedItemInx, assignedItemHistory);
+                currentParentItemInx = incrementValidIndxForHistory(currentParentItemInx, parentItemHistory);
+
+                lastParentDate = pih.getEnteredOnDateTime();
+
+                i++;
+            } else if (result > 0) {
+                ieh.setEnteredOnDateTime(aih.getEnteredOnDateTime());
+                ieh.setEnteredByUser(aih.getEnteredByUser());
+
+                currentAssignedItemInx = incrementValidIndxForHistory(currentAssignedItemInx, assignedItemHistory);                
+            } else {
+                ieh.setEnteredOnDateTime(pih.getEnteredOnDateTime());
+                ieh.setEnteredByUser(pih.getEnteredByUser());
+                
+                lastParentDate = pih.getEnteredOnDateTime();
+                
+                currentParentItemInx = incrementValidIndxForHistory(currentParentItemInx, parentItemHistory);                
+            }
+
+            if (lastParentDate == null && pih != null) {
+                lastParentDate = pih.getEnteredOnDateTime();
+            }
+
+            // Add parent only if it has happened. 
+            if (lastParentDate != null && ieh.getEnteredOnDateTime().compareTo(lastParentDate) >= 0) {
+                ieh.setParentItem(currentParentItem);
+            } 
+            ieh.setContainedItem2(currentAssignedItem);
+
+            itemElementHistories.add(ieh);
+        }
+
+        return itemElementHistories;
+    }
+
+    private int incrementValidIndxForHistory(int currIndx, List<ItemElementHistory> ieh) {
+        currIndx++;
+
+        if (ieh == null || ieh.size() == currIndx) {
+            return -1; 
+        }
+        return currIndx;
     }
 
     // </editor-fold>    
@@ -1559,7 +1816,7 @@ public class ItemDomainMachineDesignController
 
         List<Item> inventoryForCurrentTemplate = current.getDerivedFromItemList();
         int unitNum = inventoryForCurrentTemplate.size() + 1;
-        newMdInventoryItem.setName("Unit: " + unitNum);
+        newMdInventoryItem.setName(ItemDomainInventory.generatePaddedUnitName(unitNum));
 
         assignInventoryAttributes(newMdInventoryItem, current);
     }
@@ -1700,6 +1957,17 @@ public class ItemDomainMachineDesignController
     }
     // </editor-fold>   
 
+    public boolean isCablesShown() {
+        return cablesShown;
+    }
+
+    public void setCablesShown(boolean cablesShown) {
+        if (cablesShown != this.cablesShown) {
+            this.resetListDataModel();
+        }
+        this.cablesShown = cablesShown;
+    }
+
     // <editor-fold defaultstate="collapsed" desc="Element creation implementation ">   
     // <editor-fold defaultstate="collapsed" desc="Functionality">
     public void newMachineDesignElementContainedItemValueChanged() {
@@ -1714,25 +1982,27 @@ public class ItemDomainMachineDesignController
 
     public void updateInstalledInventoryItem() {
         boolean updateNecessary = false;
-        Item currentContainedItem = currentEditItemElement.getContainedItem2();
+        ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) currentEditItemElement.getContainedItem();
+        Item assignedItem = mdItem.getAssignedItem();
 
         if (inventoryForElement != null) {
-            if (currentContainedItem.equals(inventoryForElement)) {
+            if (assignedItem.equals(inventoryForElement)) {
                 SessionUtility.addInfoMessage("No update", "Inventory selected is same as before");
             } else if (verifyValidUnusedInventoryItem(inventoryForElement)) {
                 updateNecessary = true;
-                currentEditItemElement.setContainedItem2(inventoryForElement);
+                mdItem.setAssignedItem(inventoryForElement);
             }
-        } else if (currentContainedItem.getDomain().getId() == ItemDomainName.INVENTORY_ID) {
+        } else if (assignedItem.getDomain().getId() == ItemDomainName.INVENTORY_ID) {
             // Item is unselected, select catalog item
             updateNecessary = true;
-            currentEditItemElement.setContainedItem2(currentContainedItem.getDerivedFromItem());
+            mdItem.setAssignedItem(assignedItem.getDerivedFromItem());
         } else {
             SessionUtility.addInfoMessage("No update", "Inventory item not selected");
         }
 
         if (updateNecessary) {
-            updateItemElement(currentEditItemElement);
+            setCurrent(mdItem);
+            update();
         }
 
         resetItemElementEditVariables();
@@ -1859,7 +2129,6 @@ public class ItemDomainMachineDesignController
         topLevelMachineDesignSelectionList = null;
         machineDesignNameList = null;
         machineDesignName = null;
-        machineDesignAlternateName = null;
     }
 
     @Override
@@ -1888,7 +2157,7 @@ public class ItemDomainMachineDesignController
             updateList(itemsToUpdate);
         } catch (Exception ex) {
             LOGGER.error(ex);
-        } 
+        }
 
         expandToSpecificMachineDesignItem(itemFromSelectedItemInTreeTable);
     }
@@ -1897,8 +2166,7 @@ public class ItemDomainMachineDesignController
         ItemDomainMachineDesign createdFromTemplate = (ItemDomainMachineDesign) item.getCreatedFromTemplate();
 
         if (createdFromTemplate != null) {
-            String newName = generateMachineDesignNameForTemplateItem(createdFromTemplate);
-            item.setName(newName);
+            setMachineDesginIdentifiersFromTemplateItem(createdFromTemplate, item);
             itemsToUpdate.add(item);
         }
 
@@ -1958,14 +2226,23 @@ public class ItemDomainMachineDesignController
 
     private void generateMachineDesignTemplateNameVars(ItemDomainMachineDesign template) {
         String name = template.getName();
-        int firstVar = name.indexOf('{');
+        String alternateName = template.getItemIdentifier1();
+        appendMachineDesignNameList(name);
+        appendMachineDesignNameList(alternateName);
+    }
+
+    private void appendMachineDesignNameList(String templateIdentifier) {
+        if (templateIdentifier == null) {
+            return;
+        }
+        int firstVar = templateIdentifier.indexOf('{');
         int secondVar;
 
         while (firstVar != -1) {
-            name = name.substring(firstVar);
-            secondVar = name.indexOf('}');
+            templateIdentifier = templateIdentifier.substring(firstVar);
+            secondVar = templateIdentifier.indexOf('}');
 
-            String key = name.substring(1, secondVar);
+            String key = templateIdentifier.substring(1, secondVar);
 
             KeyValueObject keyValue = new KeyValueObject(key);
 
@@ -1973,29 +2250,37 @@ public class ItemDomainMachineDesignController
                 machineDesignNameList.add(keyValue);
             }
 
-            name = name.substring(secondVar + 1);
+            templateIdentifier = templateIdentifier.substring(secondVar + 1);
 
-            firstVar = name.indexOf('{');
+            firstVar = templateIdentifier.indexOf('{');
         }
     }
 
     public void generateMachineDesignName() {
-        machineDesignName = generateMachineDesignNameForTemplateItem(templateToCreateNewItem);
+        machineDesignName = generateMachineDesignNameForTemplateItem(templateToCreateNewItem.getName());
     }
 
-    public String generateMachineDesignNameForTemplateItem(ItemDomainMachineDesign templateItem) {
-        String machineDesignName = templateItem.getName();
+    private void setMachineDesginIdentifiersFromTemplateItem(ItemDomainMachineDesign templateItem, ItemDomainMachineDesign mdItem) {
+        String machineDesignName = generateMachineDesignNameForTemplateItem(templateItem.getName());
+        mdItem.setName(machineDesignName);
+        String alternateName = generateMachineDesignNameForTemplateItem(templateItem.getItemIdentifier1());
+        mdItem.setItemIdentifier1(alternateName);
+    }
 
+    public String generateMachineDesignNameForTemplateItem(String templateIdentifier) {
+        if (templateIdentifier == null) {
+            return templateIdentifier;
+        }
         if (machineDesignNameList != null) {
             for (KeyValueObject kv : machineDesignNameList) {
                 if (kv.getValue() != null && !kv.getValue().equals("")) {
                     String originalText = "{" + kv.getKey() + "}";
-                    machineDesignName = machineDesignName.replace(originalText, kv.getValue());
+                    templateIdentifier = templateIdentifier.replace(originalText, kv.getValue());
                 }
             }
         }
 
-        return machineDesignName;
+        return templateIdentifier;
     }
 
     @Override
@@ -2008,7 +2293,7 @@ public class ItemDomainMachineDesignController
             } else {
                 // Template link in multiple places        
                 currentEditItemElement.setContainedItem(templateToCreateNewItem);
-                
+
                 // Add from top level only 
                 if (templateToCreateNewItem.getParentMachineDesign() == null) {
                     throw new CdbException("Top level machine design templates will be moved into selected machine design. Use add top machine design.");
@@ -2070,9 +2355,10 @@ public class ItemDomainMachineDesignController
             itemElement.setDerivedFromItemElement(currentItemElement);
         }
 
-        itemElement.setContainedItem2(currentItemElement.getContainedItem2());
-
         ItemDomainMachineDesign createItemFromTemplate = createItemFromTemplate(templateItem);
+
+        Item assignedItem = templateItem.getAssignedItem();
+        createItemFromTemplate.setAssignedItem(assignedItem);
 
         if (newMdInventoryItem != null || currentViewIsSubAssembly) {
             // New inventory creation mode 
@@ -2083,16 +2369,14 @@ public class ItemDomainMachineDesignController
 
         // No longer needed. Skip the standard template relationship process. 
         templateToCreateNewItem = null;
-        
+
         return createItemFromTemplate;
     }
 
     private ItemDomainMachineDesign createItemFromTemplate(ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
         ItemDomainMachineDesign clone = (ItemDomainMachineDesign) templateItem.clone();
         cloneCreateItemElements(clone, templateItem, true, true);
-        String machineDesignName = generateMachineDesignNameForTemplateItem(templateItem);
-        clone.setName(machineDesignName);
-        clone.setItemIdentifier1(machineDesignAlternateName);
+        setMachineDesginIdentifiersFromTemplateItem(templateItem, clone);
 
         // ensure uniqueness of template creation.
         String viewUUID = clone.getViewUUID();
@@ -2117,18 +2401,10 @@ public class ItemDomainMachineDesignController
         return machineDesignName;
     }
 
-    public String getMachineDesignAlternateName() {
-        return machineDesignAlternateName;
-    }
-
-    public void setMachineDesignAlternateName(String machineDesignAlternateName) {
-        this.machineDesignAlternateName = machineDesignAlternateName;
-    }
-
     public List<KeyValueObject> getMachineDesignNameList() {
         return machineDesignNameList;
     }
-    
+
     public void setMachineDesignNameList(List<KeyValueObject> list) {
         this.machineDesignNameList = list;
     }
@@ -2351,10 +2627,12 @@ public class ItemDomainMachineDesignController
             }
 
             if (value.isEmpty()) {
-                Item containedItem2 = itemElement.getContainedItem2();
-                if (containedItem2 != null) {
-                    ItemController itemItemController = getItemItemController(containedItem2);
-                    value = itemItemController.getPrimaryImageValueForItem(containedItem2);
+                if (containedItem instanceof ItemDomainMachineDesign) {
+                    Item assignedItem = ((ItemDomainMachineDesign) containedItem).getAssignedItem();
+                    if (assignedItem != null) {
+                        ItemController itemItemController = getItemItemController(assignedItem);
+                        value = itemItemController.getPrimaryImageValueForItem(assignedItem);
+                    }
                 }
             }
         }
@@ -2552,6 +2830,6 @@ public class ItemDomainMachineDesignController
     protected ImportHelperBase createImportHelperInstance() throws CdbException {
         return new ImportHelperMachineDesign();
     }
-    
+
     // </editor-fold>       
 }

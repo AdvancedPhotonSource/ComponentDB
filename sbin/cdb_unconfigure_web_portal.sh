@@ -43,7 +43,7 @@ else
     echo "Deployment config file $deployConfigFile not found, using defaults"
 fi
 
-CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 GLASSFISH_DIR=$CDB_SUPPORT_DIR/payara/$CDB_HOST_ARCH
 JAVA_HOME=$CDB_SUPPORT_DIR/java/$CDB_HOST_ARCH
 

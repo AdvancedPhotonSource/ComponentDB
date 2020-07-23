@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -27,6 +28,20 @@ import org.apache.logging.log4j.Logger;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_DESIGN_ID + "")
+@JsonIgnoreProperties(value = {
+    // Transient
+    "externalCableName",
+    "importCableId",
+    "alternateCableId",
+    "legacyQrId",
+    "laying",
+    "voltage",
+    "team",
+    "endpoint1Description",
+    "endpoint2Description",
+    "coreMetadataPropertyValue",
+    "coreMetadataPropertyInfo"
+})
 public class ItemDomainCableDesign extends Item {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCableDesign.class.getName());
@@ -432,11 +447,4 @@ public class ItemDomainCableDesign extends Item {
         setItemCategoryList(technicalSystemList);
     }
 
-    public void setProject(ItemProject project) {
-        if (project != null) {
-            List<ItemProject> projectList = new ArrayList<>();
-            projectList.add(project);
-            this.setItemProjectList(projectList);
-        }
-    }
 }

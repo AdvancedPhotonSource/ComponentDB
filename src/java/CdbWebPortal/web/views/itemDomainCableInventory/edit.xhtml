@@ -16,9 +16,11 @@ See LICENSE file.
         <f:viewAction action="#{itemDomainCableInventoryController.processViewRequestParams}"/>
         <f:viewAction action="#{propertyValueController.processPreRender()}"/>
         <f:viewAction action="#{logController.processPreRender()}"/>
-        <f:viewAction action="#{itemElementController.processPreRender()}"/>
-        <f:viewAction action="#{itemMemberViewController.processPreRender()}" />        
     </f:metadata>
+
+    <ui:define name="editPanelGrid">
+        <ui:include src="private/itemDomainCableInventoryEditPanelGrid.xhtml"/>
+    </ui:define>
 
 </ui:composition>
 

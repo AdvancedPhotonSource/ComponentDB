@@ -19,7 +19,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
@@ -42,6 +41,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
+import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,14 +68,13 @@ import org.primefaces.model.DefaultTreeNode;
  */
 @Named("itemDomainInventoryController")
 @SessionScoped
-public class ItemDomainInventoryController extends ItemController<ItemDomainInventory, ItemDomainInventoryFacade, ItemDomainInventorySettings> {
+public class ItemDomainInventoryController extends ItemDomainInventoryBaseController<ItemDomainInventory, ItemDomainInventoryFacade, ItemDomainInventorySettings> {
 
+    public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";
+    
     private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.inventory.getValue();
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";                        
     
-    // Inventory status variables
-    private PropertyType inventoryStatusPropertyType; 
-
     private static final Logger logger = LogManager.getLogger(ItemDomainInventoryController.class.getName());
 
     private List<PropertyValue> filteredPropertyValueList = null;
@@ -109,9 +108,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     private RelationshipTypeFacade relationshipTypeFacade;
     
     @EJB
-    private PropertyTypeFacade propertyTypeFacade;
-
-    @EJB
     private ItemDomainInventoryFacade itemDomainInventoryFacade;
     
     @EJB
@@ -134,6 +130,35 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return item instanceof ItemDomainInventory; 
     }
 
+    @Override
+    protected String getStatusPropertyTypeName() {
+        return ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
+    }
+    
+    @Override
+    protected InventoryStatusPropertyTypeInfo initializeInventoryStatusPropertyTypeInfo() {
+        InventoryStatusPropertyTypeInfo info = new InventoryStatusPropertyTypeInfo();
+        info.addValue("Unknown", new Float(1.0));
+        info.addValue("Planned", new Float(1.1));
+        info.addValue("Requisition Submitted", new Float(2.0));
+        info.addValue("Delivered", new Float(3.0));
+        info.addValue("Acceptance In Progress", new Float(4.0));
+        info.addValue("Accepted", new Float(5.0));
+        info.addValue("Rejected", new Float(6.0));
+        info.addValue("Post-Acceptance/Test/Certification in Progress", new Float(7.0));
+        info.addValue("Ready For Use", new Float(8.0));
+        info.addValue("Installed", new Float(9.0));
+        info.addValue("Spare", new Float(10.0));
+        info.addValue("Spare - Critical", new Float(11.0));
+        info.addValue("Failed", new Float(12.0));
+        info.addValue("Returned", new Float(13.0));
+        info.addValue("Discarded", new Float(14.0));
+        
+        info.setDefaultValue("Unknown");
+        
+        return info;
+    }
+            
     @Override
     public void createListDataModel() {
         List<Item> inventory = (List<Item>)(List<?>)getEntityDbFacade().findAll();
@@ -173,7 +198,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         super.loadEJBResourcesManually(); 
         itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance();
         relationshipTypeFacade = RelationshipTypeFacade.getInstance();
-        propertyTypeFacade = PropertyTypeFacade.getInstance();
         itemDomainInventoryFacade = ItemDomainInventoryFacade.getInstance();
         connectorFacade = ConnectorFacade.getInstance();
     }
@@ -201,37 +225,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return ItemEnforcedPropertiesDomainInventoryController.getInstance();
     }
        
-    // <editor-fold defaultstate="collapsed" desc="Inventory status implementation">
-        
-    public PropertyType getInventoryStatusPropertyType() {
-        if (inventoryStatusPropertyType == null) {
-            inventoryStatusPropertyType = propertyTypeFacade.findByName(ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
-        }
-        return inventoryStatusPropertyType;
-    }        
-
-    public PropertyValue getCurrentStatusPropertyValue() {
-        return getCurrent().getInventoryStatusPropertyValue();
-    }
-    
-    public void prepareEditInventoryStatus() {
-        if (getCurrentStatusPropertyValue() == null) {
-            PropertyValue preparePropertyTypeValueAdd = preparePropertyTypeValueAdd(getInventoryStatusPropertyType()); 
-            getCurrent().setInventoryStatusPropertyValue(preparePropertyTypeValueAdd);
-        }
-    }
-    
-    public synchronized void prepareEditInventoryStatusFromApi(ItemDomainInventory item) {
-        setCurrent(item);
-        prepareEditInventoryStatus();
-    }
-    
-    public boolean getRenderedHistoryButton() {
-        return getCurrentStatusPropertyValue() != null; 
-    }
-
-    // </editor-fold>        
-
     private List<ItemElementRelationship> findItemCableConnectionRelationship(Item item) {
         // Support items that have not yet been saved to db.
         if (item.getSelfElement().getId() != null) {

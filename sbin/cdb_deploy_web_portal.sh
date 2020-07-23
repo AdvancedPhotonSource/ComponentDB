@@ -42,7 +42,7 @@ else
     echo "Deployment config file $deployConfigFile not found, using defaults"
 fi
 
-CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 CDB_CONTEXT_ROOT=${CDB_CONTEXT_ROOT:=cdb}
 CDB_PERM_CONTEXT_ROOT_URL=${CDB_PERM_CONTEXT_ROOT_URL:=http://localhost:8080/cdb}
 CDB_DATA_DIR=${CDB_DATA_DIR:=/cdb}

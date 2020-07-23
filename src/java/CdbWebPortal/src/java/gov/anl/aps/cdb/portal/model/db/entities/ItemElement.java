@@ -56,7 +56,7 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM ItemElement i WHERE i.description = :description"),
     @NamedQuery(name = "ItemElement.findBySortOrder",
             query = "SELECT i FROM ItemElement i WHERE i.sortOrder = :sortOrder"),})
-@JsonIgnoreProperties(value = {  
+@JsonIgnoreProperties(value = {
     "itemCanHaveInventoryItem",
     "catalogDisplayString",
     "inventoryDisplayString",
@@ -124,7 +124,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList1;
     @OneToMany(mappedBy = "linkItemElement")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList2;
-    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "firstItemElement")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstItemElement")
     private List<ItemElementRelationship> itemElementRelationshipList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondItemElement")
     private List<ItemElementRelationship> itemElementRelationshipList1;
@@ -142,12 +142,13 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private transient Item catalogItem;
     private transient Item inventoryItem;
     private transient ItemDomainMachineDesign machineDesignItem;
-    private transient String catalogDisplayString; 
-    private transient String inventoryDisplayString; 
-    private transient String machineDesignDisplayString; 
+    private transient String catalogDisplayString;
+    private transient String inventoryDisplayString;
+    private transient String machineDesignDisplayString;
     private transient boolean loadedCatalogInventoryMachineDesignItem = false;
-    private transient boolean itemCanHaveInventoryItem = false; 
-    private transient String rowStyle; 
+    private transient boolean itemCanHaveInventoryItem = false;
+    private transient String rowStyle;
+    private transient ItemConnector mdConnector;
     // </editor-fold>
 
     // Helper variable used to ensure proper procedure is executed if the attribute changes. 
@@ -155,9 +156,9 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public ItemElement() {
     }
-    
-    public void init(Item parentItem, ItemElement derivedFromItemElement) {        
-        init(parentItem, derivedFromItemElement, null);        
+
+    public void init(Item parentItem, ItemElement derivedFromItemElement) {
+        init(parentItem, derivedFromItemElement, null);
     }
 
     public void init(Item parentItem, ItemElement derivedFromItemElement, EntityInfo entityInfo) {
@@ -169,13 +170,13 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         this.setDerivedFromItemElement(derivedFromItemElement);
 
     }
-    
+
     public void init(Item parentItem, EntityInfo entityInfo) {
         init(parentItem, null, entityInfo);
     }
 
     public void init(Item parentItem) {
-        EntityInfo ei = null; 
+        EntityInfo ei = null;
         init(parentItem, ei);
     }
 
@@ -342,10 +343,10 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     public void setContainedItem(Item containedItem) {
-        resetCatalogInventoryMachineDesingItems(); 
+        resetCatalogInventoryMachineDesingItems();
         this.containedItem1 = containedItem;
     }
-    
+
     @XmlTransient
     public Item getContainedItem2() {
         return containedItem2;
@@ -436,61 +437,67 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     // <editor-fold defaultstate="collapsed" desc="Machine Design Logic">  
     private void resetCatalogInventoryMachineDesingItems() {
-        loadedCatalogInventoryMachineDesignItem = false;        
+        loadedCatalogInventoryMachineDesignItem = false;
         itemCanHaveInventoryItem = false;
         catalogItem = null;
         inventoryItem = null;
         machineDesignItem = null;
         catalogDisplayString = null;
         inventoryDisplayString = null;
-        machineDesignDisplayString = null; 
+        machineDesignDisplayString = null;
     }
 
     private void loadCatalogInventoryMachineDesignItems() {
         if (!loadedCatalogInventoryMachineDesignItem) {
-            if (containedItem2 != null) {
-                Domain domain = containedItem2.getDomain();
-                switch (domain.getId()) {
-                    case ItemDomainName.CATALOG_ID:
-                        catalogItem = containedItem2;
-                        machineDesignDisplayString = "N/A";
-                        catalogDisplayString = catalogItem.toString();
-                        itemCanHaveInventoryItem = true;
-                        break;
-                    case ItemDomainName.INVENTORY_ID:
-                        inventoryItem = containedItem2;
-                        catalogItem = containedItem2.getDerivedFromItem();
-                        machineDesignDisplayString = "N/A";
-                        catalogDisplayString = catalogItem.toString();
-                        inventoryDisplayString = inventoryItem.getName(); 
-                        itemCanHaveInventoryItem = true;
-                        break;
-                    case ItemDomainName.MACHINE_DESIGN_ID:
-                        machineDesignItem = (ItemDomainMachineDesign) containedItem1;
-                        machineDesignDisplayString = machineDesignItem.toString(); 
-                        catalogDisplayString = "N/A";
-                        inventoryDisplayString = "N/A";
-                        itemCanHaveInventoryItem = false;                         
-                        break;
-                    default:
-                        break;
+            if (containedItem1 != null) {
+                if (containedItem1 instanceof ItemDomainMachineDesign) {
+                    ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) containedItem1;
+                    Item assignedItem = mdItem.getAssignedItem();
+                    if (assignedItem != null) {
+                        Domain domain = assignedItem.getDomain();
+                        switch (domain.getId()) {
+                            case ItemDomainName.CATALOG_ID:
+                                catalogItem = assignedItem;
+                                machineDesignDisplayString = "N/A";
+                                catalogDisplayString = catalogItem.toString();
+                                itemCanHaveInventoryItem = true;
+                                break;
+                            case ItemDomainName.INVENTORY_ID:
+                                inventoryItem = assignedItem;
+                                catalogItem = assignedItem.getDerivedFromItem();
+                                machineDesignDisplayString = "N/A";
+                                catalogDisplayString = catalogItem.toString();
+                                inventoryDisplayString = inventoryItem.getName();
+                                itemCanHaveInventoryItem = true;
+                                break;
+                            case ItemDomainName.MACHINE_DESIGN_ID:
+                                machineDesignItem = (ItemDomainMachineDesign) containedItem1;
+                                machineDesignDisplayString = machineDesignItem.toString();
+                                catalogDisplayString = "N/A";
+                                inventoryDisplayString = "N/A";
+                                itemCanHaveInventoryItem = false;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
             }
             loadedCatalogInventoryMachineDesignItem = true;
         }
     }
-    
+
     public boolean getItemCanHaveInventoryItem() {
-        return itemCanHaveInventoryItem; 
+        return itemCanHaveInventoryItem;
     }
 
-    public Item getCatalogItem() {        
-        loadCatalogInventoryMachineDesignItems();        
+    public Item getCatalogItem() {
+        loadCatalogInventoryMachineDesignItems();
         return catalogItem;
     }
 
-    public Item getInventoryItem() {        
-        loadCatalogInventoryMachineDesignItems();       
+    public Item getInventoryItem() {
+        loadCatalogInventoryMachineDesignItems();
         return inventoryItem;
     }
 
@@ -501,7 +508,14 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public ItemDomainMachineDesign getMachineDesignItem() {
         loadCatalogInventoryMachineDesignItems();
         return machineDesignItem;
-    } 
+    }
+
+    public Item getMdTypeContainedItem() {
+        if (getContainedItem() instanceof ItemDomainMachineDesign) {
+            return getContainedItem();
+        }
+        return null;
+    }
 
     public String getCatalogDisplayString() {
         loadCatalogInventoryMachineDesignItems();
@@ -525,9 +539,16 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public void setRowStyle(String rowStyle) {
         this.rowStyle = rowStyle;
     }
-    
+
+    public ItemConnector getMdConnector() {
+        return mdConnector;
+    }
+
+    public void setMdConnector(ItemConnector mdConnector) {
+        this.mdConnector = mdConnector;
+    }
+
     // </editor-fold>
-    
     @Override
     public SearchResult search(Pattern searchPattern) {
 
@@ -574,23 +595,23 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         }
         return true;
     }
-    
+
     public boolean equalsByIdContainedItemsAndParentItem(ItemElement other) {
-        if (this.equals(other)){
+        if (this.equals(other)) {
             return nullSafeComparison(this.containedItem1, other.containedItem1)
                     && nullSafeComparison(this.containedItem2, other.containedItem2)
                     && nullSafeComparison(this.parentItem, other.parentItem);
         }
-        return false; 
+        return false;
     }
-    
+
     private boolean nullSafeComparison(Object object1, Object object2) {
         if (object1 == null && object2 == null) {
             return true;
         } else if (object1 == null || object2 == null) {
-            return false; 
+            return false;
         } else {
-            return object1.equals(object2); 
+            return object1.equals(object2);
         }
     }
 

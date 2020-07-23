@@ -50,7 +50,6 @@ import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.authentication.User;
 import gov.anl.aps.cdb.rest.entities.FileUploadObject;
 import gov.anl.aps.cdb.rest.entities.ItemDomainCatalogSearchResult;
-import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemLocationInformation;
 import gov.anl.aps.cdb.rest.entities.ItemSearchResults;
@@ -70,6 +69,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -78,7 +78,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -453,6 +452,27 @@ public class ItemRoute extends BaseRoute {
         }
     }
     
+    @DELETE
+    @Path("/DeleteById/{itemId}")
+    @Operation(summary = "Delete an item by its id.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public void deleteItemById(@PathParam("itemId") int itemId) throws ObjectNotFound, ObjectNotFound, AuthorizationError, CdbException {
+        LOGGER.debug("Deleting item with id: " + itemId);
+        
+        Item dbItem = getItemByIdBase(itemId);
+        UserInfo updatedByUser = getCurrentRequestUserInfo();
+        
+        if (!verifyUserPermissionForItem(updatedByUser, dbItem)) {            
+            AuthorizationError ex = new AuthorizationError("User does not have permission to delete item");
+            LOGGER.error(ex);
+            throw ex; 
+        }
+        
+        ItemController itemController = dbItem.getItemDomainController();
+        itemController.destroyFromApi(dbItem, updatedByUser);
+    }
+    
     @POST
     @Path("/UpdateProperty/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -595,16 +615,15 @@ public class ItemRoute extends BaseRoute {
         ItemController itemController = dbItem.getItemDomainController();
         PropertyValue dbPropertyValue = null;
         
-        PropertyType propertyType = propertyValue.getPropertyType();
-        if(propertyType.getId() == null) {
-            //Find property type object by name
-            propertyType = getPropertyTypeByName(propertyType.getName());
-            if (propertyType == null) {
-                InvalidArgument invalidArgument = new InvalidArgument("Property type name must be correct or give property type id");
-                LOGGER.error(invalidArgument);
-                throw invalidArgument; 
-            }
+        PropertyType propertyType = propertyValue.getPropertyType();        
+        //Find property type object by name
+        propertyType = getPropertyTypeByName(propertyType.getName());
+        if (propertyType == null) {
+            InvalidArgument invalidArgument = new InvalidArgument("Property type name must be correct or give property type id");
+            LOGGER.error(invalidArgument);
+            throw invalidArgument; 
         }
+        
         propertyValue.setPropertyType(propertyType);
         
         propertyValueInternalCheck(propertyValue);

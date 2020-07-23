@@ -6,7 +6,7 @@
 
 # Need to update pypi Download URL manually upon version update
 CHERRY_PY_VERSION=8.1.2
-CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`

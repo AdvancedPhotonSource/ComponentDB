@@ -218,6 +218,10 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return findByDomain(domainName, "Item.findByDomainNameOrderByDerivedFromItem");
     }
 
+    public List<ItemDomainEntity> findByDomainOrderByDerivedFromItemAndItemName(String domainName) {
+        return findByDomain(domainName, "Item.findByDomainNameOrderByDerivedFromItemAndItemName");
+    }
+
     private List<ItemDomainEntity> findByDomainAndProject(String domainName, String projectName, String queryName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndProjectOrderByQrId")
