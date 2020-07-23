@@ -19,7 +19,7 @@ See LICENSE file.
         <p:outputPanel id="travelerInstanceMoveDialogOutputPanel"
                        rendered="#{itemTravelerDomainInventoryController.renderMoveTravelerContents}">
             <ui:include src="../../../../item/private/itemSelectDataTable.xhtml">
-                <ui:param name="viewName" value="travelerInstanceMoveDialog"
+                <ui:param name="viewName" value="travelerInstanceMoveDialog" />
                 <ui:param name="updateTarget" value="travelerInstanceMoveDialogOutputPanel" /> 
                 <ui:param name="selectionValue" value="#{itemTravelerDomainInventoryController.inventoryItemToMoveCurrentTraveler}" />
                 <ui:param name="selectionTarget" value="#{itemTravelerDomainInventoryController.inventoryItemToMoveCurrentTraveler}" />
