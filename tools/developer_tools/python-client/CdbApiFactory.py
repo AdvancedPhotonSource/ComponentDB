@@ -8,7 +8,7 @@ import os
 from cdbApi import ApiException, DomainApi, FileUploadObject
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
-from cdbApi.api.property_api import PropertyApi
+from cdbApi.api.property_type_api import PropertyTypeApi
 from cdbApi.api.users_api import UsersApi
 from cdbApi.api.sources_api import SourcesApi
 from cdbApi.api.cable_catalog_items_api import CableCatalogItemsApi
@@ -27,7 +27,7 @@ class CdbApiFactory:
 		self.apiClient = ApiClient(configuration=self.config)
 		self.itemApi = ItemApi(api_client=self.apiClient)
 		self.downloadsApi = DownloadsApi(api_client=self.apiClient)
-		self.propertyApi = PropertyApi(api_client=self.apiClient)
+		self.propertyTypeApi = PropertyTypeApi(api_client=self.apiClient)
 		self.usersApi = UsersApi(api_client=self.apiClient)
 		self.domainApi = DomainApi(api_client=self.apiClient)
 		self.sourceApi = SourcesApi(api_client=self.apiClient)
@@ -45,8 +45,8 @@ class CdbApiFactory:
 	def getDownloadApi(self):
 		return self.downloadsApi
 
-	def getPropertyApi(self):
-		return self.propertyApi
+	def getPropertyTypeApi(self):
+		return self.propertyTypeApi
 
 	def getUsersApi(self):
 		return self.usersApi
