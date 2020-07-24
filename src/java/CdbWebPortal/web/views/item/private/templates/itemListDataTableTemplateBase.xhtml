@@ -19,6 +19,9 @@ See LICENSE file.
     
     <ui:param name="filterable" value="#{filterable != null ? filterable : true}" />
     <ui:param name="sortable" value="#{sortable != null ? sortable : true}" />
+    
+    <ui:param name="itemListDataTableLazy" value="#{itemListDataTableLazy != null ? itemListDataTableLazy : false}" /> 
+    <ui:param name="itemListDataTablePaginatorAlwaysVisible" value="#{itemListDataTablePaginatorAlwaysVisible != null ? itemListDataTablePaginatorAlwaysVisible : false}" /> 
 
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
     <ui:param name="displayEntityTypeName" value="#{entityController.displayEntityTypeName}"/>
@@ -31,11 +34,12 @@ See LICENSE file.
                  selection="#{dataTableSelectionList}"
                  rowKey="#{itemListObject.viewUUID}"
                  value="#{itemListDataTableValue}" 
+                 lazy="#{itemListDataTableLazy}"
                  filteredValue="#{entityController.filteredObjectList}"
                  draggableColumns="true"
                  rows="#{entitySettingObject.displayNumberOfItemsPerPage}" 
                  paginator="true" 
-                 paginatorAlwaysVisible="false" 
+                 paginatorAlwaysVisible="#{itemListDataTablePaginatorAlwaysVisible}" 
                  emptyMessage="No #{displayEntityTypeName}s found.">
         
         <ui:insert name="selectionColumn" />                
