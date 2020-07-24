@@ -34,7 +34,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     List<ItemDomainEntity> itemsToAdd;
 
     private final String QUERY_STRING_START = "SELECT i FROM Item i ";
-    private final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"}; 
+    private final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"};
 
     public ItemFacadeBase(Class<ItemDomainEntity> entityClass) {
         super(entityClass);
@@ -120,6 +120,114 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         }
         return null;
+    }
+
+    public List<ItemDomainEntity> findByDataTableFilterQueryBuilder(Domain domain, 
+            String entityTypeName, 
+            String name,
+            String description,
+            String itemId,
+            String ownerUsername,
+            String createdByUsername,
+            String modifiedByUsername,
+            String ownerGroupname,
+            String createdOnDate, 
+            String modifiedOnDate) {
+
+        String query = QUERY_STRING_START;
+        String wherePart = "";
+        Boolean appendSelfElement = false; 
+
+        wherePart = appendWhere(wherePart, "=", "i.domain.id", domain.getId());
+
+        if (entityTypeName != null) {
+            query += "JOIN i.entityTypeList etl ";
+            wherePart = appendWhere(wherePart, "=", "etl.name", entityTypeName);
+        }
+        
+        if (itemId != null) {
+            wherePart = appendWhere(wherePart, "LIKE", "i.id", itemId); 
+        }
+
+        if (name != null) {
+            wherePart = appendWhere(wherePart, "LIKE", "i.name", name);
+        }
+        
+        if (description != null) {
+            appendSelfElement = true; 
+            wherePart = appendWhere(wherePart, "LIKE", "fiel.description", description);
+        } 
+        
+        if (ownerUsername != null) {
+            appendSelfElement = true; 
+            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.ownerUser.username", ownerUsername); 
+        }
+        
+        if (createdByUsername != null) {
+            appendSelfElement = true; 
+            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.createdByUser.username", createdByUsername); 
+        }
+        
+        if (modifiedByUsername != null) {
+            appendSelfElement = true; 
+            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.lastModifiedByUser.username", modifiedByUsername); 
+        }
+        
+        if (ownerGroupname != null) {
+            appendSelfElement = true; 
+            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.ownerUserGroup.name", ownerGroupname); 
+        }
+        
+        if (createdOnDate != null) {
+            appendSelfElement = true; 
+            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.createdOnDateTime", createdOnDate); 
+        }
+        
+        if (modifiedOnDate != null) {
+            appendSelfElement = true; 
+            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.lastModifiedOnDateTime", modifiedOnDate); 
+        }
+        
+        if (appendSelfElement) {
+            query += " JOIN i.fullItemElementList fiel "; 
+            wherePart = appendWhere(wherePart, "IS" , "fiel.derivedFromItemElement", null); 
+            wherePart = appendWhere(wherePart, "IS" , "fiel.name", null);                                        
+        }
+ 
+        String fullQuery = query + wherePart;
+
+        try {
+            return (List<ItemDomainEntity>) em.createQuery(fullQuery).getResultList();
+        } catch (NoResultException ex) {
+        }
+
+        return null;
+
+    }
+
+    public String appendWhere(String where, String comparator, String key, Object object) {
+        if (where.isEmpty()) {
+            where += "WHERE ";
+        } else {
+            where += "AND "; 
+        }
+
+        String value = "NULL"; 
+        if (object != null) {            
+            value = object.toString();
+        }
+
+        if (object != null && object instanceof String) {
+            if (comparator.equalsIgnoreCase("LIKE")) {
+                value = "%" + value + "%";
+            }
+
+            value = "'" + escapeCharacters(value) + "'";
+        }
+
+        where += key + " " + comparator + " " + value + " ";
+
+        return where;
     }
 
     public List<ItemDomainEntity> findByDomainAndEntityType(String domainName, String entityTypeName) {
@@ -280,11 +388,11 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         return null;
     }
-    
+
     private String escapeCharacters(String queryParameter) {
         for (CharSequence cs : ESCAPE_QUERY_CHARACTERS) {
             if (queryParameter.contains(cs)) {
-                queryParameter = queryParameter.replace(cs, "'" + cs); 
+                queryParameter = queryParameter.replace(cs, "'" + cs);
             }
         }
         return queryParameter;
@@ -522,7 +630,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     public List<ItemDomainEntity> getItemListOwnedByUserGroupExcludeEntityType(String domainName, UserGroup ownerUserGroup, String entityTypeName) {
         List<ItemDomainEntity> itemListOwnedByUserGroup = getItemListOwnedByUserGroup(domainName, ownerUserGroup);
         trimEntityTypeName(itemListOwnedByUserGroup, entityTypeName);
-        return itemListOwnedByUserGroup; 
+        return itemListOwnedByUserGroup;
     }
 
     public List<ItemDomainEntity> getItemListContainedInList(String domainName, ListTbl list) {
@@ -567,9 +675,9 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     public List<ItemDomainEntity> getItemListContainedInListOrOwnedByUserExcludeEntityType(String domainName, ListTbl list, UserInfo ownerUserInfo, String entityTypeName) {
-        List<ItemDomainEntity> itemListContainedInListOrOwnedByUser = getItemListContainedInListOrOwnedByUser(domainName, list, ownerUserInfo); 
+        List<ItemDomainEntity> itemListContainedInListOrOwnedByUser = getItemListContainedInListOrOwnedByUser(domainName, list, ownerUserInfo);
         trimEntityTypeName(itemListContainedInListOrOwnedByUser, entityTypeName);
-        return itemListContainedInListOrOwnedByUser; 
+        return itemListContainedInListOrOwnedByUser;
     }
 
     public List<ItemDomainEntity> getItemListContainedInListOrOwnedByGroup(String domainName, ListTbl list, UserGroup ownerUserGroup) {
@@ -588,12 +696,12 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     public List<ItemDomainEntity> getItemListContainedInListOrOwnedByGroupExcludeEntityType(String domainName, ListTbl list, UserGroup ownerUserGroup, String entityTypeName) {
-        List<ItemDomainEntity> itemListContainedInListOrOwnedByGroup = getItemListContainedInListOrOwnedByGroup(domainName, list, ownerUserGroup); 
+        List<ItemDomainEntity> itemListContainedInListOrOwnedByGroup = getItemListContainedInListOrOwnedByGroup(domainName, list, ownerUserGroup);
         trimEntityTypeName(itemListContainedInListOrOwnedByGroup, entityTypeName);
         return itemListContainedInListOrOwnedByGroup;
     }
-    
-     private void trimEntityTypeName(List<ItemDomainEntity> entityList, String entityTypeName) {
+
+    private void trimEntityTypeName(List<ItemDomainEntity> entityList, String entityTypeName) {
         if (entityList != null) {
             int i = 0;
             while (i < entityList.size()) {
