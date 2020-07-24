@@ -61,7 +61,6 @@ public class UserSessionKeeper {
             long currentTime = currentDate.getTime();
             
             if (currentTime < expirationDate) {
-                user.updateExpiration(); 
                 return true; 
             } else {
                 userTokenMap.remove(token); 

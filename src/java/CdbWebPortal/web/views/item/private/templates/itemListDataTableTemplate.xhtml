@@ -31,6 +31,10 @@ See LICENSE file.
         </ui:include>
     </ui:define>
     
+    <ui:define name="coreMetadataColumns">
+        <ui:include src="../coreMetadataPropertyColumns.xhtml" />
+    </ui:define>
+    
     <ui:define name="entityInfoColumns">
         <ui:include src="../../../entityInfo/private/entityInfoListObject.xhtml">
             <ui:param name="entityInfoObject" value="#{itemListObject.entityInfo}"/>

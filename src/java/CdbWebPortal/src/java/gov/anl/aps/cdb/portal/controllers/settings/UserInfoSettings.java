@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -127,13 +128,13 @@ public class UserInfoSettings extends CdbEntitySettingsBase<UserInfoController> 
             return;
         }
 
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByEmail = (String) filters.get("email");
-        filterByFirstName = (String) filters.get("firstName");
-        filterByGroups = (String) filters.get("groups");
-        filterByLastName = (String) filters.get("lastName");
-        filterByMiddleName = (String) filters.get("middleName");
-        filterByUsername = (String) filters.get("username");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByEmail = (String) filters.get("email").getFilterField();
+        filterByFirstName = (String) filters.get("firstName").getFilterField();
+        filterByGroups = (String) filters.get("groups").getFilterField();
+        filterByLastName = (String) filters.get("lastName").getFilterField();
+        filterByMiddleName = (String) filters.get("middleName").getFilterField();
+        filterByUsername = (String) filters.get("username").getFilterField();
     }
 
     public Boolean getDisplayEmail() {

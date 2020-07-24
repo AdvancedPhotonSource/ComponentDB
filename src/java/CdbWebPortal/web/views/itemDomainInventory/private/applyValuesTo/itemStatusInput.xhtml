@@ -14,9 +14,9 @@ See LICENSE file.
     <p:panelGrid columns="2"
                  styleClass="leftAlignedText">
         <h:outputText value='Item Status' />
-        <ui:include src="../templateDefaults/itemFieldEditValues/itemDomainInventoryStatusSelectOneMenu.xhtml">
-            <ui:param name="inventoryStatusValue"
-                      value="#{statusMockProperty.value}"/> 
+        <ui:include src="../../../propertyValue/private/propertyValueEditObjectValueSelectOneAllowedValue.xhtml">
+            <ui:param name="propertyValueObject"
+                      value="#{statusMockProperty}"/> 
         </ui:include>
         
         <h:outputText value='Effective Date' />

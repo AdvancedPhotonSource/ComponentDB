@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    
+    <ui:param name="rendered" value="#{rendered != null ? rendered : true}" />
+    
+    <ui:param name="entitySettingObject" value="#{entityController.settingObject}" />
+
+    <c:forEach items="#{entitySettingObject.coreMetadataPropertyInfo.fields}"
+               var="metadataField">  
+
+        <ui:param name="metadataKey" value="#{metadataField.key}"/>
+        <ui:param name="metadataLabel" value="#{metadataField.label}"/>
+        <ui:param name="metadataDescription" value="#{metadataField.description}"/>
+        <ui:param name="propertyName" value="#{metadataKey}Display"/>
+        <ui:param name="filterValue" value="#{metadataKey}Filter"/>
+
+        <p:column id="#{metadataKey}Column"
+                  rendered="#{rendered and entitySettingObject[propertyName]}"
+                  sortBy="#{itemListObject[metadataKey]}"
+                  filterBy="#{itemListObject[metadataKey]}"
+                  filterMatchMode="contains"
+                  filterValue="#{entitySettingObject[filterValue]}">
+            <f:facet name="header">
+                <h:outputText value="#{metadataLabel}" />
+                <p:tooltip value="#{metadataDescription}"
+                           for="#{metadataKey}Column"/>
+            </f:facet> 
+            <h:outputText value="#{itemListObject[metadataKey]}"/>
+        </p:column>
+
+
+    </c:forEach>
+
+</ui:composition>
+
+

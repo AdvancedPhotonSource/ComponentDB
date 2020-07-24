@@ -4,17 +4,18 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCableCatalog;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableCatalogSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog.CABLE_CATALOG_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import java.util.ArrayList;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -29,15 +30,8 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     
     public static final String CONTROLLER_NAMED = "itemDomainCableCatalogController";
     
-    private final static String CABLE_INTERNAL_PROPERTY_TYPE = "cable_internal_property_type"; 
-    
-    protected ImportHelperCableCatalog importHelper = new ImportHelperCableCatalog();
-    
     @EJB
     ItemDomainCableCatalogFacade itemDomainCableCatalogFacade;
-    
-    @EJB
-    private PropertyTypeFacade propertyTypeFacade;
     
     public static ItemDomainCableCatalogController getInstance() {
         if (SessionUtility.runningFaces()) {
@@ -48,46 +42,32 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         }
     }
     
-    /**
-     * Prepares import wizard.
-     */
-    public String prepareWizardImport() {   
-        importHelper.reset();
-        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
-        return "/views/itemDomainCableCatalog/import?faces-redirect=true";
+    @Override
+    protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
+        ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Type Metadata", CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_URL_KEY, "Documentation URL", "Raw URL for documentation pdf file.", ItemCoreMetadataFieldType.URL, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_IMAGE_URL_KEY, "Image URL", "Raw URL for image file.", ItemCoreMetadataFieldType.URL, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_ALT_PART_NUM_KEY, "Alt Part Num", "Manufacturer's alternate part number.", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_WEIGHT_KEY, "Weight", "Nominal weight in lbs/1000 feet.", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_DIAMETER_KEY, "Diameter", "Diameter in inches (max).", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_CONDUCTORS_KEY, "Conductors", "Number of conductors/fibers.", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_INSULATION_KEY, "Insulation", "Description of cable insulation.", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_JACKET_COLOR_KEY, "Jacket Color", "Jacket color.", ItemCoreMetadataFieldType.STRING, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_VOLTAGE_RATING_KEY, "Voltage Rating", "Voltage rating (VRMS).", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_FIRE_LOAD_KEY, "Fire Load", "Fire load rating.", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_HEAT_LIMIT_KEY, "Heat Limit", "Heat limit rating.", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_BEND_RADIUS_KEY, "Bend Radius", "Bend radius in inches.", ItemCoreMetadataFieldType.NUMERIC, "");
+        info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_RAD_TOLERANCE_KEY, "Radiation Tolearance", "Radiation tolerance rating.", ItemCoreMetadataFieldType.NUMERIC, "");
+        return info;
     }
     
-    /**
-     * Creates new instance but doesn't set current (for operations from
-     * outside controller).
-     */
-    public ItemDomainCableCatalog newEntityInstance() {
-        
+    @Override
+    public ItemDomainCableCatalog createEntityInstance() {
         ItemDomainCableCatalog item = super.createEntityInstance();
-        
-        // Add cable internal property type
-        PropertyType propertyType = propertyTypeFacade.findByName(CABLE_INTERNAL_PROPERTY_TYPE);
-        
-        if (propertyType == null) {
-            propertyType = createInternalCablePropertyType();
-        }
-
-        item.setPropertyValueList(new ArrayList<>());
-        preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
-        
+        setCurrent(item);
         return item;
     }
     
-    private PropertyType createInternalCablePropertyType() {
-        PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
-        PropertyType propertyType = propertyTypeController.createEntityInstance();
-        propertyType.setIsInternal(true);
-        propertyType.setName(CABLE_INTERNAL_PROPERTY_TYPE);
-        propertyTypeController.setCurrent(propertyType);
-        propertyTypeController.create(true, false); 
-        return propertyType; 
-    }    
-
     @Override
     public ItemMultiEditController getItemMultiEditController() {
         return ItemMultiEditDomainCableCatalogController.getInstance();
@@ -124,67 +104,12 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     }
 
     @Override
-    public boolean getEntityDisplayItemConnectors() {
-        return true; 
-    }
-
-    @Override
-    public boolean getEntityDisplayItemName() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayDerivedFromItem() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
-        return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemGallery() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemLogs() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemSources() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemProperties() {
-        return true; 
-    }
-
-    @Override
     public boolean getEntityDisplayItemElements() {
         return false; 
     }
 
     @Override
-    public boolean getEntityDisplayItemsDerivedFromItem() {
-        return false; 
-    }
-
-    @Override
     public boolean getEntityDisplayItemMemberships() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayItemProject() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayItemEntityTypes() {
         return false; 
     }
 
@@ -204,14 +129,23 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     }
 
     @Override
-    public String getDefaultDomainDerivedFromDomainName() {
-        return null; 
-               
-    }
-
-    @Override
     public String getDefaultDomainDerivedToDomainName() {
         return ItemDomainName.cableInventory.getValue(); 
     } 
+    
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        return false; 
+    }    
+
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected ImportHelperBase createImportHelperInstance() throws CdbException {
+        return new ImportHelperCableCatalog();
+    }
     
 }

@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -287,16 +288,16 @@ public class ItemDomainCatalogSettings extends ItemSettings<ItemDomainCatalogCon
             return;
         }
 
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByType = (String) filters.get("componentType");
-        filterByCategory = (String) filters.get("componentTypeCategory");
-        filterByModelNumber = (String) filters.get("modelNumber");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByType = (String) filters.get("componentType").getFilterField();
+        filterByCategory = (String) filters.get("componentTypeCategory").getFilterField();
+        filterByModelNumber = (String) filters.get("modelNumber").getFilterField();
 
-        filterByPropertyValue1 = (String) filters.get("propertyValue1");
-        filterByPropertyValue2 = (String) filters.get("propertyValue2");
-        filterByPropertyValue3 = (String) filters.get("propertyValue3");
-        filterByPropertyValue4 = (String) filters.get("propertyValue4");
-        filterByPropertyValue5 = (String) filters.get("propertyValue5");
+        filterByPropertyValue1 = (String) filters.get("propertyValue1").getFilterField();
+        filterByPropertyValue2 = (String) filters.get("propertyValue2").getFilterField();
+        filterByPropertyValue3 = (String) filters.get("propertyValue3").getFilterField();
+        filterByPropertyValue4 = (String) filters.get("propertyValue4").getFilterField();
+        filterByPropertyValue5 = (String) filters.get("propertyValue5").getFilterField();
     }
     
     @Override

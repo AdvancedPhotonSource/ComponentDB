@@ -16,6 +16,11 @@ import javax.ejb.Stateless;
 @Stateless
 public class ItemFacade extends ItemFacadeBase<Item> {
     
+    @Override
+    public String getDomainName() {
+        return "";
+    }
+    
     public ItemFacade() {
         super(Item.class);
     }

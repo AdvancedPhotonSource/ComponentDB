@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -61,20 +62,28 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
     private static final String FilterByTagSettingTypeKey = "ItemDomainInventory.List.FilterBy.Tag";
     private static final String FilterByQrIdSettingTypeKey = "ItemDomainInventory.List.FilterBy.QrId";
     private static final String FilterBySerialNumberSettingTypeKey = "ItemDomainInventory.List.FilterBy.SerialNumber";
+    private static final String FilterByDomainSettingTypeKey = "ItemDomainInventory.List.FilterBy.Domain"; 
+    private static final String DisplayDomainSettingTypeKey = "ItemDomainInventory.List.Display.Domain";
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "ItemDomainInventory.Help.ListPage.Display.Fragment";
     private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainInventory.List.AutoLoad.FilterBy.Properties";
     private static final String DisplayListDataModelScopeSettingTypeKey = "ItemDomainInventory.List.Scope.Display";
     private static final String DisplayListDataModelScopePropertyTypeIdSettingTypeKey = "ItemDomainInventory.List.Scope.Display.PropertyTypeId";
+    private static final String DisplayStatusSettingTypeKey = "ItemDomainInventory.List.Display.Status";
+    private static final String FilterByStatusSettingTypeKey = "ItemDomainInventory.List.FilterBy.Status";
     
     private Boolean displayLocationDetails = null;
     private Boolean displayLocation = null;
-    private Boolean displaySerialNumber = null;
+    private Boolean displaySerialNumber = null;    
+    private Boolean displayDomain;  
+    private Boolean displayStatus = null;
 
     private String filterByComponent = null;
     private String filterByLocation = null;
     private String filterByLocationDetails = null;
     private String filterBySerialNumber = null;
     private String filterByTag = null;
+    private String filterByDomain = null;
+    private String filterByStatus = null;
     
     public ItemDomainInventorySettings(ItemDomainInventoryController parentController) {
         super(parentController);
@@ -95,6 +104,7 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
         displayLocationDetails = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationDetailsSettingTypeKey).getDefaultValue());
         displayLocation = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue());
+        displayDomain = Boolean.parseBoolean(settingTypeMap.get(DisplayDomainSettingTypeKey).getDefaultValue()); 
 
         displayQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayQrIdSettingTypeKey).getDefaultValue());
         displaySerialNumber = Boolean.parseBoolean(settingTypeMap.get(DisplaySerialNumberSettingTypeKey).getDefaultValue());
@@ -125,6 +135,7 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         filterByQrId = settingTypeMap.get(FilterByQrIdSettingTypeKey).getDefaultValue();
         filterBySerialNumber = settingTypeMap.get(FilterBySerialNumberSettingTypeKey).getDefaultValue();
         filterByTag = settingTypeMap.get(FilterByTagSettingTypeKey).getDefaultValue();
+        filterByDomain = settingTypeMap.get(FilterByDomainSettingTypeKey).getDefaultValue(); 
 
         filterByPropertyValue1 = settingTypeMap.get(FilterByPropertyValue1SettingTypeKey).getDefaultValue();
         filterByPropertyValue2 = settingTypeMap.get(FilterByPropertyValue2SettingTypeKey).getDefaultValue();
@@ -138,6 +149,9 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         displayListDataModelScope = settingTypeMap.get(DisplayListDataModelScopeSettingTypeKey).getDefaultValue();
         displayListDataModelScopePropertyTypeId = parseSettingValueAsInteger(settingTypeMap.get(DisplayListDataModelScopePropertyTypeIdSettingTypeKey).getDefaultValue());
         
+        displayStatus = Boolean.parseBoolean(settingTypeMap.get(DisplayStatusSettingTypeKey).getDefaultValue());
+        filterByStatus = settingTypeMap.get(FilterByStatusSettingTypeKey).getDefaultValue();
+
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
     }
     
@@ -157,6 +171,7 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
 
         displayLocationDetails = settingEntity.getSettingValueAsBoolean(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
         displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
+        displayDomain = settingEntity.getSettingValueAsBoolean(DisplayDomainSettingTypeKey, displayDomain); 
         displayQrId = settingEntity.getSettingValueAsBoolean(DisplayQrIdSettingTypeKey, displayQrId);
         displaySerialNumber = settingEntity.getSettingValueAsBoolean(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
         displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayItemProjectSettingTypeKey, displayItemProject);
@@ -186,6 +201,7 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         filterByQrId = settingEntity.getSettingValueAsString(FilterByQrIdSettingTypeKey, filterByQrId);
         filterBySerialNumber = settingEntity.getSettingValueAsString(FilterBySerialNumberSettingTypeKey, filterBySerialNumber);
         filterByTag = settingEntity.getSettingValueAsString(FilterByTagSettingTypeKey, filterByTag);
+        filterByDomain = settingEntity.getSettingValueAsString(FilterByDomainSettingTypeKey, filterByDomain); 
 
         filterByPropertyValue1 = settingEntity.getSettingValueAsString(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
         filterByPropertyValue2 = settingEntity.getSettingValueAsString(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
@@ -199,6 +215,9 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         displayListDataModelScope = settingEntity.getSettingValueAsString(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
         displayListDataModelScopePropertyTypeId = settingEntity.getSettingValueAsInteger(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
         
+        displayStatus = settingEntity.getSettingValueAsBoolean(DisplayStatusSettingTypeKey, displayStatus);
+        filterByStatus = settingEntity.getSettingValueAsString(FilterByStatusSettingTypeKey, filterByStatus);
+
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);        
     }
 
@@ -217,6 +236,7 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
 
         settingEntity.setSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
         settingEntity.setSettingValue(DisplayLocationSettingTypeKey, displayLocation);
+        settingEntity.setSettingValue(DisplayDomainSettingTypeKey, displayDomain);
         settingEntity.setSettingValue(DisplayQrIdSettingTypeKey, displayQrId);
         settingEntity.setSettingValue(DisplaySerialNumberSettingTypeKey, displaySerialNumber);
         settingEntity.setSettingValue(DisplayItemProjectSettingTypeKey, displayItemProject);
@@ -244,7 +264,8 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         settingEntity.setSettingValue(FilterByLocationDetailsSettingTypeKey, filterByLocationDetails);
         settingEntity.setSettingValue(FilterByQrIdSettingTypeKey, filterByQrId);
         settingEntity.setSettingValue(FilterBySerialNumberSettingTypeKey, filterBySerialNumber);
-        settingEntity.setSettingValue(FilterByTagSettingTypeKey, filterByTag);
+        settingEntity.setSettingValue(FilterByTagSettingTypeKey, filterByTag);        
+        settingEntity.setSettingValue(FilterByDomainSettingTypeKey, filterByDomain);
 
         settingEntity.setSettingValue(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
         settingEntity.setSettingValue(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
@@ -258,6 +279,9 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         settingEntity.setSettingValue(DisplayListDataModelScopeSettingTypeKey, displayListDataModelScope);
         settingEntity.setSettingValue(DisplayListDataModelScopePropertyTypeIdSettingTypeKey, displayListDataModelScopePropertyTypeId);
         
+        settingEntity.setSettingValue(DisplayStatusSettingTypeKey, displayStatus);
+        settingEntity.setSettingValue(FilterByStatusSettingTypeKey, filterByStatus);
+
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
     }
     
@@ -275,6 +299,8 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         filterByPropertyValue3 = null;
         filterByPropertyValue4 = null;
         filterByPropertyValue5 = null;
+        filterByDomain = null;
+        filterByStatus = null;
     }
     
     @Override
@@ -283,19 +309,21 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
         if (dataTable == null) {
             return;
         }
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByComponent = (String) filters.get("component.name");
-        filterByLocation = (String) filters.get("location.name");
-        filterByLocationDetails = (String) filters.get("locationDetails");
-        filterByQrId = (String) filters.get("qrId");
-        filterBySerialNumber = (String) filters.get("serialNumber");
-        filterByTag = (String) filters.get("tag");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByComponent = (String) filters.get("component.name").getFilterField();
+        filterByLocation = (String) filters.get("location.name").getFilterField();
+        filterByLocationDetails = (String) filters.get("locationDetails").getFilterField();
+        filterByQrId = (String) filters.get("qrId").getFilterField();
+        filterBySerialNumber = (String) filters.get("serialNumber").getFilterField();
+        filterByTag = (String) filters.get("tag").getFilterField();
+        filterByDomain = (String) filters.get("domain").getFilterField(); 
+        filterByStatus = (String) filters.get("status").getFilterField();
 
-        filterByPropertyValue1 = (String) filters.get("propertyValue1");
-        filterByPropertyValue2 = (String) filters.get("propertyValue2");
-        filterByPropertyValue3 = (String) filters.get("propertyValue3");
-        filterByPropertyValue4 = (String) filters.get("propertyValue4");
-        filterByPropertyValue5 = (String) filters.get("propertyValue5");
+        filterByPropertyValue1 = (String) filters.get("propertyValue1").getFilterField();
+        filterByPropertyValue2 = (String) filters.get("propertyValue2").getFilterField();
+        filterByPropertyValue3 = (String) filters.get("propertyValue3").getFilterField();
+        filterByPropertyValue4 = (String) filters.get("propertyValue4").getFilterField();
+        filterByPropertyValue5 = (String) filters.get("propertyValue5").getFilterField();
     }
     
     @Override
@@ -320,6 +348,14 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
     
     public void setDisplaySerialNumber(Boolean displaySerialNumber) {
         this.displaySerialNumber = displaySerialNumber;
+    }
+
+    public Boolean getDisplayDomain() {
+        return displayDomain;
+    }
+
+    public void setDisplayDomain(Boolean displayDomain) {
+        this.displayDomain = displayDomain;
     }
 
     @Override
@@ -410,8 +446,32 @@ public class ItemDomainInventorySettings extends ItemSettings<ItemDomainInventor
 
     public void setFilterByTag(String filterByTag) {
         this.filterByTag = filterByTag;
+   }
+
+    public String getFilterByDomain() {
+        return filterByDomain;
+    }
+
+    public void setFilterByDomain(String filterByDomain) {
+        this.filterByDomain = filterByDomain;
     }
     
+    public Boolean getDisplayStatus() {
+        return displayStatus;
+    }
+
+    public void setDisplayStatus(Boolean displayStatus) {
+        this.displayStatus = displayStatus;
+    }
+
+    public String getFilterByStatus() {
+        return filterByStatus;
+    }
+
+    public void setFilterByStatus(String filterByStatus) {
+        this.filterByStatus = filterByStatus;
+    }
+
     @Override
     public String getDisplayListPageHelpFragmentSettingTypeKey() {
         // No help fragment yet exists for cdb 3.0 Inventory. 

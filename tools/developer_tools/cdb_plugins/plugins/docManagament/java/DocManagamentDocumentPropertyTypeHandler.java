@@ -12,7 +12,8 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.api.DocumentManagamentApi;
 import gov.anl.aps.cdb.portal.plugins.support.docManagament.objects.Document;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -26,7 +27,7 @@ public class DocManagamentDocumentPropertyTypeHandler extends AbstractPropertyTy
     
     public static final String INFO_ACTION_COMMAND = "updateDmsDocumentInfoDialog();";
 
-    private static final Logger logger = Logger.getLogger(DocManagamentDocumentPropertyTypeHandler.class.getName());
+    private static final Logger logger = LogManager.getLogger(DocManagamentDocumentPropertyTypeHandler.class.getName());
 
     protected DocumentManagamentApi api = null;
 

@@ -96,7 +96,11 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
     public ItemElementHistory(ItemElement element, EntityInfo entityInfo) {
         this.itemElement = element; 
         this.snapshotElementName = element.getName(); 
-        this.parentItem = element.getParentItem();
+        Item parentItem = element.getParentItem();
+        // No need to track parent item for self element. 
+        if (parentItem != null && !parentItem.getSelfElement().equals(element)) {
+            this.parentItem = parentItem; 
+        }
         this.snapshotParentName = element.getParentItem().toString(); 
         this.containedItem1 = element.getContainedItem();
         if (this.containedItem1 != null) {

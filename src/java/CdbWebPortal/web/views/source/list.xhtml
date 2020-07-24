@@ -12,7 +12,7 @@ See LICENSE file.
 
     <ui:define name="pageTitle">: Sources</ui:define>        
     <ui:define name="middleCenter">
-        
+
         <f:metadata>
             <f:viewAction action="#{settingController.updateGlobalSettings()}" />
             <f:viewAction action="#{sourceController.processPreRenderList()}"/>
@@ -24,7 +24,13 @@ See LICENSE file.
             </div>
 
             <ui:param name="entityController" value="#{sourceController}"/>
-            <ui:include src="../common/private/commonListActionButtons.xhtml"/>
+
+            <ui:decorate template="../common/private/commonListActionButtons.xhtml">
+                <ui:define name ="additonalListButtons">
+                    <ui:include src="private/sourceListAdditionalActionButtons.xhtml"/>
+                </ui:define>
+            </ui:decorate>
+
             <h:panelGroup>  
                 <ui:include src="private/sourceListDataTable.xhtml"/>
             </h:panelGroup>

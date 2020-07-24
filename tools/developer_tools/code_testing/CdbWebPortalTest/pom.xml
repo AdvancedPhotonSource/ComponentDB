@@ -83,10 +83,14 @@
             <version>4.0.1</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.14</version>
-            <type>jar</type>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.13.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.13.1</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -96,12 +100,17 @@
         <dependency>
             <groupId>org.primefaces</groupId>
             <artifactId>primefaces</artifactId>
-            <version>6.2</version>
+            <version>8.0</version>
         </dependency>        
         <dependency>
             <groupId>org.primefaces.extensions</groupId>
             <artifactId>primefaces-extensions</artifactId>
-            <version>6.2.4</version>
+            <version>8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+            <version>5.5.13.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -109,14 +118,19 @@
             <version>3.5</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.pdfbox</groupId>
-            <artifactId>pdfbox</artifactId>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+            <version>2.0.16</version>
+        </dependency>
+        <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
             <version>2.0.16</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.40</version>
+            <version>8.0.16</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>

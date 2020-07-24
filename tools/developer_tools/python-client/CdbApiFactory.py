@@ -2,11 +2,17 @@
 
 # Copyright (c) UChicago Argonne, LLC. All rights reserved.
 # See LICENSE file.
-from cdbApi import ApiException
+import base64
+import os
+
+from cdbApi import ApiException, DomainApi, FileUploadObject
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
-from cdbApi.api.property_api import PropertyApi
+from cdbApi.api.property_type_api import PropertyTypeApi
 from cdbApi.api.users_api import UsersApi
+from cdbApi.api.sources_api import SourcesApi
+from cdbApi.api.cable_catalog_items_api import CableCatalogItemsApi
+from cdbApi.api.machine_design_items_api import MachineDesignItemsApi
 from cdbApi.api_client import ApiClient
 from cdbApi.api.authentication_api import AuthenticationApi
 from cdbApi.configuration import Configuration
@@ -21,28 +27,50 @@ class CdbApiFactory:
 		self.apiClient = ApiClient(configuration=self.config)
 		self.itemApi = ItemApi(api_client=self.apiClient)
 		self.downloadsApi = DownloadsApi(api_client=self.apiClient)
-		self.propertyApi = PropertyApi(api_client=self.apiClient)
+		self.propertyTypeApi = PropertyTypeApi(api_client=self.apiClient)
 		self.usersApi = UsersApi(api_client=self.apiClient)
+		self.domainApi = DomainApi(api_client=self.apiClient)
+		self.sourceApi = SourcesApi(api_client=self.apiClient)
+		self.cableCatalogItemApi = CableCatalogItemsApi(api_client=self.apiClient)
+		self.machineDesignItemApi = MachineDesignItemsApi(api_client=self.apiClient)
 
 		self.authApi = AuthenticationApi(api_client=self.apiClient)
 
 	def getItemApi(self):
 		return self.itemApi
 
+	def getDomainApi(self):
+		return self.domainApi
+
 	def getDownloadApi(self):
 		return self.downloadsApi
 
-	def getPropertyApi(self):
-		return self.propertyApi
+	def getPropertyTypeApi(self):
+		return self.propertyTypeApi
 
 	def getUsersApi(self):
 		return self.usersApi
+
+	def getSourceApi(self):
+		return self.sourceApi
+
+	def getCableCatalogItemApi(self):
+		return self.cableCatalogItemApi
+
+	def getMachineDesignItemApi(self):
+		return self.machineDesignItemApi
 
 	def authenticateUser(self, username, password):
 		response = self.authApi.authenticate_user_with_http_info(username=username, password=password)
 
 		token = response[-1][self.HEADER_TOKEN_KEY]
+		self.setAuthenticateToken(token)
+
+	def setAuthenticateToken(self, token):
 		self.apiClient.set_default_header(self.HEADER_TOKEN_KEY, token)
+
+	def getAuthenticateToken(self):
+		return self.apiClient.default_headers[self.HEADER_TOKEN_KEY]
 
 	def testAuthenticated(self):
 		self.authApi.verify_authenticated()
@@ -50,6 +78,13 @@ class CdbApiFactory:
 	def logOutUser(self):
 		self.authApi.log_out()
 
+	@classmethod
+	def createFileUploadObject(cls, filePath):
+		data = open(filePath, "rb").read()
+		b64String = base64.b64encode(data).decode()
+
+		fileName = os.path.basename(filePath)
+		return FileUploadObject(file_name=fileName, base64_binary=b64String)
 
 if __name__ == '__main__':
 	# Example
@@ -63,7 +98,7 @@ if __name__ == '__main__':
 	catalogId = catalogItem.get('id')
 
 	# Single items seem to be appropriate type
-	catalogFetchedById = itemApi.get_item_by_id_from_api(catalogId)
+	catalogFetchedById = itemApi.get_item_by_id(catalogId)
 	print(catalogFetchedById.name)
 
 	inventoryItemPerCatalog = itemApi.get_items_derived_from_item_by_item_id(catalogId)

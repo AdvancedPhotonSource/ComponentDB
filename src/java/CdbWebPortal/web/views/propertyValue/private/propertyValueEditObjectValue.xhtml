@@ -20,10 +20,7 @@ See LICENSE file.
                            propertyValueController.displaySelectedTextValue(propertyValueObject)}" /> 
 
         <p:outputPanel rendered="#{renderAllowedValuesEditPage}">
-            <p:selectOneMenu id="selectedTextValue" value="#{propertyValueObject.value}" styleClass="entityDataText" >
-                <f:selectItems var="allowedPropertyValue" value="#{propertyValueObject.propertyType.sortedAllowedPropertyValueList}" 
-                               itemLabel="#{allowedPropertyValue.value}" itemValue="#{allowedPropertyValue.value}"/>
-            </p:selectOneMenu>
+            <ui:include src="propertyValueEditObjectValueSelectOneAllowedValue.xhtml" /> 
         </p:outputPanel>
 
         <p:outputPanel rendered="#{!renderAllowedValuesEditPage}">
@@ -39,9 +36,7 @@ See LICENSE file.
 
                 <h:inputText id="DownloadActionValue" value="#{propertyValueObject.value}" styleClass="#{defaultStyleClass}"
                              rendered="#{propertyValueController.displayDownloadActionValue(propertyValueObject)}" />
-                <p:tooltip for="DownloadActionValue" value="Enter identifier property value."/>
-
-                <p:tooltip for="selectedTextValue" value="Select property value."/>
+                <p:tooltip for="DownloadActionValue" value="Enter identifier property value."/>              
 
                 <p:panelGrid columns="2" rendered="#{propertyValueController.displayImageValue(propertyValueObject)}"
                              styleClass="inlineOutputPanel">

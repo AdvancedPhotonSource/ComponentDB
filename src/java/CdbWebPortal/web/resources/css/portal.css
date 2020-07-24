@@ -801,11 +801,30 @@ h2 {
     background-position: center;
     background-size: contain;     
     animation: transition-ui-icon-machine-design 0.25s;
+    filter: grayscale(100%) brightness(500%) brightness(10%);
 }
 
 @keyframes transition-ui-icon-machine-design {
     0% {        
         transform:rotate(0deg);  
+    }
+    100% {
+        transform:rotate(360deg);
+    }
+}
+
+.ui-icon-machine-design-template {    
+    background-image: url(../../resources/images/aps-icon-template.svg) !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    animation: transition-ui-icon-machine-design 0.25s;    
+    filter: grayscale(100%) brightness(500%) brightness(10%);
+}
+
+@keyframes transition-ui-icon-machine-design-template {
+    0% {
+        transform:rotate(0deg);
     }
     100% {
         transform:rotate(360deg);
@@ -899,6 +918,10 @@ h2 {
 
 .ui-datatable table {
     table-layout: auto !important;
+}
+
+.invalidTableData {
+    color: red !important;
 }
 
 .ui-panelgrid > tbody > tr.ui-widget-content, .ui-panelgrid-even, .ui-panelgrid-odd {

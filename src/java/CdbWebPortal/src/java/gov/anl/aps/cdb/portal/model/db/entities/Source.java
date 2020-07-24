@@ -57,7 +57,7 @@ public class Source extends CdbEntity implements Serializable {
     private String contactInfo;
     @Size(max = 256)
     private String url;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "source")
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "source")
     private List<ItemSource> itemSourceList;
 
     private transient String targetUrl;
@@ -157,12 +157,23 @@ public class Source extends CdbEntity implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Source)) {
             return false;
         }
         Source other = (Source) object;
+        
+        if ((this.id == null) && (other.id == null)) {
+            // neither object has an id, so compare by names
+            if ((this.name == null) && (other.name == null)) {
+                return true;
+            } else if ((this.name == null) ^ (other.name == null)) {
+                return false;
+            } else {
+                return this.name.equals(other.name);
+            }
+        }
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+            // at least on object has a non-null id, so compare by id
             return false;
         }
         return true;
@@ -170,7 +181,11 @@ public class Source extends CdbEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "gov.anl.aps.cdb.portal.model.db.entities.Source[ id=" + id + " ]";
+        if (getName() != null && getName().isEmpty() == false) {
+            return getName();
+        } else {
+            return "gov.anl.aps.cdb.portal.model.db.entities.Source[ id=" + id + " ]";
+        }
     }
 
 }

@@ -14,17 +14,17 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               resizable="false">
 
-            <p:fileUpload fileUploadListener="#{propertyValueImageUploadBean.handleSingleFileUpload}"
-                          fileLimit="1" 
-                          allowTypes="/(\.|\/)([gG][iI][fF]|[jJ][pP][eE]?[gG]|[pP][nN][gG]|[pP][dD][fF])$/"
-                          oncomplete="propertyValueImageUploadDialogFileUploadOnComplete()"/>
-            
-            <p:remoteCommand name="propertyValueImageUploadDialogFileUploadOnComplete"
-                             onstart="PF('loadingDialog').show();"
-                             oncomplete="PF('loadingDialog').hide();"
-                             actionListener="#{propertyValueImageUploadBean.upload(propertyValueController.current)}"
-                             action="#{parentEntityController[saveAction]}" 
-                             update="@form"/> 
+        <p:fileUpload listener="#{propertyValueImageUploadBean.handleSingleFileUpload}"
+                      fileLimit="1" 
+                      allowTypes="/(\.|\/)([gG][iI][fF]|[jJ][pP][eE]?[gG]|[pP][nN][gG]|[pP][dD][fF])$/"
+                      oncomplete="propertyValueImageUploadDialogFileUploadOnComplete()"/>
+
+        <p:remoteCommand name="propertyValueImageUploadDialogFileUploadOnComplete"
+                         onstart="PF('loadingDialog').show();"
+                         oncomplete="PF('loadingDialog').hide();"
+                         actionListener="#{propertyValueImageUploadBean.upload(propertyValueController.current)}"
+                         action="#{parentEntityController[saveAction]}" 
+                         update="@form"/> 
 
     </p:dialog>
 

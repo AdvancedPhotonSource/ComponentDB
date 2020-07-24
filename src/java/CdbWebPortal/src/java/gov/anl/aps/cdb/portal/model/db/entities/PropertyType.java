@@ -113,7 +113,7 @@ public class PropertyType extends CdbEntity implements Serializable {
         @JoinColumn(name = "entity_type_id", referencedColumnName = "id")})
     @ManyToMany    
     private List<EntityType> entityTypeList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "propertyType")    
+    @OneToMany(cascade = CascadeType.PERSIST, mappedBy = "propertyType")    
     private List<PropertyValue> propertyValueList;
     @JoinColumn(name = "property_type_category_id", referencedColumnName = "id")
     @ManyToOne    

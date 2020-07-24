@@ -11,46 +11,16 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">  
+                xmlns:h="http://xmlns.jcp.org/jsf/html">  
 
-    <p:panelGrid id="itemDomainMachineDesignCreateFromTEmplatePanelGrid#{viewName}"
+    <p:panelGrid id="itemDomainMachineDesignCreateFromTemplatePanelGrid#{viewName}"
                  columns="2"
                  rendered="#{rendered}">
-        
-        <h:outputText value="Create all of template hierarchy"/>
-        <p:outputPanel>
-            <p:selectBooleanCheckbox value="#{itemDomainMachineDesignController.machineDesignTemplateCreateAll}"
-                                     onchange="createAllTemplateHierarchy()"/>
-
-            <p:remoteCommand name="createAllTemplateHierarchy"
-                             update="itemDomainMachineDesignCreateFromTEmplatePanelGrid#{viewName}"
-                             action="#{itemDomainMachineDesignController.generateTemplateForElementMachineDesignNameVars()}"
-                             onstart="PF('loadingDialog').show()"
-                             oncomplete="PF('loadingDialog').hide()"/>
-        </p:outputPanel>                                 
-        
-        <c:forEach items="#{itemDomainMachineDesignController.machineDesignNameList}"
-                   var="replacementName">
-            <h:outputText value="#{replacementName.key}"/>
-            <p:outputPanel>
-                <h:inputText value="#{replacementName.value}"
-                             onchange="templateTitlePlaceholderNameChanged()"/>
-            </p:outputPanel>
-        </c:forEach>
+        <ui:include src="itemDomainMachineDesignTemplateVarsForEach.xhtml"/>
 
         <h:outputText value="Machine Design Item Name"/>
-        <h:outputText value="#{itemDomainMachineDesignController.machineDesignName}"/> 
-
-        <h:outputText value="Machine Design Alternate Name" />        
-        <h:inputText value="#{entityController.machineDesignAlternateName}" /> 
+        <h:outputText value="#{itemDomainMachineDesignController.machineDesignName}"/>
     </p:panelGrid>
-
-    <p:remoteCommand name="templateTitlePlaceholderNameChanged"
-                     update="itemDomainMachineDesignCreateFromTEmplatePanelGrid#{viewName}
-                     #{templateTitleChangeUpdateTarget}" 
-                     action="#{itemDomainMachineDesignController.titleGenerationValueChange()}"/> 
-
 
 </ui:composition>
 

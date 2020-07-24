@@ -122,6 +122,9 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     private transient List<PropertyValueMetadata> propertyValueMetadataList;    
     @JsonIgnore
     private transient Boolean isHasPropertyMetadata = null;
+    
+    @JsonIgnore
+    private transient AllowedPropertyValue selectedAllowedPropertyValue = null; 
 
     public PropertyValue() {
     }
@@ -365,7 +368,7 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
                         for (PropertyMetadata pm : this.getPropertyMetadataList()) {
                             String metadataKey = pm.getMetadataKey();
                             PropertyMetadata otherPm = other.getPropertyMetadataForKey(metadataKey); 
-                            if (ObjectUtility.equals(pm.getMetadataValue(), otherPm.getMetadataValue()) == false) {
+                            if ((otherPm == null) || (ObjectUtility.equals(pm.getMetadataValue(), otherPm.getMetadataValue()) == false)) {
                                 equal = false; 
                                 break; 
                             }
@@ -449,8 +452,11 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
     public List<PropertyValueMetadata> getPropertyValueMetadataList() {
         if (propertyValueMetadataList == null) {
             if (propertyType != null) {
-
                 List<PropertyTypeMetadata> propertyTypeMetadataList = propertyType.getPropertyTypeMetadataList();
+                if (propertyTypeMetadataList == null) {
+                    return propertyValueMetadataList; 
+                }
+                
                 propertyValueMetadataList = new ArrayList<>();
 
                 for (PropertyTypeMetadata ptm : propertyTypeMetadataList) {
@@ -592,6 +598,26 @@ public class PropertyValue extends PropertyValueBase implements Serializable {
             // will not happen 
         }
         return copied;
+    }
+
+    public AllowedPropertyValue getSelectedAllowedPropertyValue() {
+        if (value != null) {
+            for (AllowedPropertyValue apv : getPropertyType().getAllowedPropertyValueList()) {
+                String value = apv.getValue();
+                if (value.equals(this.value)) {
+                    selectedAllowedPropertyValue = apv;
+                    break; 
+                }
+            }
+        }
+        return selectedAllowedPropertyValue;
+    }
+
+    public void setSelectedAllowedPropertyValue(AllowedPropertyValue selectedAllowedPropertyValue) {
+        this.selectedAllowedPropertyValue = selectedAllowedPropertyValue;
+        if (selectedAllowedPropertyValue != null) {
+            this.value = selectedAllowedPropertyValue.getValue(); 
+        }
     }
 
     @Override

@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -139,14 +140,14 @@ public class ItemSourceSettings extends CdbEntitySettingsBase<ItemSourceControll
             return;
         }
 
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByCost = (String) filters.get("cost");
-        filterByContactInfo = (String) filters.get("contactInfo");
-        filterByIsManufacturer = (String) filters.get("isManufacturer");
-        filterByIsVendor = (String) filters.get("isVendor");
-        filterByPartNumber = (String) filters.get("partNumber");
-        filterBySourceName = (String) filters.get("source.name");
-        filterByUrl = (String) filters.get("url");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByCost = (String) filters.get("cost").getFilterField();
+        filterByContactInfo = (String) filters.get("contactInfo").getFilterField();
+        filterByIsManufacturer = (String) filters.get("isManufacturer").getFilterField();
+        filterByIsVendor = (String) filters.get("isVendor").getFilterField();
+        filterByPartNumber = (String) filters.get("partNumber").getFilterField();
+        filterBySourceName = (String) filters.get("source.name").getFilterField();
+        filterByUrl = (String) filters.get("url").getFilterField();
     }
     
     public Boolean getDisplayCost() {

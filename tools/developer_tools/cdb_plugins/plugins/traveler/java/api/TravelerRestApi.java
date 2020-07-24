@@ -32,9 +32,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
-import org.apache.log4j.Logger;
-import org.primefaces.json.JSONObject;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.primefaces.shaded.json.JSONObject;
 
 /**
  * CDB REST Web Service API class.
@@ -54,7 +54,7 @@ public class TravelerRestApi {
 
     private static final boolean httpsInitialized = initializeHttpsConnection();    
 
-    private static final Logger logger = Logger.getLogger(TravelerRestApi.class.getName());
+    private static final Logger logger = LogManager.getLogger(TravelerRestApi.class.getName());
 
     private static boolean initializeHttpsConnection() {
         HttpsURLConnection.setDefaultSSLSocketFactory(new NoServerVerificationSSLSocketFactory());

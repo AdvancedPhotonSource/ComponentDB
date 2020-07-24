@@ -4,13 +4,21 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
+import gov.anl.aps.cdb.portal.controllers.SourceController;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -18,13 +26,40 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_CATALOG_ID + "")   
+@JsonIgnoreProperties(value = {
+    // Transient
+    "url",
+    "urlDisplay",
+    "imageUrl",
+    "imageUrlDisplay",
+    "manufacturer",
+    "altPartNumber",
+    "weight",
+    "diameter",
+    "conductors",
+    "insulation",
+    "jacketColor",
+    "voltageRating",
+    "fireLoad",
+    "heatLimit",
+    "bendRadius",
+    "radTolerance",
+    "team",
+    "isValid",
+    "validString",
+    "coreMetadataPropertyValue",
+    "coreMetadataPropertyInfo"
+})
 public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCableInventory> {
     
+    private static final Logger LOGGER = LogManager.getLogger(ItemDomainCableCatalog.class.getName());
+
     private transient String url = null;
     private transient String urlDisplay = null;
     private transient String imageUrl = null;
     private transient String imageUrlDisplay = null;
     private transient String manufacturer = null;
+    private transient String altPartNumber = null;
     private transient String weight = null;
     private transient String diameter = null;
     private transient String conductors = null;
@@ -34,101 +69,90 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient String fireLoad = null;
     private transient String heatLimit = null;
     private transient String bendRadius = null;
+    private transient String radTolerance = null;
     private transient String team = null;
+    private transient boolean isValid = false;
+    private transient String validString = null;
     
-    private final static String CABLE_INTERNAL_PROPERTY_TYPE = "cable_internal_property_type"; 
-    private final static String CABLE_PROPERTY_URL_KEY = "url"; 
-    private final static String CABLE_PROPERTY_IMAGE_URL_KEY = "imageUrl"; 
-    private final static String CABLE_PROPERTY_MANUFACTURER_KEY = "manufacturer"; 
-    private final static String CABLE_PROPERTY_WEIGHT_KEY = "weight"; 
-    private final static String CABLE_PROPERTY_DIAMETER_KEY = "diameter"; 
-    private final static String CABLE_PROPERTY_CONDUCTORS_KEY = "conductors"; 
-    private final static String CABLE_PROPERTY_INSULATION_KEY = "insulation"; 
-    private final static String CABLE_PROPERTY_JACKET_COLOR_KEY = "jacketColor"; 
-    private final static String CABLE_PROPERTY_VOLTAGE_RATING_KEY = "voltageRating"; 
-    private final static String CABLE_PROPERTY_FIRE_LOAD_KEY = "fireLoad"; 
-    private final static String CABLE_PROPERTY_HEAT_LIMIT_KEY = "heatLimit"; 
-    private final static String CABLE_PROPERTY_BEND_RADIUS_KEY = "bendRadius"; 
-
+    public final static String CABLE_CATALOG_INTERNAL_PROPERTY_TYPE = "cable_catalog_internal_property_type"; 
+    public final static String CABLE_PROPERTY_URL_KEY = "url"; 
+    public final static String CABLE_PROPERTY_ALT_PART_NUM_KEY = "altPartNumber"; 
+    public final static String CABLE_PROPERTY_IMAGE_URL_KEY = "imageUrl"; 
+    public final static String CABLE_PROPERTY_WEIGHT_KEY = "weight"; 
+    public final static String CABLE_PROPERTY_DIAMETER_KEY = "diameter"; 
+    public final static String CABLE_PROPERTY_CONDUCTORS_KEY = "conductors"; 
+    public final static String CABLE_PROPERTY_INSULATION_KEY = "insulation"; 
+    public final static String CABLE_PROPERTY_JACKET_COLOR_KEY = "jacketColor"; 
+    public final static String CABLE_PROPERTY_VOLTAGE_RATING_KEY = "voltageRating"; 
+    public final static String CABLE_PROPERTY_FIRE_LOAD_KEY = "fireLoad"; 
+    public final static String CABLE_PROPERTY_HEAT_LIMIT_KEY = "heatLimit"; 
+    public final static String CABLE_PROPERTY_BEND_RADIUS_KEY = "bendRadius"; 
+    public final static String CABLE_PROPERTY_RAD_TOLERANCE_KEY = "radTolerance"; 
+    
     @Override
     public Item createInstance() {
         return new ItemDomainCableCatalog(); 
     }
-
+    
+    @Override
+    public List<Item> getDerivedFromItemList() {
+        List<Item> itemList = super.getDerivedFromItemList();
+        // copy list so we are not modifying original list
+        List<Item> itemListCopy = new ArrayList<>(itemList);
+        Collections.sort(itemListCopy, new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        return itemListCopy;        
+    }
+    
+    @JsonIgnore
     public List<ItemDomainCableInventory> getCableInventoryItemList() {
         return (List<ItemDomainCableInventory>)(List<?>) super.getDerivedFromItemList();
     }
     
-    private PropertyValue getInternalCablePropertyValue() {
-        List<PropertyValue> propertyValueList = getPropertyValueList(); 
-        for (PropertyValue propertyValue: propertyValueList) {
-            if (propertyValue.getPropertyType().getName().equals(CABLE_INTERNAL_PROPERTY_TYPE)) {
-                return propertyValue; 
-            }
-        }
-        return null; 
+    public String getAlternateName() {
+        return getItemIdentifier2();
     }
-    
-    public String getCableType() {
-        return this.getName();
+
+    public void setAlternateName(String n) {
+        setItemIdentifier2(n);
     }
-    
-    public void setCableType(String t) {
-        this.setName(t);
-    }
-    
-    public String getUrl() {
+
+    public String getUrl() throws CdbException {
         if (url == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                url = "";
-            } else {
-                url = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_URL_KEY);
-            }
+            url = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY);
         }
         return url;
     }
     
-    public void setUrl(String w) {
+    public void setUrl(String w) throws CdbException {
         url = w;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_URL_KEY, w);
-        }
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY, w);
     }
     
-    public String getUrlDisplay() {
+    public String getUrlDisplay() throws CdbException {
         if (urlDisplay == null && this.getUrl() != null) {
             urlDisplay = HttpLinkUtility.prepareHttpLinkDisplayValue(this.getUrl());
         }
         return urlDisplay;
     }
 
-    public String getImageUrl() {
+    public String getImageUrl() throws CdbException {
         if (imageUrl == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                imageUrl = "";
-            } else {
-                imageUrl = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_IMAGE_URL_KEY);
-            }
+            imageUrl = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY);
         }
         return imageUrl;
     }
     
-    public void setImageUrl(String w) {
+    public void setImageUrl(String w) throws CdbException {
         imageUrl = w;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_IMAGE_URL_KEY, w);
-        }
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY, w);
     }
     
-    public String getImageUrlDisplay() {
+    public String getImageUrlDisplay() throws CdbException {
         if (imageUrlDisplay == null && this.getImageUrl() != null) {
             imageUrlDisplay = HttpLinkUtility.prepareHttpLinkDisplayValue(this.getImageUrl());
         }
@@ -136,25 +160,45 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
 
     public String getManufacturer() {
-        if (manufacturer == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                manufacturer = "";
-            } else {
-                manufacturer = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_MANUFACTURER_KEY);
-            }
-        }
         return manufacturer;
     }
     
-    public void setManufacturer(String w) {
-        manufacturer = w;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_MANUFACTURER_KEY, w);
+    public void setManufacturer(String sourceName) {        
+        Source source = SourceController.getInstance().findByName(sourceName);
+        if (source != null) {
+            this.setManufacturerSource(source);
         }
+    }
+    
+    public void setManufacturerId(String sourceId) {
+        Source source = (Source)(getEntityById(SourceController.getInstance(), sourceId));
+        if (source != null) {
+            this.setManufacturerSource(source);
+        } else {
+            LOGGER.error("setManufacturerId() unknown source id " + sourceId);
+        }
+    }
+    
+    public void setManufacturerSource(Source source) {           
+        List<ItemSource> sourceList = new ArrayList<>();
+        ItemSource itemSource = new ItemSource();
+        itemSource.setItem(this);
+        itemSource.setSource(source);
+        sourceList.add(itemSource);
+        this.setItemSourceList(sourceList);
+        manufacturer = source.getName();
+    }
+    
+    public String getAltPartNumber() throws CdbException {
+        if (altPartNumber == null) {
+            altPartNumber = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_ALT_PART_NUM_KEY);
+        }
+        return altPartNumber;
+    }
+    
+    public void setAltPartNumber(String n) throws CdbException {
+        altPartNumber = n;
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_ALT_PART_NUM_KEY, n);
     }
     
     public String getPartNumber() {
@@ -165,202 +209,124 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         this.setItemIdentifier1(n);
     }
     
-    public String getWeight() {
+    public String getWeight() throws CdbException {
         if (weight == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                weight = "";
-            } else {
-                weight = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_WEIGHT_KEY);
-            }
+            weight = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_WEIGHT_KEY);
         }
         return weight;
     }
     
-    public void setWeight(String w) {
+    public void setWeight(String w) throws CdbException {
         weight = w;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_WEIGHT_KEY, w);
-        }
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_WEIGHT_KEY, w);
     }
     
-    public String getDiameter() {
+    public String getDiameter() throws CdbException {
         if (diameter == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                diameter = "";
-            } else {
-                diameter = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_DIAMETER_KEY);
-            }
+            diameter = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_DIAMETER_KEY);
         }
         return diameter;
     }
     
-    public void setDiameter(String d) {
+    public void setDiameter(String d) throws CdbException {
         diameter = d;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_DIAMETER_KEY, d + "");
-        }
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_DIAMETER_KEY, d);
     }
     
-    public String getConductors() {
+    public String getConductors() throws CdbException {
         if (conductors == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                conductors = "";
-            } else {
-                conductors = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_CONDUCTORS_KEY);
-            }
+            conductors = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_CONDUCTORS_KEY);
         }
         return conductors;
     }
     
-    public void setConductors(String w) {
+    public void setConductors(String w) throws CdbException {
         conductors = w;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_CONDUCTORS_KEY, w);
-        }
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_CONDUCTORS_KEY, w);
     }
     
-    public String getInsulation() {
+    public String getInsulation() throws CdbException {
         if (insulation == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                insulation = "";
-            } else {
-                insulation = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_INSULATION_KEY);
-            }
+            insulation = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_INSULATION_KEY);
         }
         return insulation;
     }
     
-    public void setInsulation(String w) {
+    public void setInsulation(String w) throws CdbException {
         insulation = w;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_INSULATION_KEY, w);
-        }
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_INSULATION_KEY, w);
     }
     
-    public String getJacketColor() {
+    public String getJacketColor() throws CdbException {
         if (jacketColor == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                jacketColor = "";
-            } else {
-                jacketColor = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_JACKET_COLOR_KEY);
-            }
+            jacketColor = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_JACKET_COLOR_KEY);
         }
         return jacketColor;
     }
     
-    public void setJacketColor(String w) {
+    public void setJacketColor(String w) throws CdbException {
         jacketColor = w;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_JACKET_COLOR_KEY, w);
-        }
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_JACKET_COLOR_KEY, w);
     }
     
-    public String getVoltageRating() {
+    public String getVoltageRating() throws CdbException {
         if (voltageRating == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                voltageRating = "";
-            } else {
-                voltageRating = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_VOLTAGE_RATING_KEY);
-            }
+            voltageRating = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_VOLTAGE_RATING_KEY);
         }
         return voltageRating;
     }
     
-    public void setVoltageRating(String w) {
+    public void setVoltageRating(String w) throws CdbException {
         voltageRating = w;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_VOLTAGE_RATING_KEY, w);
-        }
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_VOLTAGE_RATING_KEY, w);
     }
     
-    public String getFireLoad() {
+    public String getFireLoad() throws CdbException {
         if (fireLoad == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                fireLoad = "";
-            } else {
-                fireLoad = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_FIRE_LOAD_KEY);
-            }
+            fireLoad = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_FIRE_LOAD_KEY);
         }
         return fireLoad;
     }
     
-    public void setFireLoad(String w) {
+    public void setFireLoad(String w) throws CdbException {
         fireLoad = w;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_FIRE_LOAD_KEY, w);
-        }
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_FIRE_LOAD_KEY, w);
     }
     
-    public String getHeatLimit() {
+    public String getHeatLimit() throws CdbException {
         if (heatLimit == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                heatLimit = "";
-            } else {
-                heatLimit = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_HEAT_LIMIT_KEY);
-            }
+            heatLimit = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_HEAT_LIMIT_KEY);
         }
         return heatLimit;
     }
     
-    public void setHeatLimit(String w) {
+    public void setHeatLimit(String w) throws CdbException {
         heatLimit = w;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_HEAT_LIMIT_KEY, w);
-        }
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_HEAT_LIMIT_KEY, w);
     }
     
-    public String getBendRadius() {
+    public String getBendRadius() throws CdbException {
         if (bendRadius == null) {
-            PropertyValue propertyValue = getInternalCablePropertyValue();
-            if (propertyValue == null) {
-                bendRadius = "";
-            } else {
-                bendRadius = propertyValue.getPropertyMetadataValueForKey(CABLE_PROPERTY_BEND_RADIUS_KEY);
-            }
+            bendRadius = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_BEND_RADIUS_KEY);
         }
         return bendRadius;
     }
     
-    public void setBendRadius(String w) {
+    public void setBendRadius(String w) throws CdbException {
         bendRadius = w;
-        
-        PropertyValue propertyValue = getInternalCablePropertyValue();
-
-        if (propertyValue != null) {
-            propertyValue.setPropertyMetadataValue(CABLE_PROPERTY_BEND_RADIUS_KEY, w);
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_BEND_RADIUS_KEY, w);
+    }
+    
+    public String getRadTolerance() throws CdbException {
+        if (radTolerance == null) {
+            radTolerance = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY);
         }
+        return radTolerance;
+    }
+    
+    public void setRadTolerance(String w) throws CdbException {
+        radTolerance = w;
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY, w);
     }
     
     public String getTeam() {
@@ -370,14 +336,39 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return team;
     }
     
-    public void setTeam(String categoryId) {
-        ItemCategory category = ItemCategoryController.getInstance().findById(Integer.valueOf(categoryId));
+    public void setTeam(ItemCategory category) throws CdbException {
         if (category != null) {
+            String domainName = category.getDomain().getName();
+            if (!domainName.equals(this.getDomain().getName())) {
+                String msg = "invalid domain: " + domainName +
+                        " expected: " + this.getDomain().getName();
+                LOGGER.error("setTeam() " + msg);
+                throw new CdbException(msg);
+            }
+
             List<ItemCategory> categoryList = new ArrayList<>();
             categoryList.add(category);
             this.setItemCategoryList(categoryList);
             team = this.getItemCategoryString();
+        } else {
+            LOGGER.error("setTeamId() null item category");
         }
     }
     
+    public boolean isIsValid() {
+        return isValid;
+    }
+
+    public void setIsValid(boolean isValid) {
+        this.isValid = isValid;
+    }
+
+    public String getValidString() {
+        return validString;
+    }
+
+    public void setValidString(String validString) {
+        this.validString = validString;
+    }
+        
 }

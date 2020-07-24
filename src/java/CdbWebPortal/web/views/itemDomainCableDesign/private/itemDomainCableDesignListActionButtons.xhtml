@@ -13,38 +13,35 @@ See LICENSE file.
     <ui:define name="listAddButton">
 
         <p:menuButton value="Add"
-                      icon="ui-icon-plus"
+                      icon="fa fa-plus"
                       styleClass="actionButtonLeft"
                       rendered="#{loginController.loggedInAsAdmin}">
             <p:menuitem value="Cable"
                         action="#{itemDomainCableDesignController.prepareWizardCable()}"
                         icon="ui-icon-cable-design"
-                        styleClass="actionButtonLeft">
+                        styleClass="actionButtonLeft"
+                        onstart="PF('loadingDialog').show();"
+                        oncomplete="PF('loadingDialog').hide();">
             </p:menuitem>
             <p:menuitem value="Circuit"
                         action="#{itemDomainCableDesignController.prepareWizardCircuit()}"
                         icon="ui-icon-cable-design"
                         styleClass="actionButtonLeft"
-                        disabled="true">
+                        disabled="true"
+                        onstart="PF('loadingDialog').show();"
+                        oncomplete="PF('loadingDialog').hide();">
             </p:menuitem>
             <p:menuitem value="Bundle"
                         action="#{itemDomainCableDesignController.prepareWizardBundle()}"
                         icon="ui-icon-cable-design"
                         styleClass="actionButtonLeft"
-                        disabled="true">
+                        disabled="true"
+                        onstart="PF('loadingDialog').show();"
+                        oncomplete="PF('loadingDialog').hide();">
             </p:menuitem>
         </p:menuButton>
 
     </ui:define>    
-
-    <ui:define name ="additonalListButtons">
-        <p:commandButton value="Import"
-                         icon="ui-icon-plus"
-                         action="#{itemDomainCableDesignController.prepareWizardImport()}"
-                         rendered="#{loginController.loggedInAsAdmin}"
-                         disabled="true"/> 
-
-    </ui:define>
 
 </ui:composition>
 

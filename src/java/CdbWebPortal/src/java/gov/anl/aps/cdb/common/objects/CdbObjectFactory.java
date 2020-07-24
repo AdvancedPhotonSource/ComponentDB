@@ -11,14 +11,15 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import java.lang.reflect.Type;
 import java.util.LinkedList;
 import java.util.List;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * CDB object factory class.
  */
 public class CdbObjectFactory {
 
-    private static final Logger logger = Logger.getLogger(CdbObjectFactory.class.getName());
+    private static final Logger logger = LogManager.getLogger(CdbObjectFactory.class.getName());
     private static final Gson gson = new GsonBuilder().create();
 
     /**

@@ -19,7 +19,8 @@ import java.awt.Graphics2D;
 import java.io.ByteArrayInputStream;
 import javax.imageio.ImageIO;
 import java.io.ByteArrayOutputStream;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Utility class for manipulating images.
@@ -31,7 +32,7 @@ public class ImageUtility {
      */
     public static final String DEFAULT_IMAGE_FORMAT = "jpg";
 
-    private static final Logger logger = Logger.getLogger(ImageUtility.class.getName());
+    private static final Logger logger = LogManager.getLogger(ImageUtility.class.getName());
 
     /**
      * Resize image using default format.

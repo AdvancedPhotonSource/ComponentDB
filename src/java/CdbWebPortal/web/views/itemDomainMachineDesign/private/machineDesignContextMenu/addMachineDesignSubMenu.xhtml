@@ -12,17 +12,20 @@ See LICENSE file.
                style="width: 250px;"               
                disabled="#{disabledEditContextMenuItemForSelection}">
         
+        <ui:param name="mdIcon"
+                  value="#{entityController.currentViewIsTemplate 
+                           ? 'ui-icon-machine-design-template' 
+                           : 'ui-icon-machine-design' }" />
+        
         <ui:include src="addMachineDesignContextMenuItem.xhtml">
             <ui:param name="value" value="Placeholder"/>
-            <ui:param name="icon" value="ui-icon-machine-design"/>
+            <ui:param name="icon" value="#{mdIcon}"/>
             <ui:param name="action" value="prepareAddPlaceholder"/> 
         </ui:include>
         
-        <ui:include src="#{entityController.currentViewIsTemplate 
-                           ? '../../../common/private/commonEmptyPage.xhtml' 
-                           : 'addMachineDesignContextMenuItem.xhtml'}">
+        <ui:include src="addMachineDesignContextMenuItem.xhtml">
             <ui:param name="value" value="From Template"/>
-            <ui:param name="icon" value="ui-icon-template"/>
+            <ui:param name="icon" value="ui-icon-machine-design-template"/>
             <ui:param name="action" value="prepareAddMdFromPlaceholder" /> 
         </ui:include>                
         
@@ -34,8 +37,9 @@ See LICENSE file.
         
         <ui:include src="addMachineDesignContextMenuItem.xhtml">
             <ui:param name="value" value="Top Machine Design"/>
-            <ui:param name="icon" value="ui-icon-machine-design"/>
+            <ui:param name="icon" value="#{mdIcon}"/>
             <ui:param name="action" value="prepareAddMoveExistingMd"/>
+            <ui:param name="menuItemRendered" value="#{itemDomainMachineDesignController.currentViewIsSubAssembly == false}" />
         </ui:include>
              
     </p:submenu>

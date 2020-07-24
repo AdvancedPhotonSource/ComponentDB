@@ -7,8 +7,8 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">   
-
+                xmlns:h="http://xmlns.jcp.org/jsf/html">              
+                            
 
 
     <h:outputText value="Machine Design Item Name"
@@ -27,6 +27,11 @@ See LICENSE file.
                          process="@this"
                          oncomplete="updateMachineDesignAddButton()"/>
     </p:outputPanel>
+    
+    <h:outputText value="Optional Name Usage"
+                  rendered="#{currentViewIsTemplate}"/> 
+    <h:outputText value="Place parements within {} in template name. Example: 'templateName {paramName}'"
+                  rendered="#{currentViewIsTemplate}"/>
     
     <h:outputText value="Machine Design Alternate Name" 
                   rendered="#{newMachineDesignCreation}"/>

@@ -7,12 +7,14 @@ package gov.anl.aps.cdb.portal.controllers.settings;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemElementController;
-import gov.anl.aps.cdb.portal.controllers.SettingController;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
+import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import java.util.Map;
 import java.util.Objects;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -20,7 +22,10 @@ import org.apache.log4j.Logger;
  */
 public abstract class ItemSettings<ItemControllerBase extends ItemController> extends CdbDomainEntitySettings<ItemControllerBase> {
     
-    private static final Logger logger = Logger.getLogger(ItemSettings.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemSettings.class.getName());
+    
+    // Name and image is always shown. 
+    protected final int ItemElementItemInitialColumnCount = 2; 
     
     protected Boolean displayItemIdentifier1 = null;
     protected Boolean displayItemIdentifier2 = null;
@@ -342,6 +347,36 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
         this.displayItemElementListQrId = displayItemElementListQrId;
     }
     
+    public int getItemElementItemColumnCount() {        
+        int count = ItemElementItemInitialColumnCount; 
+        
+        if (getDisplayItemElementListItemIdentifier1()) {
+            count++; 
+        }
+        if (getDisplayItemElementListItemIdentifier2()) {
+            count++; 
+        }
+        if (getDisplayItemElementListDescription()) {
+            count++; 
+        }
+        if (getDisplayItemElementListItemCategory()) {
+            count++; 
+        }
+        if (getDisplayItemElementListItemType()) {
+            count++; 
+        }
+        if (getDisplayItemElementListProject()) {
+            count++; 
+        }
+        if (getDisplayItemElementListSource()) {
+            count++; 
+        }
+        if (getDisplayItemElementListQrId()) {
+            count++; 
+        }
+        return count; 
+    }
+    
     public Boolean getDisplayItemProject() {
         if (displayItemProject == null) {
             displayItemProject = parentController.getEntityDisplayItemProject();
@@ -530,5 +565,12 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
     public Boolean getAutoLoadListFilterValues() {
         return autoLoadListFilterValues;
     }
-     
+    
+    public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
+        return parentController.getCoreMetadataPropertyInfo();
+    }
+    
+    public PropertyType getCoreMetadataPropertyType() {
+        return parentController.getCoreMetadataPropertyType();
+    }
 }

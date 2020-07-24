@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -35,6 +36,11 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
     private final String QUERY_STRING_START = "SELECT i FROM Item i ";
     private final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"};
+  
+    /**
+     * Returns Item domain for subclass implementation. 
+     */
+    public abstract String getDomainName();
 
     public ItemFacadeBase(Class<ItemDomainEntity> entityClass) {
         super(entityClass);
@@ -242,6 +248,18 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
     }
 
+    public List<ItemDomainEntity> findByDomainAndEntityTypeAndTopLevel(String domainName, String entityTypeName) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndTopLevel")
+                    .setParameter("domainName", domainName)
+                    .setParameter("entityTypeName", entityTypeName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
+
     public List<ItemDomainEntity> findByDomain(String domainName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainName")
@@ -308,6 +326,10 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return findByDomain(domainName, "Item.findByDomainNameOrderByDerivedFromItem");
     }
 
+    public List<ItemDomainEntity> findByDomainOrderByDerivedFromItemAndItemName(String domainName) {
+        return findByDomain(domainName, "Item.findByDomainNameOrderByDerivedFromItemAndItemName");
+    }
+
     private List<ItemDomainEntity> findByDomainAndProject(String domainName, String projectName, String queryName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndProjectOrderByQrId")
@@ -344,6 +366,88 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     public List<ItemDomainEntity> findByName(String name) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByName")
+                    .setParameter("name", name)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
+    
+    /**
+     * Find unique entity by name.  Returns null if none is found, or raises
+     * CdbException if multiple instances are found.
+     */
+    public ItemDomainEntity findUniqueByName(String name, String filterDomainName) throws CdbException {
+        
+        if ((name == null) || (name.isEmpty())) {
+            return null;
+        }
+        
+        String domainName = getDomainName();
+        
+        if ((domainName == null) || domainName.isEmpty()) {
+            throw new CdbException("findUniqueByName() not implemented by facade");
+        }
+        
+        List<ItemDomainEntity> items = findByDomainAndName(domainName, name);
+        if (items.size() > 1) {
+            // ambiguous result, throw exception
+            throw new CdbException("findUniqueByName() returns multiple instances");
+        } else if (items.size() == 0) {
+            // no items found
+            return null;
+        } else {
+            // return single item returned by query
+            return items.get(0);
+        }
+    }
+    
+    public List<ItemDomainEntity> findByDomainAndName(String domainName, String name) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndName")
+                    .setParameter("domainName", domainName)
+                    .setParameter("name", name)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
+
+    public ItemDomainEntity findUniqueByDomainAndEntityTypeAndName(
+            String name, 
+            String entityType, 
+            String filterDomainName) throws CdbException {
+        
+        if ((name == null) || (name.isEmpty()) || (entityType == null) || (entityType.isEmpty())) {
+            return null;
+        }
+        
+        String domainName = getDomainName();
+        
+        if ((domainName == null) || domainName.isEmpty()) {
+            throw new CdbException("findUniqueByEntityTypeAndName() not implemented by facade");
+        }
+        
+        List<ItemDomainEntity> items = findByDomainAndEntityTypeAndName(domainName, entityType, name);
+        if (items.size() > 1) {
+            // ambiguous result, throw exception
+            throw new CdbException("findUniqueByEntityTypeAndName() returns multiple instances");
+        } else if (items.size() == 0) {
+            // no items found
+            return null;
+        } else {
+            // return single item returned by query
+            return items.get(0);
+        }
+    }
+    
+    public List<ItemDomainEntity> findByDomainAndEntityTypeAndName(String domainName, String entityType, String name) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndName")
+                    .setParameter("domainName", domainName)
+                    .setParameter("entityTypeName", entityType)
                     .setParameter("name", name)
                     .getResultList();
         } catch (NoResultException ex) {
@@ -653,6 +757,33 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
                         .setParameter("domainName", domainName)
                         .setParameter("list", list)
                         .setParameter("entityTypeName", entityTypeName)
+                        .getResultList();
+            } catch (NoResultException ex) {
+            }
+        }
+        return null;
+    }
+
+    public List<ItemDomainEntity> getItemListContainedInListWithEntityType(String domainName, ListTbl list, String entityTypeName) {
+        if (list != null) {
+            try {
+                return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsInListWithEntityType")
+                        .setParameter("domainName", domainName)
+                        .setParameter("list", list)
+                        .setParameter("entityTypeName", entityTypeName)
+                        .getResultList();
+            } catch (NoResultException ex) {
+            }
+        }
+        return null;
+    }
+
+    public List<ItemDomainEntity> getItemListContainedInListWithoutEntityType(String domainName, ListTbl list) {
+        if (list != null) {
+            try {
+                return (List<ItemDomainEntity>) em.createNamedQuery("Item.findItemsInListWithoutEntityType")
+                        .setParameter("domainName", domainName)
+                        .setParameter("list", list)
                         .getResultList();
             } catch (NoResultException ex) {
             }

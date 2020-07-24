@@ -57,6 +57,47 @@ See LICENSE file.
                  collapsed="#{entityController.displayContentsOfCreatedFromTemplateItem}">
             <ui:include src="../../item/private/itemListCreatedFromTemplateDataTable.xhtml" /> 
         </p:panel>
+                
+        <p:panel header="Inventory"
+                 collapsed="#{itemDomainMachineDesignController.collapseContentsOfInventoryItem}"
+                 rendered="#{itemDomainMachineDesignController.renderInventorySection}"
+                 toggleable="true">
+            
+            <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
+                <ui:param name="childEntityTypeName" value="machineDesingInventory" />
+                <ui:param name="displayAddButton" value="#{loginController.loggedIn}" />
+                <ui:param name="onCompleteAddButtonCommand" value="addMachineDesingInventoryCommand()" /> 
+                <ui:param name="customizableListDataTable" value="#{false}"/>
+            </ui:include>
+
+            <p:remoteCommand name="addMachineDesingInventoryCommand"
+                             onstart="PF('loadingDialog').show()"
+                             action="#{itemDomainMachineDesignController.prepareCreateInventoryFromCurrentTemplate()}"                              
+                             update="itemDomainMachineDesignCreateMDInventoryDialog"
+                             oncomplete="PF('loadingDialog').hide();
+                                         PF('itemDomainMachineDesignCreateMDInventoryDialogWidget').show()"/>
+            
+            <ui:param name="inventoryList"
+                      value="#{itemObject.derivedFromItemList}" />
+            <ui:param name="filterableInventory"
+                      value="#{facesUtility.islistSizeOverMin(inventoryList, 10)}"/>
+                             
+            <p:dataTable id="machineDesingInventoryListDataTable"
+                         value="#{inventoryList}"
+                         var="inventoryObject"
+                         rows="10"
+                         paginator="true"
+                         paginatorAlwaysVisible="false">
+                <ui:include src="../../item/private/itemListObject.xhtml" >
+                    <ui:param name="itemListObject"
+                              value="#{inventoryObject}"/>
+                    <ui:param name="filterable"
+                              value="#{filterableInventory}" />
+                    <ui:param name="sortable"
+                              value="#{filterableInventory}" /> 
+                </ui:include>
+            </p:dataTable>
+        </p:panel>
 
         <p:panel header="Cable Connections"
                  toggleable="true"
@@ -74,9 +115,4 @@ See LICENSE file.
         </p:panel>
 
     </p:outputPanel>
-
-
-
 </ui:composition>
-
-

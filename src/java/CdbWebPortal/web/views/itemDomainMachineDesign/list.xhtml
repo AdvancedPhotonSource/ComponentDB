@@ -27,11 +27,28 @@ See LICENSE file.
                 <p:tooltip for="itemDomainMachineDesignKeyboardShortcutButton"
                            value="Show keyboard shortcuts for machine design list."/> 
             </p:commandButton>
+
+            <p:selectBooleanButton id="itemDomainMachineToggleShowCables"
+                                   onLabel="" offLabel=""
+                                   onIcon="ui-icon ui-icon-cable-design"
+                                   value="#{itemDomainMachineDesignController.cablesShown}"
+                                   onchange="onChangeItemDomainMachineToggleShowCables()"
+                                   rendered="#{!itemDomainMachineDesignController.displayListConfigurationView}"
+                                   offIcon="ui-icon ui-icon-cable-design">
+                <p:remoteCommand name="onChangeItemDomainMachineToggleShowCables"
+                                 action="#{itemDomainMachineDesignController.list()}"
+                                 onstart="PF('loadingDialog').show()" />
+                <p:tooltip for="itemDomainMachineToggleShowCables" 
+                           value="Toggle show cables in machine design hierarchy." />
+            </p:selectBooleanButton>
+
             <p:selectBooleanButton onLabel="Favorites Enabled" offLabel="Favorites Disabled"
                                    onIcon="fa fa-star" offIcon="fa fa-star-o"
                                    value="#{itemDomainMachineDesignController.favoritesShown}"
                                    onchange="onChangeFavoritesEnabled()"
-                                   rendered="#{!itemDomainMachineDesignController.displayListConfigurationView and loginController.loggedIn}">
+                                   rendered="#{!itemDomainMachineDesignController.displayListConfigurationView 
+                                               and loginController.loggedIn
+                                               and itemDomainMachineDesignController.currentViewIsStandard}">
                 <p:remoteCommand name="onChangeFavoritesEnabled"                         
                                  action="#{itemDomainMachineDesignController.list()}"
                                  onstart="PF('loadingDialog').show()"/> 
@@ -75,10 +92,26 @@ See LICENSE file.
 
     <ui:define name="listActionButtons">
         <p:outputPanel rendered="#{!itemDomainMachineDesignController.displayListConfigurationView}">
-            <ui:include src="../item/private/itemListActionButtons.xhtml" >
+            <ui:decorate template="../item/private/templates/itemListActionButtonsTemplate.xhtml">                
                 <ui:param name="listExportable"
                           value="#{false}" /> 
-            </ui:include>
+                <ui:param name="templateIcon"
+                          value="ui-icon-machine-design-template" />
+                <ui:define name="additionalListTypeCategoryActionButtons">
+                    <p:commandButton id="#{entityTypeName}#{viewName}reorderTopLevel"
+                                     icon="fa fa-sort"
+                                     styleClass="actionButtonRight"
+                                     action="#{entityController.prepareReorderTopLevelMachineDesignElements()}"
+                                     rendered="#{loginController.loggedInAsAdmin}"
+                                     onclick="PF('loadingDialog').show()"
+                                     oncomplete="PF('itemDomainMachineDesignReorderOverlayPanelWidget').show();
+                                     PF('loadingDialog').hide()"
+                                     update="itemDomainMachineDesignReorderOverlayPanel">
+                        <p:tooltip for="#{entityTypeName}#{viewName}reorderTopLevel" 
+                                   value="Reorder top level machine designs."/>
+                    </p:commandButton>
+                </ui:define>
+            </ui:decorate>
         </p:outputPanel>
     </ui:define>
 
@@ -89,6 +122,7 @@ See LICENSE file.
         <ui:include src="private/itemDomainMachineDesignAssignedItemHistoryDialog.xhtml" />
         <ui:include src="private/itemDomainMachineDesignCableMappingDialog.xhtml"/> 
         <ui:include src="private/itemDomainMachineDesignKeyboardShortcutDialog.xhtml" />
+        <ui:include src="private/itemDomainMachineDesignTemplateReassignMacrosDialog.xhtml"/>
     </ui:define>
 
 

@@ -6,7 +6,7 @@
 JAVA_VERSION=11+28
 JDK_VERSION=jdk11
 
-CMS_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+CMS_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`

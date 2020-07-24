@@ -6,7 +6,8 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
-                xmlns:p="http://primefaces.org/ui">   
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">   
 
 
     <p:panel header="Add Machine Design Using a Template Item"
@@ -17,36 +18,43 @@ See LICENSE file.
                   value="#{itemDomainMachineDesignController.templateToCreateNewItem}" />
 
         <p:outputPanel rendered="#{templateToCreateNewItem == null}">
-            <ui:include src="../../item/private/itemSelectDataTable.xhtml">
-                <ui:param name="viewName" value="templateSelection" />
-                <ui:param name="updateTarget" 
-                          value="@parent" />
-                <ui:param name="selectionValue" 
-                          value="#{itemDomainMachineDesignController.templateToCreateNewItem}" />
-                <ui:param name="selectionTarget" 
-                          value="#{itemDomainMachineDesignController.templateToCreateNewItem}" />
-                <ui:param name="entityController" 
-                          value="#{itemDomainMachineDesignController}" />
-                <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
-                <ui:param name="selectDataModel" 
-                          value="#{itemDomainMachineDesignController.machineDesignTemplatesSelectionList}" />
-                <ui:param name="additionalSelectionMadeRemoteCommands" 
-                          value="generateTemplateForElementMachineDesignNameVars()" /> 
-            </ui:include>
+            <ui:decorate template="templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+                <ui:param name="viewId"
+                          value="templateSelection" /> 
+                <ui:param name="rendered"
+                          value="#{true}" />
+                <ui:param name="valueModel"
+                          value="#{itemDomainMachineDesignController.machineDesignTemplateRootTreeNode}" />
+                <ui:param name="scrollable"
+                          value="#{true}"/> 
+                <ui:define name="treeTableEvents">
+                    <p:ajax event="select" listener="#{itemDomainMachineDesignController.templateToCreateNewItemSelected}"
+                            oncomplete="generateTemplateForElementMachineDesignNameVars()"/>                            
+                </ui:define>
+            </ui:decorate>
         </p:outputPanel>
-        
+
         <p:remoteCommand name="generateTemplateForElementMachineDesignNameVars"
                          action="#{itemDomainMachineDesignController.generateTemplateForElementMachineDesignNameVars()}"
                          update="machineDesignDualListViewOutputPanel"/> 
 
 
+        <ui:param name="currentViewIsTemplate"
+                  value="#{itemDomainMachineDesignController.currentViewIsTemplate}"/>
+
         <ui:include src="itemDomainMachineDesignCreateFromTemplateEditPanelGrid.xhtml">
-            <ui:param name="templateTitleChangeUpdateTarget"
-                      value="addMachineDesignUsingTemplate" />
             <ui:param name="rendered"
-                      value="#{templateToCreateNewItem != null}" /> 
+                      value="#{templateToCreateNewItem != null and currentViewIsTemplate == false}" /> 
         </ui:include>
-                
+
+        <p:outputPanel rendered="#{templateToCreateNewItem != null and currentViewIsTemplate}">
+            The selected machine design will be reused within the template. 
+            <p:panelGrid columns="2">
+                <h:outputText value="Machine Design Item Name"/>
+                <h:outputText value="#{itemDomainMachineDesignController.machineDesignName}"/>
+            </p:panelGrid>
+        </p:outputPanel>
+
         <ui:include src="itemDomainMachineDesignDualColumnListViewAddButton.xhtml">
             <ui:param name="viewName"
                       value="UsingTemplate" /> 

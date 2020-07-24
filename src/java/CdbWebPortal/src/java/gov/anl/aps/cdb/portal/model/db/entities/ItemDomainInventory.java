@@ -48,7 +48,7 @@ import org.primefaces.model.TreeNode;
                 )
             }
     ),})
-public class ItemDomainInventory extends ItemDomainInventoryBase {
+public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatalog> {
 
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_SPARE_VALUE = "Spare";
@@ -59,22 +59,21 @@ public class ItemDomainInventory extends ItemDomainInventoryBase {
 
     private transient InventoryBillOfMaterialItem containedInBOM;
 
-    private transient Boolean sparePartIndicator = null;
     private transient SparePartsBean sparePartsBean = null;
-
-    // Inventory status variables
-    private transient PropertyValue inventoryStatusPropertyValue;
-    private transient boolean loadedCurrentStatusPropertyValue = false;
 
     @Override
     public Item createInstance() {
         return new ItemDomainInventory();
     }
+    
+    public String getStatusPropertyTypeName() {
+        return ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
+    }
 
-    public ItemDomainCatalog getCatalogItem() {
-        return (ItemDomainCatalog) getDerivedFromItem();
-    } 
-
+    public static String generatePaddedUnitName(int itemNumber) {
+        return String.format("Unit: %04d", itemNumber);
+    }
+    
     @Override
     // TODO API Change back to json ignore and utilize the catalog item 
     //@JsonIgnore
@@ -125,45 +124,6 @@ public class ItemDomainInventory extends ItemDomainInventoryBase {
             sparePartsBean = SparePartsBean.getInstance();
         }
         return sparePartsBean;
-    }
-
-    @JsonIgnore
-    public PropertyValue getInventoryStatusPropertyValue() {
-        if (!loadedCurrentStatusPropertyValue) {
-            if (this.getPropertyValueInternalList() != null) {
-                for (PropertyValue propertyValue : this.getPropertyValueInternalList()) {
-                    String propertyTypeName = propertyValue.getPropertyType().getName();
-                    if (propertyTypeName.equals(ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME)) {
-                        inventoryStatusPropertyValue = propertyValue;
-                        break;
-                    }
-                }
-            }
-            loadedCurrentStatusPropertyValue = true;
-        }
-        return inventoryStatusPropertyValue;
-    }
-
-    public void setInventoryStatusPropertyValue(PropertyValue inventoryStatusPropertyValue) {
-        this.inventoryStatusPropertyValue = inventoryStatusPropertyValue;
-    }
-
-    @JsonIgnore
-    public String getInventoryStatusValue() {
-        if (getInventoryStatusPropertyValue() != null) {
-            String value = getInventoryStatusPropertyValue().getValue();
-            if (value != null) {
-                return value;
-            }
-        }
-        return "";
-    }
-
-    public void setInventoryStatusValue(String status) {
-        if (getInventoryStatusPropertyValue() != null) {
-            getInventoryStatusPropertyValue().setValue(status);
-            sparePartIndicator = null;
-        }
     }
 
     @Override

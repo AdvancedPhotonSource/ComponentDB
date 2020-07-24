@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import com.itextpdf.text.DocumentException;
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
@@ -20,6 +21,8 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
+import java.io.IOException;
+import java.io.InputStream;
 
 import java.io.Serializable;
 import java.util.List;
@@ -30,7 +33,8 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.StreamedContent;
 
 @Named("propertyValueController")
@@ -45,7 +49,7 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
 
     private PropertyValueMetadata currentPropertyMetadata;
 
-    private static final Logger logger = Logger.getLogger(PropertyValueController.class.getName());
+    private static final Logger logger = LogManager.getLogger(PropertyValueController.class.getName());
 
     public PropertyValueController() {
         super();
@@ -131,6 +135,32 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
         return null;
     }
 
+    public StreamedContent executeFileDownloadExcelPDFActionCommandForPropertyValue(PropertyValue propertyValue) {
+        DisplayType propertyValueDisplayType = getPropertyValueDisplayType(propertyValue);
+        if (propertyValueDisplayType == DisplayType.FILE_DOWNLOAD
+                || propertyValueDisplayType == DisplayType.GENERATED_HTTP_LINK_FILE_DOWNLOAD) {
+            try {
+                PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
+                StreamedContent fileDownloadActionCommand = propertyTypeHandler.fileDownloadActionCommand(propertyValue);
+                String fileName = fileDownloadActionCommand.getName();
+                InputStream stream = fileDownloadActionCommand.getStream();
+                            
+                return GalleryUtility.convertExcelToPDF(stream, fileName);
+            } catch (ExternalServiceError ex) {
+                logger.error(ex);
+                SessionUtility.addErrorMessage("Error", ex.getMessage());
+            } catch (DocumentException ex) {
+                logger.error(ex);
+                SessionUtility.addErrorMessage("Error", ex.getMessage());
+            } catch (IOException ex) {
+                logger.error(ex);
+                SessionUtility.addErrorMessage("Error", ex.getMessage());
+            }
+        }
+        
+        return null; 
+    }
+
     public String getPropertyEditPage(PropertyValue propertyValue) {
         PropertyTypeHandlerInterface propertyTypeHandler = PropertyTypeHandlerFactory.getHandler(propertyValue);
         return propertyTypeHandler.getPropertyEditPage();
@@ -213,6 +243,14 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     public boolean displayDownloadActionValue(PropertyValue propertyValue) {
         return getPropertyValueDisplayType(propertyValue).equals(DisplayType.FILE_DOWNLOAD);
     }
+    
+    public boolean displayDownloadActionExcelPDFValue(PropertyValue propertyValue) {
+        if (displayDownloadActionValue(propertyValue)) {
+            String fileName = propertyValue.getValue();
+            return GalleryUtility.isFileNameExcel(fileName); 
+        }
+        return false; 
+    }
 
     public static String getOriginalImageApplicationPath(PropertyValue propertyValue) {
         return getOriginalImageApplicationPathByValue(propertyValue.getValue());
@@ -263,12 +301,12 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     public void setCurrentPropertyMetadata(PropertyValueMetadata currentPropertyMetadata) {
         this.currentPropertyMetadata = currentPropertyMetadata;
     }
-    
+
     public void removeCurrentPropertyMetadata() {
         PropertyMetadata propertyMetadata = currentPropertyMetadata.getPropertyMetadata();
         removePropertyMetadata(propertyMetadata);
     }
-    
+
     public void removePropertyMetadata(PropertyMetadata propertyMetadata) {
         removePropertyMetadata(propertyMetadata, "Property metadata has been removed.");
     }

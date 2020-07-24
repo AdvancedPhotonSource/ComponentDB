@@ -11,10 +11,14 @@ public enum PortalStyles {
     rowStyleErrorInEntity("errorItemInRow"), 
     rowStyleNewEntity("newItemInRow"),
     
+    itemConnectorIcon("ui-icon-item-connector"), 
+    
+    machineDesingTemplateIcon("ui-icon-machine-design-template"),
     machineDesignIcon("ui-icon-machine-design"),
     catalogIcon("ui-icon-catalog"),
     inventoryIcon("ui-icon-inventory"),
-    maarcIcon("ui-icon-maarc");
+    maarcIcon("ui-icon-maarc"),
+    cableDesignIcon("ui-icon-cable-design");
 
     private String value;
 

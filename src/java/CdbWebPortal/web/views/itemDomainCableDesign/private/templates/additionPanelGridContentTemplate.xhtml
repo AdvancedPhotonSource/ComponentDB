@@ -68,9 +68,13 @@ See LICENSE file.
                 <p:tooltip for="catalogEditShowButton"
                            value="Edit Assigned Catalog Item" />
             </p:commandLink>
-            <h:outputText value="#{itemObject.getCatalogItemString()}" 
-                          title="Assigned Catalog Item" 
-                          styleClass="entityDataEmphasizedText" />
+            
+            <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="viewName"
+                          value="catalogItem"/>
+                <ui:param name="itemObject"
+                          value="#{itemObject.catalogItem}"/>
+            </ui:include>            
         </p:outputPanel>
 
 

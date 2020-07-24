@@ -18,8 +18,27 @@ See LICENSE file.
               value="#{displayMultiEditButtons != null 
                        ? displayMultiEditButtons 
                        : true}" />
+    
+    <ui:param name="templateIcon"
+              value="#{templateIcon == null 
+                       ? 'ui-icon-template' 
+                       : templateIcon }" />
 
     <ui:define name="additonalListButtons" >
+        
+        <ui:param name="importEntityActionFunctionName" 
+                  value="#{importEntityActionFunctionName != null 
+                       ? importEntityActionFunctionName 
+                       : 'prepareImport'}" /> 
+
+        <p:commandButton value="Import"
+                         icon="fa fa-plus"
+                         action="#{entityController[importEntityActionFunctionName]}"
+                         rendered="#{loginController.loggedInAsAdmin
+                                     and entityController.entityDisplayImportButton}"
+                         onstart="PF('loadingDialog').show();"
+                         oncomplete="PF('loadingDialog').hide();"/> 
+        
         <ui:param name="itemMultiEditController"
                   value="#{entityController.itemMultiEditController}" />
         <p:commandButton value="Create Multiple Items"
@@ -41,6 +60,8 @@ See LICENSE file.
     <ui:define name="listTypeCategoryActionButtons">        
         <ui:include src="../templateDefaults/common/itemListCategoryTypeActionButtons.xhtml" />
         
+        <ui:insert name="additionalListTypeCategoryActionButtons"/> 
+        
         <p:commandButton id="#{entityTypeName}#{viewName}ViewItemProperties" 
                          alt="View #{entityController.entityEntityTypeName}s" 
                          action="#{propertyTypeController.prepareItemPropertyList(entityController.defaultDomainName)}"
@@ -50,13 +71,13 @@ See LICENSE file.
         </p:commandButton>
         
         <p:commandButton id="#{entityTypeName}#{viewName}ViewItemTemplates"
-                         icon="ui-icon ui-icon-template"
+                         icon="ui-icon #{templateIcon}"
                          styleClass="actionButtonRight"
                          action="#{entityController.prepareTemplateList()}"
                          rendered="#{displayAvailableTemplatesButton}">
             <p:tooltip for="#{entityTypeName}#{viewName}ViewItemTemplates" 
                        value="View Available Templates."/>
-        </p:commandButton>
+        </p:commandButton>                
     </ui:define>  
 
 </ui:composition>

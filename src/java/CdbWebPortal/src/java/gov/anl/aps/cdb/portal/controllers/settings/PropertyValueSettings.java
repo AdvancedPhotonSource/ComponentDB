@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Map;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -164,16 +165,16 @@ public class PropertyValueSettings extends CdbEntitySettingsBase<PropertyValueCo
         if (dataTable == null) {
             return;
         }
-        Map<String, Object> filters = dataTable.getFilters();
-        filterByEnteredByUser = (String) filters.get("enteredByUser");
-        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime");
-        filterByIsDynamic = (String) filters.get("isDynamic");
-        filterByIsUserWriteable = (String) filters.get("isUserWriteable");
-        filterByTag = (String) filters.get("tag");
-        filterByType = (String) filters.get("type");
-        filterByTypeCategory = (String) filters.get("typeCategory");
-        filterByUnits = (String) filters.get("units");
-        filterByValue = (String) filters.get("value");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterByEnteredByUser = (String) filters.get("enteredByUser").getFilterField();
+        filterByEnteredOnDateTime = (String) filters.get("enteredOnDateTime").getFilterField();
+        filterByIsDynamic = (String) filters.get("isDynamic").getFilterField();
+        filterByIsUserWriteable = (String) filters.get("isUserWriteable").getFilterField();
+        filterByTag = (String) filters.get("tag").getFilterField();
+        filterByType = (String) filters.get("type").getFilterField();
+        filterByTypeCategory = (String) filters.get("typeCategory").getFilterField();
+        filterByUnits = (String) filters.get("units").getFilterField();
+        filterByValue = (String) filters.get("value").getFilterField();
     }
 
     public Boolean getDisplayEffectiveFromDateTime() {

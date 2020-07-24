@@ -13,3 +13,4 @@ rm -rf $topDir/ant
 rm -rf $topDir/glassfish
 rm -rf $topDir/python
 rm -rf $topDir/mysql
+rm -rf $topDir/anaconda

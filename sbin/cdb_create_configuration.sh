@@ -138,7 +138,7 @@ fi
 if [ ! -z $userLdapServerDnFormat ]; then
 	CDB_LDAP_AUTH_DN_FORMAT=$userLdapServerDnFormat
 fi
-if [ $ldapLookup == 'y' ]; then
+if [[ $ldapLookup == 'y' ]]; then
 	if [ ! -z $userLdapLookupFilter ]; then
 		CDB_LDAP_LOOKUP_FILTER="'$userLdapLookupFilter'"
 	elif [ ! -z $CDB_LDAP_LOOKUP_FILTER ]; then

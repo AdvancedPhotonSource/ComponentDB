@@ -9,8 +9,10 @@ import gov.anl.aps.cdb.portal.controllers.SettingController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Date;
 import java.util.Map;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.component.datatable.DataTable;
+import org.primefaces.model.FilterMeta;
 
 /**
  *
@@ -18,7 +20,7 @@ import org.primefaces.component.datatable.DataTable;
  */
 public abstract class CdbEntitySettingsBase<EntityController extends CdbEntityController> extends SettingBase<EntityController> {
     
-    private static final Logger logger = Logger.getLogger(CdbEntitySettingsBase.class.getName());
+    private static final Logger logger = LogManager.getLogger(CdbEntitySettingsBase.class.getName());
         
     protected Boolean displayId = null;
     protected Boolean displayDescription = null;
@@ -81,16 +83,16 @@ public abstract class CdbEntitySettingsBase<EntityController extends CdbEntityCo
             return;
         }
 
-        Map<String, Object> filters = dataTable.getFilters();
-        filterById = (String) filters.get("id");
-        filterByName = (String) filters.get("name");
-        filterByDescription = (String) filters.get("description");
-        filterByOwnerUser = (String) filters.get("entityInfo.ownerUser.username");
-        filterByOwnerGroup = (String) filters.get("entityInfo.ownerUserGroup.name");
-        filterByCreatedByUser = (String) filters.get("entityInfo.createdByUser.username");
-        filterByCreatedOnDateTime = (String) filters.get("entityInfo.createdOnDateTime");
-        filterByLastModifiedByUser = (String) filters.get("entityInfo.lastModifiedByUser.username");
-        filterByLastModifiedOnDateTime = (String) filters.get("entityInfo.lastModifiedOnDateTime");
+        Map<String, FilterMeta> filters = dataTable.getFilterBy();
+        filterById = (String) filters.get("id").getFilterField();
+        filterByName = (String) filters.get("name").getFilterField();
+        filterByDescription = (String) filters.get("description").getFilterField();
+        filterByOwnerUser = (String) filters.get("entityInfo.ownerUser.username").getFilterField();
+        filterByOwnerGroup = (String) filters.get("entityInfo.ownerUserGroup.name").getFilterField();
+        filterByCreatedByUser = (String) filters.get("entityInfo.createdByUser.username").getFilterField();
+        filterByCreatedOnDateTime = (String) filters.get("entityInfo.createdOnDateTime").getFilterField();
+        filterByLastModifiedByUser = (String) filters.get("entityInfo.lastModifiedByUser.username").getFilterField();
+        filterByLastModifiedOnDateTime = (String) filters.get("entityInfo.lastModifiedOnDateTime").getFilterField();
     }
 
     /**

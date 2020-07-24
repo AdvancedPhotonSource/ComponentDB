@@ -8,7 +8,8 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
@@ -21,7 +22,7 @@ import org.primefaces.model.menu.MenuModel;
  */
 public abstract class ItemCreateWizardController extends ItemControllerExtensionHelper {      
     
-    private static final Logger logger = Logger.getLogger(ItemCreateWizardController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemCreateWizardController.class.getName());
     
     private String currentWizardStep;
     protected MenuModel createItemWizardStepsMenuModel = null;

@@ -6,7 +6,7 @@
 
 MYSQL_VERSION=5.6.37
 MYSQL_TGZ_FILE=mysql-$MYSQL_VERSION.tar.gz
-CDB_HOST_ARCH=`uname | tr [A-Z] [a-z]`-`uname -m`
+CDB_HOST_ARCH=$(uname -sm | tr -s '[:upper:][:blank:]' '[:lower:][\-]')
 
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`

@@ -17,14 +17,15 @@ import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * DB utility class for property values.
  */
 public class PropertyValueUtility {
 
-    private static final Logger logger = Logger.getLogger(PropertyValueUtility.class.getName());
+    private static final Logger logger = LogManager.getLogger(PropertyValueUtility.class.getName());
     
     public static boolean verifyValidValueForPropertyValue(PropertyValue value) {
         PropertyType propertyType = value.getPropertyType();

@@ -4,8 +4,10 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.List;
 import javax.ejb.Stateless;
 
 /**
@@ -15,6 +17,11 @@ import javax.ejb.Stateless;
 @Stateless
 public class ItemDomainCableCatalogFacade extends ItemFacadeBase<ItemDomainCableCatalog> {
     
+    @Override
+    public String getDomainName() {
+        return ItemDomainName.cableCatalog.getValue();
+    }
+    
     public ItemDomainCableCatalogFacade() {
         super(ItemDomainCableCatalog.class);
     }
@@ -23,4 +30,7 @@ public class ItemDomainCableCatalogFacade extends ItemFacadeBase<ItemDomainCable
         return (ItemDomainCableCatalogFacade) SessionUtility.findFacade(ItemDomainCableCatalogFacade.class.getSimpleName()); 
     }
     
+    public List<ItemDomainCableCatalog> findByName(String name) {
+        return findByDomainAndName(getDomainName(), name);
+    }  
 }

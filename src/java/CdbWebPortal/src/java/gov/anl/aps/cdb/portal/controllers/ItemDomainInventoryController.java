@@ -17,8 +17,8 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainInventor
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainInventorySettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
@@ -29,15 +29,19 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCable;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
+import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
+import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +49,10 @@ import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.ListDataModel;
+import javax.faces.model.SelectItem;
 import javax.inject.Named;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.component.selectonelistbox.SelectOneListbox;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.DefaultTreeNode;
@@ -62,17 +68,18 @@ import org.primefaces.model.DefaultTreeNode;
  */
 @Named("itemDomainInventoryController")
 @SessionScoped
-public class ItemDomainInventoryController extends ItemController<ItemDomainInventory, ItemDomainInventoryFacade, ItemDomainInventorySettings> {
+public class ItemDomainInventoryController extends ItemDomainInventoryBaseController<ItemDomainInventory, ItemDomainInventoryFacade, ItemDomainInventorySettings> {
 
+    public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";
+    
     private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.inventory.getValue();
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "Catalog";                        
     
-    // Inventory status variables
-    private PropertyType inventoryStatusPropertyType; 
-
-    private static final Logger logger = Logger.getLogger(ItemDomainInventoryController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemDomainInventoryController.class.getName());
 
     private List<PropertyValue> filteredPropertyValueList = null;
+    
+    private List<SelectItem> domainFilterOptions = null;
 
     //Variables used for creation of new inventory item. 
     private List<ItemDomainInventory> newItemsToAdd = null;
@@ -101,10 +108,10 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
     private RelationshipTypeFacade relationshipTypeFacade;
     
     @EJB
-    private PropertyTypeFacade propertyTypeFacade;
-
-    @EJB
     private ItemDomainInventoryFacade itemDomainInventoryFacade;
+    
+    @EJB
+    private ItemDomainMachineDesignFacade itemDomainMachineDesignFacade; 
 
     @EJB
     private ConnectorFacade connectorFacade;
@@ -117,6 +124,73 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             apiInstance.prepareApiInstance(); 
         }
         return apiInstance;
+    } 
+    
+    public boolean isInventory(Item item) {
+        return item instanceof ItemDomainInventory; 
+    }
+
+    @Override
+    protected String getStatusPropertyTypeName() {
+        return ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
+    }
+    
+    @Override
+    protected InventoryStatusPropertyTypeInfo initializeInventoryStatusPropertyTypeInfo() {
+        InventoryStatusPropertyTypeInfo info = new InventoryStatusPropertyTypeInfo();
+        info.addValue("Unknown", new Float(1.0));
+        info.addValue("Planned", new Float(1.1));
+        info.addValue("Requisition Submitted", new Float(2.0));
+        info.addValue("Delivered", new Float(3.0));
+        info.addValue("Acceptance In Progress", new Float(4.0));
+        info.addValue("Accepted", new Float(5.0));
+        info.addValue("Rejected", new Float(6.0));
+        info.addValue("Post-Acceptance/Test/Certification in Progress", new Float(7.0));
+        info.addValue("Ready For Use", new Float(8.0));
+        info.addValue("Installed", new Float(9.0));
+        info.addValue("Spare", new Float(10.0));
+        info.addValue("Spare - Critical", new Float(11.0));
+        info.addValue("Failed", new Float(12.0));
+        info.addValue("Returned", new Float(13.0));
+        info.addValue("Discarded", new Float(14.0));
+        
+        info.setDefaultValue("Unknown");
+        
+        return info;
+    }
+            
+    @Override
+    public void createListDataModel() {
+        List<Item> inventory = (List<Item>)(List<?>)getEntityDbFacade().findAll();
+        List<Item> findAll = (List<Item>)(List<?>)itemDomainMachineDesignFacade.getTopLevelMachineDesignInventory();
+        inventory.addAll(findAll);
+        listDataModel = new ListDataModel(inventory);               
+    }
+
+    @Override
+    public ListDataModel createFavoritesListDataModel() {
+        List<Item> favoriteItems = (List<Item>)(List<?>)getFavoriteItems();
+        
+        ListTbl favoritesList = getFavoritesList();
+        List<ItemDomainMachineDesign> favoriteMachineDesignInventory = itemDomainMachineDesignFacade.getMachineDesignInventoryInList(favoritesList);
+        
+        favoriteItems.addAll(favoriteMachineDesignInventory); 
+        
+        return new ListDataModel(favoriteItems); 
+    }
+
+    public List<SelectItem> getDomainFilterOptions() {
+        if (domainFilterOptions == null) {           
+            domainFilterOptions = new ArrayList();
+            
+            String inventoryName = ItemDomainName.inventory.getValue();
+            String machingeDesignName = ItemDomainName.machineDesign.getValue();
+            
+            domainFilterOptions.add(new SelectItem("", "Select"));
+            domainFilterOptions.add(new SelectItem(inventoryName));
+            domainFilterOptions.add(new SelectItem(machingeDesignName)); 
+        }
+        return domainFilterOptions;
     }
     
     @Override
@@ -124,7 +198,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         super.loadEJBResourcesManually(); 
         itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance();
         relationshipTypeFacade = RelationshipTypeFacade.getInstance();
-        propertyTypeFacade = PropertyTypeFacade.getInstance();
         itemDomainInventoryFacade = ItemDomainInventoryFacade.getInstance();
         connectorFacade = ConnectorFacade.getInstance();
     }
@@ -152,37 +225,6 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         return ItemEnforcedPropertiesDomainInventoryController.getInstance();
     }
        
-    // <editor-fold defaultstate="collapsed" desc="Inventory status implementation">
-        
-    public PropertyType getInventoryStatusPropertyType() {
-        if (inventoryStatusPropertyType == null) {
-            inventoryStatusPropertyType = propertyTypeFacade.findByName(ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME); 
-        }
-        return inventoryStatusPropertyType;
-    }        
-
-    public PropertyValue getCurrentStatusPropertyValue() {
-        return getCurrent().getInventoryStatusPropertyValue();
-    }
-    
-    public void prepareEditInventoryStatus() {
-        if (getCurrentStatusPropertyValue() == null) {
-            PropertyValue preparePropertyTypeValueAdd = preparePropertyTypeValueAdd(getInventoryStatusPropertyType()); 
-            getCurrent().setInventoryStatusPropertyValue(preparePropertyTypeValueAdd);
-        }
-    }
-    
-    public synchronized void prepareEditInventoryStatusFromApi(ItemDomainInventory item) {
-        setCurrent(item);
-        prepareEditInventoryStatus();
-    }
-    
-    public boolean getRenderedHistoryButton() {
-        return getCurrentStatusPropertyValue() != null; 
-    }
-
-    // </editor-fold>        
-
     private List<ItemElementRelationship> findItemCableConnectionRelationship(Item item) {
         // Support items that have not yet been saved to db.
         if (item.getSelfElement().getId() != null) {
@@ -772,6 +814,28 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
         if (bomItems == null) {
             prepareBillOfMaterialsForCurrentItem(); 
             bomItems = item.getInventoryDomainBillOfMaterialList();
+            
+            if (SessionUtility.runningFaces() == false) {
+                // API Mode
+                // Bill of materials is loaded from updated values set from API to check against db values. 
+                Integer id = item.getId();
+                ItemDomainInventory findById = findById(id);
+                List<ItemElement> fullItemElementList = findById.getFullItemElementList();
+
+                ItemElement selfElement = item.getSelfElement();
+                item.setFullItemElementList(fullItemElementList);
+                item.resetItemElementVars();
+                
+                // Restore self element
+                for (int i = 0; i < fullItemElementList.size(); i ++) {
+                    ItemElement itemElement = fullItemElementList.get(i);
+                    if (itemElement.equals(selfElement)) {
+                        fullItemElementList.remove(i);
+                        fullItemElementList.add(i, selfElement);
+                        break; 
+                    }
+                }
+            }
         }
 
         if (bomItems != null) {
@@ -784,7 +848,8 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                 ItemElement catalogItemElement = bomItem.getCatalogItemElement();
                 ItemElement currentInventoryItemElement = null;
                 for (ItemElement inventoryItemElement : item.getFullItemElementList()) {
-                    if (inventoryItemElement.getDerivedFromItemElement() == catalogItemElement) {
+                    ItemElement derivedFromItemElement = inventoryItemElement.getDerivedFromItemElement();
+                    if (derivedFromItemElement != null && derivedFromItemElement.equals(catalogItemElement)) {
                         currentInventoryItemElement = inventoryItemElement;
                         logger.debug("Updating element " + currentInventoryItemElement + " to item " + item);
                         break;
@@ -817,11 +882,10 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
                     // No need to do that for existing items. 
                     if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
                         addItemElementsFromBillOfMaterials(inventoryItem);
-                        currentInventoryItemElement.setContainedItem(inventoryItem);
-
+                        updateContainedItemForElement(currentInventoryItemElement, inventoryItem);
                     } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
                         if (currentInventoryItemElement.getContainedItem() == inventoryItem == false) {
-                            currentInventoryItemElement.setContainedItem(itemDomainInventoryFacade.find(inventoryItem.getId()));
+                            updateContainedItemForElement(currentInventoryItemElement, itemDomainInventoryFacade.find(inventoryItem.getId()));                            
                         }
                     }
                 } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.placeholder.getValue())) {
@@ -833,6 +897,19 @@ public class ItemDomainInventoryController extends ItemController<ItemDomainInve
             }
         }
 
+    }
+    
+    public void updateContainedItemForElement(ItemElement ie, ItemDomainInventory containedItem) throws CdbException {
+        ItemElement derivedFromItemElement = ie.getDerivedFromItemElement();
+        Item derivedContainedItem = derivedFromItemElement.getContainedItem();
+        
+        ItemDomainCatalog catalogItem = containedItem.getCatalogItem();
+        
+        if (catalogItem.equals(derivedContainedItem)) {
+            ie.setContainedItem(containedItem);
+        } else {
+            throw new CdbException("Cannot place item of type: " + catalogItem.getName() + " into position for type: " + derivedContainedItem.getName()); 
+        }
     }
 
     public void updateItemElementPermissionsToItem(ItemElement itemElement, ItemDomainInventory item) {
