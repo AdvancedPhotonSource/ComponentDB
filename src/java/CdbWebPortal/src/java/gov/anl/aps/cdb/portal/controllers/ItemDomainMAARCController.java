@@ -40,6 +40,7 @@ import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.io.IOUtils;
+import org.primefaces.model.FilterMeta;
 import org.primefaces.model.LazyDataModel;
 import org.primefaces.model.SortOrder;
 import org.primefaces.model.StreamedContent;
@@ -725,12 +726,10 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
         }
 
         private String readFilterValue(Map filterMap, String key) {
-            if (filterMap.containsKey(key)) {
-                // New version of primefaces utilizes FilterMeta older version is equal to filterValue. 
-                //FilterMeta filter = (FilterMeta) filterMap.get(key);
-                //Object filterValue = filter.getFilterValue();
+            if (filterMap.containsKey(key)) {                
+                FilterMeta filter = (FilterMeta) filterMap.get(key);
+                Object filterValue = filter.getFilterValue();
                 
-                Object filterValue = filterMap.get(key);
                 if (filterValue != null) {
                     return filterValue.toString();
                 }
