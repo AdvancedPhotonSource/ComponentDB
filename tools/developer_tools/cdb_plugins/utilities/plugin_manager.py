@@ -193,7 +193,12 @@ class PluginManager():
         if os.path.exists(CDB_PYTHON_PLUGIN_PATH):
             # Create a __init__.py file for all python plugins.
             init_file_path = "%s/%s" % (CDB_PYTHON_PLUGIN_PATH, '__init__.py')
-            init_file = os.open(init_file_path, os.O_CREAT)
+            init_file = os.open(init_file_path, os.O_CREAT|os.O_WRONLY)
+            os.write(init_file, "#!/usr/bin/env python\n")
+            os.write(init_file, "\"\"\"\n")
+            os.write(init_file, "Copyright (c) UChicago Argonne, LLC. All rights reserved.\n")
+            os.write(init_file, "See LICENSE file.\n")
+            os.write(init_file, "\"\"\"")
             os.close(init_file)
 
     @staticmethod
