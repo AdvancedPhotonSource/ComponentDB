@@ -23,7 +23,7 @@ plugin_manager = PluginManager(cdb_db_name, use_default_storage_directory=True)
 
 update_configuration = False
 if sys.argv.__len__() == 3:
-    input_update_configuration = sys.argv[2]
+    input_update_configuration = int(sys.argv[2])
     if input_update_configuration is not None:
         if input_update_configuration == 1:
             update_configuration = True
