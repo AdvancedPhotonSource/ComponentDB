@@ -159,6 +159,8 @@ class PluginManager():
             os.mkdir(CDB_JAVA_PLUGIN_PATH)
         if not os.path.exists(CDB_XHTML_PLUGIN_PATH):
             os.makedirs(CDB_XHTML_PLUGIN_PATH)
+        if not os.path.exists(CDB_PYTHON_PLUGIN_PATH):
+            os.makedirs(CDB_PYTHON_PLUGIN_PATH)
         if not os.path.exists(self.cdb_plugin_configuration_storage):
             os.makedirs(self.cdb_plugin_configuration_storage)
 
