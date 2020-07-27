@@ -87,8 +87,7 @@ See LICENSE file.
                           rendered="#{itemElementSettingObject.displayPartDescription}"/> 
                 <p:column headerText="Required"
                           rendered="#{redneredIsRequired != null ? redneredIsRequired : true}"/> 
-                
-                <p:column headerText="" />
+                                
                 <p:column headerText="Name" /> 
                 <p:column headerText="QrId" 
                           rendered="#{currentItemSettingObject.displayItemElementListQrId}"/>
@@ -96,6 +95,7 @@ See LICENSE file.
                           rendered="#{currentItemSettingObject.displayItemElementListItemIdentifier1}"/>
                 <p:column headerText="#{itemDomainCatalogController.itemIdentifier2Title}" 
                           rendered="#{currentItemSettingObject.displayItemElementListItemIdentifier2}"/>
+                <p:column headerText="" />
                 <p:column headerText="Project" 
                           rendered="#{currentItemSettingObject.displayItemElementListProject}"/>
                 <p:column headerText="#{itemDomainCatalogController.itemItemTypeTitle}" 

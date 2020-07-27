@@ -136,6 +136,16 @@ public class ItemDomainMachineDesign extends LocatableItem {
         }
         return super.getLocationDetails(); 
     }
+    
+    /**
+     * Machine design inventory requires this function for filtering. 
+     * Placeholder until we decide if md inventory will handle status same as inventory. 
+     * 
+     * @return 
+     */
+    public String getInventoryStatusValue() {
+        return null; 
+    }
 
     @Override
     public String toString() {
