@@ -14,12 +14,12 @@ See LICENSE file.
               value="#{hideOptionalColumns != null 
                        ? hideOptionalColumns 
                        : false}" />
-    
+
     <ui:param name="hideSearchColumns"
               value="#{hideSearchColumns != null 
                        ? hideSearchColumns 
                        : false}" />
-    
+
     <ui:param name="enableDragDropToMoveMD"
               value="#{enableDragDropToMoveMD == null ? false : enableDragDropToMoveMD}" />
 
@@ -69,13 +69,22 @@ See LICENSE file.
                                title="View Template Item"
                                rendered="#{createdFromTemplate != null}"/> 
 
-                <ui:fragment rendered="#{itemTreeListObject != null}">
-                    <span>#{itemTreeListObject}</span>
+                <ui:fragment rendered="#{mdTreeListObject != null}">
+                    <span>#{mdTreeListObject}</span>
                 </ui:fragment>
 
-                <ui:fragment rendered="#{itemTreeListObject == null 
-                                         and itemDomainMachineDesignController.isItemInventory(itemElementParentItem)}">                
-                    <span>#{itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementListObject)}</span>
+                <ui:fragment rendered="#{mdTreeListObject == null}">
+                    <ui:param name="isElementInventory" value="#{itemTreeListObject != null 
+                                                                 ? itemDomainMachineDesignController.isItemInventory(itemTreeListObject) 
+                                                                 : itemDomainMachineDesignController.isItemInventory(itemElementParentItem)}"/>
+
+                    <ui:fragment rendered="#{isElementInventory == false}">
+                        <span>#{itemElementListObject.name}</span>
+                    </ui:fragment>
+
+                    <ui:fragment rendered="#{isElementInventory}">
+                        <span>#{itemElementListObject.derivedFromItemElement.name}</span>
+                    </ui:fragment>
                 </ui:fragment>
             </ui:fragment>
             <ui:fragment rendered="#{itemElementListObject.mdConnector != null}">
@@ -104,7 +113,7 @@ See LICENSE file.
     <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemThumbnailColumn.xhtml" >             
         <ui:param name="thumbnailColumnName"
                   value=" " /> 
-        
+
         <ui:param name="rendered" value="#{hideOptionalColumns and hideSearchColumns}"/>
 
         <ui:param name="itemHasPrimaryImage"
@@ -132,7 +141,7 @@ See LICENSE file.
     </p:column>
 
     <ui:param name="assignedItem"
-              value="#{mdTreeListObject.assignedItem}"/> 
+              value="#{mdTreeListObject != null ? mdTreeListObject.assignedItem : itemTreeListObject}"/> 
 
     <p:column headerText="Assigned Catalog &#38; Inventory Item" 
               rendered="#{hideOptionalColumns 
@@ -150,7 +159,13 @@ See LICENSE file.
             <f:setPropertyActionListener target="#{itemElementController.current}" 
                                          value="#{itemElementListObject}"/>
             <p:tooltip for="#{entityTypeName}AssignedItemHistory" value="View assigned item history."/>
-        </p:commandLink>            
+        </p:commandLink>
+
+        <!-- Inventory element without assigned inventory item -->
+        <ui:fragment rendered="#{itemTreeListObject == null
+                                 and itemDomainMachineDesignController.isItemInventory(itemElementParentItem)}">
+            <span>#{itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementListObject)}</span>
+        </ui:fragment>
 
         <ui:include src="itemDomainMachineDesignAssignedItemFragment.xhtml"/>
     </p:column>
