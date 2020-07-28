@@ -66,7 +66,7 @@ See LICENSE file.
         <p:outputPanel id="catalogBlockUIContent"
                        rendered="#{itemDomainMachineDesignController.displayAddCatalogItemListConfigurationPanel}">
             <div>
-                Drag Catalog items to add to selected machine design.                            
+                Drag Catalog items to add to selected machine element.                            
             </div>
 
             <p:outputPanel id="catalogBlockUIDropContent">
@@ -83,7 +83,7 @@ See LICENSE file.
                         <ui:param name="itemMachineDesign"
                                   value="#{itemDomainMachineDesignController.isItemMachineDesign(treeNode)}"/>
 
-                        <p:column headerText="Machine Design Name">
+                        <p:column headerText="Machine Element Name">
                             <ui:fragment rendered="#{itemMachineDesign}">
                                 <span>#{treeNode.name}</span>
                             </ui:fragment>            

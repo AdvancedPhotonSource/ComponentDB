@@ -9,13 +9,13 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">      
 
-    <p:confirmDialog header="Destroy selected machine design" severity="alert"
+    <p:confirmDialog header="Destroy selected machine element" severity="alert"
                      widgetVar="destroyMachineDesignWidget"
                      styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
         <f:facet name="message">
-            All the machine design children will become top level machine design items. 
+            All the machine element children will become top level machine elements. 
             First level children will lose parent membership histories.
-            <br/><b>Proceed with removal of selected Machine Design?</b>
+            <br/><b>Proceed with removal of selected Machine Element?</b>
         </f:facet>
         <p:commandButton value="Yes" 
                          actionListener="#{entityController.deleteSelectedMachineDesignItemFromDualView}"
@@ -27,11 +27,11 @@ See LICENSE file.
                          onclick="PF('destroyMachineDesignWidget').hide();"/>
     </p:confirmDialog>    
 
-    <p:confirmDialog header="Detach machine design from hierarchy?" severity="alert"
+    <p:confirmDialog header="Detach machine element from hierarchy?" severity="alert"
                      widgetVar="detachMachineDesignWidget"
                      styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
         <f:facet name="message">
-            When detaching machine design from hierarchy the parent history is lost.           
+            When detaching machine element from hierarchy the parent history is lost.           
             <br/><b>Proceed with Detaching?</b>
         </f:facet>
         <p:commandButton value="Yes" 
@@ -40,7 +40,7 @@ See LICENSE file.
                          update="@form"
                          oncomplete="PF('loadingDialog').hide();
                                      PF('detachMachineDesignWidget').hide()"/>
-        <p:commandButton value="No, try drag + drop of machine design name instead." 
+        <p:commandButton value="No, try drag + drop of machine element name instead." 
                          onclick="PF('detachMachineDesignWidget').hide();"/>
     </p:confirmDialog>    
 

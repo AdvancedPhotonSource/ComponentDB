@@ -25,7 +25,7 @@ See LICENSE file.
                              rendered="#{!itemDomainMachineDesignController.displayListConfigurationView}"
                              onclick="PF('itemDomainMachineDesignKeyboardShortcutDialogWidget').show()" >
                 <p:tooltip for="itemDomainMachineDesignKeyboardShortcutButton"
-                           value="Show keyboard shortcuts for machine design list."/> 
+                           value="Show keyboard shortcuts for machine element list."/> 
             </p:commandButton>
 
             <p:selectBooleanButton id="itemDomainMachineToggleShowCables"
@@ -39,7 +39,7 @@ See LICENSE file.
                                  action="#{itemDomainMachineDesignController.list()}"
                                  onstart="PF('loadingDialog').show()" />
                 <p:tooltip for="itemDomainMachineToggleShowCables" 
-                           value="Toggle show cables in machine design hierarchy." />
+                           value="Toggle show cables in machine element hierarchy." />
             </p:selectBooleanButton>
 
             <p:selectBooleanButton onLabel="Favorites Enabled" offLabel="Favorites Disabled"
@@ -108,7 +108,7 @@ See LICENSE file.
                                      PF('loadingDialog').hide()"
                                      update="itemDomainMachineDesignReorderOverlayPanel">
                         <p:tooltip for="#{entityTypeName}#{viewName}reorderTopLevel" 
-                                   value="Reorder top level machine designs."/>
+                                   value="Reorder top level machine elements."/>
                     </p:commandButton>
                 </ui:define>
             </ui:decorate>

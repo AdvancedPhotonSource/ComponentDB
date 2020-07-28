@@ -11,7 +11,7 @@ See LICENSE file.
                             
 
 
-    <h:outputText value="Machine Design Item Name"
+    <h:outputText value="Machine Element Name"
                   rendered="#{newMachineDesignCreation}"/>
     <p:outputPanel>
         <h:inputText id="newMachineDesignName#{viewName}"
@@ -33,7 +33,7 @@ See LICENSE file.
     <h:outputText value="Place parements within {} in template name. Example: 'templateName {paramName}'"
                   rendered="#{currentViewIsTemplate}"/>
     
-    <h:outputText value="Machine Design Alternate Name" 
+    <h:outputText value="Machine Element Alternate Name" 
                   rendered="#{newMachineDesignCreation}"/>
     <p:outputPanel rendered="#{newMachineDesignCreation}">
         <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier1.xhtml" >
@@ -42,7 +42,7 @@ See LICENSE file.
         </ui:include>
     </p:outputPanel>
     
-    <h:outputText value="Machine Design Description"/>
+    <h:outputText value="Machine Element Description"/>
     <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemDescription.xhtml">
         <ui:param name="itemObject"
                   value="#{containedItem}" /> 
