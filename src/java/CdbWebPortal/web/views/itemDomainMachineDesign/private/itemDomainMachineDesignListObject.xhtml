@@ -48,7 +48,7 @@ See LICENSE file.
     <ui:param name="filterable"
               value="#{true}"/>
 
-    <p:column headerText="Machine Design Item Name" styleClass="draggableTreeTableDataCell"
+    <p:column headerText="Machine Element Name" styleClass="draggableTreeTableDataCell"
               filterBy="#{itemTreeListObject.name}"
               filterMatchMode="contains"
               colspan="3">
@@ -131,7 +131,7 @@ See LICENSE file.
                                            and hideSearchColumns}" />
     </ui:include>
 
-    <p:column headerText="Machine Design Item Description"
+    <p:column headerText="Machine Element Description"
               rendered="#{hideOptionalColumns 
                           and hideSearchColumns
                           and settingObject.displayDescription}"
