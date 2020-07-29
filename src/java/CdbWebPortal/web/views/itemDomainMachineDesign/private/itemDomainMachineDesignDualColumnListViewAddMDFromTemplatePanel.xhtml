@@ -10,7 +10,7 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html">   
 
 
-    <p:panel header="Add Machine Design Using a Template Item"
+    <p:panel header="Add Machine Element Using a Template Item"
              id="addMachineDesignUsingTemplate"
              rendered="#{entityController.displayAddMDFromTemplateConfigurationPanel}">
 
@@ -48,9 +48,9 @@ See LICENSE file.
         </ui:include>
 
         <p:outputPanel rendered="#{templateToCreateNewItem != null and currentViewIsTemplate}">
-            The selected machine design will be reused within the template. 
+            The selected machine element will be reused within the template. 
             <p:panelGrid columns="2">
-                <h:outputText value="Machine Design Item Name"/>
+                <h:outputText value="Machine Element Name"/>
                 <h:outputText value="#{itemDomainMachineDesignController.machineDesignName}"/>
             </p:panelGrid>
         </p:outputPanel>
