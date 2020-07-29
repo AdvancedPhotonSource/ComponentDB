@@ -9,7 +9,7 @@ CDB_HOSTNAME=`hostname -f`
 NETBEANS_VERSION=11.0
 NETBEANS_ZIP_FILE=incubating-netbeans-$NETBEANS_VERSION-bin.zip
 
-DOWNLOAD_URL=http://mirrors.ibiblio.org/apache/incubator/netbeans/incubating-netbeans/incubating-$NETBEANS_VERSION/$NETBEANS_ZIP_FILE
+DOWNLOAD_URL=https://archive.apache.org/dist/incubator/netbeans/incubating-netbeans/incubating-$NETBEANS_VERSION/$NETBEANS_ZIP_FILE
 
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`
