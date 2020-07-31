@@ -86,6 +86,7 @@ public class ItemDomainCableDesign extends Item {
                 if (cableIerType != null) {
                     return ierList.stream().
                             filter(ier -> ier.getRelationshipType().getName().equals(cableIerType.getName())).
+                            sorted((ier1,ier2) -> (ier1.getSecondSortOrder() == null || ier2.getSecondSortOrder() == null) ? 0 : ier1.getSecondSortOrder().compareTo(ier2.getSecondSortOrder())).
                             map(ier -> ier.getFirstItemElement().getParentItem()).
                             collect(Collectors.toList());
                 }
@@ -113,11 +114,12 @@ public class ItemDomainCableDesign extends Item {
      * @param item Machine design item for cable endpoint.
      * @return New instance of ItemElementRelationshipo for specified items.
      */
-    private ItemElementRelationship createRelationship(Item item) {
+    private ItemElementRelationship createRelationship(Item item, float sortOrder) {
 
         ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
         itemElementRelationship.setFirstItemElement(item.getSelfElement());
         itemElementRelationship.setSecondItemElement(this.getSelfElement());
+        itemElementRelationship.setSecondSortOrder(sortOrder);
 
         RelationshipType cableConnectionRelationshipType = getCableConnectionRelationshipType();
         itemElementRelationship.setRelationshipType(cableConnectionRelationshipType);
@@ -144,9 +146,9 @@ public class ItemDomainCableDesign extends Item {
         ierList.add(ier);
     }
 
-    private void addCableRelationship(Item endpoint) {
+    private void addCableRelationship(Item endpoint, float sortOrder) {
         // create relationships from cable to endpoints
-        ItemElementRelationship relationship = createRelationship(endpoint);
+        ItemElementRelationship relationship = createRelationship(endpoint, sortOrder);
 
         // Create list for cable's relationships. 
         ItemElement selfElement = this.getSelfElement();
@@ -160,7 +162,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint1(Item itemEndpoint1) {
-        this.addCableRelationship(itemEndpoint1);
+        this.addCableRelationship(itemEndpoint1, 1.0f);
     }
 
     public void setEndpoint1Id(String id) {
@@ -173,7 +175,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint2(Item itemEndpoint2) {
-        this.addCableRelationship(itemEndpoint2);
+        this.addCableRelationship(itemEndpoint2, 2.0f);
     }
 
     public void setEndpoint2Id(String id) {
