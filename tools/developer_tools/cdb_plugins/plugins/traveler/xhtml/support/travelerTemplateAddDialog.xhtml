@@ -19,7 +19,7 @@ See LICENSE file.
               modal="true"
               resizable="false">
 
-        <p:outputPanel rendered="#{itemTravelerDomainCatalogController.renderTravelerTemplateAddDialog}">
+        <p:outputPanel rendered="#{travelerDomainController.renderTravelerTemplateAddDialog}">
 
             <ui:include src="travelerTemplateCreateConfigurationPanelGrid.xhtml"/>
 
@@ -31,7 +31,7 @@ See LICENSE file.
 
         <f:facet name="footer">
             <p:commandButton value="Create Traveler Template"                              
-                             action="#{itemTravelerDomainCatalogController.createTravelerTemplate(
+                             action="#{travelerDomainController.createTravelerTemplate(
                                        entityController,
                                        'successTravelerTemplateAddDialog();')}" 
                              icon="ui-icon-plus"

@@ -99,6 +99,13 @@ See LICENSE file.
             </p:dataTable>
         </p:panel>
 
+        <!-- traveler templates section-->
+        <ui:include src="../../plugins/private/catalogDetailsViewSections.xhtml">
+            <ui:param name="travelerDomainController"
+                      value="#{itemTravelerDomainMachineDesignController}" />
+            <ui:param name="rendered" value="#{itemDomainMachineDesignController.currentViewIsTemplate}"/>
+        </ui:include>
+
         <p:panel header="Cable Connections"
                  toggleable="true"
                  rendered="#{entityController.entityDisplayItemConnectors and resources.EnabledConnectorAndConnectionsFunctionality}"

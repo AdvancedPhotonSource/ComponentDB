@@ -121,7 +121,9 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     @PostConstruct
     public void init() {
         getItemController().subscribeResetVariablesForCurrent(this);
-        getItemController().getItemMultiEditController().subscribeResetForMultiEdit(this);
+        if (getItemController().getItemMultiEditController() != null) {
+            getItemController().getItemMultiEditController().subscribeResetForMultiEdit(this);
+        }
         resetExtensionVariablesForCurrent();
         resetExtensionVariablesForMultiEdit();
 

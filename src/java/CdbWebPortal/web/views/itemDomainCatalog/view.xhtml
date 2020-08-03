@@ -29,9 +29,13 @@ See LICENSE file.
     </ui:define>
     
     <ui:define name="additonalPluginSections" >
-        <ui:include src="../plugins/private/catalogDetailsViewSections.xhtml"/>
+        <ui:include src="../plugins/private/catalogDetailsViewSections.xhtml">
+            <ui:param name="travelerDomainController"
+                      value="#{itemTravelerDomainCatalogController}" />    
+            <ui:param name="rendered" value="#{true}"/>
+        </ui:include>
     </ui:define>
-    
+
     <ui:define name="additionalViewItemContent">
         <ui:include src="private/itemDomainCatalogInventoryCreateDialog.xhtml" />
         <ui:include src="../itemSparePartsTrackingProperty/private/itemSparePartsPropertyConfigurationDialog.xhtml"/>

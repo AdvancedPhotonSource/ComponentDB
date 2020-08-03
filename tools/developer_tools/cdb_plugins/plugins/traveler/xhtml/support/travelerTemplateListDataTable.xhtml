@@ -11,7 +11,7 @@ See LICENSE file.
     
 
     <p:dataTable id="travelerTemplateListDataTable"
-                 value="#{itemTravelerDomainCatalogController.templatesForCurrent}"
+                 value="#{travelerDomainController.templatesForCurrent}"
                  var="templateObject">
 
         <ui:include src="travelerTemplateListObject.xhtml" />
@@ -31,8 +31,8 @@ See LICENSE file.
                            oncomplete="PF('loadingDialog').hide();
                                        PF('travelerTemplateTravelerListDialogWidget').show();"
                            styleClass="fa-link-icon fa fa-list"
-                           action="#{itemTravelerDomainCatalogController.prepareTravlersCreatedFromTemplate()}">
-                <f:setPropertyActionListener target="#{itemTravelerDomainCatalogController.selectedTemplateForTravelersCreatedFromTemplate}"
+                           action="#{travelerDomainController.prepareTravlersCreatedFromTemplate()}">
+                <f:setPropertyActionListener target="#{travelerDomainController.selectedTemplateForTravelersCreatedFromTemplate}"
                                              value="#{templateObject}"/> 
                 <p:tooltip for="#{entityTypeName}InventoryTravelerList" 
                            value="Show travelers created from this template for each inventory item."/>
@@ -45,7 +45,7 @@ See LICENSE file.
                              widgetVar="confirmDeleteTraveler#{templateObject.id}Widget">
                 <p:commandButton value="Yes" 
                                  onstart="PF('confirmDeleteTraveler#{templateObject.id}Widget').hide()"
-                                 action="#{itemTravelerDomainCatalogController.destroyTravelerTemplateFromCurrent(templateObject)}"
+                                 action="#{travelerDomainController.destroyTravelerTemplateFromCurrent(templateObject)}"
                                  update="travelerTemplateListDataTable"/>
                 <p:commandButton value="No" onclick="PF('confirmDeleteTraveler#{templateObject.id}Widget').hide();" type="button" />
             </p:confirmDialog>

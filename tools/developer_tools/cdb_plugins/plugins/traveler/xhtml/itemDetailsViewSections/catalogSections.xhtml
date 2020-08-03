@@ -13,7 +13,8 @@ See LICENSE file.
 
     <p:panel header="eTraveler Templates"
              toggleable="true"
-             collapsed="#{itemTravelerDomainCatalogController.isCollapsedTravelerTemplates}">
+             rendered="#{rendered}"
+             collapsed="#{travelerDomainController.isCollapsedTravelerTemplates}">
 
         <ui:include src="../support/travelerTemplateList.xhtml" />
 

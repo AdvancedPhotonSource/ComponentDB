@@ -20,10 +20,10 @@ See LICENSE file.
               resizable="false">
 
         <p:outputPanel id='travelerTemplateUpdatePrefVersionDialogContents'>        
-            <p:outputPanel rendered="#{itemTravelerDomainCatalogController.renderTravelerTemplateUpdatePrefVersionDialog}">
+            <p:outputPanel rendered="#{travelerDomainController.renderTravelerTemplateUpdatePrefVersionDialog}">
                 <ui:include src="travelerTemplateReleasedVersionSelectionDataTable.xhtml"> 
                     <ui:param name="selectedTemplate"
-                              value="#{itemTravelerDomainCatalogController.selectedTemplate}"/> 
+                              value="#{travelerDomainController.selectedTemplate}"/> 
                     <ui:param name="viewName"
                               value="PrefVersionSelection"/>
                 </ui:include>
@@ -33,7 +33,7 @@ See LICENSE file.
 
         <f:facet name="footer">           
             <p:commandButton value="Update"                             
-                             action="#{itemTravelerDomainCatalogController.saveSelectedTemplatePropertyValue('successUpodatePrefVersion()')}"
+                             action="#{travelerDomainController.saveSelectedTemplatePropertyValue('successUpodatePrefVersion()')}"
                              onclick="PF('loadingDialog').show()"
                              icon="fa fa-save"
                              oncomplete="PF('loadingDialog').hide();"/>
