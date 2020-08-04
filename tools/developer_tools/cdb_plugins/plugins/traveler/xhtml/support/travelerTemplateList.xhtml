@@ -8,6 +8,9 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
     <ui:include src="travelerTemplateSectionCommonChildListActionButtons.xhtml">
         <ui:param name="childEntityTypeName" value="travelerTemplate"/>
         <ui:param name="customizableListDataTable" value="#{false}"/> 
@@ -18,8 +21,7 @@ See LICENSE file.
                      onstart="PF('loadingDialog').show()"
                      update="travelerTemplateAddDialog"
                      oncomplete="PF('loadingDialog').hide()"
-                     action="#{travelerDomainController.prepareAddTemplateAndLoadActiveTravelerTemplates('showTravelerTemplateLinkDialog()')}" />
-
+                     action="#{travelerDomainTemplateController.prepareAddTemplateAndLoadActiveTravelerTemplates('showTravelerTemplateLinkDialog()')}" />
 
     <ui:include src="travelerTemplateListDataTable.xhtml"/>
     <ui:include src="travelerTemplateArchiveListDialog.xhtml" /> 

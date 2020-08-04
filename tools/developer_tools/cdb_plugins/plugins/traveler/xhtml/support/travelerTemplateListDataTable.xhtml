@@ -10,8 +10,11 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
     
 
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
     <p:dataTable id="travelerTemplateListDataTable"
-                 value="#{travelerDomainController.templatesForCurrent}"
+                 value="#{travelerDomainTemplateController.templatesForCurrent}"
                  var="templateObject">
 
         <ui:include src="travelerTemplateListObject.xhtml" />
@@ -31,8 +34,8 @@ See LICENSE file.
                            oncomplete="PF('loadingDialog').hide();
                                        PF('travelerTemplateTravelerListDialogWidget').show();"
                            styleClass="fa-link-icon fa fa-list"
-                           action="#{travelerDomainController.prepareTravlersCreatedFromTemplate()}">
-                <f:setPropertyActionListener target="#{travelerDomainController.selectedTemplateForTravelersCreatedFromTemplate}"
+                           action="#{travelerDomainTemplateController.prepareTravlersCreatedFromTemplate()}">
+                <f:setPropertyActionListener target="#{travelerDomainTemplateController.selectedTemplateForTravelersCreatedFromTemplate}"
                                              value="#{templateObject}"/> 
                 <p:tooltip for="#{entityTypeName}InventoryTravelerList" 
                            value="Show travelers created from this template for each inventory item."/>
@@ -45,7 +48,7 @@ See LICENSE file.
                              widgetVar="confirmDeleteTraveler#{templateObject.id}Widget">
                 <p:commandButton value="Yes" 
                                  onstart="PF('confirmDeleteTraveler#{templateObject.id}Widget').hide()"
-                                 action="#{travelerDomainController.destroyTravelerTemplateFromCurrent(templateObject)}"
+                                 action="#{travelerDomainTemplateController.destroyTravelerTemplateFromCurrent(templateObject)}"
                                  update="travelerTemplateListDataTable"/>
                 <p:commandButton value="No" onclick="PF('confirmDeleteTraveler#{templateObject.id}Widget').hide();" type="button" />
             </p:confirmDialog>

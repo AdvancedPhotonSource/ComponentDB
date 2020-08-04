@@ -10,6 +10,9 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">           
 
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
     <p:dataTable id="#{dataTableId}"
                  widgetVar="#{dataTableId}Widget"
                  var="travelerTemplate" 
@@ -35,7 +38,7 @@ See LICENSE file.
                   filterBy="#{travelerTemplate.title}"
                   filterMatchMode="contains">
             <h:outputText value="#{travelerTemplate.title}" />
-            <h:outputLink target="_blank" value="#{itemTravelerDomainCatalogController.getTravelerTemplateUrl(travelerTemplate.id)}">
+            <h:outputLink target="_blank" value="#{travelerDomainTemplateController.getTravelerTemplateUrl(travelerTemplate.id)}">
 
             </h:outputLink>
 
@@ -56,7 +59,7 @@ See LICENSE file.
 
                 <h:outputLink id="travelerTemplateViewLink"
                               target="_blank"
-                              value="#{itemTravelerDomainCatalogController.getTravelerTemplateUrl(travelerTemplate.id)}"
+                              value="#{travelerDomainTemplateController.getTravelerTemplateUrl(travelerTemplate.id)}"
                               styleClass="ui-icon #{templateViewStyleClass}">
                     <p:tooltip for="travelerTemplateViewLink" value="Go to traveler template."/>  
                 </h:outputLink>

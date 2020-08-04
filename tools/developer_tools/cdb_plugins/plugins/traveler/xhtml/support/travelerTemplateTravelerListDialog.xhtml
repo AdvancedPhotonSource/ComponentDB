@@ -12,6 +12,9 @@ See LICENSE file.
     <ui:param name="travelerSuccessUpdateTarget"
               value="#{travelerSuccessUpdateTarget != null ? travelerSuccessUpdateTarget : 'travelerTemplateListDataTable'}" />
 
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
     <p:dialog id="travelerTemplateTravelerListDialog" 
               widgetVar="travelerTemplateTravelerListDialogWidget" 
               header="List of Travelers for Selected Template" 
@@ -20,7 +23,7 @@ See LICENSE file.
               modal="false"
               resizable="false">
         <ui:param name="travelersCreatedFromTemplate"
-                  value="#{travelerDomainController.travelersCreatedFromTemplate}"/>
+                  value="#{travelerDomainTemplateController.travelersCreatedFromTemplate}"/>
 
         <p:outputPanel id="travelerTemplateTravelerListDialogPanel">            
             <p:dataTable value="#{travelersCreatedFromTemplate}"

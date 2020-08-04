@@ -101,9 +101,10 @@ See LICENSE file.
 
         <!-- traveler templates section-->
         <ui:include src="../../plugins/private/catalogDetailsViewSections.xhtml">
-            <ui:param name="travelerDomainController"
+            <ui:param name="travelerDomainTemplateController"
                       value="#{itemTravelerDomainMachineDesignController}" />
-            <ui:param name="rendered" value="#{itemDomainMachineDesignController.currentViewIsTemplate}"/>
+            <ui:param name="renderTravelerTemplatesPanel" 
+                      value="#{itemDomainMachineDesignController.currentViewIsTemplate}"/>
         </ui:include>
 
         <p:panel header="Cable Connections"

@@ -12,6 +12,9 @@ See LICENSE file.
     <ui:param name="travelerSuccessUpdateTarget"
               value="#{travelerSuccessUpdateTarget != null ? travelerSuccessUpdateTarget : 'travelerTemplateListDataTable'}" />
 
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
     <p:dialog id="travelerTemplateAddDialog" 
               widgetVar="travelerTemplateAddDialogWidget" 
               header="Add eTraveler Template" 
@@ -19,7 +22,7 @@ See LICENSE file.
               modal="true"
               resizable="false">
 
-        <p:outputPanel rendered="#{travelerDomainController.renderTravelerTemplateAddDialog}">
+        <p:outputPanel rendered="#{travelerDomainTemplateController.renderTravelerTemplateAddDialog}">
 
             <ui:include src="travelerTemplateCreateConfigurationPanelGrid.xhtml"/>
 
@@ -31,7 +34,7 @@ See LICENSE file.
 
         <f:facet name="footer">
             <p:commandButton value="Create Traveler Template"                              
-                             action="#{travelerDomainController.createTravelerTemplate(
+                             action="#{travelerDomainTemplateController.createTravelerTemplate(
                                        entityController,
                                        'successTravelerTemplateAddDialog();')}" 
                              icon="ui-icon-plus"
