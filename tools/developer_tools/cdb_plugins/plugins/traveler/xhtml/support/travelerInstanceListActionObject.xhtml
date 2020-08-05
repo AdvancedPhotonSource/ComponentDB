@@ -12,6 +12,11 @@ See LICENSE file.
     <ui:param name="renderAddToBinderButton"
               value="#{renderAddToBinderButton != null ? renderAddToBinderButton : true}" /> 
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <p:column headerText="Action">
         <p:commandLink id="#{entityTypeName}TravelerInfoButton"
                        styleClass="fa-link-icon fa fa-info-circle" title="Display Information"
@@ -21,7 +26,7 @@ See LICENSE file.
                        oncomplete="PF('loadingDialog').hide();
                        PF('travelerInstanceInfoDialogWidget').show()">
             <p:tooltip for="#{entityTypeName}TravelerInfoButton" value="Display traveler information."/>
-            <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
+            <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentTravelerInstance}"
                                          value="#{travelerObject}" />
         </p:commandLink>
 
@@ -31,10 +36,10 @@ See LICENSE file.
                        onstart="PF('loadingDialog').show()"
                        oncomplete="PF('loadingDialog').hide();
                        PF('travelerInstanceAddToBinderDialogWidget').show()"
-                       action="#{itemTravelerDomainInventoryController.prepareShowAddTravelerToBinderDialog()}"
+                       action="#{travelerDomainInstanceController.prepareShowAddTravelerToBinderDialog()}"
                        rendered="#{renderAddToBinderButton and isEntityWriteable and travelerObject.traveler}">
             <p:tooltip for="#{entityTypeName}TravelerMoveToBinder" value="Add traveler to binder."/>
-            <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
+            <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentTravelerInstance}"
                                          value="#{travelerObject}" />            
         </p:commandLink>
 
@@ -43,7 +48,7 @@ See LICENSE file.
                        onstart="PF('loadingDialog').show()"                       
                        oncomplete="PF('loadingDialog').hide();"
                        update="@form"
-                       action="#{itemTravelerDomainInventoryController.removeTravelerFromBinder(binderObject, travelerObject)}"
+                       action="#{travelerDomainInstanceController.removeTravelerFromBinder(binderObject, travelerObject)}"
                        rendered="#{!renderAddToBinderButton and isEntityWriteable and travelerObject.traveler}">
             <p:tooltip for="#{entityTypeName}TravelerRemoveFromBinder" value="Remove traveler from binder."/>                      
         </p:commandLink>
@@ -53,10 +58,10 @@ See LICENSE file.
                        onstart="PF('loadingDialog').show()"
                        oncomplete="PF('loadingDialog').hide(); PF('travelerInstanceMoveDialogWidget').show()"
                        update="@form:travelerInstanceMoveDialog"
-                       action="#{itemTravelerDomainInventoryController.prepareTravelerInstanceMove()}"
+                       action="#{travelerDomainInstanceController.prepareTravelerInstanceMove()}"
                        rendered="#{isEntityWriteable and travelerObject.traveler and loginController.loggedInAsAdmin}">
             <p:tooltip for="#{entityTypeName}TravelerMove" value="Move the traveler to another item."/>
-            <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
+            <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentTravelerInstance}"
                                          value="#{travelerObject}" />
         </p:commandLink>
 
@@ -65,10 +70,10 @@ See LICENSE file.
                        onstart="PF('loadingDialog').show()"
                        oncomplete="PF('loadingDialog').hide()"
                        update="@form"
-                       action="#{itemTravelerDomainInventoryController.archiveTraveler(travelerObject)}"
+                       action="#{travelerDomainInstanceController.archiveTraveler(travelerObject)}"
                        rendered="#{isEntityWriteable and travelerObject.traveler}">
             <p:tooltip for="#{entityTypeName}TravelerArchive" value="Archive the traveler."/>
-            <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
+            <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentTravelerInstance}"
                                          value="#{travelerObject}" />
         </p:commandLink>
         

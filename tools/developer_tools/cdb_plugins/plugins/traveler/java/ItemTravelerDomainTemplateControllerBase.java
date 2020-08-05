@@ -4,47 +4,26 @@
  */
 package gov.anl.aps.cdb.portal.plugins.support.traveler;
 
-import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Binder;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Form;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.objects.Traveler;
 import gov.anl.aps.cdb.portal.plugins.support.traveler.view.objects.CreatedFromTemplateSummaryObject;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
 
 /**
  *
- * @author djarosz
+ * @author craig
  */
-@Named(ItemTravelerDomainMachineDesignController.controllerNamed)
-@SessionScoped
-public class ItemTravelerDomainMachineDesignController extends ItemTravelerController implements Serializable {
-
-    public final static String controllerNamed = "itemTravelerDomainMachineDesignController";
-
-    private ItemDomainMachineDesignController itemDomainMachineDesignController = null;
-
+public abstract class ItemTravelerDomainTemplateControllerBase extends ItemTravelerController {
+    
     private boolean isDisplayMultiEditTravelerTemplate = false;
 
     private Boolean applyAllCreateNew = null;
 
     private List<CreatedFromTemplateSummaryObject> travelersCreatedFromTemplate = null;
     private Form selectedTemplateForTravelersCreatedFromTemplate = null;
-
-    @Override
-    protected ItemController getItemController() {
-        if (itemDomainMachineDesignController == null) {
-            itemDomainMachineDesignController = ItemDomainMachineDesignController.getInstance();
-        }
-        return itemDomainMachineDesignController;
-    }
 
     public boolean getIsCollapsedTravelerTemplates() {
         List<Form> templatesForCurrent = getTemplatesForCurrent();
@@ -96,13 +75,12 @@ public class ItemTravelerDomainMachineDesignController extends ItemTravelerContr
     public void prepareTravlersCreatedFromTemplate() {
         travelersCreatedFromTemplate = new ArrayList<>();
 
-        ItemDomainCatalog current = (ItemDomainCatalog) getCurrent();
-        List<ItemDomainInventory> inventoryItemList = current.getInventoryItemList();
+        Item current = getCurrent();
+        List<Item> itemList = current.getDerivedFromItemList();
 
         String templateId = selectedTemplateForTravelersCreatedFromTemplate.getId();
 
-        for (int i = 0; i < inventoryItemList.size(); i++) {
-            Item item = inventoryItemList.get(i);
+        for (Item item : itemList) {
             List<Traveler> travelerList = new ArrayList<>();
             loadPropertyTravelerInstanceList(item.getPropertyValueInternalList(), travelerList);
 
@@ -134,5 +112,4 @@ public class ItemTravelerDomainMachineDesignController extends ItemTravelerContr
             }
         }
     }
-    
 }

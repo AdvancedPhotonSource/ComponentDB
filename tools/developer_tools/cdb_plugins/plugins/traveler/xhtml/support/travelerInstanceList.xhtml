@@ -8,6 +8,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <ui:include src="travelerInstanceSectionCommonChildListActionButtons.xhtml">
         <ui:param name="childEntityTypeName" value="travelerInstance"/>
         <ui:param name="customizableListDataTable" value="#{false}"/> 
@@ -19,7 +24,7 @@ See LICENSE file.
                      update="travelerInstanceAddDialog"
                      oncomplete="PF('travelerInstanceAddDialogWidget').initPosition(); 
                                  PF('loadingDialog').hide()"
-                     action="#{itemTravelerDomainInventoryController.addTravelerInstanceToCurrent('PF(\'travelerInstanceAddDialogWidget\').show()')}" />
+                     action="#{travelerDomainInstanceController.addTravelerInstanceToCurrent('PF(\'travelerInstanceAddDialogWidget\').show()')}" />
 
 
     <ui:include src="travelerInstanceListDataTable.xhtml"/>

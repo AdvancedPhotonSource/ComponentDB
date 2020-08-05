@@ -12,7 +12,10 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:column rendered="#{itemTravelerDomainInventoryController.isDisplayMultiEditTravelerInstance}">
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null ? travelerDomainInstanceController : itemTravelerDomainInventoryController}" />
+
+    <p:column rendered="#{travelerDomainInstanceController.isDisplayMultiEditTravelerInstance}">
 
         <f:facet name="header">            
             Traveler Instance
@@ -20,7 +23,7 @@ See LICENSE file.
                            onstart="PF('loadingDialog').show()"
                            oncomplete="PF('loadingDialog').hide();
                                        PF('travelerInstanceMultiEditApplyToAllDialogWidget').show()"
-                           action="#{itemTravelerDomainInventoryController.prepareMultiEditAppplyInstanceToAllItems()}"
+                           action="#{travelerDomainInstanceController.prepareMultiEditAppplyInstanceToAllItems()}"
                            update="@form:travelerInstanceMultiEditApplyToAllDialog"
                            title="Apply traveler instnace values to all items."/> 
         </f:facet>
@@ -28,7 +31,7 @@ See LICENSE file.
         <p:commandLink styleClass="fa fa-link-icon fa-search" 
                        title="View traveler instance list"
                        onstart="PF('loadingDialog').show()"
-                       action="#{itemTravelerDomainInventoryController.loadTravelerInstancesForMultiEditItem(itemObject)}"
+                       action="#{travelerDomainInstanceController.loadTravelerInstancesForMultiEditItem(itemObject)}"
                        update="@parent:travelerInstanceListing"
                        oncomplete="PF('loadingDialog').hide();
                        PF('travelerInstanceListing#{itemObject.viewUUID}Widget').show()"/>
@@ -36,13 +39,13 @@ See LICENSE file.
                        title="Add a traveler instance to item"
                        update="@form:travelerInstanceAddDialog"
                        onclick="PF('loadingDialog').show()"
-                       action="#{itemTravelerDomainInventoryController.prepareAddTravelerInstanceOnMultiEdit(itemObject)}"
+                       action="#{travelerDomainInstanceController.prepareAddTravelerInstanceOnMultiEdit(itemObject)}"
                        oncomplete="PF('loadingDialog').hide();
                                    PF('travelerInstanceAddDialogWidget').show();"/>
 
         <p:overlayPanel id="travelerInstanceListing"
                         widgetVar="travelerInstanceListing#{itemObject.viewUUID}Widget">
-            <p:dataTable value="#{itemTravelerDomainInventoryController.getInstancesForMultiEditItem(itemObject)}"
+            <p:dataTable value="#{travelerDomainInstanceController.getInstancesForMultiEditItem(itemObject)}"
                          var="travelerObject">
                 <ui:include src="../support/travelerInstanceListObject.xhtml" />
             </p:dataTable>                            
