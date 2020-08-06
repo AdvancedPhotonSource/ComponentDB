@@ -88,12 +88,17 @@ See LICENSE file.
         <f:facet name="footer">
             <p:commandButton value="Create Binder"
                              icon="fa fa-floppy-o"
-                             action="#{travelerDomainInstanceController.createBinder()}"/>
+                             action="#{travelerDomainInstanceController.createBinder('successTravelerInstanceAddBinder();')}"/>
 
             <p:commandButton value="Close"
                              icon="fa fa-close"
                              onclick="PF('travelerBinderAddDialogWidget').hide()"/>                             
         </f:facet>
+        
+        <p:remoteCommand name="successTravelerInstanceAddBinder"
+                         oncomplete="PF('travelerBinderAddDialogWidget').hide();"
+                         update="@form"/>        
+
     </p:dialog>
 
 

@@ -328,25 +328,25 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     }
 
-    public String createBinder() {
+    public void createBinder(String onSuccessCommand) {
         // Validataion before submission of anything... 
         String newBinderTitle = newBinder.getTitle();
         if (newBinderTitle == null || newBinderTitle.equals("")) {
             SessionUtility.addErrorMessage("Error",
                     "Please specify a binder title.");
-            return null;
+            return;
         }
 
         if (newBinderTemplateSelection.size() == 0) {
             SessionUtility.addErrorMessage("Error",
                     "Please select traveler templates to create travelers for the binder.");
-            return null;
+            return;
         } else {
             for (Form template : newBinderTemplateSelection) {
                 if (template.getTravelerInstanceName().equals("")) {
                     SessionUtility.addErrorMessage("Error",
                             "Please specify a title for traveler of template: '" + template.getTitle() + "'.");
-                    return null;
+                    return;
                 }
             }
         }
@@ -371,7 +371,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             }
 
             if (failedValidation) {
-                return null;
+                return;
             }
 
             String[] travelerIds = new String[newBinderTemplateSelection.size()];
@@ -391,12 +391,13 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             propertyValue.setValue(newBinderId);
             this.savePropertyList();
 
-            return SessionUtility.getRedirectToCurrentView();
+            if (onSuccessCommand != null) {
+                SessionUtility.executeRemoteCommand(onSuccessCommand);
+            }
 
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", ex.getMessage());
         }
-        return null;
     }
 
     public void destroyTravelerTemplateFromCurrent(Form travelerTemplate) {
