@@ -104,10 +104,8 @@ See LICENSE file.
             <ui:param name="viewName" value="MachineTravelerTemplates" />
             <ui:param name="travelerDomainTemplateController"
                       value="#{itemTravelerDomainMachineTemplateController}" />
-            <ui:remove><ui:param name="renderTravelerTemplatesPanel" 
-                                 value="#{itemDomainMachineDesignController.currentViewIsTemplate}"/></ui:remove>
             <ui:param name="renderTravelerTemplatesPanel" 
-                      value="#{true}"/>
+                      value="#{itemDomainMachineDesignController.currentViewIsTemplate}"/>
         </ui:include>
 
         <!-- traveler instances section-->

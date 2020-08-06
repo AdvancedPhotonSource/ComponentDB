@@ -1069,6 +1069,16 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         }
         return defaultTemplates;
     }
+    
+    /**
+     * Default implementation returns internal property values for specified item.
+     * Subclasses override to customize.
+     */
+    protected List<PropertyValue> getInternalPropertyValueListForItem(Item item) {
+        List<PropertyValue> pvList = new ArrayList<>();
+        pvList.addAll(item.getPropertyValueInternalList());
+        return pvList;
+    }
 
     /**
      * Determines all entities that need to have (traveler templates)/forms
@@ -1083,10 +1093,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
         if (domainEntity instanceof Item) {
             Item item = (Item) domainEntity;
-            loadPropertyTravelerTemplateList(item.getPropertyValueInternalList(), templateList);
-            if (item.getDerivedFromItem() != null) {
-                loadPropertyTravelerTemplateList(item.getDerivedFromItem().getPropertyValueInternalList(), templateList);
-            }
+            loadPropertyTravelerTemplateList(getInternalPropertyValueListForItem(item), templateList);
         } else if (domainEntity instanceof ItemElement) {
             ItemElement itemElement = (ItemElement) domainEntity;
             loadPropertyTravelerTemplateList(itemElement.getPropertyValueList(), templateList);
