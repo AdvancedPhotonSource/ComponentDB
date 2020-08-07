@@ -9,13 +9,13 @@ See LICENSE file.
                 template="../../item/private/templates/itemListCustomizeDisplayDialogTemplate.xhtml">       
     
     <ui:param name="locationObjectSrc"
-                  value="#{itemDomainMachineDesignController.currentViewIsTemplate 
+                  value="#{entityController.currentViewIsTemplate 
                            ? '../../common/private/commonEmptyPage.xhtml' 
                            : '../../locatableItem/private/locatableItemListCustomizeObject.xhtml'}" />
     
     <ui:define name="additionalItemSpecificColumns">        
         <ui:include src="#{locationObjectSrc}">
-            <ui:param name="settingObject" value="#{itemDomainMachineDesignController.settingObject}" /> 
+            <ui:param name="settingObject" value="#{entityController.settingObject}" /> 
         </ui:include>
     </ui:define>
     

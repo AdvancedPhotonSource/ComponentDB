@@ -58,7 +58,7 @@ See LICENSE file.
             <div class="mdName" style="display: none">#{itemListObject.name}</div>
 
             <ui:param name="domainIcon" 
-                      value="#{itemDomainMachineDesignController.getMdNodeRepIcon(itemElementListObject)}" />
+                      value="#{entityController.getMdNodeRepIcon(itemElementListObject)}" />
 
             <span class="ui-treenode-icon ui-icon #{domainIcon}"/>      
 
@@ -75,8 +75,8 @@ See LICENSE file.
 
                 <ui:fragment rendered="#{mdTreeListObject == null}">
                     <ui:param name="isElementInventory" value="#{itemTreeListObject != null 
-                                                                 ? itemDomainMachineDesignController.isItemInventory(itemTreeListObject) 
-                                                                 : itemDomainMachineDesignController.isItemInventory(itemElementParentItem)}"/>
+                                                                 ? entityController.isItemInventory(itemTreeListObject) 
+                                                                 : entityController.isItemInventory(itemElementParentItem)}"/>
 
                     <ui:fragment rendered="#{isElementInventory == false}">
                         <span>#{itemElementListObject.name}</span>
@@ -117,11 +117,11 @@ See LICENSE file.
         <ui:param name="rendered" value="#{hideOptionalColumns and hideSearchColumns}"/>
 
         <ui:param name="itemHasPrimaryImage"
-                  value="#{itemDomainMachineDesignController.isMachineDesignItemHasPrimaryImage(itemElementListObject)}"/>             
+                  value="#{entityController.isMachineDesignItemHasPrimaryImage(itemElementListObject)}"/>             
         <ui:param name="primaryImageThumbnailForItem"
-                  value="#{itemDomainMachineDesignController.getPrimaryImageThumbnailForMachineDesignItem(itemElementListObject)}" /> 
+                  value="#{entityController.getPrimaryImageThumbnailForMachineDesignItem(itemElementListObject)}" /> 
         <ui:param name="primaryImageValueForItem"
-                  value="#{itemDomainMachineDesignController.getPrimaryImageValueForMachineDesignItem(itemElementListObject)}" /> 
+                  value="#{entityController.getPrimaryImageValueForMachineDesignItem(itemElementListObject)}" /> 
     </ui:include>
 
     <ui:include src="../../item/private/templateDefaults/itemListObjectColumns/itemQrId.xhtml">
@@ -163,7 +163,7 @@ See LICENSE file.
 
         <!-- Inventory element without assigned inventory item -->
         <ui:fragment rendered="#{itemTreeListObject == null
-                                 and itemDomainMachineDesignController.isItemInventory(itemElementParentItem)}">
+                                 and entityController.isItemInventory(itemElementParentItem)}">
             <span>#{itemDomainInventoryController.getInventoryItemElementDisplayString(itemElementListObject)}</span>
         </ui:fragment>
 
@@ -171,7 +171,7 @@ See LICENSE file.
     </p:column>
 
     <ui:param name="locationObjectSrc"
-              value="#{itemDomainMachineDesignController.currentViewIsTemplate 
+              value="#{entityController.currentViewIsTemplate 
                        ? '../../common/private/commonEmptyPage.xhtml' 
                        : '../../locatableItem/private/locatableItemListLocationObject.xhtml'}" />
 

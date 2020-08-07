@@ -13,10 +13,10 @@ See LICENSE file.
 
     <ui:fragment>
         <ui:param name="isAssignedItemInventory"
-                  value="#{itemDomainMachineDesignController.isItemInventory(assignedItem)}" />
+                  value="#{entityController.isItemInventory(assignedItem)}" />
 
         <ui:param name="isAssignedItemCatalog"
-                  value="#{itemDomainMachineDesignController.isItemCatalog(assignedItem)}" /> 
+                  value="#{entityController.isItemCatalog(assignedItem)}" /> 
         <ui:fragment rendered="#{isAssignedItemInventory}">
             <div class="actionLink">
                 <p:commandLink id="#{entityTypeName}CatalogLink#{viewName}" 

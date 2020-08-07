@@ -11,9 +11,9 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">   
 
     <p:blockUI block="itemMachineDesignListDataTable" 
-               blocked="#{itemDomainMachineDesignController.displayListConfigurationView}">
+               blocked="#{entityController.displayListConfigurationView}">
 
-        <p:outputPanel rendered="#{itemDomainMachineDesignController.displayFollowInstructionOnRightOnBlockUI}">
+        <p:outputPanel rendered="#{entityController.displayFollowInstructionOnRightOnBlockUI}">
             <div>
                 <span>
                     Follow instructions on the panel to the right.
@@ -21,7 +21,7 @@ See LICENSE file.
                     <p:commandButton value="Return"
                                      id="backToListFromDualView"
                                      onclick="PF('loadingDialog').show()"
-                                     action="#{itemDomainMachineDesignController.currentDualViewList()}"
+                                     action="#{entityController.currentDualViewList()}"
                                      icon="fa fa-arrow-circle-o-left"/>
                 </span>
 
@@ -30,7 +30,7 @@ See LICENSE file.
             </div>
         </p:outputPanel>
 
-        <p:outputPanel rendered="#{itemDomainMachineDesignController.displayAddCablePanel}">
+        <p:outputPanel rendered="#{entityController.displayAddCablePanel}">
             <div>
                 <span>
                     Follow instructions on the panel to the right for specifying cable details.
@@ -41,7 +41,7 @@ See LICENSE file.
             </div>
         </p:outputPanel>
 
-        <p:outputPanel rendered="#{itemDomainMachineDesignController.displayAddCableCircuitPanel}">
+        <p:outputPanel rendered="#{entityController.displayAddCableCircuitPanel}">
             <div>
                 <span>
                     Follow instructions on the panel to the right for specifying cable circuit details.
@@ -52,7 +52,7 @@ See LICENSE file.
             </div>
         </p:outputPanel>
 
-        <p:outputPanel rendered="#{itemDomainMachineDesignController.displayAddCableBundlePanel}">
+        <p:outputPanel rendered="#{entityController.displayAddCableBundlePanel}">
             <div>
                 <span>
                     Follow instructions on the panel to the right for specifying cable bundle details.
@@ -64,24 +64,24 @@ See LICENSE file.
         </p:outputPanel>
 
         <p:outputPanel id="catalogBlockUIContent"
-                       rendered="#{itemDomainMachineDesignController.displayAddCatalogItemListConfigurationPanel}">
+                       rendered="#{entityController.displayAddCatalogItemListConfigurationPanel}">
             <div>
                 Drag Catalog items to add to selected machine element.                            
             </div>
 
             <p:outputPanel id="catalogBlockUIDropContent">
-                <p:outputPanel rendered="#{itemDomainMachineDesignController.catalogItemsDraggedAsChildren == null}"
+                <p:outputPanel rendered="#{entityController.catalogItemsDraggedAsChildren == null}"
                                style="width: 100%;
                                margin-top: 15px;
                                font-size: 20px;">
                     Drop Here
                 </p:outputPanel>
 
-                <p:outputPanel rendered="#{itemDomainMachineDesignController.catalogItemsDraggedAsChildren != null}">
-                    <p:treeTable value="#{itemDomainMachineDesignController.newCatalogItemsInMachineDesignModel}"
+                <p:outputPanel rendered="#{entityController.catalogItemsDraggedAsChildren != null}">
+                    <p:treeTable value="#{entityController.newCatalogItemsInMachineDesignModel}"
                                  var="treeNode">
                         <ui:param name="itemMachineDesign"
-                                  value="#{itemDomainMachineDesignController.isItemMachineDesign(treeNode)}"/>
+                                  value="#{entityController.isItemMachineDesign(treeNode)}"/>
 
                         <p:column headerText="Machine Element Name">
                             <ui:fragment rendered="#{itemMachineDesign}">
@@ -104,7 +104,7 @@ See LICENSE file.
                     <p:commandButton value="Complete"
                                      icon="fa fa-save"
                                      update="catalogBlockUIDropContent"
-                                     action="#{itemDomainMachineDesignController.completeAddNewCatalogListConfiguration()}"/> 
+                                     action="#{entityController.completeAddNewCatalogListConfiguration()}"/> 
                 </p:outputPanel>
             </p:outputPanel>
         </p:outputPanel>
@@ -113,7 +113,7 @@ See LICENSE file.
             <p:commandButton value="Return"
                              id="backToListFromDetails"
                              onclick="PF('loadingDialog').show()"
-                             action="#{itemDomainMachineDesignController.currentDualViewList()}"
+                             action="#{entityController.currentDualViewList()}"
                              icon="fa fa-arrow-circle-o-left"/> 
         </ui:fragment>
 
@@ -121,7 +121,7 @@ See LICENSE file.
                      tolerance="touch"
                      activeStyleClass="ui-state-highlight"
                      datasource="addCatalogToMachineDesignDataTable">
-            <p:ajax listener="#{itemDomainMachineDesignController.onItemDrop}"
+            <p:ajax listener="#{entityController.onItemDrop}"
                     update="catalogBlockUIDropContent addCatalogToMachineDesignDataTable" /> 
         </p:droppable>
 

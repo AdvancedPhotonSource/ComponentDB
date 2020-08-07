@@ -23,7 +23,7 @@ See LICENSE file.
                     oncomplete="newMachineDesignElementContainedItemValueChanged()"/> 
         </h:inputText>
         <p:remoteCommand name="newMachineDesignElementContainedItemValueChanged"
-                         action="#{itemDomainMachineDesignController.newMachineDesignElementContainedItemValueChanged()}"
+                         action="#{entityController.newMachineDesignElementContainedItemValueChanged()}"
                          process="@this"
                          oncomplete="updateMachineDesignAddButton()"/>
     </p:outputPanel>

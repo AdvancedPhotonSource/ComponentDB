@@ -10,7 +10,7 @@ See LICENSE file.
 
     <p:submenu icon="ui-icon-machine-design-template" label="Template"
                disabled="#{disabledEditContextMenuItemForSelection}"
-               rendered="#{itemDomainMachineDesignController.selectedItemInTreeTableCreatedFromTemplate}">
+               rendered="#{entityController.selectedItemInTreeTableCreatedFromTemplate}">
         
         <p:menuitem value="Ressign Macros" icon="fa fa-repeat"
                 update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel emphasizedContentBelowTitleOutputPanel"

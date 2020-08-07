@@ -11,16 +11,16 @@ See LICENSE file.
     <ui:param name="dualConfigurationViewEnabled"
               value="#{entityController.displayListConfigurationView}"/>
 
-    <ui:param name="settingObject" value="#{itemDomainMachineDesignController.settingObject}" /> 
+    <ui:param name="settingObject" value="#{entityController.settingObject}" /> 
 
-    <p:hotkey bind="ctrl+e" action="#{itemDomainMachineDesignController.expandSelectedTreeNode()}"
+    <p:hotkey bind="ctrl+e" action="#{entityController.expandSelectedTreeNode()}"
               rendered="#{!dualConfigurationViewEnabled}"
               onstart="PF('loadingDialog').show();"
               oncomplete="PF('loadingDialog').hide()"
               update="itemMachineDesignListDataTable#{viewId}"/>
 
     <p:hotkey bind="alt+n"
-              action="#{itemDomainMachineDesignController.selectNextResult()}"
+              action="#{entityController.selectNextResult()}"
               update="itemMachineDesignListDataTable#{viewId}"
               onstart="PF('loadingDialog').show();"
               oncomplete="PF('loadingDialog').hide();
@@ -33,7 +33,7 @@ See LICENSE file.
         <ui:param name="valueModel" value="#{entityController.currentMachineDesignListRootTreeNode}" />
         <ui:param name="selectionModel" value="#{entityController.selectedItemInListTreeTable}" />
         <ui:param name="rendered" value="#{true}" />
-        <ui:param name="enableDragDropToMoveMD" value="#{itemDomainMachineDesignController.currentViewIsStandard}"/> 
+        <ui:param name="enableDragDropToMoveMD" value="#{entityController.currentViewIsStandard}"/> 
         <ui:param name="scrollable" value="#{dualConfigurationViewEnabled}" />        
 
         <ui:define name="treeTableEvents">

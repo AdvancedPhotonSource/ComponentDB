@@ -13,13 +13,9 @@ See LICENSE file.
     <p:outputPanel rendered="#{entityController.displayListViewItemDetailsView}">
 
         <ui:param name="itemObject"
-                  value="#{itemDomainMachineDesignController.current}" /> 
+                  value="#{entityController.current}" /> 
         <ui:param name="isEntityWriteable" 
-                  value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>
-
-        <ui:param name="entityController"
-                  value="#{itemDomainMachineDesignController}" /> 
-
+                  value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>        
 
         <p:panel header="Details"
                  id="machineDesignDetailsPanel"
@@ -59,8 +55,8 @@ See LICENSE file.
         </p:panel>
                 
         <p:panel header="Inventory"
-                 collapsed="#{itemDomainMachineDesignController.collapseContentsOfInventoryItem}"
-                 rendered="#{itemDomainMachineDesignController.renderInventorySection}"
+                 rendered="#{entityController.currentViewIsTemplate}"
+                 collapsed="#{entityController.collapseContentsOfInventoryItem}"                 
                  toggleable="true">
             
             <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
@@ -72,7 +68,7 @@ See LICENSE file.
 
             <p:remoteCommand name="addMachineDesingInventoryCommand"
                              onstart="PF('loadingDialog').show()"
-                             action="#{itemDomainMachineDesignController.prepareCreateInventoryFromCurrentTemplate()}"                              
+                             action="#{entityController.prepareCreateInventoryFromCurrentTemplate()}"                              
                              update="itemDomainMachineDesignCreateMDInventoryDialog"
                              oncomplete="PF('loadingDialog').hide();
                                          PF('itemDomainMachineDesignCreateMDInventoryDialogWidget').show()"/>

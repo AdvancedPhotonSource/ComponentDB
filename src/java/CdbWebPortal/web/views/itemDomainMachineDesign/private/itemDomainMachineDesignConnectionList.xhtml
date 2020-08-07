@@ -22,7 +22,7 @@ See LICENSE file.
                              disabled="#{disabledEditContextMenuItemForSelection}"
                              immediate="true"
                              rendered="#{isEntityWriteable}"
-                             action="#{itemDomainMachineDesignController.prepareCableMappingDialogForCurrent()}"
+                             action="#{entityController.prepareCableMappingDialogForCurrent()}"
                              oncomplete="showItemDomainMachineDesignCableMappingDialog()"/>   
             <p:commandButton value="Add Connection"
                              update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel"

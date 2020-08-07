@@ -11,8 +11,8 @@ See LICENSE file.
     <p:menuitem value="Reorder Machine Element Children"
                 icon="fa fa-sort"
                 onclick="PF('loadingDialog').show()"
-                action="#{itemDomainMachineDesignController.prepareReorderMachineDesignElements()}"
-                disabled="#{!itemDomainMachineDesignController.isSelectedItemInListReorderable()}"
+                action="#{entityController.prepareReorderMachineDesignElements()}"
+                disabled="#{!entityController.isSelectedItemInListReorderable()}"
                 oncomplete="PF('itemDomainMachineDesignReorderOverlayPanelWidget').show();
                             PF('loadingDialog').hide()"
                 update="itemDomainMachineDesignReorderOverlayPanel"/>
