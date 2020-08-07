@@ -7,7 +7,7 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="list.xhtml">
+                template="private/templates/itemDomainMachineListViewTemplate.xhtml">
 
     <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
     <ui:param name="itemObject" value="#{entityController.current}" />    
@@ -31,12 +31,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="additionalSupport" >
-        <ui:include src="../locatableItem/private/locatableItemLocationHistoryDialog.xhtml" />
-        <ui:include src="../entityInfo/private/domainEntityInfoViewDialog.xhtml" />
-        <ui:include src="../domainEntityProperty/private/domainEntityPropertyListCustomizeDisplayDialog.xhtml" /> 
-        <ui:include src="../propertyMetadata/private/propertyValueMetadataListDialog.xhtml" />
-        <ui:include src="../propertyValueHistory/private/propertyValueHistoryListDialog.xhtml" />
-        <ui:include src="private/itemDomainMachineDesignCreateMDInventoryDialog.xhtml" />
+        <ui:include src="private/itemDomainMachineDesignViewSupport.xhtml"/> 
     </ui:define>
 
 </ui:composition>
