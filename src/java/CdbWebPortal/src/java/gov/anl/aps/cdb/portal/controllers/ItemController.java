@@ -2426,7 +2426,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return false;
     }
 
-    private ItemDomainEntity performItemRedirection(ItemDomainEntity item, String paramString, boolean forceRedirection) {
+    protected ItemDomainEntity performItemRedirection(ItemDomainEntity item, String paramString, boolean forceRedirection) {
         String currentViewId = SessionUtility.getCurrentViewId();
 
         Domain itemDomain = item.getDomain();
