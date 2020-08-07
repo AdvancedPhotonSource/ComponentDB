@@ -6,50 +6,6 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
-    <p:outputPanel rendered="#{entityController.renderCreateConfiguration}">
-        <p:outputPanel rendered="#{entityController.entityDisplayDerivedFromItem}">
-            <h2>Select #{entityController.derivedFromItemTitle}.</h2>
-
-            <p:panelGrid columns="2" >
-                <h:outputText value="#{entityController.derivedFromItemTitle}"
-                              rendered="#{entityController.entityDisplayDerivedFromItem}"/>
-                <p:column rendered="#{entityController.entityDisplayDerivedFromItem}"
-                          id="itemSelectDataTableColumn">
-                    <ui:include src="../../item/private/itemSelectDataTable.xhtml">
-                        <ui:param name="selectionController" value="#{entityController.defaultDomainDerivedFromDomainController}" />
-                        <ui:param name="selectionTarget" value="#{entityController.derivedFromItemForNewItems}" />
-                        <ui:param name="updateTarget" value="itemSelectDataTableColumn" />
-                        <ui:param name="immediateUpdate" value="#{true}"/>
-                    </ui:include>
-                </p:column>
-            </p:panelGrid>
-        </p:outputPanel>
-
-        <p:panelGrid columns="2" >
-            <h:outputText value="Quantity" />
-            <p:inputNumber minValue="#{entityController.minNewItemsToCreate}"
-                           maxValue="500"
-                           value="#{entityController.createNewItemCount}"/>
-        </p:panelGrid>
-
-        <p:outputPanel id='defaultValuesConfigurationOutputPanel' >
-            <h2>Default Values for new items.</h2>
-
-            <p:panelGrid columns="2" >                
-
-                <ui:include src="itemMultiCreateConfigurationProjectObject.xhtml" />
-
-                <ui:include src="itemMultiCreateConfigurationEntityInfoObject.xhtml" />
-
-            </p:panelGrid>
-        </p:outputPanel>
-        <p:blockUI block="defaultValuesConfigurationOutputPanel"
-                   blocked="#{entityController.defaultValuesForNewItemsEditable}">
-            <h:outputText value="Items have already been created with this default configuration." />
-        </p:blockUI>
-    </p:outputPanel>
-
+                template="templates/itemMultiCreateConfigurationPanelTemplate.xhtml">
+    
 </ui:composition>
