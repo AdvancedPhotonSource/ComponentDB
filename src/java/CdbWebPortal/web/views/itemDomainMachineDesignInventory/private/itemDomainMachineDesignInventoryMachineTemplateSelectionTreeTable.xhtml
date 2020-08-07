@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">    
+
+    
+        <ui:param name="viewId"
+                  value="templateSelection" /> 
+        <ui:param name="rendered"
+                  value="#{true}" />
+        <ui:param name="valueModel"
+                  value="#{entityController.machineDesignTemplateRootTreeNode}" />
+        <ui:param name="scrollable"
+                  value="#{false}"/> 
+        <ui:define name="treeTableEvents">
+            <p:ajax event="select" listener="#{entityController.createInventoryFromTemplateSelected}"
+                    oncomplete="#{onCompleteSelectMachineTemplateCommand}"/>
+
+        </ui:define>
+
+    
+
+</ui:composition>
