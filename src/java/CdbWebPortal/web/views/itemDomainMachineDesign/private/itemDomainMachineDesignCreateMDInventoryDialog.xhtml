@@ -17,34 +17,10 @@ See LICENSE file.
               header="Create Inventory"
               styleClass="viewTransparentBackgroundDialog">
 
-        <ui:param name="newInventoryObject"
-                  value="#{itemDomainMachineDesignController.newMdInventoryItem}" />
-
-        <p:outputPanel rendered="#{newInventoryObject != null}" >                    
-            <p:panelGrid columns="3">
-                <ui:param name="viewName"
-                          value="newInventory"/> 
-                <ui:param name="itemObject"
-                          value="#{newInventoryObject}" /> 
-                
-                
-                <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemName.xhtml"/>
-                <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemName.xhtml" />
-                <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemName.xhtml" />
-
-                <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemQrId.xhtml" />
-                <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemQrId.xhtml" />
-                <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemQrId.xhtml" />
-
-                <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemIdentifier2.xhtml"/>
-                <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml" />
-                <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemIdentifier2.xhtml" />
-
-                <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemProject.xhtml"/>
-                <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemProject.xhtml"/>
-                <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemProject.xhtml"/>               
-            </p:panelGrid>
-        </p:outputPanel>
+        <ui:include src="itemDomainMachineDesignCreateMDInventoryPanelGrid.xhtml">
+            <ui:param name="newInventoryObject"
+                      value="#{entityController.newMdInventoryItem}" />
+        </ui:include>
 
         <f:facet name="footer">           
             <p:commandButton value="Save"
@@ -52,8 +28,8 @@ See LICENSE file.
                              onclick="PF('loadingDialog').show()"
                              oncomplete="PF('loadingDialog').hide()"
                              update="@form"
-                             action="#{itemDomainMachineDesignController.createNewMdInventoryItem()}" />
-            
+                             action="#{entityController.createNewMdInventoryItem()}" />
+
             <p:commandButton value="Close"
                              icon="fa fa-close"
                              onclick="PF('loadingDialog').show()"
