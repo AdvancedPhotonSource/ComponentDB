@@ -46,7 +46,8 @@ See LICENSE file.
             <p:submenu label="Inventory"
                        icon="ui-icon-inventory"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainInventory/list') 
-                                     or fn:startsWith(view.viewId, '/views/itemDomainCableInventory/list')) ? 'activeSubMenuParentItem' : ''} ">
+                                     or fn:startsWith(view.viewId, '/views/itemDomainCableInventory/list')
+                                     or fn:startsWith(view.viewId, '/views/itemDomainMachineDesignInventory/list')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Component"
                             icon="ui-icon-inventory"
                             url="#{request.contextPath}/views/itemDomainInventory/list"
@@ -55,6 +56,10 @@ See LICENSE file.
                             icon="ui-icon-inventory"
                             url="#{request.contextPath}/views/itemDomainCableInventory/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableInventory/list') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="Machine"
+                            icon="ui-icon-machine-design"
+                            url="#{request.contextPath}/views/itemDomainMachineDesignInventory/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignInventory/list') ? 'activeMenuItem' : ''} "/>                                
             </p:submenu>
             
             <p:submenu label="Design"
