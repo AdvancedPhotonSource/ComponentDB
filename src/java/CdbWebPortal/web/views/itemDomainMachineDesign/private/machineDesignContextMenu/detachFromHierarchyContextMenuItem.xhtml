@@ -10,7 +10,7 @@ See LICENSE file.
 
     <p:menuitem value="Detach from hierarchy"
                 icon="fa fa-minus"
-                rendered="#{entityController.currentViewIsSubAssembly == false}"
+                rendered="#{entityController.currentViewIsStandard or entityController.currentViewIsTemplate}"
                 onclick="PF('detachMachineDesignWidget').show()"
                 disabled="#{disabledEditContextMenuItemForSelectionParent}"/>
 
