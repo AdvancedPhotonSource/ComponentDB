@@ -68,7 +68,7 @@ See LICENSE file.
 
             <p:remoteCommand name="addMachineDesingInventoryCommand"
                              onstart="PF('loadingDialog').show()"
-                             action="#{entityController.prepareCreateInventoryFromCurrentTemplate()}"                              
+                             action="#{itemDomainMachineDesignInventoryController.prepareCreateInventoryFromTemplate(itemObject)}"                              
                              update="itemDomainMachineDesignCreateMDInventoryDialog"
                              oncomplete="PF('loadingDialog').hide();
                                          PF('itemDomainMachineDesignCreateMDInventoryDialogWidget').show()"/>

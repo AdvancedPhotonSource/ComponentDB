@@ -19,7 +19,7 @@ See LICENSE file.
 
         <ui:include src="itemDomainMachineDesignCreateMDInventoryPanelGrid.xhtml">
             <ui:param name="newInventoryObject"
-                      value="#{entityController.newMdInventoryItem}" />
+                      value="#{itemDomainMachineDesignInventoryController.newMdInventoryItem}" />
         </ui:include>
 
         <f:facet name="footer">           
@@ -28,7 +28,7 @@ See LICENSE file.
                              onclick="PF('loadingDialog').show()"
                              oncomplete="PF('loadingDialog').hide()"
                              update="@form"
-                             action="#{entityController.createNewMdInventoryItem()}" />
+                             action="#{itemDomainMachineDesignInventoryController.createInventoryFromDialog()}" />
 
             <p:commandButton value="Close"
                              icon="fa fa-close"
