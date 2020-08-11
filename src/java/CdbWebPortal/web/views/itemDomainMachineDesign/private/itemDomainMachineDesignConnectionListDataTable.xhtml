@@ -9,7 +9,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">   
 
     <p:dataTable id="#{itemConnectorEntityTypeName}ListDataTable"
-                 value="#{itemDomainMachineDesignController.mdConnectorListForCurrent}"
+                 value="#{entityController.mdConnectorListForCurrent}"
                  var="mdConnectorListForCurrent">
 
         <ui:include src="itemDomainMachineDesignConnectionListObject.xhtml" /> 

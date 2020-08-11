@@ -10,7 +10,7 @@ See LICENSE file.
 
     <p:submenu icon="ui-icon-cable-design" label="Cable"
                disabled="#{disabledEditContextMenuItemForSelection}"
-               rendered="#{itemDomainMachineDesignController.currentViewIsStandard}">
+               rendered="#{entityController.currentViewIsStandard}">
         <ui:include src="addCableSubMenu.xhtml" />
         <ui:include src="performCableMappingContextMenuItem.xhtml"/>                
     </p:submenu>

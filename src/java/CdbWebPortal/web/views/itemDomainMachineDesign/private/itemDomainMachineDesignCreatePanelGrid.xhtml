@@ -9,12 +9,12 @@ See LICENSE file.
                 template="../../item/private/templates/itemCreatePanelGridTemplate.xhtml">   
 
     <ui:param name="locationEditObjectSrc"
-              value="#{itemDomainMachineDesignController.currentViewIsTemplate 
+              value="#{entityController.currentViewIsTemplate 
                        ? '../../common/private/commonEmptyPage.xhtml' 
                        : '../../locatableItem/private/locatableItemLocationEditPanelGrid.xhtml'}" />
     
     <ui:param name="locationSelectDialogSrc"
-              value="#{itemDomainMachineDesignController.currentViewIsTemplate 
+              value="#{entityController.currentViewIsTemplate 
                        ? '../../common/private/commonEmptyPage.xhtml' 
                        : '../../locatableItem/private/locatableItemLocationSelectDialog.xhtml'}" />
 

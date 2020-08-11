@@ -23,7 +23,7 @@ See LICENSE file.
 
         <p:outputPanel rendered="#{itemElementObject != null}" >
             <ui:param name="itemElementHistoryList"
-                      value="#{itemDomainMachineDesignController.getCombinedItemElementHistory(itemElementObject)}" />
+                      value="#{entityController.getCombinedItemElementHistory(itemElementObject)}" />
 
             <p:dataTable value="#{itemElementHistoryList}"
                          var="historyItem"

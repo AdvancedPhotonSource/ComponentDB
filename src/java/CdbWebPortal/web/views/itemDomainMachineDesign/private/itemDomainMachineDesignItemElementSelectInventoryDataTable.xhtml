@@ -11,13 +11,13 @@ See LICENSE file.
     <!-- sepcify updateTarget param -->
     
     <ui:param name="inventorySelectionDataModel"
-              value="#{itemDomainMachineDesignController.installedInventorySelectionForCurrentElement}" /> 
+              value="#{entityController.installedInventorySelectionForCurrentElement}" /> 
 
     <p:outputPanel rendered="#{inventorySelectionDataModel != null}">
         <ui:include src="../../item/private/itemSelectDataTable.xhtml">
             <ui:param name="viewName" value="installedInventorySelection#{viewName}" />         
-            <ui:param name="selectionValue" value="#{itemDomainMachineDesignController.inventoryForElement}" />
-            <ui:param name="selectionTarget" value="#{itemDomainMachineDesignController.inventoryForElement}" />
+            <ui:param name="selectionValue" value="#{entityController.inventoryForElement}" />
+            <ui:param name="selectionTarget" value="#{entityController.inventoryForElement}" />
             <ui:param name="entityController" value="#{itemDomainInventoryController}" />
             <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
             <ui:param name="selectDataModel" value="#{inventorySelectionDataModel}" />

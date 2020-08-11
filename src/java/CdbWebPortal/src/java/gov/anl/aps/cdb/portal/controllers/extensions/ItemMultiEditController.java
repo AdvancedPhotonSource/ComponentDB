@@ -42,7 +42,7 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager; 
+import org.apache.logging.log4j.LogManager;
 
 /**
  *
@@ -62,7 +62,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     protected final String EDIT_MULTIPLE_REDIRECT = "editMultiple?faces-redirect=true";
     protected final String CREATE_MULTIPLE_REDIRECT = "createMultiple?faces-redirect=true";
-    
+
     protected final String REL_PATH_EMPTY_PAGE = "../../common/private/commonEmptyPage.xhtml";
 
     protected ListDataModel editableListDataModel;
@@ -85,8 +85,8 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     protected boolean updateProject = false;
     protected boolean updateDescription = false;
     protected boolean updateQrId = false;
-    protected boolean updateItemType = false; 
-    protected boolean updateItemCategory = false; 
+    protected boolean updateItemType = false;
+    protected boolean updateItemCategory = false;
 
     protected boolean updateOwnerUser = false;
     protected boolean updateOwnerGroup = false;
@@ -307,7 +307,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
         for (int i = 0; i < selectedItemsToEdit.size(); i++) {
             Item item = selectedItemsToEdit.get(i);
-            
+
             if (isItemExistInDb(item)) {
                 if (performSaveOperationsOnItem(item)) {
                     successUpdateCounter++;
@@ -315,11 +315,11 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
             } else if (performSaveOperationsOnItem(item)) {
                 successCreateCounter++;
             }
-            
+
             // Reload the updated item. 
             Item updatedItem = getCurrent();
             selectedItemsToEdit.remove(i);
-            selectedItemsToEdit.add(i, updatedItem); 
+            selectedItemsToEdit.add(i, updatedItem);
         }
 
         // Summary message
@@ -398,22 +398,22 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         SessionUtility.navigateTo(desiredPath);
         renderMultiCreateConfigurationDialog = false;
     }
-    
+
     public void editAllItemsDerivedFromItem(Item item) {
         resetMultiEditVariables();
         setActiveIndex(MultipleEditMenu.updateItems.ordinal());
-        multiEditMode = MultiEditMode.update; 
-               
+        multiEditMode = MultiEditMode.update;
+
         LoginController loginController = LoginController.getInstance();
         List<Item> derivedFromItemList = item.getDerivedFromItemList();
-        selectedItemsToEdit = new ArrayList<>(); 
+        selectedItemsToEdit = new ArrayList<>();
         for (Item derivedItem : derivedFromItemList) {
             if (loginController.isEntityWriteable(derivedItem.getEntityInfo())) {
                 selectedItemsToEdit.add(derivedItem);
             }
         }
-                
-        String desiredPath = getEntityApplicationViewPath() + "/" + EDIT_MULTIPLE_REDIRECT; 
+
+        String desiredPath = getEntityApplicationViewPath() + "/" + EDIT_MULTIPLE_REDIRECT;
         SessionUtility.navigateTo(desiredPath);
     }
 
@@ -451,12 +451,16 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
             LoginController loginController = LoginController.getInstance();
             if (loginController.isLoggedInAsAdmin()) {
                 editableListDataModel = new ListDataModel(getItemList());
-            } else {
-                UserInfo userInfo = (UserInfo) SessionUtility.getUser();
-                editableListDataModel = new ListDataModel(getItemDbFacade().findItemsWithPermissionsOfDomain(userInfo.getId(), getDomainId()));
+            } else {                
+                editableListDataModel = new ListDataModel(getEditableItemsForCurrentNonAdminUser());
             }
         }
         return editableListDataModel;
+    }
+
+    protected List<Item> getEditableItemsForCurrentNonAdminUser() {
+        UserInfo userInfo = (UserInfo) SessionUtility.getUser();
+        return getItemDbFacade().findItemsWithPermissionsOfDomain(userInfo.getId(), getDomainId());
     }
 
     public void updateSingleItem(Item item) {
@@ -924,9 +928,9 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     public boolean getRenderItemProjectInputValue() {
         return getRenderSpecificInput(ItemDefaultColumnReferences.itemProject);
     }
-    
+
     public boolean getRenderLocationInputValue() {
-        return getRenderSpecificInput(ItemDefaultColumnReferences.location); 
+        return getRenderSpecificInput(ItemDefaultColumnReferences.location);
     }
 
     public boolean getRenderPropertyInputValue() {
@@ -950,7 +954,7 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
             } else if (this.currentApplyValuesToColumn == ItemDefaultColumnReferences.itemIdentifier2) {
                 return true;
             } else if (this.currentApplyValuesToColumn == ItemDefaultColumnReferences.locationDetails) {
-                return true; 
+                return true;
             }
         }
 
@@ -1008,52 +1012,52 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
                 case location:
                     LocatableItemController locationController = LocatableItemController.getInstance();
                     DefaultTreeNode node = (DefaultTreeNode) currentObjectValueToColumn;
-                    ItemDomainLocation location = null; 
+                    ItemDomainLocation location = null;
                     if (node != null) {
-                        location = (ItemDomainLocation) node.getData();                         
+                        location = (ItemDomainLocation) node.getData();
                     }
-                    
+
                     LocatableItem locatableItem = (LocatableItem) item;
                     locationController.updateLocationForItem(locatableItem, location, null);
                     break;
                 case locationDetails:
                     String locDetails = getNextValueForCurrentSequence();
                     LocatableItem locitem = (LocatableItem) item;
-                    
-                    locitem.setLocationDetails(locDetails);                     
-                    break;  
+
+                    locitem.setLocationDetails(locDetails);
+                    break;
                 default:
                     customApplyValuesForColumn(item, currentApplyValuesToColumn);
                     break;
             }
         }
     }
-    
+
     protected void customApplyValuesForColumn(Item item, ItemDefaultColumnReferences columnReference) {
         // Override this for additional domain specific values. 
     }
-    
+
     public String getApplyValuesToEditLink() {
         if (getRenderItemProjectInputValue()) {
             return "applyValuesTo/itemProjectInput.xhtml";
         } else if (getRenderSimpleTextInputValue()) {
             return "applyValuesTo/simpleTextInput.xhtml";
         } else if (getRenderLargeTextInput()) {
-            return "applyValuesTo/itemLargeTextInput.xhtml"; 
+            return "applyValuesTo/itemLargeTextInput.xhtml";
         } else if (getRenderNumberInput()) {
-            return "applyValuesTo/numberInput.xhtml"; 
+            return "applyValuesTo/numberInput.xhtml";
         } else if (getRenderOwnerUserInput()) {
             return "applyValuesTo/entityInfoOwnerUserInput.xhtml";
         } else if (getRenderOwnerGroupInput()) {
             return "applyValuesTo/entityInfoOwnerGroupInput.xhtml";
         } else if (getRenderGroupWriteableInput()) {
-            return "applyValuesTo/entityInfoGroupWriteableInput.xhtml"; 
+            return "applyValuesTo/entityInfoGroupWriteableInput.xhtml";
         } else if (getRenderPropertyInputValue()) {
             return "applyValuesTo/propertyValueInput.xhtml";
         } else if (getRenderLocationInputValue()) {
             return LocatableItemController.getRelPathMultiEditLocationInput();
-        }else {
-            return REL_PATH_EMPTY_PAGE; 
+        } else {
+            return REL_PATH_EMPTY_PAGE;
         }
     }
 

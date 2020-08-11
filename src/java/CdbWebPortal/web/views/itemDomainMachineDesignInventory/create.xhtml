@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                template="../item/private/templates/itemCreateTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+
+    <f:metadata>
+        <f:viewAction action="#{settingController.updateGlobalSettings()}" />
+    </f:metadata>
+
+    <ui:param name="entityController" value="#{itemDomainMachineDesignInventoryController}"/>   
+
+    <ui:define name="itemEditPanelGrid">
+
+        <p:outputPanel id="itemDomainMachineDesignInventoryCreateNewPanel">
+            
+            <ui:param name="newInventoryObject"
+                      value="#{itemDomainMachineDesignInventoryController.newMdInventoryItem}" />
+            
+            <p:outputPanel rendered="#{newInventoryObject == null}">
+                <h2>Select Machine Template:</h2>
+                <ui:include src="private/itemDomainMachineDesignInventoryMachineTemplateSelectionTreeTable.xhtml" >
+                    <ui:param name="onCompleteSelectMachineTemplateCommand"
+                              value="updateItemDomainMachineDesignInventoryCreateNewPanel()" />
+                </ui:include>
+            </p:outputPanel>
+
+            <p:remoteCommand name="updateItemDomainMachineDesignInventoryCreateNewPanel"
+                             update="@form:itemDomainMachineDesignInventoryCreateNewPanel"
+                             immediate="true"
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"/>
+            
+            <ui:include src="../itemDomainMachineDesign/private/itemDomainMachineDesignCreateMDInventoryPanelGrid.xhtml" >
+                <ui:param name="newInventoryObject"
+                          value="#{newInventoryObject}"/> 
+            </ui:include>
+        </p:outputPanel>
+
+
+    </ui:define>
+
+
+
+</ui:composition>
+
+

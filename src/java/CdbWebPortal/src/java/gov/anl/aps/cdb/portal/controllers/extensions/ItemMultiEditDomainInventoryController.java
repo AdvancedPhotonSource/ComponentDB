@@ -27,17 +27,13 @@ import javax.inject.Named;
  */
 @Named(ItemMultiEditDomainInventoryController.controllerNamed)
 @SessionScoped
-public class ItemMultiEditDomainInventoryController extends ItemMultiEditController implements Serializable {
+public class ItemMultiEditDomainInventoryController extends ItemMultiEditLocatableItemController implements Serializable {
     
     public final static String controllerNamed = "itemMultiEditDomainInventoryController";
     
     private final String REL_PATH_ITEM_STATUS_INPUT = "../../itemDomainInventory/private/applyValuesTo/itemStatusInput.xhtml";
     
     Integer unitCount = null; 
-    
-    protected boolean updateLocation = false;
-    protected boolean updateLocationDetails = false; 
-    protected String toggledLocationEditViewUUID = null; 
     
     protected boolean updateInventoryStatus = false; 
     
@@ -151,31 +147,6 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditControl
 
     public void setSelectedPropertyTypesForEditing(List<PropertyType> selectedPropertyTypesForEditing) {      
         this.selectedPropertyTypesForEditing = selectedPropertyTypesForEditing;
-    }
-
-    public boolean isUpdateLocation() {
-        return updateLocation;
-    }
-
-    public void setUpdateLocation(boolean updateLocation) {
-        this.toggledLocationEditViewUUID = null; 
-        this.updateLocation = updateLocation;
-    }
-
-    public boolean isUpdateLocationDetails() {
-        return updateLocationDetails;
-    }
-
-    public void setUpdateLocationDetails(boolean updateLocationDetails) {
-        this.updateLocationDetails = updateLocationDetails;
-    }
-
-    public String getToggledLocationEditViewUUID() {
-        return toggledLocationEditViewUUID;
-    }
-
-    public void setToggledLocationEditViewUUID(String toggledLocationEditViewUUID) {
-        this.toggledLocationEditViewUUID = toggledLocationEditViewUUID;
     }
 
     public boolean isUpdateInventoryStatus() {

@@ -12,18 +12,7 @@ See LICENSE file.
     <ui:define name="additonalItemColumns">
         <ui:include src="../../locatableItem/private/locatableItemListLocationObject.xhtml"/>        
         
-        <ui:param name="settingObject" value="#{entityController.settingObject}"/>     
-        
-        <p:column id="domain"
-                  headerText="Domain"
-                  sortable="#{true}"
-                  filterable="#{true}"                 
-                  filterOptions="#{itemDomainInventoryController.domainFilterOptions}"                  
-                  filterBy="#{itemListObject.domain}"
-                  rendered="#{settingObject.displayDomain}"
-                  filterValue="#{settingObject.filterByDomain}">
-            #{itemListObject.domain.name}
-        </p:column>
+        <ui:param name="settingObject" value="#{entityController.settingObject}"/>                     
                   
     </ui:define>
     
