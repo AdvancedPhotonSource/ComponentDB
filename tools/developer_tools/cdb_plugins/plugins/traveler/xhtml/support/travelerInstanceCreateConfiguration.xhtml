@@ -8,6 +8,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <p:outputPanel id="#{viewName}travelerInstanceCreateConfigurationPanel">
 
         <ui:param name="overrideTravelerTemplateList"
@@ -15,7 +20,7 @@ See LICENSE file.
         <ui:param name="travelerTemplateList"
                   value="#{overrideTravelerTemplateList 
                            ? travelerTemplateList
-                           : itemTravelerDomainInventoryController.availableTemplates }" />
+                           : travelerDomainInstanceController.availableTemplates }" />
         <ui:param name="additonalTravelerTemplateEmptyMessage"
                   value="#{additonalTravelerTemplateEmptyMessage != null 
                            ? additonalTravelerTemplateEmptyMessage 
@@ -23,7 +28,7 @@ See LICENSE file.
 
         <ui:include src="travelerTemplateDataTable.xhtml">
             <ui:param name="travelerTemplateList" value="#{travelerTemplateList}" />
-            <ui:param name="travelerSelectedValue" value="#{itemTravelerDomainInventoryController.selectedTravelerInstanceTemplate}" /> 
+            <ui:param name="travelerSelectedValue" value="#{travelerDomainInstanceController.selectedTravelerInstanceTemplate}" /> 
             <ui:param name="rowSelectEvent" value="updateConfigurationPanel();" />
             <ui:param name="rowUnselectEvent" value="updateConfigurationPanel();" />
             <ui:param name="dataTableId" value="#{viewName}TravelerInstanceDataTable" />    
@@ -42,7 +47,7 @@ See LICENSE file.
                     <p:outputPanel>
                         <ui:include src="travelerTemplateReleasedVersionSelectionDataTable.xhtml">
                             <ui:param name="selectedTemplate"
-                                      value="#{itemTravelerDomainInventoryController.selectedTravelerInstanceTemplate}"/>                     
+                                      value="#{travelerDomainInstanceController.selectedTravelerInstanceTemplate}"/>                     
                         </ui:include>
                     </p:outputPanel>
                 </p:column>
@@ -53,7 +58,7 @@ See LICENSE file.
                 </p:column>
                 <p:column>
                     <p:inputText styleClass="entityDataText" 
-                                 value="#{itemTravelerDomainInventoryController.travelerInstanceTitle}"
+                                 value="#{travelerDomainInstanceController.travelerInstanceTitle}"
                                  id="#{viewName}travelerInstanceTitleInputText"                             
                                  />
                 </p:column>

@@ -10,6 +10,9 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
     
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
     <p:remoteCommand name="showTravelerTemplateMultiEditApplyToAllDialog"
                      onstart="resetTravelerTemplateMultiEditApplyAllPanelsToDefault()"
                      oncomplete="PF('travelerTemplateMultiEditApplyToAllDialogWidget').show()" />
@@ -51,7 +54,7 @@ See LICENSE file.
                      collapsed="false"
                      toggleable="true">
                 <p:selectOneRadio id="travelerTemplateApplyAllMultiEditIfCreateSelectOne"
-                                  value="#{itemTravelerDomainCatalogController.applyAllCreateNew}"
+                                  value="#{travelerDomainTemplateController.applyAllCreateNew}"
                                   onclick="applyAllTemplateCreateNewSelectionMade()">
                     <f:selectItem itemValue="#{false}" itemLabel="Select Existing Template" />
                     <f:selectItem itemValue="#{true}" itemLabel="Create New Template" />                
@@ -62,7 +65,7 @@ See LICENSE file.
                      widgetVar="travelerTemplateApplyAllMultiEditCreateLinkWidget"
                      collapsed="true"
                      toggleable="true">                
-                <p:outputPanel rendered="#{itemTravelerDomainCatalogController.applyAllCreateNew}">
+                <p:outputPanel rendered="#{travelerDomainTemplateController.applyAllCreateNew}">
                     <ui:include src="travelerTemplateCreateConfigurationPanelGrid.xhtml">
                         <ui:param name="viewName"
                                   value="multiEdit" />
@@ -72,13 +75,13 @@ See LICENSE file.
                                      update="@parent"
                                      onstart="PF('loadingDialog').show()"
                                      oncomplete="PF('loadingDialog').hide();"
-                                     action="#{itemTravelerDomainCatalogController.createTravelerTemplateAndSelectNewTemplate('applyAllTemplateSelectionMade()')}"/>
+                                     action="#{travelerDomainTemplateController.createTravelerTemplateAndSelectNewTemplate('applyAllTemplateSelectionMade()')}"/>
                 </p:outputPanel>
 
-                <p:outputPanel rendered="#{!itemTravelerDomainCatalogController.applyAllCreateNew}">
+                <p:outputPanel rendered="#{!travelerDomainTemplateController.applyAllCreateNew}">
                     <ui:include src="travelerTemplateDataTable.xhtml">
-                        <ui:param name="travelerTemplateList" value="#{itemTravelerDomainCatalogController.activeTravelerTemplates}" />
-                        <ui:param name="travelerSelectedValue" value="#{itemTravelerDomainCatalogController.multiEditSelectedTemplate}" />
+                        <ui:param name="travelerTemplateList" value="#{travelerDomainTemplateController.activeTravelerTemplates}" />
+                        <ui:param name="travelerSelectedValue" value="#{travelerDomainTemplateController.multiEditSelectedTemplate}" />
                         <ui:param name="dataTableId" value="multiEditTravelerTemplatesDataTable" />
                         <ui:param name="rowSelectEvent" value="applyAllTemplateSelectionMade()" />
                     </ui:include> 
@@ -91,7 +94,7 @@ See LICENSE file.
                      collapsed="true"
                      toggleable="true">
                 <ui:param name="applyAllTravelerTemplate"
-                          value="#{itemTravelerDomainCatalogController.multiEditSelectedTemplate}" />                
+                          value="#{travelerDomainTemplateController.multiEditSelectedTemplate}" />                
                 <p:panelGrid rendered="#{applyAllTravelerTemplate != null}" >
 
                     <p:row>
@@ -105,7 +108,7 @@ See LICENSE file.
 
                     <p:row>
                         <p:column colspan="2">
-                            <h:outputLink value="#{itemTravelerDomainCatalogController.getTravelerTemplateURL(applyAllTravelerTemplate.id)}"
+                            <h:outputLink value="#{travelerDomainTemplateController.getTravelerTemplateURL(applyAllTravelerTemplate.id)}"
                                           target="_blank">
                                 <h:outputText value="Go to traveler template" />
                             </h:outputLink>
@@ -125,12 +128,12 @@ See LICENSE file.
                              icon="fa fa-plus"
                              value="Apply template to all"
                              update="@form"
-                             action="#{itemTravelerDomainCatalogController.applyMultiEditSelectedTemplateToAllSelectedItems()}"
-                             disabled="#{itemTravelerDomainCatalogController.multiEditSelectedTemplate == null}"/> 
+                             action="#{travelerDomainTemplateController.applyMultiEditSelectedTemplateToAllSelectedItems()}"
+                             disabled="#{travelerDomainTemplateController.multiEditSelectedTemplate == null}"/> 
 
             <p:commandButton icon="fa fa-refresh"
                              value="Reset"
-                             action="#{itemTravelerDomainCatalogController.prepareMultiEditAppplyTempalteToAllItems()}"
+                             action="#{travelerDomainTemplateController.prepareMultiEditAppplyTempalteToAllItems()}"
                              update="travelerTemplateMultiEditApplyToAllCommandButton"
                              onstart="PF('loadingDialog').show();
                                       resetTravelerTemplateMultiEditApplyAllPanelsToDefault()"

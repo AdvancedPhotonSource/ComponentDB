@@ -12,8 +12,11 @@ See LICENSE file.
     <ui:param name="preferredVerRendered"
               value="#{preferredVerRendered != null ? preferredVerRendered : true}" />
 
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
     <p:column headerText="Title">                
-        <h:outputLink value="#{itemTravelerDomainCatalogController.getTravelerTemplateURL(templateObject.id)}"
+        <h:outputLink value="#{travelerDomainTemplateController.getTravelerTemplateURL(templateObject.id)}"
                       target="_blank">
             <h:outputText value="#{templateObject.title}" />
         </h:outputLink>
@@ -23,7 +26,7 @@ See LICENSE file.
         <p:commandLink id="#{entityTypeName}UpdateTemplatePreferredVersion"
                        styleClass="fa-link-icon fa fa-pencil" title="Update Preferred Version"
                        onclick="PF('loadingDialog').show()"
-                       action="#{itemTravelerDomainCatalogController.prepareUpdatePreferredVersionForTemplate(templateObject, 'showTravelerTemplateUpdatePrefVersionDialog()')}"
+                       action="#{travelerDomainTemplateController.prepareUpdatePreferredVersionForTemplate(templateObject, 'showTravelerTemplateUpdatePrefVersionDialog()')}"
                        oncomplete="PF('loadingDialog').hide()"
                        rendered="#{isEntityWriteable}">
             <p:tooltip for="#{entityTypeName}UpdateTemplatePreferredVersion" value="Allows user to set preferred version for template entry."/>

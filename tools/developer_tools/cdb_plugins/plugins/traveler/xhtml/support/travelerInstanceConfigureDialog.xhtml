@@ -10,6 +10,11 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <p:dialog id="travelerInstanceConfigureDialog" 
               widgetVar="travelerInstanceConfigureDialogWidget" 
               header="Configure Traveler Instance" 
@@ -18,28 +23,28 @@ See LICENSE file.
               resizable="false"
               modal="true"
               focus="travelerStatusSelectOneButton">
-        <p:panelGrid columns="2" rendered="#{itemTravelerDomainInventoryController.currentTravelerInstance != null}">
+        <p:panelGrid columns="2" rendered="#{travelerDomainInstanceController.currentTravelerInstance != null}">
 
             <p:outputLabel for="travelerTemplateConfigTitle" 
                            value="Title" 
                            styleClass="entityDataLabel"/>            
             <p:inputText id="travelerTemplateConfigTitle"
-                         value="#{itemTravelerDomainInventoryController.currentTravelerEditTitle}" 
+                         value="#{travelerDomainInstanceController.currentTravelerEditTitle}" 
                          styleClass="entityDataEmphasizedText"/>            
 
             <p:outputLabel for="travelerTemplateConfigDescription" value="Description" styleClass="entityDataLabel"/>
             <p:inputTextarea id="travelerTemplateConfigDescription"
-                             value="#{itemTravelerDomainInventoryController.currentTravelerEditDescription}" 
+                             value="#{travelerDomainInstanceController.currentTravelerEditDescription}" 
                              styleClass="entityDataEmphasizedText"/>
 
 
             <p:outputLabel value="Deadline" styleClass="entityDataLabel"/>
-            <p:calendar value="#{itemTravelerDomainInventoryController.currentTravelerDeadline}" />
+            <p:calendar value="#{travelerDomainInstanceController.currentTravelerDeadline}" />
 
 
             <p:outputLabel value="Status" styleClass="entityDataLabel"/>
-            <p:selectOneButton value="#{itemTravelerDomainInventoryController.currentTravelerSelectedStatus}" id="travelerStatusSelectOneButton"> 
-                <f:selectItems value="#{itemTravelerDomainInventoryController.currentTravelerStatusOptions}"/>
+            <p:selectOneButton value="#{travelerDomainInstanceController.currentTravelerSelectedStatus}" id="travelerStatusSelectOneButton"> 
+                <f:selectItems value="#{travelerDomainInstanceController.currentTravelerStatusOptions}"/>
             </p:selectOneButton>
 
         </p:panelGrid>
@@ -53,10 +58,10 @@ See LICENSE file.
         <f:facet name="footer" class="dialog">
             <p:commandButton value="Update Traveler"
                              update="travelerInstanceConfigureDialog" 
-                             action="#{itemTravelerDomainInventoryController.updateTravelerInstanceConfiguration('successTravelerInstanceConfigureDialog()')}"
+                             action="#{travelerDomainInstanceController.updateTravelerInstanceConfiguration('successTravelerInstanceConfigureDialog()')}"
                              icon="ui-icon-check"/>
             <p:commandButton value="Cancel" alt="Cancel" 
-                             action="#{itemTravelerDomainInventoryController.resetUpdateTravelerInstanceConfiguration()}"
+                             action="#{travelerDomainInstanceController.resetUpdateTravelerInstanceConfiguration()}"
                              oncomplete="successTravelerInstanceConfigureDialog()" 
                              icon="ui-icon-arrowreturnthick-1-w"/>
         </f:facet>

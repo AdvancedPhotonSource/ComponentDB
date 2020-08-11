@@ -12,6 +12,9 @@ See LICENSE file.
     <ui:param name="travelerSuccessUpdateTarget"
               value="#{travelerSuccessUpdateTarget != null ? travelerSuccessUpdateTarget : 'travelerTemplateListDataTable'}" />
 
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
     <p:dialog id="travelerTemplateLinkDialog" 
               widgetVar="travelerTemplateLinkDialogWidget" 
               header="Link to Existing Traveler Template" 
@@ -19,10 +22,10 @@ See LICENSE file.
               onShow="PF('travelerTemplateLinkDialogWidget').initPosition();"
               modal="true"
               resizable="false">
-        <p:outputPanel rendered="#{itemTravelerDomainCatalogController.renderTravelerTemplateLinkDialog}">
+        <p:outputPanel rendered="#{travelerDomainTemplateController.renderTravelerTemplateLinkDialog}">
             <ui:include src="travelerTemplateDataTable.xhtml">
-                <ui:param name="travelerTemplateList" value="#{itemTravelerDomainCatalogController.activeTravelerTemplates}" />
-                <ui:param name="travelerSelectedValue" value="#{itemTravelerDomainCatalogController.selectedTemplate}" />
+                <ui:param name="travelerTemplateList" value="#{travelerDomainTemplateController.activeTravelerTemplates}" />
+                <ui:param name="travelerSelectedValue" value="#{travelerDomainTemplateController.selectedTemplate}" />
                 <ui:param name="dataTableId" value="travelerTemplatesDataTable" />
                 <ui:param name="travelerTemplateDoubleClickSelectionEvent" value="linkSelectedTravelerTemplate()" />
                 <ui:param name="rowSelectEvent" value="selectedTravelerTemplateChanged()" />
@@ -30,7 +33,7 @@ See LICENSE file.
                         
             <p:outputPanel id="travelerTemplateReleasedVersionSelectionOutputPanel">
                 <ui:param name="selectedTemplate"
-                              value="#{itemTravelerDomainCatalogController.selectedTemplate}"/> 
+                              value="#{travelerDomainTemplateController.selectedTemplate}"/> 
                 <p:outputPanel rendered="#{selectedTemplate != null}">
                     <h3>Preferred Version:</h3>
                     <ui:include src="travelerTemplateReleasedVersionSelectionDataTable.xhtml"/>                
@@ -41,13 +44,13 @@ See LICENSE file.
                              onstart="PF('loadingDialog').show()"
                              oncomplete="PF('loadingDialog').hide();
                                          PF('travelerTemplateLinkDialogWidget').initPosition();"
-                             action="#{itemTravelerDomainCatalogController.loadReleasedTemplatesForSelectedTemplate()}"
+                             action="#{travelerDomainTemplateController.loadReleasedTemplatesForSelectedTemplate()}"
                              update="travelerTemplateReleasedVersionSelectionOutputPanel"/>
         </p:outputPanel>
 
         <f:facet name="footer">
             <p:remoteCommand name="linkSelectedTravelerTemplate"
-                             action="#{itemTravelerDomainCatalogController.linkTravelerTemplate('successTravelerTemplateLinkDialog();')}"
+                             action="#{travelerDomainTemplateController.linkTravelerTemplate('successTravelerTemplateLinkDialog();')}"
                              onstart="PF('loadingDialog').show();"
                              onerror="PF('loadingDialog').hide();"
                              oncomplete="PF('loadingDialog').hide();"

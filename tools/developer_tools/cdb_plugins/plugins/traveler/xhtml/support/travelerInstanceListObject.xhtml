@@ -22,8 +22,13 @@ See LICENSE file.
               value="#{renderedArchivedOn != null ? renderedArchivedOn : false}" /> 
               
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <p:column headerText="Title">
-        <h:outputLink value="#{itemTravelerDomainInventoryController.getBinderTravelerUrl(travelerObject)}"
+        <h:outputLink value="#{travelerDomainInstanceController.getBinderTravelerUrl(travelerObject)}"
                       target="_blank">
             <h:outputText value="#{travelerObject.title}" />
         </h:outputLink>
@@ -44,7 +49,7 @@ See LICENSE file.
 
     <p:column headerText="Created From Template"
               rendered="#{renderedCreatedFromTemplate}">
-        <h:outputText value="#{itemTravelerDomainInventoryController.getFormName(travelerObject)}" />
+        <h:outputText value="#{travelerDomainInstanceController.getFormName(travelerObject)}" />
     </p:column>
 
     <p:column headerText="Estimated Progress"

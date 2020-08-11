@@ -11,9 +11,16 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:param name="renderTravelerTemplatesPanel"
+              value="#{renderTravelerTemplatesPanel != null ? renderTravelerTemplatesPanel : true}" />
+
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
     <p:panel header="eTraveler Templates"
              toggleable="true"
-             collapsed="#{itemTravelerDomainCatalogController.isCollapsedTravelerTemplates}">
+             rendered="#{renderTravelerTemplatesPanel}"
+             collapsed="#{travelerDomainTemplateController.isCollapsedTravelerTemplates}">
 
         <ui:include src="../support/travelerTemplateList.xhtml" />
 

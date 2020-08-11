@@ -10,6 +10,11 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <p:dialog id="travelerInstanceInfoDialog" 
               widgetVar="travelerInstanceInfoDialogWidget" 
               header="Traveler Instance Information" 
@@ -17,7 +22,7 @@ See LICENSE file.
               resizable="false"
               styleClass="viewTransparentBackgroundDialog">
         <ui:param name="travelerObject" 
-                  value="#{itemTravelerDomainInventoryController.currentTravelerInstance}" />
+                  value="#{travelerDomainInstanceController.currentTravelerInstance}" />
         <p:panelGrid rendered="#{travelerObject != null}">
             <p:row>
                 <p:column>
@@ -25,19 +30,19 @@ See LICENSE file.
                 </p:column>
                 <p:column>
                     <h:outputLink target="_blank" 
-                                  value="#{itemTravelerDomainInventoryController.getBinderTravelerUrl(travelerObject)}">
-                        <h:outputText value="#{itemTravelerDomainInventoryController.currentTravelerInstanceTitle}"
+                                  value="#{travelerDomainInstanceController.getBinderTravelerUrl(travelerObject)}">
+                        <h:outputText value="#{travelerDomainInstanceController.currentTravelerInstanceTitle}"
                                       styleClass="entityDataEmphasizedText"/>
                     </h:outputLink>
                 </p:column>
             </p:row>
 
-            <p:row rendered="#{itemTravelerDomainInventoryController.currentTravelerInstance.description != ''}">
+            <p:row rendered="#{travelerDomainInstanceController.currentTravelerInstance.description != ''}">
                 <p:column>
                     <p:outputLabel value="Description" styleClass="entityDataLabel"/>
                 </p:column>
                 <p:column>
-                    <p:outputLabel value="#{itemTravelerDomainInventoryController.currentTravelerInstanceDescription}" styleClass="entityDataEmphasizedText" /> 
+                    <p:outputLabel value="#{travelerDomainInstanceController.currentTravelerInstanceDescription}" styleClass="entityDataEmphasizedText" /> 
                 </p:column>
             </p:row>
 
@@ -46,7 +51,7 @@ See LICENSE file.
                     <p:outputLabel value="Status" styleClass="entityDataLabel"/>
                 </p:column>
                 <p:column>
-                    <p:outputLabel value="#{itemTravelerDomainInventoryController.currentTravelerStatus}" styleClass="entityDataEmphasizedText" /> 
+                    <p:outputLabel value="#{travelerDomainInstanceController.currentTravelerStatus}" styleClass="entityDataEmphasizedText" /> 
                 </p:column>
             </p:row>
 
@@ -55,7 +60,7 @@ See LICENSE file.
                     <p:outputLabel value="Created By" styleClass="entityDataLabel"/>
                 </p:column>
                 <p:column>
-                    <p:outputLabel value="#{itemTravelerDomainInventoryController.currentTravelerInstance.createdBy}" styleClass="entityDataEmphasizedText" /> 
+                    <p:outputLabel value="#{travelerDomainInstanceController.currentTravelerInstance.createdBy}" styleClass="entityDataEmphasizedText" /> 
                 </p:column>
             </p:row>
 
@@ -64,34 +69,34 @@ See LICENSE file.
                     <p:outputLabel value="Created On (UTC)" styleClass="entityDataLabel"/>
                 </p:column>
                 <p:column>
-                    <p:outputLabel value="#{itemTravelerDomainInventoryController.currentTravelerInstance.localCreatedOn}" styleClass="entityDataEmphasizedText" /> 
+                    <p:outputLabel value="#{travelerDomainInstanceController.currentTravelerInstance.localCreatedOn}" styleClass="entityDataEmphasizedText" /> 
                 </p:column>
             </p:row>
 
-            <p:row rendered="${itemTravelerDomainInventoryController.currentTravelerInstance.updatedBy != null}">
+            <p:row rendered="${travelerDomainInstanceController.currentTravelerInstance.updatedBy != null}">
                 <p:column>
                     <p:outputLabel value="Updated By" styleClass="entityDataLabel"/>
                 </p:column>
                 <p:column>
-                    <p:outputLabel value="#{itemTravelerDomainInventoryController.currentTravelerInstance.updatedBy}" styleClass="entityDataEmphasizedText" /> 
+                    <p:outputLabel value="#{travelerDomainInstanceController.currentTravelerInstance.updatedBy}" styleClass="entityDataEmphasizedText" /> 
                 </p:column>
             </p:row>
 
-            <p:row rendered="${itemTravelerDomainInventoryController.currentTravelerInstance.updatedBy != null}">
+            <p:row rendered="${travelerDomainInstanceController.currentTravelerInstance.updatedBy != null}">
                 <p:column>
                     <p:outputLabel value="Updated On (UTC)" styleClass="entityDataLabel"/>
                 </p:column>
                 <p:column>
-                    <p:outputLabel value="#{itemTravelerDomainInventoryController.currentTravelerInstance.localUpdatedOn}" styleClass="entityDataEmphasizedText" /> 
+                    <p:outputLabel value="#{travelerDomainInstanceController.currentTravelerInstance.localUpdatedOn}" styleClass="entityDataEmphasizedText" /> 
                 </p:column>
             </p:row>
 
-            <p:row rendered="${itemTravelerDomainInventoryController.currentTravelerInstance.deadline != null}">
+            <p:row rendered="${travelerDomainInstanceController.currentTravelerInstance.deadline != null}">
                 <p:column>
                     <p:outputLabel value="Deadline (UTC)" styleClass="entityDataLabel"/>
                 </p:column>
                 <p:column>
-                    <p:outputLabel value="#{itemTravelerDomainInventoryController.currentTravelerInstance.deadline}" styleClass="entityDataEmphasizedText" /> 
+                    <p:outputLabel value="#{travelerDomainInstanceController.currentTravelerInstance.deadline}" styleClass="entityDataEmphasizedText" /> 
                 </p:column>
             </p:row>
 
@@ -105,12 +110,12 @@ See LICENSE file.
                 <p:column colspan="2">                    
                     <ui:include src="travelerInstanceObjectProgress.xhtml">
                         <ui:param name="travelerObject"
-                                  value="#{itemTravelerDomainInventoryController.currentTravelerInstance}" />
+                                  value="#{travelerDomainInstanceController.currentTravelerInstance}" />
                     </ui:include>
                 </p:column>
             </p:row>
 
-            <p:row rendered="#{itemTravelerDomainInventoryController.currentTravelerInstance.status == 0}">
+            <p:row rendered="#{travelerDomainInstanceController.currentTravelerInstance.status == 0}">
                 <p:column colspan="2">
                     <h:outputText escape="false"
                                   value="This traveler is in the initial state, it still needs to be configured before it could be filled out."
@@ -118,11 +123,11 @@ See LICENSE file.
                 </p:column>
             </p:row>
 
-            <p:row rendered="#{itemTravelerDomainInventoryController.currentTravelerInstance.status == 0}">
+            <p:row rendered="#{travelerDomainInstanceController.currentTravelerInstance.status == 0}">
                 <p:column colspan="2">
-                    <h:outputText rendered="#{!itemTravelerDomainInventoryController.currentTravelerConfigPermission}"
+                    <h:outputText rendered="#{!travelerDomainInstanceController.currentTravelerConfigPermission}"
                                   escape="false"
-                                  value="Please contact creator, #{itemTravelerDomainInventoryController.currentTravelerInstance.createdBy}, to request configuration."
+                                  value="Please contact creator, #{travelerDomainInstanceController.currentTravelerInstance.createdBy}, to request configuration."
                                   styleClass="entityDataEmphasizedText"/>
                 </p:column>
             </p:row>
@@ -138,10 +143,10 @@ See LICENSE file.
         <f:facet name="footer" class="dialog">
             <p:commandButton value="Configure Traveler"
                              icon="ui-icon-gear"
-                             action="#{itemTravelerDomainInventoryController.reloadCurrentTravelerInstance('updateTravelerInstanceConfigureDialog()')}"
-                             rendered="#{itemTravelerDomainInventoryController.currentTravelerConfigPermission}"/>
+                             action="#{travelerDomainInstanceController.reloadCurrentTravelerInstance('updateTravelerInstanceConfigureDialog()')}"
+                             rendered="#{travelerDomainInstanceController.currentTravelerConfigPermission}"/>
             <p:commandButton value="Refresh"
-                             action="#{itemTravelerDomainInventoryController.reloadCurrentTravelerInstance('updateTravelerInstanceInfoDialog()')}"
+                             action="#{travelerDomainInstanceController.reloadCurrentTravelerInstance('updateTravelerInstanceInfoDialog()')}"
                              onstart="PF('loadingDialog').show()"
                              oncomplete="PF('loadingDialog').hide()"
                              icon="ui-icon-refresh" />

@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.jsf.handlers;
 
 import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import java.util.List;
@@ -134,6 +135,7 @@ public interface PropertyTypeHandlerInterface {
      * this attribute allows specifying if a property wit this handler can be cloned.
      */
     public abstract boolean isPropertyCloneable();
-    
+    public abstract boolean isPropertyCloneable(Domain domain);
+
     public abstract List<String> getRequiredMetadataKeys(); 
 }

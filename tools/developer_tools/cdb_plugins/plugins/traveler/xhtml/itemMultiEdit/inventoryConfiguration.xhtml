@@ -11,7 +11,10 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:selectBooleanCheckbox value="#{itemTravelerDomainInventoryController.isDisplayMultiEditTravelerInstance}"
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null ? travelerDomainInstanceController : itemTravelerDomainInventoryController}" />
+
+    <p:selectBooleanCheckbox value="#{travelerDomainInstanceController.isDisplayMultiEditTravelerInstance}"
                              onchange="onUpdateOptionsChange()"/>
     <p:outputLabel value="Traveler Instance" />
 </ui:composition>

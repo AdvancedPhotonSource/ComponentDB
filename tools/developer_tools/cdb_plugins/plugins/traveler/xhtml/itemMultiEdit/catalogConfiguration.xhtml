@@ -12,7 +12,10 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     
-    <p:selectBooleanCheckbox value="#{itemTravelerDomainCatalogController.isDisplayMultiEditTravelerTemplate}"
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
+    <p:selectBooleanCheckbox value="#{travelerDomainTemplateController.isDisplayMultiEditTravelerTemplate}"
                              onchange="onUpdateOptionsChange()"/>
     <p:outputLabel value="Traveler Template" />
 

@@ -9,6 +9,11 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <p:dialog id="travelerInstanceArchiveListDialog" 
               widgetVar="travelerInstanceArchiveListDialogWidget" 
               header="Traveler Instance Archive List" 
@@ -17,7 +22,7 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog">
 
         <p:dataTable id="travelerInstanceArchivedListDataTable"
-                     value="#{itemTravelerDomainInventoryController.archivedTravelersForCurrent}"
+                     value="#{travelerDomainInstanceController.archivedTravelersForCurrent}"
                      var="travelerObject"                     
                      emptyMessage="No travelers have been archived yet."
                      paginator="true" 
@@ -41,10 +46,10 @@ See LICENSE file.
                                onstart="PF('loadingDialog').show()"
                                oncomplete="PF('loadingDialog').hide()"
                                update="@form"
-                               action="#{itemTravelerDomainInventoryController.unarchiveTraveler(travelerObject)}"
+                               action="#{travelerDomainInstanceController.unarchiveTraveler(travelerObject)}"
                                rendered="#{isEntityWriteable and travelerObject.traveler}">
                     <p:tooltip for="#{entityTypeName}TravelerUnarchive" value="Unarchive the traveler."/>
-                    <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.currentTravelerInstance}"
+                    <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentTravelerInstance}"
                                                  value="#{travelerObject}" />
                 </p:commandLink>
 

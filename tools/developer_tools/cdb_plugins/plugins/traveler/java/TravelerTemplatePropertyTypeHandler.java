@@ -7,6 +7,8 @@ package gov.anl.aps.cdb.portal.plugins.support.traveler;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ConfigurationError;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.AbstractPropertyTypeHandler;
@@ -95,4 +97,14 @@ public class TravelerTemplatePropertyTypeHandler extends AbstractPropertyTypeHan
         String travelerInstanceUrl = TRAVELER_WEB_APP_URL + TRAVELER_WEB_APP_TEMPLATE_PATH;
         return travelerInstanceUrl.replace("FORM_ID", value);
     }
+    
+    @Override
+    public boolean isPropertyCloneable(Domain domain) {
+        if (domain.getName().equals(ItemDomainName.machineDesign.getValue())) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+   
 }
