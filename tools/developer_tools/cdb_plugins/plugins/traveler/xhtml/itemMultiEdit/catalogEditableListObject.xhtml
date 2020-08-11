@@ -13,7 +13,10 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core">  
 
 
-    <p:column rendered="#{itemTravelerDomainCatalogController.isDisplayMultiEditTravelerTemplate}">
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
+    <p:column rendered="#{travelerDomainTemplateController.isDisplayMultiEditTravelerTemplate}">
         
         <f:facet name="header">            
             Traveler Template
@@ -21,7 +24,7 @@ See LICENSE file.
                            onstart="PF('loadingDialog').show()"                          
                            oncomplete="PF('loadingDialog').hide();
                                        showTravelerTemplateMultiEditApplyToAllDialog()"
-                           action="#{itemTravelerDomainCatalogController.prepareMultiEditAppplyTempalteToAllItems()}"
+                           action="#{travelerDomainTemplateController.prepareMultiEditAppplyTempalteToAllItems()}"
                            update="@form:travelerTemplateMultiEditApplyToAllDialog"
                            title="Apply traveler template value to all items."/> 
         </f:facet>
@@ -29,19 +32,19 @@ See LICENSE file.
         <p:commandLink styleClass="fa fa-link-icon fa-search" 
                        title="View traveler template list"
                        onstart="PF('loadingDialog').show()"
-                       action="#{itemTravelerDomainCatalogController.loadTemplatesFormMultiEditItem(itemObject)}"
+                       action="#{travelerDomainTemplateController.loadTemplatesFormMultiEditItem(itemObject)}"
                        update="@parent:travelerTemplateListing"
                        oncomplete="PF('loadingDialog').hide();
                                    PF('travelerTemplateListing#{itemObject.viewUUID}Widget').show()"/>
         <p:commandLink styleClass="fa fa-link-icon fa-plus" 
                        title="Add a traveler template to item"
-                       action="#{itemTravelerDomainCatalogController.addTravelerTemplateToNewCurrentItem(itemObject)}"
+                       action="#{travelerDomainTemplateController.addTravelerTemplateToNewCurrentItem(itemObject)}"
                        oncomplete="PF('travelerTemplateAddDialogWidget').show()"/>
             
 
         <p:overlayPanel id="travelerTemplateListing"
                         widgetVar="travelerTemplateListing#{itemObject.viewUUID}Widget">
-            <p:dataTable value="#{itemTravelerDomainCatalogController.getTemplatesForMultiEditItem(itemObject)}"
+            <p:dataTable value="#{travelerDomainTemplateController.getTemplatesForMultiEditItem(itemObject)}"
                          var="templateObject">
                 <ui:include src="../support/travelerTemplateListObject.xhtml" />
             </p:dataTable>                            

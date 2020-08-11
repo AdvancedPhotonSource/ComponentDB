@@ -11,6 +11,11 @@ See LICENSE file.
     
     
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <p:dialog widgetVar="travelerInstanceMultiEditApplyToAllDialogWidget"
               id="travelerInstanceMultiEditApplyToAllDialog"
               header="Create an instance for each item in the multi-edit list." 
@@ -22,7 +27,7 @@ See LICENSE file.
             <ui:param name="overrideTravelerTemplateList"
                       value="#{true}" />
             <ui:param name="travelerTemplateList"
-                      value="#{itemTravelerDomainInventoryController.multiEditAvailableTemplateForApplyAll}" />
+                      value="#{travelerDomainInstanceController.multiEditAvailableTemplateForApplyAll}" />
             <ui:param name="viewName"
                       value="multiEditApplyAll"/>
             <ui:param name="additonalTravelerTemplateEmptyMessage"
@@ -35,7 +40,7 @@ See LICENSE file.
                              icon="fa fa-plus"
                              onclick="PF('loadingDialog').show()"
                              process="@form:travelerInstanceMultiEditApplyToAllDialog"
-                             action="#{itemTravelerDomainInventoryController.createTravelerInstanceForEachSelectedItem('travelerInstanceMultiEditApplyToAllSuccess();')}"
+                             action="#{travelerDomainInstanceController.createTravelerInstanceForEachSelectedItem('travelerInstanceMultiEditApplyToAllSuccess();')}"
                              oncomplete="PF('loadingDialog').hide()"
                              value="Create a traveler instance for each item"/> 
 

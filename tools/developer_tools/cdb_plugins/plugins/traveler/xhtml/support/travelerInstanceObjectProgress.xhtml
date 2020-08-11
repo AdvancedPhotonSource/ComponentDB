@@ -8,11 +8,16 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
     
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <ui:param name="travelerInstanceProgressLabel"
-              value="#{itemTravelerDomainInventoryController.getTravelerInstanceProgressLabel(travelerObject)}"/>           
+              value="#{travelerDomainInstanceController.getTravelerInstanceProgressLabel(travelerObject)}"/>           
     
     <ui:param name="travelerCompleted"
-              value="#{itemTravelerDomainInventoryController.isTravelerCompleted(travelerObject)}" />
+              value="#{travelerDomainInstanceController.isTravelerCompleted(travelerObject)}" />
 
     <p:progressBar value="#{travelerObject.progress}" 
                    rendered="#{travelerCompleted == false}"

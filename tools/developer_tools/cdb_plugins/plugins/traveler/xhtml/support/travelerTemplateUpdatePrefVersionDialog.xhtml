@@ -12,6 +12,9 @@ See LICENSE file.
     <ui:param name="travelerSuccessUpdateTarget"
               value="#{travelerSuccessUpdateTarget != null ? travelerSuccessUpdateTarget : 'travelerTemplateListDataTable'}" />
 
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
     <p:dialog id="travelerTemplateUpdatePrefVersionDialog" 
               widgetVar="travelerTemplateUpdatePrefVersionDialogWidget" 
               header="Update Template Preferred Version"
@@ -20,10 +23,10 @@ See LICENSE file.
               resizable="false">
 
         <p:outputPanel id='travelerTemplateUpdatePrefVersionDialogContents'>        
-            <p:outputPanel rendered="#{itemTravelerDomainCatalogController.renderTravelerTemplateUpdatePrefVersionDialog}">
+            <p:outputPanel rendered="#{travelerDomainTemplateController.renderTravelerTemplateUpdatePrefVersionDialog}">
                 <ui:include src="travelerTemplateReleasedVersionSelectionDataTable.xhtml"> 
                     <ui:param name="selectedTemplate"
-                              value="#{itemTravelerDomainCatalogController.selectedTemplate}"/> 
+                              value="#{travelerDomainTemplateController.selectedTemplate}"/> 
                     <ui:param name="viewName"
                               value="PrefVersionSelection"/>
                 </ui:include>
@@ -33,7 +36,7 @@ See LICENSE file.
 
         <f:facet name="footer">           
             <p:commandButton value="Update"                             
-                             action="#{itemTravelerDomainCatalogController.saveSelectedTemplatePropertyValue('successUpodatePrefVersion()')}"
+                             action="#{travelerDomainTemplateController.saveSelectedTemplatePropertyValue('successUpodatePrefVersion()')}"
                              onclick="PF('loadingDialog').show()"
                              icon="fa fa-save"
                              oncomplete="PF('loadingDialog').hide();"/>

@@ -8,6 +8,9 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:param name="travelerDomainTemplateController"
+              value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
+
     <p:panelGrid id="#{viewName}travelerTemplateAddPanel"
                  styleClass="centeredContent">
         <p:row>
@@ -16,7 +19,7 @@ See LICENSE file.
             </p:column>
             <p:column>
                 <p:inputText styleClass="entityDataText" 
-                             value="#{itemTravelerDomainCatalogController.travelerTemplateTitle}"/>
+                             value="#{travelerDomainTemplateController.travelerTemplateTitle}"/>
             </p:column>
         </p:row>            
     </p:panelGrid>

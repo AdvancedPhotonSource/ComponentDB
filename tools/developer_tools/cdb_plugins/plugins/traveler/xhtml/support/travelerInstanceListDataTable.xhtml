@@ -10,13 +10,18 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <p:dataTable id="travelerInstanceListDataTable"
-                 value="#{itemTravelerDomainInventoryController.activeTravelersForCurrent}"
+                 value="#{travelerDomainInstanceController.activeTravelersForCurrent}"
                  var="travelerObject"
                  rowExpandMode="single">
         
         <p:ajax event="rowToggle"
-                listener="#{itemTravelerDomainInventoryController.loadTravelerListForBinder(travelerObject)}"
+                listener="#{travelerDomainInstanceController.loadTravelerListForBinder(travelerObject)}"
                 onstart="PF('loadingDialog').show()"
                 oncomplete="PF('loadingDialog').hide()"/>
         
@@ -44,11 +49,11 @@ See LICENSE file.
                                  icon="fa fa-plus"
                                  rendered="#{isEntityWriteable}"
                                  update="@form:travelerBinderCreateToBinderDialog"
-                                 action="#{itemTravelerDomainInventoryController.prepareShowAddNewTravelerToBinderDialog()}"
+                                 action="#{travelerDomainInstanceController.prepareShowAddNewTravelerToBinderDialog()}"
                                  onstart="PF('loadingDialog').show()"
                                  oncomplete="PF('loadingDialog').hide();
                                              PF('travelerBinderCreateToBinderDialogWidget').show()">
-                    <f:setPropertyActionListener target="#{itemTravelerDomainInventoryController.selectedBinder}"
+                    <f:setPropertyActionListener target="#{travelerDomainInstanceController.selectedBinder}"
                                                  value="#{binderObject}" />                                                  
                 </p:commandButton>
                 <p:dataTable id="travelerInstanceListDataTable"

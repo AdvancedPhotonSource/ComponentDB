@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import java.util.List;
 import org.primefaces.model.StreamedContent;
 
@@ -153,6 +154,14 @@ public abstract class AbstractPropertyTypeHandler implements PropertyTypeHandler
     @Override
     public boolean isPropertyCloneable() {
         return true; 
+    }
+
+    /**
+     * Defaults to isPropertyCloneable(), subclass overrides to customize.
+     */
+    @Override
+    public boolean isPropertyCloneable(Domain domain) {
+        return isPropertyCloneable(); 
     }
 
     @Override

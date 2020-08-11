@@ -95,6 +95,26 @@ See LICENSE file.
             </p:dataTable>
         </p:panel>
 
+        <!-- traveler templates section-->
+        <ui:include src="../../plugins/private/catalogDetailsViewSections.xhtml">
+            <ui:param name="viewName" value="MachineTravelerTemplates" />
+            <ui:param name="travelerDomainTemplateController"
+                      value="#{itemTravelerDomainMachineTemplateController}" />
+            <ui:param name="renderTravelerTemplatesPanel" 
+                      value="#{itemDomainMachineDesignController.currentViewIsTemplate}"/>
+        </ui:include>
+
+        <!-- traveler instances section-->
+        <ui:include src="../../plugins/private/inventoryDetailsViewSections.xhtml">
+            <ui:param name="viewName" value="MachineTravelerInstances" />
+            <ui:param name="travelerDomainTemplateController"
+                      value="#{itemTravelerDomainMachineTemplateController}" />
+            <ui:param name="travelerDomainInstanceController"
+                      value="#{itemTravelerDomainMachineInstanceController}" />
+            <ui:param name="renderTravelerInstancesPanel" 
+                      value="#{!itemDomainMachineDesignController.currentViewIsTemplate}"/>
+        </ui:include>
+
         <p:panel header="Cable Connections"
                  toggleable="true"
                  rendered="#{entityController.entityDisplayItemConnectors and resources.EnabledConnectorAndConnectionsFunctionality}"

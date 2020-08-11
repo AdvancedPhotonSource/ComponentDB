@@ -20,6 +20,11 @@ See LICENSE file.
                        ? travelerInstanceSuccessUpdateTarget 
                        : 'travelerInstanceListDataTable'}" />
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <p:dialog id="travelerInstanceAddDialog" 
               widgetVar="travelerInstanceAddDialogWidget" 
               header="Create Traveler Instance From Template" 
@@ -28,7 +33,7 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               onShow="PF('#{viewName}TravelerInstanceDataTableWidget').filter()">
         
-        <p:outputPanel rendered="#{itemTravelerDomainInventoryController.renderAddNewTravelerDialog}">
+        <p:outputPanel rendered="#{travelerDomainInstanceController.renderAddNewTravelerDialog}">
             <ui:include src="travelerInstanceCreateConfiguration.xhtml" />
         </p:outputPanel>
 
@@ -39,7 +44,7 @@ See LICENSE file.
                                  onerror="PF('loadingDialog').hide();"
                                  process="@form:travelerInstanceAddDialog"
                                  oncomplete="PF('loadingDialog').hide();"
-                                 action="#{itemTravelerDomainInventoryController.createTravelerInstance(
+                                 action="#{travelerDomainInstanceController.createTravelerInstance(
                                            entityController,
                                            'successTravelerInstanceAddDialog();')}" />
             </p:outputPanel>
@@ -49,7 +54,7 @@ See LICENSE file.
                                  onerror="PF('loadingDialog').hide();"
                                  process="@form:travelerInstanceAddDialog"
                                  oncomplete="PF('loadingDialog').hide();"
-                                 action="#{itemTravelerDomainInventoryController.saveMultiEditTravelerInstance(
+                                 action="#{travelerDomainInstanceController.saveMultiEditTravelerInstance(
                                            'successTravelerInstanceAddDialog();')}" />
             </p:outputPanel>
         </f:facet>       

@@ -10,6 +10,9 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null ? travelerDomainInstanceController : itemTravelerDomainInventoryController}" />
+
     <p:dialog id="travelerBinderAddDialog" 
               widgetVar="travelerBinderAddDialogWidget" 
               header="Create Traveler Binder" 
@@ -17,7 +20,7 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog">
 
         <ui:param name="binder"
-                  value="#{itemTravelerDomainInventoryController.newBinder}" />
+                  value="#{travelerDomainInstanceController.newBinder}" />
 
         <p:outputPanel rendered="#{binder != null}">
             <h3>Binder Details</h3>
@@ -34,8 +37,8 @@ See LICENSE file.
             <p:panelGrid columns="2" styleClass="centeredContent">
                 <h:outputText value="Select Traveler Templates" />
                 <p:dataTable id="travelerBinderTemplateSelectionListDataTable"
-                             value="#{itemTravelerDomainInventoryController.availableTemplates}"
-                             selection="#{itemTravelerDomainInventoryController.newBinderTemplateSelection}"
+                             value="#{travelerDomainInstanceController.availableTemplates}"
+                             selection="#{travelerDomainInstanceController.newBinderTemplateSelection}"
                              rowKey="#{travelerTemplateObject.id}"
                              var="travelerTemplateObject">
                     <p:ajax event="rowSelect"
@@ -58,7 +61,7 @@ See LICENSE file.
 
 
                     <ui:param name="selectedTemplateObject"
-                              value="#{itemTravelerDomainInventoryController.isSelectedNewBinderTemplate(travelerTemplateObject)}" />                   
+                              value="#{travelerDomainInstanceController.isSelectedNewBinderTemplate(travelerTemplateObject)}" />                   
 
                     <p:column headerText="New Traveler Instance Title">
 
@@ -85,12 +88,17 @@ See LICENSE file.
         <f:facet name="footer">
             <p:commandButton value="Create Binder"
                              icon="fa fa-floppy-o"
-                             action="#{itemTravelerDomainInventoryController.createBinder()}"/>
+                             action="#{travelerDomainInstanceController.createBinder('successTravelerInstanceAddBinder();')}"/>
 
             <p:commandButton value="Close"
                              icon="fa fa-close"
                              onclick="PF('travelerBinderAddDialogWidget').hide()"/>                             
         </f:facet>
+        
+        <p:remoteCommand name="successTravelerInstanceAddBinder"
+                         oncomplete="PF('travelerBinderAddDialogWidget').hide();"
+                         update="@form"/>        
+
     </p:dialog>
 
 

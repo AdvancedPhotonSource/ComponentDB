@@ -121,7 +121,9 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     @PostConstruct
     public void init() {
         getItemController().subscribeResetVariablesForCurrent(this);
-        getItemController().getItemMultiEditController().subscribeResetForMultiEdit(this);
+        if (getItemController().getItemMultiEditController() != null) {
+            getItemController().getItemMultiEditController().subscribeResetForMultiEdit(this);
+        }
         resetExtensionVariablesForCurrent();
         resetExtensionVariablesForMultiEdit();
 
@@ -326,25 +328,25 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     }
 
-    public String createBinder() {
+    public void createBinder(String onSuccessCommand) {
         // Validataion before submission of anything... 
         String newBinderTitle = newBinder.getTitle();
         if (newBinderTitle == null || newBinderTitle.equals("")) {
             SessionUtility.addErrorMessage("Error",
                     "Please specify a binder title.");
-            return null;
+            return;
         }
 
         if (newBinderTemplateSelection.size() == 0) {
             SessionUtility.addErrorMessage("Error",
                     "Please select traveler templates to create travelers for the binder.");
-            return null;
+            return;
         } else {
             for (Form template : newBinderTemplateSelection) {
                 if (template.getTravelerInstanceName().equals("")) {
                     SessionUtility.addErrorMessage("Error",
                             "Please specify a title for traveler of template: '" + template.getTitle() + "'.");
-                    return null;
+                    return;
                 }
             }
         }
@@ -369,7 +371,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             }
 
             if (failedValidation) {
-                return null;
+                return;
             }
 
             String[] travelerIds = new String[newBinderTemplateSelection.size()];
@@ -389,12 +391,13 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             propertyValue.setValue(newBinderId);
             this.savePropertyList();
 
-            return SessionUtility.getRedirectToCurrentView();
+            if (onSuccessCommand != null) {
+                SessionUtility.executeRemoteCommand(onSuccessCommand);
+            }
 
         } catch (CdbException ex) {
             SessionUtility.addErrorMessage("Error", ex.getMessage());
         }
-        return null;
     }
 
     public void destroyTravelerTemplateFromCurrent(Form travelerTemplate) {
@@ -1067,6 +1070,16 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         }
         return defaultTemplates;
     }
+    
+    /**
+     * Default implementation returns internal property values for specified item.
+     * Subclasses override to customize.
+     */
+    protected List<PropertyValue> getInternalPropertyValueListForItem(Item item) {
+        List<PropertyValue> pvList = new ArrayList<>();
+        pvList.addAll(item.getPropertyValueInternalList());
+        return pvList;
+    }
 
     /**
      * Determines all entities that need to have (traveler templates)/forms
@@ -1081,10 +1094,7 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
         if (domainEntity instanceof Item) {
             Item item = (Item) domainEntity;
-            loadPropertyTravelerTemplateList(item.getPropertyValueInternalList(), templateList);
-            if (item.getDerivedFromItem() != null) {
-                loadPropertyTravelerTemplateList(item.getDerivedFromItem().getPropertyValueInternalList(), templateList);
-            }
+            loadPropertyTravelerTemplateList(getInternalPropertyValueListForItem(item), templateList);
         } else if (domainEntity instanceof ItemElement) {
             ItemElement itemElement = (ItemElement) domainEntity;
             loadPropertyTravelerTemplateList(itemElement.getPropertyValueList(), templateList);

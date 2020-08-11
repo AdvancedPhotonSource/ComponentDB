@@ -1618,7 +1618,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 PropertyTypeHandlerInterface handler;
                 handler = PropertyTypeHandlerFactory.getHandler(propertyValue);
                 if (handler != null) {
-                    if (handler.isPropertyCloneable() == false) {
+                    if (handler.isPropertyCloneable(cloningFrom.getDomain()) == false) {
                         continue;
                     }
                 }

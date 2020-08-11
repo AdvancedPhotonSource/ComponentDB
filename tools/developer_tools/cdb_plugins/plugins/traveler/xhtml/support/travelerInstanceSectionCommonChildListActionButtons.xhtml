@@ -9,11 +9,16 @@ See LICENSE file.
                 template="../../../../common/private/commonChildListActionButtons.xhtml"
                 xmlns:p="http://primefaces.org/ui">
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <ui:define name="additionalButtons">
         <p:commandButton icon="fa fa-plus"
                          value="Create Binder"
                          onclick="PF('loadingDialog').show()"
-                         action="#{itemTravelerDomainInventoryController.addTravelerBinderToCurrent('onSuccessAddNewBinder()')}"                         
+                         action="#{travelerDomainInstanceController.addTravelerBinderToCurrent('onSuccessAddNewBinder()')}"                         
                          rendered="#{isEntityWriteable}"
                          oncomplete="PF('loadingDialog').hide();"/>
 
@@ -28,7 +33,7 @@ See LICENSE file.
                                      PF('travelerInstanceArchiveListDialogWidget').show()"
                          icon="fa fa-archive" 
                          update="travelerInstanceArchiveListDialog"
-                         action="#{itemTravelerDomainInventoryController.prepareShowArchivedTravelerListDialog()}"
+                         action="#{travelerDomainInstanceController.prepareShowArchivedTravelerListDialog()}"
                          styleClass="actionButtonRight">
             <p:tooltip for="#{childEntityTypeName}ShowArchivedTravelers" value="Show Archived Travelers."/>
         </p:commandButton>

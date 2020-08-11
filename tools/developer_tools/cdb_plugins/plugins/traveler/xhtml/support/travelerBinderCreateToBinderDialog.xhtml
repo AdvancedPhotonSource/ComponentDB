@@ -9,6 +9,9 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"                
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null ? travelerDomainInstanceController : itemTravelerDomainInventoryController}" />
+
     <p:dialog id="travelerBinderCreateToBinderDialog" 
               widgetVar="travelerBinderCreateToBinderDialogWidget" 
               header="Create Traveler Instance and Add To Binder" 
@@ -16,7 +19,7 @@ See LICENSE file.
               modal="true"
               styleClass="viewTransparentBackgroundDialog">
         
-        <p:outputPanel rendered="#{itemTravelerDomainInventoryController.renderAddNewTravelerToBinderDialog}">
+        <p:outputPanel rendered="#{travelerDomainInstanceController.renderAddNewTravelerToBinderDialog}">
             
             <ui:include src="travelerInstanceCreateConfiguration.xhtml" >
                 <ui:param name="viewName"
@@ -28,7 +31,7 @@ See LICENSE file.
         <f:facet name="footer">
             <p:commandButton value="Create Traveler"
                              icon="fa fa-floppy-o"                             
-                             action="#{itemTravelerDomainInventoryController.addNewTravelerToBinder('successCreateTravelerForBinder()')}"
+                             action="#{travelerDomainInstanceController.addNewTravelerToBinder('successCreateTravelerForBinder()')}"
                              onclick="PF('loadingDialog').show()"
                              oncomplete="PF('loadingDialog').hide()"/>
             

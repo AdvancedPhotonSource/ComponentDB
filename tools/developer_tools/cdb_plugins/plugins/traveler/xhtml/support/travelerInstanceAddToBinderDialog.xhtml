@@ -9,6 +9,11 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <p:dialog id="travelerInstanceAddToBinderDialog" 
               modal="true"
               widgetVar="travelerInstanceAddToBinderDialogWidget" 
@@ -16,13 +21,13 @@ See LICENSE file.
               resizable="false"
               styleClass="viewTransparentBackgroundDialog">
 
-        <p:outputPanel rendered="#{itemTravelerDomainInventoryController.renderAddTravelerToBinderDialog}">
+        <p:outputPanel rendered="#{travelerDomainInstanceController.renderAddTravelerToBinderDialog}">
             <p:dataTable id="addTravelerToBinderSelectionDataTable"
-                         value="#{itemTravelerDomainInventoryController.bindersForCurrent}"
+                         value="#{travelerDomainInstanceController.bindersForCurrent}"
                          var="binderObject"
                          selectionMode="single"
                          rowKey="#{binderObject}"
-                         selection="#{itemTravelerDomainInventoryController.selectedBinder}"> 
+                         selection="#{travelerDomainInstanceController.selectedBinder}"> 
 
                 <p:ajax event="rowSelect" process="addTravelerToBinderSelectionDataTable" />
                 <p:ajax event="rowUnselect" process="addTravelerToBinderSelectionDataTable" />
@@ -39,7 +44,7 @@ See LICENSE file.
         <f:facet name="footer">
             <p:commandButton value="Add to Binder"
                              icon="fa fa-floppy-o"
-                             action="#{itemTravelerDomainInventoryController.addTravelerToBinder('successAddTravelerToBinder()')}"/>
+                             action="#{travelerDomainInstanceController.addTravelerToBinder('successAddTravelerToBinder()')}"/>
             
             <p:remoteCommand name="successAddTravelerToBinder"
                              onstart="PF('loadingDialog').show()"

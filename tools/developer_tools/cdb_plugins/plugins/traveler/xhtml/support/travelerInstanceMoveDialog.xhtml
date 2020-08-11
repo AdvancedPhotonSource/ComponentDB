@@ -9,6 +9,11 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null
+                       ? travelerDomainInstanceController
+                       : itemTravelerDomainInventoryController}" />
+
     <p:dialog id="travelerInstanceMoveDialog" 
               widgetVar="travelerInstanceMoveDialogWidget" 
               header="Move Traveler Instance to Different Item" 
@@ -17,12 +22,12 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog">
         
         <p:outputPanel id="travelerInstanceMoveDialogOutputPanel"
-                       rendered="#{itemTravelerDomainInventoryController.renderMoveTravelerContents}">
+                       rendered="#{travelerDomainInstanceController.renderMoveTravelerContents}">
             <ui:include src="../../../../item/private/itemSelectDataTable.xhtml">
                 <ui:param name="viewName" value="travelerInstanceMoveDialog" />
                 <ui:param name="updateTarget" value="travelerInstanceMoveDialogOutputPanel" /> 
-                <ui:param name="selectionValue" value="#{itemTravelerDomainInventoryController.inventoryItemToMoveCurrentTraveler}" />
-                <ui:param name="selectionTarget" value="#{itemTravelerDomainInventoryController.inventoryItemToMoveCurrentTraveler}" />
+                <ui:param name="selectionValue" value="#{travelerDomainInstanceController.itemToMoveCurrentTraveler}" />
+                <ui:param name="selectionTarget" value="#{travelerDomainInstanceController.itemToMoveCurrentTraveler}" />
                 <ui:param name="entityController" value="#{itemDomainInventoryController}" />                           
             </ui:include>
         </p:outputPanel>
@@ -35,7 +40,7 @@ See LICENSE file.
             <p:commandButton value="Move" alt="Move"
                              onclick="PF('loadingDialog').show()"
                              oncomplete="PF('loadingDialog').hide()"
-                             action="#{itemTravelerDomainInventoryController.moveTravelerInstanceToNewItem('successTravelerMoveCommand()')}"
+                             action="#{travelerDomainInstanceController.moveTravelerInstanceToNewItem('successTravelerMoveCommand()')}"
                              icon="fa fa-arrows" />                              
             
             <p:remoteCommand name="successTravelerMoveCommand"
