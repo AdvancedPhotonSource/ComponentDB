@@ -4,6 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCatalog;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogSettings;
@@ -83,9 +85,25 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     }
     
     @Override
+    public ItemDomainCatalog createEntityInstance() {
+        ItemDomainCatalog item = super.createEntityInstance();
+        return item;
+    }
+
+    @Override
     protected ItemDomainCatalogSettings createNewSettingObject() {
         return new ItemDomainCatalogSettings(this);
     }   
+
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected ImportHelperBase createImportHelperInstance() throws CdbException {
+        return new ImportHelperCatalog();
+    }
 
     @Override
     protected void resetVariablesForCurrent() {

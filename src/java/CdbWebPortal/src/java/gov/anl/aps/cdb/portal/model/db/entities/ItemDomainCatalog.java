@@ -22,6 +22,8 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     
     private transient String machineDesignPlaceholderName = null;         
 
+    private transient String importPath = null;
+
     @Override
     public Item createInstance() {
         return new ItemDomainCatalog(); 
@@ -41,4 +43,13 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
         return ItemDomainCatalogController.getInstance();
     }
    
+    @JsonIgnore
+    public String getImportPath() {
+        return importPath;
+    }
+
+    public void setImportPath(String importPath) {
+        this.importPath = importPath;
+    }
+
 }

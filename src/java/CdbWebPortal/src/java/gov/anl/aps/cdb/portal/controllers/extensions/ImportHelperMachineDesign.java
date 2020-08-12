@@ -39,77 +39,6 @@ import org.primefaces.model.TreeNode;
 public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
     
     /**
-     * Using custom handler so that we can have the machine design hierarchy
-     * in multiple (variable numbered) columns in the import spreadsheet.
-     * We expect columns like "Level 0", "Level 1" etc and then have to figure
-     * out the parent for each item in the spreadsheet by looking for an item
-     * at the previous indent level in the spreadsheet.  E.g., the parent of 
-     * an item whose name appears in column "Level 1" is the last item whose
-     * name was in "Level 0", etc.
-     */
-    private class NameHandler extends ColumnRangeInputHandler {
-        
-        protected int maxLength = 0;
-        
-        public NameHandler(int firstIndex, int lastIndex, int maxLength) {
-            super(firstIndex, lastIndex);
-            this.maxLength = maxLength;
-        }
-        
-        public int getMaxLength() {
-            return maxLength;
-        }
-
-        @Override
-        public ValidInfo handleInput(
-                Row row,
-                Map<Integer, String> cellValueMap,
-                Map<String, Object> rowMap) {
-            
-            boolean isValid = true;
-            String validString = "";
-            
-            int currentIndentLevel = 1;
-            int itemIndentLevel = 0;
-            String itemName = null;
-            for (int colIndex = getFirstColumnIndex();
-                    colIndex <= getLastColumnIndex();
-                    colIndex++) {
-                
-                String parsedValue = cellValueMap.get(colIndex);
-                if ((parsedValue != null) && (!parsedValue.isEmpty())) {
-                    if (itemName != null) {
-                        // invalid, we have a value in 2 columns
-                        isValid = false;
-                        validString = "Found value in multiple 'Level' columns, only one allowed";
-                    } else {
-                        itemName = parsedValue;
-                        itemIndentLevel = currentIndentLevel;
-                    }
-                }
-                
-                currentIndentLevel = currentIndentLevel + 1;                
-            }
-            
-            if (itemName != null) {
-                
-                // check column length is valid
-                if ((getMaxLength() > 0) && (itemName.length() > getMaxLength())) {
-                    isValid = false;
-                    validString = appendToString(validString, 
-                            "Invalid name, length exceeds " + getMaxLength());
-                }
-                
-                // set item info
-                rowMap.put(KEY_NAME, itemName);
-                rowMap.put(KEY_INDENT, itemIndentLevel);                
-            }
-            
-            return new ValidInfo(isValid, validString);
-        }
-    }
-    
-    /**
      * Using a custom handler so that we can use catalog or inventory item id's
      * in a single column.  There is not a way to do this with IdRef handler, as
      * it needs a particular controller instance to use for the lookup.  The
@@ -209,18 +138,6 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         public TemplateInvocationInfo(String templateName, Map<String, String> varMap) {
             this.templateName = templateName;
             this.varNameValueMap = varMap;
-        }
-    }
-    
-    private class InputColumnInfo {
-        public String name;
-        public boolean isRequired;
-        public String description;
-        
-        public InputColumnInfo(String name, boolean isRequired, String description) {
-            this.name = name;
-            this.isRequired = isRequired;
-            this.description = description;
         }
     }
     
@@ -369,6 +286,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         return inputColumns;
     }
     
+    @Override
     protected List<ColumnSpec> getColumnSpecs() {
         return new ArrayList<>();
     }
@@ -490,7 +408,8 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             
         } else {
             // add handler for multiple "level" columns
-            inputHandlers.add(new NameHandler(firstLevelIndex, lastLevelIndex, 128));
+            inputHandlers.add(new HierarchyHandler(
+                    firstLevelIndex, lastLevelIndex, 128, KEY_NAME, KEY_INDENT));
         }
         
         // output columns are fixed
@@ -541,6 +460,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
      * Specifies whether the subclass will provide a tree view.  Default is false,
      * subclass should override to customize.
      */
+    @Override
     public boolean hasTreeView() {
         return true;
     }
