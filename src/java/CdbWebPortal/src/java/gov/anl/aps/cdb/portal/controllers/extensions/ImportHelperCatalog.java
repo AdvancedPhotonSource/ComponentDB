@@ -4,14 +4,16 @@
  */
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,8 +22,7 @@ import org.apache.logging.log4j.Logger;
  * @author craig
  */
 public class ImportHelperCatalog extends 
-        ImportHelperBase<ItemDomainCatalog, ItemDomainCatalogController>{
-
+        HierarchicalImportHelperBase<ItemDomainCatalog, ItemDomainCatalogController> {
 
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperCatalog.class.getName());
     
@@ -57,6 +58,7 @@ public class ImportHelperCatalog extends
     
     @Override
     protected void reset_() {
+        super.reset_();
         columnInfoMap = null;
         parentIndentMap = new HashMap<>();
     }
@@ -264,6 +266,24 @@ public class ImportHelperCatalog extends
     }
     
     @Override
+    protected ItemDomainCatalog getItemParent(ItemDomainCatalog item) {
+        return null;
+    }
+    
+    @Override
+    protected String getItemName(ItemDomainCatalog item) {
+        return item.getName();
+    }
+    
+    @Override
+    protected List<ItemDomainCatalog> getItemChildren(ItemDomainCatalog item) {
+        List<ItemElement> children = item.getItemElementDisplayList();
+        return children.stream()
+                .map((child) -> (ItemDomainCatalog) child.getContainedItem())
+                .collect(Collectors.toList());
+    }
+            
+    @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         
         String methodLogName = "createEntityForRegularItem() ";
@@ -318,6 +338,9 @@ public class ImportHelperCatalog extends
         
         // set current item as last parent at its indent level
         parentIndentMap.put(itemIndentLevel, item);
+
+        // update tree view with item and parent
+        updateTreeView(item, itemParent, false);
 
         return new CreateInfo(item, isValid, validString);
     }
