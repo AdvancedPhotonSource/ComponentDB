@@ -40,7 +40,6 @@ public class ItemTravelerDomainMachineInstanceController extends ItemTravelerDom
         return itemDomainMachineDesignController;
     }
 
-    @Override
     protected List<PropertyValue> getInternalPropertyValueListForItem(Item item) {
         List<PropertyValue> pvList = new ArrayList<>();
         if (!(item instanceof ItemDomainMachineDesign)) {

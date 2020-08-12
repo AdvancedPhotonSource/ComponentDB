@@ -33,6 +33,8 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
+    
+    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";
 
     private static ItemDomainMachineDesignInventoryController apiInstance;
 
@@ -256,6 +258,10 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     public ItemDomainMachineDesign getNewMdInventoryItem() {
         return newMdInventoryItem;
+    }
+    
+    public String getPluginItemMachineDesignSectionsName() {
+        return pluginItemMachineDesignSectionsName; 
     }
 
 }
