@@ -66,6 +66,8 @@ public class ItemDomainMachineDesignController
     public final static String controllerNamed = "itemDomainMachineDesignController";
     private final static String cableWizardRedirectSuccess
             = "/views/itemDomainMachineDesign/list?faces-redirect=true";
+    
+    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignDetailsViewSections";
 
     private List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
 
@@ -1904,6 +1906,10 @@ public class ItemDomainMachineDesignController
             this.resetListDataModel();
         }
         this.cablesShown = cablesShown;
+    }
+    
+    public String getPluginItemMachineDesignSectionsName() {
+        return pluginItemMachineDesignSectionsName; 
     }
 
     // <editor-fold defaultstate="collapsed" desc="Element creation implementation ">   

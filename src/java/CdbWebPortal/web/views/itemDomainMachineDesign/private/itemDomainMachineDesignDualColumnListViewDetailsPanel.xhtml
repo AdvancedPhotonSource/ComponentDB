@@ -6,9 +6,7 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
-                xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">   
+                xmlns:p="http://primefaces.org/ui">   
 
     <p:outputPanel rendered="#{entityController.displayListViewItemDetailsView}">
 
@@ -95,25 +93,7 @@ See LICENSE file.
             </p:dataTable>
         </p:panel>
 
-        <!-- traveler templates section-->
-        <ui:include src="../../plugins/private/catalogDetailsViewSections.xhtml">
-            <ui:param name="viewName" value="MachineTravelerTemplates" />
-            <ui:param name="travelerDomainTemplateController"
-                      value="#{itemTravelerDomainMachineTemplateController}" />
-            <ui:param name="renderTravelerTemplatesPanel" 
-                      value="#{itemDomainMachineDesignController.currentViewIsTemplate}"/>
-        </ui:include>
-
-        <!-- traveler instances section-->
-        <ui:include src="../../plugins/private/inventoryDetailsViewSections.xhtml">
-            <ui:param name="viewName" value="MachineTravelerInstances" />
-            <ui:param name="travelerDomainTemplateController"
-                      value="#{itemTravelerDomainMachineTemplateController}" />
-            <ui:param name="travelerDomainInstanceController"
-                      value="#{itemTravelerDomainMachineInstanceController}" />
-            <ui:param name="renderTravelerInstancesPanel" 
-                      value="#{!itemDomainMachineDesignController.currentViewIsTemplate}"/>
-        </ui:include>
+        <ui:include src="../../plugins/private/#{entityController.pluginItemMachineDesignSectionsName}.xhtml"/> 
 
         <p:panel header="Cable Connections"
                  toggleable="true"

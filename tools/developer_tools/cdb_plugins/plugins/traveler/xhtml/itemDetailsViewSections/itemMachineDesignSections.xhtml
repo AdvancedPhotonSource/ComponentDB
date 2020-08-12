@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!--Auto-generated xhtml file. See tools/developer_tools/cdb_plugin-->
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets">
+    
+    <ui:param name="travelerDomainInstanceController"
+              value="#{travelerDomainInstanceController != null 
+                       ? travelerDomainInstanceController 
+                       : itemTravelerDomainMachineInstanceController }" />
+
+    <!-- traveler templates section-->
+    <ui:include src="catalogSections.xhtml">
+        <ui:param name="viewName" value="MachineTravelerTemplates" />
+        <ui:param name="travelerDomainTemplateController"
+                  value="#{itemTravelerDomainMachineTemplateController}" />
+        <ui:param name="renderTravelerTemplatesPanel" 
+                  value="#{entityController.currentViewIsTemplate}"/>
+    </ui:include>
+
+    <!-- traveler instances section-->
+    <ui:include src="inventorySections.xhtml">
+        <ui:param name="viewName" value="MachineTravelerInstances" />
+        <ui:param name="travelerDomainTemplateController"
+                  value="#{itemTravelerDomainMachineTemplateController}" />
+        <ui:param name="renderTravelerInstancesPanel" 
+                  value="#{!entityController.currentViewIsTemplate}"/>
+    </ui:include>
+
+
+</ui:composition>
