@@ -451,15 +451,6 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
         templateItemCount = 0;
     }
     
-    /**
-     * Specifies whether the subclass will provide a tree view.  Default is false,
-     * subclass should override to customize.
-     */
-    @Override
-    public boolean hasTreeView() {
-        return true;
-    }
-    
     @Override
     protected ItemDomainMachineDesign getItemParent(ItemDomainMachineDesign item) {
         return null;

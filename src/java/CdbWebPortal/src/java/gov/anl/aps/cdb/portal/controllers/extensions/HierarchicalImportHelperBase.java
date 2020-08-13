@@ -26,6 +26,10 @@ public abstract class HierarchicalImportHelperBase<EntityType extends CdbEntity,
     
     private int treeNodeChildCount = 0;
     
+    protected abstract EntityType getItemParent(EntityType item);
+    protected abstract String getItemName(EntityType item);
+    protected abstract List<EntityType> getItemChildren(EntityType item);
+
     protected int getTreeNodeChildCount() {
         return treeNodeChildCount;
     }
@@ -36,10 +40,15 @@ public abstract class HierarchicalImportHelperBase<EntityType extends CdbEntity,
         treeNodeChildCount = 0;
     }
     
-    protected abstract EntityType getItemParent(EntityType item);
-    protected abstract String getItemName(EntityType item);
-    protected abstract List<EntityType> getItemChildren(EntityType item);
-
+    /**
+     * Specifies whether the subclass will provide a tree view.  Default is false,
+     * subclass should override to customize.
+     */
+    @Override
+    public boolean hasTreeView() {
+        return true;
+    }
+    
     protected void updateTreeView(
             EntityType item, 
             EntityType parent,

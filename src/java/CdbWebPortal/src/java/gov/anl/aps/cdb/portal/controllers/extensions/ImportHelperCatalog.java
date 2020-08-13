@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ public class ImportHelperCatalog extends
     
     private static final String KEY_NAME = "name";
     private static final String KEY_INDENT = "indentLevel";
+    private static final String KEY_ASSIGNED_ITEM = "assignedItem";
     
     private static final String HEADER_BASE_LEVEL = "Level";
     private static final String HEADER_ALT_NAME = "Machine Design Alternate Name";
@@ -61,15 +61,6 @@ public class ImportHelperCatalog extends
         super.reset_();
         columnInfoMap = null;
         parentIndentMap = new HashMap<>();
-    }
-    
-    /**
-     * Specifies whether the subclass will provide a tree view.  Default is false,
-     * subclass should override to customize.
-     */
-    @Override
-    public boolean hasTreeView() {
-        return true;
     }
     
     private void initColumnInfoMap() {
@@ -218,12 +209,12 @@ public class ImportHelperCatalog extends
 //                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
 //                        break;
 //
-//                    case HEADER_ASSIGNED_ITEM_ID:
-//                        colInfo = getColumnInfoMap().get(HEADER_ASSIGNED_ITEM_ID);
-//                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-//                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, "assignedCatalogItem", "setAssignedCatalogItem", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, ""));
-//                        break;
-//
+                    case HEADER_ASSIGNED_ITEM_ID:
+                        colInfo = getColumnInfoMap().get(HEADER_ASSIGNED_ITEM_ID);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
+                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, "assignedCatalogItem", "setAssignedCatalogItem", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, ""));
+                        break;
+
 //                    case HEADER_PROJECT:
 //                        colInfo = getColumnInfoMap().get(HEADER_PROJECT);
 //                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
@@ -295,18 +286,25 @@ public class ImportHelperCatalog extends
 
         ItemDomainCatalog item = null;
         ItemDomainCatalog itemParent = null;
-
-        item = getEntityController().createEntityInstance();
         
-        item.setName((String) rowMap.get(KEY_NAME));
-        if ((item.getName() == null) || (item.getName().isEmpty())) {
-            // didn't find a non-empty name column for this row
-            isValid = false;
-            validString = "name columns are all empty";
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(item, isValid, validString);
+        // check if there is an assigned item
+        ItemDomainCatalog assignedCatalogItem = (ItemDomainCatalog) rowMap.get(KEY_ASSIGNED_ITEM);
+
+        if (assignedCatalogItem == null) {
+            item = getEntityController().createEntityInstance();
+            item.setName((String) rowMap.get(KEY_NAME));
+            if ((item.getName() == null) || (item.getName().isEmpty())) {
+                // didn't find a non-empty name column for this row
+                isValid = false;
+                validString = "name columns are all empty";
+                LOGGER.info(methodLogName + validString);
+                return new CreateInfo(item, isValid, validString);
+            }        
+        } else {
+            item = assignedCatalogItem;
         }
         
+        // find parent item
         int itemIndentLevel = (int) rowMap.get(KEY_INDENT);
         if (itemIndentLevel > 1) {
 
