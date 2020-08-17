@@ -14,8 +14,10 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import org.apache.logging.log4j.LogManager;
@@ -423,6 +425,19 @@ public class ItemDomainMachineDesign extends LocatableItem {
         }
 
         return newItem;
+    }
+
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult result = super.search(searchPattern);
+        
+        Item assignedItem = getAssignedItem();
+        if (assignedItem != null) {
+            String assignedItemName = assignedItem.getName();
+            result.doesValueContainPattern("Assigned Item Name", assignedItemName, searchPattern);
+        }
+        
+        return result; 
     }
     
 }
