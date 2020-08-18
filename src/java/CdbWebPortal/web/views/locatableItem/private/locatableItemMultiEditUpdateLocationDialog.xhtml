@@ -44,14 +44,11 @@ Ensure that multiedit controller contains updateLocation and updateLocationDetai
 
         <f:facet name="footer">
             <p:commandButton update="@form"
-                             value="Save"
-                             icon="fa fa-save"
+                             value="Done"
+                             icon="fa fa-check"
                              action="#{locatableItemController.updateLocationForItem(currentItemObject, 
                                        itemDomainLocationController.itemFromSelectedLocationTreeNode, 
-                                       'finalizeMultiEditLocationUpdate()')}" />
-
-            <p:remoteCommand name="finalizeMultiEditLocationUpdate"                             
-                             action="#{entityController.updateWithoutRedirect()}"/> 
+                                       null)}" />
         </f:facet>
 
 
