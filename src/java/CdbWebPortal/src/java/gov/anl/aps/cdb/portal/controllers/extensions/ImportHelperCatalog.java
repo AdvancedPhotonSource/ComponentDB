@@ -34,7 +34,7 @@ public class ImportHelperCatalog extends ImportHelperBase<ItemDomainCatalog, Ite
         List<ColumnSpec> specs = new ArrayList<>();
         
         specs.add(new ImportHelperBase.StringColumnSpec(0, "Name", "name", "setName", true, "Catalog item name.", 128));
-        specs.add(new ImportHelperBase.StringColumnSpec(1, "Model Number", "modelNumber", "setModelNumber", false, "Model number.", 32));
+        specs.add(new ImportHelperBase.StringColumnSpec(1, "Model Number", "modelNumber", "setModelNumber", false, "Model number.", 128));
         specs.add(new ImportHelperBase.StringColumnSpec(2, "Description", "description", "setDescription", false, "Textual description.", 256));
         specs.add(new ImportHelperBase.StringColumnSpec(3, "Alt Name", "alternateName", "setAlternateName", false, "Alternate item name.", 128));
         specs.add(new ImportHelperBase.IdOrNameRefColumnSpec(4, "Source", "importSource", "setImportSource", false, "Item source.", SourceController.getInstance(), Source.class, null));

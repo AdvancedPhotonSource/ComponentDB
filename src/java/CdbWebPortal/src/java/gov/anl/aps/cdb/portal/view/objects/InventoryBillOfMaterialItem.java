@@ -126,7 +126,18 @@ public class InventoryBillOfMaterialItem {
             }
         }
     }
-
+    
+    /**
+     * TODO: I want to change this method to use 
+     * ItemDomainInventoryControllergenerateItemName(), but I don't
+     * really understand everything that is going on here and don't want to break
+     * it.  There are side-effects with changes to instance variables in the call stack. 
+     * Also not sure why we call getExistingInventoryItemSelectDataModel(), which
+     * gets the inventory list, makes a copy of it, potentially removes an item,
+     * then creates a ListDataModel from the resulting list.  Are we gaining
+     * something by using the data model?  Can't we just count the number of items
+     * and not copy the list or create the data model?
+     */
     private void setDefaultTag() {
         if (inventoryItem != null) {
             if (inventoryItem.getName() == null || inventoryItem.getName().isEmpty()) {

@@ -117,6 +117,21 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
         return getCurrentStatusPropertyValue() != null; 
     }
 
+    @Override
+    public ItemInventoryBaseDomainEntity createEntityInstance() {
+        ItemInventoryBaseDomainEntity item = super.createEntityInstance();
+        setCurrent(item);
+        
+        // set default value for status property
+        String defaultValue = this.getInventoryStatusPropertyType().getDefaultValue();
+        if (defaultValue != null && !defaultValue.isEmpty()) {
+            prepareEditInventoryStatus();
+            item.setInventoryStatusValue(defaultValue);
+        }
+        
+        return item;
+    }
+    
     // </editor-fold>        
 
 }

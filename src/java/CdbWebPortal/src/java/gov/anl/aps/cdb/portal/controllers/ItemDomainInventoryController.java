@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperInventory;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
@@ -1367,6 +1368,30 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return false;
     }
 
+    public String generateItemName(
+            ItemDomainInventory inventoryItem, 
+            ItemDomainCatalog catalogItem, 
+            int newInstanceCount) {
+        
+        int numExistingItems = 0;
+        if (catalogItem != null) {
+            numExistingItems = catalogItem.getInventoryItemList().size();
+        }
+        
+        int itemNumber = numExistingItems + newInstanceCount;
+        return ItemDomainInventory.generatePaddedUnitName(itemNumber);        
+    }
+    
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected ImportHelperBase createImportHelperInstance() throws CdbException {
+        return new ImportHelperInventory();
+    }
+
     @Override
     public String getEntityTypeName() {
         return "componentInstance";
@@ -1489,6 +1514,12 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     protected ItemDomainInventory instenciateNewItemDomainEntity() {
         return new ItemDomainInventory();
+    }
+
+    @Override
+    public ItemDomainInventory createEntityInstance() {
+        ItemDomainInventory item = super.createEntityInstance();
+        return item;
     }
 
     @Override

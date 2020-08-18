@@ -61,18 +61,9 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     @Override
     public ItemDomainCableInventory createEntityInstance() {
         ItemDomainCableInventory item = super.createEntityInstance();
-        setCurrent(item);
-        
-        // set default value for status property
-        String defaultValue = this.getInventoryStatusPropertyType().getDefaultValue();
-        if (defaultValue != null && !defaultValue.isEmpty()) {
-            prepareEditInventoryStatus();
-            item.setInventoryStatusValue(defaultValue);
-        }
-        
         return item;
     }
-    
+
     @Override
     protected String getStatusPropertyTypeName() {
         return ItemDomainCableInventory.ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
