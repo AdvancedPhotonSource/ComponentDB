@@ -35,10 +35,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
@@ -132,6 +130,27 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     }
 
     @Override
+    protected ItemDomainInventory instenciateNewItemDomainEntity() {
+        return new ItemDomainInventory();
+    }
+
+    @Override
+    public ItemDomainInventory createEntityInstance() {
+        ItemDomainInventory item = super.createEntityInstance();
+        return item;
+    }
+
+    @Override
+    protected ItemDomainInventoryFacade getEntityDbFacade() {
+        return itemDomainInventoryFacade;
+    }
+
+    @Override
+    protected ItemDomainInventorySettings createNewSettingObject() {
+        return new ItemDomainInventorySettings(this);
+    }
+
+    @Override
     protected String getStatusPropertyTypeName() {
         return ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
     }
@@ -160,6 +179,11 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return info;
     }
             
+    @Override
+    protected String generatePaddedUnitName(int itemNumber) {
+        return ItemDomainInventory.generatePaddedUnitName(itemNumber);
+    }
+
     @Override
     public void createListDataModel() {
         List<Item> inventory = (List<Item>)(List<?>)getEntityDbFacade().findAll();
@@ -603,20 +627,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         }
         return relationshipType;
     }    
-
-    @Override
-    public String prepareCreate() {
-        ItemController derivedItemController = getDefaultDomainDerivedFromDomainController();
-        if (derivedItemController != null) {
-            derivedItemController.getSelectedObjectAndResetDataModel();
-            derivedItemController.getSettingObject().clearListFilters();
-            derivedItemController.setFilteredObjectList(null);
-        }
-
-        String createResult = super.prepareCreate();
-
-        return createResult;
-    }
 
     public void createSaveFromDialog(String onSuccessCommand) {
         String result = create();
@@ -1229,31 +1239,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return null;
     }
 
-    @Override
-    public String getItemDisplayString(Item item) {
-        if (item != null) {
-            if (item instanceof ItemDomainInventory) {
-                if (item.getDerivedFromItem() != null) {
-                    String result = item.getDerivedFromItem().getName();
-
-                    //Tag to help user identify the item
-                    String tag = item.getName();
-                    if (tag != null && !tag.isEmpty()) {
-                        result += " - [" + tag + "]";
-                    }
-
-                    return result;
-                } else {
-                    return "No inventory item defied";
-                }
-            } else {
-                return getItemItemController(item).getItemDisplayString(item);
-            }
-        }
-        return null;
-
-    }
-
     private void checkUniquenessBetweenNewItemsToAdd() throws CdbException {
         for (int i = 0; i < newItemsToAdd.size(); i++) {
             for (int j = newItemsToAdd.size() - 1; j > -1; j--) {
@@ -1368,25 +1353,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return false;
     }
 
-    public String generateItemName(
-            ItemDomainInventory inventoryItem, 
-            ItemDomainCatalog catalogItem, 
-            int newInstanceCount) {
-        
-        int numExistingItems = 0;
-        if (catalogItem != null) {
-            numExistingItems = catalogItem.getInventoryItemList().size();
-        }
-        
-        int itemNumber = numExistingItems + newInstanceCount;
-        return ItemDomainInventory.generatePaddedUnitName(itemNumber);        
-    }
-    
-    @Override
-    public boolean getEntityDisplayImportButton() {
-        return true;
-    }
-
     @Override
     protected ImportHelperBase createImportHelperInstance() throws CdbException {
         return new ImportHelperInventory();
@@ -1403,28 +1369,8 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     }
 
     @Override
-    public boolean getEntityDisplayItemSources() {
-        return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemName() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayDerivedFromItem() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
-        return true;
-    }
-
-    @Override
-    public String getNameTitle() {
-        return "Tag";
+    public String getDefaultDomainName() {
+        return DEFAULT_DOMAIN_NAME;
     }
 
     @Override
@@ -1433,33 +1379,8 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     }
 
     @Override
-    public String getItemsDerivedFromItemTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean getEntityDisplayItemGallery() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemLogs() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemProperties() {
-        return true;
-    }
-
-    @Override
     public boolean getEntityDisplayItemElements() {
         return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemsDerivedFromItem() {
-        return false;
     }
 
     @Override
@@ -1468,73 +1389,12 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     }
 
     @Override
-    public String getStyleName() {
-        return "inventory";
-    }
-
-    @Override
-    public String getDefaultDomainName() {
-        return DEFAULT_DOMAIN_NAME;
-    }
-
-    @Override
     public String getDefaultDomainDerivedFromDomainName() {
         return DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemProject() {
-        return true;
     }
 
     @Override
     public boolean entityCanBeCreatedByUsers() {
         return true;
     }
-
-    @Override
-    public boolean isAllowedSetDerivedFromItemForCurrentItem() {
-        if (getCurrent() != null) {
-            return !getCurrent().isIsCloned();
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemEntityTypes() {
-        return false;
-    }
-
-    @Override
-    public String getDefaultDomainDerivedToDomainName() {
-        return null;
-    }
-
-    @Override
-    protected ItemDomainInventory instenciateNewItemDomainEntity() {
-        return new ItemDomainInventory();
-    }
-
-    @Override
-    public ItemDomainInventory createEntityInstance() {
-        ItemDomainInventory item = super.createEntityInstance();
-        return item;
-    }
-
-    @Override
-    protected ItemDomainInventoryFacade getEntityDbFacade() {
-        return itemDomainInventoryFacade;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemConnectors() {
-        return false;
-    }
-
-    @Override
-    protected ItemDomainInventorySettings createNewSettingObject() {
-        return new ItemDomainInventorySettings(this);
-    }
-
 }
