@@ -4,19 +4,18 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.SimpleInputHandler;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ImportInfo;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.OutputColumnModel;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.event.AjaxBehaviorEvent;
 import javax.inject.Named;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.FlowEvent;
@@ -49,8 +48,9 @@ public class ItemDomainImportWizard implements Serializable {
     private Boolean disableButtonFinish = true;
     private Boolean disableButtonCancel = false;
     
+    private DomainImportInfo domainInfo = null;
+    
     // models for select format tab
-    private List<ImportFormatInfo> formatInfoList = new ArrayList<>();
     private ImportFormatInfo selectedFormat = null;
     private String selectedFormatName = null;
 
@@ -80,16 +80,29 @@ public class ItemDomainImportWizard implements Serializable {
         importHelper = helper;
     }
     
-    public List<ImportFormatInfo> getFormatInfoList() {
-        return formatInfoList;
+    public void setDomainInfo(DomainImportInfo info) {
+        reset();
+        domainInfo = info;
     }
     
-    public void setFormatInfoList(List<ImportFormatInfo> infoList) {
-        formatInfoList = infoList;
+    public List<ImportFormatInfo> getFormatInfoList() {
+        if (domainInfo != null) {
+            return domainInfo.getFormatInfoList();
+        } else {
+            return new ArrayList<>();
+        }
     }
-
+    
+    public String getCompletionUrl() {
+        if (domainInfo != null) {
+            return domainInfo.getCompletionUrl();
+        } else {
+            return "";
+        }
+    }
+    
     public List<String> getFormatNames() {
-        return formatInfoList.stream().map(e -> e.toString()).collect(Collectors.toList());
+        return getFormatInfoList().stream().map(e -> e.toString()).collect(Collectors.toList());
     }
 
     public ImportFormatInfo getSelectedFormat() {
@@ -373,7 +386,7 @@ public class ItemDomainImportWizard implements Serializable {
      * navigation button.
      */
     public String cancel() {
-        String completionUrl = importHelper.getCompletionUrl();
+        String completionUrl = getCompletionUrl();
         this.reset();
         return completionUrl;
     }
@@ -383,7 +396,7 @@ public class ItemDomainImportWizard implements Serializable {
      * navigation button.
      */
     public String finish() {
-        String completionUrl = importHelper.getCompletionUrl();
+        String completionUrl = getCompletionUrl();
         this.reset();
         return completionUrl;
     }

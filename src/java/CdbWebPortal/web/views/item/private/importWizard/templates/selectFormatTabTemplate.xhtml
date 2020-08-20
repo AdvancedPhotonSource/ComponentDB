@@ -21,8 +21,7 @@ See LICENSE file.
                     <p:row>
                         <p:column>
                             <p:selectOneMenu id="#{rootViewId}SelectFormatMenu" 
-                                             value="#{wizardController.selectedFormatName}"
-                                             dynamic="true">
+                                             value="#{wizardController.selectedFormatName}">
                                 <p:ajax listener="#{wizardController.selectListenerFormat}"
                                         oncomplete="update#{rootViewId}WizardButtons();"/>
                                 <f:selectItem itemLabel="Select Format" 

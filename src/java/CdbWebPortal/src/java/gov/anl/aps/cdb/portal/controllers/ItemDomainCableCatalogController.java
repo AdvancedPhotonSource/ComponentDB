@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog.CABLE_CATALOG_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import java.util.ArrayList;
@@ -147,10 +148,14 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     }
 
     @Override
-    protected List<ImportFormatInfo> initializeImportFormatInfoList() {
+    protected DomainImportInfo initializeDomainImportInfo() {
+        
         List<ImportFormatInfo> formatInfo = new ArrayList<>();
         formatInfo.add(new ImportFormatInfo("Basic Cable Catalog Format", ImportHelperCableCatalog.class));
-        return formatInfo;
+        
+        String completionUrl = "/views/itemDomainCableCatalog/list?faces-redirect=true";
+        
+        return new DomainImportInfo(formatInfo, completionUrl);
     }
     
 }

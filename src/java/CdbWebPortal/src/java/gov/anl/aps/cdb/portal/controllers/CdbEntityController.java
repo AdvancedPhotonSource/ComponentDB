@@ -26,6 +26,7 @@ import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import java.io.IOException;
 
@@ -102,7 +103,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected boolean apiMode = false;
     protected UserInfo apiUser;
     
-    private List<ImportFormatInfo> importFormatInfoList;
+    private DomainImportInfo domainImportInfo;
     
     /**
      * Default constructor.
@@ -1759,19 +1760,18 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * Prepares import wizard.
      */
     public String prepareImport() throws CdbException {  
-        ItemDomainImportWizard.getInstance().setFormatInfoList(getImportFormatInfo());
+        ItemDomainImportWizard.getInstance().setDomainInfo(getDomainImportInfo());
         return "import?faces-redirect=true";
     }
     
-    protected List<ImportFormatInfo> initializeImportFormatInfoList() {
-        return new ArrayList<>();
+    protected DomainImportInfo initializeDomainImportInfo() {
+        return null;
     }
     
-    public List<ImportFormatInfo> getImportFormatInfo() {
-        if (importFormatInfoList == null) {
-            importFormatInfoList = initializeImportFormatInfoList();
+    public DomainImportInfo getDomainImportInfo() {
+        if (domainImportInfo == null) {
+            domainImportInfo = initializeDomainImportInfo();
         }
-        return importFormatInfoList;
+        return domainImportInfo;
     }
-    
 }
