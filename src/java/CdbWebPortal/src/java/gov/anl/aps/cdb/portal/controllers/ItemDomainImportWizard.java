@@ -51,7 +51,6 @@ public class ItemDomainImportWizard implements Serializable {
     private DomainImportInfo domainInfo = null;
     
     // models for select format tab
-    private ImportFormatInfo selectedFormat = null;
     private String selectedFormatName = null;
 
     // models for select file tab
@@ -75,11 +74,6 @@ public class ItemDomainImportWizard implements Serializable {
                 ItemDomainImportWizard.CONTROLLER_NAMED);
     }
 
-    public void registerHelper(ImportHelperBase helper) {
-        reset();
-        importHelper = helper;
-    }
-    
     public void setDomainInfo(DomainImportInfo info) {
         reset();
         domainInfo = info;
@@ -103,14 +97,6 @@ public class ItemDomainImportWizard implements Serializable {
     
     public List<String> getFormatNames() {
         return getFormatInfoList().stream().map(e -> e.toString()).collect(Collectors.toList());
-    }
-
-    public ImportFormatInfo getSelectedFormat() {
-        return selectedFormat;
-    }
-    
-    public void setSelectedFormat(ImportFormatInfo selectedFormat) {
-        this.selectedFormat = selectedFormat;
     }
 
     public String getSelectedFormatName() {
@@ -329,6 +315,21 @@ public class ItemDomainImportWizard implements Serializable {
         String nextStep = event.getNewStep();
         String currStep = event.getOldStep();
         
+        // create helper if moving from select format tab to select file tab
+        if ((currStep.endsWith(tabSelectFormat))
+                && (nextStep.endsWith(tabSelectFile))) {
+            createHelperForSelectedFormat();
+            if (importHelper == null) {
+                // don't allow transition if we couldn't create helper
+                SessionUtility.addErrorMessage(
+                    "Unable to create import helper for selected format",
+                    "Please select a different format or Cancel.");
+                setEnablement(currStep);
+                currentTab = currStep;
+                return currStep;
+            }
+        }
+
         // parse file if moving from select file tab to validate tab
         if ((currStep.endsWith(tabSelectFile))
                 && (nextStep.endsWith(tabValidate))) {
@@ -351,6 +352,25 @@ public class ItemDomainImportWizard implements Serializable {
 
         return nextStep;
     }
+    
+    protected void createHelperForSelectedFormat() {
+        List<ImportFormatInfo> infoList = getFormatInfoList();
+        ImportFormatInfo selectedFormatInfo = null;
+        for (ImportFormatInfo info : infoList) {
+            if (info.getFormatName().equals(getSelectedFormatName())) {
+                selectedFormatInfo = info;
+                break;
+            }
+        }
+        try {
+            if (selectedFormatInfo != null) {
+                Class helperClass = selectedFormatInfo.getImportHelperClass();
+                importHelper = (ImportHelperBase) helperClass.newInstance();
+            }
+        } catch (InstantiationException | IllegalAccessException ex) {
+
+        }
+    }
 
     protected void triggerImport() {
 
@@ -365,7 +385,6 @@ public class ItemDomainImportWizard implements Serializable {
      */
     protected void reset() {
         currentTab = tabSelectFormat;
-        selectedFormat = null;
         selectedFormatName = null;
         uploadfileData = null;
         importHelper = null;
