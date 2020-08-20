@@ -27,8 +27,6 @@ import java.util.Map;
 public class ImportHelperCatalog extends ImportHelperBase<ItemDomainCatalog, ItemDomainCatalogController> {
 
 
-    protected static String completionUrlValue = "/views/itemDomainCatalog/list?faces-redirect=true";
-    
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
@@ -43,11 +41,6 @@ public class ImportHelperCatalog extends ImportHelperBase<ItemDomainCatalog, Ite
         specs.add(new ImportHelperBase.IdOrNameRefColumnSpec(7, "Function", "function", "setFunction", false, "Numeric ID of CDB function.", ItemTypeController.getInstance(), ItemType.class, ItemDomainName.catalog.getValue()));
 
         return specs;
-    }
-    
-    @Override
-    protected String getCompletionUrlValue() {
-        return completionUrlValue;
     }
     
     @Override

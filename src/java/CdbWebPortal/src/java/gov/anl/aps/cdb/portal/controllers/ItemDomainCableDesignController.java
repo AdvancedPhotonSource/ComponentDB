@@ -22,7 +22,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -607,8 +610,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return true;
     }
 
-    protected ImportHelperBase createImportHelperInstance() throws CdbException {
-        return new ImportHelperCableDesign();
+    @Override
+    protected DomainImportInfo initializeDomainImportInfo() {
+        
+        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportFormatInfo("Basic Cable Design Format", ImportHelperCableDesign.class));
+        
+        String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
+        
+        return new DomainImportInfo(formatInfo, completionUrl);
     }
-    
 }

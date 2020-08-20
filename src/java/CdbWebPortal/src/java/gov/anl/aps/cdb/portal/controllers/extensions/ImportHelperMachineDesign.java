@@ -161,8 +161,6 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
     private static final String HEADER_PROJECT = "Project ID";
     private static final String HEADER_TEMPLATE = "Is Template?";
 
-    protected static String completionUrlValue = "/views/itemDomainMachineDesign/list?faces-redirect=true";
-    
     private Map<String, InputColumnInfo> columnInfoMap = null;
     private Map<String, ItemDomainMachineDesign> itemByNameMap = new HashMap<>();
     private Map<ItemDomainMachineDesign, ImportInfo> itemInfoMap = new HashMap<>();
@@ -423,11 +421,6 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
         outputColumns.add(new OutputColumnModel(10, "Location", "importLocationItemString"));
         
         return new ValidInfo(isValid, validString);
-    }
-    
-    @Override
-    protected String getCompletionUrlValue() {
-        return completionUrlValue;
     }
     
     @Override

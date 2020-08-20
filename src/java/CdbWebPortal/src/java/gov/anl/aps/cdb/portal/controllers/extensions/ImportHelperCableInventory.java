@@ -24,8 +24,6 @@ import org.apache.logging.log4j.Logger;
 public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDomainCableInventory, ItemDomainCableInventoryController> {
 
 
-    protected static String completionUrlValue = "/views/itemDomainCableInventory/list?faces-redirect=true";
-    
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperCableInventory.class.getName());
     
     @Override
@@ -44,11 +42,6 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
         return specs;
     } 
    
-    @Override
-    protected String getCompletionUrlValue() {
-        return completionUrlValue;
-    }
-    
     @Override
     public ItemDomainCableInventoryController getEntityController() {
         return ItemDomainCableInventoryController.getInstance();

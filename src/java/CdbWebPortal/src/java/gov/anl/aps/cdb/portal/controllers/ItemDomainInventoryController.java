@@ -38,6 +38,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
@@ -1353,10 +1355,17 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return false;
     }
 
-    protected ImportHelperBase createImportHelperInstance() throws CdbException {
-        return new ImportHelperInventory();
+    @Override
+    protected DomainImportInfo initializeDomainImportInfo() {
+        
+        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportFormatInfo("Basic Inventory Format", ImportHelperInventory.class));
+        
+        String completionUrl = "/views/itemDomainInventory/list?faces-redirect=true";
+        
+        return new DomainImportInfo(formatInfo, completionUrl);
     }
-
+    
     @Override
     public String getEntityTypeName() {
         return "componentInstance";

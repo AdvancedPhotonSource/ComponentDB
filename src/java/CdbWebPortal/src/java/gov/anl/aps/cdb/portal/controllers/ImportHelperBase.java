@@ -950,10 +950,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return summaryMessage;
     }
 
-    public String getCompletionUrl() {
-        return getCompletionUrlValue();
-    }
-    
     private InitializeInfo initialize(
             int actualColumnCount,
             Map<Integer, String> headerValueMap) {
@@ -1546,8 +1542,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     protected abstract List<ColumnSpec> getColumnSpecs();
     
-    protected abstract String getCompletionUrlValue();
-
     public abstract EntityControllerType getEntityController();
     
     public abstract String getTemplateFilename();

@@ -26,8 +26,6 @@ import org.apache.logging.log4j.Logger;
 public class ImportHelperInventory 
         extends ImportHelperInventoryBase<ItemDomainInventory, ItemDomainInventoryController> {
 
-    protected static String completionUrlValue = "/views/itemDomainInventory/list?faces-redirect=true";
-    
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperInventory.class.getName());
     
     @Override
@@ -48,11 +46,6 @@ public class ImportHelperInventory
         return specs;
     } 
    
-    @Override
-    protected String getCompletionUrlValue() {
-        return completionUrlValue;
-    }
-    
     @Override
     public ItemDomainInventoryController getEntityController() {
         return ItemDomainInventoryController.getInstance();

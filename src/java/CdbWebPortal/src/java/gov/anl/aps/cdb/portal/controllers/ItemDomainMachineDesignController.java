@@ -30,6 +30,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
@@ -2826,9 +2828,15 @@ public class ItemDomainMachineDesignController
         return true;
     }
 
-    protected ImportHelperBase createImportHelperInstance() throws CdbException {
-        return new ImportHelperMachineDesign();
+    @Override
+    protected DomainImportInfo initializeDomainImportInfo() {
+        
+        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportFormatInfo("Basic Machine Design Format", ImportHelperMachineDesign.class));
+        
+        String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
+        
+        return new DomainImportInfo(formatInfo, completionUrl);
     }
-
     // </editor-fold>       
 }

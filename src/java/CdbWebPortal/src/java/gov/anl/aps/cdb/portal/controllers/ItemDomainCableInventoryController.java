@@ -16,6 +16,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import java.util.ArrayList;
@@ -161,10 +163,6 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
         return itemDomainCableInventoryFacade.findByDomainOrderByDerivedFromItemAndItemName(getDefaultDomainName());
     }
 
-    protected ImportHelperBase createImportHelperInstance() throws CdbException {
-        return new ImportHelperCableInventory();
-    }
-
     @Override
     public String getEntityTypeName() {
         return "cableInventory"; 
@@ -198,5 +196,16 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     @Override
     public String getDefaultDomainDerivedFromDomainName() {
         return DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME;
+    }
+    
+    @Override
+    protected DomainImportInfo initializeDomainImportInfo() {
+        
+        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportFormatInfo("Basic Cable Inventory Format", ImportHelperCableInventory.class));
+        
+        String completionUrl = "/views/itemDomainCableInventory/list?faces-redirect=true";
+        
+        return new DomainImportInfo(formatInfo, completionUrl);
     }
 }

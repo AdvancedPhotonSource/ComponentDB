@@ -12,7 +12,10 @@ import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.ejb.EJB;
@@ -195,4 +198,14 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
         return new ImportHelperSource();
     }
     
+    @Override
+    protected DomainImportInfo initializeDomainImportInfo() {
+        
+        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportFormatInfo("Basic Source Format", ImportHelperSource.class));
+        
+        String completionUrl = "/views/source/list?faces-redirect=true";
+        
+        return new DomainImportInfo(formatInfo, completionUrl);
+    }
 }
