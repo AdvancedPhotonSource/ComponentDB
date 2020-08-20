@@ -1353,7 +1353,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return false;
     }
 
-    @Override
     protected ImportHelperBase createImportHelperInstance() throws CdbException {
         return new ImportHelperInventory();
     }

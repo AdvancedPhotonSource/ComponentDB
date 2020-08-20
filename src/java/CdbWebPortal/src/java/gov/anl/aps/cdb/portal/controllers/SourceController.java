@@ -191,7 +191,6 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
         return true;
     }
 
-    @Override
     protected ImportHelperBase createImportHelperInstance() throws CdbException {
         return new ImportHelperSource();
     }

@@ -100,7 +100,6 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
         return true;
     }
 
-    @Override
     protected ImportHelperBase createImportHelperInstance() throws CdbException {
         return new ImportHelperCatalog();
     }

@@ -2826,7 +2826,6 @@ public class ItemDomainMachineDesignController
         return true;
     }
 
-    @Override
     protected ImportHelperBase createImportHelperInstance() throws CdbException {
         return new ImportHelperMachineDesign();
     }

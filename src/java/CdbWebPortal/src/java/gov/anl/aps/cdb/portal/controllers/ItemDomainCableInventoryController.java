@@ -161,7 +161,6 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
         return itemDomainCableInventoryFacade.findByDomainOrderByDerivedFromItemAndItemName(getDefaultDomainName());
     }
 
-    @Override
     protected ImportHelperBase createImportHelperInstance() throws CdbException {
         return new ImportHelperCableInventory();
     }

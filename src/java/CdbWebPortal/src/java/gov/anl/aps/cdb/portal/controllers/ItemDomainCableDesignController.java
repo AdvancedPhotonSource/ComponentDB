@@ -607,7 +607,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return true;
     }
 
-    @Override
     protected ImportHelperBase createImportHelperInstance() throws CdbException {
         return new ImportHelperCableDesign();
     }
