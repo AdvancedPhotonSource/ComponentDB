@@ -191,7 +191,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     @Override
     public ItemDomainMachineDesign createMachineDesignFromTemplate(ItemElement itemElement, ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
         ItemDomainMachineDesign createItemFromTemplate = super.createMachineDesignFromTemplate(itemElement, templateItem);
-
+        
         assignInventoryAttributes(createItemFromTemplate, templateItem);
 
         return createItemFromTemplate;

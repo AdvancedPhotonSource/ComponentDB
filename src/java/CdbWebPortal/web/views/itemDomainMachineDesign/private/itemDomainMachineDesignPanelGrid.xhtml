@@ -26,13 +26,13 @@ See LICENSE file.
             <ui:param name="locataionMenuModelActionName" 
                       value="getMachineDesignLocationMenuModel" /> 
             <ui:param name="locataionMenuModelObjectParam"
-                      value="#{itemObject.currentItemElement}" /> 
+                      value="#{entityController.getCurrentHierarchyItemElementForItem(itemObject)}" /> 
         </ui:include>
         
         <h:outputText value="Assigned Item" />
         <ui:include src="itemDomainMachineDesignAssignedItemFragment.xhtml">
             <ui:param name="assignedItem"
-                      value="#{itemObject.currentItemElement.containedItem2}"/>
+                      value="#{itemObject.assignedItem}"/>
         </ui:include>
     </ui:define>
 
