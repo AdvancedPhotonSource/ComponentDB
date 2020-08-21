@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCatalog;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCatalogAssembly;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogSettings;
@@ -107,6 +108,7 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
         
         List<ImportFormatInfo> formatInfo = new ArrayList<>();
         formatInfo.add(new ImportFormatInfo("Basic Catalog Format", ImportHelperCatalog.class));
+        formatInfo.add(new ImportFormatInfo("Catalog Assembly Format", ImportHelperCatalogAssembly.class));
         
         String completionUrl = "/views/itemDomainCatalog/list?faces-redirect=true";
         

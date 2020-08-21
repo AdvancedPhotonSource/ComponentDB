@@ -466,9 +466,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 isValid = true;
                 validString = "";
             } else {
-                if (stringValue.equalsIgnoreCase("true") || stringValue.equals("1")) {
+                if (stringValue.equalsIgnoreCase("true") || stringValue.equals("1") || stringValue.equals("yes")) {
                     parsedValue = true;
-                } else if (stringValue.equalsIgnoreCase("false") || stringValue.equals("0")) {
+                } else if (stringValue.equalsIgnoreCase("false") || stringValue.equals("0") || stringValue.equals("no")) {
                     parsedValue = false;
                 } else {
                     parsedValue = null;
@@ -1445,7 +1445,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             try {
                 getEntityController().checkItemUniqueness(newEntity);
             } catch (CdbException ex) {
-                if (ignoreDuplicates()) {
+                if (ex.getErrorMessage().startsWith("Uniqueness check not implemented by controller")) {
+                    // ignore this?
+                } else if (ignoreDuplicates()) {
                     isDuplicate = true;
                 } else {
                     validString = appendToString(validString, ex.getMessage());
@@ -1485,7 +1487,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected ValidInfo postParseRow(EntityType e) {
         return new ValidInfo(true, "");
     }
-
+    
     public ImportInfo importData() {
 
         EntityControllerType controller = this.getEntityController();
