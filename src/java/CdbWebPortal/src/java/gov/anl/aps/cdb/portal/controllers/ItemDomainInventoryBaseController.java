@@ -7,14 +7,14 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
-import java.util.ArrayList;
-import java.util.List;
 import javax.ejb.EJB;
 
 /**
@@ -61,14 +61,8 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
     @Override
     public ItemInventoryBaseDomainEntity createEntityInstance() {
         ItemInventoryBaseDomainEntity item = super.createEntityInstance();
-        setCurrent(item);
-        
-        // set default value for status property
-        String defaultValue = this.getInventoryStatusPropertyType().getDefaultValue();
-        if (defaultValue != null && !defaultValue.isEmpty()) {
-            prepareEditInventoryStatus();
-            item.setInventoryStatusValue(defaultValue);
-        }
+
+        ItemStatusUtility.updateDefaultStatusProperty(item, this);       
         
         return item;
     }
@@ -155,7 +149,9 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
     @Override
     public boolean getEntityDisplayItemConnectors() {
         return false;
+    }
 
+    @Override
     public boolean getRenderedHistoryButton() {
         return ItemStatusUtility.getRenderedHistoryButton(this);
     }

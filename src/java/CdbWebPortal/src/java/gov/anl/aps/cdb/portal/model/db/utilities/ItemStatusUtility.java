@@ -135,7 +135,7 @@ public class ItemStatusUtility {
         // set default value for status property
         String defaultValue = itemController.getInventoryStatusPropertyType().getDefaultValue();
         if (defaultValue != null && !defaultValue.isEmpty()) {
-            itemController.prepareEditInventoryStatus();
+            itemController.prepareEditInventoryStatus(item);
             item.setInventoryStatusValue(defaultValue);
         }
     }
