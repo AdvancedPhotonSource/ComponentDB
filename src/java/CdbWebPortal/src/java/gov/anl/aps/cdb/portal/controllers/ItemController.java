@@ -46,7 +46,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -122,7 +121,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     private ItemElementRelationshipFacade itemElementRelationshipFacade;
 
     @EJB
-    private PropertyTypeFacade propertyTypeFacade;
+    protected PropertyTypeFacade propertyTypeFacade;
     
     private List<ItemElementRelationship> locationRelationshipCache;
 

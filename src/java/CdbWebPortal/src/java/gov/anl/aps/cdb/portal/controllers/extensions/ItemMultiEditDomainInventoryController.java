@@ -31,7 +31,7 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditLocatab
 
     public final static String controllerNamed = "itemMultiEditDomainInventoryController";
 
-    private final String REL_PATH_ITEM_STATUS_INPUT = "../../itemDomainInventory/private/applyValuesTo/itemStatusInput.xhtml";
+    private final String REL_PATH_ITEM_STATUS_INPUT = "../../itemStatus/private/applyValuesTo/itemStatusInput.xhtml";
 
     Integer unitCount = null;
 
