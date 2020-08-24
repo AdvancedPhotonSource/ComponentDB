@@ -29,13 +29,13 @@ import org.apache.logging.log4j.Logger;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.MACHINE_DESIGN_ID + "")
-public class ItemDomainMachineDesign extends LocatableItem {   
+public class ItemDomainMachineDesign extends LocatableStatusItem {   
     
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesign.class.getName());
+    public final static String MD_INTERNAL_STATUS_PROPERTY_TYPE = "Machine Design Status";
 
     private transient List<ItemElement> combinedItemElementList; 
     private transient ItemElement combinedItemElementListParentElement; 
-    private transient ItemElement currentItemElement; 
     
     private transient ItemDomainMachineDesign importContainerItem = null;
     private transient String importPath = null;
@@ -421,6 +421,11 @@ public class ItemDomainMachineDesign extends LocatableItem {
         }
         
         return result; 
+    }
+
+    @Override
+    public String getStatusPropertyTypeName() {
+        return MD_INTERNAL_STATUS_PROPERTY_TYPE; 
     }
     
 }
