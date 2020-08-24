@@ -164,6 +164,8 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
             }
         }
         newInventory.getEntityTypeList().add(inventoryet);
+        
+        ItemStatusUtility.updateDefaultStatusProperty(newInventory, this);
     } 
 
     public void createInventoryFromTemplateSelected(NodeSelectEvent nodeSelection) {
