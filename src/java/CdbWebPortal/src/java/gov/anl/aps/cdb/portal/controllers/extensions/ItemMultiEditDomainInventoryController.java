@@ -28,46 +28,45 @@ import javax.inject.Named;
 @Named(ItemMultiEditDomainInventoryController.controllerNamed)
 @SessionScoped
 public class ItemMultiEditDomainInventoryController extends ItemMultiEditLocatableItemController implements Serializable {
-    
+
     public final static String controllerNamed = "itemMultiEditDomainInventoryController";
-    
+
     private final String REL_PATH_ITEM_STATUS_INPUT = "../../itemDomainInventory/private/applyValuesTo/itemStatusInput.xhtml";
-    
-    Integer unitCount = null; 
-    
-    protected boolean updateInventoryStatus = false; 
-    
-    private ItemDomainInventoryController itemDomainInventoryController = null; 
-    
-    private List<PropertyType> propertyTypesRequiredForMultiCreate = null; 
+
+    Integer unitCount = null;
+
+    protected boolean updateInventoryStatus = false;
+
+    private ItemDomainInventoryController itemDomainInventoryController = null;
+
+    private List<PropertyType> propertyTypesRequiredForMultiCreate = null;
 
     public ItemDomainInventoryController getItemDomainInventoryController() {
         if (itemDomainInventoryController == null) {
             itemDomainInventoryController = ItemDomainInventoryController.getInstance();
         }
-        return itemDomainInventoryController; 
+        return itemDomainInventoryController;
     }
 
     @Override
     protected ItemController getItemController() {
-        return getItemDomainInventoryController(); 
+        return getItemDomainInventoryController();
     }
 
     @Override
     protected String getControllerNamedConstant() {
-        return controllerNamed; 
+        return controllerNamed;
     }
-    
+
     public static ItemMultiEditDomainInventoryController getInstance() {
         return (ItemMultiEditDomainInventoryController) SessionUtility.findBean(controllerNamed);
     }
-    
+
     @Override
     public void resetMultiEditVariables() {
         super.resetMultiEditVariables();
-        unitCount = null; 
+        unitCount = null;
     }
-            
 
     @Override
     public Item createItemEntity() {
@@ -75,62 +74,62 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditLocatab
         // Create a bill of materials for later creating placeholder elements.         
         List<ItemElement> itemElementDisplayList = derivedFromItemForNewItems.getItemElementDisplayList();
         List<ItemElement> newItemItemElementList = item.getFullItemElementList();
-        
+
         for (ItemElement catalogItemElement : itemElementDisplayList) {
             ItemElement newItemElement = new ItemElement();
             newItemElement.init(item, catalogItemElement);
-            newItemItemElementList.add(newItemElement);            
+            newItemItemElementList.add(newItemElement);
         }
-        
+
         // Auto-assign tag
         if (unitCount == null) {
-            unitCount = derivedFromItemForNewItems.getDerivedFromItemList().size() + 1 ;
+            unitCount = derivedFromItemForNewItems.getDerivedFromItemList().size() + 1;
         }
-        
+
         item.setName(ItemDomainInventory.generatePaddedUnitName(unitCount));
-        unitCount ++; 
-        
-        return item; 
+        unitCount++;
+
+        return item;
     }
 
     @Override
     protected boolean checkCreateConfig() {
         if (derivedFromItemForNewItems == null) {
             SessionUtility.addErrorMessage("No Catalog Item Selected", "Please select a catalog item.");
-            return false; 
+            return false;
         }
-        return true; 
+        return true;
     }
 
     @Override
     protected boolean prepareSwitchToUpdateNewItemsActiveIndex() {
-        if(super.prepareSwitchToUpdateNewItemsActiveIndex()) {
+        if (super.prepareSwitchToUpdateNewItemsActiveIndex()) {
             List<PropertyType> propertyTypes = getPropertyTypesRequiredForMultiCreate();
             if (propertyTypes != null) {
                 setSelectedPropertyTypesForEditing(propertyTypes);
                 for (PropertyType propertyType : propertyTypes) {
-                    addPropertyTypeToRestItems(propertyType); 
+                    addPropertyTypeToRestItems(propertyType);
                 }
             }
-            return true; 
+            return true;
         }
-        return false;         
+        return false;
     }
-    
+
     private List<PropertyType> getPropertyTypesRequiredForMultiCreate() {
         if (propertyTypesRequiredForMultiCreate == null) {
             if (selectedPropertyTypesForEditing == null || selectedPropertyTypesForEditing.isEmpty()) {
                 if (selectedItemsToEdit != null && !selectedItemsToEdit.isEmpty()) {
                     ItemEnforcedPropertiesController itemEnforcedPropertiesController = getItemEnforcedPropertiesController();
                     propertyTypesRequiredForMultiCreate = itemEnforcedPropertiesController.getRequiredPropertyTypeListForItem(selectedItemsToEdit.get(0));
-                    
+
                     if (propertyTypesRequiredForMultiCreate != null) {
                         // Select appopriate categories for the property type filter view to prevent a automated clear. 
-                        List<PropertyTypeCategory> propertyTypeCategories = new ArrayList<>(); 
+                        List<PropertyTypeCategory> propertyTypeCategories = new ArrayList<>();
                         for (PropertyType propertyType : propertyTypesRequiredForMultiCreate) {
                             PropertyTypeCategory propertyTypeCategory = propertyType.getPropertyTypeCategory();
                             if (!propertyTypeCategories.contains(propertyTypeCategory)) {
-                                propertyTypeCategories.add(propertyTypeCategory); 
+                                propertyTypeCategories.add(propertyTypeCategory);
                             }
                         }
                         PropertyTypeController ptcontroller = PropertyTypeController.getInstance();
@@ -141,11 +140,11 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditLocatab
                 }
             }
         }
-        
-        return propertyTypesRequiredForMultiCreate; 
+
+        return propertyTypesRequiredForMultiCreate;
     }
 
-    public void setSelectedPropertyTypesForEditing(List<PropertyType> selectedPropertyTypesForEditing) {      
+    public void setSelectedPropertyTypesForEditing(List<PropertyType> selectedPropertyTypesForEditing) {
         this.selectedPropertyTypesForEditing = selectedPropertyTypesForEditing;
     }
 
@@ -154,21 +153,22 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditLocatab
     }
 
     public void setUpdateInventoryStatus(boolean updateInventoryStatus) {
-        ItemDomainInventoryController itemController = (ItemDomainInventoryController) getItemController();
-        for (Item item : selectedItemsToEdit) {
-            itemController.setCurrent((ItemDomainInventory) item);
-            itemController.prepareEditInventoryStatus();
+        if (updateInventoryStatus) {
+            ItemDomainInventoryController itemController = (ItemDomainInventoryController) getItemController();
+            for (Item item : selectedItemsToEdit) {
+                itemController.prepareEditInventoryStatus((ItemDomainInventory) item);
+            }
         }
-                
+
         this.updateInventoryStatus = updateInventoryStatus;
     }
 
     @Override
     public String getApplyValuesToEditLink() {
         if (getRenderSpecificInput(ItemDefaultColumnReferences.inventoryStatus)) {
-            return REL_PATH_ITEM_STATUS_INPUT; 
+            return REL_PATH_ITEM_STATUS_INPUT;
         }
-        
+
         return super.getApplyValuesToEditLink();
     }
 
@@ -176,7 +176,7 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditLocatab
     protected void customApplyValuesForColumn(Item item, ItemDefaultColumnReferences columnReference) {
         if (columnReference == ItemDefaultColumnReferences.inventoryStatus) {
             ItemDomainInventory inventoryItem = (ItemDomainInventory) item;
-            
+
             PropertyValue inventoryStatusPropertyValue = inventoryItem.getInventoryStatusPropertyValue();
             PropertyValue mockStatusPV = (PropertyValue) currentObjectValueToColumn;
             inventoryStatusPropertyValue.setValue(mockStatusPV.getValue());
@@ -187,14 +187,13 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditLocatab
     @Override
     public void setCurrentApplyValuesToColumn(ItemDefaultColumnReferences currentApplyValuesToColumn) {
         super.setCurrentApplyValuesToColumn(currentApplyValuesToColumn);
-        
+
         if (currentApplyValuesToColumn == currentApplyValuesToColumn.inventoryStatus) {
             // Mock property value will hold value and effective date.
-            this.currentObjectValueToColumn = new PropertyValue(); 
+            this.currentObjectValueToColumn = new PropertyValue();
             PropertyType statusType = getItemDomainInventoryController().getInventoryStatusPropertyType();
-            ((PropertyValue)this.currentObjectValueToColumn).setPropertyType(statusType);
+            ((PropertyValue) this.currentObjectValueToColumn).setPropertyType(statusType);
         }
     }
 
-    
 }

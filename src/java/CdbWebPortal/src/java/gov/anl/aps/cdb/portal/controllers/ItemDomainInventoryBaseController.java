@@ -102,9 +102,13 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
     }
     
     public void prepareEditInventoryStatus() {
+        prepareEditInventoryStatus(getCurrent());
+    }
+    
+    public void prepareEditInventoryStatus(ItemInventoryBaseDomainEntity item) {
         if (getCurrentStatusPropertyValue() == null) {
             PropertyValue preparePropertyTypeValueAdd = preparePropertyTypeValueAdd(getInventoryStatusPropertyType()); 
-            getCurrent().setInventoryStatusPropertyValue(preparePropertyTypeValueAdd);
+            item.setInventoryStatusPropertyValue(preparePropertyTypeValueAdd);
         }
     }
     

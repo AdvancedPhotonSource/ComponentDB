@@ -14,8 +14,10 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import org.apache.logging.log4j.LogManager;
@@ -42,6 +44,9 @@ public class ItemDomainMachineDesign extends LocatableItem {
     private transient ItemDomainLocation importLocationItem = null;
     private transient String importLocationItemString = null;
     private transient String importTemplateAndParameters = null;
+    
+    private transient ItemElement currentHierarchyItemElement;
+
 
     @Override
     public Item createInstance() {
@@ -71,33 +76,13 @@ public class ItemDomainMachineDesign extends LocatableItem {
         
         return combinedItemElementList;
     }
-    
-    /**
-     * Machine Design Heirarchy ensures each item is a child of only one item. 
-     * Method returns item element at which the current item is referenced. 
-     * 
-     * @param item
-     * @return 
-     */
-    @JsonIgnore
-    public ItemElement getCurrentItemElement() {
-        if (currentItemElement == null) {
-            List<ItemElement> itemElementMemberList = getItemElementMemberList();
-            if (itemElementMemberList.size() > 0) {
-                for (ItemElement itemElement : itemElementMemberList) {
-                    Item parentItem = itemElement.getParentItem(); 
-                    if (ItemDomainMachineDesignController.isItemMachineDesign(parentItem)) {
-                        currentItemElement = itemElement; 
-                        break; 
-                    }
-                }
-            } else {
-                currentItemElement = new ItemElement();
-                currentItemElement.setContainedItem(this);
-            }
-        }
-        
-        return currentItemElement; 
+
+    public ItemElement getCurrentHierarchyItemElement() {
+        return currentHierarchyItemElement;
+    }
+
+    public void setCurrentHierarchyItemElement(ItemElement currentHierarchyItemElement) {
+        this.currentHierarchyItemElement = currentHierarchyItemElement;
     }
     
     @JsonIgnore
@@ -423,6 +408,19 @@ public class ItemDomainMachineDesign extends LocatableItem {
         }
 
         return newItem;
+    }
+
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult result = super.search(searchPattern);
+        
+        Item assignedItem = getAssignedItem();
+        if (assignedItem != null) {
+            String assignedItemName = assignedItem.getName();
+            result.doesValueContainPattern("Assigned Item Name", assignedItemName, searchPattern);
+        }
+        
+        return result; 
     }
     
 }
