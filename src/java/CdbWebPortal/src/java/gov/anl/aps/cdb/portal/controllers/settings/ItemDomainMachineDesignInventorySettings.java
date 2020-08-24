@@ -103,5 +103,9 @@ public class ItemDomainMachineDesignInventorySettings extends ItemDomainMachineD
     public Boolean getDisplayRowExpansion() {
         return true;
     }
+    
+    public Boolean getDisplayStatus() {
+        return true;
+    }
 
 }

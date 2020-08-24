@@ -86,9 +86,12 @@ class CdbApiFactory:
 		fileName = os.path.basename(filePath)
 		return FileUploadObject(file_name=fileName, base64_binary=b64String)
 
-if __name__ == '__main__':
+def run_command():
 	# Example
-	apiFactory = CdbApiFactory("https://cdb-dev.aps.anl.gov/cdb_dev")
+	print("\nEnter cdb URL (ex: https://cdb.aps.anl.gov/cdb): ")
+	hostname = input()
+        
+	apiFactory = CdbApiFactory(hostname)
 	itemApi = apiFactory.getItemApi()
 
 	catalogItems = itemApi.get_catalog_items()
@@ -122,3 +125,6 @@ if __name__ == '__main__':
 			exit(1)
 
 		print("Success!")
+
+if __name__ == '__main__':
+	run_command()

@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
@@ -82,28 +83,13 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     }
 
     @Override
-    protected String getStatusPropertyTypeName() {
+    public String getStatusPropertyTypeName() {
         return ItemDomainCableInventory.ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
     }
             
     @Override
-    protected InventoryStatusPropertyTypeInfo initializeInventoryStatusPropertyTypeInfo() {
-        InventoryStatusPropertyTypeInfo info = new InventoryStatusPropertyTypeInfo();
-        info.addValue("Unknown", new Float(1.0));
-        info.addValue("Planned", new Float(1.1));
-        info.addValue("Requisition Submitted", new Float(2.0));
-        info.addValue("Delivered", new Float(3.0));
-        info.addValue("Acceptance In Progress", new Float(4.0));
-        info.addValue("Accepted", new Float(5.0));
-        info.addValue("Rejected", new Float(6.0));
-        info.addValue("Post-Acceptance/Test/Certification in Progress", new Float(7.0));
-        info.addValue("Ready For Use", new Float(8.0));
-        info.addValue("Installed", new Float(9.0));
-        info.addValue("Spare", new Float(10.0));
-        info.addValue("Spare - Critical", new Float(11.0));
-        info.addValue("Failed", new Float(12.0));
-        info.addValue("Returned", new Float(13.0));
-        info.addValue("Discarded", new Float(14.0));
+    public InventoryStatusPropertyTypeInfo initializeInventoryStatusPropertyTypeInfo() {
+        InventoryStatusPropertyTypeInfo info = ItemStatusUtility.initializeInventoryStatusPropertyTypeInfo();     
         
         info.setDefaultValue("Planned");
         
