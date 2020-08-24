@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">  
+
+    <p:outputPanel rendered="#{newInventoryObject != null}" >                    
+        <p:panelGrid columns="3">
+            <ui:param name="viewName"
+                      value="newInventory"/> 
+            <ui:param name="itemObject"
+                      value="#{newInventoryObject}" /> 
+
+
+            <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemName.xhtml"/>
+            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemName.xhtml" />
+            <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemName.xhtml" />
+
+            <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemQrId.xhtml" />
+            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemQrId.xhtml" />
+            <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemQrId.xhtml" />
+
+            <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemIdentifier2.xhtml"/>
+            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemIdentifier2.xhtml" />
+            <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemIdentifier2.xhtml" />
+
+            <ui:include src="../../item/private/templateDefaults/itemFieldLabels/itemItemProject.xhtml"/>
+            <ui:include src="../../item/private/templateDefaults/itemFieldEditValues/itemItemProject.xhtml"/>
+            <ui:include src="../../item/private/templateDefaults/itemFieldHelpFragments/itemItemProject.xhtml"/>               
+        </p:panelGrid>
+    </p:outputPanel>
+
+</ui:composition>

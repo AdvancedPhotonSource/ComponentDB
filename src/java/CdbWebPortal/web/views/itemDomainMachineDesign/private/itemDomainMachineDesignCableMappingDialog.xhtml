@@ -21,7 +21,7 @@ See LICENSE file.
               header="Cable Mapping Utility" 
               styleClass="viewTransparentBackgroundDialog">                
 
-        <ui:param name="diagramEditableView" value="#{itemDomainMachineDesignController.machineDesignConnectorCableMapperItem}" /> 
+        <ui:param name="diagramEditableView" value="#{entityController.machineDesignConnectorCableMapperItem}" /> 
         <p:outputPanel rendered="#{diagramEditableView != null}">
             <p:diagram value="#{diagramEditableView.model}" styleClass="wiringDiagram" var="el">
                 <f:facet name="element">
@@ -39,7 +39,7 @@ See LICENSE file.
                              icon="fa fa-save"
                              ajax="false"
                              oncomplete="PF('itemDomainMachineDesignCableMappingDialogWidget').hide();"
-                             action="#{itemDomainMachineDesignController.saveCableMappingDialog()}" />
+                             action="#{entityController.saveCableMappingDialog()}" />
             <p:commandButton value="Close"
                              icon="fa fa-close"
                              onclick="PF('loadingDialog').show()"

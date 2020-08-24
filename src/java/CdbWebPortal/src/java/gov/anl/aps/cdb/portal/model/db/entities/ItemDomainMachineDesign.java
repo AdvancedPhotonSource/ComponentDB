@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import java.util.ArrayList;
@@ -118,6 +119,9 @@ public class ItemDomainMachineDesign extends LocatableItem {
 
     @Override
     public ItemController getItemDomainController() {
+        if (isItemInventory(this)) {
+            return ItemDomainMachineDesignInventoryController.getInstance(); 
+        }
         return ItemDomainMachineDesignController.getInstance();
     }
 
@@ -137,16 +141,11 @@ public class ItemDomainMachineDesign extends LocatableItem {
         return super.getLocationDetails(); 
     }
     
-    /**
-     * Machine design inventory requires this function for filtering. 
-     * Placeholder until we decide if md inventory will handle status same as inventory. 
-     * 
-     * @return 
-     */
-    public String getInventoryStatusValue() {
-        return null; 
+        
+    public static boolean isItemInventory(Item item) {
+        return isItemEntityType(item, EntityTypeName.inventory.getValue());
     }
-
+    
     @Override
     public String toString() {
         // Only top level machine design will get the special derived from formatting... DerivedItem - [name]

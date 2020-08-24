@@ -18,7 +18,6 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainInventor
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainInventorySettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
@@ -30,11 +29,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCable;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -110,9 +107,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     
     @EJB
     private ItemDomainInventoryFacade itemDomainInventoryFacade;
-    
-    @EJB
-    private ItemDomainMachineDesignFacade itemDomainMachineDesignFacade; 
 
     @EJB
     private ConnectorFacade connectorFacade;
@@ -186,40 +180,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return ItemDomainInventory.generatePaddedUnitName(itemNumber);
     }
 
-    @Override
-    public void createListDataModel() {
-        List<Item> inventory = (List<Item>)(List<?>)getEntityDbFacade().findAll();
-        List<Item> findAll = (List<Item>)(List<?>)itemDomainMachineDesignFacade.getTopLevelMachineDesignInventory();
-        inventory.addAll(findAll);
-        listDataModel = new ListDataModel(inventory);               
-    }
-
-    @Override
-    public ListDataModel createFavoritesListDataModel() {
-        List<Item> favoriteItems = (List<Item>)(List<?>)getFavoriteItems();
-        
-        ListTbl favoritesList = getFavoritesList();
-        List<ItemDomainMachineDesign> favoriteMachineDesignInventory = itemDomainMachineDesignFacade.getMachineDesignInventoryInList(favoritesList);
-        
-        favoriteItems.addAll(favoriteMachineDesignInventory); 
-        
-        return new ListDataModel(favoriteItems); 
-    }
-
-    public List<SelectItem> getDomainFilterOptions() {
-        if (domainFilterOptions == null) {           
-            domainFilterOptions = new ArrayList();
-            
-            String inventoryName = ItemDomainName.inventory.getValue();
-            String machingeDesignName = ItemDomainName.machineDesign.getValue();
-            
-            domainFilterOptions.add(new SelectItem("", "Select"));
-            domainFilterOptions.add(new SelectItem(inventoryName));
-            domainFilterOptions.add(new SelectItem(machingeDesignName)); 
-        }
-        return domainFilterOptions;
-    }
-    
     @Override
     protected void loadEJBResourcesManually() {
         super.loadEJBResourcesManually(); 

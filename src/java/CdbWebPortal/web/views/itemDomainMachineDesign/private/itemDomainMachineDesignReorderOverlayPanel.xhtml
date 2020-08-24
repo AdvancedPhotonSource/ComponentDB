@@ -17,7 +17,7 @@ See LICENSE file.
                     onHide="scrollReorderConfigureListender(false)">
 
         <p:outputPanel id="itemDomainMachineDesignReorderOutputPanel"
-                       rendered="#{itemDomainMachineDesignController.displayMachineDesignReorderOverlayPanel}">
+                       rendered="#{entityController.displayMachineDesignReorderOverlayPanel}">
 
             <ui:param name="currentObject"
                       value="#{entityController.current}"/> 
@@ -44,12 +44,12 @@ See LICENSE file.
                              icon="fa fa-save"
                              onclick="PF('loadingDialog').show()"
                              disabled="#{!entityController.hasElementReorderChangesForCurrent}" 
-                             action="#{itemDomainMachineDesignController.saveReorderMachineDesignElement()}" /> 
+                             action="#{entityController.saveReorderMachineDesignElement()}" /> 
 
             <p:commandButton value="Close"
                              icon="fa fa-close"
                              onclick="PF('loadingDialog').show()"
-                             action="#{itemDomainMachineDesignController.revertReorderMachineDesignElement()}" />
+                             action="#{entityController.revertReorderMachineDesignElement()}" />
 
         </p:outputPanel>
 

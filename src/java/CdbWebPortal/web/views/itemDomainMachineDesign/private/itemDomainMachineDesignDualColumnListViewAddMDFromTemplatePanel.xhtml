@@ -15,7 +15,7 @@ See LICENSE file.
              rendered="#{entityController.displayAddMDFromTemplateConfigurationPanel}">
 
         <ui:param name="templateToCreateNewItem"
-                  value="#{itemDomainMachineDesignController.templateToCreateNewItem}" />
+                  value="#{entityController.templateToCreateNewItem}" />
 
         <p:outputPanel rendered="#{templateToCreateNewItem == null}">
             <ui:decorate template="templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
@@ -24,23 +24,23 @@ See LICENSE file.
                 <ui:param name="rendered"
                           value="#{true}" />
                 <ui:param name="valueModel"
-                          value="#{itemDomainMachineDesignController.machineDesignTemplateRootTreeNode}" />
+                          value="#{entityController.machineDesignTemplateRootTreeNode}" />
                 <ui:param name="scrollable"
                           value="#{true}"/> 
                 <ui:define name="treeTableEvents">
-                    <p:ajax event="select" listener="#{itemDomainMachineDesignController.templateToCreateNewItemSelected}"
+                    <p:ajax event="select" listener="#{entityController.templateToCreateNewItemSelected}"
                             oncomplete="generateTemplateForElementMachineDesignNameVars()"/>                            
                 </ui:define>
             </ui:decorate>
         </p:outputPanel>
 
         <p:remoteCommand name="generateTemplateForElementMachineDesignNameVars"
-                         action="#{itemDomainMachineDesignController.generateTemplateForElementMachineDesignNameVars()}"
+                         action="#{entityController.generateTemplateForElementMachineDesignNameVars()}"
                          update="machineDesignDualListViewOutputPanel"/> 
 
 
         <ui:param name="currentViewIsTemplate"
-                  value="#{itemDomainMachineDesignController.currentViewIsTemplate}"/>
+                  value="#{entityController.currentViewIsTemplate}"/>
 
         <ui:include src="itemDomainMachineDesignCreateFromTemplateEditPanelGrid.xhtml">
             <ui:param name="rendered"
@@ -51,7 +51,7 @@ See LICENSE file.
             The selected machine element will be reused within the template. 
             <p:panelGrid columns="2">
                 <h:outputText value="Machine Element Name"/>
-                <h:outputText value="#{itemDomainMachineDesignController.machineDesignName}"/>
+                <h:outputText value="#{entityController.machineDesignName}"/>
             </p:panelGrid>
         </p:outputPanel>
 

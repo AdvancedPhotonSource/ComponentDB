@@ -1,0 +1,267 @@
+/*
+ * Copyright (c) UChicago Argonne, LLC. All rights reserved.
+ * See LICENSE file.
+ */
+package gov.anl.aps.cdb.portal.controllers;
+
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.EntityTypeName;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
+import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainMachineDesignInventoryController;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignInventorySettings;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.ArrayList;
+import java.util.List;
+import javax.enterprise.context.SessionScoped;
+import javax.faces.model.ListDataModel;
+import javax.inject.Named;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.model.TreeNode;
+
+@Named(ItemDomainMachineDesignInventoryController.controllerNamed)
+@SessionScoped
+public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignController {
+
+    public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
+    private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
+    
+    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";
+
+    private static ItemDomainMachineDesignInventoryController apiInstance;
+
+    private ItemDomainMachineDesign newMdInventoryItem = null;
+
+    @Override
+    public void createListDataModel() {
+        List<ItemDomainMachineDesign> itemList = getItemList();
+        ListDataModel listDataModel = new ListDataModel(itemList);
+        setListDataModel(listDataModel);
+    }
+
+    public String getSubassemblyPageTitle() {
+        String title = "Preassembled Machine: ";
+        if (getCurrent() != null) {
+            ItemDomainMachineDesign current = getCurrent();
+
+            while (current.getParentMachineDesign() != null) {
+                current = current.getParentMachineDesign();
+            }
+
+            title += current;
+        }
+
+        return title;
+    }
+
+    @Override
+    public String getItemListPageTitle() {
+        return "Preassembled Machines";
+    }
+
+    @Override
+    public boolean getEntityDisplayDerivedFromItem() {
+        return true;
+    }
+
+    @Override
+    public String getDerivedFromItemTitle() {
+        return "Machine Template";
+    }
+
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return false;
+    }
+
+    @Override
+    public boolean isDisplayRowExpansionForItem(Item item) {
+        return super.isDisplayRowExpansionForItem(item); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getDefaultDomainDerivedFromDomainName() {
+        return ItemDomainName.machineDesign.getValue();
+    }
+
+    @Override
+    public List<ItemDomainMachineDesign> getItemList() {
+        return itemDomainMachineDesignFacade.getTopLevelMachineDesignInventory();
+    }
+
+    public static ItemDomainMachineDesignInventoryController getInstance() {
+        if (SessionUtility.runningFaces()) {
+            return (ItemDomainMachineDesignInventoryController) SessionUtility.findBean(controllerNamed);
+        } else {
+            return getApiInstance();
+        }
+    }
+
+    public static synchronized ItemDomainMachineDesignInventoryController getApiInstance() {
+        if (apiInstance == null) {
+            apiInstance = new ItemDomainMachineDesignInventoryController();
+            apiInstance.prepareApiInstance();
+        }
+        return apiInstance;
+    }
+
+    public void prepareCreateInventoryFromTemplate(ItemDomainMachineDesign template) {
+        newMdInventoryItem = performPrepareCreateInventoryFromTemplate(template);
+    }
+
+    public ItemDomainMachineDesign performPrepareCreateInventoryFromTemplate(ItemDomainMachineDesign template) {
+        ItemDomainMachineDesign mdInventory = null;
+
+        try {
+            mdInventory = createItemFromTemplate(template);
+            createMachineDesignFromTemplateHierachically(mdInventory);
+        } catch (CdbException | CloneNotSupportedException ex) {
+            LOGGER.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+            return null;
+        }
+
+        List<Item> inventoryForCurrentTemplate = template.getDerivedFromItemList();
+        int unitNum = inventoryForCurrentTemplate.size() + 1;
+        mdInventory.setName(ItemDomainInventory.generatePaddedUnitName(unitNum));
+
+        template.getDerivedFromItemList().add(mdInventory);
+
+        assignInventoryAttributes(mdInventory, template);
+
+        return mdInventory;
+    }
+
+    protected void assignInventoryAttributes(ItemDomainMachineDesign newInventory, ItemDomainMachineDesign templateItem) {
+        newInventory.setDerivedFromItem(templateItem);
+        assignInventoryAttributes(newInventory);
+    }
+
+    protected void assignInventoryAttributes(ItemDomainMachineDesign newInventory) {
+        String inventoryetn = EntityTypeName.inventory.getValue();
+        EntityType inventoryet = entityTypeFacade.findByName(inventoryetn);
+        if (newInventory.getEntityTypeList() == null) {
+            try {
+                newInventory.setEntityTypeList(new ArrayList());
+            } catch (CdbException ex) {
+                LOGGER.error(ex);
+            }
+        }
+        newInventory.getEntityTypeList().add(inventoryet);
+    }
+
+    public void createInventoryFromTemplateSelected(NodeSelectEvent nodeSelection) {
+        templateToCreateNewItemSelected(nodeSelection);
+        prepareCreateInventoryFromTemplate(templateToCreateNewItem);
+    }
+
+    public void createInventoryFromDialog() {
+        create();
+    }
+
+    @Override
+    public String create() {
+        ItemDomainMachineDesign newMdInventoryItem = getNewMdInventoryItem();
+        if (newMdInventoryItem != null) {
+            setCurrent(newMdInventoryItem);
+            return super.create();
+        } else {
+            SessionUtility.addWarningMessage("No machine template selected", "Select machine template to continue.");
+            return null;
+        }
+    }
+
+    @Override
+    public ItemDomainMachineDesign createEntityInstanceForDualTreeView() {
+        ItemDomainMachineDesign item = super.createEntityInstanceForDualTreeView();
+
+        assignInventoryAttributes(item);
+
+        return item;
+    }
+
+    @Override
+    public ItemDomainMachineDesign createMachineDesignFromTemplate(ItemElement itemElement, ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
+        ItemDomainMachineDesign createItemFromTemplate = super.createMachineDesignFromTemplate(itemElement, templateItem);
+
+        assignInventoryAttributes(createItemFromTemplate, templateItem);
+
+        return createItemFromTemplate;
+    }
+
+    @Override
+    public TreeNode getCurrentMachineDesignListRootTreeNode() {
+        return getMachineDesignFixtureRootTreeNode();
+    }
+
+    @Override
+    protected void prepareEntityView(ItemDomainMachineDesign entity) {
+        if (isMdInventory(entity)) {
+            loadViewModeUrlParameter();
+            return;
+        }
+        super.prepareEntityView(entity);
+    }
+
+    @Override
+    public String currentDualViewList() {
+        resetListConfigurationVariables();
+        return view();
+    }
+
+    @Override
+    protected ItemDomainMachineDesign performItemRedirection(ItemDomainMachineDesign item, String paramString, boolean forceRedirection) {
+        if (isMdInventory(item)) {
+            setCurrent(item);
+            prepareView(item);
+            resetListDataModel();
+            return item;
+        }
+
+        // Do default action. 
+        return super.performItemRedirection(item, paramString, forceRedirection); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    protected ItemDomainMachineDesignSettings createNewSettingObject() {
+        return new ItemDomainMachineDesignInventorySettings(this);
+    }
+
+    private boolean isMdInventory(ItemDomainMachineDesign item) {
+        if (item instanceof ItemDomainMachineDesign) {
+            if (isInventory(item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    protected void resetVariablesForCurrent() {
+        super.resetVariablesForCurrent();
+
+        newMdInventoryItem = null;
+    }
+
+    @Override
+    public ItemMultiEditController getItemMultiEditController() {
+        return ItemMultiEditDomainMachineDesignInventoryController.getInstance();
+    }
+
+    public ItemDomainMachineDesign getNewMdInventoryItem() {
+        return newMdInventoryItem;
+    }
+    
+    public String getPluginItemMachineDesignSectionsName() {
+        return pluginItemMachineDesignSectionsName; 
+    }
+
+}
