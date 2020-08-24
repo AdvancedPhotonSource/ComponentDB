@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
@@ -23,10 +22,6 @@ import org.apache.logging.log4j.Logger;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CATALOG_ID + "")  
-@JsonIgnoreProperties(value = {
-    // Transient
-    "importSource",
-})
 public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory> {
     
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCatalog.class.getName());
@@ -69,6 +64,7 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
         setItemIdentifier2(n);
     }
     
+    @JsonIgnore
     public String getImportSource() {
         return importSource;
     }

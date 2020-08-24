@@ -4,14 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
-import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
-import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.RelationshipTypeController;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import java.util.ArrayList;
@@ -28,20 +26,6 @@ import org.apache.logging.log4j.Logger;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_DESIGN_ID + "")
-@JsonIgnoreProperties(value = {
-    // Transient
-    "externalCableName",
-    "importCableId",
-    "alternateCableId",
-    "legacyQrId",
-    "laying",
-    "voltage",
-    "team",
-    "endpoint1Description",
-    "endpoint2Description",
-    "coreMetadataPropertyValue",
-    "coreMetadataPropertyInfo"
-})
 public class ItemDomainCableDesign extends Item {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCableDesign.class.getName());
@@ -323,6 +307,7 @@ public class ItemDomainCableDesign extends Item {
         setItemIdentifier1(n);
     }
 
+    @JsonIgnore
     public String getExternalCableName() throws CdbException {
         if (externalCableName == null) {
             externalCableName = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY);
@@ -335,6 +320,7 @@ public class ItemDomainCableDesign extends Item {
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY, n);
     }
 
+    @JsonIgnore
     public String getImportCableId() throws CdbException {
         if (importCableId == null) {
             importCableId = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY);
@@ -347,6 +333,7 @@ public class ItemDomainCableDesign extends Item {
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY, id);
     }
 
+    @JsonIgnore
     public String getAlternateCableId() throws CdbException {
         if (alternateCableId == null) {
             alternateCableId = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY);
@@ -359,6 +346,7 @@ public class ItemDomainCableDesign extends Item {
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY, id);
     }
 
+    @JsonIgnore
     public String getLegacyQrId() throws CdbException {
         if (legacyQrId == null) {
             legacyQrId = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LEGACY_QR_ID_KEY);
@@ -371,6 +359,7 @@ public class ItemDomainCableDesign extends Item {
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LEGACY_QR_ID_KEY, id);
     }
 
+    @JsonIgnore
     public String getLaying() throws CdbException {
         if (laying == null) {
             laying = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY);
@@ -383,6 +372,7 @@ public class ItemDomainCableDesign extends Item {
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY, l);
     }
 
+    @JsonIgnore
     public String getVoltage() throws CdbException {
         if (voltage == null) {
             voltage = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY);
@@ -395,6 +385,7 @@ public class ItemDomainCableDesign extends Item {
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, v);
     }
 
+    @JsonIgnore
     public String getEndpoint1Description() throws CdbException {
         if (endpoint1Description == null) {
             endpoint1Description = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY);
@@ -407,6 +398,7 @@ public class ItemDomainCableDesign extends Item {
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY, d);
     }
 
+    @JsonIgnore
     public String getEndpoint2Description() throws CdbException {
         if (endpoint2Description == null) {
             endpoint2Description = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY);
@@ -419,6 +411,7 @@ public class ItemDomainCableDesign extends Item {
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY, d);
     }
 
+    @JsonIgnore
     public String getTeam() {
         if (team == null) {
             team = this.getItemCategoryString();

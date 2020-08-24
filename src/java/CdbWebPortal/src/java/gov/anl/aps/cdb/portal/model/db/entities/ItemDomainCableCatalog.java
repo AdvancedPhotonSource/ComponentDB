@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
@@ -25,30 +24,6 @@ import org.apache.logging.log4j.Logger;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_CATALOG_ID + "")   
-@JsonIgnoreProperties(value = {
-    // Transient
-    "url",
-    "urlDisplay",
-    "imageUrl",
-    "imageUrlDisplay",
-    "manufacturer",
-    "altPartNumber",
-    "weight",
-    "diameter",
-    "conductors",
-    "insulation",
-    "jacketColor",
-    "voltageRating",
-    "fireLoad",
-    "heatLimit",
-    "bendRadius",
-    "radTolerance",
-    "team",
-    "isValid",
-    "validString",
-    "coreMetadataPropertyValue",
-    "coreMetadataPropertyInfo"
-})
 public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCableInventory> {
     
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCableCatalog.class.getName());
@@ -120,6 +95,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setItemIdentifier2(n);
     }
 
+    @JsonIgnore
     public String getUrl() throws CdbException {
         if (url == null) {
             url = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY);
@@ -132,6 +108,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_URL_KEY, w);
     }
     
+    @JsonIgnore
     public String getUrlDisplay() throws CdbException {
         if (urlDisplay == null && this.getUrl() != null) {
             urlDisplay = HttpLinkUtility.prepareHttpLinkDisplayValue(this.getUrl());
@@ -139,6 +116,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return urlDisplay;
     }
 
+    @JsonIgnore
     public String getImageUrl() throws CdbException {
         if (imageUrl == null) {
             imageUrl = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY);
@@ -151,6 +129,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_IMAGE_URL_KEY, w);
     }
     
+    @JsonIgnore
     public String getImageUrlDisplay() throws CdbException {
         if (imageUrlDisplay == null && this.getImageUrl() != null) {
             imageUrlDisplay = HttpLinkUtility.prepareHttpLinkDisplayValue(this.getImageUrl());
@@ -158,6 +137,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         return imageUrlDisplay;
     }
 
+    @JsonIgnore
     public String getManufacturer() {
         return manufacturer;
     }
@@ -188,6 +168,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         manufacturer = source.getName();
     }
     
+    @JsonIgnore
     public String getAltPartNumber() throws CdbException {
         if (altPartNumber == null) {
             altPartNumber = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_ALT_PART_NUM_KEY);
@@ -200,6 +181,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_ALT_PART_NUM_KEY, n);
     }
     
+    @JsonIgnore
     public String getPartNumber() {
         return this.getItemIdentifier1();
     }
@@ -208,6 +190,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         this.setItemIdentifier1(n);
     }
     
+    @JsonIgnore
     public String getWeight() throws CdbException {
         if (weight == null) {
             weight = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_WEIGHT_KEY);
@@ -220,6 +203,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_WEIGHT_KEY, w);
     }
     
+    @JsonIgnore
     public String getDiameter() throws CdbException {
         if (diameter == null) {
             diameter = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_DIAMETER_KEY);
@@ -232,6 +216,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_DIAMETER_KEY, d);
     }
     
+    @JsonIgnore
     public String getConductors() throws CdbException {
         if (conductors == null) {
             conductors = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_CONDUCTORS_KEY);
@@ -244,6 +229,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_CONDUCTORS_KEY, w);
     }
     
+    @JsonIgnore
     public String getInsulation() throws CdbException {
         if (insulation == null) {
             insulation = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_INSULATION_KEY);
@@ -256,6 +242,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_INSULATION_KEY, w);
     }
     
+    @JsonIgnore
     public String getJacketColor() throws CdbException {
         if (jacketColor == null) {
             jacketColor = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_JACKET_COLOR_KEY);
@@ -268,6 +255,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_JACKET_COLOR_KEY, w);
     }
     
+    @JsonIgnore
     public String getVoltageRating() throws CdbException {
         if (voltageRating == null) {
             voltageRating = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_VOLTAGE_RATING_KEY);
@@ -280,6 +268,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_VOLTAGE_RATING_KEY, w);
     }
     
+    @JsonIgnore
     public String getFireLoad() throws CdbException {
         if (fireLoad == null) {
             fireLoad = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_FIRE_LOAD_KEY);
@@ -292,6 +281,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_FIRE_LOAD_KEY, w);
     }
     
+    @JsonIgnore
     public String getHeatLimit() throws CdbException {
         if (heatLimit == null) {
             heatLimit = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_HEAT_LIMIT_KEY);
@@ -304,6 +294,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_HEAT_LIMIT_KEY, w);
     }
     
+    @JsonIgnore
     public String getBendRadius() throws CdbException {
         if (bendRadius == null) {
             bendRadius = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_BEND_RADIUS_KEY);
@@ -316,6 +307,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_BEND_RADIUS_KEY, w);
     }
     
+    @JsonIgnore
     public String getRadTolerance() throws CdbException {
         if (radTolerance == null) {
             radTolerance = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY);
@@ -328,6 +320,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY, w);
     }
     
+    @JsonIgnore
     public String getTeam() {
         if (team == null) {
             team = this.getItemCategoryString();
@@ -354,6 +347,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         }
     }
     
+    @JsonIgnore
     public boolean isIsValid() {
         return isValid;
     }
@@ -362,6 +356,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
         this.isValid = isValid;
     }
 
+    @JsonIgnore
     public String getValidString() {
         return validString;
     }

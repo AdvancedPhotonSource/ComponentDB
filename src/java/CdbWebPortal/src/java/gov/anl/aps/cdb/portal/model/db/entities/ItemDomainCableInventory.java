@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import javax.persistence.DiscriminatorValue;
@@ -16,12 +16,6 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_INVENTORY_ID + "")   
-@JsonIgnoreProperties(value = {
-    // Transient
-    "length",
-    "coreMetadataPropertyValue",
-    "coreMetadataPropertyInfo"
-})
 public class ItemDomainCableInventory extends ItemDomainInventoryBase<ItemDomainCableCatalog> {
 
     public final static String CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE = "cable_inventory_internal_property_type";
@@ -36,10 +30,12 @@ public class ItemDomainCableInventory extends ItemDomainInventoryBase<ItemDomain
         return new ItemDomainCableInventory(); 
     }
     
+    @JsonIgnore
     public String getStatusPropertyTypeName() {
         return ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
     }
     
+    @JsonIgnore
     public static String generatePaddedUnitName(int itemNumber) {
         return String.format("Unit: %09d", itemNumber);
     }
@@ -55,6 +51,7 @@ public class ItemDomainCableInventory extends ItemDomainInventoryBase<ItemDomain
         super.setCatalogItem(catalogItem);
     }
 
+    @JsonIgnore
     public String getLength() throws CdbException {
         if (length == null) {
             length = getCoreMetadataPropertyFieldValue(CABLE_INVENTORY_PROPERTY_LENGTH_KEY);

@@ -73,10 +73,12 @@ public class CdbEntity implements Serializable, Cloneable {
         apiProperties.put(key, value);
     }
     
+    @JsonIgnore
     public boolean getIsValidImport() {
         return isValidImport;
     }
     
+    @JsonIgnore
     public String getIsValidImportString() {
         if (isValidImport) {
             return "yes";
@@ -89,6 +91,7 @@ public class CdbEntity implements Serializable, Cloneable {
         isValidImport = b;
     }
     
+    @JsonIgnore
     public String getValidStringImport() {
         return validStringImport;
     }
