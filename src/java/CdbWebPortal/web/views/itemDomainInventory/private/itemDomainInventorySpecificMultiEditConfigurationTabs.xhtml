@@ -15,9 +15,7 @@ See LICENSE file.
         <p:panelGrid columns="2">
             <ui:include src="../../locatableItem/private/locatableItemSpecificMultiEditConfigurationObject.xhtml"/>
             
-            <p:selectBooleanCheckbox onchange="onUpdateOptionsChange()"
-                                     value="#{entityController.updateInventoryStatus}"/>
-            <h:outputText value="Status" />
+            <ui:include src="../../itemStatus/private/itemStatusMultiEditConfigurationObject.xhtml"/>
             
         </p:panelGrid>        
     </p:tab> 

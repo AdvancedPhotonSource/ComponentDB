@@ -52,14 +52,14 @@ See LICENSE file.
                                    value="Edit Status" />
                     </p:commandLink>
 
-                    <h:outputText value="#{currentObject.inventoryStatusValue}"
+                    <h:outputText value="#{itemObject.inventoryStatusValue}"
                                   styleClass="entityDataText"/> 
                 </p:outputPanel>
             </f:facet>
             <f:facet name="input">
                 <ui:include src="templateDefaults/itemFieldEditValues/itemDomainInventoryStatus.xhtml">
                     <ui:param name="inventoryStatusPropertyValue"
-                              value="#{currentObject.inventoryStatusPropertyValue}"/>
+                              value="#{itemObject.inventoryStatusPropertyValue}"/>
                 </ui:include>
             </f:facet>
         </p:inplace>
