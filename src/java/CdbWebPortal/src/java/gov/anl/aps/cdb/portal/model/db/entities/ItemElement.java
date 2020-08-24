@@ -67,12 +67,7 @@ import org.primefaces.model.TreeNode;
     "machineDesignItem",
     "temporaryIsRequiredValue",
     "customizableSortOrder",
-    "childItemElementListTreeTableRootNode",
-    "importParentCatalogItem",
-    "importPartName",
-    "importPartDescription",
-    "importPartRequired",
-    "importPartCatalogItemName"
+    "childItemElementListTreeTableRootNode"
 })
 public class ItemElement extends CdbDomainEntity implements Serializable {
 
