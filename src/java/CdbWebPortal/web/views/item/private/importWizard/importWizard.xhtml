@@ -21,6 +21,11 @@ See LICENSE file.
                   showStepStatus="false" 
                   showNavBar="false">
 
+            <ui:decorate template="templates/selectFormatTabTemplate.xhtml">
+                <ui:param name="viewId" value="#{rootViewId}" />                
+                <ui:param name="wizardController" value="#{wizardController}" />
+            </ui:decorate>
+
             <ui:decorate template="templates/selectFileTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />                
                 <ui:param name="wizardController" value="#{wizardController}" />

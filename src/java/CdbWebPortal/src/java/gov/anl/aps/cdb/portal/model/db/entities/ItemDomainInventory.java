@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
@@ -60,6 +61,8 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
     private transient InventoryBillOfMaterialItem containedInBOM;
 
     private transient SparePartsBean sparePartsBean = null;
+    
+    private transient String importLocationItemString = null;
 
     @Override
     public Item createInstance() {
@@ -130,5 +133,45 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
     public ItemController getItemDomainController() {
         return ItemDomainInventoryController.getInstance(); 
     }
+    
+    /**
+     * This method is redundant to the generic method defined in the superclass,
+     * ItemDomainInventoryBase.  It is needed here because the import wizard
+     * uses reflection to invoke the setter method, and apparently the generic
+     * method is not a valid match for invocation by reflection.
+     * @param catalogItem 
+     */
+    public void setCatalogItem(ItemDomainCatalog catalogItem) {
+        super.setCatalogItem(catalogItem);
+    }
+
+    public String getTag() {
+        return getName();
+    }
+
+    public void setTag(String name) {
+        setName(name);
+    }
+
+    public String getSerialNumber() {
+        return this.getItemIdentifier1();
+    }
+    
+    public void setSerialNumber(String serialNumber) {
+        this.setItemIdentifier1(serialNumber);
+    }
+    
+    @JsonIgnore
+    public String getImportLocationItemString() {
+        return importLocationItemString;
+    }
+    
+    public void setImportLocationItem(ItemDomainLocation location) {
+        LocatableItemController.getInstance().setItemLocationInfo(this);
+        LocatableItemController.getInstance().updateLocationForItem(
+                this, location, null);
+        importLocationItemString = getLocationString();
+    }
+           
 
 }

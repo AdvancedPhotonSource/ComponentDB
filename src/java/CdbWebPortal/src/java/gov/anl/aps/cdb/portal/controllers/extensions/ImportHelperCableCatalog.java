@@ -25,8 +25,6 @@ import java.util.Map;
 public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCatalog, ItemDomainCableCatalogController> {
 
 
-    protected static String completionUrlValue = "/views/itemDomainCableCatalog/list?faces-redirect=true";
-    
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
@@ -53,11 +51,6 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
         specs.add(new StringColumnSpec(19, "Rad Tolerance", "radTolerance", "setRadTolerance", false, "Radiation tolerance rating.", 256));
 
         return specs;
-    }
-    
-    @Override
-    protected String getCompletionUrlValue() {
-        return completionUrlValue;
     }
     
     @Override

@@ -17,9 +17,6 @@ import java.util.Map;
  */
 public class ImportHelperSource extends ImportHelperBase<Source, SourceController> {
 
-
-    protected static String completionUrlValue = "/views/source/list?faces-redirect=true";
-    
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
         
@@ -33,11 +30,6 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
         return specs;
     } 
    
-    @Override
-    protected String getCompletionUrlValue() {
-        return completionUrlValue;
-    }
-    
     @Override
     public SourceController getEntityController() {
         return SourceController.getInstance();

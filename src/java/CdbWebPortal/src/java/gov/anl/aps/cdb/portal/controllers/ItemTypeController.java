@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemTypeSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.List;
@@ -26,6 +27,8 @@ public class ItemTypeController extends ItemTypeCategoryController<ItemType, Ite
 
     private static final Logger logger = LogManager.getLogger(ItemTypeController.class.getName());
 
+    public static final String CONTROLLER_NAMED = "itemTypeController";
+        
     @EJB
     private ItemTypeFacade itemTypeFacade;   
 
@@ -34,6 +37,15 @@ public class ItemTypeController extends ItemTypeCategoryController<ItemType, Ite
     public ItemTypeController() {
         super();
     }
+
+    public static ItemTypeController getInstance() {
+        if (SessionUtility.runningFaces()) {
+            return (ItemTypeController) SessionUtility.findBean(ItemTypeController.CONTROLLER_NAMED);
+        } else {
+            // TODO add apiInstance
+            return null;
+        }
+    }        
 
     @Override
     protected ItemTypeFacade getEntityDbFacade() {

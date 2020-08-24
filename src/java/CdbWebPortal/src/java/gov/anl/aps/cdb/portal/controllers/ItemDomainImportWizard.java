@@ -4,15 +4,17 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.SimpleInputHandler;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ImportInfo;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.OutputColumnModel;
 import gov.anl.aps.cdb.portal.controllers.ImportHelperBase.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.primefaces.event.FileUploadEvent;
@@ -32,18 +34,24 @@ public class ItemDomainImportWizard implements Serializable {
 
     public static final String CONTROLLER_NAMED = "importWizard";
 
+    protected static final String tabSelectFormat = "SelectFormatTab";
     protected static final String tabSelectFile = "SelectFileTab";
     protected static final String tabValidate = "ValidateTab";
     protected static final String tabResults = "ResultsTab";
 
     protected ImportHelperBase importHelper = null;
 
-    protected String currentTab = tabSelectFile;
+    protected String currentTab = tabSelectFormat;
 
     private Boolean disableButtonPrev = true;
     private Boolean disableButtonNext = true;
     private Boolean disableButtonFinish = true;
     private Boolean disableButtonCancel = false;
+    
+    private DomainImportInfo domainInfo = null;
+    
+    // models for select format tab
+    private String selectedFormatName = null;
 
     // models for select file tab
     private Boolean disableButtonUpload = true;
@@ -66,9 +74,41 @@ public class ItemDomainImportWizard implements Serializable {
                 ItemDomainImportWizard.CONTROLLER_NAMED);
     }
 
-    public void registerHelper(ImportHelperBase helper) {
+    public void setDomainInfo(DomainImportInfo info) {
         reset();
-        importHelper = helper;
+        domainInfo = info;
+    }
+    
+    public List<ImportFormatInfo> getFormatInfoList() {
+        if (domainInfo != null) {
+            return domainInfo.getFormatInfoList();
+        } else {
+            return new ArrayList<>();
+        }
+    }
+    
+    public String getCompletionUrl() {
+        if (domainInfo != null) {
+            return domainInfo.getCompletionUrl();
+        } else {
+            return "";
+        }
+    }
+    
+    public List<String> getFormatNames() {
+        return getFormatInfoList().stream().map(e -> e.toString()).collect(Collectors.toList());
+    }
+
+    public String getSelectedFormatName() {
+        return selectedFormatName;
+    }
+
+    public void setSelectedFormatName(String selectedFormatName) {
+        this.selectedFormatName = selectedFormatName;
+    }
+
+    public void selectListenerFormat() {
+        setEnablementForCurrentTab();
     }
 
     public Boolean getDisableButtonPrev() {
@@ -275,6 +315,21 @@ public class ItemDomainImportWizard implements Serializable {
         String nextStep = event.getNewStep();
         String currStep = event.getOldStep();
         
+        // create helper if moving from select format tab to select file tab
+        if ((currStep.endsWith(tabSelectFormat))
+                && (nextStep.endsWith(tabSelectFile))) {
+            createHelperForSelectedFormat();
+            if (importHelper == null) {
+                // don't allow transition if we couldn't create helper
+                SessionUtility.addErrorMessage(
+                    "Unable to create import helper for selected format",
+                    "Please select a different format or Cancel.");
+                setEnablement(currStep);
+                currentTab = currStep;
+                return currStep;
+            }
+        }
+
         // parse file if moving from select file tab to validate tab
         if ((currStep.endsWith(tabSelectFile))
                 && (nextStep.endsWith(tabValidate))) {
@@ -297,6 +352,25 @@ public class ItemDomainImportWizard implements Serializable {
 
         return nextStep;
     }
+    
+    protected void createHelperForSelectedFormat() {
+        List<ImportFormatInfo> infoList = getFormatInfoList();
+        ImportFormatInfo selectedFormatInfo = null;
+        for (ImportFormatInfo info : infoList) {
+            if (info.getFormatName().equals(getSelectedFormatName())) {
+                selectedFormatInfo = info;
+                break;
+            }
+        }
+        try {
+            if (selectedFormatInfo != null) {
+                Class helperClass = selectedFormatInfo.getImportHelperClass();
+                importHelper = (ImportHelperBase) helperClass.newInstance();
+            }
+        } catch (InstantiationException | IllegalAccessException ex) {
+
+        }
+    }
 
     protected void triggerImport() {
 
@@ -310,7 +384,8 @@ public class ItemDomainImportWizard implements Serializable {
      * Resets models for wizard components.
      */
     protected void reset() {
-        currentTab = tabSelectFile;
+        currentTab = tabSelectFormat;
+        selectedFormatName = null;
         uploadfileData = null;
         importHelper = null;
         importSuccessful = true;
@@ -330,7 +405,7 @@ public class ItemDomainImportWizard implements Serializable {
      * navigation button.
      */
     public String cancel() {
-        String completionUrl = importHelper.getCompletionUrl();
+        String completionUrl = getCompletionUrl();
         this.reset();
         return completionUrl;
     }
@@ -340,7 +415,7 @@ public class ItemDomainImportWizard implements Serializable {
      * navigation button.
      */
     public String finish() {
-        String completionUrl = importHelper.getCompletionUrl();
+        String completionUrl = getCompletionUrl();
         this.reset();
         return completionUrl;
     }
@@ -365,8 +440,19 @@ public class ItemDomainImportWizard implements Serializable {
         disableButtonFinish = true;
         disableButtonNext = true;
 
-        if (tab.endsWith(tabSelectFile)) {
+        if (tab.endsWith(tabSelectFormat)) {
             disableButtonPrev = true;
+            disableButtonCancel = false;
+            disableButtonFinish = true;
+
+            if (getSelectedFormatName()!= null) {
+                disableButtonNext = false;
+            } else {
+                disableButtonNext = true;
+            }
+
+        } else if (tab.endsWith(tabSelectFile)) {
+            disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonFinish = true;
 

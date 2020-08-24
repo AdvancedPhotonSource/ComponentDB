@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemElementSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -47,7 +48,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
 
     @EJB
     private ItemElementFacade itemElementFacade;
-
+    
     private static final Logger logger = LogManager.getLogger(ItemElementController.class.getName());
 
     private static final String DESIGN_ELEMENT_ROW_COLOR_PROPERTY_NAME = "Item Element Row Color";

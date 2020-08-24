@@ -98,8 +98,6 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         }
     }
 
-    protected static String completionUrlValue = "/views/itemDomainCableDesign/list?faces-redirect=true";
-    
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
@@ -136,11 +134,6 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         outputColumns.add(new OutputColumnModel(0, "Name", "name"));
         
         return new ValidInfo(true, "");
-    }
-    
-    @Override
-    protected String getCompletionUrlValue() {
-        return completionUrlValue;
     }
     
     @Override

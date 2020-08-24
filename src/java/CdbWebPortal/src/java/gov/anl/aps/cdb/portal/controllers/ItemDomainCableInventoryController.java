@@ -12,12 +12,13 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCableInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableInventorySettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableInventoryFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import java.util.ArrayList;
@@ -41,6 +42,9 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.cableInventory.getValue();
     private static ItemDomainCableInventoryController apiInstance;        
     
+    @EJB
+    ItemDomainCableInventoryFacade itemDomainCableInventoryFacade; 
+
     public static synchronized ItemDomainCableInventoryController getApiInstance() {
         if (apiInstance == null) {
             apiInstance = new ItemDomainCableInventoryController();            
@@ -58,15 +62,26 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     }        
 
     @Override
+    protected ItemDomainCableInventory instenciateNewItemDomainEntity() {
+        return new ItemDomainCableInventory();
+    }
+
+    @Override
+    protected ItemDomainCableInventorySettings createNewSettingObject() {
+        return new ItemDomainCableInventorySettings(this);
+    }
+
+    @Override
+    protected ItemDomainCableInventoryFacade getEntityDbFacade() {
+        return itemDomainCableInventoryFacade; 
+    }
+
+    @Override
     public ItemDomainCableInventory createEntityInstance() {
         ItemDomainCableInventory item = super.createEntityInstance();
-        setCurrent(item);
-        
-        ItemStatusUtility.updateDefaultStatusProperty(item, this); 
-        
         return item;
     }
-    
+
     @Override
     public String getStatusPropertyTypeName() {
         return ItemDomainCableInventory.ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
@@ -82,6 +97,11 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     }
             
     @Override
+    protected String generatePaddedUnitName(int itemNumber) {
+        return ItemDomainCableInventory.generatePaddedUnitName(itemNumber);
+    }
+
+    @Override
     protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
         ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Inventory Metadata", ItemDomainCableInventory.CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE);
         info.addField(ItemDomainCableInventory.CABLE_INVENTORY_PROPERTY_LENGTH_KEY, "Length", "Installed length of cable.", ItemCoreMetadataFieldType.STRING, "");
@@ -91,40 +111,6 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     @Override
     protected ItemCreateWizardController getItemCreateWizardController() {
         return ItemCreateWizardDomainCableInventoryController.getInstance();
-    }
-
-    @Override
-    public String prepareCreate() {
-        ItemController derivedItemController = getDefaultDomainDerivedFromDomainController();
-        if (derivedItemController != null) {
-            derivedItemController.getSelectedObjectAndResetDataModel();
-            derivedItemController.getSettingObject().clearListFilters();
-            derivedItemController.setFilteredObjectList(null);
-        }
-
-        String createResult = super.prepareCreate();
-
-        return createResult;
-    }
-    
-    public String generateItemName(
-            ItemDomainCableInventory cableInventoryItem,
-            ItemDomainCableCatalog cableCatalogItem) {
-        return generateItemName(cableInventoryItem, cableCatalogItem, 1);
-    }
-    
-    public String generateItemName(
-            ItemDomainCableInventory cableInventoryItem,
-            ItemDomainCableCatalog cableCatalogItem,
-            int newInstanceCount) {
-        
-        int numExistingItems = 0;
-        if (cableCatalogItem != null) {
-            numExistingItems = cableCatalogItem.getCableInventoryItemList().size();
-        }
-        
-        int itemNumber = numExistingItems + newInstanceCount;
-        return ItemDomainCableInventory.generatePaddedUnitName(itemNumber);
     }
 
     public void setDefaultValuesForCurrentItem() {
@@ -158,49 +144,6 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
         }
     }
     
-    @EJB
-    ItemDomainCableInventoryFacade itemDomainCableInventoryFacade; 
-
-    @Override
-    protected ItemDomainCableInventory instenciateNewItemDomainEntity() {
-        return new ItemDomainCableInventory();
-    }
-
-    @Override
-    protected ItemDomainCableInventorySettings createNewSettingObject() {
-        return new ItemDomainCableInventorySettings(this);
-    }
-
-    @Override
-    protected ItemDomainCableInventoryFacade getEntityDbFacade() {
-        return itemDomainCableInventoryFacade; 
-    }
-
-    @Override
-    public String getItemDisplayString(Item item) {
-        if (item != null) {
-            if (item instanceof ItemDomainCableInventory) {
-                if (item.getDerivedFromItem() != null) {
-                    String result = item.getDerivedFromItem().getName();
-
-                    //Tag to help user identify the item
-                    String tag = item.getName();
-                    if (tag != null && !tag.isEmpty()) {
-                        result += " - [" + tag + "]";
-                    }
-
-                    return result;
-                } else {
-                    return "No cable inventory item defied";
-                }
-            } else {
-                return getItemItemController(item).getItemDisplayString(item);
-            }
-        }
-        return null;
-
-    }
-
     @Override
     public List<ItemDomainCableInventory> getItemList() {
         return itemDomainCableInventoryFacade.findByDomainOrderByDerivedFromItemAndItemName(getDefaultDomainName());
@@ -222,57 +165,12 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     }
 
     @Override
-    public boolean getEntityDisplayItemConnectors() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayItemName() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayDerivedFromItem() {
-        return true; 
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
-        return true;
-    }
-
-    @Override
-    public String getNameTitle() {
-        return "Tag";
-    }
-
-    @Override
-    public boolean getEntityDisplayItemGallery() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemLogs() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemSources() {
-        return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemProperties() {
-        return true; 
+    public String getDerivedFromItemTitle() {
+        return "Cable Catalog Item";
     }
 
     @Override
     public boolean getEntityDisplayItemElements() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayItemsDerivedFromItem() {
         return false; 
     }
 
@@ -282,56 +180,18 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     }
 
     @Override
-    public boolean getEntityDisplayItemProject() {
-        return true; 
-    }
-
-    @Override
-    public boolean isAllowedSetDerivedFromItemForCurrentItem() {
-        if (getCurrent() != null) {
-            return !getCurrent().isIsCloned();
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemEntityTypes() {
-        return false; 
-    }
-
-    @Override
-    public String getItemsDerivedFromItemTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getDerivedFromItemTitle() {
-        return "Cable Catalog Item";
-    }
-
-    @Override
-    public String getStyleName() {
-        return "inventory"; 
-    }
-
-    @Override
     public String getDefaultDomainDerivedFromDomainName() {
         return DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME;
     }
-
+    
     @Override
-    public String getDefaultDomainDerivedToDomainName() {
-        return null;
-    } 
-
-    @Override
-    public boolean getEntityDisplayImportButton() {
-        return true;
-    }
-
-    @Override
-    protected ImportHelperBase createImportHelperInstance() throws CdbException {
-        return new ImportHelperCableInventory();
+    protected DomainImportInfo initializeDomainImportInfo() {
+        
+        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportFormatInfo("Basic Cable Inventory Format", ImportHelperCableInventory.class));
+        
+        String completionUrl = "/views/itemDomainCableInventory/list?faces-redirect=true";
+        
+        return new DomainImportInfo(formatInfo, completionUrl);
     }
 }

@@ -67,7 +67,12 @@ import org.primefaces.model.TreeNode;
     "machineDesignItem",
     "temporaryIsRequiredValue",
     "customizableSortOrder",
-    "childItemElementListTreeTableRootNode"
+    "childItemElementListTreeTableRootNode",
+    "importParentCatalogItem",
+    "importPartName",
+    "importPartDescription",
+    "importPartRequired",
+    "importPartCatalogItemName"
 })
 public class ItemElement extends CdbDomainEntity implements Serializable {
 
@@ -137,6 +142,11 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private static transient Integer sortByPropertyTypeId = null;
     private transient TreeNode childItemElementListTreeTableRootNode = null;
     private transient ItemElementConstraintInformation constraintInformation;
+    
+    // <editor-fold defaultstate="collapsed" desc="Import Variables">
+    private transient ItemDomainCatalog importParentCatalogItem;
+    private transient String importPartCatalogItemName;
+    // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Machine Design Element Variables"> 
     private transient Item catalogItem;
@@ -593,6 +603,18 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
+        
+        // special case for import
+        if ((this.importParentCatalogItem != null) && 
+                (other.importParentCatalogItem != null)) {
+            if ((this.importParentCatalogItem == other.importParentCatalogItem) &&
+                (this.getName().equals(other.getName()))) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
         return true;
     }
 
@@ -624,4 +646,60 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemElement[ id=" + id + " ]";
     }
 
+    // <editor-fold defaultstate="collapsed" desc="import functionality">
+    public ItemDomainCatalog getImportParentCatalogItem() {
+        return (ItemDomainCatalog) getParentItem();
+    }
+
+    public void setImportParentCatalogItem(ItemDomainCatalog parentCatalogItem) {
+        setParentItem(parentCatalogItem);
+        parentCatalogItem.getFullItemElementList().add(this);
+        parentCatalogItem.getItemElementDisplayList().add(0, this);
+        importParentCatalogItem = parentCatalogItem;
+    }
+
+    public String getImportPartName() {
+        return getName();
+    }
+
+    public void setImportPartName(String partName) {
+        setName(partName);
+    }
+
+    public String getImportPartDescription() {
+        return getDescription();
+    }
+
+    public void setImportPartDescription(String partDescription) {
+        this.setDescription(partDescription);
+    }
+
+    public Boolean getImportPartRequired() {
+        return this.getIsRequired();
+    }
+
+    public void setImportPartRequired(Boolean partRequired) {
+        this.setIsRequired(partRequired);
+    }
+
+    public String getImportPartCatalogItemName() {
+        return importPartCatalogItemName;
+    }
+
+    public void setImportPartCatalogItemName(String partCatalogItemName) {
+        this.importPartCatalogItemName = partCatalogItemName;
+    }
+
+    public ItemDomainCatalog getImportPartCatalogItem() {
+        return (ItemDomainCatalog) this.getContainedItem();
+    }
+
+    public void setImportPartCatalogItem(ItemDomainCatalog partCatalogItem) {
+        this.setContainedItem(partCatalogItem);
+        if (partCatalogItem.getItemElementMemberList() == null) {
+            partCatalogItem.setItemElementMemberList(new ArrayList<>());
+        }
+        partCatalogItem.getItemElementMemberList().add(this);
+    }
+    // </editor-fold>
 }
