@@ -26,9 +26,12 @@ import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import java.io.IOException;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -100,8 +103,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected boolean apiMode = false;
     protected UserInfo apiUser;
     
-    protected ImportHelperBase importHelper = null;
-
+    private DomainImportInfo domainImportInfo;
+    
     /**
      * Default constructor.
      */
@@ -1753,21 +1756,22 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         return false;
     }
     
-    protected ImportHelperBase createImportHelperInstance() throws CdbException {
-        throw new CdbException("Import helper not implemented by controller: " + this.getClass().getName());
-    }
-
     /**
      * Prepares import wizard.
      */
     public String prepareImport() throws CdbException {  
-        if (importHelper != null) {
-            importHelper.reset();
-        } else {
-            importHelper = this.createImportHelperInstance();
-        }
-        ItemDomainImportWizard.getInstance().registerHelper(importHelper);
+        ItemDomainImportWizard.getInstance().setDomainInfo(getDomainImportInfo());
         return "import?faces-redirect=true";
     }
     
+    protected DomainImportInfo initializeDomainImportInfo() {
+        return null;
+    }
+    
+    public DomainImportInfo getDomainImportInfo() {
+        if (domainImportInfo == null) {
+            domainImportInfo = initializeDomainImportInfo();
+        }
+        return domainImportInfo;
+    }
 }

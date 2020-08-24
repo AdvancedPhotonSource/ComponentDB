@@ -6,7 +6,6 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
@@ -26,88 +25,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Row;
-import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
 /**
  *
  * @author craig
  */
-public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
-    
-    /**
-     * Using custom handler so that we can have the machine design hierarchy
-     * in multiple (variable numbered) columns in the import spreadsheet.
-     * We expect columns like "Level 0", "Level 1" etc and then have to figure
-     * out the parent for each item in the spreadsheet by looking for an item
-     * at the previous indent level in the spreadsheet.  E.g., the parent of 
-     * an item whose name appears in column "Level 1" is the last item whose
-     * name was in "Level 0", etc.
-     */
-    private class NameHandler extends ColumnRangeInputHandler {
-        
-        protected int maxLength = 0;
-        
-        public NameHandler(int firstIndex, int lastIndex, int maxLength) {
-            super(firstIndex, lastIndex);
-            this.maxLength = maxLength;
-        }
-        
-        public int getMaxLength() {
-            return maxLength;
-        }
-
-        @Override
-        public ValidInfo handleInput(
-                Row row,
-                Map<Integer, String> cellValueMap,
-                Map<String, Object> rowMap) {
-            
-            boolean isValid = true;
-            String validString = "";
-            
-            int currentIndentLevel = 1;
-            int itemIndentLevel = 0;
-            String itemName = null;
-            for (int colIndex = getFirstColumnIndex();
-                    colIndex <= getLastColumnIndex();
-                    colIndex++) {
-                
-                String parsedValue = cellValueMap.get(colIndex);
-                if ((parsedValue != null) && (!parsedValue.isEmpty())) {
-                    if (itemName != null) {
-                        // invalid, we have a value in 2 columns
-                        isValid = false;
-                        validString = "Found value in multiple 'Level' columns, only one allowed";
-                    } else {
-                        itemName = parsedValue;
-                        itemIndentLevel = currentIndentLevel;
-                    }
-                }
-                
-                currentIndentLevel = currentIndentLevel + 1;                
-            }
-            
-            if (itemName != null) {
-                
-                // check column length is valid
-                if ((getMaxLength() > 0) && (itemName.length() > getMaxLength())) {
-                    isValid = false;
-                    validString = appendToString(validString, 
-                            "Invalid name, length exceeds " + getMaxLength());
-                }
-                
-                // set item info
-                rowMap.put(KEY_NAME, itemName);
-                rowMap.put(KEY_INDENT, itemIndentLevel);                
-            }
-            
-            return new ValidInfo(isValid, validString);
-        }
-    }
+public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
     
     /**
      * Using a custom handler so that we can use catalog or inventory item id's
@@ -212,18 +140,6 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         }
     }
     
-    private class InputColumnInfo {
-        public String name;
-        public boolean isRequired;
-        public String description;
-        
-        public InputColumnInfo(String name, boolean isRequired, String description) {
-            this.name = name;
-            this.isRequired = isRequired;
-            this.description = description;
-        }
-    }
-    
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineDesign.class.getName());
     
     private static final String KEY_NAME = "name";
@@ -245,16 +161,12 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     private static final String HEADER_PROJECT = "Project ID";
     private static final String HEADER_TEMPLATE = "Is Template?";
 
-    protected static String completionUrlValue = "/views/itemDomainMachineDesign/list?faces-redirect=true";
-    
     private Map<String, InputColumnInfo> columnInfoMap = null;
     private Map<String, ItemDomainMachineDesign> itemByNameMap = new HashMap<>();
-    private Map<String, TreeNode> treeNodeMap = new HashMap<>();
     private Map<ItemDomainMachineDesign, ImportInfo> itemInfoMap = new HashMap<>();
     private Map<Integer, ItemDomainMachineDesign> parentIndentMap = new HashMap<>();
     
     private int templateInstantiationCount = 0;
-    private int templateInstantiationChildCount = 0;
     private int nonTemplateItemCount = 0;
     private int templateItemCount = 0;
     
@@ -369,6 +281,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         return inputColumns;
     }
     
+    @Override
     protected List<ColumnSpec> getColumnSpecs() {
         return new ArrayList<>();
     }
@@ -490,7 +403,8 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
             
         } else {
             // add handler for multiple "level" columns
-            inputHandlers.add(new NameHandler(firstLevelIndex, lastLevelIndex, 128));
+            inputHandlers.add(new HierarchyHandler(
+                    firstLevelIndex, lastLevelIndex, 128, KEY_NAME, KEY_INDENT));
         }
         
         // output columns are fixed
@@ -510,11 +424,6 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     }
     
     @Override
-    protected String getCompletionUrlValue() {
-        return completionUrlValue;
-    }
-    
-    @Override
     public ItemDomainMachineDesignController getEntityController() {
         return ItemDomainMachineDesignController.getInstance();
     }
@@ -527,24 +436,32 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
     @Override
     protected void reset_() {
         itemByNameMap = new HashMap<>();
-        treeNodeMap = new HashMap<>();
         columnInfoMap = null;
         itemInfoMap = new HashMap<>();
         parentIndentMap = new HashMap<>();
         templateInstantiationCount = 0;
-        templateInstantiationChildCount = 0;
         nonTemplateItemCount = 0;
         templateItemCount = 0;
     }
     
-    /**
-     * Specifies whether the subclass will provide a tree view.  Default is false,
-     * subclass should override to customize.
-     */
-    public boolean hasTreeView() {
-        return true;
+    @Override
+    protected ItemDomainMachineDesign getItemParent(ItemDomainMachineDesign item) {
+        return null;
     }
     
+    @Override
+    protected String getItemName(ItemDomainMachineDesign item) {
+        return item.getName();
+    }
+    
+    @Override
+    protected List<ItemDomainMachineDesign> getItemChildren(ItemDomainMachineDesign item) {
+        List<ItemElement> children = item.getItemElementDisplayList();
+        return children.stream()
+                .map((child) -> (ItemDomainMachineDesign) child.getContainedItem())
+                .collect(Collectors.toList());
+    }
+            
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
 
@@ -908,55 +825,6 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         return new CreateInfo(item, isValid, validString);
     }
 
-    private void updateTreeView(
-            ItemDomainMachineDesign item, 
-            ItemDomainMachineDesign parent,
-            boolean addChildren) {
-        
-        TreeNode itemNode = new DefaultTreeNode(item);
-        itemNode.setExpanded(true);
-        treeNodeMap.put(item.getName(), itemNode);
-        
-        if (addChildren) {
-            addChildrenForItemToTreeNode(item, itemNode);
-        }
-        
-        if (parent != null) {
-            
-            // create parent nodes recursively if they don't exist
-            TreeNode parentNode = treeNodeMap.get(parent.getName());
-            if (parentNode == null) {
-                updateTreeView(parent, parent.getParentMachineDesign(), false);
-                parentNode = treeNodeMap.get(parent.getName());
-            }
-            
-            parentNode.getChildren().add(itemNode);
-            
-        } else {
-            // top level machine design item, so add to root tree node
-            rootTreeNode.getChildren().add(itemNode);
-        }
-    }
-    
-    private void addChildrenForItemToTreeNode(
-            ItemDomainMachineDesign item, 
-            TreeNode itemNode) {
-        
-        templateInstantiationChildCount = templateInstantiationChildCount + 1;
-        
-        itemNode.setExpanded(false);
-        
-        List<ItemElement> children = item.getItemElementDisplayList();
-        for (ItemElement child : children) {
-            ItemDomainMachineDesign childItem = 
-                    (ItemDomainMachineDesign) child.getContainedItem();
-            TreeNode childNode = new DefaultTreeNode(childItem);
-            childNode.setExpanded(false);
-            itemNode.getChildren().add(childNode);
-            addChildrenForItemToTreeNode(childItem, childNode);
-        }
-    }
-    
     protected String getCustomSummaryDetails() {
         
         String summaryDetails = "";
@@ -964,7 +832,7 @@ public class ImportHelperMachineDesign extends ImportHelperBase<ItemDomainMachin
         if (templateInstantiationCount > 0) {
             summaryDetails = 
                     templateInstantiationCount + " template instantiations including " +
-                    templateInstantiationChildCount + "  items";                    
+                    getTreeNodeChildCount() + "  items";                    
         }
         
         if (templateItemCount > 0) {

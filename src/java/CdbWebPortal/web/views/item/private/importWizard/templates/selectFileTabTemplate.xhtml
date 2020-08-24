@@ -15,23 +15,30 @@ See LICENSE file.
     <ui:param name="rootViewId" value="#{viewId}"/>
     
     <p:tab id="#{rootViewId}SelectFileTab">
-        <p:panel header="Choose file to import, then click Next Step to review.">
+        <p:panel header="Choose spreadsheet format and file to import, then click 'Next Step' to review.">
             <p:outputPanel id="#{rootViewId}SelectFilePanel">
-                <p:panelGrid columns="2">
-                
-                    <p:fileUpload listener="#{wizardController.fileUploadListenerData}" 
-                                  auto="true" 
-                                  allowTypes="/(\.|\/)([xX][lL][sS][xX]?)$/"
-                                  rendered="#{wizardController.renderFileuploadData}"
-                                  update="#{rootViewId}SelectFilePanel"
-                                  oncomplete="update#{rootViewId}WizardButtons();"/>
+                <p:panelGrid>
                     
-                    <p:commandLink id="#{rootViewId}DownloadTemplateLink"
-                                   value="Download Excel template"
-                                   ajax="false"
-                                   rendered="#{wizardController.renderFileuploadData}">
-                        <p:fileDownload value="#{wizardController.templateExcelFile}" />
-                    </p:commandLink>
+                    <p:row>
+                        <p:column>
+                            <p:fileUpload listener="#{wizardController.fileUploadListenerData}" 
+                                          auto="true" 
+                                          allowTypes="/(\.|\/)([xX][lL][sS][xX]?)$/"
+                                          rendered="#{wizardController.renderFileuploadData}"
+                                          update="#{rootViewId}SelectFilePanel"
+                                          oncomplete="update#{rootViewId}WizardButtons();"
+                                          label="Choose File"/>
+                        </p:column>
+                        
+                        <p:column>
+                            <p:commandLink id="#{rootViewId}DownloadTemplateLink"
+                                           value="Download Excel template"
+                                           ajax="false"
+                                           rendered="#{wizardController.renderFileuploadData}">
+                                <p:fileDownload value="#{wizardController.templateExcelFile}" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:row>
 
                     <p:panelGrid columns="2">
                        

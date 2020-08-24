@@ -4,6 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCatalog;
+import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCatalogAssembly;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogSettings;
@@ -12,6 +15,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -83,10 +88,33 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     }
     
     @Override
+    public ItemDomainCatalog createEntityInstance() {
+        ItemDomainCatalog item = super.createEntityInstance();
+        return item;
+    }
+
+    @Override
     protected ItemDomainCatalogSettings createNewSettingObject() {
         return new ItemDomainCatalogSettings(this);
     }   
 
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected DomainImportInfo initializeDomainImportInfo() {
+        
+        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportFormatInfo("Basic Catalog Format", ImportHelperCatalog.class));
+        formatInfo.add(new ImportFormatInfo("Catalog Assembly Format", ImportHelperCatalogAssembly.class));
+        
+        String completionUrl = "/views/itemDomainCatalog/list?faces-redirect=true";
+        
+        return new DomainImportInfo(formatInfo, completionUrl);
+    }
+    
     @Override
     protected void resetVariablesForCurrent() {
         super.resetVariablesForCurrent();

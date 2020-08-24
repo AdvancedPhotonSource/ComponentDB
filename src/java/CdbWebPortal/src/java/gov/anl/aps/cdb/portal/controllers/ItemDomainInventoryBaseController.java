@@ -13,6 +13,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ejb.EJB;
 
 /**
@@ -32,6 +34,82 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
     protected void loadEJBResourcesManually() {
         super.loadEJBResourcesManually();
         propertyTypeFacade = PropertyTypeFacade.getInstance();
+    }
+    
+    protected abstract String generatePaddedUnitName(int itemNumber);
+    
+    public String generateItemName(
+            ItemDomainInventoryBase inventoryItem,
+            ItemDomainCatalogBase catalogItem) {
+        return generateItemName(inventoryItem, catalogItem, 1);
+    }
+    
+    public String generateItemName(
+            ItemDomainInventoryBase inventoryItem,
+            ItemDomainCatalogBase catalogItem,
+            int newInstanceCount) {
+        
+        int numExistingItems = 0;
+        if (catalogItem != null) {
+            numExistingItems = catalogItem.getDerivedFromItemList().size();
+        }
+        
+        int itemNumber = numExistingItems + newInstanceCount;
+        return generatePaddedUnitName(itemNumber);
+    }
+   
+    @Override
+    public ItemInventoryBaseDomainEntity createEntityInstance() {
+        ItemInventoryBaseDomainEntity item = super.createEntityInstance();
+        setCurrent(item);
+        
+        // set default value for status property
+        String defaultValue = this.getInventoryStatusPropertyType().getDefaultValue();
+        if (defaultValue != null && !defaultValue.isEmpty()) {
+            prepareEditInventoryStatus();
+            item.setInventoryStatusValue(defaultValue);
+        }
+        
+        return item;
+    }
+    
+    @Override
+    public String prepareCreate() {
+        ItemController derivedItemController = getDefaultDomainDerivedFromDomainController();
+        if (derivedItemController != null) {
+            derivedItemController.getSelectedObjectAndResetDataModel();
+            derivedItemController.getSettingObject().clearListFilters();
+            derivedItemController.setFilteredObjectList(null);
+        }
+
+        String createResult = super.prepareCreate();
+
+        return createResult;
+    }
+    
+    @Override
+    public String getItemDisplayString(Item item) {
+        if (item != null) {
+            if (item instanceof ItemDomainInventoryBase) {
+                if (item.getDerivedFromItem() != null) {
+                    String result = item.getDerivedFromItem().getName();
+
+                    //Tag to help user identify the item
+                    String tag = item.getName();
+                    if (tag != null && !tag.isEmpty()) {
+                        result += " - [" + tag + "]";
+                    }
+
+                    return result;
+                } else {
+                    return "No inventory item defied";
+                }
+            } else {
+                return getItemItemController(item).getItemDisplayString(item);
+            }
+        }
+        return null;
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="Inventory status implementation">
@@ -66,11 +144,98 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
         setCurrent(item);
         prepareEditInventoryStatus();
     }
+    
+    // </editor-fold>      
+    
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemConnectors() {
+        return false;
 
     public boolean getRenderedHistoryButton() {
         return ItemStatusUtility.getRenderedHistoryButton(this);
     }
 
-    // </editor-fold>        
+    @Override
+    public boolean getEntityDisplayItemName() {
+        return true;
+    }
 
+    @Override
+    public boolean getEntityDisplayDerivedFromItem() {
+        return true; 
+    }
+
+    @Override
+    public boolean getEntityDisplayQrId() {
+        return true;
+    }
+
+    @Override
+    public String getNameTitle() {
+        return "Tag";
+    }
+
+    @Override
+    public boolean getEntityDisplayItemGallery() {
+        return true;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemLogs() {
+        return true;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemSources() {
+        return false;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemProperties() {
+        return true;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemsDerivedFromItem() {
+        return false;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemProject() {
+        return true; 
+    }
+
+    @Override
+    public String getItemsDerivedFromItemTitle() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }    
+
+    @Override
+    public boolean isAllowedSetDerivedFromItemForCurrentItem() {
+        if (getCurrent() != null) {
+            return !getCurrent().isIsCloned();
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean getEntityDisplayItemEntityTypes() {
+        return false;
+    }
+
+    @Override
+    public String getStyleName() {
+        return "inventory";
+    }
+
+    @Override
+    public String getDefaultDomainDerivedToDomainName() {
+        return null;
+    }
 }
