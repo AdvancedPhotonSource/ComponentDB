@@ -16,7 +16,12 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
@@ -29,12 +34,15 @@ import org.primefaces.model.TreeNode;
 
 @Named(ItemDomainMachineDesignInventoryController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignController {
+public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignController implements IItemStatusController {
 
     public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
     
     private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";
+    
+    private InventoryStatusPropertyTypeInfo inventoryStatusPropertyTypeInfo = null;
+    private PropertyType inventoryStatusPropertyType;
 
     private static ItemDomainMachineDesignInventoryController apiInstance;
 
@@ -156,7 +164,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
             }
         }
         newInventory.getEntityTypeList().add(inventoryet);
-    }
+    } 
 
     public void createInventoryFromTemplateSelected(NodeSelectEvent nodeSelection) {
         templateToCreateNewItemSelected(nodeSelection);
@@ -183,7 +191,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     public ItemDomainMachineDesign createEntityInstanceForDualTreeView() {
         ItemDomainMachineDesign item = super.createEntityInstanceForDualTreeView();
 
-        assignInventoryAttributes(item);
+        assignInventoryAttributes(item);        
 
         return item;
     }
@@ -262,6 +270,52 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     
     public String getPluginItemMachineDesignSectionsName() {
         return pluginItemMachineDesignSectionsName; 
+    }
+
+    @Override
+    public void prepareEditInventoryStatus(LocatableStatusItem item) {
+        ItemStatusUtility.prepareEditInventoryStatus(this, item);       
+    }
+
+    @Override
+    public void prepareEditInventoryStatus() {
+        ItemStatusUtility.prepareEditInventoryStatus(this);
+    }
+
+    @Override
+    public String getStatusPropertyTypeName() {
+        return ItemDomainMachineDesign.MD_INTERNAL_STATUS_PROPERTY_TYPE; 
+    }
+
+    @Override
+    public PropertyValue getCurrentStatusPropertyValue() {
+        return ItemStatusUtility.getCurrentStatusPropertyValue(this);
+    }
+
+    @Override
+    public PropertyType getInventoryStatusPropertyType() {
+        inventoryStatusPropertyType = ItemStatusUtility.getInventoryStatusPropertyType(this, propertyTypeFacade, inventoryStatusPropertyType);
+        return inventoryStatusPropertyType;
+    }
+
+    @Override
+    public InventoryStatusPropertyTypeInfo getInventoryStatusPropertyTypeInfo() {
+        inventoryStatusPropertyTypeInfo = ItemStatusUtility.getInventoryStatusPropertyTypeInfo(this, inventoryStatusPropertyTypeInfo);
+        return inventoryStatusPropertyTypeInfo;
+    }
+
+    @Override
+    public InventoryStatusPropertyTypeInfo initializeInventoryStatusPropertyTypeInfo() {
+        return ItemStatusUtility.initializeInventoryStatusPropertyTypeInfo(); 
+    }
+
+    @Override
+    public boolean getRenderedHistoryButton() {
+        return ItemStatusUtility.getRenderedHistoryButton(this);
+    }
+    
+    public PropertyValue getItemStatusPropertyValue(LocatableStatusItem item) {
+        return ItemStatusUtility.getItemStatusPropertyValue(item); 
     }
 
 }
