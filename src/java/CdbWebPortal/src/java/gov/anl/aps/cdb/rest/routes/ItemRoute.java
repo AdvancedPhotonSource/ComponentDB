@@ -19,7 +19,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
@@ -318,10 +317,10 @@ public class ItemRoute extends ItemBaseRoute {
         locatableItem.setLocation(locationItem);
         locatableItem.setLocationDetails(locationInformation.getLocationDetails());
 
-        // Perfrom update
-        UserInfo updateUser = getCurrentRequestUserInfo();
+        // Perfrom update        
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(locatableItem);
         ItemController controller = locatableItem.getItemDomainController();
-        controller.updateFromApi(locatableItem, updateUser);
+        controller.updateFromApi(locatableItem, currentUser);
 
         // Get the latest item after update to respond
         locatableItem = (LocatableItem) getItemByIdBase(locatableItem.getId());
@@ -337,12 +336,11 @@ public class ItemRoute extends ItemBaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public Item updateItemDetails(Item item) throws ObjectNotFound, CdbException {
-        LOGGER.debug("Updating details for item with id: " + item.getId());
-        
-        // TODO add verify permissions 
+        LOGGER.debug("Updating details for item with id: " + item.getId());               
         
         int itemId = item.getId();
         Item dbItem = getItemByIdBase(itemId);
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(dbItem);
         
         dbItem.setName(item.getName());
         dbItem.setQrId(item.getQrId());
@@ -354,8 +352,7 @@ public class ItemRoute extends ItemBaseRoute {
         
         ItemController itemDomainControllerForApi = dbItem.getItemDomainController();
         
-        UserInfo updateUser = getCurrentRequestUserInfo();
-        itemDomainControllerForApi.updateFromApi(dbItem, updateUser);
+        itemDomainControllerForApi.updateFromApi(dbItem, currentUser);
         
         return dbItem;
     }
@@ -625,7 +622,8 @@ public class ItemRoute extends ItemBaseRoute {
         Item itemById = getItemByIdBase(itemId);
         
         ItemController controller = itemById.getItemDomainController();
-        UserInfo updateUser = getCurrentRequestUserInfo();
+        
+        UserInfo updateUser = verifyCurrentUserPermissionForItem(itemById);        
         Log newLog = controller.prepareAddLog(itemById, updateUser);
         
         newLog.setText(logEntryEditInformation.getLogEntry());        
