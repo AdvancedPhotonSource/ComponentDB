@@ -85,12 +85,9 @@ import org.apache.logging.log4j.Logger;
  */
 @Path("/Items")
 @Tag(name = "Item")
-public class ItemRoute extends BaseRoute {
+public class ItemRoute extends ItemBaseRoute {
     
-    private static final Logger LOGGER = LogManager.getLogger(ItemRoute.class.getName());
-    
-    @EJB
-    ItemFacade itemFacade;    
+    private static final Logger LOGGER = LogManager.getLogger(ItemRoute.class.getName());        
     
     @EJB
     ItemElementFacade itemElementFacade;
@@ -174,17 +171,7 @@ public class ItemRoute extends BaseRoute {
         itemDomainController.updateFromApi(parentItem, updatedByUser);                        
         
         return getItemHierarchyById(parentItem.getId());         
-    }
-        
-    public Item getItemByIdBase(@PathParam("id") int id) throws ObjectNotFound {        
-        Item findById = itemFacade.findById(id);
-        if (findById == null) {
-            ObjectNotFound ex = new ObjectNotFound("Could not find item with id: " + id);
-            LOGGER.error(ex);
-            throw ex; 
-        }
-        return findById;
-    }
+    }            
     
     public PropertyType getPropertyTypeByName(String name) throws ObjectNotFound {
         PropertyType pt = propertyTypeFacade.findByName(name);
@@ -291,29 +278,7 @@ public class ItemRoute extends BaseRoute {
             return verifyUserPermissionForItem(user, itemById);
         }
         return false;
-    }
-    
-    private UserInfo verifyCurrentUserPermissionForItem(Item item) throws AuthorizationError {
-        UserInfo updatedByUser = getCurrentRequestUserInfo();
-        
-        if (!verifyUserPermissionForItem(updatedByUser, item)) {            
-            AuthorizationError ex = new AuthorizationError("User does not have permission to update property value for the item");
-            LOGGER.error(ex);
-            throw ex; 
-        }
-        
-        return updatedByUser; 
-    }
-    
-    private boolean verifyUserPermissionForItem(UserInfo user, Item item) {        
-        if (user != null) {
-            if (isUserAdmin(user)) {
-                return true;
-            }
-            return AuthorizationUtility.isEntityWriteableByUser(item, user);
-        }
-        return false;
-    }
+    }                
     
     @POST
     @Path("/UpdateLocation")
@@ -373,6 +338,9 @@ public class ItemRoute extends BaseRoute {
     @Secured
     public Item updateItemDetails(Item item) throws ObjectNotFound, CdbException {
         LOGGER.debug("Updating details for item with id: " + item.getId());
+        
+        // TODO add verify permissions 
+        
         int itemId = item.getId();
         Item dbItem = getItemByIdBase(itemId);
         
@@ -1030,15 +998,6 @@ public class ItemRoute extends BaseRoute {
         }
         
         return detailedSearchResults; 
-    }
-    
-    private UserInfo getCurrentRequestUserInfo() {
-        Principal userPrincipal = securityContext.getUserPrincipal();
-        if (userPrincipal instanceof User) {
-            UserInfo user = ((User) userPrincipal).getUser();
-            return user;
-        }
-        return null;
-    }
+    }        
         
 }

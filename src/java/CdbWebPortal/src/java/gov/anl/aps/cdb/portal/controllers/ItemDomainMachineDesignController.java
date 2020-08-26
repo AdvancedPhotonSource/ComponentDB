@@ -2500,6 +2500,32 @@ public class ItemDomainMachineDesignController
                 }
             }
         }
+
+        Integer itemId = item.getId();
+        ItemDomainMachineDesign originalItem = findById(itemId);
+
+        Item origAssignedItem = originalItem.getAssignedItem();
+        Item newAssignedItem = item.getAssignedItem();
+
+        if ((newAssignedItem instanceof ItemDomainCatalog || newAssignedItem instanceof ItemDomainInventory) == false) {
+            throw new CdbException("The new assigned item must be either catalog or inventory item.");
+        }
+
+        if (origAssignedItem != null) {
+            ItemDomainCatalog catItem = null;
+            if (origAssignedItem instanceof ItemDomainInventory) {
+                catItem = ((ItemDomainInventory) origAssignedItem).getCatalogItem();
+            } else if (origAssignedItem instanceof ItemDomainCatalog) {
+                catItem = (ItemDomainCatalog) origAssignedItem;
+            }
+
+            if (newAssignedItem instanceof ItemDomainInventory) {
+                List<ItemDomainInventory> inventoryItemList = catItem.getInventoryItemList();
+                if (inventoryItemList.contains(newAssignedItem) == false) {
+                    throw new CdbException("The new assigned inventory item must be of catalog item: " + catItem.getName() + ".");
+                }
+            }
+        }
     }
 
     @Override
@@ -2610,7 +2636,7 @@ public class ItemDomainMachineDesignController
             if (id == null) {
                 ItemElement ie = new ItemElement();
                 ie.setContainedItem(item);
-                
+
                 item.setCurrentHierarchyItemElement(ie);
             } else {
                 for (ItemElement ie : itemElementMemberList) {
@@ -2774,12 +2800,12 @@ public class ItemDomainMachineDesignController
 
     @Override
     protected DomainImportInfo initializeDomainImportInfo() {
-        
+
         List<ImportFormatInfo> formatInfo = new ArrayList<>();
         formatInfo.add(new ImportFormatInfo("Basic Machine Design Format", ImportHelperMachineDesign.class));
-        
+
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
-        
+
         return new DomainImportInfo(formatInfo, completionUrl);
     }
     // </editor-fold>       
