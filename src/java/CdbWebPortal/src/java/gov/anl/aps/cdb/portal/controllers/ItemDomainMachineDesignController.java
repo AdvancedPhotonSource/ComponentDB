@@ -2501,28 +2501,32 @@ public class ItemDomainMachineDesignController
             }
         }
 
-        Integer itemId = item.getId();
-        ItemDomainMachineDesign originalItem = findById(itemId);
-
-        Item origAssignedItem = originalItem.getAssignedItem();
         Item newAssignedItem = item.getAssignedItem();
-
-        if ((newAssignedItem instanceof ItemDomainCatalog || newAssignedItem instanceof ItemDomainInventory) == false) {
-            throw new CdbException("The new assigned item must be either catalog or inventory item.");
-        }
-
-        if (origAssignedItem != null) {
-            ItemDomainCatalog catItem = null;
-            if (origAssignedItem instanceof ItemDomainInventory) {
-                catItem = ((ItemDomainInventory) origAssignedItem).getCatalogItem();
-            } else if (origAssignedItem instanceof ItemDomainCatalog) {
-                catItem = (ItemDomainCatalog) origAssignedItem;
+        if (newAssignedItem != null) {
+            if ((newAssignedItem instanceof ItemDomainCatalog || newAssignedItem instanceof ItemDomainInventory) == false) {
+                throw new CdbException("The new assigned item must be either catalog or inventory item.");
             }
 
-            if (newAssignedItem instanceof ItemDomainInventory) {
-                List<ItemDomainInventory> inventoryItemList = catItem.getInventoryItemList();
-                if (inventoryItemList.contains(newAssignedItem) == false) {
-                    throw new CdbException("The new assigned inventory item must be of catalog item: " + catItem.getName() + ".");
+            Integer itemId = item.getId();
+            if (itemId != null) {
+                ItemDomainMachineDesign originalItem = findById(itemId);
+
+                Item origAssignedItem = originalItem.getAssignedItem();
+
+                if (origAssignedItem != null) {
+                    ItemDomainCatalog catItem = null;
+                    if (origAssignedItem instanceof ItemDomainInventory) {
+                        catItem = ((ItemDomainInventory) origAssignedItem).getCatalogItem();
+                    } else if (origAssignedItem instanceof ItemDomainCatalog) {
+                        catItem = (ItemDomainCatalog) origAssignedItem;
+                    }
+
+                    if (newAssignedItem instanceof ItemDomainInventory) {
+                        List<ItemDomainInventory> inventoryItemList = catItem.getInventoryItemList();
+                        if (inventoryItemList.contains(newAssignedItem) == false) {
+                            throw new CdbException("The new assigned inventory item must be of catalog item: " + catItem.getName() + ".");
+                        }
+                    }
                 }
             }
         }
