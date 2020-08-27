@@ -19,7 +19,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
@@ -85,12 +84,9 @@ import org.apache.logging.log4j.Logger;
  */
 @Path("/Items")
 @Tag(name = "Item")
-public class ItemRoute extends BaseRoute {
+public class ItemRoute extends ItemBaseRoute {
     
-    private static final Logger LOGGER = LogManager.getLogger(ItemRoute.class.getName());
-    
-    @EJB
-    ItemFacade itemFacade;    
+    private static final Logger LOGGER = LogManager.getLogger(ItemRoute.class.getName());        
     
     @EJB
     ItemElementFacade itemElementFacade;
@@ -174,17 +170,7 @@ public class ItemRoute extends BaseRoute {
         itemDomainController.updateFromApi(parentItem, updatedByUser);                        
         
         return getItemHierarchyById(parentItem.getId());         
-    }
-        
-    public Item getItemByIdBase(@PathParam("id") int id) throws ObjectNotFound {        
-        Item findById = itemFacade.findById(id);
-        if (findById == null) {
-            ObjectNotFound ex = new ObjectNotFound("Could not find item with id: " + id);
-            LOGGER.error(ex);
-            throw ex; 
-        }
-        return findById;
-    }
+    }            
     
     public PropertyType getPropertyTypeByName(String name) throws ObjectNotFound {
         PropertyType pt = propertyTypeFacade.findByName(name);
@@ -291,29 +277,7 @@ public class ItemRoute extends BaseRoute {
             return verifyUserPermissionForItem(user, itemById);
         }
         return false;
-    }
-    
-    private UserInfo verifyCurrentUserPermissionForItem(Item item) throws AuthorizationError {
-        UserInfo updatedByUser = getCurrentRequestUserInfo();
-        
-        if (!verifyUserPermissionForItem(updatedByUser, item)) {            
-            AuthorizationError ex = new AuthorizationError("User does not have permission to update property value for the item");
-            LOGGER.error(ex);
-            throw ex; 
-        }
-        
-        return updatedByUser; 
-    }
-    
-    private boolean verifyUserPermissionForItem(UserInfo user, Item item) {        
-        if (user != null) {
-            if (isUserAdmin(user)) {
-                return true;
-            }
-            return AuthorizationUtility.isEntityWriteableByUser(item, user);
-        }
-        return false;
-    }
+    }                
     
     @POST
     @Path("/UpdateLocation")
@@ -353,10 +317,10 @@ public class ItemRoute extends BaseRoute {
         locatableItem.setLocation(locationItem);
         locatableItem.setLocationDetails(locationInformation.getLocationDetails());
 
-        // Perfrom update
-        UserInfo updateUser = getCurrentRequestUserInfo();
+        // Perfrom update        
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(locatableItem);
         ItemController controller = locatableItem.getItemDomainController();
-        controller.updateFromApi(locatableItem, updateUser);
+        controller.updateFromApi(locatableItem, currentUser);
 
         // Get the latest item after update to respond
         locatableItem = (LocatableItem) getItemByIdBase(locatableItem.getId());
@@ -372,9 +336,11 @@ public class ItemRoute extends BaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public Item updateItemDetails(Item item) throws ObjectNotFound, CdbException {
-        LOGGER.debug("Updating details for item with id: " + item.getId());
+        LOGGER.debug("Updating details for item with id: " + item.getId());               
+        
         int itemId = item.getId();
         Item dbItem = getItemByIdBase(itemId);
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(dbItem);
         
         dbItem.setName(item.getName());
         dbItem.setQrId(item.getQrId());
@@ -386,8 +352,7 @@ public class ItemRoute extends BaseRoute {
         
         ItemController itemDomainControllerForApi = dbItem.getItemDomainController();
         
-        UserInfo updateUser = getCurrentRequestUserInfo();
-        itemDomainControllerForApi.updateFromApi(dbItem, updateUser);
+        itemDomainControllerForApi.updateFromApi(dbItem, currentUser);
         
         return dbItem;
     }
@@ -657,7 +622,8 @@ public class ItemRoute extends BaseRoute {
         Item itemById = getItemByIdBase(itemId);
         
         ItemController controller = itemById.getItemDomainController();
-        UserInfo updateUser = getCurrentRequestUserInfo();
+        
+        UserInfo updateUser = verifyCurrentUserPermissionForItem(itemById);        
         Log newLog = controller.prepareAddLog(itemById, updateUser);
         
         newLog.setText(logEntryEditInformation.getLogEntry());        
@@ -1030,15 +996,6 @@ public class ItemRoute extends BaseRoute {
         }
         
         return detailedSearchResults; 
-    }
-    
-    private UserInfo getCurrentRequestUserInfo() {
-        Principal userPrincipal = securityContext.getUserPrincipal();
-        if (userPrincipal instanceof User) {
-            UserInfo user = ((User) userPrincipal).getUser();
-            return user;
-        }
-        return null;
-    }
+    }        
         
 }
