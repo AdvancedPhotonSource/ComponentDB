@@ -7,7 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCableCatalog;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableCatalog;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableCatalogSettings;

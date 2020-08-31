@@ -2,9 +2,10 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
-package gov.anl.aps.cdb.portal.controllers;
+package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -845,7 +846,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
     }
 
-    protected class ImportInfo {
+    public class ImportInfo {
 
         protected boolean importSuccessful = true;
         protected String message = "";
@@ -1164,7 +1165,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return true;
     }
 
-    protected boolean readXlsxFileData(UploadedFile f, String sheetName) {
+    public boolean readXlsxFileData(UploadedFile f, String sheetName) {
 
         InputStream inputStream;
         XSSFWorkbook workbook = null;

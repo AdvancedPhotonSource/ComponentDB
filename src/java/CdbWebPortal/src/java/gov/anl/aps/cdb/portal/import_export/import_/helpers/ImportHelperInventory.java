@@ -2,9 +2,9 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
-package gov.anl.aps.cdb.portal.controllers.extensions;
+package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
