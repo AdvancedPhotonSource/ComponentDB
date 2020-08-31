@@ -903,10 +903,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperBase.class.getName());
 
-    protected static String isValidHeader = "Is Valid";
-    protected static String isValidProperty = "isValidImportString";
-    protected static String validStringHeader = "Valid String";
-    protected static String validStringProperty = "validStringImport";
+    private static final String HEADER_IS_VALID = "Is Valid";
+    private static final String PROPERTY_IS_VALID = "isValidImportString";
+    private static final String HEADER_VALID_STRING = "Valid String";
+    private static final String PROPERTY_VALID_STRING = "validStringImport";
+    
+    private static final String INDICATOR_COMMENT = "//";
 
     protected List<EntityType> rows = new ArrayList<>();
     
@@ -1029,8 +1031,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         // these are special columns for displaying validation info for each row
         int numColumns = columns.size();
-        columns.add(new OutputColumnModel(numColumns, isValidHeader, isValidProperty));
-        columns.add(new OutputColumnModel(numColumns + 1, validStringHeader, validStringProperty));  
+        columns.add(new OutputColumnModel(numColumns, HEADER_IS_VALID, PROPERTY_IS_VALID));
+        columns.add(new OutputColumnModel(numColumns + 1, HEADER_VALID_STRING, PROPERTY_VALID_STRING));  
         
         for (OutputColumnModel col : columns) {
             outputColumnMap.put(col.getColumnIndex(), col);
@@ -1407,11 +1409,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
         
-        // skip blank rows
-        if (isBlankRow(cellValueMap)) {
+        // skip blank and comment rows
+        if (isBlankRow(cellValueMap) || isCommentRow(cellValueMap)) {
             return new ValidInfo(true, "");
         }
-
+        
         // invoke each input handler to populate row dictionary (String key -> object)
         Map<String, Object> rowDict = new HashMap<>();
         for (InputHandler handler : inputHandlers) {
@@ -1475,6 +1477,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
         return true;
+    }
+    
+    protected boolean isCommentRow(Map<Integer, String> cellValues) {
+        String value = cellValues.get(0);
+        if (value.trim().startsWith(INDICATOR_COMMENT)) {
+            return true;
+        } else {
+            return false;
+        }
     }
     
     /**
