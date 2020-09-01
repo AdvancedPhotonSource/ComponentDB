@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -610,7 +611,15 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
             }
         }
         
-        return true;
+        // Verify other metadata 
+        if (ObjectUtility.equals(this.getName(), other.getName()) && 
+                ObjectUtility.equals(this.getParentItem(), other.getParentItem()) &&
+                ObjectUtility.equals(this.getContainedItem(), other.getContainedItem()) &&
+                ObjectUtility.equals(this.getContainedItem2(), other.getContainedItem2())) {
+            return true; 
+        } else {
+            return false; 
+        }
     }
 
     public boolean equalsByIdContainedItemsAndParentItem(ItemElement other) {
