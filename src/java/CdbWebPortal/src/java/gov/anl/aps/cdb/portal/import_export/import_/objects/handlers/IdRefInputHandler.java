@@ -20,35 +20,43 @@ public class IdRefInputHandler extends RefInputHandler {
             String setterMethod,
             CdbEntityController controller,
             Class paramType) {
+        
         super(columnIndex, propertyName, setterMethod, controller, paramType);
+    }
+    
+    protected CdbEntity getObjectWithId(String idString) {
+        
+        CdbEntity objValue = null;
+        try {
+            int id = Integer.valueOf(idString.trim());
+            if (objectIdMap.containsKey(id)) {
+                objValue = objectIdMap.get(id);
+            } else {
+                objValue = controller.findById(id);
+                if (objValue != null) {
+                    objectIdMap.put(objValue.getId(), objValue);
+                }
+            }
+        } catch (NumberFormatException ex) {
+        }
+        
+        return objValue;
     }
 
     @Override
     public ParseInfo parseCellValue(String strValue) {
+        
         boolean isValid = true;
         String validString = "";
         CdbEntity objValue = null;
         if (strValue != null && strValue.length() > 0) {
-            try {
-                int id = Integer.valueOf(strValue);
-                if (objectIdMap.containsKey(id)) {
-                    objValue = objectIdMap.get(id);
-                } else {
-                    objValue = controller.findById(id);
-                    if (objValue == null) {
-                        isValid = false;
-                        validString
-                                = "Unable to find object for: "
-                                + columnNameForIndex(columnIndex)
-                                + " with id: " + strValue;
-                    } else {
-                        objectIdMap.put(objValue.getId(), objValue);
-                    }
-                }
-            } catch (NumberFormatException ex) {
+            objValue = getObjectWithId(strValue);
+            if (objValue == null) {
                 isValid = false;
-                validString = "Invalid id number format: " + strValue
-                        + " for: " + columnNameForIndex(columnIndex);
+                validString
+                        = "Unable to find object for: "
+                        + columnNameForIndex(columnIndex)
+                        + " with id: " + strValue;
             }
         }
         return new ParseInfo<>(objValue, isValid, validString);

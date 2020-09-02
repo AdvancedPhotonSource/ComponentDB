@@ -14,8 +14,8 @@ import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
  */
 public class IdRefColumnSpec extends ColumnSpec {
 
-    private CdbEntityController controller;
-    private Class paramType;
+    protected CdbEntityController controller;
+    protected Class paramType;
 
     public IdRefColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType) {
         super(columnIndex, header, propertyName, entitySetterMethod, required, description);

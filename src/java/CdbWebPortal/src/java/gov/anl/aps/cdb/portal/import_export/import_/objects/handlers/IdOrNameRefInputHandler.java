@@ -13,7 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
  *
  * @author craig
  */
-public class IdOrNameRefInputHandler extends RefInputHandler {
+public class IdOrNameRefInputHandler extends IdRefInputHandler {
 
     String domainNameFilter = null;
 
@@ -24,6 +24,7 @@ public class IdOrNameRefInputHandler extends RefInputHandler {
             CdbEntityController controller,
             Class paramType,
             String domainNameFilter) {
+        
         super(columnIndex, propertyName, setterMethod, controller, paramType);
         this.domainNameFilter = domainNameFilter;
     }
@@ -71,31 +72,7 @@ public class IdOrNameRefInputHandler extends RefInputHandler {
 
             } else {
                 // process cell as numeric
-                int id = 0;
-                try {
-                    id = Integer.parseInt(strValue);
-                    // check cache for object so different references use same instance
-                    if (objectIdMap.containsKey(id)) {
-                        objValue = objectIdMap.get(id);
-                    } else {
-                        objValue = controller.findById(id);
-                        if (objValue == null) {
-                            String msg
-                                    = "Unable to find object for: "
-                                    + columnNameForIndex(columnIndex)
-                                    + " with id: " + id;
-                            return new ParseInfo<>(objValue, false, msg);
-                        } else {
-                            // add to cache
-                            objectIdMap.put(id, objValue);
-                        }
-                    }
-                } catch (NumberFormatException ex) {
-                    String msg = "Invalid number format"
-                            + " for: " + columnNameForIndex(columnIndex)
-                            + " id: " + strValue;
-                    return new ParseInfo<>(objValue, false, msg);
-                }
+                return super.parseCellValue(strValue);
             }
         }
 
