@@ -6,12 +6,12 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InitializeInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.InputHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
