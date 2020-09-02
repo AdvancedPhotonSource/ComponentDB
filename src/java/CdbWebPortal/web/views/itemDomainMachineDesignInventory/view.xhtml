@@ -37,11 +37,31 @@ See LICENSE file.
         #{entityController.subassemblyPageTitle}
     </ui:define>
 
+    <ui:define name="itemDomainMachineDesignListObject">
+        <ui:decorate template="../itemDomainMachineDesign/private/templates/itemDomainMachineDesignListObjectTemplate.xhtml">
+            <ui:define name="qrIdColumn"/>
+        </ui:decorate>
+    </ui:define>
+            
+    <ui:define name="itemQrIdLabel">
+        <ui:include src="../item/private/templateDefaults/itemFieldLabels/itemQrId.xhtml">
+            <ui:param name="rendered"
+                      value="#{entityController.currentTopLevel}"/>
+        </ui:include>
+    </ui:define>
+
+    <ui:define name="itemQrIdValue">
+        <ui:include src="../item/private/templateDefaults/itemFieldViewValues/itemQrId.xhtml">
+            <ui:param name="rendered"
+                      value="#{entityController.currentTopLevel}"/>
+        </ui:include>
+    </ui:define>
+
     <ui:define name="additionalSupport" >
         <ui:include src="../itemDomainMachineDesign/private/itemDomainMachineDesignViewSupport.xhtml"/> 
         <ui:include src="../itemStatus/private/itemStatusHistoryDialog.xhtml"/>  
     </ui:define>
-    
+
     <ui:define name="additionalMdItemInformation">        
         <ui:include src="../itemStatus/private/itemStatusPanelGridObject.xhtml"/>
     </ui:define>
