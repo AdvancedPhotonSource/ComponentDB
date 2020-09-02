@@ -115,7 +115,7 @@ public class ItemElementUtility {
     }
 
     public static void prepareItemElementHistory(List<ItemElement> originalItemElementList,
-            List<ItemElement> newItemElementList, EntityInfo entityInfo) {
+            List<ItemElement> newItemElementList, EntityInfo entityInfo) {                        
         for (ItemElement itemElementValue : newItemElementList) {
             int index = -1;
             if (originalItemElementList != null) {
@@ -132,9 +132,9 @@ public class ItemElementUtility {
                 // New item elements may be created hierarchically
                 Item containedItem = itemElementValue.getContainedItem();
                 if (containedItem != null) {
-                    List<ItemElement> itemElementDisplayList = containedItem.getItemElementDisplayList();
-                    if (itemElementDisplayList != null) {
-                        prepareItemElementHistory(null, itemElementDisplayList, entityInfo);
+                    List<ItemElement> fullItemElementList = containedItem.getFullItemElementList();
+                    if (fullItemElementList != null) {
+                        prepareItemElementHistory(null, fullItemElementList, entityInfo);
                     }
                 }
             }
