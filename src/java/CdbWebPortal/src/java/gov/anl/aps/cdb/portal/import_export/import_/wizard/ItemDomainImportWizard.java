@@ -5,9 +5,9 @@
 package gov.anl.aps.cdb.portal.import_export.import_.wizard;
 
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase;
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase.ImportInfo;
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase.OutputColumnModel;
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
@@ -35,14 +35,14 @@ public class ItemDomainImportWizard implements Serializable {
 
     public static final String CONTROLLER_NAMED = "importWizard";
 
-    protected static final String tabSelectFormat = "SelectFormatTab";
-    protected static final String tabSelectFile = "SelectFileTab";
-    protected static final String tabValidate = "ValidateTab";
-    protected static final String tabResults = "ResultsTab";
+    protected static final String TAB_SELECT_FORMAT = "SelectFormatTab";
+    protected static final String TAB_SELECT_FILE = "SelectFileTab";
+    protected static final String TAB_VALIDATE = "ValidateTab";
+    protected static final String TAB_RESULTS = "ResultsTab";
 
     protected ImportHelperBase importHelper = null;
 
-    protected String currentTab = tabSelectFormat;
+    protected String currentTab = TAB_SELECT_FORMAT;
 
     private Boolean disableButtonPrev = true;
     private Boolean disableButtonNext = true;
@@ -317,8 +317,8 @@ public class ItemDomainImportWizard implements Serializable {
         String currStep = event.getOldStep();
         
         // create helper if moving from select format tab to select file tab
-        if ((currStep.endsWith(tabSelectFormat))
-                && (nextStep.endsWith(tabSelectFile))) {
+        if ((currStep.endsWith(TAB_SELECT_FORMAT))
+                && (nextStep.endsWith(TAB_SELECT_FILE))) {
             createHelperForSelectedFormat();
             if (importHelper == null) {
                 // don't allow transition if we couldn't create helper
@@ -332,8 +332,8 @@ public class ItemDomainImportWizard implements Serializable {
         }
 
         // parse file if moving from select file tab to validate tab
-        if ((currStep.endsWith(tabSelectFile))
-                && (nextStep.endsWith(tabValidate))) {
+        if ((currStep.endsWith(TAB_SELECT_FILE))
+                && (nextStep.endsWith(TAB_VALIDATE))) {
             boolean result = 
                     importHelper.readXlsxFileData(uploadfileData, selectedSheet);
             if (!result) {
@@ -342,8 +342,8 @@ public class ItemDomainImportWizard implements Serializable {
         }
 
         // trigger import process if moving from validate tab to results tab
-        if ((currStep.endsWith(tabValidate))
-                && (nextStep.endsWith(tabResults))) {
+        if ((currStep.endsWith(TAB_VALIDATE))
+                && (nextStep.endsWith(TAB_RESULTS))) {
             triggerImport();
         }
 
@@ -385,7 +385,7 @@ public class ItemDomainImportWizard implements Serializable {
      * Resets models for wizard components.
      */
     protected void reset() {
-        currentTab = tabSelectFormat;
+        currentTab = TAB_SELECT_FORMAT;
         selectedFormatName = null;
         uploadfileData = null;
         importHelper = null;
@@ -441,7 +441,7 @@ public class ItemDomainImportWizard implements Serializable {
         disableButtonFinish = true;
         disableButtonNext = true;
 
-        if (tab.endsWith(tabSelectFormat)) {
+        if (tab.endsWith(TAB_SELECT_FORMAT)) {
             disableButtonPrev = true;
             disableButtonCancel = false;
             disableButtonFinish = true;
@@ -452,7 +452,7 @@ public class ItemDomainImportWizard implements Serializable {
                 disableButtonNext = true;
             }
 
-        } else if (tab.endsWith(tabSelectFile)) {
+        } else if (tab.endsWith(TAB_SELECT_FILE)) {
             disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonFinish = true;
@@ -463,7 +463,7 @@ public class ItemDomainImportWizard implements Serializable {
                 disableButtonNext = true;
             }
             
-        } else if (tab.endsWith(tabValidate)) {
+        } else if (tab.endsWith(TAB_VALIDATE)) {
             disableButtonPrev = true;
             disableButtonCancel = false;
             /* if (importHelper.isValidationOnly()) {
@@ -474,7 +474,7 @@ public class ItemDomainImportWizard implements Serializable {
                 disableButtonNext = false;
             }
             
-        } else if (tab.endsWith(tabResults)) {
+        } else if (tab.endsWith(TAB_RESULTS)) {
             disableButtonPrev = true;
             disableButtonCancel = true;
             disableButtonFinish = false;

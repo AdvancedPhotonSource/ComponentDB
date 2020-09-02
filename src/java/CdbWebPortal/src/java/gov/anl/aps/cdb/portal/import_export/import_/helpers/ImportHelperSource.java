@@ -4,8 +4,10 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.ArrayList;
 import java.util.List;

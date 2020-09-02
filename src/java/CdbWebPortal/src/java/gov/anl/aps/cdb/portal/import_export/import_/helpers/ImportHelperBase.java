@@ -6,14 +6,19 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.InitializeInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.InputHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -51,856 +55,6 @@ import org.primefaces.model.file.UploadedFile;
  */
 public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityControllerType extends CdbEntityController> {
 
-    protected abstract class ColumnSpec {
-        
-        private int columnIndex;
-        private String header;
-        private String propertyName;
-        private String entitySetterMethod;
-        private boolean required;
-        private String description;
-        
-        public ColumnSpec(
-                int columnIndex,
-                String header,
-                String propertyName,
-                String entitySetterMethod,
-                boolean required,
-                String description) {
-            
-            this.columnIndex = columnIndex;
-            this.header = header;
-            this.propertyName = propertyName;
-            this.entitySetterMethod = entitySetterMethod;
-            this.required = required;
-            this.description = description;
-        }
-
-        public int getColumnIndex() {
-            return columnIndex;
-        }
-
-        public String getHeader() {
-            return header;
-        }
-
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        public String getEntitySetterMethod() {
-            return entitySetterMethod;
-        }
-
-        public boolean isRequired() {
-            return required;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-        
-        public abstract InputHandler createInputHandlerInstance();
-
-    }
-    
-    protected class StringColumnSpec extends ColumnSpec {
-        
-        private int maxLength;
-        
-        public StringColumnSpec(
-                int columnIndex,
-                String header,
-                String propertyName,
-                String entitySetterMethod,
-                boolean required,
-                String description,
-                int maxLength) {
-                    
-            super(columnIndex, header, propertyName, entitySetterMethod, required, description);
-            this.maxLength = maxLength;
-        }
-
-        public int getMaxLength() {
-            return maxLength;
-        }
-        
-        @Override
-        public InputHandler createInputHandlerInstance() {
-            return new StringInputHandler(
-                    getColumnIndex(), 
-                    getPropertyName(), 
-                    getEntitySetterMethod(), 
-                    getMaxLength());
-        }
-    }
-    
-    protected class BooleanColumnSpec extends ColumnSpec {
-        
-        public BooleanColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description) {
-            super(columnIndex, header, propertyName, entitySetterMethod, required, description);
-        }
-        
-        @Override
-        public InputHandler createInputHandlerInstance() {
-            return new BooleanInputHandler(
-                    getColumnIndex(), getPropertyName(), getEntitySetterMethod());
-        }
-    }
-    
-    protected class IntegerColumnSpec extends ColumnSpec {
-        
-        public IntegerColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description) {
-            super(columnIndex, header, propertyName, entitySetterMethod, required, description);
-        }
-        
-        @Override
-        public InputHandler createInputHandlerInstance() {
-            return new IntegerInputHandler(
-                    getColumnIndex(), getPropertyName(), getEntitySetterMethod());
-        }
-    }
-    
-    protected class IdRefColumnSpec extends ColumnSpec {
-        
-        private CdbEntityController controller;
-        private Class paramType;
-        
-        public IdRefColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType) {
-            super(columnIndex, header, propertyName, entitySetterMethod, required, description);
-            this.controller = controller;
-            this.paramType = paramType;
-        }
-        
-        @Override
-        public InputHandler createInputHandlerInstance() {
-            return new IdRefInputHandler(
-                    getColumnIndex(),
-                    getPropertyName(),
-                    getEntitySetterMethod(),
-                    controller,
-                    paramType);
-        }
-    }
-    
-    protected class IdOrNameRefColumnSpec extends ColumnSpec {
-        
-        private CdbEntityController controller;
-        private Class paramType;
-        private String domainNameFilter = null;
-        
-        public IdOrNameRefColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType, String domainNameFilter) {
-            super(columnIndex, header, propertyName, entitySetterMethod, required, description);
-            this.controller = controller;
-            this.paramType = paramType;
-            this.domainNameFilter = domainNameFilter;
-        }
-        
-        @Override
-        public InputHandler createInputHandlerInstance() {
-            return new IdOrNameRefInputHandler(
-                    getColumnIndex(),
-                    getPropertyName(),
-                    getEntitySetterMethod(),
-                    controller,
-                    paramType,
-                    domainNameFilter);
-        }
-    }
-    
-    public class OutputColumnModel implements Serializable {
-        
-        private int columnIndex;
-        private String header = null;
-        private String domainProperty = null;
-        
-        public OutputColumnModel(
-                int columnIndex,
-                String header, 
-                String domainProperty) {
-            
-            this.columnIndex = columnIndex;
-            this.header = header;
-            this.domainProperty = domainProperty; // must have getter method
-        }
-        
-        public int getColumnIndex() {
-            return columnIndex;
-        }
-
-        public String getHeader() {
-            return header;
-        }
-
-        public String getDomainProperty() {
-            return domainProperty;
-        }
-
-    }
-    
-    public class InputColumnModel {
-        
-        protected int columnIndex;
-        protected String name;
-        protected String description = null;
-        protected boolean required = false;
-        
-        public InputColumnModel(
-                int columnIndex,
-                String name,
-                boolean required,
-                String description) {
-            
-            this.columnIndex = columnIndex;
-            this.name = name;
-            this.description = description;
-            this.required = required;
-        }
-        
-        public int getColumnIndex() {
-            return columnIndex;
-        }
-                
-        public String getName() {
-            return name;
-        }
-        
-        public String getDescription() {
-            return description;
-        }
-
-        public boolean isRequired() {
-            return this.required;
-        }
-
-    }
-    
-    public abstract class InputHandler {
-        
-        public abstract ValidInfo handleInput(
-                Row row, 
-                Map<Integer, String> cellValueMap, 
-                Map<String, Object> rowMap);
-        
-        public ValidInfo updateEntity(
-                Map<String, Object> rowMap, 
-                EntityType entity) {
-            return new ValidInfo(true, "");
-        }
-        
-    }
-    
-    public abstract class SingleColumnInputHandler extends InputHandler {
-        
-        protected int columnIndex;
-        
-        public SingleColumnInputHandler(int columnIndex) {
-            this.columnIndex = columnIndex;
-        }
-        
-        public int getColumnIndex() {
-            return columnIndex;
-        }
-    }
-    
-    public abstract class ColumnRangeInputHandler extends InputHandler {
-
-        private int firstColumnIndex;
-        private int lastColumnIndex;
-        
-        public ColumnRangeInputHandler(int firstColumnIndex, int lastColumnIndex) {
-            this.firstColumnIndex = firstColumnIndex;
-            this.lastColumnIndex = lastColumnIndex;
-        }
-        
-        public int getFirstColumnIndex() {
-            return firstColumnIndex;
-        }
-
-        public int getLastColumnIndex() {
-            return lastColumnIndex;
-        }
-                
-    }
-    
-    public abstract class SimpleInputHandler extends SingleColumnInputHandler {
-        
-        protected String propertyName = null;
-        protected String setterMethod = null;
-
-        public SimpleInputHandler(
-                int columnIndex,
-                String propertyName,
-                String setterMethod) {
-            super(columnIndex);
-            this.propertyName = propertyName;
-            this.setterMethod = setterMethod;
-        }
-
-        public String getPropertyName() {
-            return propertyName;
-        }
-
-        public String getSetterMethod() {
-            return setterMethod;
-        }
-
-        public abstract ParseInfo parseCellValue(String cellValue);
-        
-        public abstract Class getParamType();
-        
-        @Override
-        public ValidInfo handleInput(
-                Row row, 
-                Map<Integer, String> cellValueMap, 
-                Map<String, Object> rowMap) {
-            
-            boolean isValid = true;
-            String validString = "";
-            
-            String cellValue = cellValueMap.get(columnIndex);
-                        
-            if (cellValue != null && (!cellValue.isEmpty())) {
-                
-                // process the parsed value
-                ParseInfo result = parseCellValue(cellValue);
-                Object parsedValue = result.getValue();
-                if (!result.getValidInfo().isValid()) {
-                    isValid = false;
-                    validString = result.getValidInfo().getValidString();
-                }
-
-                // add to row dictionary
-                rowMap.put(getPropertyName(), parsedValue);
-            }
-            
-            return new ValidInfo(isValid, validString);
-        }
-        
-        @Override
-        public ValidInfo updateEntity(Map<String, Object> rowMap, EntityType entity) {
-            
-            boolean isValid = true;
-            String validString = "";
-            String methodLogName = "SimpleInputHandler::updateEntity() ";
-            
-            // get row dictionary value
-            Object parsedValue = rowMap.get(getPropertyName());
-            if (parsedValue != null) {
-                try {
-                    String setterMethodName = getSetterMethod();
-                    if ((setterMethodName != null) && (!setterMethodName.equals(""))) {
-                        // use reflection to invoke setter method on entity instance
-                        Method method;
-                        Class paramType = getParamType();
-                        method = entity.getClass().getMethod(getSetterMethod(), paramType);
-                        method.invoke(entity, parsedValue);
-                    }
-                } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    isValid = false;
-                    validString
-                            = "Unable to invoke setter method: " + getSetterMethod()
-                            + " for column: " + columnNameForIndex(columnIndex)
-                            + " reason: " + ex.getClass().getName();
-                    LOGGER.info(methodLogName + validString);
-                    return new ValidInfo(isValid, validString);
-                }
-            }
-            
-            return new ValidInfo(isValid, validString);
-        }
-    }
-
-    public class StringInputHandler extends SimpleInputHandler {
-
-        protected int maxLength = 0;
-        
-        public StringInputHandler(
-                int columnIndex,
-                String propertyName,
-                String setterMethod, 
-                int maxLength) {
-            super(columnIndex, propertyName, setterMethod);
-            this.maxLength = maxLength;
-        }
-
-        public int getMaxLength() {
-            return maxLength;
-        }
-
-        @Override
-        public ParseInfo parseCellValue(String value) {
-            
-            boolean isValid = true;
-            String validString = "";
-            
-            if ((getMaxLength() > 0) && (value.length() > getMaxLength())) {
-                isValid = false;
-                validString = appendToString(validString, 
-                        "Value length exceeds " + getMaxLength() + 
-                                " characters for column " + columnNameForIndex(columnIndex));
-            }
-            return new ParseInfo<>(value, isValid, validString);
-        }
-        
-        @Override
-        public Class getParamType() {
-            return String.class;
-        }
-    }
-
-    public class BooleanInputHandler extends SimpleInputHandler {
-
-        public BooleanInputHandler(int columnIndex, String propertyName, String setterMethod) {
-            super(columnIndex, propertyName, setterMethod);
-        }
-
-        @Override
-        public ParseInfo parseCellValue(String stringValue) {
-            
-            Boolean parsedValue = null;
-            boolean isValid = true;
-            String validString = "";
-
-            if (stringValue.length() == 0) {
-                parsedValue = null;
-                isValid = true;
-                validString = "";
-            } else {
-                if (stringValue.equalsIgnoreCase("true") || stringValue.equals("1") || stringValue.equals("yes")) {
-                    parsedValue = true;
-                } else if (stringValue.equalsIgnoreCase("false") || stringValue.equals("0") || stringValue.equals("no")) {
-                    parsedValue = false;
-                } else {
-                    parsedValue = null;
-                    isValid = false;
-                    validString = "unexpected boolean value: " + stringValue
-                            + " for column: " + columnNameForIndex(columnIndex);
-                }
-            }
-
-            return new ParseInfo<>(parsedValue, isValid, validString);
-        }
-        
-        @Override
-        public Class getParamType() {
-            return Boolean.class;
-        }
-    }
-    
-    public class IntegerInputHandler extends SimpleInputHandler {
-
-        public IntegerInputHandler(int columnIndex, String propertyName, String setterMethod) {
-            super(columnIndex, propertyName, setterMethod);
-        }
-
-        @Override
-        public ParseInfo parseCellValue(String stringValue) {
-            
-            Integer parsedValue = null;
-            boolean isValid = true;
-            String validString = "";
-
-            if (stringValue.length() == 0) {
-                parsedValue = null;
-                isValid = true;
-                validString = "";
-            } else {
-                try {
-                    parsedValue = Integer.valueOf(stringValue);
-                } catch (NumberFormatException ex) {
-                    isValid = false;
-                    validString = "invalid integer format: " + stringValue;
-                }
-            }
-
-            return new ParseInfo<>(parsedValue, isValid, validString);
-        }
-        
-        @Override
-        public Class getParamType() {
-            return Integer.class;
-        }
-    }
-    
-    public abstract class RefInputHandler extends SimpleInputHandler {
-        
-        protected CdbEntityController controller;
-        protected Class paramType;
-        
-        protected Map<Object, CdbEntity> objectIdMap = new HashMap<>();
-
-        public RefInputHandler(
-                int columnIndex, 
-                String propertyName,
-                String setterMethod, 
-                CdbEntityController controller, 
-                Class paramType) {
-            super(columnIndex, propertyName, setterMethod);
-            this.controller = controller;
-            this.paramType = paramType;
-        }
-        
-        @Override
-        public Class getParamType() {
-            return paramType;
-        }
-    }
-
-    public class IdRefInputHandler extends RefInputHandler {
-        
-        public IdRefInputHandler(
-                int columnIndex, 
-                String propertyName,
-                String setterMethod, 
-                CdbEntityController controller, 
-                Class paramType) {
-            super(columnIndex, propertyName, setterMethod, controller, paramType);
-        }
-
-        @Override
-        public ParseInfo parseCellValue(String strValue) {
-            boolean isValid = true;
-            String validString = "";
-            CdbEntity objValue = null;
-            if (strValue != null && strValue.length() > 0) {
-                try {
-                    int id = Integer.valueOf(strValue);
-                    if (objectIdMap.containsKey(id)) {
-                        objValue = objectIdMap.get(id);
-                        LOGGER.debug("found object in cache with id: " + id);
-                    } else {
-                        objValue = controller.findById(id);
-                        if (objValue == null) {
-                            isValid = false;
-                            validString
-                                    = "Unable to find object for: "
-                                    + columnNameForIndex(columnIndex)
-                                    + " with id: " + strValue;
-                        } else {
-                            objectIdMap.put(objValue.getId(), objValue);
-                        }
-                    }
-                } catch (NumberFormatException ex) {
-                    isValid = false;
-                    validString = "Invalid id number format: " + strValue +
-                            " for: " + columnNameForIndex(columnIndex);
-                }
-            }
-            return new ParseInfo<>(objValue, isValid, validString);
-        }
-    }
-
-    public class IdOrNameRefInputHandler extends RefInputHandler {
-        
-        String domainNameFilter = null;
-        
-        public IdOrNameRefInputHandler(
-                int columnIndex, 
-                String propertyName,
-                String setterMethod, 
-                CdbEntityController controller, 
-                Class paramType, 
-                String domainNameFilter) {
-            super(columnIndex, propertyName, setterMethod, controller, paramType);
-            this.domainNameFilter = domainNameFilter;
-        }
-
-        @Override
-        public ParseInfo parseCellValue(String strValue) {
-            
-            CdbEntity objValue = null;
-            if ((strValue != null) && (!strValue.isEmpty())) {
-                
-                if (strValue.charAt(0) == '#') {
-                    // process cell as name if first char is #
-                    if (strValue.length() < 2) {
-                        String msg = 
-                                "Invalid name format for: "
-                                    + columnNameForIndex(columnIndex)
-                                    + " name: " + strValue;
-                        return new ParseInfo<>(objValue, false, msg);
-                    }
-                    String name = strValue.substring(1);
-                    try {
-                        objValue = controller.findUniqueByName(name, domainNameFilter);
-                        if (objValue == null) {
-                            String msg = 
-                                    "Unable to find object for: "
-                                    + columnNameForIndex(columnIndex)
-                                    + " with name: " + name;
-                            return new ParseInfo<>(objValue, false, msg);
-                        } else {
-                            // check cache for object so different references use same instance
-                            int id = (Integer) objValue.getId();
-                            if (objectIdMap.containsKey(id)) {
-                                objValue = objectIdMap.get(id);
-                                LOGGER.debug("found object in cache with id: " + id);
-                            } else {
-                                // add this instance to cache
-                                objectIdMap.put(id, objValue);
-                            }
-                        }
-                    } catch (CdbException ex) {
-                        String msg = "Exception searching for object with name: " + name
-                                + " for: " + columnNameForIndex(columnIndex)
-                                + " reason: " + ex.getMessage();
-                        return new ParseInfo<>(objValue, false, msg);
-                    }
-
-                } else {
-                    // process cell as numeric
-                    int id = 0;
-                    try {
-                        id = Integer.parseInt(strValue);
-                        // check cache for object so different references use same instance
-                        if (objectIdMap.containsKey(id)) {
-                            objValue = objectIdMap.get(id);
-                            LOGGER.debug("found object in cache with id: " + id);
-                        } else {
-                            objValue = controller.findById(id);
-                            if (objValue == null) {
-                                String msg = 
-                                    "Unable to find object for: "
-                                    + columnNameForIndex(columnIndex)
-                                    + " with id: " + id;
-                                return new ParseInfo<>(objValue, false, msg);
-                            } else {
-                                // add to cache
-                                objectIdMap.put(id, objValue);
-                            }
-                        }
-                    } catch (NumberFormatException ex) {
-                        String msg = "Invalid number format"
-                                + " for: " + columnNameForIndex(columnIndex)
-                                + " id: " + strValue;
-                        return new ParseInfo<>(objValue, false, msg);
-                    }
-                }
-            }
-            
-            return new ParseInfo<>(objValue, true, "");
-        }
-    }
-    
-    /**
-     * Supports the definition of a hierarchy using the indent levels in a range
-     * of columns in the import spreadsheet. Each row is expected to contain a
-     * single value in the range of columns.  The level of hierarchy is determined
-     * by which column of the range the value appears in.  A value in the first
-     * column of the range is at the top of the hierarchy.  The "parent" of
-     * a row in the spreadsheet is the last row that contains a value at the 
-     * previous indent level.  E.g., the parent of an item whose name appears in
-     * the third column of the range is the last item whose name was in the
-     * second column, etc.
-     */
-    protected class HierarchyHandler extends ColumnRangeInputHandler {
-
-        protected int maxLength = 0;
-        private String valueKey;
-        private String indentKey;
-
-        public HierarchyHandler(
-                int firstIndex, 
-                int lastIndex, 
-                int maxLength, 
-                String valueKey, 
-                String indentKey) {
-            super(firstIndex, lastIndex);
-            this.maxLength = maxLength;
-            this.valueKey = valueKey;
-            this.indentKey = indentKey;
-        }
-
-        public int getMaxLength() {
-            return maxLength;
-        }
-
-        @Override
-        public ValidInfo handleInput(
-                Row row,
-                Map<Integer, String> cellValueMap,
-                Map<String, Object> rowMap) {
-
-            boolean isValid = true;
-            String validString = "";
-
-            int currentIndentLevel = 1;
-            int itemIndentLevel = 0;
-            String itemName = null;
-            for (int colIndex = getFirstColumnIndex();
-                    colIndex <= getLastColumnIndex();
-                    colIndex++) {
-
-                String parsedValue = cellValueMap.get(colIndex);
-                if ((parsedValue != null) && (!parsedValue.isEmpty())) {
-                    if (itemName != null) {
-                        // invalid, we have a value in 2 columns
-                        isValid = false;
-                        validString = "Found value in multiple 'Level' columns, only one allowed";
-                    } else {
-                        itemName = parsedValue;
-                        itemIndentLevel = currentIndentLevel;
-                    }
-                }
-
-                currentIndentLevel = currentIndentLevel + 1;
-            }
-
-            if (itemName != null) {
-
-                // check column length is valid
-                if ((getMaxLength() > 0) && (itemName.length() > getMaxLength())) {
-                    isValid = false;
-                    validString = appendToString(validString,
-                            "Invalid name, length exceeds " + getMaxLength());
-                }
-
-                // set item info
-                rowMap.put(valueKey, itemName);
-                rowMap.put(indentKey, itemIndentLevel);
-            }
-
-            return new ValidInfo(isValid, validString);
-        }
-    }
-
-    public class InitializeInfo {
-        public List<InputColumnModel> inputColumns;
-        public List<InputHandler> inputHandlers;
-        public List<OutputColumnModel> outputColumns;
-        public ValidInfo validInfo;
-        
-        public InitializeInfo(
-                List<InputColumnModel> inputColumns,
-                List<InputHandler> inputHandlers,
-                List<OutputColumnModel> outputColumns,
-                ValidInfo validInfo) {
-            
-            this.inputColumns = inputColumns;
-            this.inputHandlers = inputHandlers;
-            this.outputColumns = outputColumns;
-            this.validInfo = validInfo;            
-        }
-    }
-
-    static public class ValidInfo {
-
-        protected boolean isValid = false;
-        protected String validString = "";
-        protected boolean isDuplicate = false;
-
-        public ValidInfo(boolean iv, String s) {
-            isValid = iv;
-            validString = s;
-        }
-        
-        public ValidInfo(boolean iv, String s, boolean d) {
-            this(iv, s);
-            isDuplicate = d;
-        }
-
-        public boolean isValid() {
-            return isValid;
-        }
-
-        public void isValid(boolean b) {
-            isValid = b;
-        }
-
-        public String getValidString() {
-            return validString;
-        }
-
-        public void setValidString(String s) {
-            validString = s;
-        }
-        
-        public boolean isDuplicate() {
-            return isDuplicate;
-        }
-    }
-    
-    static public class ParseInfo<ValueType extends Object> {
-
-        protected ValueType value = null;
-        protected ValidInfo validInfo = null;
-
-        public ParseInfo(ValueType v, boolean iv, String s) {
-            value = v;
-            validInfo = new ValidInfo(iv, s);
-        }
-
-        public ParseInfo(ValueType v, boolean iv, String s, boolean d) {
-            value = v;
-            validInfo = new ValidInfo(iv, s, d);
-        }
-
-        public ValidInfo getValidInfo() {
-            return validInfo;
-        }
-        
-        public ValueType getValue() {
-            return value;
-        }
-        
-    }
-
-    public class ImportInfo {
-
-        protected boolean importSuccessful = true;
-        protected String message = "";
-
-        public ImportInfo(boolean s, String m) {
-            importSuccessful = s;
-            message = m;
-        }
-
-        public boolean isImportSuccessful() {
-            return importSuccessful;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
-    
-    protected class CreateInfo {
-        
-        private EntityType entity;
-        private ValidInfo validInfo;
-        
-        public CreateInfo(EntityType entity, ValidInfo validInfo) {
-            this.entity = entity;
-            this.validInfo = validInfo;
-        }
-        
-        public CreateInfo(EntityType entity, boolean isValid, String validString) {
-            this(entity, new ValidInfo(isValid, validString));
-        }
-
-        public EntityType getEntity() {
-            return entity;
-        }
-
-        public ValidInfo getValidInfo() {
-            return validInfo;
-        }
-        
-    }
-
-    protected class InputColumnInfo {
-        public String name;
-        public boolean isRequired;
-        public String description;
-        
-        public InputColumnInfo(String name, boolean isRequired, String description) {
-            this.name = name;
-            this.isRequired = isRequired;
-            this.description = description;
-        }
-    }
-    
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperBase.class.getName());
 
     private static final String HEADER_IS_VALID = "Is Valid";
@@ -958,7 +112,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             Map<Integer, String> headerValueMap) {
         
         List<InputColumnModel> inputColumns = new ArrayList<>();
-        List<InputHandler> inputHandlers = new ArrayList<>();
+        List<InputHandler> handlers = new ArrayList<>();
         List<OutputColumnModel> outputColumns = new ArrayList<>();
         
         List<ColumnSpec> columnSpecs = getColumnSpecs();        
@@ -970,7 +124,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     spec.isRequired(),
                     spec.getDescription()));
             
-            inputHandlers.add(spec.createInputHandlerInstance());
+            handlers.add(spec.createInputHandlerInstance());
             
             outputColumns.add(new OutputColumnModel(
                     spec.getColumnIndex(),
@@ -982,10 +136,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 actualColumnCount, 
                 headerValueMap, 
                 inputColumns, 
-                inputHandlers, 
+                handlers, 
                 outputColumns);
         
-        return new InitializeInfo(inputColumns, inputHandlers, outputColumns, validInfo);
+        return new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
     }
     
     /**
@@ -1093,7 +247,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     protected String parseStringCell(Cell cell) {
 
-        String parsedValue = "";
+        String parsedValue;
 
         if (cell == null) {
             parsedValue = "";
@@ -1150,7 +304,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected boolean readXlsFileData(UploadedFile f) {
 
         InputStream inputStream;
-        HSSFWorkbook workbook = null;
+        HSSFWorkbook workbook;
         try {
             inputStream = f.getInputStream();
             workbook = new HSSFWorkbook(inputStream);
@@ -1170,7 +324,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public boolean readXlsxFileData(UploadedFile f, String sheetName) {
 
         InputStream inputStream;
-        XSSFWorkbook workbook = null;
+        XSSFWorkbook workbook;
         try {
             inputStream = f.getInputStream();
             workbook = new XSSFWorkbook(inputStream);
@@ -1197,7 +351,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         List<String> sheetNames = new ArrayList<>();
         
         InputStream inputStream;
-        XSSFWorkbook workbook = null;
+        XSSFWorkbook workbook;
         try {
             inputStream = f.getInputStream();
             workbook = new XSSFWorkbook(inputStream);
@@ -1222,7 +376,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         String logMethodName = "validateSheet() ";
         
         InputStream inputStream;
-        XSSFWorkbook workbook = null;
+        XSSFWorkbook workbook;
         try {
             inputStream = f.getInputStream();
             workbook = new XSSFWorkbook(inputStream);
@@ -1306,7 +460,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     "Removed " + dupCount + 
                             " rows that already exist in database: (" + dupString + ")");
         }
-        if (rows.size() == 0) {
+        if (rows.isEmpty()) {
             // nothing to import, this will disable the "next" button
             validInput = false;
             validationMessage = appendToString(
@@ -1425,7 +579,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         
         CreateInfo createInfo = createEntityInstance(rowDict);
-        EntityType newEntity = createInfo.getEntity();
+        EntityType newEntity = (EntityType) createInfo.getEntity();
         ValidInfo createValidInfo = createInfo.getValidInfo();
         if (!createValidInfo.isValid()) {
             validString = appendToString(validString, createValidInfo.getValidString());
@@ -1481,11 +635,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     protected boolean isCommentRow(Map<Integer, String> cellValues) {
         String value = cellValues.get(0);
-        if (value.trim().startsWith(INDICATOR_COMMENT)) {
-            return true;
-        } else {
-            return false;
+        if ((value != null) && (!value.isEmpty())) {
+            if (value.trim().startsWith(INDICATOR_COMMENT)) {
+                return true;
+            }
         }
+        return false;
     }
     
     /**
@@ -1504,12 +659,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         EntityControllerType controller = this.getEntityController();
 
-        String message = "";
+        String message;
         try {
             controller.createList(rows);
             message = "Import succeeded, created " + rows.size() + " instances";
         } catch (CdbException | RuntimeException ex) {
-            Throwable t = ExceptionUtils.getRootCause(ex);
             return new ImportInfo(false, "Import failed. " + ex.getClass().getName());
         }
         
