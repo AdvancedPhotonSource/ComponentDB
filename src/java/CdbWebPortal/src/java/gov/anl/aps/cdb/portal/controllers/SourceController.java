@@ -4,9 +4,10 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperSource;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperSource;
 import gov.anl.aps.cdb.portal.controllers.settings.SourceSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;

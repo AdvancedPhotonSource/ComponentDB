@@ -2,11 +2,15 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
-package gov.anl.aps.cdb.portal.controllers.extensions;
+package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemElementController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;

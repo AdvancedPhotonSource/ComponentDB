@@ -2,17 +2,20 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
-package gov.anl.aps.cdb.portal.controllers.extensions;
+package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdRefListColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +28,7 @@ import java.util.Map;
 public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCatalog, ItemDomainCableCatalogController> {
 
 
+    @Override
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
@@ -38,7 +42,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
         specs.add(new StringColumnSpec(6, "Part Number", "partNumber", "setPartNumber", false, "Manufacturer's part number, e.g., R-024-DS-5K-FSUBR", 32));
         specs.add(new StringColumnSpec(7, "Alt Part Num", "altPartNumber", "setAltPartNumber", false, "Manufacturer's alternate part number, e.g., 760152413", 256));
         specs.add(new IdOrNameRefColumnSpec(8, "Owner", "team", "setTeam", false, "Numeric ID of CDB technical system.", ItemCategoryController.getInstance(), ItemCategory.class, ItemDomainName.cableCatalog.getValue()));
-        specs.add(new IdOrNameRefColumnSpec(9, "Project", "itemProjectString", "setProject", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class, ""));
+        specs.add(new IdRefListColumnSpec(9, "Project", "itemProjectString", "setItemProjectList", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), List.class));
         specs.add(new StringColumnSpec(10, "Diameter", "diameter", "setDiameter", false, "Diameter in inches (max).", 256));
         specs.add(new StringColumnSpec(11, "Weight", "weight", "setWeight", false, "Nominal weight in lbs/1000 feet.", 256));
         specs.add(new StringColumnSpec(12, "Conductors", "conductors", "setConductors", false, "Number of conductors/fibers", 256));

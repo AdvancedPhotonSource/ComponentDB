@@ -14,23 +14,25 @@ See LICENSE file.
               id="dialogEndpoint"
               widgetVar="endpointDialog" 
               modal="true"
-              closable="false">
+              closable="false"
+              width="500">
 
         <ui:decorate template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
             <ui:param name="viewId" value="endpointDialogTree" />
-            <ui:param name="hideOptionalColumns" value="#{false}" /> 
-            <ui:param name="valueModel" value="#{entityController.dialogEndpoint.valueModelTree}" />
-            <ui:param name="selectionModel" value="#{entityController.dialogEndpoint.selectionModelEndpoint}" />
+            <ui:param name="hideOptionalColumns" value="#{false}" />
+            <ui:param name="valueModel" value="#{itemDomainCableDesignController.dialogEndpoint.valueModelTree}" />
+            <ui:param name="selectionModel" value="#{itemDomainCableDesignController.dialogEndpoint.selectionModelEndpoint}" />
             <ui:param name="rendered" value="#{true}" />
             <ui:param name="scrollable" value="#{true}" />
             <ui:define name="treeTableEvents">
-                <p:ajax event="select" 
-                        listener="#{entityController.dialogEndpoint.selectListenerEndpoint}" 
+                <p:ajax event="select"
+                        listener="#{itemDomainCableDesignController.dialogEndpoint.selectListenerEndpoint}"
                         oncomplete="updateButtonsDialogEndpoint();" />
-                <p:ajax event="unselect" 
-                        listener="#{entityController.dialogEndpoint.selectListenerEndpoint}" 
+                <p:ajax event="unselect"
+                        listener="#{itemDomainCableDesignController.dialogEndpoint.selectListenerEndpoint}"
                         oncomplete="updateButtonsDialogEndpoint();" />
             </ui:define>
+            <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
         </ui:decorate>
 
         <f:facet name="footer" class="dialog">

@@ -5,8 +5,8 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCatalog;
-import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCatalogAssembly;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCatalog;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCatalogAssembly;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogSettings;

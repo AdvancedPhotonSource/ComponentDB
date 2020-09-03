@@ -2,16 +2,25 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
-package gov.anl.aps.cdb.portal.controllers.extensions;
+package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.SingleColumnInputHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
@@ -67,14 +76,15 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
             boolean isValid = true;
             String validString = "";
             
-            String parsedValue = cellValueMap.get(columnIndex);
+            String parsedValue = cellValueMap.get(getColumnIndex());
 
             // check column length is valid
             if ((getMaxLength() > 0) && (parsedValue.length() > getMaxLength())) {
                 isValid = false;
-                validString = appendToString(validString, 
-                        "Value length exceeds " + getMaxLength() + 
-                                " characters for column " + columnNameForIndex(columnIndex));
+                validString = 
+                        "Value length exceeds " + 
+                        String.valueOf(getMaxLength()) + 
+                        " characters for column: Name";
             }
                 
             // replace "#cdbid#" with a unique identifier
@@ -90,14 +100,15 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         @Override
         public ValidInfo updateEntity(
                 Map<String, Object> rowMap, 
-                ItemDomainCableDesign entity) {
+                CdbEntity entity) {
             
-            entity.setName((String)rowMap.get(PROPERTY));
+            ((ItemDomainCableDesign)entity).setName((String)rowMap.get(PROPERTY));
             
             return new ValidInfo(true, "");
         }
     }
 
+    @Override
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
