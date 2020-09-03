@@ -259,6 +259,18 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
+    
+    public List<ItemDomainEntity> findByDomainAndEntityTypeAndTopLevelOrderByDerivedFromItem(String domainName, String entityTypeName) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndTopLevelOrderByDerivedFromItem")
+                    .setParameter("domainName", domainName)
+                    .setParameter("entityTypeName", entityTypeName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
 
     public List<ItemDomainEntity> findByDomain(String domainName) {
         try {
