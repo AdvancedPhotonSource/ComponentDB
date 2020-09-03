@@ -1216,7 +1216,7 @@ public class ItemDomainMachineDesignController
                 Float sortOrder = o1.getSortOrder();
                 Float sortOrder1 = o2.getSortOrder();
 
-                if (ObjectUtility.equals(o1, o2)) {
+                if (ObjectUtility.equals(sortOrder, sortOrder1)) {
                     return 0;
                 }
 
@@ -2259,10 +2259,6 @@ public class ItemDomainMachineDesignController
 
         ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) currentEditItemElement.getContainedItem();
 
-        if (containedItem.getDerivedFromItemList() != null && containedItem.getDerivedFromItemList().size() > 0) {
-            throw new CdbException("Machine design: '" + containedItem.getName() + "' must stay top level. It has inventory items.");
-        }
-
         List<ItemElement> itemElementMemberList = containedItem.getItemElementMemberList();
         if (itemElementMemberList == null) {
             containedItem.setItemElementMemberList(new ArrayList<>());
@@ -2397,6 +2393,11 @@ public class ItemDomainMachineDesignController
     @Override
     public String getItemListPageTitle() {
         return "Machine: Housing Hierarchy";
+    }
+    
+    @Override
+    public String getItemTemplateListPageTitle() {
+        return "Machine Element Templates"; 
     }
 
     @Override
@@ -2720,6 +2721,11 @@ public class ItemDomainMachineDesignController
     @Override
     public boolean getEntityDisplayQrId() {
         return isCurrentViewIsTemplate() == false;
+    } 
+
+    @Override
+    public boolean getEntityDisplayQrId(ItemDomainMachineDesign item) {
+        return !item.getIsItemTemplate(); 
     }
 
     @Override

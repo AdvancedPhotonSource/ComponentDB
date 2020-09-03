@@ -36,7 +36,7 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
     }
     
     public List<ItemDomainMachineDesign> getTopLevelMachineDesignInventory() {        
-        return findByDomainAndEntityTypeAndTopLevel(
+        return findByDomainAndEntityTypeAndTopLevelOrderByDerivedFromItem(
                 ItemDomainName.machineDesign.getValue(),
                 EntityTypeName.inventory.getValue()
         ); 
