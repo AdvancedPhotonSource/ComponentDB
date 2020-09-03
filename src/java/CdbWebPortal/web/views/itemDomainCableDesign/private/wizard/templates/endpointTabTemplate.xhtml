@@ -41,6 +41,8 @@ See LICENSE file.
                                         listener="#{wizardController.unselectListenerEndpoint1}" 
                                         oncomplete="update#{rootViewId}WizardButtons();" />
                             </ui:define>
+                            
+                            <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
 
                         </ui:decorate>      
                     </p:panelGrid>
@@ -68,6 +70,9 @@ See LICENSE file.
                                         listener="#{wizardController.unselectListenerEndpoint2}" 
                                         oncomplete="update#{rootViewId}WizardButtons();" />
                             </ui:define>
+
+                            <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+
                         </ui:decorate>
 
                     </p:panelGrid>
