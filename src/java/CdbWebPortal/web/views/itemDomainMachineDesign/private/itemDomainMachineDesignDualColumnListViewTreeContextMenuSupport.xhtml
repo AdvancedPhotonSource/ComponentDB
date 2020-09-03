@@ -40,7 +40,11 @@ See LICENSE file.
                          update="@form"
                          oncomplete="PF('loadingDialog').hide();
                                      PF('detachMachineDesignWidget').hide()"/>
-        <p:commandButton value="No, try drag + drop of machine element name instead." 
+        
+        <ui:param name="noMessage" 
+                  value="#{itemDomainMachineDesignController.currentViewIsTemplate ? 'No' : 'No, try drag + drop of machine element name instead.'}" /> 
+        
+        <p:commandButton value="#{noMessage}" 
                          onclick="PF('detachMachineDesignWidget').hide();"/>
     </p:confirmDialog>    
 
