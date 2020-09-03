@@ -2394,6 +2394,11 @@ public class ItemDomainMachineDesignController
     public String getItemListPageTitle() {
         return "Machine: Housing Hierarchy";
     }
+    
+    @Override
+    public String getItemTemplateListPageTitle() {
+        return "Machine Element Templates"; 
+    }
 
     @Override
     public boolean getEntityHasSortableElements() {

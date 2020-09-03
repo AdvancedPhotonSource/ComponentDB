@@ -81,11 +81,11 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         }
 
         return title;
-    }
+    }   
 
     @Override
     public String getItemListPageTitle() {
-        return "Preassembled Machines";
+        return "Preassembled Machine Elements (defined by Machine Templates)";
     }
 
     @Override
