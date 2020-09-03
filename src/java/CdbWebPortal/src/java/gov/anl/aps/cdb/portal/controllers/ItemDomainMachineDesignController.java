@@ -1216,7 +1216,7 @@ public class ItemDomainMachineDesignController
                 Float sortOrder = o1.getSortOrder();
                 Float sortOrder1 = o2.getSortOrder();
 
-                if (ObjectUtility.equals(o1, o2)) {
+                if (ObjectUtility.equals(sortOrder, sortOrder1)) {
                     return 0;
                 }
 
