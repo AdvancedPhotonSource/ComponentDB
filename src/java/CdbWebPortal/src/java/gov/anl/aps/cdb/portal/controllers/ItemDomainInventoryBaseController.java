@@ -61,6 +61,7 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
     @Override
     public ItemInventoryBaseDomainEntity createEntityInstance() {
         ItemInventoryBaseDomainEntity item = super.createEntityInstance();
+        setCurrent(item);
 
         ItemStatusUtility.updateDefaultStatusProperty(item, this);       
         

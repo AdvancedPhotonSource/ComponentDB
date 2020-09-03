@@ -2,10 +2,10 @@
  * Copyright (c) UChicago Argonne, LLC. All rights reserved.
  * See LICENSE file.
  */
-package gov.anl.aps.cdb.portal.controllers.extensions;
+package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import gov.anl.aps.cdb.portal.controllers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryBaseController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
@@ -93,9 +93,10 @@ public abstract class ImportHelperInventoryBase
             }
         }
 
-        return new ImportHelperBase.CreateInfo(item, isValid, validString);
+        return new CreateInfo(item, isValid, validString);
     }  
 
+    @Override
     protected boolean ignoreDuplicates() {
         return false;
     }

@@ -10,7 +10,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
-import gov.anl.aps.cdb.portal.controllers.extensions.ImportHelperCableDesign;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
