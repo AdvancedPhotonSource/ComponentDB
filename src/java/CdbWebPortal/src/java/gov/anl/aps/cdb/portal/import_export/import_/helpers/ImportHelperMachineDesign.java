@@ -58,7 +58,7 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
     private class AssignedItemHandler extends SingleColumnInputHandler {
         
         public AssignedItemHandler(int columnIndex) {
-            super(columnIndex);
+            super(columnIndex, HEADER_ASSIGNED_ITEM);
         }
         
         @Override
@@ -76,17 +76,25 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
             if ((parsedValue != null) && (!parsedValue.isEmpty())) {
                 // assigned item is specified
                 
-                assignedItem = ItemFacade.getInstance().findById(Integer.valueOf(parsedValue));
-                
-                if (assignedItem == null) {
-                    String msg = "Unable to find object for: " + columnNameForIndex(columnIndex)
-                            + " with id: " + parsedValue;
+                int id;
+                try {
+                    id = Integer.valueOf(parsedValue);
+                    assignedItem = ItemFacade.getInstance().findById(id);
+                    if (assignedItem == null) {
+                        String msg = "Unable to find object for: " + getColumnName()
+                                + " with id: " + parsedValue;
+                        isValid = false;
+                        validString = msg;
+                        LOGGER.info("AssignedItemHandler.handleInput() " + msg);
+                    }
+                    rowMap.put(KEY_ASSIGNED_ITEM, assignedItem);
+                    
+                } catch (NumberFormatException ex) {
+                    String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
                     isValid = false;
                     validString = msg;
-                    LOGGER.info("AssignedItemHandler.handleInput() " + msg);                    
-                }
-                
-                rowMap.put(KEY_ASSIGNED_ITEM, assignedItem);
+                    LOGGER.info("AssignedItemHandler.handleInput() " + msg);  
+                }                
             }
 
             return new ValidInfo(isValid, validString);
@@ -101,7 +109,7 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
     private class LocationHandler extends SingleColumnInputHandler {
         
         public LocationHandler(int columnIndex) {
-            super(columnIndex);
+            super(columnIndex, HEADER_LOCATION);
         }
         
         @Override
@@ -121,20 +129,28 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
                 
                 // ignore word "parent"
                 if (!parsedValue.equalsIgnoreCase("parent")) {
-                
-                    itemLocation = ItemDomainLocationController.getInstance().findById(Integer.valueOf(parsedValue));
+                    int id;
+                    try {
+                        id = Integer.valueOf(parsedValue);
+                        itemLocation = ItemDomainLocationController.getInstance().findById(id);
+                        if (itemLocation == null) {
+                            String msg = "Unable to find object for: " + getColumnName()
+                                    + " with id: " + parsedValue;
+                            isValid = false;
+                            validString = msg;
+                            LOGGER.info("LocationHandler.handleInput() " + msg);
 
-                    if (itemLocation == null) {
-                        String msg = "Unable to find object for: " + columnNameForIndex(columnIndex)
-                                + " with id: " + parsedValue;
+                        } else {
+                            // set location
+                            rowMap.put(KEY_LOCATION, itemLocation);
+                        }
+
+                    } catch (NumberFormatException ex) {
+                        String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
                         isValid = false;
                         validString = msg;
                         LOGGER.info("LocationHandler.handleInput() " + msg);
-
-                    } else {
-                        // set location
-                        rowMap.put(KEY_LOCATION, itemLocation);
-                    }
+                    }              
                 }
             }
 
@@ -346,25 +362,25 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
                     case HEADER_PARENT:
                         colInfo = getColumnInfoMap().get(HEADER_PARENT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new RefInputHandler(columnIndex, KEY_CONTAINER, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, "", false, true));
+                        inputHandlers.add(new RefInputHandler(columnIndex, HEADER_PARENT, KEY_CONTAINER, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, "", false, true));
                         break;
 
                     case HEADER_TEMPLATE_INVOCATION:
                         colInfo = getColumnInfoMap().get(HEADER_TEMPLATE_INVOCATION);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new StringInputHandler(columnIndex, KEY_TEMPLATE_INVOCATION, "setImportTemplateAndParameters", 0));
+                        inputHandlers.add(new StringInputHandler(columnIndex, HEADER_TEMPLATE_INVOCATION, KEY_TEMPLATE_INVOCATION, "setImportTemplateAndParameters", 0));
                         break;
 
                     case HEADER_ALT_NAME:
                         colInfo = getColumnInfoMap().get(HEADER_ALT_NAME);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new StringInputHandler(columnIndex, "alternateName", "setAlternateName", 128));
+                        inputHandlers.add(new StringInputHandler(columnIndex, HEADER_ALT_NAME, "alternateName", "setAlternateName", 128));
                         break;
 
                     case HEADER_DESCRIPTION:
                         colInfo = getColumnInfoMap().get(HEADER_DESCRIPTION);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new StringInputHandler(columnIndex, "description", "setDescription", 256));
+                        inputHandlers.add(new StringInputHandler(columnIndex, HEADER_DESCRIPTION, "description", "setDescription", 256));
                         break;
 
                     case HEADER_ASSIGNED_ITEM:
@@ -387,13 +403,13 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
                     case HEADER_PROJECT:
                         colInfo = getColumnInfoMap().get(HEADER_PROJECT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new RefInputHandler(columnIndex, "project", "setProject", ItemProjectController.getInstance(), ItemProject.class, "", false, true));
+                        inputHandlers.add(new RefInputHandler(columnIndex, HEADER_PROJECT, "project", "setProject", ItemProjectController.getInstance(), ItemProject.class, "", false, true));
                         break;
 
                     case HEADER_TEMPLATE:
                         colInfo = getColumnInfoMap().get(HEADER_TEMPLATE);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new BooleanInputHandler(columnIndex, KEY_IS_TEMPLATE, "setImportIsTemplate"));
+                        inputHandlers.add(new BooleanInputHandler(columnIndex, HEADER_TEMPLATE, KEY_IS_TEMPLATE, "setImportIsTemplate"));
                         break;
 
                     default:

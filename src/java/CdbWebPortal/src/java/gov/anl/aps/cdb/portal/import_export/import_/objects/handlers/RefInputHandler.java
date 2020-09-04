@@ -31,18 +31,20 @@ public class RefInputHandler extends SimpleInputHandler {
 
     public RefInputHandler(
             int columnIndex,
+            String columnName,
             String propertyName,
             String setterMethod,
             CdbEntityController controller,
             Class paramType) {
         
-        super(columnIndex, propertyName, setterMethod);
+        super(columnIndex, columnName, propertyName, setterMethod);
         this.controller = controller;
         this.paramType = paramType;
     }
 
     public RefInputHandler(
             int columnIndex,
+            String columnName,
             String propertyName,
             String setterMethod,
             CdbEntityController controller,
@@ -50,25 +52,27 @@ public class RefInputHandler extends SimpleInputHandler {
             boolean idOnly,
             boolean singleValue) {
         
-        this(columnIndex, propertyName, setterMethod, controller, paramType);
+        this(columnIndex, columnName, propertyName, setterMethod, controller, paramType);
         this.idOnly = idOnly;
         this.singleValue = singleValue;
     }
 
     public RefInputHandler(
             int columnIndex,
+            String columnName,
             String propertyName,
             String setterMethod,
             CdbEntityController controller,
             Class paramType,
             String domainNameFilter) {
         
-        this(columnIndex, propertyName, setterMethod, controller, paramType);
+        this(columnIndex, columnName, propertyName, setterMethod, controller, paramType);
         this.domainNameFilter = domainNameFilter;
     }
 
     public RefInputHandler(
             int columnIndex,
+            String columnName,
             String propertyName,
             String setterMethod,
             CdbEntityController controller,
@@ -77,7 +81,7 @@ public class RefInputHandler extends SimpleInputHandler {
             boolean idOnly,
             boolean singleValue) {
         
-        this(columnIndex, propertyName, setterMethod, controller, paramType, domainNameFilter);
+        this(columnIndex, columnName, propertyName, setterMethod, controller, paramType, domainNameFilter);
         this.idOnly = idOnly;
         this.singleValue = singleValue;
     }
@@ -103,7 +107,7 @@ public class RefInputHandler extends SimpleInputHandler {
             }
         } catch (NumberFormatException ex) {
             message_o = "Invalid number format id: " + idString
-                    + " for: " + columnNameForIndex(columnIndex);
+                    + " for: " + getColumnName();
         }
         
         return objValue;
@@ -127,7 +131,7 @@ public class RefInputHandler extends SimpleInputHandler {
             }
         } catch (CdbException ex) {
             message_o = "Exception searching for object with name: " + nameString
-                    + " for: " + columnNameForIndex(columnIndex)
+                    + " for: " + getColumnName()
                     + " reason: " + ex.getMessage();
         }
         
@@ -144,7 +148,7 @@ public class RefInputHandler extends SimpleInputHandler {
                 
                 if (idOnly) {
                     String msg = "Lookup by name not enabled for column: "
-                            + columnNameForIndex(columnIndex);
+                            + getColumnName();
                     return new ParseInfo<>(null, false, msg);
                 }
                 
@@ -162,7 +166,7 @@ public class RefInputHandler extends SimpleInputHandler {
                                 msg = info_o;
                             } else {
                                 msg = "Unable to find object for: "
-                                            + columnNameForIndex(columnIndex)
+                                            + getColumnName()
                                             + " with name: " + nameString;
                             }
                             return new ParseInfo<>(null, false, msg);
@@ -183,7 +187,7 @@ public class RefInputHandler extends SimpleInputHandler {
                                     msg = info_o;
                                 } else {
                                     msg = "Unable to find object for: "
-                                            + columnNameForIndex(columnIndex)
+                                            + getColumnName()
                                             + " with name: " + nameToken;
                                 }
                                 return new ParseInfo<>(objValueList, false, msg);
@@ -209,7 +213,7 @@ public class RefInputHandler extends SimpleInputHandler {
                                 msg = info_o;
                             } else {
                                 msg = "Unable to find object for: "
-                                            + columnNameForIndex(columnIndex)
+                                            + getColumnName()
                                             + " with id: " + strValue;
                             }
                             return new ParseInfo<>(null, false, msg);
@@ -230,7 +234,7 @@ public class RefInputHandler extends SimpleInputHandler {
                                 msg = info_o;
                             } else {
                                 msg = "Unable to find object for: "
-                                        + columnNameForIndex(columnIndex)
+                                        + getColumnName()
                                         + " with id: " + idToken;
                             }
                             return new ParseInfo<>(objValueList, false, msg);

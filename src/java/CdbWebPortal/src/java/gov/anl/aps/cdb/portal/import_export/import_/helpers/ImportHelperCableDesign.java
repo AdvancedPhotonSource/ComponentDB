@@ -48,7 +48,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         protected int entityNum = 0;
         
         public NameHandler(int columnIndex, int maxLength) {
-            super(columnIndex);
+            super(columnIndex, LABEL_NAME);
             this.maxLength = maxLength;
         }
         
@@ -84,7 +84,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 validString = 
                         "Value length exceeds " + 
                         String.valueOf(getMaxLength()) + 
-                        " characters for column: Name";
+                        " characters for column: " + LABEL_NAME;
             }
                 
             // replace "#cdbid#" with a unique identifier
@@ -107,6 +107,8 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
             return new ValidInfo(true, "");
         }
     }
+    
+    private static final String LABEL_NAME = "Name";
 
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
@@ -140,9 +142,9 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
             List<InputHandler> inputHandlers,
             List<OutputColumnModel> outputColumns) {
         
-        inputColumns.add(new InputColumnModel(0, "Name", true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer)."));
+        inputColumns.add(new InputColumnModel(0, LABEL_NAME, true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer)."));
         inputHandlers.add(new NameHandler(0, 128));
-        outputColumns.add(new OutputColumnModel(0, "Name", "name"));
+        outputColumns.add(new OutputColumnModel(0, LABEL_NAME, "name"));
         
         return new ValidInfo(true, "");
     }

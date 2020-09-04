@@ -25,6 +25,7 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
     public InputHandler createInputHandlerInstance() {
         return new RefInputHandler(
                 getColumnIndex(),
+                getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),
                 controller,
