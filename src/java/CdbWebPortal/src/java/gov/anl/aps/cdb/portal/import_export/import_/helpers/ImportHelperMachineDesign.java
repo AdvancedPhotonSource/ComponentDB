@@ -13,7 +13,6 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.BooleanInpu
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.HierarchyHandler;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.IdOrNameRefInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
@@ -22,6 +21,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.SingleColumnInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.StringInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -346,7 +346,7 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
                     case HEADER_PARENT:
                         colInfo = getColumnInfoMap().get(HEADER_PARENT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, KEY_CONTAINER, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, ""));
+                        inputHandlers.add(new RefInputHandler(columnIndex, KEY_CONTAINER, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, "", false, true));
                         break;
 
                     case HEADER_TEMPLATE_INVOCATION:
@@ -387,7 +387,7 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
                     case HEADER_PROJECT:
                         colInfo = getColumnInfoMap().get(HEADER_PROJECT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, "project", "setProject", ItemProjectController.getInstance(), ItemProject.class, ""));
+                        inputHandlers.add(new RefInputHandler(columnIndex, "project", "setProject", ItemProjectController.getInstance(), ItemProject.class, "", false, true));
                         break;
 
                     case HEADER_TEMPLATE:

@@ -12,7 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.SourceController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdRefListColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
@@ -42,7 +42,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
         specs.add(new StringColumnSpec(6, "Part Number", "partNumber", "setPartNumber", false, "Manufacturer's part number, e.g., R-024-DS-5K-FSUBR", 32));
         specs.add(new StringColumnSpec(7, "Alt Part Num", "altPartNumber", "setAltPartNumber", false, "Manufacturer's alternate part number, e.g., 760152413", 256));
         specs.add(new IdOrNameRefColumnSpec(8, "Owner", "team", "setTeam", false, "Numeric ID of CDB technical system.", ItemCategoryController.getInstance(), ItemCategory.class, ItemDomainName.cableCatalog.getValue()));
-        specs.add(new IdRefListColumnSpec(9, "Project", "itemProjectString", "setItemProjectList", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), List.class));
+        specs.add(new IdOrNameRefListColumnSpec(9, "Project", "itemProjectString", "setItemProjectList", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), List.class, ""));
         specs.add(new StringColumnSpec(10, "Diameter", "diameter", "setDiameter", false, "Diameter in inches (max).", 256));
         specs.add(new StringColumnSpec(11, "Weight", "weight", "setWeight", false, "Nominal weight in lbs/1000 feet.", 256));
         specs.add(new StringColumnSpec(12, "Conductors", "conductors", "setConductors", false, "Number of conductors/fibers", 256));

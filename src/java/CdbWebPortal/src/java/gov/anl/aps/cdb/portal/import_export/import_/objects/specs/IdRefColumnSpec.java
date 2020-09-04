@@ -4,9 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.IdRefInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
 
 /**
  *
@@ -25,11 +25,13 @@ public class IdRefColumnSpec extends ColumnSpec {
 
     @Override
     public InputHandler createInputHandlerInstance() {
-        return new IdRefInputHandler(
+        return new RefInputHandler(
                 getColumnIndex(),
                 getPropertyName(),
                 getEntitySetterMethod(),
                 controller,
-                paramType);
+                paramType,
+                true,
+                true);
     }
 }

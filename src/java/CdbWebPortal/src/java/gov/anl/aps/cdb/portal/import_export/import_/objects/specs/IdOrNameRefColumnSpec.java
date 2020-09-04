@@ -4,9 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.IdOrNameRefInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
 
 /**
  *
@@ -23,12 +23,14 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
 
     @Override
     public InputHandler createInputHandlerInstance() {
-        return new IdOrNameRefInputHandler(
+        return new RefInputHandler(
                 getColumnIndex(),
                 getPropertyName(),
                 getEntitySetterMethod(),
                 controller,
                 paramType,
-                domainNameFilter);
+                domainNameFilter,
+                false,
+                true);
     }
 }

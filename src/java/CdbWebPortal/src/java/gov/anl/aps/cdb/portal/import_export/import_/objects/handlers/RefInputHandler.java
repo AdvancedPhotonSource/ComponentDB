@@ -8,21 +8,26 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ParseInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  *
  * @author craig
  */
-public abstract class RefInputHandler extends SimpleInputHandler {
+public class RefInputHandler extends SimpleInputHandler {
 
-    protected CdbEntityController controller;
-    protected Class paramType;
-    protected String domainNameFilter = null;
-    protected boolean idOnly = false;
+    private static final String SEPARATOR = ",";
 
-    protected Map<Object, CdbEntity> objectIdMap = new HashMap<>();
+    private CdbEntityController controller;
+    private Class paramType;
+    private String domainNameFilter = null;
+    private boolean idOnly = false;
+    private boolean singleValue = true;
+    
+    private Map<Object, CdbEntity> objectIdMap = new HashMap<>();
 
     public RefInputHandler(
             int columnIndex,
@@ -42,10 +47,12 @@ public abstract class RefInputHandler extends SimpleInputHandler {
             String setterMethod,
             CdbEntityController controller,
             Class paramType,
-            boolean idOnly) {
+            boolean idOnly,
+            boolean singleValue) {
         
         this(columnIndex, propertyName, setterMethod, controller, paramType);
         this.idOnly = idOnly;
+        this.singleValue = singleValue;
     }
 
     public RefInputHandler(
@@ -67,16 +74,19 @@ public abstract class RefInputHandler extends SimpleInputHandler {
             CdbEntityController controller,
             Class paramType,
             String domainNameFilter,
-            boolean idOnly) {
+            boolean idOnly,
+            boolean singleValue) {
         
         this(columnIndex, propertyName, setterMethod, controller, paramType, domainNameFilter);
         this.idOnly = idOnly;
+        this.singleValue = singleValue;
     }
 
     @Override
     public Class getParamType() {
         return paramType;
     }
+
 
     protected CdbEntity getObjectWithId(String idString, String message_o) {
         
@@ -124,4 +134,115 @@ public abstract class RefInputHandler extends SimpleInputHandler {
         return objValue;
     }
 
+    @Override
+    public ParseInfo parseCellValue(String strValue) {
+        
+        if (strValue != null && strValue.length() > 0) {
+            
+            if (strValue.charAt(0) == '#') {
+                // lookup by name(s)
+                
+                if (idOnly) {
+                    String msg = "Lookup by name not enabled for column: "
+                            + columnNameForIndex(columnIndex);
+                    return new ParseInfo<>(null, false, msg);
+                }
+                
+                String nameString = strValue.substring(1);                
+                if (!nameString.isEmpty()) {
+                    
+                    if (singleValue) {
+                        // parse and lookup single name
+                        
+                        String info_o = null;
+                        CdbEntity objValue = getObjectWithName(nameString.trim(), info_o);
+                        if (objValue == null) {
+                            String msg;
+                            if (info_o != null) {
+                                msg = info_o;
+                            } else {
+                                msg = "Unable to find object for: "
+                                            + columnNameForIndex(columnIndex)
+                                            + " with name: " + nameString;
+                            }
+                            return new ParseInfo<>(null, false, msg);
+                        }
+                        return new ParseInfo<>(objValue, true, "");
+                        
+                    } else {
+                        // parse and lookup list of names
+
+                        List<CdbEntity> objValueList = new ArrayList<>();
+                        String[] nameTokens = nameString.split(SEPARATOR);
+                        for (String nameToken : nameTokens) {
+                            String info_o = null;
+                            CdbEntity objValue = getObjectWithName(nameToken.trim(), info_o);
+                            if (objValue == null) {
+                                String msg;
+                                if (info_o != null) {
+                                    msg = info_o;
+                                } else {
+                                    msg = "Unable to find object for: "
+                                            + columnNameForIndex(columnIndex)
+                                            + " with name: " + nameToken;
+                                }
+                                return new ParseInfo<>(objValueList, false, msg);
+                            } else {
+                                objValueList.add(objValue);
+                            }
+                        }
+                        return new ParseInfo<>(objValueList, true, "");
+                    }
+                }
+                
+            } else {
+                // lookup by id(s)
+                
+                if (singleValue) {
+                    // parse and lookup single id
+                    
+                        String info_o = null;
+                        CdbEntity objValue = getObjectWithId(strValue.trim(), info_o);
+                        if (objValue == null) {
+                            String msg;
+                            if (info_o != null) {
+                                msg = info_o;
+                            } else {
+                                msg = "Unable to find object for: "
+                                            + columnNameForIndex(columnIndex)
+                                            + " with id: " + strValue;
+                            }
+                            return new ParseInfo<>(null, false, msg);
+                        }
+                        return new ParseInfo<>(objValue, true, "");
+                        
+                } else {
+                    // parse and lookup list of ids
+                    
+                    List<CdbEntity> objValueList = new ArrayList<>();
+                    String[] idTokens = strValue.split(SEPARATOR);
+                    for (String idToken : idTokens) {
+                        String info_o = null;
+                        CdbEntity objValue = getObjectWithId(idToken.trim(), info_o);
+                        if (objValue == null) {
+                            String msg;
+                            if (info_o != null) {
+                                msg = info_o;
+                            } else {
+                                msg = "Unable to find object for: "
+                                        + columnNameForIndex(columnIndex)
+                                        + " with id: " + idToken;
+                            }
+                            return new ParseInfo<>(objValueList, false, msg);
+                        } else {
+                            objValueList.add(objValue);
+                        }
+                    }
+                    return new ParseInfo<>(objValueList, true, "");
+                }
+            }
+        }
+        
+        return new ParseInfo<>(null, true, "");                    
+    }
 }
