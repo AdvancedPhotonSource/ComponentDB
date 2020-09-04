@@ -12,16 +12,12 @@ import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
  *
  * @author craig
  */
-public class IdOrNameRefColumnSpec extends ColumnSpec {
+public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
 
-    private CdbEntityController controller;
-    private Class paramType;
-    private String domainNameFilter = null;
+    protected String domainNameFilter = null;
 
     public IdOrNameRefColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType, String domainNameFilter) {
-        super(columnIndex, header, propertyName, entitySetterMethod, required, description);
-        this.controller = controller;
-        this.paramType = paramType;
+        super(columnIndex, header, propertyName, entitySetterMethod, required, description, controller, paramType);
         this.domainNameFilter = domainNameFilter;
     }
 

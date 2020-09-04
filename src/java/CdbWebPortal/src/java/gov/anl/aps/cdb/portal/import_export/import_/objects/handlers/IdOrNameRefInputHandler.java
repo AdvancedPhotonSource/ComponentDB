@@ -13,9 +13,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
  *
  * @author craig
  */
-public class IdOrNameRefInputHandler extends IdRefInputHandler {
-
-    String domainNameFilter = null;
+public class IdOrNameRefInputHandler extends RefInputHandler {
 
     public IdOrNameRefInputHandler(
             int columnIndex,
@@ -25,8 +23,19 @@ public class IdOrNameRefInputHandler extends IdRefInputHandler {
             Class paramType,
             String domainNameFilter) {
         
-        super(columnIndex, propertyName, setterMethod, controller, paramType);
-        this.domainNameFilter = domainNameFilter;
+        super(columnIndex, propertyName, setterMethod, controller, paramType, domainNameFilter);
+    }
+
+    public IdOrNameRefInputHandler(
+            int columnIndex,
+            String propertyName,
+            String setterMethod,
+            CdbEntityController controller,
+            Class paramType,
+            String domainNameFilter,
+            boolean idOnly) {
+        
+        super(columnIndex, propertyName, setterMethod, controller, paramType, domainNameFilter, idOnly);
     }
 
     @Override
@@ -37,42 +46,53 @@ public class IdOrNameRefInputHandler extends IdRefInputHandler {
 
             if (strValue.charAt(0) == '#') {
                 // process cell as name if first char is #
-                if (strValue.length() < 2) {
-                    String msg
-                            = "Invalid name format for: "
-                            + columnNameForIndex(columnIndex)
-                            + " name: " + strValue;
+                
+                if (idOnly) {
+                    String msg = "Lookup by name not enabled for column: "
+                            + columnNameForIndex(columnIndex);
                     return new ParseInfo<>(objValue, false, msg);
                 }
+                
+                if (strValue.length() < 2) {
+                    String msg = "Empty name string for: "
+                            + columnNameForIndex(columnIndex);
+                    return new ParseInfo<>(objValue, false, msg);
+                }
+                
                 String name = strValue.substring(1);
-                try {
-                    objValue = controller.findUniqueByName(name, domainNameFilter);
-                    if (objValue == null) {
-                        String msg
-                                = "Unable to find object for: "
+                String info_o = null;
+                objValue = getObjectWithName(name, info_o);
+                if (objValue == null) {
+                    String msg;
+                    if (info_o != null) {
+                        msg = info_o;
+                    } else {
+                        msg = "Unable to find object for: "
                                 + columnNameForIndex(columnIndex)
                                 + " with name: " + name;
-                        return new ParseInfo<>(objValue, false, msg);
-                    } else {
-                        // check cache for object so different references use same instance
-                        int id = (Integer) objValue.getId();
-                        if (objectIdMap.containsKey(id)) {
-                            objValue = objectIdMap.get(id);
-                        } else {
-                            // add this instance to cache
-                            objectIdMap.put(id, objValue);
-                        }
                     }
-                } catch (CdbException ex) {
-                    String msg = "Exception searching for object with name: " + name
-                            + " for: " + columnNameForIndex(columnIndex)
-                            + " reason: " + ex.getMessage();
                     return new ParseInfo<>(objValue, false, msg);
                 }
-
+                
             } else {
                 // process cell as numeric
-                return super.parseCellValue(strValue);
+                
+                if (strValue != null && strValue.length() > 0) {
+                    String info_o = null;
+                    objValue = getObjectWithId(strValue, info_o);
+                    if (objValue == null) {
+                        String msg;
+                        if (info_o != null) {
+                            msg = info_o;
+                        } else {
+                            msg = "Unable to find object for: "
+                                    + columnNameForIndex(columnIndex)
+                                    + " with id: " + strValue;
+                        }
+                        return new ParseInfo<>(objValue, false, msg);
+                    }
+                }
+                return new ParseInfo<>(objValue, true, "");
             }
         }
 
