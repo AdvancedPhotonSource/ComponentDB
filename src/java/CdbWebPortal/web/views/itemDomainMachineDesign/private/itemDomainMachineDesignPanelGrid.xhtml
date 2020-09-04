@@ -24,8 +24,11 @@ See LICENSE file.
     <ui:define name="additionalQRIDPanelGridContent">
         <h:outputLabel for="assignedQrId" 
                        value="Installed QR Id"
+                       rendered="#{!entityController.currentViewIsTemplate}"
                        styleClass="entityDataEmphasizedLabel"/>
-        <h:outputText value="#{itemObject.assignedItem.qrIdDisplay}" title="QR Id" styleClass="entityDataEmphasizedText" />
+        <h:outputText value="#{itemObject.assignedItem.qrIdDisplay}" 
+                      title="QR Id" styleClass="entityDataEmphasizedText" 
+                      rendered="#{!entityController.currentViewIsTemplate}" />
     </ui:define>
 
     <ui:define name="additionalItemInformation">
