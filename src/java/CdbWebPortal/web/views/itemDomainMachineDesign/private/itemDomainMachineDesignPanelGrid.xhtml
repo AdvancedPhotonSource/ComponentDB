@@ -21,6 +21,16 @@ See LICENSE file.
         </ui:include>
     </ui:define>
 
+    <ui:define name="additionalQRIDPanelGridContent">
+        <h:outputLabel for="assignedQrId" 
+                       value="Installed QR Id"
+                       rendered="#{!entityController.currentViewIsTemplate}"
+                       styleClass="entityDataEmphasizedLabel"/>
+        <h:outputText value="#{itemObject.assignedItem.qrIdDisplay}" 
+                      title="QR Id" styleClass="entityDataEmphasizedText" 
+                      rendered="#{!entityController.currentViewIsTemplate}" />
+    </ui:define>
+
     <ui:define name="additionalItemInformation">
         <ui:include src="#{locationObjectSrc}" >
             <ui:param name="locataionMenuModelActionName" 
@@ -28,13 +38,13 @@ See LICENSE file.
             <ui:param name="locataionMenuModelObjectParam"
                       value="#{entityController.getCurrentHierarchyItemElementForItem(itemObject)}" /> 
         </ui:include>
-        
+
         <h:outputText value="Assigned Item" />
         <ui:include src="itemDomainMachineDesignAssignedItemFragment.xhtml">
             <ui:param name="assignedItem"
                       value="#{itemObject.assignedItem}"/>
         </ui:include>
-        
+
         <ui:insert name="additionalMdItemInformation" />
     </ui:define>
 

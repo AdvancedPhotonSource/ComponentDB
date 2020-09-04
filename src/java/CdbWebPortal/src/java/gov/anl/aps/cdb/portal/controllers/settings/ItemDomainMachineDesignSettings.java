@@ -21,6 +21,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     private static final String DisplayLocationDetailsSettingTypeKey = "ItemDomainMachineDesign.List.Display.LocationDetails";
     private static final String DisplayProjectSettingTypeKey = "ItemDomainMachineDesign.List.Display.ItemProject";
     private static final String DisplayIdSettingTypeKey = "ItemDomainMachineDesign.List.Display.Id";
+    private static final String DisplayInstalledQrIdSettingTypeKey = "ItemDomainMachineDesign.List.Display.InstalledQrId";
     private static final String DisplayOwnerUserSettingTypeKey = "ItemDomainMachineDesign.List.Display.OwnerUser";
     private static final String DisplayOwnerGroupSettingTypeKey = "ItemDomainMachineDesign.List.Display.OwnerGroup";
     private static final String DisplayCreatedByUserSettingTypeKey = "ItemDomainMachineDesign.List.Display.CreatedByUser";
@@ -33,6 +34,8 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
 
     protected Boolean displayLocation = null;
     protected Boolean displayLocationDetails = null;
+    
+    protected Boolean displayInstalledQrId = null; 
 
     public ItemDomainMachineDesignSettings(ItemDomainMachineDesignController parentController) {
         super(parentController);
@@ -52,6 +55,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         displayLocationDetails = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationDetailsSettingTypeKey).getDefaultValue());
 
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
+        displayInstalledQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayInstalledQrIdSettingTypeKey).getDefaultValue()); 
         displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
         displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
         displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
@@ -71,6 +75,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         displayLocationDetails = settingEntity.getSettingValueAsBoolean(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
 
         displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
+        displayInstalledQrId = settingEntity.getSettingValueAsBoolean(DisplayInstalledQrIdSettingTypeKey, displayInstalledQrId); 
         displayOwnerUser = settingEntity.getSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         displayOwnerGroup = settingEntity.getSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
         displayCreatedByUser = settingEntity.getSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
@@ -89,6 +94,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         settingEntity.setSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
 
         settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
+        settingEntity.setSettingValue(DisplayInstalledQrIdSettingTypeKey, displayInstalledQrId);
         settingEntity.setSettingValue(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         settingEntity.setSettingValue(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
         settingEntity.setSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
@@ -123,6 +129,14 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
 
     public void setDisplayLocationDetails(Boolean displayLocationDetails) {
         this.displayLocationDetails = displayLocationDetails;
+    }
+
+    public Boolean getDisplayInstalledQrId() {
+        return displayInstalledQrId;
+    }
+
+    public void setDisplayInstalledQrId(Boolean displayInstalledQrId) {
+        this.displayInstalledQrId = displayInstalledQrId;
     }
 
 }
