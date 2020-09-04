@@ -133,6 +133,11 @@ See LICENSE file.
                                                and hideSearchColumns}" />
         </ui:include>
     </ui:insert>
+    
+    <ui:include src="../templateDefaults/itemListObjectColumns/itemInstalledQrId.xhtml" > 
+        <ui:param name="rendered"
+                  value="#{entitySettingObject.displayInstalledQrId}"/> 
+    </ui:include>
 
     <p:column headerText="Machine Element Description"
               rendered="#{hideOptionalColumns 
