@@ -59,7 +59,7 @@ See LICENSE file.
                        oncomplete="PF('loadingDialog').hide(); PF('travelerInstanceMoveDialogWidget').show()"
                        update="@form:travelerInstanceMoveDialog"
                        action="#{travelerDomainInstanceController.prepareTravelerInstanceMove()}"
-                       rendered="#{isEntityWriteable and travelerObject.traveler and loginController.loggedInAsAdmin}">
+                       rendered="#{isEntityWriteable and travelerObject.traveler and loginController.loggedInAsAdmin and travelerDomainInstanceController.renderMoveTraveler}">
             <p:tooltip for="#{entityTypeName}TravelerMove" value="Move the traveler to another item."/>
             <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentTravelerInstance}"
                                          value="#{travelerObject}" />

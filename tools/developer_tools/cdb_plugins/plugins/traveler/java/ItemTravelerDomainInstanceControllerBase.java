@@ -367,4 +367,8 @@ public abstract class ItemTravelerDomainInstanceControllerBase extends ItemTrave
     public boolean isRenderMoveTravelerContents() {
         return renderMoveTravelerContents;
     }
+    
+    public boolean isRenderMoveTraveler() {
+        return true; 
+    }
 }

@@ -5,9 +5,9 @@
 package gov.anl.aps.cdb.portal.plugins.support.traveler;
 
 import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCableInventoryController;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,35 +21,35 @@ import org.apache.logging.log4j.Logger;
  *
  * @author djarosz
  */
-@Named(ItemTravelerDomainMachineInstanceController.controllerNamed)
+@Named(ItemTravelerDomainCableInventoryController.controllerNamed)
 @SessionScoped
-public class ItemTravelerDomainMachineInstanceController extends ItemTravelerDomainInstanceControllerBase implements Serializable {
+public class ItemTravelerDomainCableInventoryController extends ItemTravelerDomainInstanceControllerBase implements Serializable {
 
-    public final static String controllerNamed = "itemTravelerDomainMachineInstanceController";
+    public final static String controllerNamed = "itemTravelerDomainCableInventoryController";
   
-    private static final Logger logger = LogManager.getLogger(ItemTravelerDomainMachineInstanceController.class.getName());
+    private static final Logger logger = LogManager.getLogger(ItemTravelerDomainCableInventoryController.class.getName());
     
-    private ItemDomainMachineDesignController itemDomainMachineDesignController = null;
+    private ItemDomainCableInventoryController itemDomainInventoryController = null;
 
     @Override
     protected ItemController getItemController() {
-        if (itemDomainMachineDesignController == null) {
-            itemDomainMachineDesignController = ItemDomainMachineDesignController.getInstance();
+        if (itemDomainInventoryController == null) {
+            itemDomainInventoryController = ItemDomainCableInventoryController.getInstance();
         }
 
-        return itemDomainMachineDesignController;
-    }
-
+        return itemDomainInventoryController;
+    }    
+    
     protected List<PropertyValue> getInternalPropertyValueListForItem(Item item) {
         List<PropertyValue> pvList = new ArrayList<>();
-        if (!(item instanceof ItemDomainMachineDesign)) {
+        if (!(item instanceof ItemDomainCableInventory)) {
             return pvList;
         }
         // add templates for machine design item and template that it's instantiated
         // from, if any
         pvList.addAll(item.getPropertyValueInternalList());
-        if (item.getCreatedFromTemplate() != null) {
-            pvList.addAll(item.getCreatedFromTemplate().getPropertyValueInternalList());
+        if (item.getDerivedFromItem() != null) {
+            pvList.addAll(item.getDerivedFromItem().getPropertyValueInternalList());
         }
         return pvList;
     }
@@ -58,5 +58,4 @@ public class ItemTravelerDomainMachineInstanceController extends ItemTravelerDom
     public boolean isRenderMoveTraveler() {
         return false;
     }
-
 }
