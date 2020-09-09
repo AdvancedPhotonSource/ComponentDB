@@ -38,7 +38,7 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
         specs.add(new StringColumnSpec(2, "Description", "description", "setDescription", false, "Textual description of cable type.", 256));
         specs.add(new StringColumnSpec(3, "Documentation URL", "urlDisplay", "setUrl", false, "Raw URL for documentation pdf file, e.g., http://www.example.com/documentation.pdf", 256));
         specs.add(new StringColumnSpec(4, "Image URL", "imageUrlDisplay", "setImageUrl", false, "Raw URL for image file, e.g., http://www.example.com/image.jpg", 256));
-        specs.add(new IdOrNameRefColumnSpec(5, "Manufacturer", "manufacturer", "setManufacturerSource", false, "Manufacturer or vendor, e.g., CommScope", SourceController.getInstance(), Source.class, null));
+        specs.add(new IdOrNameRefListColumnSpec(5, "Manufacturer", "sourceListString", "setSourceList", false, "Manufacturer or vendor, e.g., CommScope", SourceController.getInstance(), List.class, null));
         specs.add(new StringColumnSpec(6, "Part Number", "partNumber", "setPartNumber", false, "Manufacturer's part number, e.g., R-024-DS-5K-FSUBR", 32));
         specs.add(new StringColumnSpec(7, "Alt Part Num", "altPartNumber", "setAltPartNumber", false, "Manufacturer's alternate part number, e.g., 760152413", 256));
         specs.add(new IdOrNameRefColumnSpec(8, "Owner", "team", "setTeam", false, "Numeric ID of CDB technical system.", ItemCategoryController.getInstance(), ItemCategory.class, ItemDomainName.cableCatalog.getValue()));

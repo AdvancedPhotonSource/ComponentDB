@@ -32,7 +32,7 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient String urlDisplay = null;
     private transient String imageUrl = null;
     private transient String imageUrlDisplay = null;
-    private transient String manufacturer = null;
+    private transient String sourceListString = null;
     private transient String altPartNumber = null;
     private transient String weight = null;
     private transient String diameter = null;
@@ -138,34 +138,27 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
 
     @JsonIgnore
-    public String getManufacturer() {
-        return manufacturer;
+    public String getSourceListString() {
+        return sourceListString;
     }
     
-    public void setManufacturer(String sourceName) {        
-        Source source = SourceController.getInstance().findByName(sourceName);
-        if (source != null) {
-            this.setManufacturerSource(source);
+    public void setSourceList(List<Source> sourceList) {
+        String sourceListNameString = "";
+        List<ItemSource> itemSourceList = new ArrayList<>();
+        int sourceCount = 0;
+        for (Source source : sourceList) {
+            sourceCount = sourceCount + 1;
+            ItemSource itemSource = new ItemSource();
+            itemSource.setItem(this);
+            itemSource.setSource(source);
+            itemSourceList.add(itemSource);
+            sourceListNameString = sourceListNameString + source.getName();
+            if (sourceCount < sourceList.size()) {
+                sourceListNameString = sourceListNameString + "; ";
+            }
         }
-    }
-    
-    public void setManufacturerId(String sourceId) {
-        Source source = (Source)(getEntityById(SourceController.getInstance(), sourceId));
-        if (source != null) {
-            this.setManufacturerSource(source);
-        } else {
-            LOGGER.error("setManufacturerId() unknown source id " + sourceId);
-        }
-    }
-    
-    public void setManufacturerSource(Source source) {           
-        List<ItemSource> sourceList = new ArrayList<>();
-        ItemSource itemSource = new ItemSource();
-        itemSource.setItem(this);
-        itemSource.setSource(source);
-        sourceList.add(itemSource);
-        this.setItemSourceList(sourceList);
-        manufacturer = source.getName();
+        this.setItemSourceList(itemSourceList);
+        sourceListString = sourceListNameString;
     }
     
     @JsonIgnore
