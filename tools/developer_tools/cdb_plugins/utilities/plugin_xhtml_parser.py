@@ -11,9 +11,11 @@ ABOUT_PAGE_PLUGIN_LINKS_XHTML_FILENAME = 'aboutPagePluginLinks.xhtml'
 ITEM_DOMAIN_CATALOG_LIST_ACTION_BUTTONS_XHTML_FILENAME = 'itemDomainCatalogListActionButtons.xhtml'
 ITEM_DOMAIN_CATALOG_LIST_DIALOGS_XHTML_FILENAME = 'itemDomainCatalogListDialogs.xhtml'
 ITEM_DOMAIN_CATALOG_DETAIL_VIEW_SECTIONS = 'catalogDetailsViewSections.xhtml'
+ITEM_DOMAIN_INVENTORY_DETAIL_VIEW_SECTIONS = 'inventoryDetailsViewSections.xhtml'
+ITEM_DOMAIN_CABLE_CATALOG_DETAIL_VIEW_SECTIONS = 'cableCatalogDetailsViewSections.xhtml'
+ITEM_DOMAIN_CABLE_INVENTORY_DETAIL_VIEW_SECTIONS = 'cableInventoryDetailsViewSections.xhtml'
 ITEM_DOMAIN_MACHINE_DESIGN_DETAIL_VIEW_SECTIONS = 'itemMachineDesignDetailsViewSections.xhtml'
 ITEM_DOMAIN_MACHINE_DESIGN_INVENTORY_DETAIL_VIEW_SECTIONS = 'itemMachineDesignInventoryDetailsViewSections.xhtml'
-ITEM_DOMAIN_INVENTORY_DETAIL_VIEW_SECTIONS = 'inventoryDetailsViewSections.xhtml'
 PROPERTY_INFO_ACTION_DIALOGS_XHTML_FILENAME = 'propertyInfoActionDialogs.xhtml'
 PROPERTY_EDIT_LIST_SUPPORT_FILENAME = 'propertyEditListSupport.xhtml'
 PROPERTY_EDIT_OBJECT_SUPPORT_FILENAME = 'propertyEditObjectSupport.xhtml'
@@ -32,6 +34,8 @@ PLUGIN_ITEM_DOMAIN_CATALOG_LIST_ACTION_BUTTONS_PATH = 'item/domainCatalogListBut
 PLUGIN_ITEM_DETAIL_VIEW_SECTION_BASE_PATH = 'itemDetailsViewSections'
 PLUGIN_ITEM_DOMAIN_CATALOG_VIEW_SECTION_PATH = '%s/catalogSections.xhtml' % PLUGIN_ITEM_DETAIL_VIEW_SECTION_BASE_PATH
 PLUGIN_ITEM_DOMAIN_INVENTORY_VIEW_SECTION_PATH = '%s/inventorySections.xhtml' % PLUGIN_ITEM_DETAIL_VIEW_SECTION_BASE_PATH
+PLUGIN_ITEM_DOMAIN_CABLE_CATALOG_VIEW_SECTION_PATH = '%s/cableCatalogSections.xhtml' % PLUGIN_ITEM_DETAIL_VIEW_SECTION_BASE_PATH
+PLUGIN_ITEM_DOMAIN_CABLE_INVENTORY_VIEW_SECTION_PATH = '%s/cableInventorySections.xhtml' % PLUGIN_ITEM_DETAIL_VIEW_SECTION_BASE_PATH
 PLUGIN_ITEM_DOMAIN_MACHINE_DESIGN_VIEW_SECTION_PATH = '%s/itemMachineDesignSections.xhtml' % PLUGIN_ITEM_DETAIL_VIEW_SECTION_BASE_PATH
 PLUGIN_ITEM_DOMAIN_MACHINE_DESIGN_INVENTORY_VIEW_SECTION_PATH = '%s/itemMachineDesignInventorySections.xhtml' % PLUGIN_ITEM_DETAIL_VIEW_SECTION_BASE_PATH
 PLUGIN_PROPERTY_INFO_ACTION_DIALOGS_PATH = 'propertyValue/infoActionDialogs.xhtml'
@@ -65,6 +69,8 @@ class PluginXhtmlParser():
         item_domain_catalog_list_action_buttons = ''
         item_domain_catalog_view_sections = ''
         item_domain_inventory_view_sections = ''
+        item_domain_cable_catalog_view_sections = ''
+        item_domain_cable_inventory_view_sections = ''
         item_domain_machine_design_view_sections = ''
         item_domain_machine_design_inventory_view_sections = ''
         property_info_action_dialogs = ''
@@ -90,6 +96,9 @@ class PluginXhtmlParser():
 
             item_domain_catalog_view_sections += self.generate_ui_inlcude(PLUGIN_ITEM_DOMAIN_CATALOG_VIEW_SECTION_PATH, plugin_name)
             item_domain_inventory_view_sections += self.generate_ui_inlcude(PLUGIN_ITEM_DOMAIN_INVENTORY_VIEW_SECTION_PATH, plugin_name)
+
+            item_domain_cable_catalog_view_sections += self.generate_ui_inlcude(PLUGIN_ITEM_DOMAIN_CABLE_CATALOG_VIEW_SECTION_PATH, plugin_name)
+            item_domain_cable_inventory_view_sections += self.generate_ui_inlcude(PLUGIN_ITEM_DOMAIN_CABLE_INVENTORY_VIEW_SECTION_PATH, plugin_name)
 
             item_domain_machine_design_view_sections += self.generate_ui_inlcude(PLUGIN_ITEM_DOMAIN_MACHINE_DESIGN_VIEW_SECTION_PATH, plugin_name)
             item_domain_machine_design_inventory_view_sections += self.generate_ui_inlcude(PLUGIN_ITEM_DOMAIN_MACHINE_DESIGN_INVENTORY_VIEW_SECTION_PATH, plugin_name)
@@ -127,6 +136,10 @@ class PluginXhtmlParser():
             XHTML_TEMPLATE_UI_INCLUDE_KEY, item_domain_catalog_view_sections)
         result[ITEM_DOMAIN_INVENTORY_DETAIL_VIEW_SECTIONS] = xhtml_template_file_content.replace(
             XHTML_TEMPLATE_UI_INCLUDE_KEY, item_domain_inventory_view_sections)
+        result[ITEM_DOMAIN_CABLE_CATALOG_DETAIL_VIEW_SECTIONS] = xhtml_template_file_content.replace(
+            XHTML_TEMPLATE_UI_INCLUDE_KEY, item_domain_cable_catalog_view_sections)
+        result[ITEM_DOMAIN_CABLE_INVENTORY_DETAIL_VIEW_SECTIONS] = xhtml_template_file_content.replace(
+            XHTML_TEMPLATE_UI_INCLUDE_KEY, item_domain_cable_inventory_view_sections)
         result[ITEM_DOMAIN_MACHINE_DESIGN_DETAIL_VIEW_SECTIONS] = xhtml_template_file_content.replace(
             XHTML_TEMPLATE_UI_INCLUDE_KEY, item_domain_machine_design_view_sections)
         result[ITEM_DOMAIN_MACHINE_DESIGN_INVENTORY_DETAIL_VIEW_SECTIONS] = xhtml_template_file_content.replace(
