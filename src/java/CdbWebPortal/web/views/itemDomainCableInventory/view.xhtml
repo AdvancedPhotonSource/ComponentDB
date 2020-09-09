@@ -9,9 +9,9 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="../item/private/templates/itemViewTemplate.xhtml">
-    
+
     <ui:param name="entityController" value="#{itemDomainCableInventoryController}" />        
-    
+
     <ui:define name="pageTitle">
         #{itemDomainCableInventoryController.getItemDisplayString(itemObject)} 
     </ui:define>
@@ -25,16 +25,14 @@ See LICENSE file.
         <f:viewAction action="#{itemMemberViewController.processPreRender()}" />
         <f:viewAction action="#{itemDomainMAARCController.processPreRender()}"/>
     </f:metadata>
-    
+
     <ui:define name="viewPanelGrid">
         <ui:include src="private/cableInventoryViewPanelGrid.xhtml"/>
-    </ui:define>
-    
-    <ui:remove>
-        <ui:define name="additonalPluginSections" >
-            <ui:include src="../plugins/private/inventoryDetailsViewSections.xhtml"/>
-        </ui:define>
-    </ui:remove>
+    </ui:define>    
+
+    <ui:define name="additonalPluginSections" >
+        <ui:include src="../plugins/private/cableInventoryDetailsViewSections.xhtml"/>
+    </ui:define>    
 
     <ui:define name="additionalRightItemPanels">        
         <p:panel header="Cable Catalog Item Properties" 
