@@ -192,7 +192,9 @@ public class RefInputHandler extends SimpleInputHandler {
                                 }
                                 return new ParseInfo<>(objValueList, false, msg);
                             } else {
-                                objValueList.add(objValue);
+                                if (!objValueList.contains(objValue)) {
+                                    objValueList.add(objValue);
+                                }
                             }
                         }
                         return new ParseInfo<>(objValueList, true, "");
@@ -239,7 +241,9 @@ public class RefInputHandler extends SimpleInputHandler {
                             }
                             return new ParseInfo<>(objValueList, false, msg);
                         } else {
-                            objValueList.add(objValue);
+                            if (!objValueList.contains(objValue)) {
+                                objValueList.add(objValue);
+                            }
                         }
                     }
                     return new ParseInfo<>(objValueList, true, "");
