@@ -27,7 +27,7 @@ import java.util.Map;
  *
  * @author craig
  */
-public class ImportHelperCatalog extends ImportHelperBase<ItemDomainCatalog, ItemDomainCatalogController> {
+public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatalog, ItemDomainCatalogController> {
 
 
     @Override
@@ -36,10 +36,10 @@ public class ImportHelperCatalog extends ImportHelperBase<ItemDomainCatalog, Ite
         List<ColumnSpec> specs = new ArrayList<>();
         
         specs.add(new StringColumnSpec(0, "Name", "name", "setName", true, "Catalog item name.", 128));
-        specs.add(new StringColumnSpec(1, "Model Number", "modelNumber", "setModelNumber", false, "Model number.", 128));
+        specs.add(new StringColumnSpec(1, "Model Number", ImportHelperCatalogBase.KEY_PART_NUM, "setPartNumber", false, "Model number.", 128));
         specs.add(new StringColumnSpec(2, "Description", "description", "setDescription", false, "Textual description.", 256));
         specs.add(new StringColumnSpec(3, "Alt Name", "alternateName", "setAlternateName", false, "Alternate item name.", 128));
-        specs.add(new IdOrNameRefColumnSpec(4, "Source", "importSource", "setImportSource", false, "Item source.", SourceController.getInstance(), Source.class, null));
+        specs.add(new IdOrNameRefColumnSpec(4, "Source", ImportHelperCatalogBase.KEY_MFR, "", false, "Item source.", SourceController.getInstance(), Source.class, null));
         specs.add(new IdOrNameRefColumnSpec(5, "Project", "itemProjectString", "setProject", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class, ""));
         specs.add(new IdOrNameRefColumnSpec(6, "Technical System", "technicalSystem", "setTechnicalSystem", false, "Numeric ID of CDB technical system.", ItemCategoryController.getInstance(), ItemCategory.class, ItemDomainName.catalog.getValue()));
         specs.add(new IdOrNameRefColumnSpec(7, "Function", "function", "setFunction", false, "Numeric ID of CDB function.", ItemTypeController.getInstance(), ItemType.class, ItemDomainName.catalog.getValue()));
@@ -59,7 +59,6 @@ public class ImportHelperCatalog extends ImportHelperBase<ItemDomainCatalog, Ite
     
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
-        ItemDomainCatalog entity = getEntityController().createEntityInstance();
-        return new CreateInfo(entity, true, "");
-    }
+        return super.createEntityInstance(rowMap);
+    }  
 }

@@ -27,7 +27,6 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCatalog.class.getName());
 
     private transient String machineDesignPlaceholderName = null;         
-    private transient String importSource = null;
 
     @Override
     public Item createInstance() {
@@ -48,35 +47,12 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
         return ItemDomainCatalogController.getInstance();
     }
     
-    public String getModelNumber() {
-        return this.getItemIdentifier1();
-    }
-    
-    public void setModelNumber(String modelNumber) {
-        this.setItemIdentifier1(modelNumber);
-    }
-
     public String getAlternateName() {
         return getItemIdentifier2();
     }
 
     public void setAlternateName(String n) {
         setItemIdentifier2(n);
-    }
-    
-    @JsonIgnore
-    public String getImportSource() {
-        return importSource;
-    }
-
-    public void setImportSource(Source source) {           
-        List<ItemSource> sourceList = new ArrayList<>();
-        ItemSource itemSource = new ItemSource();
-        itemSource.setItem(this);
-        itemSource.setSource(source);
-        sourceList.add(itemSource);
-        this.setItemSourceList(sourceList);
-        importSource = source.getName();
     }
     
     public String getTechnicalSystem() {

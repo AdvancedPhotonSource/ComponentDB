@@ -31,7 +31,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient String urlDisplay = null;
     private transient String imageUrl = null;
     private transient String imageUrlDisplay = null;
-    private transient String sourceListString = null;
     private transient String altPartNumber = null;
     private transient String weight = null;
     private transient String diameter = null;
@@ -137,30 +136,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
 
     @JsonIgnore
-    public String getSourceListString() {
-        return sourceListString;
-    }
-    
-    public void setSourceList(List<Source> sourceList) {
-        String sourceListNameString = "";
-        List<ItemSource> itemSourceList = new ArrayList<>();
-        int sourceCount = 0;
-        for (Source source : sourceList) {
-            sourceCount = sourceCount + 1;
-            ItemSource itemSource = new ItemSource();
-            itemSource.setItem(this);
-            itemSource.setSource(source);
-            itemSourceList.add(itemSource);
-            sourceListNameString = sourceListNameString + source.getName();
-            if (sourceCount < sourceList.size()) {
-                sourceListNameString = sourceListNameString + "; ";
-            }
-        }
-        this.setItemSourceList(itemSourceList);
-        sourceListString = sourceListNameString;
-    }
-    
-    @JsonIgnore
     public String getAltPartNumber() throws CdbException {
         if (altPartNumber == null) {
             altPartNumber = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_ALT_PART_NUM_KEY);
@@ -171,15 +146,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     public void setAltPartNumber(String n) throws CdbException {
         altPartNumber = n;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_ALT_PART_NUM_KEY, n);
-    }
-    
-    @JsonIgnore
-    public String getPartNumber() {
-        return this.getItemIdentifier1();
-    }
-    
-    public void setPartNumber(String n) {
-        this.setItemIdentifier1(n);
     }
     
     @JsonIgnore
