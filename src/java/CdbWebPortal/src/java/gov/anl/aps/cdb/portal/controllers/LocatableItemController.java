@@ -335,6 +335,12 @@ public class LocatableItemController implements Serializable {
                 return;
             }
             Domain domain = activeLocation.getDomain();
+            String domainName = domain.getName();
+            
+            if (domain.getId() == ItemDomainName.MACHINE_DESIGN_ID) {
+                domainName = "Machine Element";
+            }
+            
 
             if (domain.getId() == ItemDomainName.LOCATION_ID) {
                 List<Item> locationHierarchyListForItem = getLocationHierarchyListForItem(item);
@@ -343,7 +349,7 @@ public class LocatableItemController implements Serializable {
                     item.setLocationString(locationString);
                 }
             } else {
-                String locationString = "Assigned to " + domain.getName() + ": " + activeLocation.toString();
+                String locationString = "Child of " + domainName + ": " + activeLocation.toString();
                 item.setLocationString(locationString);
             }
         }
@@ -643,7 +649,10 @@ public class LocatableItemController implements Serializable {
         String partOf = "assembly";
         Domain domain = item.getDomain();
 
-        if (domain.getId() != ItemDomainName.INVENTORY_ID) {
+        if (domain.getId() == ItemDomainName.MACHINE_DESIGN_ID) {
+            return "Child of Machine Element";
+        }
+        else if (domain.getId() != ItemDomainName.INVENTORY_ID) {
             partOf = domain.getName();
         }
 

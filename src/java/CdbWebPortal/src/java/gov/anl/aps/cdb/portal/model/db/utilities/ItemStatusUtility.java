@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyAllowedValue;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import java.util.ArrayList;
@@ -27,12 +28,21 @@ import java.util.List;
  * @author darek
  */
 public class ItemStatusUtility {
-
+    
     public static void prepareEditInventoryStatus(ItemController itemController, LocatableStatusItem item) {
+        prepareEditInventoryStatus(itemController, item, null);
+    }
+
+    public static void prepareEditInventoryStatus(ItemController itemController, LocatableStatusItem item, UserInfo user) {
         IItemStatusController statusController = (IItemStatusController) itemController;
         if (statusController.getItemStatusPropertyValue(item) == null) {
             PropertyType inventoryStatusPropertyType = statusController.getInventoryStatusPropertyType();
-            PropertyValue preparePropertyTypeValueAdd = itemController.preparePropertyTypeValueAdd(item, inventoryStatusPropertyType);
+            PropertyValue preparePropertyTypeValueAdd = null; 
+            if (user == null) {
+                preparePropertyTypeValueAdd = itemController.preparePropertyTypeValueAdd(item, inventoryStatusPropertyType);                
+            } else {
+                preparePropertyTypeValueAdd = itemController.preparePropertyTypeValueAdd(item, inventoryStatusPropertyType, inventoryStatusPropertyType.getDefaultValue(), null, user);                
+            }
             item.setInventoryStatusPropertyValue(preparePropertyTypeValueAdd);
         }
     }

@@ -8,6 +8,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 
 /**
@@ -17,6 +18,7 @@ import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 public interface IItemStatusController {
     
     void prepareEditInventoryStatus(LocatableStatusItem item);
+    void prepareEditInventoryStatus(LocatableStatusItem item, UserInfo apiUser);
     void prepareEditInventoryStatus();
     
     boolean getRenderedHistoryButton();
@@ -30,3 +32,5 @@ public interface IItemStatusController {
     
     
 }
+
+

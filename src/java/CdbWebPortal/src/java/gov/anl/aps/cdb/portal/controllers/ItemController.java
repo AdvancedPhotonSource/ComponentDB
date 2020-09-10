@@ -195,6 +195,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         listFacade = ListFacade.getInstance();
         userInfoFacade = UserInfoFacade.getInstance();
         propertyTypeCategoryFacade = PropertyTypeCategoryFacade.getInstance();
+        propertyTypeFacade = PropertyTypeFacade.getInstance(); 
         relationshipTypeFacade = RelationshipTypeFacade.getInstance();
         itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance();
     }
