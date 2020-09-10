@@ -279,33 +279,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
     
     @JsonIgnore
-    public String getTeam() {
-        if (team == null) {
-            team = this.getItemCategoryString();
-        }
-        return team;
-    }
-    
-    public void setTeam(ItemCategory category) throws CdbException {
-        if (category != null) {
-            String domainName = category.getDomain().getName();
-            if (!domainName.equals(this.getDomain().getName())) {
-                String msg = "invalid domain: " + domainName +
-                        " expected: " + this.getDomain().getName();
-                LOGGER.error("setTeam() " + msg);
-                throw new CdbException(msg);
-            }
-
-            List<ItemCategory> categoryList = new ArrayList<>();
-            categoryList.add(category);
-            this.setItemCategoryList(categoryList);
-            team = this.getItemCategoryString();
-        } else {
-            LOGGER.error("setTeamId() null item category");
-        }
-    }
-    
-    @JsonIgnore
     public boolean isIsValid() {
         return isValid;
     }

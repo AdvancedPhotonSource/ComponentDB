@@ -904,6 +904,24 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setEntityInfo(EntityInfo entityInfo) {
         this.getSelfElement().setEntityInfo(entityInfo);
     }
+    
+    @JsonIgnore
+    public String getOwnerUserName() {
+        return this.getEntityInfo().getOwnerUserDisplayName();
+    }
+    
+    public void setOwnerUser(UserInfo ownerUser) {
+        this.getEntityInfo().setOwnerUser(ownerUser);
+    }
+    
+    @JsonIgnore
+    public String getOwnerUserGroupName() {
+        return this.getEntityInfo().getOwnerGroupDisplayName();
+    }
+    
+    public void setOwnerUserGroup(UserGroup ownerUserGroupId) {
+        this.getEntityInfo().setOwnerUserGroup(ownerUserGroupId);
+    }
 
     @XmlTransient
     public List<ItemConnector> getItemConnectorList() {
