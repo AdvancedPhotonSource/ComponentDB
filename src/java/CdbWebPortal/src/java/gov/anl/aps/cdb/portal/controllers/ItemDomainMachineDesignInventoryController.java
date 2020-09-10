@@ -19,6 +19,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
@@ -290,6 +291,11 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     @Override
     public void prepareEditInventoryStatus(LocatableStatusItem item) {
         ItemStatusUtility.prepareEditInventoryStatus(this, item);       
+    }
+        
+    @Override
+    public void prepareEditInventoryStatus(LocatableStatusItem item, UserInfo apiUser) {        
+        ItemStatusUtility.prepareEditInventoryStatus(this, item, apiUser);
     }
 
     @Override
