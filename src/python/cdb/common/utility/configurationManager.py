@@ -199,6 +199,9 @@ class ConfigurationManager(UserDict.UserDict):
         self.__setFromEnvVar('sslKeyFile', 'CDB_SSL_KEY_FILE')
 
         self.__setFromEnvVar('configFile', 'CDB_CONFIG_FILE')
+
+        self.__setFromEnvVar('dbSchema', 'CDB_DB_SCHEMA')
+        self.__setFromEnvVar('dbUser', 'CDB_DB_USER')
         self.__setFromEnvVar('dbPasswordFile', 'CDB_DB_PASSWORD_FILE')
 
         # Settings that might come from file.
