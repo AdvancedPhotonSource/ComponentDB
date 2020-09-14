@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignInventorySettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
@@ -21,6 +22,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,11 +86,6 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     @Override
     public String getDerivedFromItemTitle() {
         return "Machine Template";
-    }
-
-    @Override
-    public boolean getEntityDisplayImportButton() {
-        return false;
     }
 
     @Override
@@ -320,4 +318,19 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         return ItemStatusUtility.getItemStatusPropertyValue(item); 
     }
 
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected DomainImportInfo initializeDomainImportInfo() {
+        
+        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportFormatInfo("Basic Machine Inventory Format", ImportHelperMachineInventory.class));
+        
+        String completionUrl = "/views/itemDomainMachineDesignInventory/list?faces-redirect=true";
+        
+        return new DomainImportInfo(formatInfo, completionUrl);
+    }
 }

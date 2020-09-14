@@ -44,7 +44,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
         specs.add(new StringColumnSpec(6, "Part Number", ImportHelperCatalogBase.KEY_PART_NUM, "setPartNumber", false, "Manufacturer's part number.", 32));
         specs.add(new StringColumnSpec(7, "Alt Part Num", "altPartNumber", "setAltPartNumber", false, "Manufacturer's alternate part number, e.g., 760152413", 256));
         specs.add(new IdOrNameRefListColumnSpec(8, "Technical System", "itemCategoryString", "setItemCategoryList", false, "Numeric ID of CDB technical system.", ItemCategoryController.getInstance(), List.class, ItemDomainName.cableCatalog.getValue()));
-        specs.add(new IdOrNameRefListColumnSpec(9, "Project", "itemProjectString", "setItemProjectList", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), List.class, ""));
+        specs.add(new IdOrNameRefListColumnSpec(9, "Project", "itemProjectString", "setItemProjectList", true, "Comma-separated list of IDs of CDB project(s).", ItemProjectController.getInstance(), List.class, ""));
         specs.add(new IdOrNameRefColumnSpec(10, "Owner User", "ownerUserName", "setOwnerUser", false, "ID or name of CDB owner user.", UserInfoController.getInstance(), UserInfo.class, ""));
         specs.add(new IdOrNameRefColumnSpec(11, "Owner Group", "ownerUserGroupName", "setOwnerUserGroup", false, "ID or name of CDB owner user group.", UserGroupController.getInstance(), UserGroup.class, ""));
         specs.add(new StringColumnSpec(12, "Diameter", "diameter", "setDiameter", false, "Diameter in inches (max).", 256));

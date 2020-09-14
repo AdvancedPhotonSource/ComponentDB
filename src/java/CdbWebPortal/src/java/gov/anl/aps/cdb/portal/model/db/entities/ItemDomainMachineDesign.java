@@ -37,7 +37,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient List<ItemElement> combinedItemElementList; 
     private transient ItemElement combinedItemElementListParentElement; 
     
-    private transient ItemDomainMachineDesign importContainerItem = null;
+    private transient ItemDomainMachineDesign importMdItem = null;
     private transient String importPath = null;
     private transient ItemDomainCatalog importAssignedCatalogItem = null;
     private transient ItemDomainInventory importAssignedInventoryItem = null;
@@ -179,17 +179,17 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
     
     @JsonIgnore
-    public ItemDomainMachineDesign getImportContainerItem() {
-        return importContainerItem;
+    public ItemDomainMachineDesign getImportMdItem() {
+        return importMdItem;
     }
 
-    public void setImportContainerItem(ItemDomainMachineDesign item) {
-        importContainerItem = item;
+    public void setImportMdItem(ItemDomainMachineDesign item) {
+        importMdItem = item;
     }
 
     @JsonIgnore
     public String getImportContainerString() {
-        ItemDomainMachineDesign itemContainer = this.getImportContainerItem();
+        ItemDomainMachineDesign itemContainer = this.getImportMdItem();
         if (itemContainer != null) {
             return itemContainer.getName();
         } else {
@@ -261,7 +261,13 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     public void setImportLocationItem(ItemDomainLocation locationItem) {
-        importLocationItem = locationItem;
+        if (locationItem != null) {
+            LocatableItemController.getInstance().setItemLocationInfo(this);
+            LocatableItemController.getInstance().updateLocationForItem(
+                    this, locationItem, null);
+            importLocationItemString = getLocationString();
+            importLocationItem = locationItem;
+        }
     }
     
     @JsonIgnore
@@ -288,10 +294,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
     
     public void applyImportLocation() {
-        LocatableItemController.getInstance().setItemLocationInfo(this);
-        LocatableItemController.getInstance().updateLocationForItem(
-                this, getImportLocationItem(), null);
-        importLocationItemString = getLocationString();
     }
     
     /**
@@ -302,24 +304,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
      * @param childItem 
      */
     public void applyImportValues(ItemDomainMachineDesign parentItem, 
-            boolean isValidAssignedItem,
-            boolean isValidLocation) {
-        
-        if (getImportLocationItem() != null) {
-            // location was specified for item
-
-            if (isValidLocation) {
-                // if valid for this item, update it and use hierarchical location
-                // string for import location string
-                applyImportLocation();
-                
-            } else {
-                // if location is not valid for this item, just use item name for
-                // import location string
-                importLocationItemString = getImportLocationItem().getName();
-            }
-            
-        }
+            boolean isValidAssignedItem) {
         
         if (parentItem != null) {
             // create ItemElement for new relationship

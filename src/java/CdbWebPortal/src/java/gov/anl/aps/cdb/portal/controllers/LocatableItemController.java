@@ -736,38 +736,50 @@ public class LocatableItemController implements Serializable {
             }
 
             List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
+            
+            // iterate through list to find location relationship, in case pointer has been reloaded
+            ItemElementRelationship ier = null;
+            String relationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue();
+            for (ItemElementRelationship rel : itemElementRelationshipList) {
+                if (rel.getRelationshipType().getName().equals(relationshipTypeName)) {
+                    ier = rel;
+                    break;
+                }
+            }
 
-            Integer locationIndex = itemElementRelationshipList.indexOf(itemElementRelationship);
+            if (ier != null) {
+                if (item.getLocationItem() != null && item.getLocationItem().getSelfElement() != null) {
+                    ier.setSecondItemElement(item.getLocationItem().getSelfElement());
+                } else {
+                    // No location is set. 
+                    ier.setSecondItemElement(null);
+                }
+                ier.setRelationshipDetails(item.getLocationDetails());
 
-            if (item.getLocationItem() != null && item.getLocationItem().getSelfElement() != null) {
-                itemElementRelationshipList.get(locationIndex).setSecondItemElement(item.getLocationItem().getSelfElement());
+                // Add Item Element relationship history record. 
+                ItemElementRelationshipHistory ierh;
+
+                UserInfo updateUser;
+                if (apiMode) {
+                    updateUser = apiUser;
+                } else {
+                    updateUser = (UserInfo) SessionUtility.getUser();
+                }
+
+                ierh = ItemElementRelationshipUtility.createItemElementHistoryRecord(
+                        ier, updateUser, new Date());
+                List<ItemElementRelationshipHistory> ierhList;
+                ierhList = item.getSelfElement().getItemElementRelationshipHistoryList();
+                if (ierhList == null) {
+                    ierhList = new ArrayList<>();
+                    item.getSelfElement().setItemElementRelationshipHistoryList(ierhList);
+                }
+
+                ierhList.add(ierh);
+                
             } else {
-                // No location is set. 
-                itemElementRelationshipList.get(locationIndex).setSecondItemElement(null);
+                logger.error("updateItemLocation(): item location relationship unexpectedly null for item: " + item.toString());
             }
-            itemElementRelationshipList.get(locationIndex).setRelationshipDetails(item.getLocationDetails());
-
-            // Add Item Element relationship history record. 
-            ItemElementRelationship ier = itemElementRelationshipList.get(locationIndex);
-            ItemElementRelationshipHistory ierh;
-
-            UserInfo updateUser;
-            if (apiMode) {
-                updateUser = apiUser;
-            } else {
-                updateUser = (UserInfo) SessionUtility.getUser();
-            }
-
-            ierh = ItemElementRelationshipUtility.createItemElementHistoryRecord(
-                    ier, updateUser, new Date());
-            List<ItemElementRelationshipHistory> ierhList;
-            ierhList = item.getSelfElement().getItemElementRelationshipHistoryList();
-            if (ierhList == null) {
-                ierhList = new ArrayList<>();
-                item.getSelfElement().setItemElementRelationshipHistoryList(ierhList);
-            }
-
-            ierhList.add(ierh);
         }
     }
 

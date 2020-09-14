@@ -1230,9 +1230,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
 
         if (other.getId() != null) {
-            if (other.getId().equals(id)) {
-                return true;
-            }
+            return (other.getId().equals(id));
         }
 
         return (Objects.equals(other.getItemIdentifier1(), itemIdentifier1)

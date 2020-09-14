@@ -174,7 +174,7 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
     private static final String KEY_INDENT = "indentLevel";
     private static final String KEY_ASSIGNED_ITEM = "assignedItem";
     private static final String KEY_LOCATION = "location";
-    private static final String KEY_CONTAINER = "importContainerItem";
+    private static final String KEY_CONTAINER = "importMdItem";
     private static final String KEY_TEMPLATE_INVOCATION = "importTemplateAndParameters";
     private static final String KEY_IS_TEMPLATE = "importIsTemplate";
     
@@ -362,7 +362,7 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
                     case HEADER_PARENT:
                         colInfo = getColumnInfoMap().get(HEADER_PARENT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new RefInputHandler(columnIndex, HEADER_PARENT, KEY_CONTAINER, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, "", false, true));
+                        inputHandlers.add(new RefInputHandler(columnIndex, HEADER_PARENT, KEY_CONTAINER, "setImportMdItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, "", false, true));
                         break;
 
                     case HEADER_TEMPLATE_INVOCATION:
@@ -566,7 +566,7 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
             LOGGER.info(methodLogName + validString);
             return new CreateInfo(invalidInstance, isValid, validString);
         }
-        invalidInstance.setImportContainerItem(itemParent);
+        invalidInstance.setImportMdItem(itemParent);
 
         // retrieve specified template
         ItemDomainMachineDesign templateItem;
@@ -674,7 +674,6 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
         boolean isValid = true;
         String validString = "";
 
-        boolean isValidLocation = true;
         boolean isValidAssignedItem = true;
 
         ItemDomainMachineDesign item = null;
@@ -800,7 +799,6 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
                 LOGGER.info(methodLogName + msg);
                 validString = appendToString(validString, msg);
                 isValid = false;
-                isValidLocation = false;
             }
 
         } else {
@@ -838,8 +836,8 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
             }
         }
 
-        // establish parent/child relationship, set location info etc
-        item.applyImportValues(itemParent, isValidAssignedItem, isValidLocation);
+        // establish parent/child relationship etc
+        item.applyImportValues(itemParent, isValidAssignedItem);
 
         // set current item as last parent at its indent level
         parentIndentMap.put(itemIndentLevel, item);
