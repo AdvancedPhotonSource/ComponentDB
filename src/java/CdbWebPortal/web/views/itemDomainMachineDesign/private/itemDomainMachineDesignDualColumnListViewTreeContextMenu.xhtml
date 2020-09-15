@@ -68,10 +68,15 @@ See LICENSE file.
                        id="machineDesignDualViewMachineDesignPlaceholderContextMenu"
                        widgetVar="machineDesignDualViewMachineDesignPlaceholderContextMenuWidget"
                        event="select contextmenu">
-            <p:menuitem value="Fullfil placeholder" icon="fa fa-plus"
-                        update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel emphasizedContentBelowTitleOutputPanel"
-                        disabled="#{disabledEditContextMenuItemForSelectionParent}"
-                        action="#{entityController.prepareFullfilPlaceholder()}"/>
+            <ui:include src="machineDesignContextMenu/fullfilPlaceholderItemContextMenuItem.xhtml" /> 
+        </p:contextMenu>
+        
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
+                       nodeType="MachineDesignTemplatePlaceholderCatalog"
+                       id="machineDesignDualViewMachineDesignPlaceholderCatalogContextMenu"
+                       widgetVar="machineDesignDualViewMachineDesignPlaceholderCatalogContextMenuWidget"
+                       event="select contextmenu">
+            <ui:include src="machineDesignContextMenu/fullfilPlaceholderItemContextMenuItem.xhtml" /> 
         </p:contextMenu>
 
         <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"

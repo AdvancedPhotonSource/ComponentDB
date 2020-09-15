@@ -11,8 +11,10 @@ import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.IItemStatusController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryBaseController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
@@ -28,11 +30,13 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
+import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -373,31 +377,33 @@ public class ItemRoute extends ItemBaseRoute {
     public PropertyValue updateItemStatus(@PathParam("itemId") int itemId, ItemStatusBasicObject status) throws InvalidArgument, ObjectNotFound, CdbException {
         Item itemById = getItemByIdBase(itemId);      
         
-        UserInfo currentUser = verifyCurrentUserPermissionForItem(itemById);
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(itemById);       
         
-        ItemDomainInventory inventoryItem = null;
+        ItemController ic = itemById.getItemDomainController();
+        IItemStatusController controller = null; 
+        LocatableStatusItem item = null; 
         
-        if (itemById instanceof ItemDomainInventory) {
-            inventoryItem = (ItemDomainInventory) itemById;
+        if (ic instanceof IItemStatusController) {
+            controller = (IItemStatusController) ic;
+            item = (LocatableStatusItem) itemById; 
         } else {
-            throw new InvalidArgument("The item id provided is not for an inventory item");
+            throw new InvalidArgument("The item id provided is not of type with a status");
         }
+               
+        controller.prepareEditInventoryStatus(item, currentUser);
         
-        ItemDomainInventoryController ic = (ItemDomainInventoryController) inventoryItem.getItemDomainController();
-        ic.prepareEditInventoryStatusFromApi(inventoryItem);
-        
-        inventoryItem.setInventoryStatusValue(status.getStatus());             
+        item.setInventoryStatusValue(status.getStatus());             
         
         // Verify if user provided a valid allowed value.
-        PropertyValue inventoryStatusPropertyValue = inventoryItem.getInventoryStatusPropertyValue();
+        PropertyValue inventoryStatusPropertyValue = item.getInventoryStatusPropertyValue();
         if (PropertyValueUtility.verifyValidValueForPropertyValue(inventoryStatusPropertyValue) == false) {
             throw new InvalidArgument("The value: '" + status.getStatus() + "' is not valid for inventory status.");
         }
                 
         inventoryStatusPropertyValue.setEffectiveFromDateTime(status.getEffectiveFromDate());
         
-        ic.updateFromApi(inventoryItem, currentUser);        
-        return inventoryItem.getInventoryStatusPropertyValue(); 
+        ic.updateFromApi(item, currentUser);        
+        return item.getInventoryStatusPropertyValue(); 
     }
     
     private void updateDbPropertyValueWithPassedInDate(PropertyValue dbPropertyValue, PropertyValue userPassedValue) {

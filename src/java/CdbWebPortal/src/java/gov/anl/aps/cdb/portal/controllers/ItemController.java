@@ -195,6 +195,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         listFacade = ListFacade.getInstance();
         userInfoFacade = UserInfoFacade.getInstance();
         propertyTypeCategoryFacade = PropertyTypeCategoryFacade.getInstance();
+        propertyTypeFacade = PropertyTypeFacade.getInstance(); 
         relationshipTypeFacade = RelationshipTypeFacade.getInstance();
         itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance();
     }
@@ -2618,7 +2619,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         Domain itemDomain = item.getDomain();
 
         // Verify no qr id is specified when it is not allowed for the domain.
-        if (getEntityDisplayQrId() == false) {
+        if (getEntityDisplayQrId(item) == false) {
             if (item.getQrId() != null) {
                 throw new CdbException("QR Id cannot be specified for " + itemDomainToString(item));
             }
@@ -2906,6 +2907,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public boolean getDisplayCoreMetadataProperty() {
         return (getCoreMetadataPropertyInfo() != null);
+    }
+    
+    public boolean getEntityDisplayQrId(ItemDomainEntity item) {
+        return getEntityDisplayQrId(); 
     }
 
 }

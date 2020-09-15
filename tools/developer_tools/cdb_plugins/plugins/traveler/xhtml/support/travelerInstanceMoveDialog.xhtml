@@ -17,6 +17,7 @@ See LICENSE file.
     <p:dialog id="travelerInstanceMoveDialog" 
               widgetVar="travelerInstanceMoveDialogWidget" 
               header="Move Traveler Instance to Different Item" 
+              rendered="#{travelerDomainInstanceController.renderMoveTraveler}" 
               modal="true"
               resizable="false"
               styleClass="viewTransparentBackgroundDialog">
@@ -24,7 +25,7 @@ See LICENSE file.
         <p:outputPanel id="travelerInstanceMoveDialogOutputPanel"
                        rendered="#{travelerDomainInstanceController.renderMoveTravelerContents}">
             <ui:include src="../../../../item/private/itemSelectDataTable.xhtml">
-                <ui:param name="viewName" value="travelerInstanceMoveDialog" />
+                <ui:param name="viewName" value="travelerInstanceMoveDialog#{viewName}" />
                 <ui:param name="updateTarget" value="travelerInstanceMoveDialogOutputPanel" /> 
                 <ui:param name="selectionValue" value="#{travelerDomainInstanceController.itemToMoveCurrentTraveler}" />
                 <ui:param name="selectionTarget" value="#{travelerDomainInstanceController.itemToMoveCurrentTraveler}" />

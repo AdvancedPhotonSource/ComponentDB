@@ -20,6 +20,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
@@ -57,6 +58,19 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         ListDataModel listDataModel = new ListDataModel(itemList);
         setListDataModel(listDataModel);
     }
+    
+    public boolean isCurrentTopLevel() {
+        ItemDomainMachineDesign current = getCurrent();
+        
+        if (current != null) {
+            List<ItemElement> itemElementMemberList = current.getItemElementMemberList();
+            List<ItemElement> itemElementMemberList2 = current.getItemElementMemberList2();
+            
+            return itemElementMemberList.isEmpty() && itemElementMemberList2.isEmpty(); 
+        }
+        
+        return false; 
+    }
 
     public String getSubassemblyPageTitle() {
         String title = "Preassembled Machine: ";
@@ -71,11 +85,11 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         }
 
         return title;
-    }
+    }   
 
     @Override
     public String getItemListPageTitle() {
-        return "Preassembled Machines";
+        return "Preassembled Machine Elements (defined by Machine Templates)";
     }
 
     @Override
@@ -275,6 +289,11 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     @Override
     public void prepareEditInventoryStatus(LocatableStatusItem item) {
         ItemStatusUtility.prepareEditInventoryStatus(this, item);       
+    }
+        
+    @Override
+    public void prepareEditInventoryStatus(LocatableStatusItem item, UserInfo apiUser) {        
+        ItemStatusUtility.prepareEditInventoryStatus(this, item, apiUser);
     }
 
     @Override
