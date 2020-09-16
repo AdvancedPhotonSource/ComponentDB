@@ -22,7 +22,7 @@ import org.primefaces.model.TreeNode;
 public abstract class HierarchicalImportHelperBase<EntityType extends CdbEntity, EntityControllerType extends CdbEntityController>
         extends ImportHelperBase<EntityType, EntityControllerType> {
     
-    private Map<String, TreeNode> treeNodeMap = new HashMap<>();
+    private Map<EntityType, TreeNode> treeNodeMap = new HashMap<>();
     
     private int treeNodeChildCount = 0;
     
@@ -54,24 +54,24 @@ public abstract class HierarchicalImportHelperBase<EntityType extends CdbEntity,
             EntityType parent,
             boolean addChildren) {
         
-        TreeNode itemNode = new DefaultTreeNode(item);
-        itemNode.setExpanded(true);
-        treeNodeMap.put(getItemName(item), itemNode);
-        
-        if (addChildren) {
-            addChildrenForItemToTreeNode(item, itemNode);
+        TreeNode itemNode = treeNodeMap.get(item);
+        if (itemNode  == null) {
+            itemNode = new DefaultTreeNode(item);
+            itemNode.setExpanded(true);
+            treeNodeMap.put(item, itemNode);
+            if (addChildren) {
+                addChildrenForItemToTreeNode(item, itemNode);
+            }
         }
         
         if (parent != null) {
-            
             // create parent nodes recursively if they don't exist
-            TreeNode parentNode = treeNodeMap.get(getItemName(parent));
+            TreeNode parentNode = treeNodeMap.get(parent);
             if (parentNode == null) {
-                EntityType grandParent = getItemParent(item);
+                EntityType grandParent = getItemParent(parent);
                 updateTreeView(parent, grandParent, false);
-                parentNode = treeNodeMap.get(getItemName(parent));
-            }
-            
+                parentNode = treeNodeMap.get(parent);
+            }            
             parentNode.getChildren().add(itemNode);
             
         } else {
