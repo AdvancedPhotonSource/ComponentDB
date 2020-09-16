@@ -618,7 +618,7 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
         }
 
         ItemDomainMachineDesign item = 
-                ItemDomainMachineDesign.instantiateTemplateUnderParent(
+                ItemDomainMachineDesign.importInstantiateTemplateUnderParent(
                         templateItem, itemParent);
         
         // name should not be specified explicitly in spreadsheet
@@ -810,34 +810,19 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
 
         if (itemParent != null) {
             // hanlding for all items with parent, template or non-template
-
             if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
                 // parent and child must both be templates or both not be
                 String msg = "parent and child must both be templates or both not be templates";
                 LOGGER.info(methodLogName + msg);
                 validString = appendToString(validString, msg);
                 isValid = false;
-            }
-            
-        } else {
-            // handling for all top-level items (no parent), 
-            // template or non-template
-            
-            if (itemParent == null) {
-                if ((item.getImportAssignedCatalogItem() != null)
-                        || (item.getImportAssignedInventoryItem() != null)) {
-                    // top-level item cannot have assigned item
-                    String msg = "Top-level item cannot have assigned catalog/inventory item";
-                    LOGGER.info(methodLogName + msg);
-                    validString = appendToString(validString, msg);
-                    isValid = false;
-                    isValidAssignedItem = false;
-                }
-            }
+            }            
+            item.setImportChildParentRelationship(itemParent);
         }
-
-        // establish parent/child relationship etc
-        item.applyImportValues(itemParent, isValidAssignedItem);
+        
+        if (isValidAssignedItem) {
+            item.applyImportAssignedItem();
+        }
 
         // set current item as last parent at its indent level
         parentIndentMap.put(itemIndentLevel, item);

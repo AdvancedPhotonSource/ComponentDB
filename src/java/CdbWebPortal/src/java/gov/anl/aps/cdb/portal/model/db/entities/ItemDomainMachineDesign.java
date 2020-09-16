@@ -224,6 +224,26 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         selfElement.setContainedItem2(item);
     }
 
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult result = super.search(searchPattern);
+        
+        Item assignedItem = getAssignedItem();
+        if (assignedItem != null) {
+            String assignedItemName = assignedItem.getName();
+            result.doesValueContainPattern("Assigned Item Name", assignedItemName, searchPattern);
+        }
+        
+        return result; 
+    }
+
+    @Override
+    public String getStatusPropertyTypeName() {
+        return MD_INTERNAL_STATUS_PROPERTY_TYPE; 
+    }
+    
+    // <editor-fold defaultstate="collapsed" desc="Import functionality">
+    
     public void setImportAssignedCatalogItem(ItemDomainCatalog item) {
         importAssignedCatalogItem = item;
     }
@@ -293,7 +313,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         this.importTemplateAndParameters = importTemplateAndParameters;
     }
     
-    public void applyImportLocation() {
+    public void applyImportAssignedItem() {
+        if (importAssignedInventoryItem != null) {
+            setAssignedItem(importAssignedInventoryItem);
+        } else if (importAssignedCatalogItem != null) {
+            setAssignedItem(importAssignedCatalogItem);
+        }
     }
     
     /**
@@ -303,26 +328,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
      * 
      * @param childItem 
      */
-    public void applyImportValues(ItemDomainMachineDesign parentItem, 
-            boolean isValidAssignedItem) {
-        
+    public void setImportChildParentRelationship(ItemDomainMachineDesign parentItem) {        
         if (parentItem != null) {
             // create ItemElement for new relationship
-            ItemElement itemElement = createItemElementForParent(parentItem);            
-            setChildParentRelationship(this, parentItem, itemElement);
-            
-            // for non-template item, add assigned catalog/inventory item (if any)
-            if (isValidAssignedItem) {
-                if (importAssignedInventoryItem != null) {
-                    itemElement.setContainedItem2(importAssignedInventoryItem);
-                } else if (importAssignedCatalogItem != null) {
-                    itemElement.setContainedItem2(importAssignedCatalogItem);
-                }
-            }
+            ItemElement itemElement = importCreateItemElementForParent(parentItem);            
+            setImportChildParentRelationship(this, parentItem, itemElement);
         }
     }
     
-    private static void setChildParentRelationship(
+    private static void setImportChildParentRelationship(
             ItemDomainMachineDesign childItem,
             ItemDomainMachineDesign parentItem,
             ItemElement itemElement) {
@@ -342,7 +356,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             
     }
     
-    private static ItemElement createItemElementForParent(
+    private static ItemElement importCreateItemElementForParent(
             ItemDomainMachineDesign parentItem) {
         
         EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
@@ -361,7 +375,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         return itemElement;
     }  
     
-    public static ItemDomainMachineDesign instantiateTemplateUnderParent(
+    public static ItemDomainMachineDesign importInstantiateTemplateUnderParent(
             ItemDomainMachineDesign templateItem,
             ItemDomainMachineDesign parentItem) {
         
@@ -372,7 +386,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return null;
         }
         
-        ItemElement itemElement = createItemElementForParent(parentItem);
+        ItemElement itemElement = importCreateItemElementForParent(parentItem);
         
         ItemDomainMachineDesignController controller = 
                 ItemDomainMachineDesignController.getInstance();
@@ -384,7 +398,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
             controller.createMachineDesignFromTemplateHierachically(itemElement);
             
-            setChildParentRelationship(newItem, parentItem, itemElement);
+            setImportChildParentRelationship(newItem, parentItem, itemElement);
 
         } catch (CdbException | CloneNotSupportedException ex) {
             LOGGER.error(logMethodName + "failed to instantiate template " + 
@@ -394,23 +408,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         return newItem;
     }
+// </editor-fold>
 
-    @Override
-    public SearchResult search(Pattern searchPattern) {
-        SearchResult result = super.search(searchPattern);
-        
-        Item assignedItem = getAssignedItem();
-        if (assignedItem != null) {
-            String assignedItemName = assignedItem.getName();
-            result.doesValueContainPattern("Assigned Item Name", assignedItemName, searchPattern);
-        }
-        
-        return result; 
-    }
-
-    @Override
-    public String getStatusPropertyTypeName() {
-        return MD_INTERNAL_STATUS_PROPERTY_TYPE; 
-    }
-    
 }
