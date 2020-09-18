@@ -36,7 +36,6 @@ public class ItemDomainCableDesign extends Item {
     private transient String legacyQrId = null;
     private transient String laying = null;
     private transient String voltage = null;
-    private transient String team = null;
     private transient String endpoint1Description = null;
     private transient String endpoint2Description = null;
 
@@ -411,33 +410,6 @@ public class ItemDomainCableDesign extends Item {
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY, d);
     }
 
-    @JsonIgnore
-    public String getTeam() {
-        if (team == null) {
-            team = this.getItemCategoryString();
-        }
-        return team;
-    }
-
-    public void setTeam(ItemCategory category) throws CdbException {
-        if (category != null) {
-            String domainName = category.getDomain().getName();
-            if (!domainName.equals(this.getDomain().getName())) {
-                String msg = "invalid domain: " + domainName +
-                        " expected: " + this.getDomain().getName();
-                LOGGER.error("setTeam() " + msg);
-                throw new CdbException(msg);
-            }
-
-            List<ItemCategory> categoryList = new ArrayList<>();
-            categoryList.add(category);
-            this.setItemCategoryList(categoryList);
-            team = this.getItemCategoryString();
-        } else {
-            LOGGER.error("setTeamId() null item category");
-        }
-    }
-    
     public void setTechnicalSystemList(List<ItemCategory> technicalSystemList) {
         setItemCategoryList(technicalSystemList);
     }

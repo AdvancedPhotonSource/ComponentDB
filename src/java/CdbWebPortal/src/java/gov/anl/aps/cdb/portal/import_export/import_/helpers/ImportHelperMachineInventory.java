@@ -17,6 +17,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefCol
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
+import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
@@ -34,6 +35,7 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
     private static final String KEY_TEMPLATE = "importMdItem";
     private static final String KEY_NAME = "name";
     private static final String KEY_LOCATION = "locationItem";
+    protected static final String KEY_STATUS = "inventoryStatusValue";
     private static final String AUTO_VALUE = "auto";
     
     @Override
@@ -41,17 +43,17 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(0, "MD Template", KEY_TEMPLATE, "setImportMdItem", true, "ID or name of CDB machine design template.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, null));
+        specs.add(new IdOrNameRefColumnSpec(0, "MD Template", KEY_TEMPLATE, "setImportMdItem", true, "ID or name of CDB machine design template. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, null));
         specs.add(new StringColumnSpec(1, "Name", KEY_NAME, "", true, "Name for inventory unit (use 'auto' to generate automatically).", 128));
         specs.add(new StringColumnSpec(2, "Alt Name", "alternateName", "setAlternateName", false, "Alternate name for inventory unit.", 128));
         specs.add(new IntegerColumnSpec(3, "QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
         specs.add(new StringColumnSpec(4, "Description", "description", "setDescription", false, "Description of inventory unit.", 256));
-        specs.add(new StringColumnSpec(5, "Status", "inventoryStatusValue", "setInventoryStatusValue", false, "Status of inventory item.", 256));
-        specs.add(new IdOrNameRefColumnSpec(6, "Location", KEY_LOCATION, "setLocation", false, "Inventory unit location.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, ""));
-        specs.add(new StringColumnSpec(7, "Location Details", "locationDetails", "setLocationDetails", false, "Location details for inventory unit.", 256));
-        specs.add(new IdOrNameRefListColumnSpec(8, "Project", "itemProjectString", "setItemProjectList", true, "Comma-separated list of IDs of CDB project(s).", ItemProjectController.getInstance(), List.class, ""));
-        specs.add(new IdOrNameRefColumnSpec(9, "Owner User", "ownerUserName", "setOwnerUser", false, "ID or name of CDB owner user.", UserInfoController.getInstance(), UserInfo.class, ""));
-        specs.add(new IdOrNameRefColumnSpec(10, "Owner Group", "ownerUserGroupName", "setOwnerUserGroup", false, "ID or name of CDB owner user group.", UserGroupController.getInstance(), UserGroup.class, ""));
+        specs.add(new StringColumnSpec(5, "Status", KEY_STATUS, "setInventoryStatusValue", false, "Status of inventory item.", 256));
+        specs.add(locationColumnSpec(6));
+        specs.add(locationDetailsColumnSpec(7));
+        specs.add(projectListColumnSpec(8));
+        specs.add(ownerUserColumnSpec(9));
+        specs.add(ownerGroupColumnSpec(10));
         
         return specs;
     } 
@@ -72,6 +74,25 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
         String methodLogName = "createEntityFromTemplateInstantiation() ";
         boolean isValid = true;
         String validString = "";
+        
+        // validate status value is in set of allowed values
+        String itemStatus = (String) rowMap.get(KEY_STATUS);
+        if (itemStatus != null && !itemStatus.isEmpty()) {
+            List<AllowedPropertyValue> allowedValues = 
+                    getEntityController().getInventoryStatusPropertyType().getAllowedPropertyValueList();
+            boolean found = false;
+            for (AllowedPropertyValue value : allowedValues) {
+                if (itemStatus.equals(value.getValue())) {
+                    found = true;
+                    break;
+                }                    
+            }
+            if (!found) {
+                // illegal status value
+                isValid = false;
+                validString = "invalid status value: " + itemStatus;
+            }
+        }
         
         ItemDomainMachineDesign template = (ItemDomainMachineDesign) rowMap.get(KEY_TEMPLATE);
         ItemDomainMachineDesign item = null;

@@ -12,8 +12,9 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineHierarchy;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineTemplateInstantiation;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
@@ -2812,7 +2813,8 @@ public class ItemDomainMachineDesignController
     protected DomainImportInfo initializeDomainImportInfo() {
 
         List<ImportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportFormatInfo("Basic Machine Design Format", ImportHelperMachineDesign.class));
+        formatInfo.add(new ImportFormatInfo("Machine Hierarchy Creation", ImportHelperMachineHierarchy.class));
+        formatInfo.add(new ImportFormatInfo("Machine Template Instantiation", ImportHelperMachineTemplateInstantiation.class));
 
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 

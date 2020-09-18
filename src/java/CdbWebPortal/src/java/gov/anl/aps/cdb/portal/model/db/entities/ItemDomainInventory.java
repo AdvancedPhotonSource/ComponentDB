@@ -9,7 +9,6 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
-import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
@@ -62,8 +61,6 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
 
     private transient SparePartsBean sparePartsBean = null;
     
-    private transient String importLocationItemString = null;
-
     @Override
     public Item createInstance() {
         return new ItemDomainInventory();
@@ -161,17 +158,4 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
         this.setItemIdentifier1(serialNumber);
     }
     
-    @JsonIgnore
-    public String getImportLocationItemString() {
-        return importLocationItemString;
-    }
-    
-    public void setImportLocationItem(ItemDomainLocation location) {
-        LocatableItemController.getInstance().setItemLocationInfo(this);
-        LocatableItemController.getInstance().updateLocationForItem(
-                this, location, null);
-        importLocationItemString = getLocationString();
-    }
-           
-
 }

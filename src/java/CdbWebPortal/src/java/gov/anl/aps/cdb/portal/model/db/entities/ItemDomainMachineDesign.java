@@ -331,7 +331,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setImportChildParentRelationship(ItemDomainMachineDesign parentItem) {        
         if (parentItem != null) {
             // create ItemElement for new relationship
-            ItemElement itemElement = importCreateItemElementForParent(parentItem);            
+            ItemElement itemElement = importCreateItemElementForParent(parentItem, null, null);            
             setImportChildParentRelationship(this, parentItem, itemElement);
         }
     }
@@ -357,12 +357,13 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
     
     private static ItemElement importCreateItemElementForParent(
-            ItemDomainMachineDesign parentItem) {
+            ItemDomainMachineDesign parentItem,
+            UserInfo user,
+            UserGroup group) {
         
-        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         ItemElement itemElement = new ItemElement();
-        itemElement.setEntityInfo(entityInfo);
         itemElement.setParentItem(parentItem);
+        
         String elementName
                 = ItemDomainMachineDesignController.getInstance().
                         generateUniqueElementNameForItem(parentItem);
@@ -372,12 +373,23 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         float sortOrder = elementSize;
         itemElement.setSortOrder(sortOrder);
 
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        if (user != null) {
+            entityInfo.setOwnerUser(user);
+        }
+        if (group != null) {
+            entityInfo.setOwnerUserGroup(group);
+        } 
+        itemElement.setEntityInfo(entityInfo);
+        
         return itemElement;
     }  
     
     public static ItemDomainMachineDesign importInstantiateTemplateUnderParent(
             ItemDomainMachineDesign templateItem,
-            ItemDomainMachineDesign parentItem) {
+            ItemDomainMachineDesign parentItem,
+            UserInfo user,
+            UserGroup group) {
         
         String logMethodName = "instantiateTemplateUnderParent() ";
         
@@ -386,7 +398,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return null;
         }
         
-        ItemElement itemElement = importCreateItemElementForParent(parentItem);
+        ItemElement itemElement = importCreateItemElementForParent(parentItem, user, group);
         
         ItemDomainMachineDesignController controller = 
                 ItemDomainMachineDesignController.getInstance();
