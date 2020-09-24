@@ -4,6 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.view.jsf.utilities;
 
+import gov.anl.aps.cdb.common.constants.CdbProperty;
+import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,6 +58,10 @@ public class FacesUtility {
             return wizard.getStep();
         }
         return null;
+    }
+
+    public String getPermanentUrl() {
+        return ConfigurationUtility.getPortalProperty(CdbProperty.PERMANENT_CONTEXT_ROOT_URL_PROPERTY_NAME);
     }
 
     /**
