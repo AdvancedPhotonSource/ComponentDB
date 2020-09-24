@@ -406,7 +406,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         ItemDomainMachineDesign newItem;
         try {
             
-            newItem = controller.createMachineDesignFromTemplate(itemElement, templateItem);
+            newItem = controller.createMachineDesignFromTemplate(itemElement, templateItem, user, group);
 
             controller.createMachineDesignFromTemplateHierachically(itemElement);
             

@@ -20,6 +20,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -138,10 +139,18 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     public ItemDomainMachineDesign performPrepareCreateInventoryFromTemplate(ItemDomainMachineDesign template) {
+        return performPrepareCreateInventoryFromTemplate(template, null, null);
+    }
+
+    public ItemDomainMachineDesign performPrepareCreateInventoryFromTemplate(
+            ItemDomainMachineDesign template,
+            UserInfo ownerUser,
+            UserGroup ownerGroup) {
+        
         ItemDomainMachineDesign mdInventory = null;
 
         try {
-            mdInventory = createItemFromTemplate(template);
+            mdInventory = createItemFromTemplate(template, ownerUser, ownerGroup);
             createMachineDesignFromTemplateHierachically(mdInventory);
         } catch (CdbException | CloneNotSupportedException ex) {
             LOGGER.error(ex);

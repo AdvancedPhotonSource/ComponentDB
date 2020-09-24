@@ -28,6 +28,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
@@ -2276,7 +2278,6 @@ public class ItemDomainMachineDesignController
 
     private void createMachineDesignFromTemplateForEditItemElement() throws CdbException, CloneNotSupportedException {
         createMachineDesignFromTemplate(currentEditItemElement, templateToCreateNewItem);
-
         createMachineDesignFromTemplateHierachically(currentEditItemElement);
     }
 
@@ -2287,9 +2288,13 @@ public class ItemDomainMachineDesignController
     }
 
     protected void createMachineDesignFromTemplateHierachically(ItemDomainMachineDesign subTemplate) throws CdbException, CloneNotSupportedException {
+        
+        UserInfo ownerUser = subTemplate.getOwnerUser();
+        UserGroup ownerGroup = subTemplate.getOwnerUserGroup();
+        
         List<ItemElement> itemElementDisplayList = subTemplate.getItemElementDisplayList();
         for (ItemElement ie : itemElementDisplayList) {
-            createMachineDesignFromTemplate(ie, ie);
+            createMachineDesignFromTemplate(ie, ie, ownerUser, ownerGroup);
             createMachineDesignFromTemplateHierachically(ie);
         }
     }
@@ -2304,7 +2309,12 @@ public class ItemDomainMachineDesignController
      * @throws CdbException
      * @throws CloneNotSupportedException
      */
-    private ItemDomainMachineDesign createMachineDesignFromTemplate(ItemElement itemElement, ItemElement templateElementItem) throws CdbException, CloneNotSupportedException {
+    private ItemDomainMachineDesign createMachineDesignFromTemplate(
+            ItemElement itemElement, 
+            ItemElement templateElementItem,
+            UserInfo ownerUser,
+            UserGroup ownerGroup) throws CdbException, CloneNotSupportedException {
+        
         if (templateElementItem.getId() != null) {
             // The key derivedFromItemElement is used for sorting.
             itemElement.setDerivedFromItemElement(templateElementItem);
@@ -2312,14 +2322,23 @@ public class ItemDomainMachineDesignController
 
         ItemDomainMachineDesign templateItem = (ItemDomainMachineDesign) templateElementItem.getContainedItem();
 
-        return createMachineDesignFromTemplate(itemElement, templateItem);
+        return createMachineDesignFromTemplate(itemElement, templateItem, ownerUser, ownerGroup);
     }
 
     public ItemDomainMachineDesign createMachineDesignFromTemplate(ItemElement itemElement, ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
+        return createMachineDesignFromTemplate(itemElement, templateItem, null, null);
+    }
+
+    public ItemDomainMachineDesign createMachineDesignFromTemplate(
+            ItemElement itemElement, 
+            ItemDomainMachineDesign templateItem,
+            UserInfo ownerUser,
+            UserGroup ownerGroup) throws CdbException, CloneNotSupportedException {
         cloneProperties = true;
         cloneCreateItemElementPlaceholders = false;
 
-        ItemDomainMachineDesign createItemFromTemplate = createItemFromTemplate(templateItem);
+        ItemDomainMachineDesign createItemFromTemplate = 
+                createItemFromTemplate(templateItem, ownerUser, ownerGroup);
 
         Item assignedItem = templateItem.getAssignedItem();
         createItemFromTemplate.setAssignedItem(assignedItem);
@@ -2333,7 +2352,15 @@ public class ItemDomainMachineDesignController
     }
 
     protected ItemDomainMachineDesign createItemFromTemplate(ItemDomainMachineDesign templateItem) throws CdbException, CloneNotSupportedException {
-        ItemDomainMachineDesign clone = (ItemDomainMachineDesign) templateItem.clone();
+        return createItemFromTemplate(templateItem, null, null);
+    }
+
+    protected ItemDomainMachineDesign createItemFromTemplate(
+            ItemDomainMachineDesign templateItem,
+            UserInfo ownerUser,
+            UserGroup ownerGroup) throws CdbException, CloneNotSupportedException {
+        
+        ItemDomainMachineDesign clone = (ItemDomainMachineDesign) templateItem.clone(ownerUser, ownerGroup);
         cloneCreateItemElements(clone, templateItem, true, true);
         setMachineDesginIdentifiersFromTemplateItem(templateItem, clone);
 

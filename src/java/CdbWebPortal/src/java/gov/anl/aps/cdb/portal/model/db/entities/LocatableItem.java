@@ -138,7 +138,13 @@ public abstract class LocatableItem extends Item {
     
     @Override
     public Item clone() throws CloneNotSupportedException {
-        LocatableItem clonedItem = (LocatableItem) super.clone();
+        return clone(null, null);
+    }
+
+    @Override
+    public Item clone(UserInfo ownerUser, UserGroup ownerGroup) throws CloneNotSupportedException {
+        
+        LocatableItem clonedItem = (LocatableItem) super.clone(ownerUser, ownerGroup);
 
         clonedItem.setLocationDetails(null);
         clonedItem.setLocation(null);

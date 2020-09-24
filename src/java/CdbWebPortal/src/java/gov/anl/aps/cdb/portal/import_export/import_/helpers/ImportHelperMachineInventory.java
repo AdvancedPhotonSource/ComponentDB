@@ -4,21 +4,16 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
-import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
-import gov.anl.aps.cdb.portal.controllers.UserGroupController;
-import gov.anl.aps.cdb.portal.controllers.UserInfoController;
+import static gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase.KEY_USER;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -94,10 +89,13 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
             }
         }
         
+        UserInfo user = (UserInfo) rowMap.get(KEY_USER);
+        UserGroup group = (UserGroup) rowMap.get(KEY_GROUP);
+
         ItemDomainMachineDesign template = (ItemDomainMachineDesign) rowMap.get(KEY_TEMPLATE);
         ItemDomainMachineDesign item = null;
         if (template != null) {
-            item = getEntityController().performPrepareCreateInventoryFromTemplate(template);
+            item = getEntityController().performPrepareCreateInventoryFromTemplate(template, user, group);
         }
         
         if (item == null) {

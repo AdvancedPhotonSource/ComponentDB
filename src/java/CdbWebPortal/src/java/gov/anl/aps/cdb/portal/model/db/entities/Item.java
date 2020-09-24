@@ -400,6 +400,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @Override
     public Item clone() throws CloneNotSupportedException {
+        return clone(null, null);
+    }
+
+    public Item clone(UserInfo ownerUser, UserGroup ownerGroup) throws CloneNotSupportedException {
         Item clonedItem = createInstance();
         clonedItem.isCloned = true;
 
@@ -418,7 +422,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         ItemElement newSelfElement = new ItemElement();
         ItemElement oldSelfElement = this.getSelfElement();
 
-        newSelfElement.init(clonedItem);
+        newSelfElement.init(clonedItem, null, null, ownerUser, ownerGroup);
         newSelfElement.setDescription(oldSelfElement.getDescription());
 
         clonedItem.setFullItemElementList(new ArrayList<>());
@@ -912,6 +916,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         return this.getEntityInfo().getOwnerUserDisplayName();
     }
     
+    @JsonIgnore
+    public UserInfo getOwnerUser() {
+        return this.getEntityInfo().getOwnerUser();
+    }
+    
     public void setOwnerUser(UserInfo ownerUser) {
         this.getEntityInfo().setOwnerUser(ownerUser);
     }
@@ -919,6 +928,11 @@ public class Item extends CdbDomainEntity implements Serializable {
     @JsonIgnore
     public String getOwnerUserGroupName() {
         return this.getEntityInfo().getOwnerGroupDisplayName();
+    }
+    
+    @JsonIgnore
+    public UserGroup getOwnerUserGroup() {
+        return this.getEntityInfo().getOwnerUserGroup();
     }
     
     public void setOwnerUserGroup(UserGroup ownerUserGroupId) {
