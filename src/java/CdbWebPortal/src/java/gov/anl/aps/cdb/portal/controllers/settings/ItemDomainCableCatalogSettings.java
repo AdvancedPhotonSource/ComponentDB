@@ -48,6 +48,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
     private static final String FilterByLastModifiedOnDateTimeSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.LastModifiedOnDateTime";
     private static final String FilterByNameSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.Name";
     private static final String FilterByPartNumberSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.ItemIdentifier1";
+    private static final String FilterByItemSourcesSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.Sources";
     private static final String FilterByOwnerUserSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.OwnerUser";
     private static final String FilterByOwnerGroupSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.OwnerGroup";
     private static final String FilterByPropertyValue1SettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.PropertyValue1";
@@ -369,6 +370,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByTechnicalSystem = settingTypeMap.get(FilterByTechnicalSystemSettingTypeKey).getDefaultValue();
         filterByItemIdentifier1 = settingTypeMap.get(FilterByPartNumberSettingTypeKey).getDefaultValue();
+        filterByItemSources = settingTypeMap.get(FilterByItemSourcesSettingTypeKey).getDefaultValue();
         filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
         filterByOwnerGroup = settingTypeMap.get(FilterByOwnerGroupSettingTypeKey).getDefaultValue();
         filterByCreatedByUser = settingTypeMap.get(FilterByCreatedByUserSettingTypeKey).getDefaultValue();
@@ -444,6 +446,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByTechnicalSystem = settingEntity.getSettingValueAsString(FilterByTechnicalSystemSettingTypeKey, filterByTechnicalSystem);
         filterByItemIdentifier1 = settingEntity.getSettingValueAsString(FilterByPartNumberSettingTypeKey, filterByItemIdentifier1);
+        filterByItemSources = settingEntity.getSettingValueAsString(FilterByItemSourcesSettingTypeKey, filterByItemSources);
         filterByOwnerUser = settingEntity.getSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
         filterByOwnerGroup = settingEntity.getSettingValueAsString(FilterByOwnerGroupSettingTypeKey, filterByOwnerGroup);
         filterByCreatedByUser = settingEntity.getSettingValueAsString(FilterByCreatedByUserSettingTypeKey, filterByCreatedByUser);
@@ -526,6 +529,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
 
         settingEntity.setSettingValue(FilterByTechnicalSystemSettingTypeKey, filterByTechnicalSystem);
         settingEntity.setSettingValue(FilterByPartNumberSettingTypeKey, filterByItemIdentifier1);
+        settingEntity.setSettingValue(FilterByItemSourcesSettingTypeKey, filterByItemSources);
 
         settingEntity.setSettingValue(FilterByPropertyValue1SettingTypeKey, filterByPropertyValue1);
         settingEntity.setSettingValue(FilterByPropertyValue2SettingTypeKey, filterByPropertyValue2);
