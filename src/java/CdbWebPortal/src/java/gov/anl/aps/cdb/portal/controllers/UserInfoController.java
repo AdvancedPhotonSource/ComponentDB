@@ -33,11 +33,12 @@ import javax.faces.model.DataModel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Named("userInfoController")
+@Named(UserInfoController.CONTROLLER_NAMED)
 @SessionScoped
 public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFacade, UserInfoSettings> implements Serializable {   
 
     private static final Logger logger = LogManager.getLogger(UserInfoController.class.getName());
+    public static final String CONTROLLER_NAMED = "userInfoController";
 
     @EJB
     private UserInfoFacade userInfoFacade;
@@ -50,6 +51,10 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
     private Integer loadedDataModelHashCode = null;
 
     public UserInfoController() {
+    }
+
+    public static UserInfoController getInstance() {
+        return (UserInfoController) SessionUtility.findBean(UserInfoController.CONTROLLER_NAMED);
     }
 
     @Override

@@ -37,7 +37,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient List<ItemElement> combinedItemElementList; 
     private transient ItemElement combinedItemElementListParentElement; 
     
-    private transient ItemDomainMachineDesign importContainerItem = null;
+    private transient ItemDomainMachineDesign importMdItem = null;
     private transient String importPath = null;
     private transient ItemDomainCatalog importAssignedCatalogItem = null;
     private transient ItemDomainInventory importAssignedInventoryItem = null;
@@ -179,17 +179,17 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
     
     @JsonIgnore
-    public ItemDomainMachineDesign getImportContainerItem() {
-        return importContainerItem;
+    public ItemDomainMachineDesign getImportMdItem() {
+        return importMdItem;
     }
 
-    public void setImportContainerItem(ItemDomainMachineDesign item) {
-        importContainerItem = item;
+    public void setImportMdItem(ItemDomainMachineDesign item) {
+        importMdItem = item;
     }
 
     @JsonIgnore
     public String getImportContainerString() {
-        ItemDomainMachineDesign itemContainer = this.getImportContainerItem();
+        ItemDomainMachineDesign itemContainer = this.getImportMdItem();
         if (itemContainer != null) {
             return itemContainer.getName();
         } else {
@@ -224,6 +224,26 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         selfElement.setContainedItem2(item);
     }
 
+    @Override
+    public SearchResult search(Pattern searchPattern) {
+        SearchResult result = super.search(searchPattern);
+        
+        Item assignedItem = getAssignedItem();
+        if (assignedItem != null) {
+            String assignedItemName = assignedItem.getName();
+            result.doesValueContainPattern("Assigned Item Name", assignedItemName, searchPattern);
+        }
+        
+        return result; 
+    }
+
+    @Override
+    public String getStatusPropertyTypeName() {
+        return MD_INTERNAL_STATUS_PROPERTY_TYPE; 
+    }
+    
+    // <editor-fold defaultstate="collapsed" desc="Import functionality">
+    
     public void setImportAssignedCatalogItem(ItemDomainCatalog item) {
         importAssignedCatalogItem = item;
     }
@@ -261,7 +281,13 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     public void setImportLocationItem(ItemDomainLocation locationItem) {
-        importLocationItem = locationItem;
+        if (locationItem != null) {
+            LocatableItemController.getInstance().setItemLocationInfo(this);
+            LocatableItemController.getInstance().updateLocationForItem(
+                    this, locationItem, null);
+            importLocationItemString = getLocationString();
+            importLocationItem = locationItem;
+        }
     }
     
     @JsonIgnore
@@ -287,11 +313,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         this.importTemplateAndParameters = importTemplateAndParameters;
     }
     
-    public void applyImportLocation() {
-        LocatableItemController.getInstance().setItemLocationInfo(this);
-        LocatableItemController.getInstance().updateLocationForItem(
-                this, getImportLocationItem(), null);
-        importLocationItemString = getLocationString();
+    public void applyImportAssignedItem() {
+        if (importAssignedInventoryItem != null) {
+            setAssignedItem(importAssignedInventoryItem);
+        } else if (importAssignedCatalogItem != null) {
+            setAssignedItem(importAssignedCatalogItem);
+        }
     }
     
     /**
@@ -301,43 +328,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
      * 
      * @param childItem 
      */
-    public void applyImportValues(ItemDomainMachineDesign parentItem, 
-            boolean isValidAssignedItem,
-            boolean isValidLocation) {
-        
-        if (getImportLocationItem() != null) {
-            // location was specified for item
-
-            if (isValidLocation) {
-                // if valid for this item, update it and use hierarchical location
-                // string for import location string
-                applyImportLocation();
-                
-            } else {
-                // if location is not valid for this item, just use item name for
-                // import location string
-                importLocationItemString = getImportLocationItem().getName();
-            }
-            
-        }
-        
+    public void setImportChildParentRelationship(ItemDomainMachineDesign parentItem) {        
         if (parentItem != null) {
             // create ItemElement for new relationship
-            ItemElement itemElement = createItemElementForParent(parentItem);            
-            setChildParentRelationship(this, parentItem, itemElement);
-            
-            // for non-template item, add assigned catalog/inventory item (if any)
-            if (isValidAssignedItem) {
-                if (importAssignedInventoryItem != null) {
-                    itemElement.setContainedItem2(importAssignedInventoryItem);
-                } else if (importAssignedCatalogItem != null) {
-                    itemElement.setContainedItem2(importAssignedCatalogItem);
-                }
-            }
+            ItemElement itemElement = importCreateItemElementForParent(parentItem, null, null);            
+            setImportChildParentRelationship(this, parentItem, itemElement);
         }
     }
     
-    private static void setChildParentRelationship(
+    private static void setImportChildParentRelationship(
             ItemDomainMachineDesign childItem,
             ItemDomainMachineDesign parentItem,
             ItemElement itemElement) {
@@ -357,13 +356,14 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             
     }
     
-    private static ItemElement createItemElementForParent(
-            ItemDomainMachineDesign parentItem) {
+    private static ItemElement importCreateItemElementForParent(
+            ItemDomainMachineDesign parentItem,
+            UserInfo user,
+            UserGroup group) {
         
-        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
         ItemElement itemElement = new ItemElement();
-        itemElement.setEntityInfo(entityInfo);
         itemElement.setParentItem(parentItem);
+        
         String elementName
                 = ItemDomainMachineDesignController.getInstance().
                         generateUniqueElementNameForItem(parentItem);
@@ -373,12 +373,23 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         float sortOrder = elementSize;
         itemElement.setSortOrder(sortOrder);
 
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        if (user != null) {
+            entityInfo.setOwnerUser(user);
+        }
+        if (group != null) {
+            entityInfo.setOwnerUserGroup(group);
+        } 
+        itemElement.setEntityInfo(entityInfo);
+        
         return itemElement;
     }  
     
-    public static ItemDomainMachineDesign instantiateTemplateUnderParent(
+    public static ItemDomainMachineDesign importInstantiateTemplateUnderParent(
             ItemDomainMachineDesign templateItem,
-            ItemDomainMachineDesign parentItem) {
+            ItemDomainMachineDesign parentItem,
+            UserInfo user,
+            UserGroup group) {
         
         String logMethodName = "instantiateTemplateUnderParent() ";
         
@@ -387,7 +398,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return null;
         }
         
-        ItemElement itemElement = createItemElementForParent(parentItem);
+        ItemElement itemElement = importCreateItemElementForParent(parentItem, user, group);
         
         ItemDomainMachineDesignController controller = 
                 ItemDomainMachineDesignController.getInstance();
@@ -395,11 +406,11 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         ItemDomainMachineDesign newItem;
         try {
             
-            newItem = controller.createMachineDesignFromTemplate(itemElement, templateItem);
+            newItem = controller.createMachineDesignFromTemplate(itemElement, templateItem, user, group);
 
             controller.createMachineDesignFromTemplateHierachically(itemElement);
             
-            setChildParentRelationship(newItem, parentItem, itemElement);
+            setImportChildParentRelationship(newItem, parentItem, itemElement);
 
         } catch (CdbException | CloneNotSupportedException ex) {
             LOGGER.error(logMethodName + "failed to instantiate template " + 
@@ -409,23 +420,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         return newItem;
     }
+// </editor-fold>
 
-    @Override
-    public SearchResult search(Pattern searchPattern) {
-        SearchResult result = super.search(searchPattern);
-        
-        Item assignedItem = getAssignedItem();
-        if (assignedItem != null) {
-            String assignedItemName = assignedItem.getName();
-            result.doesValueContainPattern("Assigned Item Name", assignedItemName, searchPattern);
-        }
-        
-        return result; 
-    }
-
-    @Override
-    public String getStatusPropertyTypeName() {
-        return MD_INTERNAL_STATUS_PROPERTY_TYPE; 
-    }
-    
 }

@@ -179,7 +179,7 @@ public abstract class ItemDomainCatalogBaseController<ItemCatalogBaseDomainEntit
     }
 
     @Override
-    protected ItemCatalogBaseDomainEntity createEntityInstance() {
+    public ItemCatalogBaseDomainEntity createEntityInstance() {
         ItemCatalogBaseDomainEntity newItem = super.createEntityInstance();
         if (getCurrentItemProject() != null) {
             List<ItemProject> itemProjectList = new ArrayList<>();

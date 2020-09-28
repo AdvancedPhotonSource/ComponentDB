@@ -20,6 +20,6 @@ public class IntegerColumnSpec extends ColumnSpec {
     @Override
     public InputHandler createInputHandlerInstance() {
         return new IntegerInputHandler(
-                getColumnIndex(), getPropertyName(), getEntitySetterMethod());
+                getColumnIndex(), getHeader(), getPropertyName(), getEntitySetterMethod());
     }
 }

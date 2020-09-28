@@ -12,8 +12,8 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ParseInfo;
  */
 public class BooleanInputHandler extends SimpleInputHandler {
 
-    public BooleanInputHandler(int columnIndex, String propertyName, String setterMethod) {
-        super(columnIndex, propertyName, setterMethod);
+    public BooleanInputHandler(int columnIndex, String columnName, String propertyName, String setterMethod) {
+        super(columnIndex, columnName, propertyName, setterMethod);
     }
 
     @Override
@@ -36,7 +36,7 @@ public class BooleanInputHandler extends SimpleInputHandler {
                 parsedValue = null;
                 isValid = false;
                 validString = "unexpected boolean value: " + stringValue
-                        + " for column: " + columnNameForIndex(columnIndex);
+                        + " for column: " + getColumnName();
             }
         }
 

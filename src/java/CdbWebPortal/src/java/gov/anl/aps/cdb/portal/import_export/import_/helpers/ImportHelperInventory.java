@@ -37,15 +37,17 @@ public class ImportHelperInventory
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(0, "Catalog Item", KEY_CATALOG_ITEM, "setCatalogItem", true, "ID or name of catalog item for inventory unit", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
-        specs.add(new StringColumnSpec(1, "Tag", KEY_NAME, "", true, "Name for inventory unit.", 64));
+        specs.add(new IdOrNameRefColumnSpec(0, "Catalog Item", KEY_CATALOG_ITEM, "setCatalogItem", true, "ID or name of catalog item for inventory unit. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
+        specs.add(new StringColumnSpec(1, "Tag", KEY_NAME, "", true, "Name of inventory unit.", 64));
         specs.add(new IntegerColumnSpec(2, "QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
         specs.add(new StringColumnSpec(3, "Serial Number", "serialNumber", "setSerialNumber", false, "Inventory unit serial number.", 128));
         specs.add(new StringColumnSpec(4, "Description", "description", "setDescription", false, "Description of inventory unit.", 256));
-        specs.add(new StringColumnSpec(5, "Status", KEY_STATUS, "setInventoryStatusValue", false, "Status of inventory item.", 256));
-        specs.add(new IdOrNameRefColumnSpec(6, "Location", "importLocationItemString", "setImportLocationItem", false, "Inventory unit location.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, ""));
-        specs.add(new StringColumnSpec(7, "Location Details", "locationDetails", "setLocationDetails", false, "Location details for inventory unit.", 256));
-        specs.add(new IdOrNameRefColumnSpec(8, "Project", "itemProjectString", "setProject", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class, ""));
+        specs.add(statusColumnSpec(5));
+        specs.add(locationColumnSpec(6));
+        specs.add(locationDetailsColumnSpec(7));
+        specs.add(projectListColumnSpec(8));
+        specs.add(ownerUserColumnSpec(9));
+        specs.add(ownerGroupColumnSpec(10));
         
         return specs;
     } 

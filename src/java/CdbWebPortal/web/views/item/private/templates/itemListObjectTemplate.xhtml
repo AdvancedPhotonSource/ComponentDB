@@ -175,7 +175,7 @@ See LICENSE file.
     <ui:define name="itemSourceColumn" > 
         <p:column sortBy="#{itemListObject.itemSourceString}" 
                   headerText="Sources"
-                  filterBy="#{itemListObject.itemSourceString}"
+                  filterBy="#{itemListObject.itemSourceString}" filterMatchMode="contains"
                   filterValue="#{entitySettingObject.filterByItemSources}"
                   filterable="#{filterable}"
                   sortable="#{sortable}"

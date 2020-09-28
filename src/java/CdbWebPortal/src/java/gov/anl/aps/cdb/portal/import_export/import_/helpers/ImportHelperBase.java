@@ -5,7 +5,14 @@
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
+import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
+import gov.anl.aps.cdb.portal.controllers.UserGroupController;
+import gov.anl.aps.cdb.portal.controllers.UserInfoController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
@@ -14,7 +21,13 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -61,6 +74,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private static final String PROPERTY_IS_VALID = "isValidImportString";
     private static final String HEADER_VALID_STRING = "Valid String";
     private static final String PROPERTY_VALID_STRING = "validStringImport";
+    
+    protected static final String KEY_USER = "ownerUserName";
+    protected static final String KEY_GROUP = "ownerUserGroupName";
     
     private static final String INDICATOR_COMMENT = "//";
 
@@ -292,6 +308,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             headerComment.setString(str);
             headerCell.setCellComment(headerComment);
         }
+        
+        // add some documentation
+        Row blankRow = sheet.createRow(1);
+        Row commentRow = sheet.createRow(2);
+        Cell commentCell = commentRow.createCell(0);
+        commentCell.setCellValue("// Comment rows must begin with '//'.  Blank Rows are allowed.  Most ID columns also accept names or list of names, but names must be unique and cell value must be prefixed with '#' character.");
 
         try (ByteArrayOutputStream outStream = new ByteArrayOutputStream()) {
             wb.write(outStream);
@@ -715,4 +737,32 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public abstract String getTemplateFilename();
     
     protected abstract CreateInfo createEntityInstance(Map<String, Object> rowMap);
+    
+    public IdOrNameRefColumnSpec ownerUserColumnSpec(int colIndex) {
+        return new IdOrNameRefColumnSpec(colIndex, "Owner User", KEY_USER, "setOwnerUser", false, "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", UserInfoController.getInstance(), UserInfo.class, "");
+    }
+    
+    public IdOrNameRefColumnSpec ownerGroupColumnSpec(int colIndex) {
+        return new IdOrNameRefColumnSpec(colIndex, "Owner Group", KEY_GROUP, "setOwnerUserGroup", false, "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", UserGroupController.getInstance(), UserGroup.class, "");
+    }
+    
+    public IdOrNameRefListColumnSpec projectListColumnSpec(int colIndex) {
+        return new IdOrNameRefListColumnSpec(colIndex, "Project", "itemProjectString", "setItemProjectList", true, "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'.", ItemProjectController.getInstance(), List.class, "");
+    }
+    
+    public IdOrNameRefListColumnSpec technicalSystemListColumnSpec(int colIndex, String domainName) {
+        return new IdOrNameRefListColumnSpec(colIndex, "Technical System", "itemCategoryString", "setItemCategoryList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemCategoryController.getInstance(), List.class, domainName);
+    }
+    
+    public IdOrNameRefListColumnSpec functionListColumnSpec(int colIndex, String domainName) {
+        return new IdOrNameRefListColumnSpec(colIndex, "Function", "itemTypeString", "setItemTypeList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemTypeController.getInstance(), List.class, domainName);
+    }
+    
+    public IdOrNameRefColumnSpec locationColumnSpec(int colIndex) {
+        return new IdOrNameRefColumnSpec(colIndex, "Location", "importLocationItemString", "setImportLocationItem", false, "Item location.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, "");
+    }
+    
+    public StringColumnSpec locationDetailsColumnSpec(int colIndex) {
+        return new StringColumnSpec(colIndex, "Location Details", "locationDetails", "setLocationDetails", false, "Location details for item.", 256);
+    }
 }

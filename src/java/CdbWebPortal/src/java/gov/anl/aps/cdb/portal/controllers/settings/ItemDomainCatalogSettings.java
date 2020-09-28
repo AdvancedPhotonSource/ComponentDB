@@ -66,6 +66,7 @@ public class ItemDomainCatalogSettings extends ItemSettings<ItemDomainCatalogCon
     private static final String FilterByPropertyValue4SettingTypeKey = "ItemDomainCatalog.List.FilterBy.PropertyValue4";
     private static final String FilterByPropertyValue5SettingTypeKey = "ItemDomainCatalog.List.FilterBy.PropertyValue5";
     private static final String FilterByTypeSettingTypeKey = "ItemDomainCatalog.List.FilterBy.Type";
+    private static final String FilterByItemSourcesSettingTypeKey = "ItemDomainCatalog.List.FilterBy.Sources";
     private static final String FilterByPropertiesAutoLoadTypeKey = "ItemDomainCatalog.List.AutoLoad.FilterBy.Properties";    
 
     private static final String DisplayListPageHelpFragmentSettingTypeKey = "ItemDomainCatalog.Help.ListPage.Display.Fragment";
@@ -80,7 +81,6 @@ public class ItemDomainCatalogSettings extends ItemSettings<ItemDomainCatalogCon
     private String filterByType = null;
     private String filterByCategory = null;
     private String filterByModelNumber = null;
-    private String filterBySources = null;
 
     private Boolean selectDisplayType = true;
     private Boolean selectDisplayCategory = true;
@@ -132,6 +132,7 @@ public class ItemDomainCatalogSettings extends ItemSettings<ItemDomainCatalogCon
         filterByName = settingTypeMap.get(FilterByNameSettingTypeKey).getDefaultValue();
         filterByDescription = settingTypeMap.get(FilterByDescriptionSettingTypeKey).getDefaultValue();
         filterByType = settingTypeMap.get(FilterByTypeSettingTypeKey).getDefaultValue();
+        filterByItemSources = settingTypeMap.get(FilterByItemSourcesSettingTypeKey).getDefaultValue();
         filterByCategory = settingTypeMap.get(FilterByCategorySettingTypeKey).getDefaultValue();
         filterByModelNumber = settingTypeMap.get(FilterByModelNumberSettingTypeKey).getDefaultValue();
         filterByOwnerUser = settingTypeMap.get(FilterByOwnerUserSettingTypeKey).getDefaultValue();
@@ -193,6 +194,7 @@ public class ItemDomainCatalogSettings extends ItemSettings<ItemDomainCatalogCon
         filterByName = settingEntity.getSettingValueAsString(FilterByNameSettingTypeKey, filterByName);
         filterByDescription = settingEntity.getSettingValueAsString(FilterByDescriptionSettingTypeKey, filterByDescription);
         filterByType = settingEntity.getSettingValueAsString(FilterByTypeSettingTypeKey, filterByType);
+        filterByItemSources = settingEntity.getSettingValueAsString(FilterByItemSourcesSettingTypeKey, filterByItemSources);
         filterByCategory = settingEntity.getSettingValueAsString(FilterByCategorySettingTypeKey, filterByCategory);
         filterByModelNumber = settingEntity.getSettingValueAsString(FilterByModelNumberSettingTypeKey, filterByModelNumber);
         filterByOwnerUser = settingEntity.getSettingValueAsString(FilterByOwnerUserSettingTypeKey, filterByOwnerUser);
@@ -262,6 +264,7 @@ public class ItemDomainCatalogSettings extends ItemSettings<ItemDomainCatalogCon
         settingEntity.setSettingValue(FilterByLastModifiedOnDateTimeSettingTypeKey, filterByLastModifiedByUser);
 
         settingEntity.setSettingValue(FilterByTypeSettingTypeKey, filterByType);
+        settingEntity.setSettingValue(FilterByItemSourcesSettingTypeKey, filterByItemSources);
         settingEntity.setSettingValue(FilterByCategorySettingTypeKey, filterByCategory);
         settingEntity.setSettingValue(FilterByModelNumberSettingTypeKey, filterByModelNumber);
 

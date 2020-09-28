@@ -24,6 +24,7 @@ public abstract class LocatableItem extends Item {
     private transient ItemElementRelationship locationRelationship; 
     private transient String locationString;
     private transient DefaultMenuModel locationMenuModel;
+    private transient String importLocationItemString = null;
 
     // Needed to determine whenever location was removed in edit process. 
     private transient Boolean originalLocationLoaded = false;
@@ -137,7 +138,13 @@ public abstract class LocatableItem extends Item {
     
     @Override
     public Item clone() throws CloneNotSupportedException {
-        LocatableItem clonedItem = (LocatableItem) super.clone();
+        return clone(null, null);
+    }
+
+    @Override
+    public Item clone(UserInfo ownerUser, UserGroup ownerGroup) throws CloneNotSupportedException {
+        
+        LocatableItem clonedItem = (LocatableItem) super.clone(ownerUser, ownerGroup);
 
         clonedItem.setLocationDetails(null);
         clonedItem.setLocation(null);
@@ -145,4 +152,16 @@ public abstract class LocatableItem extends Item {
         return clonedItem;
     }
 
+    @JsonIgnore
+    public String getImportLocationItemString() {
+        return importLocationItemString;
+    }
+    
+    public void setImportLocationItem(ItemDomainLocation location) {
+        LocatableItemController.getInstance().setItemLocationInfo(this);
+        LocatableItemController.getInstance().updateLocationForItem(
+                this, location, null);
+        importLocationItemString = getLocationString();
+    }
+           
 }

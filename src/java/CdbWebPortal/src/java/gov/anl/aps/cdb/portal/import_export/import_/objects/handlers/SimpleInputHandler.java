@@ -27,9 +27,10 @@ public abstract class SimpleInputHandler extends SingleColumnInputHandler {
 
     public SimpleInputHandler(
             int columnIndex,
+            String columnName,
             String propertyName,
             String setterMethod) {
-        super(columnIndex);
+        super(columnIndex, columnName);
         this.propertyName = propertyName;
         this.setterMethod = setterMethod;
     }
@@ -42,14 +43,6 @@ public abstract class SimpleInputHandler extends SingleColumnInputHandler {
         return setterMethod;
     }
 
-    protected String columnNameForIndex(int index) {
-        if (propertyName != null) {
-            return propertyName;
-        } else {
-            return "";
-        }
-    }
-    
     public abstract ParseInfo parseCellValue(String cellValue);
 
     public abstract Class getParamType();
@@ -105,7 +98,7 @@ public abstract class SimpleInputHandler extends SingleColumnInputHandler {
                 isValid = false;
                 validString
                         = "Unable to invoke setter method: " + getSetterMethod()
-                        + " for column: " + columnNameForIndex(columnIndex)
+                        + " for column: " + getColumnName()
                         + " reason: " + ex.getClass().getName();
                 LOGGER.info(methodLogName + validString);
                 return new ValidInfo(isValid, validString);

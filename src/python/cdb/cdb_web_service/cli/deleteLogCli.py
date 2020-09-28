@@ -23,7 +23,7 @@ class DeleteLogCli(CdbWebServiceSessionCli):
 
     def runCommand(self):
         self.parseArgs(usage="""
-    cdb-update-log --log-id=LOG_ID
+    cdb-delete-log --log-id=LOG_ID
 
 Description:
     Removes a log entry.

@@ -36,6 +36,7 @@ public class StringColumnSpec extends ColumnSpec {
     public InputHandler createInputHandlerInstance() {
         return new StringInputHandler(
                 getColumnIndex(),
+                getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),
                 getMaxLength());

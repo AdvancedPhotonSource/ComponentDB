@@ -23,39 +23,63 @@ public class EntityInfoUtility {
     private static final List<String> adminGroupNameList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
 
     public static EntityInfo createEntityInfo() {
+        return createEntityInfo(null, null);
+    }
+    
+    public static EntityInfo createEntityInfo(UserInfo ownerUser, UserGroup ownerGroup) {
         UserInfo createdByUser = (UserInfo) SessionUtility.getUser();
         if (createdByUser == null) {
             // Created by user cannot be empty.
             return null;
         }
-        return createEntityInfo(createdByUser);
+        return createEntityInfo(createdByUser, ownerUser, ownerGroup);
     }
     
     public static EntityInfo createEntityInfo(UserInfo createdByUser) {       
+        return createEntityInfo(createdByUser, null, null);
+    }
+
+    public static EntityInfo createEntityInfo(
+            UserInfo createdByUser,
+            UserInfo ownerUser,
+            UserGroup ownerGroup) {
+        
         Date createdOnDateTime = new Date();
         EntityInfo entityInfo = new EntityInfo();
-        entityInfo.setOwnerUser(createdByUser);
+        
+        if (ownerUser != null) {
+            entityInfo.setOwnerUser(ownerUser);
+        } else {
+            entityInfo.setOwnerUser(createdByUser);
+        }
+        
         entityInfo.setCreatedOnDateTime(createdOnDateTime);
         entityInfo.setCreatedByUser(createdByUser);
         entityInfo.setLastModifiedOnDateTime(createdOnDateTime);
         entityInfo.setLastModifiedByUser(createdByUser);
         entityInfo.setIsGroupWriteable(true);
-        List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
-        if (!ownerUserGroupList.isEmpty()) {
-            UserGroup ownerUserGroup = null; 
-            for (UserGroup userGroup : ownerUserGroupList) {
-                if (adminGroupNameList.contains(userGroup.getName()) == false) {
-                    ownerUserGroup = userGroup;
-                    break;
+        
+        if (ownerGroup != null) {
+            entityInfo.setOwnerUserGroup(ownerGroup);
+        } else {
+            List<UserGroup> ownerUserGroupList = createdByUser.getUserGroupList();
+            if (!ownerUserGroupList.isEmpty()) {
+                UserGroup ownerUserGroup = null;
+                for (UserGroup userGroup : ownerUserGroupList) {
+                    if (adminGroupNameList.contains(userGroup.getName()) == false) {
+                        ownerUserGroup = userGroup;
+                        break;
+                    }
                 }
-            }
-            if (ownerUserGroup == null) {
-                ownerUserGroup = ownerUserGroupList.get(0);
-            }
-            
-            entityInfo.setOwnerUserGroup(ownerUserGroup);
+                if (ownerUserGroup == null) {
+                    ownerUserGroup = ownerUserGroupList.get(0);
+                }
 
+                entityInfo.setOwnerUserGroup(ownerUserGroup);
+
+            }
         }
+        
         return entityInfo;
     }
 

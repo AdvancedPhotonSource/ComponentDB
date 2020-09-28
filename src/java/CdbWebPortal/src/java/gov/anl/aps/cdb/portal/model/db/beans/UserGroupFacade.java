@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -54,6 +55,29 @@ public class UserGroupFacade extends CdbEntityFacade<UserGroup> {
 
         }
         return null;
+    }
+    
+    public UserGroup findByName(String name) {
+        try {
+            return (UserGroup) em.createNamedQuery("UserGroup.findByName")
+                    .setParameter("name", name)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
+    /**
+     * Find unique entity by name.  Returns null if none is found, or raises
+     * CdbException if multiple instances are found.
+     */
+    public UserGroup findUniqueByName(String name, String filterDomainName) throws CdbException {
+        
+        if ((name == null) || (name.isEmpty())) {
+            return null;
+        }
+        
+        return findByName(name);       
     }
     
 }
