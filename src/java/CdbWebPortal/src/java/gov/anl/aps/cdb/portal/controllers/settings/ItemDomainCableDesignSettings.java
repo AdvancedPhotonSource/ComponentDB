@@ -260,6 +260,10 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         this.endpoint2DescriptionFilter = endpoint2DescriptionFilter;
     }
 
+    public Boolean getDisplayInstalledQrId() {
+        return false;
+    }
+
     @Override
     protected void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);

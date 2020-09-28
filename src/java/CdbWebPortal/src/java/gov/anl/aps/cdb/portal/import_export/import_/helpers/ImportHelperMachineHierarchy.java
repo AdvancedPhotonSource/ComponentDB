@@ -4,16 +4,15 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.controllers.UserGroupController;
+import gov.anl.aps.cdb.portal.controllers.UserInfoController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.BooleanInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.HierarchyHandler;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.IdOrNameRefInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
@@ -22,7 +21,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.SingleColumnInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.StringInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
@@ -30,8 +29,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +46,7 @@ import org.apache.poi.ss.usermodel.Row;
  *
  * @author craig
  */
-public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
+public class ImportHelperMachineHierarchy extends HierarchicalImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
     
     /**
      * Using a custom handler so that we can use catalog or inventory item id's
@@ -58,7 +57,7 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
     private class AssignedItemHandler extends SingleColumnInputHandler {
         
         public AssignedItemHandler(int columnIndex) {
-            super(columnIndex);
+            super(columnIndex, HEADER_ASSIGNED_ITEM);
         }
         
         @Override
@@ -76,17 +75,25 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
             if ((parsedValue != null) && (!parsedValue.isEmpty())) {
                 // assigned item is specified
                 
-                assignedItem = ItemFacade.getInstance().findById(Integer.valueOf(parsedValue));
-                
-                if (assignedItem == null) {
-                    String msg = "Unable to find object for: " + columnNameForIndex(columnIndex)
-                            + " with id: " + parsedValue;
+                int id;
+                try {
+                    id = Integer.valueOf(parsedValue);
+                    assignedItem = ItemFacade.getInstance().findById(id);
+                    if (assignedItem == null) {
+                        String msg = "Unable to find object for: " + getColumnName()
+                                + " with id: " + parsedValue;
+                        isValid = false;
+                        validString = msg;
+                        LOGGER.info("AssignedItemHandler.handleInput() " + msg);
+                    }
+                    rowMap.put(KEY_ASSIGNED_ITEM, assignedItem);
+                    
+                } catch (NumberFormatException ex) {
+                    String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
                     isValid = false;
                     validString = msg;
-                    LOGGER.info("AssignedItemHandler.handleInput() " + msg);                    
-                }
-                
-                rowMap.put(KEY_ASSIGNED_ITEM, assignedItem);
+                    LOGGER.info("AssignedItemHandler.handleInput() " + msg);  
+                }                
             }
 
             return new ValidInfo(isValid, validString);
@@ -101,7 +108,7 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
     private class LocationHandler extends SingleColumnInputHandler {
         
         public LocationHandler(int columnIndex) {
-            super(columnIndex);
+            super(columnIndex, HEADER_LOCATION);
         }
         
         @Override
@@ -121,20 +128,28 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
                 
                 // ignore word "parent"
                 if (!parsedValue.equalsIgnoreCase("parent")) {
-                
-                    itemLocation = ItemDomainLocationController.getInstance().findById(Integer.valueOf(parsedValue));
+                    int id;
+                    try {
+                        id = Integer.valueOf(parsedValue);
+                        itemLocation = ItemDomainLocationController.getInstance().findById(id);
+                        if (itemLocation == null) {
+                            String msg = "Unable to find object for: " + getColumnName()
+                                    + " with id: " + parsedValue;
+                            isValid = false;
+                            validString = msg;
+                            LOGGER.info("LocationHandler.handleInput() " + msg);
 
-                    if (itemLocation == null) {
-                        String msg = "Unable to find object for: " + columnNameForIndex(columnIndex)
-                                + " with id: " + parsedValue;
+                        } else {
+                            // set location
+                            rowMap.put(KEY_LOCATION, itemLocation);
+                        }
+
+                    } catch (NumberFormatException ex) {
+                        String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
                         isValid = false;
                         validString = msg;
                         LOGGER.info("LocationHandler.handleInput() " + msg);
-
-                    } else {
-                        // set location
-                        rowMap.put(KEY_LOCATION, itemLocation);
-                    }
+                    }              
                 }
             }
 
@@ -142,43 +157,33 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
         }
     }
     
-    private class TemplateInvocationInfo {
-        public String templateName;
-        public Map<String, String> varNameValueMap;
-        
-        public TemplateInvocationInfo(String templateName, Map<String, String> varMap) {
-            this.templateName = templateName;
-            this.varNameValueMap = varMap;
-        }
-    }
-    
-    private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineDesign.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineHierarchy.class.getName());
     
     private static final String KEY_NAME = "name";
     private static final String KEY_INDENT = "indentLevel";
     private static final String KEY_ASSIGNED_ITEM = "assignedItem";
     private static final String KEY_LOCATION = "location";
-    private static final String KEY_CONTAINER = "importContainerItem";
-    private static final String KEY_TEMPLATE_INVOCATION = "importTemplateAndParameters";
+    private static final String KEY_CONTAINER = "importMdItem";
     private static final String KEY_IS_TEMPLATE = "importIsTemplate";
     
     private static final String HEADER_PARENT = "Parent ID";
     private static final String HEADER_BASE_LEVEL = "Level";
-    private static final String HEADER_TEMPLATE_INVOCATION = "Template Instantiation";
     private static final String HEADER_ALT_NAME = "Machine Design Alternate Name";
     private static final String HEADER_DESCRIPTION = "Machine Design Item Description";
     private static final String HEADER_ASSIGNED_ITEM = "Assigned Catalog/Inventory Item";
     private static final String HEADER_ASSIGNED_ITEM_ID = "Assigned Catalog/Inventory Item ID";
     private static final String HEADER_LOCATION = "Location";
+    private static final String HEADER_LOCATION_DETAILS = "Location Details";
     private static final String HEADER_PROJECT = "Project ID";
     private static final String HEADER_TEMPLATE = "Is Template?";
+    private static final String HEADER_USER = "Owner User";
+    private static final String HEADER_GROUP = "Owner Group";
 
     private Map<String, InputColumnInfo> columnInfoMap = null;
     private Map<String, ItemDomainMachineDesign> itemByNameMap = new HashMap<>();
     private Map<ItemDomainMachineDesign, ImportInfo> itemInfoMap = new HashMap<>();
     private Map<Integer, ItemDomainMachineDesign> parentIndentMap = new HashMap<>();
     
-    private int templateInstantiationCount = 0;
     private int nonTemplateItemCount = 0;
     private int templateItemCount = 0;
     
@@ -189,17 +194,12 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
         columnInfoMap.put(HEADER_PARENT, new InputColumnInfo(
                 HEADER_PARENT, 
                 false, 
-                "CDB ID of parent machine design item.  Can only be provided for level 0 item."));
+                "CDB ID or name of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'."));
         
         columnInfoMap.put(HEADER_BASE_LEVEL, new InputColumnInfo(
                 HEADER_BASE_LEVEL, 
                 false, 
                 "Machine design hierarchy column level"));
-        
-        columnInfoMap.put(HEADER_TEMPLATE_INVOCATION, new InputColumnInfo(
-                HEADER_TEMPLATE_INVOCATION, 
-                false, 
-                "Template to instantiate with required parameters, e.g., 'PS-SR-S{nn}-CAB1(nn=24)'."));
         
         columnInfoMap.put(HEADER_ALT_NAME, new InputColumnInfo(
                 HEADER_ALT_NAME, 
@@ -219,22 +219,37 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
         columnInfoMap.put(HEADER_ASSIGNED_ITEM_ID, new InputColumnInfo(
                 HEADER_ASSIGNED_ITEM_ID, 
                 false, 
-                "CDB ID of assigned catalog or inventory item."));
+                "CDB ID or name of assigned catalog or inventory item. Name must be unique and prefixed with '#'."));
         
         columnInfoMap.put(HEADER_LOCATION, new InputColumnInfo(
                 HEADER_LOCATION, 
                 false, 
-                "CDB ID of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored)."));
+                "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored). Name must be unique and prefixed with '#'."));
         
-        columnInfoMap.put(HEADER_PROJECT, new InputColumnInfo(
-                HEADER_PROJECT, 
-                true, 
-                "CDB ID or name of item project."));
+        columnInfoMap.put(HEADER_LOCATION_DETAILS, new InputColumnInfo(
+                HEADER_LOCATION_DETAILS, 
+                false, 
+                "Location details (text)."));
         
         columnInfoMap.put(HEADER_TEMPLATE, new InputColumnInfo(
                 HEADER_TEMPLATE, 
                 true, 
                 "TRUE if item is template, false otherwise."));
+        
+        columnInfoMap.put(HEADER_PROJECT, new InputColumnInfo(
+                HEADER_PROJECT, 
+                true, 
+                "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'."));
+        
+        columnInfoMap.put(HEADER_USER, new InputColumnInfo(
+                HEADER_USER, 
+                false, 
+                "CDB ID or name of owner user. Name must be unique and prefixed with '#'."));
+        
+        columnInfoMap.put(HEADER_GROUP, new InputColumnInfo(
+                HEADER_GROUP, 
+                false, 
+                "CDB ID or name of owner group. Name must be unique and prefixed with '#'."));
         
     }
     
@@ -266,29 +281,35 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
         inputColumns.add(new InputColumnModel(2, HEADER_BASE_LEVEL + " 1", false, colInfo.description + " 1"));
         inputColumns.add(new InputColumnModel(3, HEADER_BASE_LEVEL + " 2", false, colInfo.description + " 2"));
         
-        colInfo = getColumnInfoMap().get(HEADER_TEMPLATE_INVOCATION);
-        inputColumns.add(new InputColumnModel(4, HEADER_TEMPLATE_INVOCATION, colInfo.isRequired, colInfo.description));
-        
         colInfo = getColumnInfoMap().get(HEADER_ALT_NAME);
-        inputColumns.add(new InputColumnModel(5, HEADER_ALT_NAME, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(4, HEADER_ALT_NAME, colInfo.isRequired, colInfo.description));
         
         colInfo = getColumnInfoMap().get(HEADER_DESCRIPTION);
-        inputColumns.add(new InputColumnModel(6, HEADER_DESCRIPTION, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(5, HEADER_DESCRIPTION, colInfo.isRequired, colInfo.description));
 
         colInfo = getColumnInfoMap().get(HEADER_ASSIGNED_ITEM);
-        inputColumns.add(new InputColumnModel(7, HEADER_ASSIGNED_ITEM, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(6, HEADER_ASSIGNED_ITEM, colInfo.isRequired, colInfo.description));
 
         colInfo = getColumnInfoMap().get(HEADER_ASSIGNED_ITEM_ID);
-        inputColumns.add(new InputColumnModel(8, HEADER_ASSIGNED_ITEM_ID, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(7, HEADER_ASSIGNED_ITEM_ID, colInfo.isRequired, colInfo.description));
 
         colInfo = getColumnInfoMap().get(HEADER_LOCATION);
-        inputColumns.add(new InputColumnModel(9, HEADER_LOCATION, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(8, HEADER_LOCATION, colInfo.isRequired, colInfo.description));
 
-        colInfo = getColumnInfoMap().get(HEADER_PROJECT);
-        inputColumns.add(new InputColumnModel(10, HEADER_PROJECT, colInfo.isRequired, colInfo.description));
+        colInfo = getColumnInfoMap().get(HEADER_LOCATION_DETAILS);
+        inputColumns.add(new InputColumnModel(9, HEADER_LOCATION_DETAILS, colInfo.isRequired, colInfo.description));
 
         colInfo = getColumnInfoMap().get(HEADER_TEMPLATE);
-        inputColumns.add(new InputColumnModel(11, HEADER_TEMPLATE, colInfo.isRequired, colInfo.description));
+        inputColumns.add(new InputColumnModel(10, HEADER_TEMPLATE, colInfo.isRequired, colInfo.description));
+
+        colInfo = getColumnInfoMap().get(HEADER_PROJECT);
+        inputColumns.add(new InputColumnModel(11, HEADER_PROJECT, colInfo.isRequired, colInfo.description));
+
+        colInfo = getColumnInfoMap().get(HEADER_USER);
+        inputColumns.add(new InputColumnModel(12, HEADER_USER, colInfo.isRequired, colInfo.description));
+
+        colInfo = getColumnInfoMap().get(HEADER_GROUP);
+        inputColumns.add(new InputColumnModel(13, HEADER_GROUP, colInfo.isRequired, colInfo.description));
 
         return inputColumns;
     }
@@ -346,25 +367,19 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
                     case HEADER_PARENT:
                         colInfo = getColumnInfoMap().get(HEADER_PARENT);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, KEY_CONTAINER, "setImportContainerItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, ""));
-                        break;
-
-                    case HEADER_TEMPLATE_INVOCATION:
-                        colInfo = getColumnInfoMap().get(HEADER_TEMPLATE_INVOCATION);
-                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new StringInputHandler(columnIndex, KEY_TEMPLATE_INVOCATION, "setImportTemplateAndParameters", 0));
+                        inputHandlers.add(new RefInputHandler(columnIndex, HEADER_PARENT, KEY_CONTAINER, "setImportMdItem", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, "", false, true));
                         break;
 
                     case HEADER_ALT_NAME:
                         colInfo = getColumnInfoMap().get(HEADER_ALT_NAME);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new StringInputHandler(columnIndex, "alternateName", "setAlternateName", 128));
+                        inputHandlers.add(new StringInputHandler(columnIndex, HEADER_ALT_NAME, "alternateName", "setAlternateName", 128));
                         break;
 
                     case HEADER_DESCRIPTION:
                         colInfo = getColumnInfoMap().get(HEADER_DESCRIPTION);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new StringInputHandler(columnIndex, "description", "setDescription", 256));
+                        inputHandlers.add(new StringInputHandler(columnIndex, HEADER_DESCRIPTION, "description", "setDescription", 256));
                         break;
 
                     case HEADER_ASSIGNED_ITEM:
@@ -384,16 +399,34 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
                         inputHandlers.add(new LocationHandler(columnIndex));
                         break;
 
-                    case HEADER_PROJECT:
-                        colInfo = getColumnInfoMap().get(HEADER_PROJECT);
+                    case HEADER_LOCATION_DETAILS:
+                        colInfo = getColumnInfoMap().get(HEADER_LOCATION_DETAILS);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new IdOrNameRefInputHandler(columnIndex, "project", "setProject", ItemProjectController.getInstance(), ItemProject.class, ""));
+                        inputHandlers.add(new StringInputHandler(columnIndex, HEADER_LOCATION_DETAILS, "locationDetails", "setLocationDetails", 256));
                         break;
 
                     case HEADER_TEMPLATE:
                         colInfo = getColumnInfoMap().get(HEADER_TEMPLATE);
                         inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
-                        inputHandlers.add(new BooleanInputHandler(columnIndex, KEY_IS_TEMPLATE, "setImportIsTemplate"));
+                        inputHandlers.add(new BooleanInputHandler(columnIndex, HEADER_TEMPLATE, KEY_IS_TEMPLATE, "setImportIsTemplate"));
+                        break;
+
+                    case HEADER_PROJECT:
+                        colInfo = getColumnInfoMap().get(HEADER_PROJECT);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
+                        inputHandlers.add(new RefInputHandler(columnIndex, HEADER_PROJECT, "itemProjectString", "setItemProjectList", ItemProjectController.getInstance(), List.class, "", false, false));
+                        break;
+
+                    case HEADER_USER:
+                        colInfo = getColumnInfoMap().get(HEADER_USER);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
+                        inputHandlers.add(new RefInputHandler(columnIndex, HEADER_USER, "ownerUserName", "setOwnerUser", UserInfoController.getInstance(), UserInfo.class, "", false, true));
+                        break;
+
+                    case HEADER_GROUP:
+                        colInfo = getColumnInfoMap().get(HEADER_GROUP);
+                        inputColumns.add(new InputColumnModel(columnIndex, columnHeader, colInfo.isRequired, colInfo.description));
+                        inputHandlers.add(new RefInputHandler(columnIndex, HEADER_GROUP, "ownerUserGroupName", "setOwnerUserGroup", UserGroupController.getInstance(), UserGroup.class, "", false, true));
                         break;
 
                     default:
@@ -424,13 +457,15 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
         outputColumns.add(new OutputColumnModel(1, "Parent Path", "importPath"));
         outputColumns.add(new OutputColumnModel(2, "Name", "name"));
         outputColumns.add(new OutputColumnModel(3, "Is Template", "importIsTemplateString"));
-        outputColumns.add(new OutputColumnModel(4, "Project", "itemProjectString"));
-        outputColumns.add(new OutputColumnModel(5, "Template and Parameters", "importTemplateAndParameters"));
-        outputColumns.add(new OutputColumnModel(6, "Alt Name", "alternateName"));
-        outputColumns.add(new OutputColumnModel(7, "Description", "description"));
-        outputColumns.add(new OutputColumnModel(8, "Assigned Catalog Item", "importAssignedCatalogItemString"));
-        outputColumns.add(new OutputColumnModel(9, "Assigned Inventory Item", "importAssignedInventoryItemString"));
-        outputColumns.add(new OutputColumnModel(10, "Location", "importLocationItemString"));
+        outputColumns.add(new OutputColumnModel(4, "Alt Name", "alternateName"));
+        outputColumns.add(new OutputColumnModel(5, "Description", "description"));
+        outputColumns.add(new OutputColumnModel(6, "Assigned Catalog Item", "importAssignedCatalogItemString"));
+        outputColumns.add(new OutputColumnModel(7, "Assigned Inventory Item", "importAssignedInventoryItemString"));
+        outputColumns.add(new OutputColumnModel(8, "Location", "importLocationItemString"));
+        outputColumns.add(new OutputColumnModel(9, "Location Details", "locationDetails"));
+        outputColumns.add(new OutputColumnModel(10, "Project", "itemProjectString"));
+        outputColumns.add(new OutputColumnModel(11, "Owner User", "ownerUserName"));
+        outputColumns.add(new OutputColumnModel(12, "Owner Group", "ownerUserGroupName"));
         
         return new ValidInfo(isValid, validString);
     }
@@ -442,7 +477,7 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
 
     @Override
     public String getTemplateFilename() {
-        return "Machine Design Template";
+        return "Machine Hierarchy Template";
     }
     
     @Override
@@ -451,7 +486,6 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
         columnInfoMap = null;
         itemInfoMap = new HashMap<>();
         parentIndentMap = new HashMap<>();
-        templateInstantiationCount = 0;
         nonTemplateItemCount = 0;
         templateItemCount = 0;
     }
@@ -476,189 +510,11 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
             
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
-
-        String templateParams = (String)rowMap.get(KEY_TEMPLATE_INVOCATION);
-        if ((templateParams != null) && (!templateParams.isEmpty())) {
-            return createEntityFromTemplateInstantiation(rowMap, templateParams);
-        } else {
-            return createEntityForRegularItem(rowMap);
-        }
-    }
-
-    private CreateInfo createEntityFromTemplateInstantiation(
-            Map<String, Object> rowMap,
-            String templateParams) {
-
-        String methodLogName = "createEntityFromTemplateInstantiation() ";
-        boolean isValid = true;
-        String validString = "";
-        ItemDomainMachineDesign invalidInstance = getEntityController().createEntityInstance();
-        
-        // check that cell value matches pattern, basically of the form "*(*)"
-        String templateRegex = "[^\\(]*\\([^\\)]*\\)";
-        if (!templateParams.matches(templateRegex)) {
-            // invalid cell value doesn't match pattern
-            isValid = false;
-            validString = "invalid format for template and parameters: " + templateParams;
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(invalidInstance, isValid, validString);
-        }
-
-        int indexOpenParen = templateParams.indexOf('(');
-        int indexCloseParen = templateParams.indexOf(')');
-
-        // parse and validate template name
-        String templateName = templateParams.substring(0, indexOpenParen);
-        if ((templateName == null) || (templateName.isEmpty())) {
-            // unspecified template name
-            isValid = false;
-            validString = "template name not provided: " + templateParams;
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(invalidInstance, isValid, validString);
-        }
-
-        // parse and validate variable string
-        String templateVarString = templateParams.substring(indexOpenParen + 1, indexCloseParen);
-        Map<String, String> varNameValueMap = new HashMap<>();
-        // iterate through comma separated list of "varName=value" pairs
-        String[] varArray = templateVarString.split(",");
-        for (String varNameValue : varArray) {
-            String[] nameValueArray = varNameValue.split("=");
-            if (nameValueArray.length != 2) {
-                // invalid format
-                isValid = false;
-                validString = "invalid format for template parameters: " + templateVarString;
-                LOGGER.info(methodLogName + validString);
-                return new CreateInfo(invalidInstance, isValid, validString);
-            }
-
-            String varName = nameValueArray[0].strip();
-            String varValue = nameValueArray[1].strip();
-            varNameValueMap.put(varName, varValue);
-        }
-
-        // save template name and variable name/values in TemplateInvocationInfo object
-        TemplateInvocationInfo templateInfo = new TemplateInvocationInfo(templateName, varNameValueMap);
-        invalidInstance.setName(templateName);
-        
-        // check for and set parent item
-        ItemDomainMachineDesign itemParent = (ItemDomainMachineDesign) rowMap.get(KEY_CONTAINER);
-        if (itemParent == null) {
-            // must specify parent for template invocation
-            isValid = false;
-            validString = "parent ID must be specified for template invocation";
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(invalidInstance, isValid, validString);
-        }
-        invalidInstance.setImportContainerItem(itemParent);
-
-        // retrieve specified template
-        ItemDomainMachineDesign templateItem;
-        try {
-            templateItem
-                    = ItemDomainMachineDesignFacade.getInstance().findUniqueByDomainAndEntityTypeAndName(
-                            templateName, 
-                            EntityTypeName.template.getValue(),
-                            null);
-        } catch (CdbException ex) {
-            isValid = false;
-            validString
-                    = "exception retrieving specified template, possibly non-unique name: "
-                    + templateName + ": " + ex;
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(invalidInstance, isValid, validString);
-        }
-
-        if (templateItem == null) {
-            isValid = false;
-            validString = "no template found for name: " + templateName;
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(invalidInstance, isValid, validString);
-        }
-
-        // check that it's a template
-        if (!templateItem.getIsItemTemplate()) {
-            isValid = false;
-            validString = "specified template name is not a template: " + templateName;
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(invalidInstance, isValid, validString);
-        }
-
-        // generate list of variable name/value pairs
-        getEntityController().setMachineDesignNameList(new ArrayList<>());
-        getEntityController().generateMachineDesignTemplateNameVarsRecursivelly(templateItem);
-        List<KeyValueObject> varNameList = getEntityController().getMachineDesignNameList();
-        for (KeyValueObject obj : varNameList) {
-            // check that all params in template are specified in import params
-            if (!varNameValueMap.containsKey(obj.getKey())) {
-                // import params do not include a param specified for template
-                isValid = false;
-                validString = "specified template parameters missing required variable: " + obj.getKey();
-                LOGGER.info(methodLogName + validString);
-                return new CreateInfo(invalidInstance, isValid, validString);
-            }
-
-            obj.setValue(varNameValueMap.get(obj.getKey()));
-        }
-
-        ItemDomainMachineDesign item = 
-                ItemDomainMachineDesign.instantiateTemplateUnderParent(
-                        templateItem, itemParent);
-        
-        // name should not be specified explicitly in spreadsheet
-        String itemName = (String) rowMap.get(KEY_NAME);
-        if ((itemName != null) && (!itemName.isEmpty())) {
-            isValid = false;
-            String msg = "Level column values should not be specified for template instantiation: " + itemName;
-            validString = appendToString(validString, msg);
-            LOGGER.info(methodLogName + msg);
-            return new CreateInfo(item, isValid, validString);
-        }
-
-        // don't allow location
-        ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(KEY_LOCATION);
-        if (itemLocation != null) {
-            item.setImportLocationItem(itemLocation);
-            item.setImportLocationItemString(itemLocation.getName());
-            isValid = false;
-            String msg = "Location item not supported for template instantiation";
-            validString = appendToString(validString, msg);
-            LOGGER.info(methodLogName + msg);
-        }
-        
-        // don't allow assigned item
-        Item assignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
-        if (assignedItem != null) {
-            // set assigned item in domain property for validation table display
-            if (assignedItem instanceof ItemDomainCatalog) {
-                item.setImportAssignedCatalogItem((ItemDomainCatalog) assignedItem);
-            } else if (assignedItem instanceof ItemDomainInventory) {
-                item.setImportAssignedInventoryItem((ItemDomainInventory) assignedItem);
-            }
-            isValid = false;
-            String msg = "Assigned item not supported for template instantiation";
-            validString = appendToString(validString, msg);
-            LOGGER.info(methodLogName + msg);
-        }
-
-        // update tree view with item and parent
-        updateTreeView(item, itemParent, true);
-
-        // add entry to name map for new item
-        itemByNameMap.put(item.getName(), item);
-        
-        templateInstantiationCount = templateInstantiationCount + 1;
-
-        return new CreateInfo(item, isValid, validString);
-    }
-    
-    private CreateInfo createEntityForRegularItem(Map<String, Object> rowMap) {
         
         String methodLogName = "createEntityForRegularItem() ";
         boolean isValid = true;
         String validString = "";
 
-        boolean isValidLocation = true;
         boolean isValidAssignedItem = true;
 
         ItemDomainMachineDesign item = null;
@@ -784,7 +640,6 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
                 LOGGER.info(methodLogName + msg);
                 validString = appendToString(validString, msg);
                 isValid = false;
-                isValidLocation = false;
             }
 
         } else {
@@ -796,34 +651,19 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
 
         if (itemParent != null) {
             // hanlding for all items with parent, template or non-template
-
             if (!Objects.equals(item.getIsItemTemplate(), itemParent.getIsItemTemplate())) {
                 // parent and child must both be templates or both not be
                 String msg = "parent and child must both be templates or both not be templates";
                 LOGGER.info(methodLogName + msg);
                 validString = appendToString(validString, msg);
                 isValid = false;
-            }
-            
-        } else {
-            // handling for all top-level items (no parent), 
-            // template or non-template
-            
-            if (itemParent == null) {
-                if ((item.getImportAssignedCatalogItem() != null)
-                        || (item.getImportAssignedInventoryItem() != null)) {
-                    // top-level item cannot have assigned item
-                    String msg = "Top-level item cannot have assigned catalog/inventory item";
-                    LOGGER.info(methodLogName + msg);
-                    validString = appendToString(validString, msg);
-                    isValid = false;
-                    isValidAssignedItem = false;
-                }
-            }
+            }            
+            item.setImportChildParentRelationship(itemParent);
         }
-
-        // establish parent/child relationship, set location info etc
-        item.applyImportValues(itemParent, isValidAssignedItem, isValidLocation);
+        
+        if (isValidAssignedItem) {
+            item.applyImportAssignedItem();
+        }
 
         // set current item as last parent at its indent level
         parentIndentMap.put(itemIndentLevel, item);
@@ -840,12 +680,6 @@ public class ImportHelperMachineDesign extends HierarchicalImportHelperBase<Item
     protected String getCustomSummaryDetails() {
         
         String summaryDetails = "";
-        
-        if (templateInstantiationCount > 0) {
-            summaryDetails = 
-                    templateInstantiationCount + " template instantiations including " +
-                    getTreeNodeChildCount() + "  items";                    
-        }
         
         if (templateItemCount > 0) {
             String templateItemDetails = templateItemCount + " template items";

@@ -27,7 +27,6 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCatalog.class.getName());
 
     private transient String machineDesignPlaceholderName = null;         
-    private transient String importSource = null;
 
     @Override
     public Item createInstance() {
@@ -48,79 +47,12 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
         return ItemDomainCatalogController.getInstance();
     }
     
-    public String getModelNumber() {
-        return this.getItemIdentifier1();
-    }
-    
-    public void setModelNumber(String modelNumber) {
-        this.setItemIdentifier1(modelNumber);
-    }
-
     public String getAlternateName() {
         return getItemIdentifier2();
     }
 
     public void setAlternateName(String n) {
         setItemIdentifier2(n);
-    }
-    
-    @JsonIgnore
-    public String getImportSource() {
-        return importSource;
-    }
-
-    public void setImportSource(Source source) {           
-        List<ItemSource> sourceList = new ArrayList<>();
-        ItemSource itemSource = new ItemSource();
-        itemSource.setItem(this);
-        itemSource.setSource(source);
-        sourceList.add(itemSource);
-        this.setItemSourceList(sourceList);
-        importSource = source.getName();
-    }
-    
-    public String getTechnicalSystem() {
-        return this.getItemCategoryString();
-    }
-    
-    public void setTechnicalSystem(ItemCategory category) throws CdbException {
-        if (category != null) {
-            String domainName = category.getDomain().getName();
-            if (!domainName.equals(this.getDomain().getName())) {
-                String msg = "invalid domain: " + domainName +
-                        " expected: " + this.getDomain().getName();
-                LOGGER.error("setTechnicalSystem() " + msg);
-                throw new CdbException(msg);
-            }
-
-            List<ItemCategory> categoryList = new ArrayList<>();
-            categoryList.add(category);
-            this.setItemCategoryList(categoryList);
-        } else {
-            LOGGER.error("setTechnicalSystemId() null item category");
-        }
-    }
-    
-    public String getFunction() {
-        return this.getItemTypeString();
-    }
-    
-    public void setFunction(ItemType function) throws CdbException {
-        if (function != null) {
-            String domainName = function.getDomain().getName();
-            if (!domainName.equals(this.getDomain().getName())) {
-                String msg = "invalid domain: " + domainName +
-                        " expected: " + this.getDomain().getName();
-                LOGGER.error("setFunction() " + msg);
-                throw new CdbException(msg);
-            }
-
-            List<ItemType> functionList = new ArrayList<>();
-            functionList.add(function);
-            this.setItemTypeList(functionList);
-        } else {
-            LOGGER.error("setFunction() null item function");
-        }
     }
     
 }

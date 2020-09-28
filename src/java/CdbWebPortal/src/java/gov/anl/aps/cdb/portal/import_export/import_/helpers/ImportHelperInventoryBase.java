@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryBaseController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
@@ -31,6 +32,10 @@ public abstract class ImportHelperInventoryBase
     protected static final String AUTO_VALUE = "auto";
     
     private Map<ItemDomainCatalogBase, Integer> newItemCountMap = new HashMap<>();
+    
+    public StringColumnSpec statusColumnSpec(int colIndex) {
+        return new StringColumnSpec(colIndex, "Status", KEY_STATUS, "setInventoryStatusValue", false, "Status of inventory item.", 256);
+    }
     
     @Override
     protected void reset_() {

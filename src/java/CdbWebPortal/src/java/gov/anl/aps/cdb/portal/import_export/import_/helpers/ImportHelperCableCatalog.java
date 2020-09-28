@@ -5,16 +5,12 @@
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
-import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdRefListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.ArrayList;
@@ -25,8 +21,7 @@ import java.util.Map;
  *
  * @author craig
  */
-public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCatalog, ItemDomainCableCatalogController> {
-
+public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomainCableCatalog, ItemDomainCableCatalogController> {
 
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
@@ -38,21 +33,23 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
         specs.add(new StringColumnSpec(2, "Description", "description", "setDescription", false, "Textual description of cable type.", 256));
         specs.add(new StringColumnSpec(3, "Documentation URL", "urlDisplay", "setUrl", false, "Raw URL for documentation pdf file, e.g., http://www.example.com/documentation.pdf", 256));
         specs.add(new StringColumnSpec(4, "Image URL", "imageUrlDisplay", "setImageUrl", false, "Raw URL for image file, e.g., http://www.example.com/image.jpg", 256));
-        specs.add(new IdOrNameRefColumnSpec(5, "Manufacturer", "manufacturer", "setManufacturerSource", false, "Manufacturer or vendor, e.g., CommScope", SourceController.getInstance(), Source.class, null));
-        specs.add(new StringColumnSpec(6, "Part Number", "partNumber", "setPartNumber", false, "Manufacturer's part number, e.g., R-024-DS-5K-FSUBR", 32));
+        specs.add(new IdOrNameRefColumnSpec(5, "Manufacturer", ImportHelperCatalogBase.KEY_MFR, "", false, "ID or name of CDB source for manufacturer. Name must be unique and prefixed with '#'.", SourceController.getInstance(), Source.class, ""));
+        specs.add(new StringColumnSpec(6, "Part Number", ImportHelperCatalogBase.KEY_PART_NUM, "setPartNumber", false, "Manufacturer's part number.", 32));
         specs.add(new StringColumnSpec(7, "Alt Part Num", "altPartNumber", "setAltPartNumber", false, "Manufacturer's alternate part number, e.g., 760152413", 256));
-        specs.add(new IdOrNameRefColumnSpec(8, "Owner", "team", "setTeam", false, "Numeric ID of CDB technical system.", ItemCategoryController.getInstance(), ItemCategory.class, ItemDomainName.cableCatalog.getValue()));
-        specs.add(new IdRefListColumnSpec(9, "Project", "itemProjectString", "setItemProjectList", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), List.class));
-        specs.add(new StringColumnSpec(10, "Diameter", "diameter", "setDiameter", false, "Diameter in inches (max).", 256));
-        specs.add(new StringColumnSpec(11, "Weight", "weight", "setWeight", false, "Nominal weight in lbs/1000 feet.", 256));
-        specs.add(new StringColumnSpec(12, "Conductors", "conductors", "setConductors", false, "Number of conductors/fibers", 256));
-        specs.add(new StringColumnSpec(13, "Insulation", "insulation", "setInsulation", false, "Description of cable insulation.", 256));
-        specs.add(new StringColumnSpec(14, "Jacket Color", "jacketColor", "setJacketColor", false, "Jacket color.", 256));
-        specs.add(new StringColumnSpec(15, "Voltage Rating", "voltageRating", "setVoltageRating", false, "Voltage rating (VRMS).", 256));
-        specs.add(new StringColumnSpec(16, "Fire Load", "fireLoad", "setFireLoad", false, "Fire load rating.", 256));
-        specs.add(new StringColumnSpec(17, "Heat Limit", "heatLimit", "setHeatLimit", false, "Heat limit.", 256));
-        specs.add(new StringColumnSpec(18, "Bend Radius", "bendRadius", "setBendRadius", false, "Bend radius in inches.", 256));
-        specs.add(new StringColumnSpec(19, "Rad Tolerance", "radTolerance", "setRadTolerance", false, "Radiation tolerance rating.", 256));
+        specs.add(new StringColumnSpec(8, "Diameter", "diameter", "setDiameter", false, "Diameter in inches (max).", 256));
+        specs.add(new StringColumnSpec(9, "Weight", "weight", "setWeight", false, "Nominal weight in lbs/1000 feet.", 256));
+        specs.add(new StringColumnSpec(10, "Conductors", "conductors", "setConductors", false, "Number of conductors/fibers", 256));
+        specs.add(new StringColumnSpec(11, "Insulation", "insulation", "setInsulation", false, "Description of cable insulation.", 256));
+        specs.add(new StringColumnSpec(12, "Jacket Color", "jacketColor", "setJacketColor", false, "Jacket color.", 256));
+        specs.add(new StringColumnSpec(13, "Voltage Rating", "voltageRating", "setVoltageRating", false, "Voltage rating (VRMS).", 256));
+        specs.add(new StringColumnSpec(14, "Fire Load", "fireLoad", "setFireLoad", false, "Fire load rating.", 256));
+        specs.add(new StringColumnSpec(15, "Heat Limit", "heatLimit", "setHeatLimit", false, "Heat limit.", 256));
+        specs.add(new StringColumnSpec(16, "Bend Radius", "bendRadius", "setBendRadius", false, "Bend radius in inches.", 256));
+        specs.add(new StringColumnSpec(17, "Rad Tolerance", "radTolerance", "setRadTolerance", false, "Radiation tolerance rating.", 256));
+        specs.add(projectListColumnSpec(18));
+        specs.add(technicalSystemListColumnSpec(19, ItemDomainName.cableCatalog.getValue()));
+        specs.add(ownerUserColumnSpec(20));
+        specs.add(ownerGroupColumnSpec(21));
 
         return specs;
     }
@@ -69,7 +66,6 @@ public class ImportHelperCableCatalog extends ImportHelperBase<ItemDomainCableCa
     
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
-        ItemDomainCableCatalog entity = getEntityController().createEntityInstance();
-        return new CreateInfo(entity, true, "");
-    }
+        return super.createEntityInstance(rowMap);
+    }  
 }

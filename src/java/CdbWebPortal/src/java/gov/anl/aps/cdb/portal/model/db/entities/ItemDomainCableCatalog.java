@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.SourceController;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,7 +31,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient String urlDisplay = null;
     private transient String imageUrl = null;
     private transient String imageUrlDisplay = null;
-    private transient String manufacturer = null;
     private transient String altPartNumber = null;
     private transient String weight = null;
     private transient String diameter = null;
@@ -138,37 +136,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
 
     @JsonIgnore
-    public String getManufacturer() {
-        return manufacturer;
-    }
-    
-    public void setManufacturer(String sourceName) {        
-        Source source = SourceController.getInstance().findByName(sourceName);
-        if (source != null) {
-            this.setManufacturerSource(source);
-        }
-    }
-    
-    public void setManufacturerId(String sourceId) {
-        Source source = (Source)(getEntityById(SourceController.getInstance(), sourceId));
-        if (source != null) {
-            this.setManufacturerSource(source);
-        } else {
-            LOGGER.error("setManufacturerId() unknown source id " + sourceId);
-        }
-    }
-    
-    public void setManufacturerSource(Source source) {           
-        List<ItemSource> sourceList = new ArrayList<>();
-        ItemSource itemSource = new ItemSource();
-        itemSource.setItem(this);
-        itemSource.setSource(source);
-        sourceList.add(itemSource);
-        this.setItemSourceList(sourceList);
-        manufacturer = source.getName();
-    }
-    
-    @JsonIgnore
     public String getAltPartNumber() throws CdbException {
         if (altPartNumber == null) {
             altPartNumber = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_ALT_PART_NUM_KEY);
@@ -179,15 +146,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     public void setAltPartNumber(String n) throws CdbException {
         altPartNumber = n;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_ALT_PART_NUM_KEY, n);
-    }
-    
-    @JsonIgnore
-    public String getPartNumber() {
-        return this.getItemIdentifier1();
-    }
-    
-    public void setPartNumber(String n) {
-        this.setItemIdentifier1(n);
     }
     
     @JsonIgnore
@@ -318,33 +276,6 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     public void setRadTolerance(String w) throws CdbException {
         radTolerance = w;
         setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_RAD_TOLERANCE_KEY, w);
-    }
-    
-    @JsonIgnore
-    public String getTeam() {
-        if (team == null) {
-            team = this.getItemCategoryString();
-        }
-        return team;
-    }
-    
-    public void setTeam(ItemCategory category) throws CdbException {
-        if (category != null) {
-            String domainName = category.getDomain().getName();
-            if (!domainName.equals(this.getDomain().getName())) {
-                String msg = "invalid domain: " + domainName +
-                        " expected: " + this.getDomain().getName();
-                LOGGER.error("setTeam() " + msg);
-                throw new CdbException(msg);
-            }
-
-            List<ItemCategory> categoryList = new ArrayList<>();
-            categoryList.add(category);
-            this.setItemCategoryList(categoryList);
-            team = this.getItemCategoryString();
-        } else {
-            LOGGER.error("setTeamId() null item category");
-        }
     }
     
     @JsonIgnore

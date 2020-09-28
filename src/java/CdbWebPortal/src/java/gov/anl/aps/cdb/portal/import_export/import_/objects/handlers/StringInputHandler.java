@@ -16,10 +16,11 @@ public class StringInputHandler extends SimpleInputHandler {
 
     public StringInputHandler(
             int columnIndex,
+            String columnName,
             String propertyName,
             String setterMethod,
             int maxLength) {
-        super(columnIndex, propertyName, setterMethod);
+        super(columnIndex, columnName, propertyName, setterMethod);
         this.maxLength = maxLength;
     }
 
@@ -37,7 +38,7 @@ public class StringInputHandler extends SimpleInputHandler {
             isValid = false;
             validString = 
                     "Value length exceeds " + getMaxLength()
-                    + " characters for column " + columnNameForIndex(columnIndex);
+                    + " characters for column " + getColumnName();
         }
         return new ParseInfo<>(value, isValid, validString);
     }

@@ -168,13 +168,22 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     public void init(Item parentItem, ItemElement derivedFromItemElement, EntityInfo entityInfo) {
+        init(parentItem, derivedFromItemElement, entityInfo, null, null);
+    }
+
+    public void init(
+            Item parentItem, 
+            ItemElement derivedFromItemElement, 
+            EntityInfo entityInfo,
+            UserInfo ownerUser,
+            UserGroup ownerGroup) {
+        
         if (entityInfo == null) {
-            entityInfo = EntityInfoUtility.createEntityInfo();
+            entityInfo = EntityInfoUtility.createEntityInfo(ownerUser, ownerGroup);
         }
         this.setEntityInfo(entityInfo);
         this.setParentItem(parentItem);
         this.setDerivedFromItemElement(derivedFromItemElement);
-
     }
 
     public void init(Item parentItem, EntityInfo entityInfo) {

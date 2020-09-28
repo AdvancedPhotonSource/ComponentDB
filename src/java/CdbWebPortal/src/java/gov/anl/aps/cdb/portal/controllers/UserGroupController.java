@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.controllers.settings.UserGroupSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.List;
@@ -20,16 +21,21 @@ import javax.faces.convert.FacesConverter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Named("userGroupController")
+@Named(UserGroupController.CONTROLLER_NAMED)
 @SessionScoped
 public class UserGroupController extends CdbEntityController<UserGroup, UserGroupFacade, UserGroupSettings> implements Serializable {   
 
     private static final Logger logger = LogManager.getLogger(UserGroupController.class.getName());
+    public static final String CONTROLLER_NAMED = "userGroupController";
 
     @EJB
     private UserGroupFacade userGroupFacade;
 
     public UserGroupController() {
+    }
+
+    public static UserGroupController getInstance() {
+        return (UserGroupController) SessionUtility.findBean(UserGroupController.CONTROLLER_NAMED);
     }
 
     @Override

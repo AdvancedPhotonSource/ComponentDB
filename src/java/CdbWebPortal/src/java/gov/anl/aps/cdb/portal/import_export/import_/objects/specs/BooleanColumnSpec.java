@@ -20,6 +20,6 @@ public class BooleanColumnSpec extends ColumnSpec {
     @Override
     public InputHandler createInputHandlerInstance() {
         return new BooleanInputHandler(
-                getColumnIndex(), getPropertyName(), getEntitySetterMethod());
+                getColumnIndex(), getHeader(), getPropertyName(), getEntitySetterMethod());
     }
 }

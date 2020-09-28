@@ -12,8 +12,8 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ParseInfo;
  */
 public class IntegerInputHandler extends SimpleInputHandler {
 
-    public IntegerInputHandler(int columnIndex, String propertyName, String setterMethod) {
-        super(columnIndex, propertyName, setterMethod);
+    public IntegerInputHandler(int columnIndex, String columnName, String propertyName, String setterMethod) {
+        super(columnIndex, columnName, propertyName, setterMethod);
     }
 
     @Override

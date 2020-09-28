@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignInventorySettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
@@ -19,9 +20,12 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,11 +104,6 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     @Override
-    public boolean getEntityDisplayImportButton() {
-        return false;
-    }
-
-    @Override
     public boolean isDisplayRowExpansionForItem(Item item) {
         return super.isDisplayRowExpansionForItem(item); //To change body of generated methods, choose Tools | Templates.
     }
@@ -140,10 +139,18 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     public ItemDomainMachineDesign performPrepareCreateInventoryFromTemplate(ItemDomainMachineDesign template) {
+        return performPrepareCreateInventoryFromTemplate(template, null, null);
+    }
+
+    public ItemDomainMachineDesign performPrepareCreateInventoryFromTemplate(
+            ItemDomainMachineDesign template,
+            UserInfo ownerUser,
+            UserGroup ownerGroup) {
+        
         ItemDomainMachineDesign mdInventory = null;
 
         try {
-            mdInventory = createItemFromTemplate(template);
+            mdInventory = createItemFromTemplate(template, ownerUser, ownerGroup);
             createMachineDesignFromTemplateHierachically(mdInventory);
         } catch (CdbException | CloneNotSupportedException ex) {
             LOGGER.error(ex);
@@ -339,4 +346,19 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         return ItemStatusUtility.getItemStatusPropertyValue(item); 
     }
 
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected DomainImportInfo initializeDomainImportInfo() {
+        
+        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportFormatInfo("Basic Machine Inventory Format", ImportHelperMachineInventory.class));
+        
+        String completionUrl = "/views/itemDomainMachineDesignInventory/list?faces-redirect=true";
+        
+        return new DomainImportInfo(formatInfo, completionUrl);
+    }
 }

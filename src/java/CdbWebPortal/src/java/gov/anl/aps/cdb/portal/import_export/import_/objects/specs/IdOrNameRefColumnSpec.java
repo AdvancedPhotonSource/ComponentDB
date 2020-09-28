@@ -4,35 +4,34 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.IdOrNameRefInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
 
 /**
  *
  * @author craig
  */
-public class IdOrNameRefColumnSpec extends ColumnSpec {
+public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
 
-    private CdbEntityController controller;
-    private Class paramType;
-    private String domainNameFilter = null;
+    protected String domainNameFilter = null;
 
     public IdOrNameRefColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType, String domainNameFilter) {
-        super(columnIndex, header, propertyName, entitySetterMethod, required, description);
-        this.controller = controller;
-        this.paramType = paramType;
+        super(columnIndex, header, propertyName, entitySetterMethod, required, description, controller, paramType);
         this.domainNameFilter = domainNameFilter;
     }
 
     @Override
     public InputHandler createInputHandlerInstance() {
-        return new IdOrNameRefInputHandler(
+        return new RefInputHandler(
                 getColumnIndex(),
+                getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),
                 controller,
                 paramType,
-                domainNameFilter);
+                domainNameFilter,
+                false,
+                true);
     }
 }

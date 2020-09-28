@@ -6,7 +6,6 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableInventoryController;
-import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
@@ -14,7 +13,6 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnS
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -35,13 +33,17 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(0, "Cable Catalog Item", KEY_CATALOG_ITEM, "setCatalogItem", true, "ID or name of cable catalog item for inventory unit", ItemDomainCableCatalogController.getInstance(), ItemDomainCableCatalog.class, null));
-        specs.add(new StringColumnSpec(1, "Name", KEY_NAME, "", true, "Name for inventory unit.", 64));
+        specs.add(new IdOrNameRefColumnSpec(0, "Cable Catalog Item", KEY_CATALOG_ITEM, "setCatalogItem", true, "ID or name of cable catalog item for inventory unit. Name must be unique and prefixed with '#'.", ItemDomainCableCatalogController.getInstance(), ItemDomainCableCatalog.class, null));
+        specs.add(new StringColumnSpec(1, "Tag", KEY_NAME, "", true, "Name of inventory unit.", 64));
         specs.add(new IntegerColumnSpec(2, "QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
         specs.add(new StringColumnSpec(3, "Description", "description", "setDescription", false, "Description of inventory unit.", 256));
-        specs.add(new IdOrNameRefColumnSpec(4, "Project", "itemProjectString", "setProject", true, "Numeric ID of CDB project.", ItemProjectController.getInstance(), ItemProject.class, ""));
-        specs.add(new StringColumnSpec(5, "Status", KEY_STATUS, "setInventoryStatusValue", false, "Status of inventory item.", 256));
-        specs.add(new StringColumnSpec(6, "Length", "length", "setLength", false, "Installed length of cable inventory unit.", 256));
+        specs.add(statusColumnSpec(4));
+        specs.add(locationColumnSpec(5));
+        specs.add(locationDetailsColumnSpec(6));
+        specs.add(new StringColumnSpec(7, "Length", "length", "setLength", false, "Installed length of cable inventory unit.", 256));
+        specs.add(projectListColumnSpec(8));
+        specs.add(ownerUserColumnSpec(9));
+        specs.add(ownerGroupColumnSpec(10));
         
         return specs;
     } 

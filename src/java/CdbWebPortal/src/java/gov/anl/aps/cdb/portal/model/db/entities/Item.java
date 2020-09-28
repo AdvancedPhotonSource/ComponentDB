@@ -400,6 +400,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @Override
     public Item clone() throws CloneNotSupportedException {
+        return clone(null, null);
+    }
+
+    public Item clone(UserInfo ownerUser, UserGroup ownerGroup) throws CloneNotSupportedException {
         Item clonedItem = createInstance();
         clonedItem.isCloned = true;
 
@@ -418,7 +422,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         ItemElement newSelfElement = new ItemElement();
         ItemElement oldSelfElement = this.getSelfElement();
 
-        newSelfElement.init(clonedItem);
+        newSelfElement.init(clonedItem, null, null, ownerUser, ownerGroup);
         newSelfElement.setDescription(oldSelfElement.getDescription());
 
         clonedItem.setFullItemElementList(new ArrayList<>());
@@ -906,6 +910,34 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setEntityInfo(EntityInfo entityInfo) {
         this.getSelfElement().setEntityInfo(entityInfo);
     }
+    
+    @JsonIgnore
+    public String getOwnerUserName() {
+        return this.getEntityInfo().getOwnerUserDisplayName();
+    }
+    
+    @JsonIgnore
+    public UserInfo getOwnerUser() {
+        return this.getEntityInfo().getOwnerUser();
+    }
+    
+    public void setOwnerUser(UserInfo ownerUser) {
+        this.getEntityInfo().setOwnerUser(ownerUser);
+    }
+    
+    @JsonIgnore
+    public String getOwnerUserGroupName() {
+        return this.getEntityInfo().getOwnerGroupDisplayName();
+    }
+    
+    @JsonIgnore
+    public UserGroup getOwnerUserGroup() {
+        return this.getEntityInfo().getOwnerUserGroup();
+    }
+    
+    public void setOwnerUserGroup(UserGroup ownerUserGroupId) {
+        this.getEntityInfo().setOwnerUserGroup(ownerUserGroupId);
+    }
 
     @XmlTransient
     public List<ItemConnector> getItemConnectorList() {
@@ -1214,9 +1246,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
 
         if (other.getId() != null) {
-            if (other.getId().equals(id)) {
-                return true;
-            }
+            return (other.getId().equals(id));
         }
 
         return (Objects.equals(other.getItemIdentifier1(), itemIdentifier1)

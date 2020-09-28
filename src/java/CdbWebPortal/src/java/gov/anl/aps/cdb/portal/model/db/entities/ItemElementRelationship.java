@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
@@ -241,15 +242,34 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
+
         if (!(object instanceof ItemElementRelationship)) {
             return false;
         }
+        
         ItemElementRelationship other = (ItemElementRelationship) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
+        
+        if (other == this) {
+            return true;
         }
-        return true;
+        
+        if (other.getId() != null) {
+            return (other.getId().equals(id));
+        }
+        
+        // check attributes if id is null
+        return (ObjectUtility.equals(other.getRelationshipType(), this.getRelationshipType())
+                && ObjectUtility.equals(other.getFirstItemElement(), this.getFirstItemElement())
+                && ObjectUtility.equals(other.getSecondItemElement(), this.getSecondItemElement())
+                && ObjectUtility.equals(other.getDescription(), this.getDescription())
+                && ObjectUtility.equals(other.getFirstItemConnector(), this.getFirstItemConnector())
+                && ObjectUtility.equals(other.getFirstSortOrder(), this.getFirstSortOrder())
+                && ObjectUtility.equals(other.getLabel(), this.getLabel())
+                && ObjectUtility.equals(other.getLinkItemElement(), this.getLinkItemElement())
+                && ObjectUtility.equals(other.getRelationshipDetails(), this.getRelationshipDetails())
+                && ObjectUtility.equals(other.getResourceType(), this.getResourceType())
+                && ObjectUtility.equals(other.getSecondItemConnector(), this.getSecondItemConnector())
+                && ObjectUtility.equals(other.getSecondSortOrder(), this.getSecondSortOrder()));
     }
 
     @Override
