@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -91,10 +92,12 @@ public class ItemMultiEditDomainMachineDesignInventoryController extends ItemMul
     @Override
     public Item createItemEntity() {
         ItemDomainMachineDesignInventoryController itemDomainMachineDesignInventoryController = getItemDomainMachineDesignInventoryController();
-        
+        EntityInfo newItemEntityInfo = getNewItemEntityInfo();
+        UserInfo ownerUser = newItemEntityInfo.getOwnerUser();
+        UserGroup ownerUserGroup = newItemEntityInfo.getOwnerUserGroup();
         if (derivedFromItemForNewItems instanceof ItemDomainMachineDesign) {
             ItemDomainMachineDesign template = (ItemDomainMachineDesign) derivedFromItemForNewItems;
-            ItemDomainMachineDesign item = itemDomainMachineDesignInventoryController.performPrepareCreateInventoryFromTemplate(template);
+            ItemDomainMachineDesign item = itemDomainMachineDesignInventoryController.performPrepareCreateInventoryFromTemplate(template, ownerUser, ownerUserGroup);
             return item; 
         } else {
             return null; 

@@ -7,7 +7,9 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../item/private/templates/itemListTemplate.xhtml"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
     
     <ui:param name="entityController" value="#{itemDomainLocationController}" />
     
@@ -17,10 +19,17 @@ See LICENSE file.
     </f:metadata>
     
     <ui:define name="listObjectAdditionalParameters">
-        <ui:param name="imageCentered"
-                  value="#{false}" /> 
-        <ui:param name="primaryImageColumnStyle"
-                  value="" /> 
+        <p:column sortBy="#{itemListObject.name}" headerText="#{entityController.nameTitle}"
+                  
+                  filterBy="#{itemListObject.name}" filterMatchMode="contains"
+                  filterValue="#{entitySettingObject.filterByName}"
+                  filterable="#{filterable}"
+                  sortable="#{sortable}"
+                  exportFunction="#{itemListObject.getName()}" >
+            <ui:insert name="nameColumnObject" />
+        </p:column>
+        
+        <ui:param name="itemListRenderName" value="#{false}"/>         
     </ui:define>
     
 </ui:composition>
