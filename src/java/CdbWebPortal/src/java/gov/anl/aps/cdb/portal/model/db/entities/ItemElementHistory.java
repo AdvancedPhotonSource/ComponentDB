@@ -174,6 +174,13 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
     
     @XmlTransient
     public Item getParentItem() {
+        // Handle self element
+        if (parentItem == null && itemElement != null) {
+            Item parentItem = itemElement.getParentItem();
+            if (parentItem != null && parentItem.getSelfElement().equals(itemElement)) {
+                return parentItem; 
+            }
+        }
         return parentItem;
     }
 

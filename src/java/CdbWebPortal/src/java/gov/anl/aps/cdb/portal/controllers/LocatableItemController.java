@@ -280,18 +280,7 @@ public class LocatableItemController implements Serializable {
             }
 
             if (parentItem != null) {
-                locationItem = parentItem;
-
-                int parentDomainId = parentItem.getDomain().getId();
-                int locatableDomainId = locatableItem.getDomain().getId();
-                if (parentDomainId == ItemDomainName.MACHINE_DESIGN_ID
-                        && locatableDomainId != ItemDomainName.MACHINE_DESIGN_ID) {
-                    if (itemElementObject instanceof ItemElement) {
-                        locationItem = ((ItemElement) itemElementObject).getContainedItem();
-                    } else {
-                        locationItem = ((ItemElementHistory) itemElementObject).getContainedItem();
-                    }
-                }
+                locationItem = parentItem;               
             }
 
             return locationItem;

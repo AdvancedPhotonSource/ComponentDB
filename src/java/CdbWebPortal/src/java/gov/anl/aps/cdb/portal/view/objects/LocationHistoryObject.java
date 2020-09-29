@@ -23,26 +23,20 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
 
     private ItemElementHistory itemElementHistory;
     private ItemElementRelationshipHistory itemElementRelationshipHistory;
-    
-    private Item locationItem = null; 
-    
+
+    private Item locationItem = null;
+
     // API only data
     private ItemHierarchy locationSingleNodeHierarchy;
 
     public LocationHistoryObject(ItemElementHistory itemElementHistory, Item locationItem) {
         this.itemElementHistory = itemElementHistory;
-        this.locationItem = locationItem; 
+        this.locationItem = locationItem;
         if (locationItem != null) {
-            locationDetails = LocatableItemController.generateLocationDetailsFromItem(locationItem);                    
+            locationDetails = LocatableItemController.generateLocationDetailsFromItem(locationItem);
         } else {
             locationDetails = "Deleted Item";
-            // This item must be contained item 2 if contained item 1 is null. 
-            if (itemElementHistory.getContainedItem() == null) {
-                locationDetails += ": " + itemElementHistory.getSnapshotContainedItemName(); 
-            } else {
-                // Usually the parent location unless this item is contained item 2. 
-                locationDetails += ": " + itemElementHistory.getSnapshotParentName(); 
-            }
+            locationDetails += ": " + itemElementHistory.getSnapshotParentName();
         }
     }
 
@@ -50,9 +44,9 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
         this.itemElementRelationshipHistory = itemElementRelationshipHistory;
         ItemElement secondItemElement = itemElementRelationshipHistory.getSecondItemElement();
         if (secondItemElement != null) {
-            locationItem = secondItemElement.getParentItem();            
+            locationItem = secondItemElement.getParentItem();
         }
-        locationDetails = itemElementRelationshipHistory.getRelationshipDetails(); 
+        locationDetails = itemElementRelationshipHistory.getRelationshipDetails();
     }
 
     public Item getLocationItem() {
@@ -75,31 +69,31 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
     public void setLocationDetails(String locationDetails) {
         this.locationDetails = locationDetails;
     }
-    
+
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     public Date getEnteredOnDateTime() {
         if (itemElementHistory != null) {
             return itemElementHistory.getEnteredOnDateTime();
         } else if (itemElementRelationshipHistory != null) {
-            return itemElementRelationshipHistory.getEnteredOnDateTime(); 
+            return itemElementRelationshipHistory.getEnteredOnDateTime();
         }
-        return null; 
+        return null;
     }
 
     public UserInfo getEnteredByUser() {
         if (itemElementHistory != null) {
-            return itemElementHistory.getEnteredByUser(); 
+            return itemElementHistory.getEnteredByUser();
         } else if (itemElementRelationshipHistory != null) {
             return itemElementRelationshipHistory.getEnteredByUser();
         }
-        return null; 
+        return null;
     }
 
     public ItemHierarchy getLocationSingleNodeHierarchy() {
         if (locationSingleNodeHierarchy == null) {
             if (getLocationTree() != null) {
                 locationSingleNodeHierarchy = ItemHierarchy.createSingleNodeHierarchyFromTreeNode(getLocationTree());
-            } 
+            }
         }
         return locationSingleNodeHierarchy;
     }

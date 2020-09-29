@@ -605,8 +605,8 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
             return false;
         }
         ItemElement other = (ItemElement) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
+        if (other.getId() != null) {
+            return (other.getId().equals(id));
         }
         
         // special case for import
