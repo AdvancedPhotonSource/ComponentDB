@@ -280,7 +280,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             buildTemplateExcelFile();
         }
         InputStream inStream = new ByteArrayInputStream(templateExcelFile);
-        return new DefaultStreamedContent(inStream, "xls", getTemplateFilename() + ".xls");
+        return new DefaultStreamedContent(inStream, "xlsx", getTemplateFilename() + ".xlsx");
     }
 
     private void buildTemplateExcelFile() {
@@ -323,6 +323,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
 
+    /**
+     * Reads Excel "xls" file.  This is not currently used, but I added it for
+     * documentation in case we need to read that format.
+     */
     protected boolean readXlsFileData(UploadedFile f) {
 
         InputStream inputStream;
