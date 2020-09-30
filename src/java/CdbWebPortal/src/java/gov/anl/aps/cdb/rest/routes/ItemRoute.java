@@ -14,7 +14,6 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.IItemStatusController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryBaseController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
@@ -30,7 +29,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -46,11 +44,9 @@ import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueDocumentUploadBean;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueImageUploadBean;
-import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.LocationHistoryObject;
 import gov.anl.aps.cdb.rest.authentication.Secured;
-import gov.anl.aps.cdb.rest.authentication.User;
 import gov.anl.aps.cdb.rest.entities.FileUploadObject;
 import gov.anl.aps.cdb.rest.entities.ItemDomainCatalogSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
@@ -65,7 +61,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedList;
@@ -137,7 +132,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Operation(summary = "Update the contained item in a item hierarchy.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public ItemHierarchy updateContainedItem(@PathParam("elementId") int elementId, @PathParam("parentItemId") int parentItemId) throws ObjectNotFound, CdbException {
+    public ItemHierarchy updateContainedItem(@PathParam("elementId") int elementId, @PathParam("parentItemId") Integer parentItemId) throws ObjectNotFound, CdbException {
         LOGGER.debug("Updating contained item for item element id: " + elementId);
         ItemElement find = itemElementFacade.find(elementId);
                 
@@ -147,7 +142,11 @@ public class ItemRoute extends ItemBaseRoute {
             throw new CdbException("Currently only inventory items are supported.");
         }
         
-        Item newContainedItem = getItemByIdBase(parentItemId);
+        Item newContainedItem = null; 
+        
+        if (parentItemId != null) {
+            newContainedItem = getItemByIdBase(parentItemId);
+        }
                 
         UserInfo updatedByUser = getCurrentRequestUserInfo();
         if (!verifyUserPermissionForItem(updatedByUser, parentItem)) {            
@@ -174,7 +173,17 @@ public class ItemRoute extends ItemBaseRoute {
         itemDomainController.updateFromApi(parentItem, updatedByUser);                        
         
         return getItemHierarchyById(parentItem.getId());         
-    }            
+    }        
+
+    @POST
+    @Path("/ClearParentItem/{elementId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Clear the contained item in a item hierarchy.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemHierarchy clearContainedItem(@PathParam("elementId") int elementId) throws CdbException {
+        return updateContainedItem(elementId, null); 
+    }
     
     public PropertyType getPropertyTypeByName(String name) throws ObjectNotFound {
         PropertyType pt = propertyTypeFacade.findByName(name);
