@@ -23,6 +23,19 @@ See LICENSE file.
             <p:tooltip for="#{entityTypeName}ListTreeTableCustomizeDisplayButton" value="Customize list view."/>
         </p:commandButton>
 
+        <ui:param name="importEntityActionFunctionName" 
+                  value="#{importEntityActionFunctionName != null 
+                       ? importEntityActionFunctionName 
+                       : 'prepareImport'}" /> 
+
+        <p:commandButton value="Import"
+                         icon="fa fa-plus"
+                         action="#{entityController[importEntityActionFunctionName]}"
+                         rendered="#{loginController.loggedInAsAdmin
+                                     and entityController.entityDisplayImportButton}"
+                         onstart="PF('loadingDialog').show();"
+                         oncomplete="PF('loadingDialog').hide();"/> 
+        
         <ui:insert name="listTypeCategoryActionButtons">
             <ui:include src="reusedParts/listTypeCategoryActionButtons.xhtml">
                 <ui:param name="viewName" value="TreeTable" />

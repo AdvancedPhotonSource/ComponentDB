@@ -141,6 +141,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     
     // <editor-fold defaultstate="collapsed" desc="Import Variables">
     private transient ItemDomainCatalog importParentCatalogItem;
+    private transient Item importParentItem;
     private transient String importPartCatalogItemName;
     // </editor-fold>
 
@@ -671,6 +672,32 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         importParentCatalogItem = parentCatalogItem;
     }
 
+    public void setImportParentItem(Item parentItem, Float sortOrder, UserInfo user, UserGroup group) {
+
+        setParentItem(parentItem);
+        parentItem.getFullItemElementList().add(this);
+        parentItem.getItemElementDisplayList().add(0, this);
+
+        if (sortOrder == null) {
+            int elementSize = parentItem.getItemElementDisplayList().size();
+            float sOrder = elementSize;
+            this.setSortOrder(sOrder);
+        } else {
+            this.setSortOrder(sortOrder);
+        }
+
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        if (user != null) {
+            entityInfo.setOwnerUser(user);
+        }
+        if (group != null) {
+            entityInfo.setOwnerUserGroup(group);
+        } 
+        this.setEntityInfo(entityInfo);
+        
+        importParentItem = parentItem;
+    }
+
     public String getImportPartName() {
         return getName();
     }
@@ -713,6 +740,14 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
             partCatalogItem.setItemElementMemberList(new ArrayList<>());
         }
         partCatalogItem.getItemElementMemberList().add(this);
+    }
+
+    public void setImportChildItem(Item childItem) {
+        this.setContainedItem(childItem);
+        if (childItem.getItemElementMemberList() == null) {
+            childItem.setItemElementMemberList(new ArrayList<>());
+        }
+        childItem.getItemElementMemberList().add(this);
     }
     // </editor-fold>
 }

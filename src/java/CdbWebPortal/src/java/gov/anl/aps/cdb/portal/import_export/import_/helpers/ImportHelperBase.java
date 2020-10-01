@@ -269,7 +269,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             parsedValue = "";
         } else {
             cell.setCellType(CellType.STRING);
-            parsedValue = cell.getStringCellValue();
+            parsedValue = cell.getStringCellValue().trim();
         }
 
         return parsedValue;

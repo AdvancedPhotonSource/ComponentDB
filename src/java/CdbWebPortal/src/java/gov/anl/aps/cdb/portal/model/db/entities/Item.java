@@ -723,6 +723,12 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.itemTypeString = null;
         this.itemTypeList = itemTypeList;
     }
+    
+    public void setItemType(ItemType itemType) {
+        List<ItemType> itList = new ArrayList<>();
+        itList.add(itemType);
+        setItemTypeList(itList);
+    }
 
     @XmlTransient
     public List<ItemProject> getItemProjectList() {
