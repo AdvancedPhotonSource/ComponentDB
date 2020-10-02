@@ -66,6 +66,7 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
         return new ItemDomainInventory();
     }
     
+    @JsonIgnore
     public String getStatusPropertyTypeName() {
         return ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
     }
