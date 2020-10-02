@@ -68,7 +68,24 @@ import org.primefaces.model.TreeNode;
     "machineDesignItem",
     "temporaryIsRequiredValue",
     "customizableSortOrder",
-    "childItemElementListTreeTableRootNode"
+    "childItemElementListTreeTableRootNode",
+    "importParentCatalogItem",
+    "importPartDescription",
+    "importPartName",
+    "importPartRequired", 
+    "importPartCatalogItemName",
+    "importPartCatalogItem",
+    "itemElementRelationshipList",
+    "itemElementRelationshipList1",
+    "itemElementRelationshipList2",
+    "itemElementRelationshipHistoryList",
+    "itemElementRelationshipHistoryList1",
+    "itemElementRelationshipHistoryList2",
+    "mdConnector",
+    "mdTypeContainedItem",
+    "parentItem",
+    "containedItem",
+    "containedItem2"
 })
 public class ItemElement extends CdbDomainEntity implements Serializable {
 
@@ -343,6 +360,13 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public void setLogList(List<Log> logList) {
         this.logList = logList;
     }
+    
+    public Integer getParentItemId() {
+        if (parentItem != null) {           
+            return parentItem.getId();
+        }
+        return null; 
+    }
 
     @XmlTransient
     public Item getParentItem() {
@@ -351,6 +375,13 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public void setParentItem(Item parentItem) {
         this.parentItem = parentItem;
+    }
+    
+    public Integer getContainedItem1Id() {
+        if (containedItem1 != null) {
+            return containedItem1.getId();
+        }
+        return null;
     }
 
     @XmlTransient
@@ -361,6 +392,13 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public void setContainedItem(Item containedItem) {
         resetCatalogInventoryMachineDesingItems();
         this.containedItem1 = containedItem;
+    }
+    
+    public Integer getContainedItem2Id() {
+        if (containedItem2 != null) {
+            return containedItem2.getId();
+        }
+        return null;
     }
 
     @XmlTransient
