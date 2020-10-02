@@ -13,7 +13,6 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.BooleanInpu
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.HierarchyHandler;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
@@ -180,8 +179,6 @@ public class ImportHelperMachineHierarchy extends HierarchicalImportHelperBase<I
     private static final String HEADER_GROUP = "Owner Group";
 
     private Map<String, InputColumnInfo> columnInfoMap = null;
-    private Map<String, ItemDomainMachineDesign> itemByNameMap = new HashMap<>();
-    private Map<ItemDomainMachineDesign, ImportInfo> itemInfoMap = new HashMap<>();
     private Map<Integer, ItemDomainMachineDesign> parentIndentMap = new HashMap<>();
     
     private int nonTemplateItemCount = 0;
@@ -348,7 +345,7 @@ public class ImportHelperMachineHierarchy extends HierarchicalImportHelperBase<I
         for (Entry<Integer, String> entry : headerValueMap.entrySet()) {
             
             int columnIndex = entry.getKey();
-            String columnHeader = entry.getValue();
+            String columnHeader = entry.getValue().trim();
             
             // check to see if this is a "level" column
             if (columnHeader.startsWith(HEADER_BASE_LEVEL)) {
@@ -482,9 +479,7 @@ public class ImportHelperMachineHierarchy extends HierarchicalImportHelperBase<I
     
     @Override
     protected void reset_() {
-        itemByNameMap = new HashMap<>();
         columnInfoMap = null;
-        itemInfoMap = new HashMap<>();
         parentIndentMap = new HashMap<>();
         nonTemplateItemCount = 0;
         templateItemCount = 0;
@@ -511,7 +506,7 @@ public class ImportHelperMachineHierarchy extends HierarchicalImportHelperBase<I
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         
-        String methodLogName = "createEntityForRegularItem() ";
+        String methodLogName = "createEntityInstance() ";
         boolean isValid = true;
         String validString = "";
 
@@ -670,9 +665,6 @@ public class ImportHelperMachineHierarchy extends HierarchicalImportHelperBase<I
 
         // update tree view with item and parent
         updateTreeView(item, itemParent, false);
-
-        // add entry to name map for new item
-        itemByNameMap.put(item.getName(), item);
 
         return new CreateInfo(item, isValid, validString);
     }
