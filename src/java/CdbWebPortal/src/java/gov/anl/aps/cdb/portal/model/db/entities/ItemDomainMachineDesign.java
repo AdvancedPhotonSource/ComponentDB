@@ -322,9 +322,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
     
     /**
-     * Applies the import column values to this machine design item. Establishes 
-     * parent/child relationship, with this item as child of specified parentItem.
-     * Adds assigned catalog/inventory item
+     * Establishes parent/child relationship, with this item as child of specified parentItem.
      * 
      * @param childItem 
      */

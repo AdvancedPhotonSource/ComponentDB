@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainLocationSettings;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperLocation;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -17,7 +18,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
 import gov.anl.aps.cdb.portal.view.objects.FilterViewItemHierarchySelection;
+import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -67,6 +70,12 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         }
         return apiInstance;
     } 
+
+    @Override
+    public ItemDomainLocation createEntityInstance() {
+        ItemDomainLocation item = super.createEntityInstance();
+        return item;
+    }
 
     @Override
     protected void loadEJBResourcesManually() {
@@ -434,4 +443,19 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         this.renderLocationInplaceEditTieredMenu = renderLocationInplaceEditTieredMenu;
     }
 
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected DomainImportInfo initializeDomainImportInfo() {
+        
+        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportFormatInfo("Hierarchical Location Format", ImportHelperLocation.class));
+        
+        String completionUrl = "/views/itemDomainLocation/list?faces-redirect=true";
+        
+        return new DomainImportInfo(formatInfo, completionUrl);
+    }
 }
