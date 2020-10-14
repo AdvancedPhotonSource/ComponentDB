@@ -41,6 +41,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient String importPath = null;
     private transient ItemDomainCatalog importAssignedCatalogItem = null;
     private transient ItemDomainInventory importAssignedInventoryItem = null;
+    private transient String importAssignedItemDescription = null;
     private transient ItemDomainLocation importLocationItem = null;
     private transient String importLocationItemString = null;
     private transient String importTemplateAndParameters = null;
@@ -278,6 +279,25 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         } else {
             return "";
         }
+    }
+
+    @JsonIgnore
+    public String getImportAssignedItemString() {
+        if (importAssignedInventoryItem != null) {
+            return importAssignedInventoryItem.getName();
+        } else if (importAssignedCatalogItem != null) {
+            return importAssignedCatalogItem.getName();
+        } else {
+            return "";
+        }
+    }
+
+    public String getImportAssignedItemDescription() {
+        return importAssignedItemDescription;
+    }
+
+    public void setImportAssignedItemDescription(String importAssignedItemDescription) {
+        this.importAssignedItemDescription = importAssignedItemDescription;
     }
 
     public void setImportLocationItem(ItemDomainLocation locationItem) {

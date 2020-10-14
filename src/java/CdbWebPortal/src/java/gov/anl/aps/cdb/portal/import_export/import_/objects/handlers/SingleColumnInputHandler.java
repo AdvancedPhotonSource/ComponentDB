@@ -10,16 +10,20 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
  */
 public abstract class SingleColumnInputHandler extends InputHandler {
 
-    protected int columnIndex;
     protected String columnName;
 
-    public SingleColumnInputHandler(int columnIndex, String columnName) {
-        this.columnIndex = columnIndex;
+    public SingleColumnInputHandler(String columnName) {
+        super();
+        this.columnName = columnName;
+    }
+    
+    public SingleColumnInputHandler(int colIndex, String columnName) {
+        super(colIndex);
         this.columnName = columnName;
     }
 
     public int getColumnIndex() {
-        return columnIndex;
+        return getFirstColumnIndex();
     }
     
     public String getColumnName() {

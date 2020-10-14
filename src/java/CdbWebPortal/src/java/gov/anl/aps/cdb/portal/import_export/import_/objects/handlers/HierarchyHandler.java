@@ -20,7 +20,7 @@ import org.apache.poi.ss.usermodel.Row;
  *
  * @author craig
  */
-public class HierarchyHandler extends ColumnRangeInputHandler {
+public class HierarchyHandler extends InputHandler {
 
     protected int maxLength = 0;
     private String valueKey;
@@ -32,6 +32,7 @@ public class HierarchyHandler extends ColumnRangeInputHandler {
             int maxLength,
             String valueKey,
             String indentKey) {
+        
         super(firstIndex, lastIndex);
         this.maxLength = maxLength;
         this.valueKey = valueKey;

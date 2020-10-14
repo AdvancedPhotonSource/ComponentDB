@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemCategoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
@@ -13,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
 import gov.anl.aps.cdb.portal.controllers.UserGroupController;
 import gov.anl.aps.cdb.portal.controllers.UserInfoController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
@@ -86,7 +86,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     protected List<InputHandler> inputHandlers = null;
     
-    private SortedMap<Integer, OutputColumnModel> outputColumnMap = new TreeMap<>();
+    private List<OutputColumnModel> outputColumns = new ArrayList<>();
     
     protected byte[] templateExcelFile = null;
     protected boolean validInput = true;
@@ -101,14 +101,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return rows;
     }
 
-    public List<InputHandler> getInputHandlers() {
-        return inputHandlers;
-    }
-    
     public List<OutputColumnModel> getTableViewColumns() {
-        List<OutputColumnModel> columns = new ArrayList<>();
-        columns.addAll(outputColumnMap.values());
-        return columns;
+        return outputColumns;
     }
     
     public boolean isValidInput() {
@@ -131,46 +125,28 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         List<InputHandler> handlers = new ArrayList<>();
         List<OutputColumnModel> outputColumns = new ArrayList<>();
         
-        List<ColumnSpec> columnSpecs = getColumnSpecs();        
+        List<ColumnSpec> columnSpecs = getColumnSpecs();   
+        int colIndex = 0;
+        ValidInfo validInfo = new ValidInfo(true, "");
         for (ColumnSpec spec : columnSpecs) {
+            ColumnSpecInitInfo initInfo = spec.initialize(
+                    colIndex, 
+                    headerValueMap, 
+                    inputColumns, 
+                    handlers,  
+                    outputColumns);    
             
-            inputColumns.add(new InputColumnModel(
-                    spec.getColumnIndex(),
-                    spec.getHeader(),
-                    spec.isRequired(),
-                    spec.getDescription()));
+            if (!initInfo.getValidInfo().isValid()) {
+                validInfo = initInfo.getValidInfo();
+                break;
+            }
             
-            handlers.add(spec.createInputHandlerInstance());
-            
-            outputColumns.add(new OutputColumnModel(
-                    spec.getColumnIndex(),
-                    spec.getHeader(), 
-                    spec.getPropertyName()));
+            colIndex = colIndex + initInfo.getNumColumns();   
         }
-        
-        ValidInfo validInfo = initialize_(
-                actualColumnCount, 
-                headerValueMap, 
-                inputColumns, 
-                handlers, 
-                outputColumns);
         
         return new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
     }
     
-    /**
-     * Allow subclass to do optional custom initialization. 
-     */
-    protected ValidInfo initialize_(
-            int actualColumnCount,
-            Map<Integer, String> headerValueMap,
-            List<InputColumnModel> inputColumns,
-            List<InputHandler> inputHandlers,
-            List<OutputColumnModel> outputColumns) {
-        
-        return new ValidInfo(true, "");
-    }
-
     private ValidInfo initializeHelper(
             int actualColumnCount,
             Map<Integer, String> headerValueMap) {
@@ -197,16 +173,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         inputHandlers = specs;
     }
     
-    protected void initializeViewColumns(List<OutputColumnModel> columns) {
-        
+    protected void initializeViewColumns(List<OutputColumnModel> columns) {        
         // these are special columns for displaying validation info for each row
-        int numColumns = columns.size();
-        columns.add(new OutputColumnModel(numColumns, HEADER_IS_VALID, PROPERTY_IS_VALID));
-        columns.add(new OutputColumnModel(numColumns + 1, HEADER_VALID_STRING, PROPERTY_VALID_STRING));  
-        
-        for (OutputColumnModel col : columns) {
-            outputColumnMap.put(col.getColumnIndex(), col);
-        }
+        columns.add(new OutputColumnModel(HEADER_IS_VALID, PROPERTY_IS_VALID));
+        columns.add(new OutputColumnModel(HEADER_VALID_STRING, PROPERTY_VALID_STRING));
+        outputColumns = columns;
     }
 
     /**
@@ -218,12 +189,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         List<InputColumnModel> columns = new ArrayList<>();
         
         List<ColumnSpec> columnSpecs = getColumnSpecs();
+        int columnIndex = 0;
         for (ColumnSpec spec : columnSpecs) {
-            columns.add(new InputColumnModel(
-                    spec.getColumnIndex(),
-                    spec.getHeader(),
-                    spec.isRequired(),
-                    spec.getDescription()));
+            int numColumns = spec.getInputTemplateColumns(columnIndex, columns);
+            columnIndex = columnIndex + numColumns;
         }
         
         return columns;
@@ -453,20 +422,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             rowCount = rowCount + 1;
             Row row = rowIterator.next();
 
-            if (rowCount == 0) {
-                // parse and validate header row
-                ValidInfo headerValidInfo = parseHeader(row);
-                
-                if (!headerValidInfo.isValid()) {
-                    // don't parse the spreadsheet if the format is invalid
-                    validInput = false;
-                    validationMessage = 
-                            "Warning: " + headerValidInfo.getValidString() + 
-                            ". Please make sure spreadsheet format is correct and enter values in all header rows before proceeding";
-                    return;
-                }
-                
-            } else {
+            // skip header row, which is already parsed and validated (rowCount == 0)
+            if (rowCount > 0) {
                 // parse spreadsheet data row
                 ValidInfo rowValidInfo = parseRow(row);
                 if (!rowValidInfo.isValid()) {
@@ -742,31 +699,31 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     protected abstract CreateInfo createEntityInstance(Map<String, Object> rowMap);
     
-    public IdOrNameRefColumnSpec ownerUserColumnSpec(int colIndex) {
-        return new IdOrNameRefColumnSpec(colIndex, "Owner User", KEY_USER, "setOwnerUser", false, "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", UserInfoController.getInstance(), UserInfo.class, "");
+    public IdOrNameRefColumnSpec ownerUserColumnSpec() {
+        return new IdOrNameRefColumnSpec("Owner User", KEY_USER, "setOwnerUser", false, "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", UserInfoController.getInstance(), UserInfo.class, "");
     }
     
-    public IdOrNameRefColumnSpec ownerGroupColumnSpec(int colIndex) {
-        return new IdOrNameRefColumnSpec(colIndex, "Owner Group", KEY_GROUP, "setOwnerUserGroup", false, "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", UserGroupController.getInstance(), UserGroup.class, "");
+    public IdOrNameRefColumnSpec ownerGroupColumnSpec() {
+        return new IdOrNameRefColumnSpec("Owner Group", KEY_GROUP, "setOwnerUserGroup", false, "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", UserGroupController.getInstance(), UserGroup.class, "");
     }
     
-    public IdOrNameRefListColumnSpec projectListColumnSpec(int colIndex) {
-        return new IdOrNameRefListColumnSpec(colIndex, "Project", "itemProjectString", "setItemProjectList", true, "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'.", ItemProjectController.getInstance(), List.class, "");
+    public IdOrNameRefListColumnSpec projectListColumnSpec() {
+        return new IdOrNameRefListColumnSpec("Project", "itemProjectString", "setItemProjectList", true, "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'.", ItemProjectController.getInstance(), List.class, "");
     }
     
-    public IdOrNameRefListColumnSpec technicalSystemListColumnSpec(int colIndex, String domainName) {
-        return new IdOrNameRefListColumnSpec(colIndex, "Technical System", "itemCategoryString", "setItemCategoryList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemCategoryController.getInstance(), List.class, domainName);
+    public IdOrNameRefListColumnSpec technicalSystemListColumnSpec(String domainName) {
+        return new IdOrNameRefListColumnSpec("Technical System", "itemCategoryString", "setItemCategoryList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemCategoryController.getInstance(), List.class, domainName);
     }
     
-    public IdOrNameRefListColumnSpec functionListColumnSpec(int colIndex, String domainName) {
-        return new IdOrNameRefListColumnSpec(colIndex, "Function", "itemTypeString", "setItemTypeList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemTypeController.getInstance(), List.class, domainName);
+    public IdOrNameRefListColumnSpec functionListColumnSpec(String domainName) {
+        return new IdOrNameRefListColumnSpec("Function", "itemTypeString", "setItemTypeList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemTypeController.getInstance(), List.class, domainName);
     }
     
-    public IdOrNameRefColumnSpec locationColumnSpec(int colIndex) {
-        return new IdOrNameRefColumnSpec(colIndex, "Location", "importLocationItemString", "setImportLocationItem", false, "Item location.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, "");
+    public IdOrNameRefColumnSpec locationColumnSpec() {
+        return new IdOrNameRefColumnSpec("Location", "importLocationItemString", "setImportLocationItem", false, "Item location.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, "");
     }
     
-    public StringColumnSpec locationDetailsColumnSpec(int colIndex) {
-        return new StringColumnSpec(colIndex, "Location Details", "locationDetails", "setLocationDetails", false, "Location details for item.", 256);
+    public StringColumnSpec locationDetailsColumnSpec() {
+        return new StringColumnSpec("Location Details", "locationDetails", "setLocationDetails", false, "Location details for item.", 256);
     }
 }

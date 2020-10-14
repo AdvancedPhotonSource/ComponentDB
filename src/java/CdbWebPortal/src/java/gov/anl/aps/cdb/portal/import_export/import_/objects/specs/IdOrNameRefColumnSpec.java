@@ -16,15 +16,15 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
 
     protected String domainNameFilter = null;
 
-    public IdOrNameRefColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType, String domainNameFilter) {
-        super(columnIndex, header, propertyName, entitySetterMethod, required, description, controller, paramType);
+    public IdOrNameRefColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType, String domainNameFilter) {
+        super(header, propertyName, entitySetterMethod, required, description, controller, paramType);
         this.domainNameFilter = domainNameFilter;
     }
 
     @Override
-    public InputHandler createInputHandlerInstance() {
+    public InputHandler getInputHandler(int colIndex) {
         return new RefInputHandler(
-                getColumnIndex(),
+                colIndex,
                 getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),

@@ -17,16 +17,16 @@ public class IdRefColumnSpec extends ColumnSpec {
     protected CdbEntityController controller;
     protected Class paramType;
 
-    public IdRefColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType) {
-        super(columnIndex, header, propertyName, entitySetterMethod, required, description);
+    public IdRefColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType) {
+        super(header, propertyName, entitySetterMethod, required, description);
         this.controller = controller;
         this.paramType = paramType;
     }
 
     @Override
-    public InputHandler createInputHandlerInstance() {
+    public InputHandler getInputHandler(int colIndex) {
         return new RefInputHandler(
-                getColumnIndex(),
+                colIndex,
                 getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),

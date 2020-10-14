@@ -38,17 +38,17 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(0, "MD Template", KEY_TEMPLATE, "setImportMdItem", true, "ID or name of CDB machine design template. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, null));
-        specs.add(new StringColumnSpec(1, "Name", KEY_NAME, "", true, "Name for inventory unit (use 'auto' to generate automatically).", 128));
-        specs.add(new StringColumnSpec(2, "Alt Name", "alternateName", "setAlternateName", false, "Alternate name for inventory unit.", 128));
-        specs.add(new IntegerColumnSpec(3, "QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
-        specs.add(new StringColumnSpec(4, "Description", "description", "setDescription", false, "Description of inventory unit.", 256));
-        specs.add(new StringColumnSpec(5, "Status", KEY_STATUS, "setInventoryStatusValue", false, "Status of inventory item.", 256));
-        specs.add(locationColumnSpec(6));
-        specs.add(locationDetailsColumnSpec(7));
-        specs.add(projectListColumnSpec(8));
-        specs.add(ownerUserColumnSpec(9));
-        specs.add(ownerGroupColumnSpec(10));
+        specs.add(new IdOrNameRefColumnSpec("MD Template", KEY_TEMPLATE, "setImportMdItem", true, "ID or name of CDB machine design template. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, null));
+        specs.add(new StringColumnSpec("Name", KEY_NAME, "", true, "Name for inventory unit (use 'auto' to generate automatically).", 128));
+        specs.add(new StringColumnSpec("Alt Name", "alternateName", "setAlternateName", false, "Alternate name for inventory unit.", 128));
+        specs.add(new IntegerColumnSpec("QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
+        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of inventory unit.", 256));
+        specs.add(new StringColumnSpec("Status", KEY_STATUS, "setInventoryStatusValue", false, "Status of inventory item.", 256));
+        specs.add(locationColumnSpec());
+        specs.add(locationDetailsColumnSpec());
+        specs.add(projectListColumnSpec());
+        specs.add(ownerUserColumnSpec());
+        specs.add(ownerGroupColumnSpec());
         
         return specs;
     } 

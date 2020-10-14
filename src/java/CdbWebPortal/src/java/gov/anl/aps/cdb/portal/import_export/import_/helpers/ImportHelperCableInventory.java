@@ -33,17 +33,17 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(0, "Cable Catalog Item", KEY_CATALOG_ITEM, "setCatalogItem", true, "ID or name of cable catalog item for inventory unit. Name must be unique and prefixed with '#'.", ItemDomainCableCatalogController.getInstance(), ItemDomainCableCatalog.class, null));
-        specs.add(new StringColumnSpec(1, "Tag", KEY_NAME, "", true, "Name of inventory unit.", 64));
-        specs.add(new IntegerColumnSpec(2, "QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
-        specs.add(new StringColumnSpec(3, "Description", "description", "setDescription", false, "Description of inventory unit.", 256));
+        specs.add(new IdOrNameRefColumnSpec("Cable Catalog Item", KEY_CATALOG_ITEM, "setCatalogItem", true, "ID or name of cable catalog item for inventory unit. Name must be unique and prefixed with '#'.", ItemDomainCableCatalogController.getInstance(), ItemDomainCableCatalog.class, null));
+        specs.add(new StringColumnSpec("Tag", KEY_NAME, "", true, "Name of inventory unit.", 64));
+        specs.add(new IntegerColumnSpec("QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
+        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of inventory unit.", 256));
         specs.add(statusColumnSpec(4));
-        specs.add(locationColumnSpec(5));
-        specs.add(locationDetailsColumnSpec(6));
-        specs.add(new StringColumnSpec(7, "Length", "length", "setLength", false, "Installed length of cable inventory unit.", 256));
-        specs.add(projectListColumnSpec(8));
-        specs.add(ownerUserColumnSpec(9));
-        specs.add(ownerGroupColumnSpec(10));
+        specs.add(locationColumnSpec());
+        specs.add(locationDetailsColumnSpec());
+        specs.add(new StringColumnSpec("Length", "length", "setLength", false, "Installed length of cable inventory unit.", 256));
+        specs.add(projectListColumnSpec());
+        specs.add(ownerUserColumnSpec());
+        specs.add(ownerGroupColumnSpec());
         
         return specs;
     } 

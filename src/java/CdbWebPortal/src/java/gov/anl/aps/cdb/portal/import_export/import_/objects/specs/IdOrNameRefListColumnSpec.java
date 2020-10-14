@@ -14,14 +14,14 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandle
  */
 public class IdOrNameRefListColumnSpec extends IdOrNameRefColumnSpec {
 
-    public IdOrNameRefListColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType, String domainNameFilter) {
-        super(columnIndex, header, propertyName, entitySetterMethod, required, description, controller, paramType, domainNameFilter);
+    public IdOrNameRefListColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType, String domainNameFilter) {
+        super(header, propertyName, entitySetterMethod, required, description, controller, paramType, domainNameFilter);
     }
 
     @Override
-    public InputHandler createInputHandlerInstance() {
+    public InputHandler getInputHandler(int colIndex) {
         return new RefInputHandler(
-                getColumnIndex(),
+                colIndex,
                 getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),
