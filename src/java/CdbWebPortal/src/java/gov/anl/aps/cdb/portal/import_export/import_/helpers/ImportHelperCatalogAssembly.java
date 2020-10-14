@@ -32,12 +32,12 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(0, "Catalog Item", ROW_KEY_PARENT_ITEM, "setImportParentCatalogItem", true, "ID or name of parent catalog item. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));        
-        specs.add(new StringColumnSpec(1, "Part Name", ROW_KEY_PART_NAME, "setImportPartName", true, "Part name for assembly member.", 128));
-        specs.add(new StringColumnSpec(2, "Part Description", "importPartDescription", "setImportPartDescription", false, "Part description for assembly member.", 128));
-        specs.add(new BooleanColumnSpec(3, "Part Required", "importPartRequired", "setImportPartRequired", false, "True/yes if part is required."));
-        specs.add(new StringColumnSpec(4, "Part Catalog Item Name (optional)", "importPartCatalogItemName", "setImportPartCatalogItemName", false, "Catalog item name for part (for documentation purposes only, ignored by import).", 128));
-        specs.add(new IdOrNameRefColumnSpec(5, "Part Catalog Item ID", "importPartCatalogItem", "setImportPartCatalogItem", true, "ID or name of catalog item for part. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));        
+        specs.add(new IdOrNameRefColumnSpec("Catalog Item", ROW_KEY_PARENT_ITEM, "setImportParentCatalogItem", true, "ID or name of parent catalog item. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));        
+        specs.add(new StringColumnSpec("Part Name", ROW_KEY_PART_NAME, "setImportPartName", true, "Part name for assembly member.", 128));
+        specs.add(new StringColumnSpec("Part Description", "importPartDescription", "setImportPartDescription", false, "Part description for assembly member.", 128));
+        specs.add(new BooleanColumnSpec("Part Required", "importPartRequired", "setImportPartRequired", false, "True/yes if part is required."));
+        specs.add(new StringColumnSpec("Part Catalog Item Name (optional)", "importPartCatalogItemName", "setImportPartCatalogItemName", false, "Catalog item name for part (for documentation purposes only, ignored by import).", 128));
+        specs.add(new IdOrNameRefColumnSpec("Part Catalog Item ID", "importPartCatalogItem", "setImportPartCatalogItem", true, "ID or name of catalog item for part. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));        
 
         return specs;
     }

@@ -190,7 +190,7 @@ public class ItemDomainImportWizard implements Serializable {
     
     public void setSelectedSheet(String selectedSheet) {
         
-        if (selectedSheet == null) {
+        if ((selectedSheet == null) || (selectedSheet.equals(this.selectedSheet))) {
             return;
         }
         

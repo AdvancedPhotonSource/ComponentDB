@@ -34,7 +34,7 @@ public abstract class ImportHelperInventoryBase
     private Map<ItemDomainCatalogBase, Integer> newItemCountMap = new HashMap<>();
     
     public StringColumnSpec statusColumnSpec(int colIndex) {
-        return new StringColumnSpec(colIndex, "Status", KEY_STATUS, "setInventoryStatusValue", false, "Status of inventory item.", 256);
+        return new StringColumnSpec("Status", KEY_STATUS, "setInventoryStatusValue", false, "Status of inventory item.", 256);
     }
     
     @Override

@@ -24,10 +24,10 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new StringColumnSpec(0, "Name", "name", "setName", true, "Name of vendor/manufacturer", 64));
-        specs.add(new StringColumnSpec(1, "Description", "description", "setDescription", false, "Description of vendor/manufacturer", 256));
-        specs.add(new StringColumnSpec(2, "Contact Info", "contactInfo", "setContactInfo", false, "Contact name and phone number etc", 64));
-        specs.add(new StringColumnSpec(3, "URL", "url", "setUrl", false, "URL for vendor/manufacturer", 256));
+        specs.add(new StringColumnSpec("Name", "name", "setName", true, "Name of vendor/manufacturer", 64));
+        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of vendor/manufacturer", 256));
+        specs.add(new StringColumnSpec("Contact Info", "contactInfo", "setContactInfo", false, "Contact name and phone number etc", 64));
+        specs.add(new StringColumnSpec("URL", "url", "setUrl", false, "URL for vendor/manufacturer", 256));
         
         return specs;
     } 

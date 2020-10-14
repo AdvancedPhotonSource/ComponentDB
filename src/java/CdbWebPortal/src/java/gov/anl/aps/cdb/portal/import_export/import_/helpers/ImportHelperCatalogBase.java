@@ -23,7 +23,7 @@ public abstract class ImportHelperCatalogBase <CatalogEntityType extends ItemDom
     protected final static String KEY_PART_NUM = "partNumber";
     
     public IdOrNameRefColumnSpec sourceColumnSpec(int colIndex) {
-        return new IdOrNameRefColumnSpec(colIndex, "Source", ImportHelperCatalogBase.KEY_MFR, "", false, "Item source.", SourceController.getInstance(), Source.class, null);
+        return new IdOrNameRefColumnSpec("Source", ImportHelperCatalogBase.KEY_MFR, "", false, "Item source.", SourceController.getInstance(), Source.class, null);
     }
     
     @Override
