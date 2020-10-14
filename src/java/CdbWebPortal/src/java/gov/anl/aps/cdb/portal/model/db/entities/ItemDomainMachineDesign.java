@@ -359,19 +359,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             ItemDomainMachineDesign parentItem,
             ItemElement itemElement) {
         
-        // set parent-child relationship
-        itemElement.setContainedItem(childItem);
-
-        // add ItemElement to parent
-        parentItem.getFullItemElementList().add(itemElement);
-        parentItem.getItemElementDisplayList().add(0, itemElement);
-
-        // add ItemElement to child
-        if (childItem.getItemElementMemberList() == null) {
-            childItem.setItemElementMemberList(new ArrayList<>());
-        }
-        childItem.getItemElementMemberList().add(itemElement);
-            
+        itemElement.setImportChildItem(childItem);        
     }
     
     private static ItemElement importCreateItemElementForParent(
@@ -380,8 +368,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             UserGroup group) {
         
         ItemElement itemElement = new ItemElement();
-        itemElement.setParentItem(parentItem);
-        
+
         String elementName
                 = ItemDomainMachineDesignController.getInstance().
                         generateUniqueElementNameForItem(parentItem);
@@ -389,16 +376,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         int elementSize = parentItem.getItemElementDisplayList().size();
         float sortOrder = elementSize;
-        itemElement.setSortOrder(sortOrder);
-
-        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-        if (user != null) {
-            entityInfo.setOwnerUser(user);
-        }
-        if (group != null) {
-            entityInfo.setOwnerUserGroup(group);
-        } 
-        itemElement.setEntityInfo(entityInfo);
+        
+        itemElement.setImportParentItem(parentItem, sortOrder, user, group);
         
         return itemElement;
     }  
