@@ -49,7 +49,7 @@ See LICENSE file.
                                       title="Uploaded file" 
                                       styleClass="entityDataEmphasizedText" />
                         
-                        <p:outputLabel value="Select sheet" 
+                        <p:outputLabel value="Select sheet (required)" 
                                        styleClass="entityDataEmphasizedLabel"
                                        rendered="#{wizardController.renderSelectSheet}"/>
                         <p:selectOneMenu id="sheetMenu" 
@@ -61,6 +61,30 @@ See LICENSE file.
                                     oncomplete="update#{rootViewId}WizardButtons();"/>
                         </p:selectOneMenu>
                         
+                        <p:outputLabel value="Header Row Number (optional)" 
+                                       styleClass="entityDataEmphasizedLabel"
+                                       rendered="#{wizardController.renderSelectSheet}"/>
+                        <p:inputText id="headerRowInput" 
+                                     value="#{wizardController.rowNumberHeader}" 
+                                     title="Header row number (optional, defaults to 1)"
+                                     rendered="#{wizardController.renderSelectSheet}"/>
+
+                        <p:outputLabel value="First Data Row Number (optional)" 
+                                       styleClass="entityDataEmphasizedLabel"
+                                       rendered="#{wizardController.renderSelectSheet}"/>
+                        <p:inputText id="firstDataRowInput" 
+                                     value="#{wizardController.rowNumberFirstData}" 
+                                     title="First data row number (optional, defaults to 2)"
+                                     rendered="#{wizardController.renderSelectSheet}"/>
+
+                        <p:outputLabel value="Last Data Row Number (optional)" 
+                                       styleClass="entityDataEmphasizedLabel"
+                                       rendered="#{wizardController.renderSelectSheet}"/>
+                        <p:inputText id="lastDataRowInput" 
+                                     value="#{wizardController.rowNumberLastData}" 
+                                     title="Last data row number (optional, defaults to end of data)"
+                                     rendered="#{wizardController.renderSelectSheet}"/>
+
                     </p:panelGrid>
                 </p:panelGrid>
                 

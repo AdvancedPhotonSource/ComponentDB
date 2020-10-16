@@ -62,7 +62,9 @@ public class ItemDomainImportWizard implements Serializable {
     private boolean renderSelectSheet = false;
     private String selectFileSummaryMessage = null;
     private String selectFileErrorMessage = null;
-    private boolean isValidSheet = false;
+    private String rowNumberHeader = null;
+    private String rowNumberFirstData = null;
+    private String rowNumberLastData = null;
     
     // models for validation tab
     protected boolean importSuccessful = true;
@@ -189,34 +191,32 @@ public class ItemDomainImportWizard implements Serializable {
     }
     
     public void setSelectedSheet(String selectedSheet) {
-        
-        if ((selectedSheet == null) || (selectedSheet.equals(this.selectedSheet))) {
-            return;
-        }
-        
         this.selectedSheet = selectedSheet;
-        
-        ValidInfo validInfo = importHelper.validateSheet(uploadfileData, selectedSheet);
-        if (validInfo.isValid()) {
-            isValidSheet = true;
-            selectFileSummaryMessage = 
-                    "Selected sheet is valid for import. " +
-                    "Click 'Next Step' to continue.";
-            selectFileErrorMessage = null;
-        } else {
-            isValidSheet = false;
-            selectFileSummaryMessage = 
-                    "Selected sheet is not valid for import. " +
-                    "Select a different sheet or press cancel to terminate.";
-            selectFileErrorMessage = 
-                    "Validation error: " + validInfo.getValidString() + ".";
-        }
-        
         setEnablementForCurrentTab();
     }
     
-    public boolean isValidSheet() {
-        return isValidSheet;
+    public String getRowNumberHeader() {
+        return rowNumberHeader;
+    }
+
+    public void setRowNumberHeader(String rowNumberHeader) {
+        this.rowNumberHeader = rowNumberHeader;
+    }
+
+    public String getRowNumberFirstData() {
+        return rowNumberFirstData;
+    }
+
+    public void setRowNumberFirstData(String rowNumberFirstData) {
+        this.rowNumberFirstData = rowNumberFirstData;
+    }
+
+    public String getRowNumberLastData() {
+        return rowNumberLastData;
+    }
+
+    public void setRowNumberLastData(String rowNumberLastData) {
+        this.rowNumberLastData = rowNumberLastData;
     }
     
     public void fileUploadListenerData(FileUploadEvent event) {
@@ -334,8 +334,73 @@ public class ItemDomainImportWizard implements Serializable {
         // parse file if moving from select file tab to validate tab
         if ((currStep.endsWith(TAB_SELECT_FILE))
                 && (nextStep.endsWith(TAB_VALIDATE))) {
+            
+            int headerRowNum = -1;
+            int firstDataRowNum = -1;
+            int lastDataRowNum = -1;
+            
+            boolean invalidFileOptions = false;
+            selectFileErrorMessage = "";
+            
+            if ((rowNumberHeader != null) && (!rowNumberHeader.isEmpty())) {
+                try {
+                    headerRowNum = Integer.valueOf(rowNumberHeader);
+                } catch (NumberFormatException ex) {
+                    invalidFileOptions = true;
+                    selectFileErrorMessage
+                            = rowNumberHeader + " is not a valid header row number. ";
+                }
+                if (headerRowNum <= 0) {
+                    invalidFileOptions = true;
+                    selectFileErrorMessage
+                            = "Header row " + headerRowNum + " must be greater than zero. ";
+                }
+            } 
+            
+            if ((rowNumberFirstData != null) && (!rowNumberFirstData.isEmpty())) {
+                try {
+                    firstDataRowNum = Integer.valueOf(rowNumberFirstData);
+                } catch (NumberFormatException ex) {
+                    invalidFileOptions = true;
+                    selectFileErrorMessage = selectFileErrorMessage + rowNumberFirstData + " is not a valid first data row number. ";
+                }
+                if (firstDataRowNum <= 1) {
+                    invalidFileOptions = true;
+                    selectFileErrorMessage
+                            = "First data row " + firstDataRowNum + " must be greater than one. ";
+                }
+            }
+            
+            if ((rowNumberLastData != null) && (!rowNumberLastData.isEmpty())) {
+                try {
+                    lastDataRowNum = Integer.valueOf(rowNumberLastData);
+                } catch (NumberFormatException ex) {
+                    invalidFileOptions = true;
+                    selectFileErrorMessage = selectFileErrorMessage + rowNumberLastData + " is not a valid last data row number. ";
+                }
+                if (lastDataRowNum <= 1) {
+                    invalidFileOptions = true;
+                    selectFileErrorMessage
+                            = "Last data row " + lastDataRowNum + " must be greater than one. ";
+                }
+            } 
+            
+            if (invalidFileOptions) {
+                selectFileSummaryMessage
+                        = "Please correct options and try again.";
+                setEnablement(currStep);
+                currentTab = currStep;
+                return currStep;
+            }
+
             boolean result = 
-                    importHelper.readXlsxFileData(uploadfileData, selectedSheet);
+                    importHelper.readXlsxFileData(
+                            uploadfileData, 
+                            selectedSheet,
+                            headerRowNum,
+                            firstDataRowNum,
+                            lastDataRowNum);
+            
             if (!result) {
                 uploadfileData = null;
             }
@@ -395,10 +460,12 @@ public class ItemDomainImportWizard implements Serializable {
         selectedTreeNode = null;
         sheetNames = new ArrayList<>();
         selectedSheet = null;
+        rowNumberHeader = null;
+        rowNumberFirstData = null;
+        rowNumberLastData = null;
         renderSelectSheet = false;
         selectFileErrorMessage = null;
         selectFileSummaryMessage = null;
-        isValidSheet = false;
     }
 
     /**
@@ -457,7 +524,7 @@ public class ItemDomainImportWizard implements Serializable {
             disableButtonCancel = false;
             disableButtonFinish = true;
 
-            if (isValidSheet) {
+            if (selectedSheet != null) {
                 disableButtonNext = false;
             } else {
                 disableButtonNext = true;
@@ -466,10 +533,8 @@ public class ItemDomainImportWizard implements Serializable {
         } else if (tab.endsWith(TAB_VALIDATE)) {
             disableButtonPrev = true;
             disableButtonCancel = false;
-            /* if (importHelper.isValidationOnly()) {
-                disableButtonFinish = false;
-            } else { */
             disableButtonFinish = true;
+            
             if (importHelper.isValidInput()) {
                 disableButtonNext = false;
             }

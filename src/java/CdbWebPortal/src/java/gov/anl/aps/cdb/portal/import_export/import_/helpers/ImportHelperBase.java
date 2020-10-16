@@ -292,55 +292,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
 
-    /**
-     * Reads Excel "xls" file.  This is not currently used, but I added it for
-     * documentation in case we need to read that format.
-     */
-    protected boolean readXlsFileData(UploadedFile f) {
-
-        InputStream inputStream;
-        HSSFWorkbook workbook;
-        try {
-            inputStream = f.getInputStream();
-            workbook = new HSSFWorkbook(inputStream);
-        } catch (IOException e) {
-            return false;
-        }
-
-        HSSFSheet sheet = workbook.getSheetAt(0);
-
-        Iterator<Row> rowIterator = sheet.iterator();
-
-        parseSheet(rowIterator);
-
-        return true;
-    }
-
-    public boolean readXlsxFileData(UploadedFile f, String sheetName) {
-
-        InputStream inputStream;
-        XSSFWorkbook workbook;
-        try {
-            inputStream = f.getInputStream();
-            workbook = new XSSFWorkbook(inputStream);
-        } catch (IOException e) {
-            return false;
-        }
-
-        XSSFSheet sheet = workbook.getSheet(sheetName);
-        if (sheet == null) {
-            return false;
-        }
-
-        Iterator<Row> rowIterator = sheet.iterator();
-        if (rowIterator == null) {
-            return false;
-        }
-
-        parseSheet(rowIterator);
-        return true;
-    }
-    
     public List<String> getSheetNames(UploadedFile f) {
         
         List<String> sheetNames = new ArrayList<>();
@@ -364,67 +315,147 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return sheetNames;
     }
     
-    public ValidInfo validateSheet(UploadedFile f, String sheetName) {
-        
-        boolean isValid = true;
-        String validString = "";
-        String logMethodName = "validateSheet() ";
-        
+//    /**
+//     * Reads Excel "xls" file.  This is not currently used, but I added it for
+//     * documentation in case we need to read that format.
+//     */
+//    protected boolean readXlsFileData(UploadedFile f) {
+//
+//        InputStream inputStream;
+//        HSSFWorkbook workbook;
+//        try {
+//            inputStream = f.getInputStream();
+//            workbook = new HSSFWorkbook(inputStream);
+//        } catch (IOException e) {
+//            return false;
+//        }
+//
+//        HSSFSheet sheet = workbook.getSheetAt(0);
+//
+//        Iterator<Row> rowIterator = sheet.iterator();
+//
+//        parseSheet(rowIterator);
+//
+//        return true;
+//    }
+
+    public boolean readXlsxFileData(
+            UploadedFile f, 
+            String sheetName,
+            int rowNumberHeader,
+            int rowNumberFirstData,
+            int rowNumberLastData) {
+
         InputStream inputStream;
         XSSFWorkbook workbook;
         try {
             inputStream = f.getInputStream();
             workbook = new XSSFWorkbook(inputStream);
         } catch (IOException e) {
-            isValid = false;
-            validString = "error opening excel file: " + e;
-            LOGGER.info(logMethodName + validString);
-            return new ValidInfo(isValid, validString);
-        }        
-        
+            validInput = false;
+            validationMessage = "Unable to open file " + f.getFileName();
+            summaryMessage
+                    = "Press 'Cancel' to terminate the import process and fix "
+                    + "problems with spreadsheet file."
+                    + " No new items will be created.";
+            return false;
+        }
+
         XSSFSheet sheet = workbook.getSheet(sheetName);
         if (sheet == null) {
-            isValid = false;
-            validString = "no sheet found with name: " + sheetName;
-            LOGGER.info(logMethodName + validString);
-            return new ValidInfo(isValid, validString);
+            validInput = false;
+            validationMessage = "Unable to open specified sheet " + sheetName;
+            summaryMessage
+                    = "Press 'Cancel' to terminate the import process and fix "
+                    + "problems with spreadsheet file."
+                    + " No new items will be created.";
+            return false;
+        }
+
+        // validate specified row numbers, change user specified 1-based values to 0-based values for api, and set default values if not specified
+        boolean validOptions = true;
+        String optionMessage = "";
+        
+        if (rowNumberHeader == -1) {
+            rowNumberHeader = 0;
+        } else if ((rowNumberHeader < 1)
+                || ((rowNumberFirstData != -1) && (rowNumberHeader >= rowNumberFirstData))
+                || ((rowNumberLastData != -1) && (rowNumberHeader >= rowNumberLastData))) {
+            validOptions = false;
+            optionMessage = optionMessage
+                    + "Header row must be greater than 0, and less than both data rows. ";
+        } else {
+                rowNumberHeader = rowNumberHeader - 1;
         }
         
-        Row headerRow = sheet.getRow(0);
-        if (headerRow == null) {
-            isValid = false;
-            validString = "no header row found in file";
-            LOGGER.info(logMethodName + validString);
-            return new ValidInfo(isValid, validString);            
-        }          
+        if (rowNumberFirstData == -1) {
+            rowNumberFirstData = 1;
+        } else  if ((rowNumberFirstData < 2) || 
+                    ((rowNumberHeader != -1) && (rowNumberFirstData <= rowNumberHeader)) || 
+                    ((rowNumberLastData != -1) && (rowNumberFirstData > rowNumberLastData))) {
+            validOptions = false;
+            optionMessage = optionMessage
+                    + "First data row must be greater than 1, greater than header row, and less than or equal to last data row. ";
+        } else {
+            rowNumberFirstData = rowNumberFirstData - 1;
+        }
         
-        ValidInfo headerValidInfo = parseHeader(headerRow);
-        if (!headerValidInfo.isValid()) {
-            isValid = false;
-            validString = headerValidInfo.getValidString();
-            LOGGER.info(logMethodName + validString);
-            return new ValidInfo(isValid, validString);
-        }      
+        if (rowNumberLastData == -1) {
+            rowNumberLastData = sheet.getLastRowNum();
+        } else if ((rowNumberLastData < 2) || 
+                    ((rowNumberHeader != -1) && (rowNumberLastData <= rowNumberHeader)) || 
+                    ((rowNumberFirstData != -1) && (rowNumberFirstData > rowNumberLastData))) {
+            validOptions = false;
+            optionMessage = optionMessage
+                    + "Last data row must be greater than 1, greater than header row, and greater than or equal to first data row. ";
+        } else {
+            rowNumberLastData = rowNumberLastData - 1;
+        }
         
-        return new ValidInfo(isValid, validString);
+        if (!validOptions) {
+            validInput = false;
+            validationMessage = "Invalid row number options. " + optionMessage;
+            summaryMessage
+                    = "Press 'Cancel' to terminate the import process and fix "
+                    + "problems with row number options."
+                    + " No new items will be created.";
+            return false;
+        }
+        
+        parseSheet(sheet, rowNumberHeader, rowNumberFirstData, rowNumberLastData);
+        return true;
     }
+    
+    protected void parseSheet(
+            XSSFSheet sheet,
+            int rowNumberHeader,
+            int rowNumberFirstData,
+            int rowNumberLastData) {
 
-    protected void parseSheet(Iterator<Row> rowIterator) {
-
-        int rowCount = -1;
         int entityNum = 0;
         int dupCount = 0;
         int invalidCount = 0;
         String dupString = "";
         
-        while (rowIterator.hasNext()) {
-
-            rowCount = rowCount + 1;
-            Row row = rowIterator.next();
-
-            // skip header row, which is already parsed and validated (rowCount == 0)
-            if (rowCount > 0) {
-                // parse spreadsheet data row
+        System.out.println("row numbers: " + rowNumberHeader + " " + rowNumberFirstData + " " + rowNumberLastData);
+                    
+        // parse / validate header row  
+        Row headerRow = sheet.getRow(rowNumberHeader);
+        ValidInfo headerValidInfo = parseHeader(headerRow);
+        if (!headerValidInfo.isValid()) {
+            validInput = false;
+            validationMessage = headerValidInfo.getValidString();
+            summaryMessage
+                    = "Press 'Cancel' to terminate the import process and fix "
+                    + "problems with import spreadsheet."
+                    + " No new items will be created.";
+            return;
+        }
+            
+        // parse spreadsheet data rows
+        for (int rowNumber = rowNumberFirstData ; rowNumber <= rowNumberLastData ; rowNumber ++) {
+            Row row = sheet.getRow(rowNumber);
+            if (row != null) {
                 ValidInfo rowValidInfo = parseRow(row);
                 if (!rowValidInfo.isValid()) {
                     validInput = false;
@@ -511,11 +542,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             // check actual number of columns against expected number
             int maxColIndex = Collections.max(inputColumnMap.keySet());
             int expectedColumns = maxColIndex + 1;
+            if (actualColumns < 0) {
+                actualColumns = 0;
+            }
             if (expectedColumns != actualColumns) {
                 isValid = false;
                 validMessage
-                        = "header row (" + actualColumns
-                        + ") does not contain expected number of columns ("
+                        = "Actual number of header row columns (" + actualColumns
+                        + ") does not match expected number of columns ("
                         + expectedColumns + ")";
             }
         }
