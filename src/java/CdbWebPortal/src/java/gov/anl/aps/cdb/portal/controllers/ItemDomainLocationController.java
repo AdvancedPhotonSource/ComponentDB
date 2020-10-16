@@ -339,7 +339,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
     @Override
     public boolean getEntityDisplayItemProperties() {
-        return false;
+        return true;
     }
 
     @Override
