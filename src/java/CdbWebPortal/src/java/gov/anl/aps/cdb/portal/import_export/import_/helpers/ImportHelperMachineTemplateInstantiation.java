@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author craig
  */
-public class ImportHelperMachineTemplateInstantiation extends HierarchicalImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
+public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeViewBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
     
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineTemplateInstantiation.class.getName());
     
@@ -49,13 +49,13 @@ public class ImportHelperMachineTemplateInstantiation extends HierarchicalImport
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(0, HEADER_PARENT, KEY_CONTAINER, "setImportMdItem", true, "CDB ID or name of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, ""));
-        specs.add(new StringColumnSpec(1, HEADER_TEMPLATE_INVOCATION, KEY_TEMPLATE_INVOCATION, "setImportTemplateAndParameters", true, "Template to instantiate with required parameters, e.g., 'PS-SR-S{nn}-CAB1(nn=24)'.", 0));        
-        specs.add(new StringColumnSpec(2, HEADER_ALT_NAME, "alternateName", "setAlternateName", false, "Alternate name.", 128));
-        specs.add(new StringColumnSpec(3, HEADER_DESCRIPTION, "description", "setDescription", false, "Textual description.", 256));
-        specs.add(projectListColumnSpec(4));
-        specs.add(ownerUserColumnSpec(5));
-        specs.add(ownerGroupColumnSpec(6));
+        specs.add(new IdOrNameRefColumnSpec(HEADER_PARENT, KEY_CONTAINER, "setImportMdItem", true, "CDB ID or name of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, ""));
+        specs.add(new StringColumnSpec(HEADER_TEMPLATE_INVOCATION, KEY_TEMPLATE_INVOCATION, "setImportTemplateAndParameters", true, "Template to instantiate with required parameters, e.g., 'PS-SR-S{nn}-CAB1(nn=24)'.", 0));        
+        specs.add(new StringColumnSpec(HEADER_ALT_NAME, "alternateName", "setAlternateName", false, "Alternate name.", 128));
+        specs.add(new StringColumnSpec(HEADER_DESCRIPTION, "description", "setDescription", false, "Textual description.", 256));
+        specs.add(projectListColumnSpec());
+        specs.add(ownerUserColumnSpec());
+        specs.add(ownerGroupColumnSpec());
 
         return specs;
     }

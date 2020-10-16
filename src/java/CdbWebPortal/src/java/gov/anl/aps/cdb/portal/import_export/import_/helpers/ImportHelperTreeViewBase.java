@@ -5,10 +5,7 @@
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +16,10 @@ import org.primefaces.model.TreeNode;
  *
  * @author craig
  */
-public abstract class HierarchicalImportHelperBase<EntityType extends CdbEntity, EntityControllerType extends CdbEntityController>
+public abstract class ImportHelperTreeViewBase<EntityType extends CdbEntity, EntityControllerType extends CdbEntityController>
         extends ImportHelperBase<EntityType, EntityControllerType> {
     
-    private Map<EntityType, TreeNode> treeNodeMap = new HashMap<>();
-    
+    private Map<EntityType, TreeNode> treeNodeMap = new HashMap<>();    
     private int treeNodeChildCount = 0;
     
     protected abstract EntityType getItemParent(EntityType item);

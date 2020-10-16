@@ -13,13 +13,13 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandle
  */
 public class BooleanColumnSpec extends ColumnSpec {
 
-    public BooleanColumnSpec(int columnIndex, String header, String propertyName, String entitySetterMethod, boolean required, String description) {
-        super(columnIndex, header, propertyName, entitySetterMethod, required, description);
+    public BooleanColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description) {
+        super(header, propertyName, entitySetterMethod, required, description);
     }
 
     @Override
-    public InputHandler createInputHandlerInstance() {
+    public InputHandler getInputHandler(int colIndex) {
         return new BooleanInputHandler(
-                getColumnIndex(), getHeader(), getPropertyName(), getEntitySetterMethod());
+                colIndex, getHeader(), getPropertyName(), getEntitySetterMethod());
     }
 }

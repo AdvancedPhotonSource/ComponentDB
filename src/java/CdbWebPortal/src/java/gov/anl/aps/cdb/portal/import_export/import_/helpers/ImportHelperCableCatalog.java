@@ -28,28 +28,28 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new StringColumnSpec(0, "Name", "name", "setName", true, "Cable type name, uniquely identifies cable type.", 128));
-        specs.add(new StringColumnSpec(1, "Alt Name", "alternateName", "setAlternateName", false, "Alternate cable type name.", 128));
-        specs.add(new StringColumnSpec(2, "Description", "description", "setDescription", false, "Textual description of cable type.", 256));
-        specs.add(new StringColumnSpec(3, "Documentation URL", "urlDisplay", "setUrl", false, "Raw URL for documentation pdf file, e.g., http://www.example.com/documentation.pdf", 256));
-        specs.add(new StringColumnSpec(4, "Image URL", "imageUrlDisplay", "setImageUrl", false, "Raw URL for image file, e.g., http://www.example.com/image.jpg", 256));
-        specs.add(new IdOrNameRefColumnSpec(5, "Manufacturer", ImportHelperCatalogBase.KEY_MFR, "", false, "ID or name of CDB source for manufacturer. Name must be unique and prefixed with '#'.", SourceController.getInstance(), Source.class, ""));
-        specs.add(new StringColumnSpec(6, "Part Number", ImportHelperCatalogBase.KEY_PART_NUM, "setPartNumber", false, "Manufacturer's part number.", 32));
-        specs.add(new StringColumnSpec(7, "Alt Part Num", "altPartNumber", "setAltPartNumber", false, "Manufacturer's alternate part number, e.g., 760152413", 256));
-        specs.add(new StringColumnSpec(8, "Diameter", "diameter", "setDiameter", false, "Diameter in inches (max).", 256));
-        specs.add(new StringColumnSpec(9, "Weight", "weight", "setWeight", false, "Nominal weight in lbs/1000 feet.", 256));
-        specs.add(new StringColumnSpec(10, "Conductors", "conductors", "setConductors", false, "Number of conductors/fibers", 256));
-        specs.add(new StringColumnSpec(11, "Insulation", "insulation", "setInsulation", false, "Description of cable insulation.", 256));
-        specs.add(new StringColumnSpec(12, "Jacket Color", "jacketColor", "setJacketColor", false, "Jacket color.", 256));
-        specs.add(new StringColumnSpec(13, "Voltage Rating", "voltageRating", "setVoltageRating", false, "Voltage rating (VRMS).", 256));
-        specs.add(new StringColumnSpec(14, "Fire Load", "fireLoad", "setFireLoad", false, "Fire load rating.", 256));
-        specs.add(new StringColumnSpec(15, "Heat Limit", "heatLimit", "setHeatLimit", false, "Heat limit.", 256));
-        specs.add(new StringColumnSpec(16, "Bend Radius", "bendRadius", "setBendRadius", false, "Bend radius in inches.", 256));
-        specs.add(new StringColumnSpec(17, "Rad Tolerance", "radTolerance", "setRadTolerance", false, "Radiation tolerance rating.", 256));
-        specs.add(projectListColumnSpec(18));
-        specs.add(technicalSystemListColumnSpec(19, ItemDomainName.cableCatalog.getValue()));
-        specs.add(ownerUserColumnSpec(20));
-        specs.add(ownerGroupColumnSpec(21));
+        specs.add(new StringColumnSpec("Name", "name", "setName", true, "Cable type name, uniquely identifies cable type.", 128));
+        specs.add(new StringColumnSpec("Alt Name", "alternateName", "setAlternateName", false, "Alternate cable type name.", 128));
+        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Textual description of cable type.", 256));
+        specs.add(new StringColumnSpec("Documentation URL", "urlDisplay", "setUrl", false, "Raw URL for documentation pdf file, e.g., http://www.example.com/documentation.pdf", 256));
+        specs.add(new StringColumnSpec("Image URL", "imageUrlDisplay", "setImageUrl", false, "Raw URL for image file, e.g., http://www.example.com/image.jpg", 256));
+        specs.add(new IdOrNameRefColumnSpec("Manufacturer", ImportHelperCatalogBase.KEY_MFR, "", false, "ID or name of CDB source for manufacturer. Name must be unique and prefixed with '#'.", SourceController.getInstance(), Source.class, ""));
+        specs.add(new StringColumnSpec("Part Number", ImportHelperCatalogBase.KEY_PART_NUM, "setPartNumber", false, "Manufacturer's part number.", 32));
+        specs.add(new StringColumnSpec("Alt Part Num", "altPartNumber", "setAltPartNumber", false, "Manufacturer's alternate part number, e.g., 760152413", 256));
+        specs.add(new StringColumnSpec("Diameter", "diameter", "setDiameter", false, "Diameter in inches (max).", 256));
+        specs.add(new StringColumnSpec("Weight", "weight", "setWeight", false, "Nominal weight in lbs/1000 feet.", 256));
+        specs.add(new StringColumnSpec("Conductors", "conductors", "setConductors", false, "Number of conductors/fibers", 256));
+        specs.add(new StringColumnSpec("Insulation", "insulation", "setInsulation", false, "Description of cable insulation.", 256));
+        specs.add(new StringColumnSpec("Jacket Color", "jacketColor", "setJacketColor", false, "Jacket color.", 256));
+        specs.add(new StringColumnSpec("Voltage Rating", "voltageRating", "setVoltageRating", false, "Voltage rating (VRMS).", 256));
+        specs.add(new StringColumnSpec("Fire Load", "fireLoad", "setFireLoad", false, "Fire load rating.", 256));
+        specs.add(new StringColumnSpec("Heat Limit", "heatLimit", "setHeatLimit", false, "Heat limit.", 256));
+        specs.add(new StringColumnSpec("Bend Radius", "bendRadius", "setBendRadius", false, "Bend radius in inches.", 256));
+        specs.add(new StringColumnSpec("Rad Tolerance", "radTolerance", "setRadTolerance", false, "Radiation tolerance rating.", 256));
+        specs.add(projectListColumnSpec());
+        specs.add(technicalSystemListColumnSpec(ItemDomainName.cableCatalog.getValue()));
+        specs.add(ownerUserColumnSpec());
+        specs.add(ownerGroupColumnSpec());
 
         return specs;
     }

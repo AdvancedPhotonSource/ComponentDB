@@ -157,9 +157,8 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private transient ItemElementConstraintInformation constraintInformation;
     
     // <editor-fold defaultstate="collapsed" desc="Import Variables">
-    private transient ItemDomainCatalog importParentCatalogItem;
     private transient Item importParentItem;
-    private transient String importPartCatalogItemName;
+    private transient String importChildItemName;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Machine Design Element Variables"> 
@@ -649,9 +648,9 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         }
         
         // special case for import
-        if ((this.importParentCatalogItem != null) && 
-                (other.importParentCatalogItem != null)) {
-            if ((this.importParentCatalogItem == other.importParentCatalogItem) &&
+        if ((this.importParentItem != null) && 
+                (other.importParentItem != null)) {
+            if ((this.importParentItem == other.importParentItem) &&
                 (this.getName().equals(other.getName()))) {
                 return true;
             } else {
@@ -699,15 +698,13 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     // <editor-fold defaultstate="collapsed" desc="import functionality">
-    public ItemDomainCatalog getImportParentCatalogItem() {
-        return (ItemDomainCatalog) getParentItem();
+    
+    public void setImportParentItem(Item parentItem) {
+        setImportParentItem(parentItem, null, null, null);
     }
-
-    public void setImportParentCatalogItem(ItemDomainCatalog parentCatalogItem) {
-        setParentItem(parentCatalogItem);
-        parentCatalogItem.getFullItemElementList().add(this);
-        parentCatalogItem.getItemElementDisplayList().add(0, this);
-        importParentCatalogItem = parentCatalogItem;
+    
+    public Item getImportParentItem() {
+        return getParentItem();
     }
 
     public void setImportParentItem(Item parentItem, Float sortOrder, UserInfo user, UserGroup group) {
@@ -760,24 +757,16 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         this.setIsRequired(partRequired);
     }
 
-    public String getImportPartCatalogItemName() {
-        return importPartCatalogItemName;
+    public String getImportChildItemName() {
+        return importChildItemName;
     }
 
-    public void setImportPartCatalogItemName(String partCatalogItemName) {
-        this.importPartCatalogItemName = partCatalogItemName;
+    public void setImportChildItemName(String partCatalogItemName) {
+        this.importChildItemName = partCatalogItemName;
     }
 
-    public ItemDomainCatalog getImportPartCatalogItem() {
+    public ItemDomainCatalog getImportChildItem() {
         return (ItemDomainCatalog) this.getContainedItem();
-    }
-
-    public void setImportPartCatalogItem(ItemDomainCatalog partCatalogItem) {
-        this.setContainedItem(partCatalogItem);
-        if (partCatalogItem.getItemElementMemberList() == null) {
-            partCatalogItem.setItemElementMemberList(new ArrayList<>());
-        }
-        partCatalogItem.getItemElementMemberList().add(this);
     }
 
     public void setImportChildItem(Item childItem) {

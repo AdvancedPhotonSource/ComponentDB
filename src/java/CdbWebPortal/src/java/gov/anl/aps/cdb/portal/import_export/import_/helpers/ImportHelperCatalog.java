@@ -26,16 +26,16 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new StringColumnSpec(0, "Name", "name", "setName", true, "Catalog item name.", 128));
-        specs.add(new StringColumnSpec(1, "Model Number", ImportHelperCatalogBase.KEY_PART_NUM, "setPartNumber", false, "Model number.", 128));
-        specs.add(new StringColumnSpec(2, "Description", "description", "setDescription", false, "Textual description.", 256));
-        specs.add(new StringColumnSpec(3, "Alt Name", "alternateName", "setAlternateName", false, "Alternate item name.", 128));
+        specs.add(new StringColumnSpec("Name", "name", "setName", true, "Catalog item name.", 128));
+        specs.add(new StringColumnSpec("Model Number", ImportHelperCatalogBase.KEY_PART_NUM, "setPartNumber", false, "Model number.", 128));
+        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Textual description.", 256));
+        specs.add(new StringColumnSpec("Alt Name", "alternateName", "setAlternateName", false, "Alternate item name.", 128));
         specs.add(sourceColumnSpec(4));
-        specs.add(projectListColumnSpec(5));
-        specs.add(technicalSystemListColumnSpec(6, ItemDomainName.catalog.getValue()));
-        specs.add(functionListColumnSpec(7, ItemDomainName.catalog.getValue()));
-        specs.add(ownerUserColumnSpec(8));
-        specs.add(ownerGroupColumnSpec(9));
+        specs.add(projectListColumnSpec());
+        specs.add(technicalSystemListColumnSpec(ItemDomainName.catalog.getValue()));
+        specs.add(functionListColumnSpec(ItemDomainName.catalog.getValue()));
+        specs.add(ownerUserColumnSpec());
+        specs.add(ownerGroupColumnSpec());
 
         return specs;
     }
