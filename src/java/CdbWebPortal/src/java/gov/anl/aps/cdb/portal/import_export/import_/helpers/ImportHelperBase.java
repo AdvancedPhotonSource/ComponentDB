@@ -33,17 +33,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -93,6 +90,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private String validationMessage = "";
     private String summaryMessage = "";
     protected TreeNode rootTreeNode = new DefaultTreeNode("Root", null);
+    private int numExpectedColumns = 0;
 
     public ImportHelperBase() {
     }
@@ -143,6 +141,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             
             colIndex = colIndex + initInfo.getNumColumns();   
         }
+        
+        numExpectedColumns = colIndex;
         
         return new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
     }
@@ -438,7 +438,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         String dupString = "";
         
         System.out.println("row numbers: " + rowNumberHeader + " " + rowNumberFirstData + " " + rowNumberLastData);
-                    
+        
         // parse / validate header row  
         Row headerRow = sheet.getRow(rowNumberHeader);
         ValidInfo headerValidInfo = parseHeader(headerRow);
@@ -468,30 +468,37 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
         
-        if (dupCount > 0) {
+        int newItemCount = rows.size();        
+        if (ignoreDuplicates() && (dupCount > 0)) {
             validationMessage = appendToString(
                     validationMessage, 
-                    "Removed " + dupCount + 
-                            " rows that already exist in database: (" + dupString + ")");
+                    "Ignoring " + dupCount + " duplicate rows that exist in spreadsheet or database");
+            newItemCount = newItemCount - dupCount;
         }
-        if (rows.isEmpty()) {
+        
+        if (newItemCount == 0) {
             // nothing to import, this will disable the "next" button
-            validInput = false;
             validationMessage = appendToString(
                     validationMessage, 
-                    "Nothing to import");
+                    "Nothing to import.");
         }
+        
         if (validInput) {
-            String summaryDetails = rows.size() + " new items ";
+            String summaryDetails = newItemCount + " new items ";
             String customSummaryDetails = getCustomSummaryDetails();
             if (!customSummaryDetails.isEmpty()) {
                 summaryDetails = customSummaryDetails;
             }
-            summaryMessage = 
-                    "Press 'Next Step' to complete the import process. " +
-                    "This will create " + 
-                    summaryDetails +
-                    " displayed in table above.";
+            if (newItemCount > 0) {
+                summaryMessage
+                        = "Press 'Next Step' to complete the import process. "
+                        + "This will create "
+                        + summaryDetails
+                        + " displayed in table above.";
+            } else {
+                summaryMessage = "Press 'Cancel' to terminate the import process.";
+            }
+            
         } else {
             validationMessage = appendToString(
                     validationMessage, 
@@ -540,17 +547,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             
         } else {
             // check actual number of columns against expected number
-            int maxColIndex = Collections.max(inputColumnMap.keySet());
-            int expectedColumns = maxColIndex + 1;
             if (actualColumns < 0) {
                 actualColumns = 0;
             }
-            if (expectedColumns != actualColumns) {
+            if (numExpectedColumns != actualColumns) {
                 isValid = false;
                 validMessage
                         = "Actual number of header row columns (" + actualColumns
                         + ") does not match expected number of columns ("
-                        + expectedColumns + ")";
+                        + numExpectedColumns + ")";
             }
         }
         
@@ -594,51 +599,65 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 isValid = false;
             }
         }
-        
+       
         CreateInfo createInfo = createEntityInstance(rowDict);
         EntityType newEntity = (EntityType) createInfo.getEntity();
-        ValidInfo createValidInfo = createInfo.getValidInfo();
-        if (!createValidInfo.isValid()) {
-            validString = appendToString(validString, createValidInfo.getValidString());
-            isValid = false;
-        }
-        
-        // invoke each input handler to update the entity with row dictionary values
-        for (InputHandler handler : inputHandlers) {
-            ValidInfo validInfo = handler.updateEntity(rowDict, newEntity);
-            if (!validInfo.isValid()) {
-                validString = appendToString(validString, validInfo.getValidString());
+        if (newEntity != null) {
+            ValidInfo createValidInfo = createInfo.getValidInfo();
+            if (!createValidInfo.isValid()) {
+                validString = appendToString(validString, createValidInfo.getValidString());
                 isValid = false;
             }
-        }        
 
-        if (rows.contains(newEntity)) {
-            validString = appendToString(validString, "Duplicate rows found in spreadsheet");
-            isValid = false;
-        } else {
-            try {
-                getEntityController().checkItemUniqueness(newEntity);
-            } catch (CdbException ex) {
-                if (ex.getErrorMessage().startsWith("Uniqueness check not implemented by controller")) {
-                    // ignore this?
-                } else if (ignoreDuplicates()) {
-                    isDuplicate = true;
-                } else {
-                    validString = appendToString(validString, ex.getMessage());
+            // invoke each input handler to update the entity with row dictionary values
+            for (InputHandler handler : inputHandlers) {
+                ValidInfo validInfo = handler.updateEntity(rowDict, newEntity);
+                if (!validInfo.isValid()) {
+                    validString = appendToString(validString, validInfo.getValidString());
                     isValid = false;
                 }
             }
-        }
-        
-        newEntity.setIsValidImport(isValid);
-        newEntity.setValidStringImport(validString);
-        
-        if (!isDuplicate) {
+
+            if (rows.contains(newEntity)) {
+                validString = appendToString(validString, "Duplicates another row in spreadsheet.");
+                isDuplicate = true;
+                if (ignoreDuplicates()) {
+                    isValid = true;
+                    
+                } else {
+                    isValid = false;
+                }
+            } else {
+                try {
+                    getEntityController().checkItemUniqueness(newEntity);
+                } catch (CdbException ex) {
+                    if (ex.getErrorMessage().startsWith("Uniqueness check not implemented by controller")) {
+                        // ignore this?
+                    } else if (ignoreDuplicates()) {
+                        validString = appendToString(validString, "Duplicates existing item in database.");
+                        isDuplicate = true;
+                        isValid = true;
+                    } else {
+                        validString = appendToString(validString, ex.getMessage());
+                        isDuplicate = true;
+                        isValid = false;
+                    }
+                }
+            } 
+
+            newEntity.setIsValidImport(isValid);
+            newEntity.setIsDuplicateImport(isDuplicate);
+            newEntity.setValidStringImport(validString);
+            
             rows.add(newEntity);
-            return new ValidInfo(isValid, validString, false);
+
         } else {
-            return new ValidInfo(true, newEntity.toString(), true);
+            // helper returns null from createInstance to indicate that it won't create an item for this row
+            isValid = createInfo.getValidInfo().isValid();
+            validString = createInfo.getValidInfo().getValidString();
         }
+        
+        return new ValidInfo(isValid, validString, isDuplicate);
     }
     
     protected boolean isBlankRow(Map<Integer, String> cellValues) {
@@ -675,6 +694,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public ImportInfo importData() {
 
         EntityControllerType controller = this.getEntityController();
+        
+        // remove duplicate items if helper configured to ignore them
+        if (ignoreDuplicates()) {
+            rows = rows
+                    .stream()
+                    .filter(entity -> !entity.getIsDuplicateImport())
+                    .collect(Collectors.toList());
+        }
 
         String message;
         try {

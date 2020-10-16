@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperSource;
 import gov.anl.aps.cdb.portal.controllers.settings.SourceSettings;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperSourceApsKabel;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
@@ -203,7 +204,9 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
     protected DomainImportInfo initializeDomainImportInfo() {
         
         List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        
         formatInfo.add(new ImportFormatInfo("Basic Source Format", ImportHelperSource.class));
+        formatInfo.add(new ImportFormatInfo("Aps Kabel Workbook Source Format", ImportHelperSourceApsKabel.class));
         
         String completionUrl = "/views/source/list?faces-redirect=true";
         

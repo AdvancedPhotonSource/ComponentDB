@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
@@ -62,6 +63,8 @@ public class Source extends CdbEntity implements Serializable {
 
     private transient String targetUrl;
     private transient String displayUrl;
+    
+    private transient String importItemName;
 
     public Source() {
     }
@@ -186,6 +189,15 @@ public class Source extends CdbEntity implements Serializable {
         } else {
             return "gov.anl.aps.cdb.portal.model.db.entities.Source[ id=" + id + " ]";
         }
+    }
+
+    @JsonIgnore
+    public String getImportItemName() {
+        return importItemName;
+    }
+
+    public void setImportItemName(String importItemName) {
+        this.importItemName = importItemName;
     }
 
 }

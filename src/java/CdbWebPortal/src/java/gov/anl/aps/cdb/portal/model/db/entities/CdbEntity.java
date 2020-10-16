@@ -28,6 +28,7 @@ public class CdbEntity implements Serializable, Cloneable {
     
     // import wizard variables
     private transient boolean isValidImport = true;
+    private transient boolean isDuplicateImport = false;
     private transient String validStringImport = "";
     
     protected static final long serialVersionUID = 1L;
@@ -89,6 +90,24 @@ public class CdbEntity implements Serializable, Cloneable {
     
     public void setIsValidImport(boolean b) {
         isValidImport = b;
+    }
+    
+    @JsonIgnore
+    public boolean getIsDuplicateImport() {
+        return isDuplicateImport;
+    }
+    
+    @JsonIgnore
+    public String getIsDuplicateImportString() {
+        if (isDuplicateImport) {
+            return "yes";
+        } else {
+            return "no";
+        }
+    }
+    
+    public void setIsDuplicateImport(boolean b) {
+        isDuplicateImport = b;
     }
     
     @JsonIgnore
