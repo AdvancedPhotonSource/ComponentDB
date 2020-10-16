@@ -51,6 +51,7 @@ import gov.anl.aps.cdb.rest.entities.FileUploadObject;
 import gov.anl.aps.cdb.rest.entities.ItemDomainCatalogSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
 import gov.anl.aps.cdb.rest.entities.ItemLocationInformation;
+import gov.anl.aps.cdb.rest.entities.ItemMembership;
 import gov.anl.aps.cdb.rest.entities.ItemSearchResults;
 import gov.anl.aps.cdb.rest.entities.ItemStatusBasicObject;
 import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
@@ -274,6 +275,26 @@ public class ItemRoute extends ItemBaseRoute {
             LOGGER.error(ex);
             throw ex; 
         }
+    }
+    
+    @GET
+    @Path("/ById/{id}/Memberships")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemMembership> getItemMemberships(@PathParam("id") int id) throws ObjectNotFound {
+        LOGGER.debug("Fetching memberships for item with id: " + id);
+        Item itemById = getItemByIdBase(id);
+        
+        List<ItemElement> itemElementMemberList = new ArrayList<>(); 
+        itemElementMemberList.addAll(itemById.getItemElementMemberList());
+        itemElementMemberList.addAll(itemById.getItemElementMemberList2()); 
+        
+        List<ItemMembership> itemMemberships = new ArrayList<>(); 
+        for (ItemElement itemElement : itemElementMemberList) {
+            ItemMembership itemMembership = new ItemMembership(itemElement); 
+            itemMemberships.add(itemMembership); 
+        }
+        
+        return itemMemberships; 
     }
     
     @GET
