@@ -206,7 +206,6 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
         List<ImportFormatInfo> formatInfo = new ArrayList<>();
         
         formatInfo.add(new ImportFormatInfo("Basic Source Format", ImportHelperSource.class));
-        formatInfo.add(new ImportFormatInfo("Aps Kabel Workbook Source Format", ImportHelperSourceApsKabel.class));
         
         String completionUrl = "/views/source/list?faces-redirect=true";
         
