@@ -740,6 +740,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
     
     /**
+     * Specifies whether to display components on import wizard's select file tab
+     * for customizing row numbers for header and first/last data rows.
+     * Subclass overrides to return true for row number customization.
+     */
+    public boolean renderRowNumberCustomzationOptions() {
+        return false;
+    }
+    
+    /**
      * Specifies whether the subclass will provide a tree view. Returns true if
      * there are children of the root tree node, meaning that the subclass built
      * the tree model during parsing.

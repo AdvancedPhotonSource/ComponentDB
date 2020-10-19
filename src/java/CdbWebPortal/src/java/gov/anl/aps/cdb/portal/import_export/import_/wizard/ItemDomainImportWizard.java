@@ -158,6 +158,10 @@ public class ItemDomainImportWizard implements Serializable {
         return renderSelectSheet;
     }
     
+    public Boolean getRenderRowNumberCustomizationOptions() {
+            return importHelper.renderRowNumberCustomzationOptions();
+    }
+    
     public Boolean getRenderFileSummaryMessage() {
         return selectFileSummaryMessage != null;
     }
