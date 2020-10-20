@@ -30,6 +30,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
@@ -2857,17 +2858,65 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         PropertyType propertyType = propertyTypeFacade.findByName(item.getCoreMetadataPropertyInfo().getPropertyName());
 
         if (propertyType == null) {
-            propertyType = prepareCoreMetadataPropertyType(item);
+            propertyType = prepareCoreMetadataPropertyType();
         }
 
         return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
     }
+    
+    public PropertyTypeMetadata newPropertyTypeMetadataForField(
+            ItemCoreMetadataFieldInfo field,
+            PropertyType propertyType) {
+        
+        PropertyTypeMetadata ptm = new PropertyTypeMetadata();
+        ptm.setMetadataKey(field.getKey());
+        ptm.setDescription(field.getDescription());
+        List<AllowedPropertyMetadataValue> allowedValueList = new ArrayList<>();
+        for (String allowedValueString : field.getAllowedValues()) {
+            AllowedPropertyMetadataValue allowedValue = new AllowedPropertyMetadataValue();
+            allowedValue.setMetadataValue(allowedValueString);
+            allowedValue.setPropertyTypeMetadata(ptm);
+            allowedValueList.add(allowedValue);
+        }
+        ptm.setAllowedPropertyMetadataValueList(allowedValueList);
+        ptm.setPropertyType(propertyType);
+        
+        return ptm;
+    }
+    
+    public void migrateCoreMetadataPropertyType() {
+        
+        PropertyType propertyType = propertyTypeFacade.findByName(getCoreMetadataPropertyInfo().getPropertyName());
 
-    protected PropertyType prepareCoreMetadataPropertyType(ItemDomainEntity item) {
+        // initialize property type if it is null
+        if (propertyType == null) {
+            propertyType = prepareCoreMetadataPropertyType();
+         
+        // otherwise add new metadata fields to existing property type object
+        } else {
+            ItemCoreMetadataPropertyInfo propInfo = getCoreMetadataPropertyInfo();
+            boolean updated = false;
+            for (ItemCoreMetadataFieldInfo fieldInfo : propInfo.getFields()) {
+                if (propertyType.getPropertyTypeMetadataForKey(fieldInfo.getKey()) == null) {
+                    PropertyTypeMetadata ptm = newPropertyTypeMetadataForField(fieldInfo, propertyType);
+                    propertyType.getPropertyTypeMetadataList().add(ptm);
+                    updated = true;
+                }
+            }
+            
+            if (updated) {
+                PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
+                propertyTypeController.setCurrent(propertyType);
+                propertyTypeController.update();
+            }
+        }
+    }
+
+    protected PropertyType prepareCoreMetadataPropertyType() {
         PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
         PropertyType propertyType = propertyTypeController.createEntityInstance();
 
-        ItemCoreMetadataPropertyInfo propInfo = item.getCoreMetadataPropertyInfo();
+        ItemCoreMetadataPropertyInfo propInfo = getCoreMetadataPropertyInfo();
 
         propertyType.setIsInternal(true);
         propertyType.setName(propInfo.getPropertyName());
@@ -2879,10 +2928,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
         List<PropertyTypeMetadata> ptmList = new ArrayList<>();
         for (ItemCoreMetadataFieldInfo fieldInfo : propInfo.getFields()) {
-            PropertyTypeMetadata ptm = new PropertyTypeMetadata();
-            ptm.setMetadataKey(fieldInfo.getKey());
-            ptm.setDescription(fieldInfo.getDescription());
-            ptm.setPropertyType(propertyType);
+            PropertyTypeMetadata ptm = newPropertyTypeMetadataForField(fieldInfo, propertyType);
             ptmList.add(ptm);
         }
         propertyType.setPropertyTypeMetadataList(ptmList);

@@ -5,6 +5,8 @@
 package gov.anl.aps.cdb.portal.view.objects;
 
 import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -17,13 +19,19 @@ public class ItemCoreMetadataFieldInfo {
     protected String description;
     protected ItemCoreMetadataFieldType type;
     protected String units;
+    private List<String> allowedValues;
 
-    public ItemCoreMetadataFieldInfo(String k, String l, String d, ItemCoreMetadataFieldType t, String u) {
+    public ItemCoreMetadataFieldInfo(String k, String l, String d, ItemCoreMetadataFieldType t, String u, List<String> allowedValues) {
         key = k;
         label = l;
         description = d;
         type = t;
         units = u;
+        if (allowedValues != null) {
+            this.allowedValues = allowedValues;
+        } else {
+            this.allowedValues = new ArrayList<>();
+        }
     }
 
     public String getKey() {
@@ -68,5 +76,17 @@ public class ItemCoreMetadataFieldInfo {
 
     public void setUnits(String units) {
         this.units = units;
+    }
+
+    public List<String> getAllowedValues() {
+        return allowedValues;
+    }
+
+    public void setAllowedValues(List<String> allowedValues) {
+        if (allowedValues != null) {
+            this.allowedValues = allowedValues;
+        } else {
+            allowedValues = new ArrayList<>();
+        }
     }
 }

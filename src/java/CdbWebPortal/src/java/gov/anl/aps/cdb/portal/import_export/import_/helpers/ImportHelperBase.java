@@ -437,7 +437,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         int invalidCount = 0;
         String dupString = "";
         
-        System.out.println("row numbers: " + rowNumberHeader + " " + rowNumberFirstData + " " + rowNumberLastData);
+        // pre-import hook for helper subclass
+        ValidInfo preImportValidInfo = preImport();
         
         // parse / validate header row  
         Row headerRow = sheet.getRow(rowNumberHeader);
@@ -715,6 +716,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         message = appendToString(message, result.getValidString());
         
         return new ImportInfo(true, message);
+    }
+    
+    /**
+     * Provide pre-import hook for subclasses to override, e.g., to migrate
+     * metadata property fields etc.
+     */
+    protected ValidInfo preImport() {
+        return new ValidInfo(true, "");
     }
     
     /**
