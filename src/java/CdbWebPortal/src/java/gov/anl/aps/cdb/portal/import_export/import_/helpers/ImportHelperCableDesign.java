@@ -145,6 +145,12 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         return "Cable Design Template";
     }
     
+    @Override 
+    protected ValidInfo preImport() {
+        getEntityController().migrateCoreMetadataPropertyType();
+        return new ValidInfo(true, "");
+    }
+    
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         ItemDomainCableDesign entity = getEntityController().createEntityInstance();

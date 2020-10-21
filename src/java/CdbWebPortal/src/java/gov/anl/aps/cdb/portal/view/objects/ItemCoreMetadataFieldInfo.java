@@ -89,4 +89,19 @@ public class ItemCoreMetadataFieldInfo {
             allowedValues = new ArrayList<>();
         }
     }
+    
+    public boolean hasAllowedValues() {
+        return ((allowedValues != null) && (!allowedValues.isEmpty()));
+    }
+    
+    public boolean hasAllowedValue(String value) {
+        if (hasAllowedValues()) {
+            for (String allowedValue : allowedValues) {
+                if (allowedValue.equals(value)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

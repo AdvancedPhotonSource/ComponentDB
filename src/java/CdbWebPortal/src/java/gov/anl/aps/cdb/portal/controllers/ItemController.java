@@ -17,6 +17,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
+import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
@@ -28,6 +29,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
@@ -123,6 +125,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     @EJB
     protected PropertyTypeFacade propertyTypeFacade;
+
+    @EJB
+    private PropertyTypeMetadataFacade propertyTypeMetadataFacade;
+
+    @EJB
+    private AllowedPropertyMetadataValueFacade allowedPropertyMetadataValueFacade;
 
     private List<ItemElementRelationship> locationRelationshipCache;
 
@@ -2864,6 +2872,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
     }
     
+    public AllowedPropertyMetadataValue newAllowedPropertyMetadataValue(
+            String value, 
+            PropertyTypeMetadata ptm) {
+        
+        AllowedPropertyMetadataValue allowedValue = new AllowedPropertyMetadataValue();
+        allowedValue.setMetadataValue(value);
+        allowedValue.setPropertyTypeMetadata(ptm);
+        return allowedValue;
+    }
+    
     public PropertyTypeMetadata newPropertyTypeMetadataForField(
             ItemCoreMetadataFieldInfo field,
             PropertyType propertyType) {
@@ -2873,9 +2891,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         ptm.setDescription(field.getDescription());
         List<AllowedPropertyMetadataValue> allowedValueList = new ArrayList<>();
         for (String allowedValueString : field.getAllowedValues()) {
-            AllowedPropertyMetadataValue allowedValue = new AllowedPropertyMetadataValue();
-            allowedValue.setMetadataValue(allowedValueString);
-            allowedValue.setPropertyTypeMetadata(ptm);
+            AllowedPropertyMetadataValue allowedValue = 
+                    newAllowedPropertyMetadataValue(allowedValueString, ptm);
             allowedValueList.add(allowedValue);
         }
         ptm.setAllowedPropertyMetadataValueList(allowedValueList);
@@ -2892,17 +2909,71 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         if (propertyType == null) {
             propertyType = prepareCoreMetadataPropertyType();
          
-        // otherwise add new metadata fields to existing property type object
+        // otherwise migrate existing property type object
         } else {
+            
+            // iterate through core metadata fields to identify missing information in property type
             ItemCoreMetadataPropertyInfo propInfo = getCoreMetadataPropertyInfo();
             boolean updated = false;
             for (ItemCoreMetadataFieldInfo fieldInfo : propInfo.getFields()) {
-                if (propertyType.getPropertyTypeMetadataForKey(fieldInfo.getKey()) == null) {
-                    PropertyTypeMetadata ptm = newPropertyTypeMetadataForField(fieldInfo, propertyType);
+                
+                // add missing metadata fields to property type
+                PropertyTypeMetadata ptm = propertyType.getPropertyTypeMetadataForKey(fieldInfo.getKey());
+                if (ptm == null) {
+                    ptm = newPropertyTypeMetadataForField(fieldInfo, propertyType);
                     propertyType.getPropertyTypeMetadataList().add(ptm);
                     updated = true;
+                    
+                // add missing allowed values    
+                } else {
+                    if (fieldInfo.hasAllowedValues()) {
+                        for (String allowedValueString : fieldInfo.getAllowedValues()) {
+                            if (!ptm.hasAllowedPropertyMetadataValue(allowedValueString)) {
+                                AllowedPropertyMetadataValue allowedValue = 
+                                        newAllowedPropertyMetadataValue(allowedValueString, ptm);
+                                ptm.getAllowedPropertyMetadataValueList().add(allowedValue);
+                                updated = true;
+                            }
+                        }
+                    }
                 }
             }
+            
+            // iterate through property type metadata to identify obsolete information
+            List<PropertyTypeMetadata> removePtmList = new ArrayList<>();
+            for (PropertyTypeMetadata ptm : propertyType.getPropertyTypeMetadataList()) {
+                String key = ptm.getMetadataKey();
+                
+                // remove metadata keys no longer defined in core metadata
+                if (!propInfo.hasKey(key)) {
+                    removePtmList.add(ptm);
+                } else {
+                
+                    ItemCoreMetadataFieldInfo fieldInfo = propInfo.getField(key);
+                    if (ptm.getIsHaveAllowedValues()) {
+
+                        // remove allowed values no longer defined in core metadata
+                        List<AllowedPropertyMetadataValue> removeApmvList = new ArrayList<>();
+                        for (AllowedPropertyMetadataValue allowedValue : ptm.getAllowedPropertyMetadataValueList()) {
+                            if (!fieldInfo.hasAllowedValue(allowedValue.getMetadataValue())) {
+                                removeApmvList.add(allowedValue);
+                            }
+                        }
+                        for (AllowedPropertyMetadataValue removeApmv : removeApmvList) {
+                            ptm.getAllowedPropertyMetadataValueList().remove(removeApmv);
+                            allowedPropertyMetadataValueFacade.remove(removeApmv);
+                            updated = true;
+                        }
+
+                    }
+                }
+            }
+            for (PropertyTypeMetadata removePtm : removePtmList) {
+                propertyType.getPropertyTypeMetadataList().remove(removePtm);
+                propertyTypeMetadataFacade.remove(removePtm);
+                updated = true;
+            }
+
             
             if (updated) {
                 PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();

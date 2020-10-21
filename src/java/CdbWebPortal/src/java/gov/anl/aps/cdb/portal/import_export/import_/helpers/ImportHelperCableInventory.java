@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableInventoryController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
@@ -61,6 +62,12 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
     @Override
     protected void reset_() {
         super.reset_();
+    }
+    
+    @Override 
+    protected ValidInfo preImport() {
+        getEntityController().migrateCoreMetadataPropertyType();
+        return new ValidInfo(true, "");
     }
     
     @Override
