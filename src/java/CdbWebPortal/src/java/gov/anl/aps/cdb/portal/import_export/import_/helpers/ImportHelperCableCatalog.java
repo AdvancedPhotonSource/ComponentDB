@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
@@ -46,6 +47,11 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
         specs.add(new StringColumnSpec("Heat Limit", "heatLimit", "setHeatLimit", false, "Heat limit.", 256));
         specs.add(new StringColumnSpec("Bend Radius", "bendRadius", "setBendRadius", false, "Bend radius in inches.", 256));
         specs.add(new StringColumnSpec("Rad Tolerance", "radTolerance", "setRadTolerance", false, "Radiation tolerance rating.", 256));
+        specs.add(new StringColumnSpec("Total Length", "totalLength", "setTotalLength", false, "Total cable length required.", 256));
+        specs.add(new StringColumnSpec("Reel Length", "reelLength", "setReelLength", false, "Standard reel length for this type of cable.", 256));
+        specs.add(new StringColumnSpec("Reel Quantity", "reelQuantity", "setReelQuantity", false, "Number of standard reels required for total length.", 256));
+        specs.add(new StringColumnSpec("Lead Time", "leadTime", "setLeadTime", false, "Standard procurement lead time for this type of cable.", 256));
+        specs.add(new StringColumnSpec("Procurement Status", "procurementStatus", "setProcurementStatus", false, "Procurement status.", 256));
         specs.add(projectListColumnSpec());
         specs.add(technicalSystemListColumnSpec(ItemDomainName.cableCatalog.getValue()));
         specs.add(ownerUserColumnSpec());
@@ -62,6 +68,12 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
     @Override
     public String getTemplateFilename() {
         return "Cable Type Catalog Template";
+    }
+    
+    @Override 
+    protected ValidInfo preImport() {
+        getEntityController().migrateCoreMetadataPropertyType();
+        return new ValidInfo(true, "");
     }
     
     @Override

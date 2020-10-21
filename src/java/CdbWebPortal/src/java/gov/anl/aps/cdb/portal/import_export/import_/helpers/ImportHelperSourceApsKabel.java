@@ -5,8 +5,9 @@
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.SourceController;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IgnoreColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.ArrayList;
@@ -17,17 +18,19 @@ import java.util.Map;
  *
  * @author craig
  */
-public class ImportHelperSource extends ImportHelperBase<Source, SourceController> {
-
+public class ImportHelperSourceApsKabel extends ImportHelperBase<Source, SourceController> {
+    
+    private static final String KEY_NAME = "name";
+    
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new StringColumnSpec("Name", "name", "setName", true, "Name of vendor/manufacturer", 64));
-        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of vendor/manufacturer", 256));
-        specs.add(new StringColumnSpec("Contact Info", "contactInfo", "setContactInfo", false, "Contact name and phone number etc", 64));
-        specs.add(new StringColumnSpec("URL", "url", "setUrl", false, "URL for vendor/manufacturer", 256));
+        specs.add(new StringColumnSpec("Cable Type Name", "importItemName", "setImportItemName", true, "Name of cable type specifying this manufacturer.", 64));
+        specs.add(new IgnoreColumnSpec(1));
+        specs.add(new StringColumnSpec("Manufacturer (Source)", KEY_NAME, "setName", true, "Name of vendor/manufacturer.", 64));
+        specs.add(new IgnoreColumnSpec(20));
         
         return specs;
     } 
@@ -39,12 +42,18 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
 
     @Override
     public String getTemplateFilename() {
-        return "Source Template";
+        return "APS Kabel Workbook Source Template";
     }
 
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
-        Source entity = getEntityController().createEntityInstance();
+        Source entity;
+        String itemName = (String) rowMap.get(KEY_NAME);
+        if ((itemName == null) || (itemName.isEmpty())) {
+            return new CreateInfo(null, true, "no manufacturer specified for row");
+        } else {
+            entity = getEntityController().createEntityInstance();
+        }
         return new CreateInfo(entity, true, "");
     }  
 

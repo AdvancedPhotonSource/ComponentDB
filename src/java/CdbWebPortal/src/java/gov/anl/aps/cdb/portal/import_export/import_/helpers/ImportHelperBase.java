@@ -33,17 +33,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -93,6 +90,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private String validationMessage = "";
     private String summaryMessage = "";
     protected TreeNode rootTreeNode = new DefaultTreeNode("Root", null);
+    private int numExpectedColumns = 0;
 
     public ImportHelperBase() {
     }
@@ -143,6 +141,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             
             colIndex = colIndex + initInfo.getNumColumns();   
         }
+        
+        numExpectedColumns = colIndex;
         
         return new InitializeInfo(inputColumns, handlers, outputColumns, validInfo);
     }
@@ -292,55 +292,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
 
-    /**
-     * Reads Excel "xls" file.  This is not currently used, but I added it for
-     * documentation in case we need to read that format.
-     */
-    protected boolean readXlsFileData(UploadedFile f) {
-
-        InputStream inputStream;
-        HSSFWorkbook workbook;
-        try {
-            inputStream = f.getInputStream();
-            workbook = new HSSFWorkbook(inputStream);
-        } catch (IOException e) {
-            return false;
-        }
-
-        HSSFSheet sheet = workbook.getSheetAt(0);
-
-        Iterator<Row> rowIterator = sheet.iterator();
-
-        parseSheet(rowIterator);
-
-        return true;
-    }
-
-    public boolean readXlsxFileData(UploadedFile f, String sheetName) {
-
-        InputStream inputStream;
-        XSSFWorkbook workbook;
-        try {
-            inputStream = f.getInputStream();
-            workbook = new XSSFWorkbook(inputStream);
-        } catch (IOException e) {
-            return false;
-        }
-
-        XSSFSheet sheet = workbook.getSheet(sheetName);
-        if (sheet == null) {
-            return false;
-        }
-
-        Iterator<Row> rowIterator = sheet.iterator();
-        if (rowIterator == null) {
-            return false;
-        }
-
-        parseSheet(rowIterator);
-        return true;
-    }
-    
     public List<String> getSheetNames(UploadedFile f) {
         
         List<String> sheetNames = new ArrayList<>();
@@ -364,67 +315,148 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return sheetNames;
     }
     
-    public ValidInfo validateSheet(UploadedFile f, String sheetName) {
-        
-        boolean isValid = true;
-        String validString = "";
-        String logMethodName = "validateSheet() ";
-        
+//    /**
+//     * Reads Excel "xls" file.  This is not currently used, but I added it for
+//     * documentation in case we need to read that format.
+//     */
+//    protected boolean readXlsFileData(UploadedFile f) {
+//
+//        InputStream inputStream;
+//        HSSFWorkbook workbook;
+//        try {
+//            inputStream = f.getInputStream();
+//            workbook = new HSSFWorkbook(inputStream);
+//        } catch (IOException e) {
+//            return false;
+//        }
+//
+//        HSSFSheet sheet = workbook.getSheetAt(0);
+//
+//        Iterator<Row> rowIterator = sheet.iterator();
+//
+//        parseSheet(rowIterator);
+//
+//        return true;
+//    }
+
+    public boolean readXlsxFileData(
+            UploadedFile f, 
+            String sheetName,
+            int rowNumberHeader,
+            int rowNumberFirstData,
+            int rowNumberLastData) {
+
         InputStream inputStream;
         XSSFWorkbook workbook;
         try {
             inputStream = f.getInputStream();
             workbook = new XSSFWorkbook(inputStream);
         } catch (IOException e) {
-            isValid = false;
-            validString = "error opening excel file: " + e;
-            LOGGER.info(logMethodName + validString);
-            return new ValidInfo(isValid, validString);
-        }        
-        
+            validInput = false;
+            validationMessage = "Unable to open file " + f.getFileName();
+            summaryMessage
+                    = "Press 'Cancel' to terminate the import process and fix "
+                    + "problems with spreadsheet file."
+                    + " No new items will be created.";
+            return false;
+        }
+
         XSSFSheet sheet = workbook.getSheet(sheetName);
         if (sheet == null) {
-            isValid = false;
-            validString = "no sheet found with name: " + sheetName;
-            LOGGER.info(logMethodName + validString);
-            return new ValidInfo(isValid, validString);
+            validInput = false;
+            validationMessage = "Unable to open specified sheet " + sheetName;
+            summaryMessage
+                    = "Press 'Cancel' to terminate the import process and fix "
+                    + "problems with spreadsheet file."
+                    + " No new items will be created.";
+            return false;
+        }
+
+        // validate specified row numbers, change user specified 1-based values to 0-based values for api, and set default values if not specified
+        boolean validOptions = true;
+        String optionMessage = "";
+        
+        if (rowNumberHeader == -1) {
+            rowNumberHeader = 0;
+        } else if ((rowNumberHeader < 1)
+                || ((rowNumberFirstData != -1) && (rowNumberHeader >= rowNumberFirstData))
+                || ((rowNumberLastData != -1) && (rowNumberHeader >= rowNumberLastData))) {
+            validOptions = false;
+            optionMessage = optionMessage
+                    + "Header row must be greater than 0, and less than both data rows. ";
+        } else {
+                rowNumberHeader = rowNumberHeader - 1;
         }
         
-        Row headerRow = sheet.getRow(0);
-        if (headerRow == null) {
-            isValid = false;
-            validString = "no header row found in file";
-            LOGGER.info(logMethodName + validString);
-            return new ValidInfo(isValid, validString);            
-        }          
+        if (rowNumberFirstData == -1) {
+            rowNumberFirstData = 1;
+        } else  if ((rowNumberFirstData < 2) || 
+                    ((rowNumberHeader != -1) && (rowNumberFirstData <= rowNumberHeader)) || 
+                    ((rowNumberLastData != -1) && (rowNumberFirstData > rowNumberLastData))) {
+            validOptions = false;
+            optionMessage = optionMessage
+                    + "First data row must be greater than 1, greater than header row, and less than or equal to last data row. ";
+        } else {
+            rowNumberFirstData = rowNumberFirstData - 1;
+        }
         
-        ValidInfo headerValidInfo = parseHeader(headerRow);
-        if (!headerValidInfo.isValid()) {
-            isValid = false;
-            validString = headerValidInfo.getValidString();
-            LOGGER.info(logMethodName + validString);
-            return new ValidInfo(isValid, validString);
-        }      
+        if (rowNumberLastData == -1) {
+            rowNumberLastData = sheet.getLastRowNum();
+        } else if ((rowNumberLastData < 2) || 
+                    ((rowNumberHeader != -1) && (rowNumberLastData <= rowNumberHeader)) || 
+                    ((rowNumberFirstData != -1) && (rowNumberFirstData > rowNumberLastData))) {
+            validOptions = false;
+            optionMessage = optionMessage
+                    + "Last data row must be greater than 1, greater than header row, and greater than or equal to first data row. ";
+        } else {
+            rowNumberLastData = rowNumberLastData - 1;
+        }
         
-        return new ValidInfo(isValid, validString);
+        if (!validOptions) {
+            validInput = false;
+            validationMessage = "Invalid row number options. " + optionMessage;
+            summaryMessage
+                    = "Press 'Cancel' to terminate the import process and fix "
+                    + "problems with row number options."
+                    + " No new items will be created.";
+            return false;
+        }
+        
+        parseSheet(sheet, rowNumberHeader, rowNumberFirstData, rowNumberLastData);
+        return true;
     }
+    
+    protected void parseSheet(
+            XSSFSheet sheet,
+            int rowNumberHeader,
+            int rowNumberFirstData,
+            int rowNumberLastData) {
 
-    protected void parseSheet(Iterator<Row> rowIterator) {
-
-        int rowCount = -1;
         int entityNum = 0;
         int dupCount = 0;
         int invalidCount = 0;
         String dupString = "";
         
-        while (rowIterator.hasNext()) {
-
-            rowCount = rowCount + 1;
-            Row row = rowIterator.next();
-
-            // skip header row, which is already parsed and validated (rowCount == 0)
-            if (rowCount > 0) {
-                // parse spreadsheet data row
+        // pre-import hook for helper subclass
+        ValidInfo preImportValidInfo = preImport();
+        
+        // parse / validate header row  
+        Row headerRow = sheet.getRow(rowNumberHeader);
+        ValidInfo headerValidInfo = parseHeader(headerRow);
+        if (!headerValidInfo.isValid()) {
+            validInput = false;
+            validationMessage = headerValidInfo.getValidString();
+            summaryMessage
+                    = "Press 'Cancel' to terminate the import process and fix "
+                    + "problems with import spreadsheet."
+                    + " No new items will be created.";
+            return;
+        }
+            
+        // parse spreadsheet data rows
+        for (int rowNumber = rowNumberFirstData ; rowNumber <= rowNumberLastData ; rowNumber ++) {
+            Row row = sheet.getRow(rowNumber);
+            if (row != null) {
                 ValidInfo rowValidInfo = parseRow(row);
                 if (!rowValidInfo.isValid()) {
                     validInput = false;
@@ -437,30 +469,37 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
         
-        if (dupCount > 0) {
+        int newItemCount = rows.size();        
+        if (ignoreDuplicates() && (dupCount > 0)) {
             validationMessage = appendToString(
                     validationMessage, 
-                    "Removed " + dupCount + 
-                            " rows that already exist in database: (" + dupString + ")");
+                    "Ignoring " + dupCount + " duplicate rows that exist in spreadsheet or database");
+            newItemCount = newItemCount - dupCount;
         }
-        if (rows.isEmpty()) {
+        
+        if (newItemCount == 0) {
             // nothing to import, this will disable the "next" button
-            validInput = false;
             validationMessage = appendToString(
                     validationMessage, 
-                    "Nothing to import");
+                    "Nothing to import.");
         }
+        
         if (validInput) {
-            String summaryDetails = rows.size() + " new items ";
+            String summaryDetails = newItemCount + " new items ";
             String customSummaryDetails = getCustomSummaryDetails();
             if (!customSummaryDetails.isEmpty()) {
                 summaryDetails = customSummaryDetails;
             }
-            summaryMessage = 
-                    "Press 'Next Step' to complete the import process. " +
-                    "This will create " + 
-                    summaryDetails +
-                    " displayed in table above.";
+            if (newItemCount > 0) {
+                summaryMessage
+                        = "Press 'Next Step' to complete the import process. "
+                        + "This will create "
+                        + summaryDetails
+                        + " displayed in table above.";
+            } else {
+                summaryMessage = "Press 'Cancel' to terminate the import process.";
+            }
+            
         } else {
             validationMessage = appendToString(
                     validationMessage, 
@@ -509,14 +548,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             
         } else {
             // check actual number of columns against expected number
-            int maxColIndex = Collections.max(inputColumnMap.keySet());
-            int expectedColumns = maxColIndex + 1;
-            if (expectedColumns != actualColumns) {
+            if (actualColumns < 0) {
+                actualColumns = 0;
+            }
+            if (numExpectedColumns != actualColumns) {
                 isValid = false;
                 validMessage
-                        = "header row (" + actualColumns
-                        + ") does not contain expected number of columns ("
-                        + expectedColumns + ")";
+                        = "Actual number of header row columns (" + actualColumns
+                        + ") does not match expected number of columns ("
+                        + numExpectedColumns + ")";
             }
         }
         
@@ -560,51 +600,65 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 isValid = false;
             }
         }
-        
+       
         CreateInfo createInfo = createEntityInstance(rowDict);
         EntityType newEntity = (EntityType) createInfo.getEntity();
-        ValidInfo createValidInfo = createInfo.getValidInfo();
-        if (!createValidInfo.isValid()) {
-            validString = appendToString(validString, createValidInfo.getValidString());
-            isValid = false;
-        }
-        
-        // invoke each input handler to update the entity with row dictionary values
-        for (InputHandler handler : inputHandlers) {
-            ValidInfo validInfo = handler.updateEntity(rowDict, newEntity);
-            if (!validInfo.isValid()) {
-                validString = appendToString(validString, validInfo.getValidString());
+        if (newEntity != null) {
+            ValidInfo createValidInfo = createInfo.getValidInfo();
+            if (!createValidInfo.isValid()) {
+                validString = appendToString(validString, createValidInfo.getValidString());
                 isValid = false;
             }
-        }        
 
-        if (rows.contains(newEntity)) {
-            validString = appendToString(validString, "Duplicate rows found in spreadsheet");
-            isValid = false;
-        } else {
-            try {
-                getEntityController().checkItemUniqueness(newEntity);
-            } catch (CdbException ex) {
-                if (ex.getErrorMessage().startsWith("Uniqueness check not implemented by controller")) {
-                    // ignore this?
-                } else if (ignoreDuplicates()) {
-                    isDuplicate = true;
-                } else {
-                    validString = appendToString(validString, ex.getMessage());
+            // invoke each input handler to update the entity with row dictionary values
+            for (InputHandler handler : inputHandlers) {
+                ValidInfo validInfo = handler.updateEntity(rowDict, newEntity);
+                if (!validInfo.isValid()) {
+                    validString = appendToString(validString, validInfo.getValidString());
                     isValid = false;
                 }
             }
-        }
-        
-        newEntity.setIsValidImport(isValid);
-        newEntity.setValidStringImport(validString);
-        
-        if (!isDuplicate) {
+
+            if (rows.contains(newEntity)) {
+                validString = appendToString(validString, "Duplicates another row in spreadsheet.");
+                isDuplicate = true;
+                if (ignoreDuplicates()) {
+                    isValid = true;
+                    
+                } else {
+                    isValid = false;
+                }
+            } else {
+                try {
+                    getEntityController().checkItemUniqueness(newEntity);
+                } catch (CdbException ex) {
+                    if (ex.getErrorMessage().startsWith("Uniqueness check not implemented by controller")) {
+                        // ignore this?
+                    } else if (ignoreDuplicates()) {
+                        validString = appendToString(validString, "Duplicates existing item in database.");
+                        isDuplicate = true;
+                        isValid = true;
+                    } else {
+                        validString = appendToString(validString, ex.getMessage());
+                        isDuplicate = true;
+                        isValid = false;
+                    }
+                }
+            } 
+
+            newEntity.setIsValidImport(isValid);
+            newEntity.setIsDuplicateImport(isDuplicate);
+            newEntity.setValidStringImport(validString);
+            
             rows.add(newEntity);
-            return new ValidInfo(isValid, validString, false);
+
         } else {
-            return new ValidInfo(true, newEntity.toString(), true);
+            // helper returns null from createInstance to indicate that it won't create an item for this row
+            isValid = createInfo.getValidInfo().isValid();
+            validString = createInfo.getValidInfo().getValidString();
         }
+        
+        return new ValidInfo(isValid, validString, isDuplicate);
     }
     
     protected boolean isBlankRow(Map<Integer, String> cellValues) {
@@ -641,6 +695,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public ImportInfo importData() {
 
         EntityControllerType controller = this.getEntityController();
+        
+        // remove duplicate items if helper configured to ignore them
+        if (ignoreDuplicates()) {
+            rows = rows
+                    .stream()
+                    .filter(entity -> !entity.getIsDuplicateImport())
+                    .collect(Collectors.toList());
+        }
 
         String message;
         try {
@@ -654,6 +716,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         message = appendToString(message, result.getValidString());
         
         return new ImportInfo(true, message);
+    }
+    
+    /**
+     * Provide pre-import hook for subclasses to override, e.g., to migrate
+     * metadata property fields etc.
+     */
+    protected ValidInfo preImport() {
+        return new ValidInfo(true, "");
     }
     
     /**
@@ -675,6 +745,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      * @return 
      */
     protected boolean ignoreDuplicates() {
+        return false;
+    }
+    
+    /**
+     * Specifies whether to display components on import wizard's select file tab
+     * for customizing row numbers for header and first/last data rows.
+     * Subclass overrides to return true for row number customization.
+     */
+    public boolean renderRowNumberCustomzationOptions() {
         return false;
     }
     

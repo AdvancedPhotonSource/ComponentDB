@@ -85,6 +85,18 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
     private static final String FilterByFireLoadSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.FireLoad";
     private static final String FilterByVoltageRatingSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.VoltageRating";
     private static final String FilterByAltPartNumberSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.AltPartNumber";
+    
+    private static final String DisplayTotalLengthSettingTypeKey = "ItemDomainCableCatalog.List.Display.TotalLength";
+    private static final String FilterByTotalLengthSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.TotalLength";
+    private static final String DisplayReelLengthSettingTypeKey = "ItemDomainCableCatalog.List.Display.ReelLength";
+    private static final String FilterByReelLengthSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.ReelLength";
+    private static final String DisplayReelQuantitySettingTypeKey = "ItemDomainCableCatalog.List.Display.ReelQuantity";
+    private static final String FilterByReelQuantitySettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.ReelQuantity";
+    private static final String DisplayLeadTimeSettingTypeKey = "ItemDomainCableCatalog.List.Display.LeadTime";
+    private static final String FilterByLeadTimeSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.LeadTime";
+    private static final String DisplayProcurementStatusSettingTypeKey = "ItemDomainCableCatalog.List.Display.ProcurementStatus";
+    private static final String FilterByProcurementStatusSettingTypeKey = "ItemDomainCableCatalog.List.FilterBy.ProcurementStatus";
+
 
     protected boolean heatLimitDisplay;
     protected boolean insulationDisplay;
@@ -113,6 +125,17 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
     protected String fireLoadFilter;
     protected String voltageRatingFilter;
     protected String altPartNumberFilter;
+    
+    protected boolean totalLengthDisplay;
+    protected String totalLengthFilter;
+    protected boolean reelLengthDisplay;
+    protected String reelLengthFilter;
+    protected boolean reelQuantityDisplay;
+    protected String reelQuantityFilter;
+    protected boolean leadTimeDisplay;
+    protected String leadTimeFilter;
+    protected boolean procurementStatusDisplay;
+    protected String procurementStatusFilter;
     
     protected String filterByTechnicalSystem = null;
     
@@ -328,6 +351,86 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         this.altPartNumberFilter = altPartNumberFilter;
     }
      
+    public boolean isTotalLengthDisplay() {
+        return totalLengthDisplay;
+    }
+
+    public void setTotalLengthDisplay(boolean totalLengthDisplay) {
+        this.totalLengthDisplay = totalLengthDisplay;
+    }
+
+    public String getTotalLengthFilter() {
+        return totalLengthFilter;
+    }
+
+    public void setTotalLengthFilter(String totalLengthFilter) {
+        this.totalLengthFilter = totalLengthFilter;
+    }
+
+    public boolean isReelLengthDisplay() {
+        return reelLengthDisplay;
+    }
+
+    public void setReelLengthDisplay(boolean reelLengthDisplay) {
+        this.reelLengthDisplay = reelLengthDisplay;
+    }
+
+    public String getReelLengthFilter() {
+        return reelLengthFilter;
+    }
+
+    public void setReelLengthFilter(String reelLengthFilter) {
+        this.reelLengthFilter = reelLengthFilter;
+    }
+
+    public boolean isReelQuantityDisplay() {
+        return reelQuantityDisplay;
+    }
+
+    public void setReelQuantityDisplay(boolean reelQuantityDisplay) {
+        this.reelQuantityDisplay = reelQuantityDisplay;
+    }
+
+    public String getReelQuantityFilter() {
+        return reelQuantityFilter;
+    }
+
+    public void setReelQuantityFilter(String reelQuantityFilter) {
+        this.reelQuantityFilter = reelQuantityFilter;
+    }
+
+    public boolean isLeadTimeDisplay() {
+        return leadTimeDisplay;
+    }
+
+    public void setLeadTimeDisplay(boolean leadTimeDisplay) {
+        this.leadTimeDisplay = leadTimeDisplay;
+    }
+
+    public String getLeadTimeFilter() {
+        return leadTimeFilter;
+    }
+
+    public void setLeadTimeFilter(String leadTimeFilter) {
+        this.leadTimeFilter = leadTimeFilter;
+    }
+
+    public boolean isProcurementStatusDisplay() {
+        return procurementStatusDisplay;
+    }
+
+    public void setProcurementStatusDisplay(boolean procurementStatusDisplay) {
+        this.procurementStatusDisplay = procurementStatusDisplay;
+    }
+
+    public String getProcurementStatusFilter() {
+        return procurementStatusFilter;
+    }
+
+    public void setProcurementStatusFilter(String procurementStatusFilter) {
+        this.procurementStatusFilter = procurementStatusFilter;
+    }
+
     @Override
     public void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);        
@@ -398,6 +501,17 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         fireLoadFilter = settingTypeMap.get(FilterByFireLoadSettingTypeKey).getDefaultValue();
         voltageRatingFilter = settingTypeMap.get(FilterByVoltageRatingSettingTypeKey).getDefaultValue();
         altPartNumberFilter = settingTypeMap.get(FilterByAltPartNumberSettingTypeKey).getDefaultValue();
+        
+        totalLengthDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayTotalLengthSettingTypeKey).getDefaultValue());
+        totalLengthFilter = settingTypeMap.get(FilterByTotalLengthSettingTypeKey).getDefaultValue();
+        reelLengthDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayReelLengthSettingTypeKey).getDefaultValue());
+        reelLengthFilter = settingTypeMap.get(FilterByReelLengthSettingTypeKey).getDefaultValue();
+        reelQuantityDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayReelQuantitySettingTypeKey).getDefaultValue());
+        reelQuantityFilter = settingTypeMap.get(FilterByReelQuantitySettingTypeKey).getDefaultValue();
+        leadTimeDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayLeadTimeSettingTypeKey).getDefaultValue());
+        leadTimeFilter = settingTypeMap.get(FilterByLeadTimeSettingTypeKey).getDefaultValue();
+        procurementStatusDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayProcurementStatusSettingTypeKey).getDefaultValue());
+        procurementStatusFilter = settingTypeMap.get(FilterByProcurementStatusSettingTypeKey).getDefaultValue();
 
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
 
@@ -475,6 +589,17 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         voltageRatingFilter = settingEntity.getSettingValueAsString(FilterByVoltageRatingSettingTypeKey, voltageRatingFilter);
         altPartNumberFilter = settingEntity.getSettingValueAsString(FilterByAltPartNumberSettingTypeKey, altPartNumberFilter);
         
+        totalLengthDisplay = settingEntity.getSettingValueAsBoolean(DisplayTotalLengthSettingTypeKey, totalLengthDisplay);
+        totalLengthFilter = settingEntity.getSettingValueAsString(FilterByTotalLengthSettingTypeKey, totalLengthFilter);
+        reelLengthDisplay = settingEntity.getSettingValueAsBoolean(DisplayReelLengthSettingTypeKey, reelLengthDisplay);
+        reelLengthFilter = settingEntity.getSettingValueAsString(FilterByReelLengthSettingTypeKey, reelLengthFilter);
+        reelQuantityDisplay = settingEntity.getSettingValueAsBoolean(DisplayReelQuantitySettingTypeKey, reelQuantityDisplay);
+        reelQuantityFilter = settingEntity.getSettingValueAsString(FilterByReelQuantitySettingTypeKey, reelQuantityFilter);
+        leadTimeDisplay = settingEntity.getSettingValueAsBoolean(DisplayLeadTimeSettingTypeKey, leadTimeDisplay);
+        leadTimeFilter = settingEntity.getSettingValueAsString(FilterByLeadTimeSettingTypeKey, leadTimeFilter);
+        procurementStatusDisplay = settingEntity.getSettingValueAsBoolean(DisplayProcurementStatusSettingTypeKey, procurementStatusDisplay);
+        procurementStatusFilter = settingEntity.getSettingValueAsString(FilterByProcurementStatusSettingTypeKey, procurementStatusFilter);
+
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues); 
 
         parentController.resetDomainEntityPropertyTypeIdIndexMappings();
@@ -551,6 +676,17 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
         settingEntity.setSettingValue(FilterByFireLoadSettingTypeKey, fireLoadFilter);
         settingEntity.setSettingValue(FilterByVoltageRatingSettingTypeKey, voltageRatingFilter);
         settingEntity.setSettingValue(FilterByAltPartNumberSettingTypeKey, altPartNumberFilter);
+
+        settingEntity.setSettingValue(DisplayTotalLengthSettingTypeKey, totalLengthDisplay);
+        settingEntity.setSettingValue(FilterByTotalLengthSettingTypeKey, totalLengthFilter);
+        settingEntity.setSettingValue(DisplayReelLengthSettingTypeKey, reelLengthDisplay);
+        settingEntity.setSettingValue(FilterByReelLengthSettingTypeKey, reelLengthFilter);
+        settingEntity.setSettingValue(DisplayReelQuantitySettingTypeKey, reelQuantityDisplay);
+        settingEntity.setSettingValue(FilterByReelQuantitySettingTypeKey, reelQuantityFilter);
+        settingEntity.setSettingValue(DisplayLeadTimeSettingTypeKey, leadTimeDisplay);
+        settingEntity.setSettingValue(FilterByLeadTimeSettingTypeKey, leadTimeFilter);
+        settingEntity.setSettingValue(DisplayProcurementStatusSettingTypeKey, radToleranceDisplay);
+        settingEntity.setSettingValue(FilterByProcurementStatusSettingTypeKey, radToleranceFilter);
 
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
 

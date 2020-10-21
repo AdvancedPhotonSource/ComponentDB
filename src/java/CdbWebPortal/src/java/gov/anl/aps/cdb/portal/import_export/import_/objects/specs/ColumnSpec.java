@@ -24,6 +24,9 @@ public abstract class ColumnSpec {
     private boolean required;
     private String description;
     
+    public ColumnSpec() {
+    }
+    
     public ColumnSpec(String description) {
         this.description = description;
     }

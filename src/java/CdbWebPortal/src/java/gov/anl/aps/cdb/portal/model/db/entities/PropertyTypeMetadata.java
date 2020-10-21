@@ -110,6 +110,17 @@ public class PropertyTypeMetadata extends CdbEntity implements Serializable {
         return false;
     }
     
+    public boolean hasAllowedPropertyMetadataValue(String value) {
+        if (allowedPropertyMetadataValueList != null) {
+            for (AllowedPropertyMetadataValue allowedValue : allowedPropertyMetadataValueList) {
+                if (allowedValue.getMetadataValue().equals(value)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     public boolean getIsHaveDescription() {
         return description != null && !description.equals(""); 
     }
