@@ -237,17 +237,6 @@ import org.primefaces.model.TreeNode;
     "createdFromTemplate",
     "itemsCreatedFromThisTemplateItem"
 })
-@Schema(name = "Item",
-        subTypes
-        = {
-            ItemDomainCatalog.class,
-            ItemDomainInventory.class,
-            ItemDomainMachineDesign.class,
-            ItemDomainCable.class,
-            ItemDomainMAARC.class,
-            ItemDomainLocation.class
-        }
-)
 public class Item extends CdbDomainEntity implements Serializable {
 
     private static final Logger LOGGER = LogManager.getLogger(Item.class.getName());
