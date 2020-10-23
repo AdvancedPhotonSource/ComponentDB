@@ -1005,7 +1005,7 @@ class CableDesignOutputObject(OutputObject):
 
             else:
                 endpoint_object = result_list[0]
-                endpoint_id = endpoint_object['id']
+                endpoint_id = endpoint_object.id
                 logging.debug("found machine design item with name: %s, id: %s" % (endpoint_name, endpoint_id))
                 self.helper.set_id_for_endpoint(endpoint_name, endpoint_id)
                 return endpoint_id
