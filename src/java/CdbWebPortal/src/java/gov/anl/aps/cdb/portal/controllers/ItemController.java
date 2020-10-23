@@ -2549,6 +2549,10 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         List<ItemElement> newElementList = item.getFullItemElementList();
         LOGGER.debug("Verifying elements for item " + item);
         ItemElementUtility.prepareItemElementHistory(originalElementList, newElementList, entityInfo);
+        //Verify reverse hierarchy updates
+        List<ItemElement> originalItemElementMemberList = originalItem.getItemElementMemberList();
+        List<ItemElement> newitemElementMemberList = item.getItemElementMemberList();
+        ItemElementUtility.prepareItemElementHistory(originalItemElementMemberList, newitemElementMemberList, entityInfo);        
 
         // Compare properties with what is in the db
         List<PropertyValue> originalPropertyValueList = originalItem.getPropertyValueList();
