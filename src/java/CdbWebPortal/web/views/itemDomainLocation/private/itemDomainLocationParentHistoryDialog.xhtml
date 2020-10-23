@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">    
+
+    <p:dialog id="itemDomainLocationHistoryDialog"
+              widgetVar="itemDomainLocationHistoryDialogWidget"
+              resizable="false"
+              header="Item Location History"
+              styleClass="viewTransparentBackgroundDialog"
+              dynamic="true">
+        <ui:param name="parentItemElement"
+                  value="#{itemObject.parentItemElement}"/>
+
+        <p:outputPanel rendered="#{parentItemElement != null}">
+            <p:dataTable value="#{parentItemElement.itemElementHistoryList}"
+                         var="itemElementHistory"
+                         paginator="true"
+                         rows="10">
+                <p:column headerText="Parent Location">
+                    <ui:param name="parentItem"
+                              value="#{itemElementHistory.parentItem}" /> 
+                    <ui:param name="snapshotName"
+                              value="#{itemElementHistory.snapshotParentName}" /> 
+                    <ui:fragment rendered="#{parentItem != null}">
+                        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                            <ui:param name="displayString"
+                                      value="#{snapshotName}"/>
+                            <ui:param name="itemObject"
+                                      value="#{parentItem}" /> 
+                        </ui:include>                        
+                    </ui:fragment>
+                    <ui:fragment rendered="#{parentItem == null and snapshotName != null}">
+                        <h:outputText value="Deleted Item: #{snapshotName}" /> 
+                    </ui:fragment>
+                </p:column>
+
+                <p:column headerText="Entered By">
+                    <h:outputText value="#{itemElementHistory.enteredByUser.username}" />
+                </p:column>
+
+                <p:column sortBy="#{itemElementHistory.enteredOnDateTime}" headerText="Entered On">
+                    <h:outputText value="#{itemElementHistory.enteredOnDateTime}"/>
+                </p:column>
+
+            </p:dataTable>
+        </p:outputPanel>
+        <p:outputPanel rendered="#{parentItemElement == null}">
+            Item has no parent, no history to show.
+        </p:outputPanel>                            
+    </p:dialog>
+
+</ui:composition>
