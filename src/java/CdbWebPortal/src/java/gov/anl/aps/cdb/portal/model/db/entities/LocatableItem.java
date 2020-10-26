@@ -96,7 +96,8 @@ public abstract class LocatableItem extends Item {
     public ItemDomainLocation getLocationItem() {
         return location;
     }
-
+    
+    @JsonIgnore
     public void setLocation(ItemDomainLocation location) {
         this.location = location;
     }  
@@ -157,6 +158,7 @@ public abstract class LocatableItem extends Item {
         return importLocationItemString;
     }
     
+    @JsonIgnore
     public void setImportLocationItem(ItemDomainLocation location) {
         LocatableItemController.getInstance().setItemLocationInfo(this);
         LocatableItemController.getInstance().updateLocationForItem(

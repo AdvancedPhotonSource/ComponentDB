@@ -349,14 +349,18 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     }
 
     public void updateParentForCurrent(Item item) {
-        if (item instanceof ItemDomainLocation == false) {
+        updateParentForItem(getCurrent(), item);
+    }
+    
+    public void updateParentForItem(ItemDomainLocation item, Item newParentItem) {
+        if (newParentItem instanceof ItemDomainLocation == false) {
             return;
         }
-        ItemDomainLocation newParent = (ItemDomainLocation) item;
+        ItemDomainLocation newParent = (ItemDomainLocation) newParentItem;
 
         ItemDomainLocation ittrParentItem = newParent;
         while (ittrParentItem != null) {            
-            if (current.equals(ittrParentItem)) {
+            if (item.equals(ittrParentItem)) {
                 SessionUtility.addErrorMessage("Error", "Cannot set location of item as itself or its child.");
                 return;
             }
@@ -364,8 +368,8 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
             ittrParentItem = ittrParentItem.getParentItem();
         }
 
-        ItemElement member = current.getParentItemElement();
-        List<ItemElement> itemElementMemberList = current.getItemElementMemberList();
+        ItemElement member = item.getParentItemElement();
+        List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
 
         DefaultSubMenu topNode = (DefaultSubMenu) parentSelectionMenuModel.getElements().get(0);
         topNode.setLabel(newParent.getName());                
@@ -377,7 +381,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
             member.setParentItem(newParent);
         } else if (itemElementMemberList.isEmpty()) {
             ItemElement createItemElement = createItemElement(newParent);
-            createItemElement.setContainedItem(current);
+            createItemElement.setContainedItem(item);
             itemElementMemberList.add(createItemElement); 
         } else {
             SessionUtility.addErrorMessage("Error", "Cannot update parent, item does not have one membership.");
