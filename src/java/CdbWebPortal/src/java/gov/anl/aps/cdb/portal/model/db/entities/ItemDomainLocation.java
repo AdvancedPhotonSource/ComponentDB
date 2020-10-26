@@ -8,18 +8,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Table;
 
 /**
  *
  * @author djarosz
  */
 @Entity
-@Table(name = "item")
 @DiscriminatorValue(value = ItemDomainName.LOCATION_ID + "")
+@Schema(name = "ItemDomainLocation",
+        allOf = Item.class
+)
 public class ItemDomainLocation extends Item {
     
     private transient ItemDomainLocation importParentItem = null;
@@ -28,6 +30,7 @@ public class ItemDomainLocation extends Item {
     
     private transient ItemElement parentItemElement = null; 
 
+    @JsonIgnore
     public ItemElement getParentItemElement() {
         if (parentItemElement == null) {
             List<ItemElement> itemElementMemberList = getItemElementMemberList();
@@ -100,6 +103,7 @@ public class ItemDomainLocation extends Item {
      * 
      * @param childItem 
      */
+    @JsonIgnore
     public void setImportChildParentRelationship(
             ItemDomainLocation parentItem,
             String childName,
