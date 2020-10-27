@@ -46,6 +46,7 @@ import argparse
 import logging
 import sys
 from abc import ABC, abstractmethod
+import re
 
 import xlrd
 import xlsxwriter
@@ -108,6 +109,7 @@ CABLE_DESIGN_VIA_ROUTE_KEY = "via"
 CABLE_DESIGN_WAYPOINT_ROUTE_KEY = "waypoint"
 
 isValid = True
+name_manager = None
 
 
 def register(helper_class):
@@ -228,19 +230,34 @@ class PreImportHelper(ABC):
     # Can return False where input is valid, but it might be better to call sys.exit() with a useful message.
     def input_row_is_valid(self, input_dict, row_num):
 
+        is_valid = True
+        valid_messages = []
+
         for column in self.input_column_list():
+
             required = column.required
             if required:
                 value = input_dict[column.key]
                 if value is None or len(str(value)) == 0:
-                    sys.exit("required value missing for key: %s row index: %d, exiting" % (column.key, row_num))
+                    is_valid = False
+                    valid_messages.append("required value missing for key: %s row index: %d" % (column.key, row_num))
 
-        return self.input_row_is_valid_custom(input_dict)
+            (column_is_valid, column_valid_string) = column.validate(input_dict)
+            if not column_is_valid:
+                is_valid = False
+                valid_messages.append(column_valid_string)
+
+        (custom_is_valid, custom_valid_string) = self.input_row_is_valid_custom(input_dict)
+        if not custom_is_valid:
+            is_valid = False
+            valid_messages.append(custom_valid_string)
+
+        return is_valid, valid_messages
 
     # Performs custom validation on input row.  Returns True if row is valid.  Default is to return True. Subclass
     # can override to customize.
     def input_row_is_valid_custom(self, input_dict):
-        return True
+        return True, ""
 
     # Returns column label for specified column index.
     def get_output_column_label(self, col_index):
@@ -258,12 +275,134 @@ class PreImportHelper(ABC):
         pass
 
 
+class ConnectedMenuManager:
+
+    def __init__(self, workbook):
+        self.name_dict = {}
+        self.initialize(workbook)
+
+    def add_name(self, name, values):
+        self.name_dict[name] = values
+
+    def initialize(self, workbook):
+
+        for name in workbook.name_obj_list:
+            if name.scope == -1:
+                print(name.name)
+                name.book = workbook  # seems like an error that library doesn't do this internally
+                (sheet_name, ref) = name.formula_text.split('!')
+                if ':' in ref:
+                    (first_cell, last_cell) = ref.split(':')
+                else:
+                    first_cell = ref
+                    last_cell = ref
+                (first_cell_row, first_cell_col) = xl_cell_to_rowcol(first_cell)
+                (last_cell_row, last_cell_col) = xl_cell_to_rowcol(last_cell)
+                sheet = workbook.sheet_by_name(sheet_name)
+                values = []
+                for row_ind in range(first_cell_row, last_cell_row + 1):
+                    for col_ind in range(first_cell_col, last_cell_col + 1):
+                        values.append(sheet.cell(row_ind, col_ind).value)
+                        print("\t%s" % sheet.cell(row_ind, col_ind).value)
+                self.add_name(name.name, values)
+
+    def has_name(self, range_name):
+        return range_name in self.name_dict
+
+    def valueIsValidForName(self, parent_value, child_value):
+        child_value_list = self.name_dict.get(parent_value)
+        if child_value_list is not None:
+            return child_value in child_value_list
+        else:
+            return False
+
+
+class ColumnValidator(ABC):
+
+    # Run validation for column
+    @abstractmethod
+    def validate(self, cell_value, input_dict):
+        pass
+
+
+class ConnectedMenuValidator(ColumnValidator):
+
+    def __init__(self, parent_key):
+        self.parent_key = parent_key
+
+    def validate(self, cell_value, input_dict):
+        global name_manager
+        parent_value = input_dict[self.parent_key]
+        if not name_manager.has_name(parent_value):
+            sys.exit("name manager has no menu range for: %s" % parent_value)
+        has_child = name_manager.valueIsValidForName(parent_value, cell_value)
+        valid_string = ""
+        if not has_child:
+            valid_string = "range for parent name %s does not include child name %s" % (parent_value, cell_value)
+        return has_child, valid_string
+
+
+class NamedRangeValidator(ColumnValidator):
+
+    def __init__(self, range_name):
+        self.range_name = range_name
+
+    def validate(self, cell_value, input_dict):
+        global name_manager
+        if not name_manager.has_name(self.range_name):
+            sys.exit("name manager has no named range for: %s" % self.range_name)
+        has_child = name_manager.valueIsValidForName(self.range_name, cell_value)
+        valid_string = ""
+        if not has_child:
+            valid_string = "named range %s does not include value %s" % (self.range_name, cell_value)
+        return has_child, valid_string
+
+
+class DeviceAddressValidator(ColumnValidator):
+
+    def __init__(self, location_key, etpm_key):
+        self.location_key = location_key
+        self.etpm_key = etpm_key
+
+    def validate(self, cell_value, input_dict):
+
+        global name_manager
+
+        location_value = input_dict[self.location_key]
+        etpm_value = input_dict[self.etpm_key]
+
+        range_name = ""
+        if location_value == "SR_T":
+            range_name = "Snn" + etpm_value[3:]
+        elif "PS-" in etpm_value:
+            range_name = "_PS_CAB_SLOT_"
+        else:
+            range_name = "_RACK_AREA_"
+
+        if not name_manager.has_name(range_name):
+            sys.exit("name manager has no named address range for: %s" % range_name)
+
+        has_child = name_manager.valueIsValidForName(range_name, cell_value)
+        valid_string = ""
+        if not has_child:
+            valid_string = "named address range %s does not include value %s" % (range_name, cell_value)
+        return has_child, valid_string
+
+
 class InputColumnModel:
 
-    def __init__(self, col_index, key, required=False):
+    def __init__(self, col_index, key, validator=None, required=False):
         self.index = col_index
         self.key = key
+        self.validator = validator
         self.required = required
+
+    def validate(self, input_dict):
+        cell_value = input_dict[self.key]
+        if self.validator is None:
+            return True, ""
+        else:
+            return self.validator.validate(cell_value, input_dict)
 
 
 class OutputColumnModel:
@@ -749,21 +888,24 @@ class CableDesignHelper(PreImportHelper):
 
     @classmethod
     def input_column_list(cls):
+
+        global name_manager
+
         column_list = [
             InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
-            InputColumnModel(col_index=1, key=CABLE_DESIGN_LAYING_KEY),
-            InputColumnModel(col_index=2, key=CABLE_DESIGN_VOLTAGE_KEY),
-            InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
-            InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, required=True),
+            InputColumnModel(col_index=1, key=CABLE_DESIGN_LAYING_KEY, validator=NamedRangeValidator("_Laying"), required=True),
+            InputColumnModel(col_index=2, key=CABLE_DESIGN_VOLTAGE_KEY, validator=NamedRangeValidator("_Voltage"), required=True),
+            InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, validator=NamedRangeValidator("_Owner"), required=True),
+            InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, validator=ConnectedMenuValidator(CABLE_DESIGN_OWNER_KEY), required=True),
             InputColumnModel(col_index=5, key=CABLE_DESIGN_SRC_LOCATION_KEY, required=True),
-            InputColumnModel(col_index=6, key=CABLE_DESIGN_SRC_ANS_KEY, required=True),
-            InputColumnModel(col_index=7, key=CABLE_DESIGN_SRC_ETPM_KEY, required=True),
-            InputColumnModel(col_index=8, key=CABLE_DESIGN_SRC_ADDRESS_KEY, required=True),
+            InputColumnModel(col_index=6, key=CABLE_DESIGN_SRC_ANS_KEY, validator=ConnectedMenuValidator(CABLE_DESIGN_SRC_LOCATION_KEY), required=True),
+            InputColumnModel(col_index=7, key=CABLE_DESIGN_SRC_ETPM_KEY, validator=ConnectedMenuValidator(CABLE_DESIGN_SRC_ANS_KEY), required=True),
+            InputColumnModel(col_index=8, key=CABLE_DESIGN_SRC_ADDRESS_KEY, validator=DeviceAddressValidator(CABLE_DESIGN_SRC_LOCATION_KEY, CABLE_DESIGN_SRC_ETPM_KEY), required=True),
             InputColumnModel(col_index=9, key=CABLE_DESIGN_SRC_DESCRIPTION_KEY, required=True),
             InputColumnModel(col_index=10, key=CABLE_DESIGN_DEST_LOCATION_KEY, required=True),
-            InputColumnModel(col_index=11, key=CABLE_DESIGN_DEST_ANS_KEY, required=True),
-            InputColumnModel(col_index=12, key=CABLE_DESIGN_DEST_ETPM_KEY, required=True),
-            InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, required=True),
+            InputColumnModel(col_index=11, key=CABLE_DESIGN_DEST_ANS_KEY, validator=ConnectedMenuValidator(CABLE_DESIGN_DEST_LOCATION_KEY), required=True),
+            InputColumnModel(col_index=12, key=CABLE_DESIGN_DEST_ETPM_KEY, validator=ConnectedMenuValidator(CABLE_DESIGN_DEST_ANS_KEY), required=True),
+            InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, validator=DeviceAddressValidator(CABLE_DESIGN_DEST_LOCATION_KEY, CABLE_DESIGN_DEST_ETPM_KEY), required=True),
             InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY, required=True),
             InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
             InputColumnModel(col_index=16, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
@@ -1049,7 +1191,63 @@ class CableDesignOutputObject(OutputObject):
         return self.helper.get_args().ownerGroupId
 
 
+range_parts = re.compile(r'(\$?)([A-Z]{1,3})(\$?)(\d+)')
+def xl_cell_to_rowcol(cell_str):
+    """
+    NOTE: I borrowed this from the xlsxwriter library since it was useful for parsing Excel $G$1 notation.
+    Convert a cell reference in A1 notation to a zero indexed row and column.
+
+    Args:
+       cell_str:  A1 style string.
+
+    Returns:
+        row, col: Zero indexed cell row and column indices.
+
+    """
+    if not cell_str:
+        return 0, 0
+
+    match = range_parts.match(cell_str)
+    col_str = match.group(2)
+    row_str = match.group(4)
+
+    # Convert base26 column string to number.
+    expn = 0
+    col = 0
+    for char in reversed(col_str):
+        col += (ord(char) - ord('A') + 1) * (26 ** expn)
+        expn += 1
+
+    # Convert 1-index to zero-index
+    row = int(row_str) - 1
+    col -= 1
+
+    return row, col
+
+
+def write_validation_report(validation_map, validation_report_file):
+    output_book = xlsxwriter.Workbook(validation_report_file)
+    output_sheet = output_book.add_worksheet()
+
+    output_sheet.write(0, 0, "input row number")
+    output_sheet.write(0, 1, "validation messages")
+
+    row_index = 1
+    for key in validation_map:
+        output_sheet.write(row_index, 0, key)
+        cell_value = ""
+        for message in validation_map[key]:
+            cell_value = cell_value + message + "\n"
+        output_sheet.write(row_index, 1, cell_value)
+        row_index = row_index + 1
+
+    output_book.close()
+
+
 def main():
+
+    global name_manager
+    global isValid
 
     # find --type command line parameter so we can create the appropriate helper subclass before proceeding
     type_arg = "--type"
@@ -1073,6 +1271,7 @@ def main():
     parser.add_argument("outputFile", help="Official CDB Sources import format xlsx file")
     parser.add_argument(type_arg, help="Type of pre-import processing (Source, CableType, or CableDesign)", required=True)
     parser.add_argument("--logFile", help="File for log output", required=True)
+    parser.add_argument("--validationFile", help="File for validation output", required=True)
     parser.add_argument("--cdbUrl", help="CDB system URL", required=True)
     parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)
     parser.add_argument("--cdbPassword", help="CDB User password for API login", required=True)
@@ -1085,6 +1284,7 @@ def main():
     print("using inputFile: %s" % args.inputFile)
     print("using outputFile: %s" % args.outputFile)
     print("using logFile: %s" % args.logFile)
+    print("using validation file: %s" % args.validationFile)
     print("pre-import type: %s" % args.type)
     print("cdb url: %s" % args.cdbUrl)
     print("cdb user id: %s" % args.cdbUser)
@@ -1119,6 +1319,9 @@ def main():
 
     # open input spreadsheet
     input_book = xlrd.open_workbook(args.inputFile)
+
+    name_manager = ConnectedMenuManager(input_book)
+
     input_sheet = input_book.sheet_by_index(int(sheetIndex))
     logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.nrows, input_sheet.ncols))
 
@@ -1130,6 +1333,7 @@ def main():
 
     # process rows from input spreadsheet
     output_objects = []
+    validation_map = {}
     num_input_rows = 0
     for row_ind in range(firstDataIndex, lastDataIndex + 1):
 
@@ -1151,12 +1355,15 @@ def main():
         if helper.input_row_is_empty(input_dict=input_dict, row_num=current_row_num):
             continue
 
-        if helper.input_row_is_valid(input_dict=input_dict, row_num=row_ind):
+        (row_is_valid, row_valid_messages) = helper.input_row_is_valid(input_dict=input_dict, row_num=row_ind)
+        if row_is_valid:
             output_obj = helper.get_output_object(input_dict=input_dict)
             if output_obj:
                 output_objects.append(output_obj)
         else:
-            sys.exit("invalid input row: %d, exiting" % current_row_num)
+            isValid = False
+            logging.error("validation errors found for row %d" % row_ind)
+            validation_map[current_row_num] = row_valid_messages
 
     # create output spreadsheet
     output_book = xlsxwriter.Workbook(args.outputFile)
@@ -1199,6 +1406,13 @@ def main():
         api.logOutUser()
     except ApiException:
         sys.exit("CDB logout failed")
+
+    # print validation report
+    for key in validation_map:
+        print("row: %d" % key)
+        for message in validation_map[key]:
+            print("\t%s" % message)
+    write_validation_report(validation_map, args.validationFile)
 
     # print summary
     if isValid:
