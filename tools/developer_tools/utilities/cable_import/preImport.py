@@ -252,6 +252,10 @@ class PreImportHelper(ABC):
     def input_row_is_valid_custom(self, input_dict):
         return True, ""
 
+    # Provides hook for subclasses to override to validate the input before generating the output spreadsheet.
+    def input_is_valid(self, output_objects):
+        return True, ""
+
     def invoke_row_handlers(self, input_dict, row_num):
 
         is_valid = True
@@ -321,6 +325,11 @@ class ConnectedMenuManager:
             return child_value in child_value_list
         else:
             return False
+
+    def num_values_for_name(self, range_name):
+        if range_name in self.name_dict:
+            return len(self.name_dict[range_name])
+        return 0
 
 
 class InputHandler(ABC):
@@ -782,6 +791,7 @@ class CableTypeHelper(PreImportHelper):
         parser.add_argument("--techSystemId", help="CDB technical system ID for owner", required=True)
         parser.add_argument("--ownerUserId", help="CDB user ID for owner", required=True)
         parser.add_argument("--ownerGroupId", help="CDB group ID for owner", required=True)
+        parser.add_argument("--namedRange", help="Excel named range for technical system's cable types", required=True)
 
     def set_args(self, args):
         super().set_args(args)
@@ -789,6 +799,7 @@ class CableTypeHelper(PreImportHelper):
         print("CDB technical system id: %s" % args.techSystemId)
         print("CDB owner user id: %s" % args.ownerUserId)
         print("CDB owner group id: %s" % args.ownerGroupId)
+        print("Excel named range for technical system cable types: %s" % args.namedRange)
 
     @staticmethod
     def tag():
@@ -869,6 +880,18 @@ class CableTypeHelper(PreImportHelper):
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
         return CableTypeOutputObject(helper=self, input_dict=input_dict)
 
+    # Provides hook for subclasses to override to validate the input before generating the output spreadsheet.
+    def input_is_valid(self, output_objects):
+
+        global name_manager
+
+        cable_type_named_range = self.args.namedRange
+
+        if len(output_objects) < name_manager.num_values_for_name(cable_type_named_range):
+            return False, "fewer rows in output spreadsheet than named range of cable types for technical system"
+
+        return True, ""
+
     def close(self):
         if len(self.missing_source_list) > 0:
 
@@ -887,7 +910,6 @@ class CableTypeHelper(PreImportHelper):
                 row_index = row_index + 1
 
             output_book.close()
-
 
 
 class CableTypeOutputObject(OutputObject):
@@ -1566,40 +1588,49 @@ def main():
                 output_objects.append(output_obj)
         else:
             input_valid = False
-            logging.error("validation errors found for row %d" % current_row_num)
+            msg = "validation ERRORS found for row %d" % current_row_num
+            logging.error(msg)
+            print(msg)
             validation_map[current_row_num] = row_valid_messages
 
+    (sheet_valid, sheet_valid_string) = helper.input_is_valid(output_objects)
+    if not sheet_valid:
+        input_valid = False
+        msg = "ERROR validating input spreadsheet: %s" % sheet_valid_string
+        logging.error(msg)
+        print()
+        print(msg)
+
     # create output spreadsheet
-    output_book = xlsxwriter.Workbook(args.outputFile)
-    output_sheet = output_book.add_worksheet()
+    if input_valid:
+        output_book = xlsxwriter.Workbook(args.outputFile)
+        output_sheet = output_book.add_worksheet()
 
-    # write output spreadsheet header row
-    row_ind = 0
-    for col_ind in range(helper.num_output_cols()):
-        if col_ind in helper.output_columns:
-            label = helper.get_output_column_label(col_index=col_ind)
-            output_sheet.write(row_ind, col_ind, label)
-
-    # process output spreadsheet rows
-    num_output_rows = 0
-    if len(output_objects) == 0:
-        logging.info("no output objects, output spreadsheet will be empty")
-    for output_obj in output_objects:
-
-        row_ind = row_ind + 1
-        num_output_rows = num_output_rows + 1
-        current_row_num = row_ind + 1
-
-        logging.debug("processing row %d in output spreadsheet" % current_row_num)
-
+        # write output spreadsheet header row
+        row_ind = 0
         for col_ind in range(helper.num_output_cols()):
             if col_ind in helper.output_columns:
+                label = helper.get_output_column_label(col_index=col_ind)
+                output_sheet.write(row_ind, col_ind, label)
 
-                val = helper.get_output_cell_value(obj=output_obj, index=col_ind)
-                output_sheet.write(row_ind, col_ind, val)
+        # process output spreadsheet rows
+        num_output_rows = 0
+        if len(output_objects) == 0:
+            logging.info("no output objects, output spreadsheet will be empty")
+        for output_obj in output_objects:
 
-    # save output spreadsheet
-    if input_valid:
+            row_ind = row_ind + 1
+            num_output_rows = num_output_rows + 1
+            current_row_num = row_ind + 1
+
+            logging.debug("processing row %d in output spreadsheet" % current_row_num)
+
+            for col_ind in range(helper.num_output_cols()):
+                if col_ind in helper.output_columns:
+
+                    val = helper.get_output_cell_value(obj=output_obj, index=col_ind)
+                    output_sheet.write(row_ind, col_ind, val)
+
         output_book.close()
 
     # clean up helper
