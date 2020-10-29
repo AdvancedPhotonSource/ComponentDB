@@ -122,9 +122,7 @@ class PreImportHelper(ABC):
 
     def __init__(self):
         self.input_columns = {}
-        self.initialize_input_columns()
         self.output_columns = {}
-        self.initialize_output_columns()
         self.args = None
         self.api = None
 
@@ -150,10 +148,6 @@ class PreImportHelper(ABC):
         helper_instance = helper_class()
         return helper_instance
 
-    @classmethod
-    def num_output_cols(cls):
-        return len(cls.output_column_list())
-
     # Allows subclasses to add command line parser args.  Default behavior is to do nothing.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
     @staticmethod
@@ -167,23 +161,23 @@ class PreImportHelper(ABC):
         pass
 
     # Returns expected number of columns in input spreadsheet.
-    @classmethod
     @abstractmethod
-    def num_input_cols(cls):
+    def num_input_cols(self):
         pass
+
+    def num_output_cols(self):
+        return len(self.output_column_list())
 
     # Returns list of column models for input spreadsheet.  Not all columns need be mapped, only the ones we wish to
     # read values from.
-    @staticmethod
     @abstractmethod
-    def input_column_list():
+    def input_column_list(self):
         pass
 
     # Returns list of column models for output spreadsheet.  Not all columns need be mapped, only the ones we wish to
     # write values to.
-    @staticmethod
     @abstractmethod
-    def output_column_list():
+    def output_column_list(self):
         pass
 
     # Returns an output object for the specified input object, or None if the input object is duplicate.
@@ -389,6 +383,56 @@ class DeviceAddressValidator(ColumnValidator):
         return has_child, valid_string
 
 
+class EndpointValidator(ColumnValidator):
+
+    def __init__(self, rack_key, hierarchy_name, api, rack_manager, missing_endpoints, nonunique_endpoints):
+        self.rack_key = rack_key
+        self.hierarchy_name = hierarchy_name
+        self.api = api
+        self.rack_manager = rack_manager
+        self.missing_endpoints = missing_endpoints
+        self.nonunique_endpoints = nonunique_endpoints
+
+    def validate(self, cell_value, input_dict):
+
+        endpoint_name = cell_value
+        rack_name = input_dict[self.rack_key]
+
+        # check endpoint cache before calling API
+        if self.rack_manager.get_endpoint_id_for_rack(rack_name, endpoint_name) is not None:
+            logging.info("found endpoint: %s for rack: %s in cache")
+            return True, ""
+
+        result_list = []
+        try:
+            result_list = self.api.getMachineDesignItemApi().get_md_in_hierarchy_by_name(self.hierarchy_name, rack_name, endpoint_name)
+        except ApiException as ex:
+            return False, "exception invoking cdb endpoint retrieval api"
+
+        is_valid = True
+        valid_string = ""
+
+        if len(result_list) == 0:
+            is_valid = False
+            valid_string = "no endpoint item found with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
+            logging.error(valid_string)
+            self.missing_endpoints.add(endpoint_name)
+
+        elif len(result_list) > 1:
+            is_valid = False
+            valid_string = "duplicate endpoint items found with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
+            logging.error(valid_string)
+            self.nonunique_endpoints.add(endpoint_name)
+
+        else:
+            endpoint_object = result_list[0]
+            endpoint_id = endpoint_object.id
+            self.rack_manager.add_endpoint_id_for_rack(rack_name, endpoint_name, endpoint_id)
+            logging.debug("found machine design item with name: %s, id: %s" % (endpoint_name, endpoint_id))
+
+        return is_valid, valid_string
+
+
 class InputColumnModel:
 
     def __init__(self, col_index, key, validator=None, required=False):
@@ -431,19 +475,16 @@ class SourceHelper(PreImportHelper):
     def tag():
         return "Source"
 
-    @classmethod
-    def num_input_cols(cls):
+    def num_input_cols(self):
         return 23
 
-    @classmethod
-    def input_column_list(cls):
+    def input_column_list(self):
         column_list = [
             InputColumnModel(col_index=2, key=CABLE_TYPE_MANUFACTURER_KEY),
         ]
         return column_list
 
-    @staticmethod
-    def output_column_list():
+    def output_column_list(self):
         column_list = [
             OutputColumnModel(col_index=0, method="get_name", label="Name"),
             OutputColumnModel(col_index=1, method="get_description", label="Description"),
@@ -531,12 +572,10 @@ class CableTypeHelper(PreImportHelper):
     def tag():
         return "CableType"
 
-    @classmethod
-    def num_input_cols(cls):
+    def num_input_cols(self):
         return 23
 
-    @classmethod
-    def input_column_list(cls):
+    def input_column_list(self):
         column_list = [
             InputColumnModel(col_index=0, key=CABLE_TYPE_NAME_KEY, required=True),
             InputColumnModel(col_index=1, key=CABLE_TYPE_DESCRIPTION_KEY),
@@ -564,8 +603,7 @@ class CableTypeHelper(PreImportHelper):
         ]
         return column_list
 
-    @staticmethod
-    def output_column_list():
+    def output_column_list(self):
         column_list = [
             OutputColumnModel(col_index=0, method="get_name", label=CABLE_TYPE_NAME_KEY),
             OutputColumnModel(col_index=1, method="get_alt_name", label=CABLE_TYPE_ALT_NAME_KEY),
@@ -758,12 +796,10 @@ class CableInventoryHelper(PreImportHelper):
     def tag():
         return "CableInventory"
 
-    @classmethod
-    def num_input_cols(cls):
+    def num_input_cols(self):
         return 23
 
-    @classmethod
-    def input_column_list(cls):
+    def input_column_list(self):
         column_list = [
             InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
             InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
@@ -775,8 +811,7 @@ class CableInventoryHelper(PreImportHelper):
         ]
         return column_list
 
-    @staticmethod
-    def output_column_list():
+    def output_column_list(self):
         column_list = [
             OutputColumnModel(col_index=0, method="get_cable_type_id", label="Catalog Item"),
             OutputColumnModel(col_index=1, method="get_tag", label="Tag"),
@@ -845,12 +880,31 @@ class CableInventoryOutputObject(OutputObject):
         return self.helper.get_args().ownerGroupId
 
 
+class RackManager():
+
+    def __init__(self):
+        self.rack_dict = {}
+
+    def add_endpoint_id_for_rack(self, rack_name, endpoint_name, endpoint_id):
+        if not rack_name in self.rack_dict:
+            self.rack_dict[rack_name] = {}
+        rack_contents = self.rack_dict[rack_name]
+        rack_contents[endpoint_name] = endpoint_id
+
+    def get_endpoint_id_for_rack(self, rack_name, endpoint_name):
+        if rack_name in self.rack_dict:
+            rack_items = self.rack_dict[rack_name]
+            if endpoint_name in rack_items:
+                return rack_items[endpoint_name]
+        return None
+
+
 @register
 class CableDesignHelper(PreImportHelper):
 
     def __init__(self):
         super().__init__()
-        self.endpoint_dict = {}
+        self.rack_manager = RackManager()
         self.md_root = None
         self.missing_endpoints = set()
         self.nonunique_endpoints = set()
@@ -882,12 +936,10 @@ class CableDesignHelper(PreImportHelper):
     def tag():
         return "CableDesign"
 
-    @classmethod
-    def num_input_cols(cls):
+    def num_input_cols(self):
         return 23
 
-    @classmethod
-    def input_column_list(cls):
+    def input_column_list(self):
 
         global name_manager
 
@@ -908,7 +960,7 @@ class CableDesignHelper(PreImportHelper):
             InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, validator=DeviceAddressValidator(CABLE_DESIGN_DEST_LOCATION_KEY, CABLE_DESIGN_DEST_ETPM_KEY), required=True),
             InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY, required=True),
             InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
-            InputColumnModel(col_index=16, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
+            InputColumnModel(col_index=16, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, validator=EndpointValidator(CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints), required=True),
             InputColumnModel(col_index=17, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
             InputColumnModel(col_index=18, key=CABLE_DESIGN_MBA_ID_KEY),
             InputColumnModel(col_index=19, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
@@ -918,8 +970,7 @@ class CableDesignHelper(PreImportHelper):
         ]
         return column_list
 
-    @staticmethod
-    def output_column_list():
+    def output_column_list(self):
         column_list = [
             OutputColumnModel(col_index=0, method="get_name", label="name"),
             OutputColumnModel(col_index=1, method="get_alt_name", label="alt name"),
@@ -959,21 +1010,6 @@ class CableDesignHelper(PreImportHelper):
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
         return CableDesignOutputObject(helper=self, input_dict=input_dict)
-
-    def has_endpoint(self, endpoint):
-        return endpoint in self.endpoint_dict
-
-    def get_id_for_endpoint(self, endpoint):
-        return self.endpoint_dict[endpoint]
-
-    def set_id_for_endpoint(self, endpoint, id):
-        self.endpoint_dict[endpoint] = id
-
-    def add_missing_endpoint(self, endpoint_name):
-        self.missing_endpoints.add(endpoint_name)
-
-    def add_nonunique_endpoint(self, endpoint_name):
-        self.nonunique_endpoints.add(endpoint_name)
 
     def close(self):
         if len(CableDesignOutputObject.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
@@ -1117,43 +1153,15 @@ class CableDesignOutputObject(OutputObject):
     def get_cable_type_id(self):
         return self.get_cable_type_id_cls(self.input_dict, self.helper.api)
 
-    def get_endpoint_id(self, input_column_key):
-
-        global isValid
+    def get_endpoint_id(self, input_column_key, container_key):
 
         endpoint_name = self.input_dict[input_column_key]
+        container_name = self.input_dict[container_key]
 
-        if endpoint_name == "" or endpoint_name is None:
-            return ""
-
-        if self.helper.has_endpoint(endpoint_name):
-            return self.helper.get_id_for_endpoint(endpoint_name)
-        else:
-            # check to see if endpoint exists in CDB by name
-            result_list = []
-            result_list = self.helper.api.getMachineDesignItemApi().get_md_in_hierarchy_by_name(self.helper.get_md_root(), endpoint_name)
-
-            if len(result_list) == 0:
-                isValid = False
-                self.helper.add_missing_endpoint(endpoint_name)
-                logging.error("no endpoint machine design item found with name: %s in specified hierarchy" % (endpoint_name))
-                return None
-
-            elif len(result_list) > 1:
-                isValid = False
-                self.helper.add_nonunique_endpoint(endpoint_name)
-                logging.error("non-unique endpoint name: %s in specified hierarchy" % (endpoint_name))
-                return None
-
-            else:
-                endpoint_object = result_list[0]
-                endpoint_id = endpoint_object.id
-                logging.debug("found machine design item with name: %s, id: %s" % (endpoint_name, endpoint_id))
-                self.helper.set_id_for_endpoint(endpoint_name, endpoint_id)
-                return endpoint_id
+        return self.helper.rack_manager.get_endpoint_id_for_rack(container_name, endpoint_name)
 
     def get_endpoint1_id(self):
-        return self.get_endpoint_id(CABLE_DESIGN_FROM_DEVICE_NAME_KEY)
+        return self.get_endpoint_id(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY)
 
     def get_endpoint1_description(self):
         return str(self.input_dict[CABLE_DESIGN_SRC_LOCATION_KEY]) + ":" + \
@@ -1166,7 +1174,7 @@ class CableDesignOutputObject(OutputObject):
         return str(self.input_dict[CABLE_DESIGN_VIA_ROUTE_KEY])
 
     def get_endpoint2_id(self):
-        return self.get_endpoint_id(CABLE_DESIGN_TO_DEVICE_NAME_KEY)
+        return self.get_endpoint_id(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY)
 
     def get_endpoint2_description(self):
         return str(self.input_dict[CABLE_DESIGN_DEST_LOCATION_KEY]) + ":" + \
@@ -1304,6 +1312,10 @@ def main():
     headerIndex = headerRowNum - 1
     firstDataIndex = firstDataRowNum - 1
     lastDataIndex = lastDataRowNum - 1
+
+    # initialize input and output columns
+    helper.initialize_input_columns()
+    helper.initialize_output_columns()
 
     # configure logging
     logging.basicConfig(filename=args.logFile, filemode='w', level=logging.DEBUG, format='%(levelname)s - %(message)s')
