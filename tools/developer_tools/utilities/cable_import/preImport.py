@@ -108,7 +108,6 @@ CABLE_DESIGN_QR_ID_KEY = "qrId"
 CABLE_DESIGN_VIA_ROUTE_KEY = "via"
 CABLE_DESIGN_WAYPOINT_ROUTE_KEY = "waypoint"
 
-isValid = True
 name_manager = None
 
 
@@ -180,6 +179,11 @@ class PreImportHelper(ABC):
     def output_column_list(self):
         pass
 
+    # Returns list of input handlers.
+    @abstractmethod
+    def input_handler_list(self):
+        pass
+
     # Returns an output object for the specified input object, or None if the input object is duplicate.
     @abstractmethod
     def get_output_object(self, input_dict):
@@ -236,11 +240,6 @@ class PreImportHelper(ABC):
                     is_valid = False
                     valid_messages.append("required value missing for key: %s row index: %d" % (column.key, row_num))
 
-            (column_is_valid, column_valid_string) = column.validate(input_dict)
-            if not column_is_valid:
-                is_valid = False
-                valid_messages.append(column_valid_string)
-
         (custom_is_valid, custom_valid_string) = self.input_row_is_valid_custom(input_dict)
         if not custom_is_valid:
             is_valid = False
@@ -252,6 +251,19 @@ class PreImportHelper(ABC):
     # can override to customize.
     def input_row_is_valid_custom(self, input_dict):
         return True, ""
+
+    def invoke_row_handlers(self, input_dict, row_num):
+
+        is_valid = True
+        valid_messages = []
+
+        for handler in self.input_handler_list():
+            (handler_is_valid, handler_valid_string) = handler.handle_input(input_dict)
+            if not handler_is_valid:
+                is_valid = False
+                valid_messages.append(handler_valid_string)
+
+        return is_valid, valid_messages
 
     # Returns column label for specified column index.
     def get_output_column_label(self, col_index):
@@ -303,7 +315,7 @@ class ConnectedMenuManager:
     def has_name(self, range_name):
         return range_name in self.name_dict
 
-    def valueIsValidForName(self, parent_value, child_value):
+    def value_is_valid_for_name(self, parent_value, child_value):
         child_value_list = self.name_dict.get(parent_value)
         if child_value_list is not None:
             return child_value in child_value_list
@@ -311,59 +323,65 @@ class ConnectedMenuManager:
             return False
 
 
-class ColumnValidator(ABC):
+class InputHandler(ABC):
 
-    # Run validation for column
+    # Invokes handler.
     @abstractmethod
-    def validate(self, cell_value, input_dict):
+    def handle_input(self, input_dict):
         pass
 
 
-class ConnectedMenuValidator(ColumnValidator):
+class ConnectedMenuHandler(InputHandler):
 
-    def __init__(self, parent_key):
+    def __init__(self, column_key, parent_key):
+        self.column_key = column_key
         self.parent_key = parent_key
 
-    def validate(self, cell_value, input_dict):
+    def handle_input(self, input_dict):
         global name_manager
         parent_value = input_dict[self.parent_key]
+        cell_value = input_dict[self.column_key]
         if not name_manager.has_name(parent_value):
             sys.exit("name manager has no menu range for: %s" % parent_value)
-        has_child = name_manager.valueIsValidForName(parent_value, cell_value)
+        has_child = name_manager.value_is_valid_for_name(parent_value, cell_value)
         valid_string = ""
         if not has_child:
             valid_string = "range for parent name %s does not include child name %s" % (parent_value, cell_value)
         return has_child, valid_string
 
 
-class NamedRangeValidator(ColumnValidator):
+class NamedRangeHandler(InputHandler):
 
-    def __init__(self, range_name):
+    def __init__(self, column_key, range_name):
+        self.column_key = column_key
         self.range_name = range_name
 
-    def validate(self, cell_value, input_dict):
+    def handle_input(self, input_dict):
         global name_manager
         if not name_manager.has_name(self.range_name):
             sys.exit("name manager has no named range for: %s" % self.range_name)
-        has_child = name_manager.valueIsValidForName(self.range_name, cell_value)
+        cell_value = input_dict[self.column_key]
+        has_child = name_manager.value_is_valid_for_name(self.range_name, cell_value)
         valid_string = ""
         if not has_child:
             valid_string = "named range %s does not include value %s" % (self.range_name, cell_value)
         return has_child, valid_string
 
 
-class DeviceAddressValidator(ColumnValidator):
+class DeviceAddressHandler(InputHandler):
 
-    def __init__(self, location_key, etpm_key):
+    def __init__(self, column_key, location_key, etpm_key):
+        self.column_key = column_key
         self.location_key = location_key
         self.etpm_key = etpm_key
 
-    def validate(self, cell_value, input_dict):
+    def handle_input(self, input_dict):
 
         global name_manager
 
         location_value = input_dict[self.location_key]
         etpm_value = input_dict[self.etpm_key]
+        cell_value = input_dict[self.column_key]
 
         range_name = ""
         if location_value == "SR_T":
@@ -376,16 +394,17 @@ class DeviceAddressValidator(ColumnValidator):
         if not name_manager.has_name(range_name):
             sys.exit("name manager has no named address range for: %s" % range_name)
 
-        has_child = name_manager.valueIsValidForName(range_name, cell_value)
+        has_child = name_manager.value_is_valid_for_name(range_name, cell_value)
         valid_string = ""
         if not has_child:
             valid_string = "named address range %s does not include value %s" % (range_name, cell_value)
         return has_child, valid_string
 
 
-class EndpointValidator(ColumnValidator):
+class EndpointHandler(InputHandler):
 
-    def __init__(self, rack_key, hierarchy_name, api, rack_manager, missing_endpoints, nonunique_endpoints):
+    def __init__(self, column_key, rack_key, hierarchy_name, api, rack_manager, missing_endpoints, nonunique_endpoints):
+        self.column_key = column_key
         self.rack_key = rack_key
         self.hierarchy_name = hierarchy_name
         self.api = api
@@ -393,9 +412,9 @@ class EndpointValidator(ColumnValidator):
         self.missing_endpoints = missing_endpoints
         self.nonunique_endpoints = nonunique_endpoints
 
-    def validate(self, cell_value, input_dict):
+    def handle_input(self, input_dict):
 
-        endpoint_name = cell_value
+        endpoint_name = input_dict[self.column_key]
         rack_name = input_dict[self.rack_key]
 
         # check endpoint cache before calling API
@@ -416,13 +435,13 @@ class EndpointValidator(ColumnValidator):
             is_valid = False
             valid_string = "no endpoint item found with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
             logging.error(valid_string)
-            self.missing_endpoints.add(endpoint_name)
+            self.missing_endpoints.add(rack_name + " + " + endpoint_name)
 
         elif len(result_list) > 1:
             is_valid = False
             valid_string = "duplicate endpoint items found with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
             logging.error(valid_string)
-            self.nonunique_endpoints.add(endpoint_name)
+            self.nonunique_endpoints.add(rack_name + " + " + endpoint_name)
 
         else:
             endpoint_object = result_list[0]
@@ -433,20 +452,52 @@ class EndpointValidator(ColumnValidator):
         return is_valid, valid_string
 
 
+class CableTypeHandler(InputHandler):
+
+    def __init__(self, column_key, id_manager, api, missing_cable_type_list):
+        self.column_key = column_key
+        self.id_manager = id_manager
+        self.api = api
+        self.missing_cable_type_list = missing_cable_type_list
+
+    def handle_input(self, input_dict):
+
+        cable_type_name = input_dict[self.column_key]
+
+        cached_id = self.id_manager.get_id_for_name(cable_type_name)
+        if cached_id is not None:
+            # nothing to do, id already cached
+            return True, ""
+
+        else:
+            # check to see if cable type exists in CDB by name
+            cable_type_object = None
+            try:
+                cable_type_object = self.api.getCableCatalogItemApi().get_cable_catalog_item_by_name(cable_type_name)
+            except ApiException as ex:
+                if "ObjectNotFound" not in ex.body:
+                    error_msg = "unknown api exception retrieving cable catalog item: %s - %s" % (cable_type_name, ex.body)
+                    logging.error(error_msg)
+                    return False, error_msg
+
+            if cable_type_object:
+                cable_type_id = cable_type_object.id
+                logging.debug("found cable type with name: %s, id: %s" % (cable_type_name, cable_type_id))
+                self.id_manager.set_id_for_name(cable_type_name, cable_type_id)
+                return True, ""
+            else:
+                self.missing_cable_type_list.add(cable_type_name)
+                error_msg = "no cable type found for name: %s" % cable_type_name
+                logging.error(error_msg)
+                return False, error_msg
+
+
 class InputColumnModel:
 
     def __init__(self, col_index, key, validator=None, required=False):
         self.index = col_index
         self.key = key
-        self.validator = validator
         self.required = required
-
-    def validate(self, input_dict):
-        cell_value = input_dict[self.key]
-        if self.validator is None:
-            return True, ""
-        else:
-            return self.validator.validate(cell_value, input_dict)
 
 
 class OutputColumnModel:
@@ -462,6 +513,40 @@ class OutputObject(ABC):
     def __init__(self, helper, input_dict):
         self.helper = helper
         self.input_dict = input_dict
+
+
+class IdManager():
+
+    def __init__(self):
+        self.name_id_dict = {}
+
+    def set_id_for_name(self, name, id):
+        self.name_id_dict[name] = id
+
+    def get_id_for_name(self, name):
+        if name in self.name_id_dict:
+            return self.name_id_dict[name]
+        else:
+            return None
+
+
+class RackManager():
+
+    def __init__(self):
+        self.rack_dict = {}
+
+    def add_endpoint_id_for_rack(self, rack_name, endpoint_name, endpoint_id):
+        if not rack_name in self.rack_dict:
+            self.rack_dict[rack_name] = {}
+        rack_contents = self.rack_dict[rack_name]
+        rack_contents[endpoint_name] = endpoint_id
+
+    def get_endpoint_id_for_rack(self, rack_name, endpoint_name):
+        if rack_name in self.rack_dict:
+            rack_items = self.rack_dict[rack_name]
+            if endpoint_name in rack_items:
+                return rack_items[endpoint_name]
+        return None
 
 
 @register
@@ -777,6 +862,8 @@ class CableInventoryHelper(PreImportHelper):
 
     def __init__(self):
         super().__init__()
+        self.cable_type_id_manager = IdManager()
+        self.missing_cable_types = set()
 
     # Adds helper specific command line args.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
@@ -827,6 +914,13 @@ class CableInventoryHelper(PreImportHelper):
         ]
         return column_list
 
+    def input_handler_list(self):
+        global name_manager
+        handler_list = [
+            CableTypeHandler(CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.api, self.missing_cable_types),
+        ]
+        return handler_list
+
     # Treat a row that contains a single non-empty value in the "import id" column as an empty row.
     def input_row_is_empty_custom(self, input_dict, row_num):
         non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
@@ -847,7 +941,8 @@ class CableInventoryOutputObject(OutputObject):
         super().__init__(helper, input_dict)
 
     def get_cable_type_id(self):
-        return CableDesignOutputObject.get_cable_type_id_cls(self.input_dict, self.helper.api)
+        cable_type_name = self.input_dict[CABLE_DESIGN_TYPE_KEY]
+        return self.helper.cable_type_id_manager.get_id_for_name(cable_type_name)
 
     def get_tag(self):
         return "auto"
@@ -880,25 +975,6 @@ class CableInventoryOutputObject(OutputObject):
         return self.helper.get_args().ownerGroupId
 
 
-class RackManager():
-
-    def __init__(self):
-        self.rack_dict = {}
-
-    def add_endpoint_id_for_rack(self, rack_name, endpoint_name, endpoint_id):
-        if not rack_name in self.rack_dict:
-            self.rack_dict[rack_name] = {}
-        rack_contents = self.rack_dict[rack_name]
-        rack_contents[endpoint_name] = endpoint_id
-
-    def get_endpoint_id_for_rack(self, rack_name, endpoint_name):
-        if rack_name in self.rack_dict:
-            rack_items = self.rack_dict[rack_name]
-            if endpoint_name in rack_items:
-                return rack_items[endpoint_name]
-        return None
-
-
 @register
 class CableDesignHelper(PreImportHelper):
 
@@ -906,7 +982,9 @@ class CableDesignHelper(PreImportHelper):
         super().__init__()
         self.rack_manager = RackManager()
         self.md_root = None
+        self.cable_type_id_manager = IdManager()
         self.missing_endpoints = set()
+        self.missing_cable_types = set()
         self.nonunique_endpoints = set()
         self.info_file = None
 
@@ -940,27 +1018,24 @@ class CableDesignHelper(PreImportHelper):
         return 23
 
     def input_column_list(self):
-
-        global name_manager
-
         column_list = [
             InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
-            InputColumnModel(col_index=1, key=CABLE_DESIGN_LAYING_KEY, validator=NamedRangeValidator("_Laying"), required=True),
-            InputColumnModel(col_index=2, key=CABLE_DESIGN_VOLTAGE_KEY, validator=NamedRangeValidator("_Voltage"), required=True),
-            InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, validator=NamedRangeValidator("_Owner"), required=True),
-            InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, validator=ConnectedMenuValidator(CABLE_DESIGN_OWNER_KEY), required=True),
+            InputColumnModel(col_index=1, key=CABLE_DESIGN_LAYING_KEY, required=True),
+            InputColumnModel(col_index=2, key=CABLE_DESIGN_VOLTAGE_KEY, required=True),
+            InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
+            InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, required=True),
             InputColumnModel(col_index=5, key=CABLE_DESIGN_SRC_LOCATION_KEY, required=True),
-            InputColumnModel(col_index=6, key=CABLE_DESIGN_SRC_ANS_KEY, validator=ConnectedMenuValidator(CABLE_DESIGN_SRC_LOCATION_KEY), required=True),
-            InputColumnModel(col_index=7, key=CABLE_DESIGN_SRC_ETPM_KEY, validator=ConnectedMenuValidator(CABLE_DESIGN_SRC_ANS_KEY), required=True),
-            InputColumnModel(col_index=8, key=CABLE_DESIGN_SRC_ADDRESS_KEY, validator=DeviceAddressValidator(CABLE_DESIGN_SRC_LOCATION_KEY, CABLE_DESIGN_SRC_ETPM_KEY), required=True),
+            InputColumnModel(col_index=6, key=CABLE_DESIGN_SRC_ANS_KEY, required=True),
+            InputColumnModel(col_index=7, key=CABLE_DESIGN_SRC_ETPM_KEY, required=True),
+            InputColumnModel(col_index=8, key=CABLE_DESIGN_SRC_ADDRESS_KEY, required=True),
             InputColumnModel(col_index=9, key=CABLE_DESIGN_SRC_DESCRIPTION_KEY, required=True),
             InputColumnModel(col_index=10, key=CABLE_DESIGN_DEST_LOCATION_KEY, required=True),
-            InputColumnModel(col_index=11, key=CABLE_DESIGN_DEST_ANS_KEY, validator=ConnectedMenuValidator(CABLE_DESIGN_DEST_LOCATION_KEY), required=True),
-            InputColumnModel(col_index=12, key=CABLE_DESIGN_DEST_ETPM_KEY, validator=ConnectedMenuValidator(CABLE_DESIGN_DEST_ANS_KEY), required=True),
-            InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, validator=DeviceAddressValidator(CABLE_DESIGN_DEST_LOCATION_KEY, CABLE_DESIGN_DEST_ETPM_KEY), required=True),
+            InputColumnModel(col_index=11, key=CABLE_DESIGN_DEST_ANS_KEY, required=True),
+            InputColumnModel(col_index=12, key=CABLE_DESIGN_DEST_ETPM_KEY, required=True),
+            InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, required=True),
             InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY, required=True),
             InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
-            InputColumnModel(col_index=16, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, validator=EndpointValidator(CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints), required=True),
+            InputColumnModel(col_index=16, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
             InputColumnModel(col_index=17, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
             InputColumnModel(col_index=18, key=CABLE_DESIGN_MBA_ID_KEY),
             InputColumnModel(col_index=19, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
@@ -994,6 +1069,28 @@ class CableDesignHelper(PreImportHelper):
             OutputColumnModel(col_index=19, method="get_owner_group_id", label="owner group"),
         ]
         return column_list
+    
+    def input_handler_list(self):
+        global name_manager
+        handler_list = [
+            NamedRangeHandler(CABLE_DESIGN_LAYING_KEY, "_Laying"),
+            NamedRangeHandler(CABLE_DESIGN_VOLTAGE_KEY, "_Voltage"),
+            NamedRangeHandler(CABLE_DESIGN_OWNER_KEY, "_Owner"),
+            ConnectedMenuHandler(CABLE_DESIGN_TYPE_KEY, CABLE_DESIGN_OWNER_KEY),
+            CableTypeHandler(CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.api, self.missing_cable_types),
+            NamedRangeHandler(CABLE_DESIGN_SRC_LOCATION_KEY, "_Location"),
+            ConnectedMenuHandler(CABLE_DESIGN_SRC_ANS_KEY, CABLE_DESIGN_SRC_LOCATION_KEY),
+            ConnectedMenuHandler(CABLE_DESIGN_SRC_ETPM_KEY, CABLE_DESIGN_SRC_ANS_KEY),
+            DeviceAddressHandler(CABLE_DESIGN_SRC_ADDRESS_KEY, CABLE_DESIGN_SRC_LOCATION_KEY, CABLE_DESIGN_SRC_ETPM_KEY),
+            NamedRangeHandler(CABLE_DESIGN_DEST_LOCATION_KEY, "_Location"),
+            ConnectedMenuHandler(CABLE_DESIGN_DEST_ANS_KEY, CABLE_DESIGN_DEST_LOCATION_KEY),
+            ConnectedMenuHandler(CABLE_DESIGN_DEST_ETPM_KEY, CABLE_DESIGN_DEST_ANS_KEY),
+            DeviceAddressHandler(CABLE_DESIGN_DEST_ADDRESS_KEY, CABLE_DESIGN_DEST_LOCATION_KEY, CABLE_DESIGN_DEST_ETPM_KEY),
+            EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints),
+            EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints),
+        ]
+        return handler_list
+
 
     def get_md_root(self):
         return self.md_root
@@ -1012,7 +1109,7 @@ class CableDesignHelper(PreImportHelper):
         return CableDesignOutputObject(helper=self, input_dict=input_dict)
 
     def close(self):
-        if len(CableDesignOutputObject.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
+        if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
             output_book = xlsxwriter.Workbook(self.info_file)
             output_sheet = output_book.add_worksheet()
 
@@ -1021,7 +1118,7 @@ class CableDesignHelper(PreImportHelper):
             output_sheet.write(0, 2, "non-unique endpoints")
 
             row_index = 1
-            for cable_type_name in CableDesignOutputObject.missing_cable_types:
+            for cable_type_name in self.missing_cable_types:
                 output_sheet.write(row_index, 0, cable_type_name)
                 row_index = row_index + 1
 
@@ -1039,9 +1136,6 @@ class CableDesignHelper(PreImportHelper):
 
 
 class CableDesignOutputObject(OutputObject):
-
-    cable_type_dict = {}
-    missing_cable_types = set()
 
     def __init__(self, helper, input_dict):
         super().__init__(helper, input_dict)
@@ -1095,69 +1189,13 @@ class CableDesignOutputObject(OutputObject):
     def get_voltage(self):
         return self.input_dict[CABLE_DESIGN_VOLTAGE_KEY]
 
-    @classmethod
-    def has_cable_type(cls, cable_type):
-        return cable_type in cls.cable_type_dict
-
-    @classmethod
-    def get_id_for_cable_type(cls, cable_type):
-        return cls.cable_type_dict[cable_type]
-
-    @classmethod
-    def set_id_for_cable_type(cls, cable_type, id):
-        cls.cable_type_dict[cable_type] = id
-
-    @classmethod
-    def add_missing_cable_type(cls, cable_type_name):
-        cls.missing_cable_types.add(cable_type_name)
-
-    @classmethod
-    def get_cable_type_id_cls(cls, row_dict, api):
-
-        global isValid
-
-        cable_type_name = row_dict[CABLE_DESIGN_TYPE_KEY]
-
-        if cable_type_name == "" or cable_type_name is None:
-            return ""
-        
-        if cls.has_cable_type(cable_type_name):
-            return cls.get_id_for_cable_type(cable_type_name)
-        else:
-            # check to see if cable type exists in CDB by name
-            cable_type_object = None
-            try:
-                cable_type_object = api.getCableCatalogItemApi().get_cable_catalog_item_by_name(cable_type_name)
-            except ApiException as ex:
-                if "ObjectNotFound" not in ex.body:
-                    error_msg = "exception retrieving cable catalog item: %s - %s" % (cable_type_name, ex.body)
-                    logging.error(error_msg)
-                    sys.exit(error_msg)
-                else:
-                    isValid = False
-                    cls.add_missing_cable_type(cable_type_name)
-                    logging.error("ObjectNotFound exception for cable type with name: %s" % cable_type_name)
-                    return None
-
-            if cable_type_object:
-                cable_type_id = cable_type_object.id
-                logging.debug("found cable type with name: %s, id: %s" % (cable_type_name, cable_type_id))
-                cls.set_id_for_cable_type(cable_type_name, cable_type_id)
-                return cable_type_id
-            else:
-                isValid = False
-                cls.add_missing_cable_type(cable_type_name)
-                logging.error("cable_type_object from API result is None for name: %s" % cable_type_name)
-                return None
-
     def get_cable_type_id(self):
-        return self.get_cable_type_id_cls(self.input_dict, self.helper.api)
+        cable_type_name = self.input_dict[CABLE_DESIGN_TYPE_KEY]
+        return self.helper.cable_type_id_manager.get_id_for_name(cable_type_name)
 
     def get_endpoint_id(self, input_column_key, container_key):
-
         endpoint_name = self.input_dict[input_column_key]
         container_name = self.input_dict[container_key]
-
         return self.helper.rack_manager.get_endpoint_id_for_rack(container_name, endpoint_name)
 
     def get_endpoint1_id(self):
@@ -1255,7 +1293,6 @@ def write_validation_report(validation_map, validation_report_file):
 def main():
 
     global name_manager
-    global isValid
 
     # find --type command line parameter so we can create the appropriate helper subclass before proceeding
     type_arg = "--type"
@@ -1344,6 +1381,7 @@ def main():
         sys.exit("inputFile %s doesn't contain expected number of columns: %d" % (args.inputFile, helper.num_input_cols()))
 
     # process rows from input spreadsheet
+    input_valid = True
     output_objects = []
     validation_map = {}
     num_input_rows = 0
@@ -1367,13 +1405,27 @@ def main():
         if helper.input_row_is_empty(input_dict=input_dict, row_num=current_row_num):
             continue
 
-        (row_is_valid, row_valid_messages) = helper.input_row_is_valid(input_dict=input_dict, row_num=row_ind)
+        row_is_valid = True
+        row_valid_messages = []
+
+        # validate row
+        (is_valid, valid_messages) = helper.input_row_is_valid(input_dict=input_dict, row_num=row_ind)
+        if not is_valid:
+            row_is_valid = False
+            row_valid_messages.extend(valid_messages)
+
+        # invoke handlers
+        (handler_is_valid, handler_messages) = helper.invoke_row_handlers(input_dict=input_dict, row_num=row_ind)
+        if not handler_is_valid:
+            row_is_valid = False
+            row_valid_messages.extend(handler_messages)
+
         if row_is_valid:
             output_obj = helper.get_output_object(input_dict=input_dict)
             if output_obj:
                 output_objects.append(output_obj)
         else:
-            isValid = False
+            input_valid = False
             logging.error("validation errors found for row %d" % row_ind)
             validation_map[current_row_num] = row_valid_messages
 
@@ -1407,7 +1459,7 @@ def main():
                 output_sheet.write(row_ind, col_ind, val)
 
     # save output spreadsheet
-    if isValid:
+    if input_valid:
         output_book.close()
 
     # clean up helper
@@ -1427,7 +1479,7 @@ def main():
     write_validation_report(validation_map, args.validationFile)
 
     # print summary
-    if isValid:
+    if input_valid:
         summary_msg = "SUMMARY: processed %d input rows and wrote %d output rows" % (num_input_rows, num_output_rows)
     else:
         summary_msg = "ERROR: processed %d input rows but no output spreadsheet generated, see log for errors" % num_input_rows
