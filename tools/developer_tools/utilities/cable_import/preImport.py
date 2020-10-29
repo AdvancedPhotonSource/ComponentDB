@@ -679,6 +679,10 @@ class SourceHelper(PreImportHelper):
     def close(self):
         if len(self.new_sources) > 0 or len(self.existing_sources) > 0:
 
+            if not self.args.infoFile:
+                print("provide command line arg 'infoFile' to generate debugging output file")
+                return
+
             output_book = xlsxwriter.Workbook(self.args.infoFile)
             output_sheet = output_book.add_worksheet()
 
@@ -1195,7 +1199,13 @@ class CableDesignHelper(PreImportHelper):
         return CableDesignOutputObject(helper=self, input_dict=input_dict)
 
     def close(self):
+
         if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
+
+            if not self.args.infoFile:
+                print("provide command line arg 'infoFile' to generate debugging output file")
+                return
+
             output_book = xlsxwriter.Workbook(self.args.infoFile)
             output_sheet = output_book.add_worksheet()
 
