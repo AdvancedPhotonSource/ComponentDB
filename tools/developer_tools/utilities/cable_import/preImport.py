@@ -294,7 +294,7 @@ class ConnectedMenuManager:
 
         for name in workbook.name_obj_list:
             if name.scope == -1:
-                print(name.name)
+                # print(name.name)
                 name.book = workbook  # seems like an error that library doesn't do this internally
                 (sheet_name, ref) = name.formula_text.split('!')
                 if ':' in ref:
@@ -309,7 +309,7 @@ class ConnectedMenuManager:
                 for row_ind in range(first_cell_row, last_cell_row + 1):
                     for col_ind in range(first_cell_col, last_cell_col + 1):
                         values.append(sheet.cell(row_ind, col_ind).value)
-                        print("\t%s" % sheet.cell(row_ind, col_ind).value)
+                        # print("\t%s" % sheet.cell(row_ind, col_ind).value)
                 self.add_name(name.name, values)
 
     def has_name(self, range_name):
@@ -325,16 +325,60 @@ class ConnectedMenuManager:
 
 class InputHandler(ABC):
 
+    def __init__(self, column_key):
+        self.column_key = column_key
+
     # Invokes handler.
     @abstractmethod
     def handle_input(self, input_dict):
         pass
 
 
+class SourceHandler(InputHandler):
+
+    def __init__(self, column_key, api, existing_sources, new_sources):
+        super().__init__(column_key)
+        self.existing_sources = existing_sources
+        self.new_sources = new_sources
+        self.api = api
+
+    def handle_input(self, input_dict):
+
+        manufacturer = input_dict[self.column_key].upper()
+
+        if len(manufacturer) == 0:
+            # no manufacturer specified, skip
+            return True, ""
+
+        if (manufacturer.upper in self.new_sources) or (manufacturer in self.existing_sources):
+            # already looked up this manufacturer
+            return True, ""
+
+        # check to see if manufacturer exists as a CDB Source
+        try:
+            mfr_source = self.api.getSourceApi().get_source_by_name(manufacturer)
+        except ApiException as ex:
+            if "ObjectNotFound" not in ex.body:
+                msg = "exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body)
+                logging.error(msg)
+                print(msg)
+                return False, msg
+            mfr_source = None
+        if mfr_source:
+            # source already exists for mfr
+            self.existing_sources.append(manufacturer)
+
+        else:
+            # need to add new source for mfr
+            self.new_sources.append(manufacturer)
+
+        return True, ""
+
+
 class ConnectedMenuHandler(InputHandler):
 
     def __init__(self, column_key, parent_key):
-        self.column_key = column_key
+        super().__init__(column_key)
         self.parent_key = parent_key
 
     def handle_input(self, input_dict):
@@ -353,7 +397,7 @@ class ConnectedMenuHandler(InputHandler):
 class NamedRangeHandler(InputHandler):
 
     def __init__(self, column_key, range_name):
-        self.column_key = column_key
+        super().__init__(column_key)
         self.range_name = range_name
 
     def handle_input(self, input_dict):
@@ -371,7 +415,7 @@ class NamedRangeHandler(InputHandler):
 class DeviceAddressHandler(InputHandler):
 
     def __init__(self, column_key, location_key, etpm_key):
-        self.column_key = column_key
+        super().__init__(column_key)
         self.location_key = location_key
         self.etpm_key = etpm_key
 
@@ -404,7 +448,7 @@ class DeviceAddressHandler(InputHandler):
 class EndpointHandler(InputHandler):
 
     def __init__(self, column_key, rack_key, hierarchy_name, api, rack_manager, missing_endpoints, nonunique_endpoints):
-        self.column_key = column_key
+        super().__init__(column_key)
         self.rack_key = rack_key
         self.hierarchy_name = hierarchy_name
         self.api = api
@@ -455,7 +499,7 @@ class EndpointHandler(InputHandler):
 class CableTypeHandler(InputHandler):
 
     def __init__(self, column_key, id_manager, api, missing_cable_type_list):
-        self.column_key = column_key
+        super().__init__(column_key)
         self.id_manager = id_manager
         self.api = api
         self.missing_cable_type_list = missing_cable_type_list
@@ -530,6 +574,24 @@ class IdManager():
             return None
 
 
+class NameVariantManager():
+
+    def __init__(self):
+        self.name_list = []
+
+    def add_name(self, name):
+        is_valid = True
+        valid_string = ""
+        for n in self.name_list:
+            if n == name:
+                return True, ""
+            elif n.upper() == name.upper():
+                is_valid = False
+                valid_string = "%s is variation of existing name %s" % (name, n)
+        self.name_list.append(name)
+        return is_valid, valid_string
+
+
 class RackManager():
 
     def __init__(self):
@@ -554,7 +616,10 @@ class SourceHelper(PreImportHelper):
 
     def __init__(self):
         super().__init__()
-        self.manufacturers = set()
+        self.output_manufacturers = set()
+        self.source_name_manager = NameVariantManager()
+        self.existing_sources = []
+        self.new_sources = []
 
     @staticmethod
     def tag():
@@ -578,35 +643,59 @@ class SourceHelper(PreImportHelper):
         ]
         return column_list
 
+    def input_handler_list(self):
+        global name_manager
+        handler_list = [
+            SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, self.api, self.existing_sources, self.new_sources),
+        ]
+        return handler_list
+
     def get_output_object(self, input_dict):
 
-        manufacturer = input_dict[CABLE_TYPE_MANUFACTURER_KEY]
+        manufacturer = input_dict[CABLE_TYPE_MANUFACTURER_KEY].upper()
+
         if len(manufacturer) == 0:
             logging.debug("manufacturer is empty")
             return None
 
         logging.debug("found manufacturer: %s" % manufacturer)
 
-        if manufacturer.upper() not in self.manufacturers:
-            # check to see if manufacturer exists as a CDB Source
-            try:
-                mfr_source = self.api.getSourceApi().get_source_by_name(manufacturer)
-            except ApiException as ex:
-                if "ObjectNotFound" not in ex.body:
-                    logging.error("exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body))
-                    print("exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body))
-                mfr_source = None
-            if mfr_source:
-                logging.debug("source already exists for manufacturer: %s, skipping" % manufacturer)
-                return None
-            else:
-                logging.debug("adding output object for unique manufacturer: %s" % manufacturer)
-                self.manufacturers.add(manufacturer.upper())
-                return SourceOutputObject(helper=self, input_dict=input_dict)
+        if manufacturer in self.existing_sources:
+            # don't need to import this item
+            logging.debug("skipping existing cdb manufacturer: %s" % manufacturer)
+            return None
+
+        if manufacturer not in self.output_manufacturers:
+            # need to write this object to output spreadsheet for import
+            self.output_manufacturers.add(manufacturer)
+            logging.debug("adding new manufacturer: %s to output" % manufacturer)
+            return SourceOutputObject(helper=self, input_dict=input_dict)
 
         else:
+            # already added to output spreadsheet
             logging.debug("ignoring duplicate manufacturer: %s" % manufacturer)
             return None
+
+    def close(self):
+        if len(self.new_sources) > 0 or len(self.existing_sources) > 0:
+
+            output_book = xlsxwriter.Workbook(self.args.infoFile)
+            output_sheet = output_book.add_worksheet()
+
+            output_sheet.write(0, 0, "new sources")
+            output_sheet.write(0, 1, "existing cdb sources")
+
+            row_index = 1
+            for src in self.new_sources:
+                output_sheet.write(row_index, 0, src)
+                row_index = row_index + 1
+
+            row_index = 1
+            for src in self.existing_sources:
+                output_sheet.write(row_index, 1, src)
+                row_index = row_index + 1
+
+            output_book.close()
 
 
 class SourceOutputObject(OutputObject):
@@ -986,7 +1075,6 @@ class CableDesignHelper(PreImportHelper):
         self.missing_endpoints = set()
         self.missing_cable_types = set()
         self.nonunique_endpoints = set()
-        self.info_file = None
 
     # Adds helper specific command line args.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
@@ -995,7 +1083,6 @@ class CableDesignHelper(PreImportHelper):
         parser.add_argument("--techSystemId", help="CDB technical system ID for owner", required=True)
         parser.add_argument("--projectId", help="CDB project ID", required=True)
         parser.add_argument("--mdRoot", help="CDB top-level parent machine design node name", required=True)
-        parser.add_argument("--infoFile", help="debugging info xlsx file for missing endpoints etc.", required=True)
         parser.add_argument("--ownerUserId", help="CDB owner user ID", required=True)
         parser.add_argument("--ownerGroupId", help="CDB owner group ID", required=True)
 
@@ -1006,7 +1093,6 @@ class CableDesignHelper(PreImportHelper):
         print("CDB owner user id: %s" % args.ownerUserId)
         print("CDB owner group id: %s" % args.ownerGroupId)
         print("top-level parent machine design node name: %s" % args.mdRoot)
-        print("debugging info xlsx file: %s" % args.infoFile)
         self.md_root = args.mdRoot
         self.info_file = args.infoFile
 
@@ -1110,7 +1196,7 @@ class CableDesignHelper(PreImportHelper):
 
     def close(self):
         if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
-            output_book = xlsxwriter.Workbook(self.info_file)
+            output_book = xlsxwriter.Workbook(self.args.infoFile)
             output_sheet = output_book.add_worksheet()
 
             output_sheet.write(0, 0, "missing cable types")
@@ -1317,6 +1403,7 @@ def main():
     parser.add_argument(type_arg, help="Type of pre-import processing (Source, CableType, or CableDesign)", required=True)
     parser.add_argument("--logFile", help="File for log output", required=True)
     parser.add_argument("--validationFile", help="File for validation output", required=True)
+    parser.add_argument("--infoFile", help="domain specific xlsx file for reviewing helper actions", required=False)
     parser.add_argument("--cdbUrl", help="CDB system URL", required=True)
     parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)
     parser.add_argument("--cdbPassword", help="CDB User password for API login", required=True)
@@ -1330,6 +1417,7 @@ def main():
     print("using outputFile: %s" % args.outputFile)
     print("using logFile: %s" % args.logFile)
     print("using validation file: %s" % args.validationFile)
+    print("debugging info xlsx file: %s" % args.infoFile)
     print("pre-import type: %s" % args.type)
     print("cdb url: %s" % args.cdbUrl)
     print("cdb user id: %s" % args.cdbUser)
@@ -1426,7 +1514,7 @@ def main():
                 output_objects.append(output_obj)
         else:
             input_valid = False
-            logging.error("validation errors found for row %d" % row_ind)
+            logging.error("validation errors found for row %d" % current_row_num)
             validation_map[current_row_num] = row_valid_messages
 
     # create output spreadsheet
