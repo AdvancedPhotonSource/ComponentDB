@@ -334,7 +334,7 @@ class InputHandler(ABC):
         pass
 
 
-class SourceHandler(InputHandler):
+class ManufacturerHandler(InputHandler):
 
     def __init__(self, column_key, api, existing_sources, new_sources):
         super().__init__(column_key)
@@ -536,6 +536,49 @@ class CableTypeHandler(InputHandler):
                 return False, error_msg
 
 
+class SourceHandler(InputHandler):
+
+    def __init__(self, column_key, id_manager, api, missing_source_list):
+        super().__init__(column_key)
+        self.id_manager = id_manager
+        self.api = api
+        self.missing_source_list = missing_source_list
+
+    def handle_input(self, input_dict):
+
+        source_name = input_dict[self.column_key]
+
+        if source_name == "" or source_name is None:
+            return True, ""
+
+        cached_id = self.id_manager.get_id_for_name(source_name)
+        if cached_id is not None:
+            # nothing to do, id already cached
+            return True, ""
+
+        else:
+            # check to see if source exists in CDB by name
+            source_object = None
+            try:
+                source_object = self.api.getSourceApi().get_source_by_name(source_name)
+            except ApiException as ex:
+                if "ObjectNotFound" not in ex.body:
+                    error_msg = "unknown api exception retrieving source item: %s - %s" % (source_name, ex.body)
+                    logging.error(error_msg)
+                    return False, error_msg
+
+            if source_object:
+                source_id = source_object.id
+                logging.debug("found source with name: %s, id: %s" % (source_name, source_id))
+                self.id_manager.set_id_for_name(source_name, source_id)
+                return True, ""
+            else:
+                self.missing_source_list.append(source_name)
+                error_msg = "no source found for name: %s" % source_name
+                logging.error(error_msg)
+                return False, error_msg
+            
+
 class InputColumnModel:
 
     def __init__(self, col_index, key, validator=None, required=False):
@@ -646,7 +689,7 @@ class SourceHelper(PreImportHelper):
     def input_handler_list(self):
         global name_manager
         handler_list = [
-            SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, self.api, self.existing_sources, self.new_sources),
+            ManufacturerHandler(CABLE_TYPE_MANUFACTURER_KEY, self.api, self.existing_sources, self.new_sources),
         ]
         return handler_list
 
@@ -728,7 +771,8 @@ class CableTypeHelper(PreImportHelper):
 
     def __init__(self):
         super().__init__()
-        self.source_dict = {}
+        self.source_id_manager = IdManager()
+        self.missing_source_list = []
 
     # Adds helper specific command line args.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
@@ -813,19 +857,37 @@ class CableTypeHelper(PreImportHelper):
         ]
         return column_list
 
+    def input_handler_list(self):
+        global name_manager
+        handler_list = [
+            SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, self.source_id_manager, self.api, self.missing_source_list),
+        ]
+        return handler_list
+
     def get_output_object(self, input_dict):
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
         return CableTypeOutputObject(helper=self, input_dict=input_dict)
 
-    def has_mfr(self, mfr):
-        return mfr in self.source_dict
+    def close(self):
+        if len(self.missing_source_list) > 0:
 
-    def get_id_for_mfr(self, mfr):
-        return self.source_dict[mfr]
+            if not self.args.infoFile:
+                print("provide command line arg 'infoFile' to generate debugging output file")
+                return
 
-    def set_id_for_mfr(self, mfr, id):
-        self.source_dict[mfr] = id
+            output_book = xlsxwriter.Workbook(self.args.infoFile)
+            output_sheet = output_book.add_worksheet()
+
+            output_sheet.write(0, 0, "missing sources")
+
+            row_index = 1
+            for src in self.missing_source_list:
+                output_sheet.write(row_index, 0, src)
+                row_index = row_index + 1
+
+            output_book.close()
+
 
 
 class CableTypeOutputObject(OutputObject):
@@ -849,28 +911,8 @@ class CableTypeOutputObject(OutputObject):
         return self.input_dict[CABLE_TYPE_IMAGE_URL_KEY]
 
     def get_manufacturer_id(self):
-        manufacturer = self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
-
-        if manufacturer == "" or manufacturer is None:
-            return ""
-
-        if self.helper.has_mfr(manufacturer):
-            return self.helper.get_id_for_mfr(manufacturer)
-        else:
-            # check to see if manufacturer exists as a CDB Source
-            mfr_source = None
-            try:
-                mfr_source = self.helper.api.getSourceApi().get_source_by_name(manufacturer)
-            except ApiException as ex:
-                sys.exit("exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body))
-
-            if mfr_source:
-                source_id = mfr_source.id
-                logging.debug("found source for manufacturer: %s, id: %s" % (manufacturer, source_id))
-                self.helper.set_id_for_mfr(manufacturer, source_id)
-                return source_id
-            else:
-                sys.exit("no source found for manufacturer: %s" % manufacturer)
+        source_name = self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
+        return self.helper.source_id_manager.get_id_for_name(source_name)
 
     def get_part_number(self):
         return self.input_dict[CABLE_TYPE_PART_NUMBER_KEY]
