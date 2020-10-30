@@ -742,12 +742,12 @@ class SourceHelper(PreImportHelper):
             output_sheet.write(0, 1, "existing cdb sources")
 
             row_index = 1
-            for src in self.new_sources:
+            for src in sorted(self.new_sources):
                 output_sheet.write(row_index, 0, src)
                 row_index = row_index + 1
 
             row_index = 1
-            for src in self.existing_sources:
+            for src in (self.existing_sources):
                 output_sheet.write(row_index, 1, src)
                 row_index = row_index + 1
 
@@ -905,7 +905,7 @@ class CableTypeHelper(PreImportHelper):
             output_sheet.write(0, 0, "missing sources")
 
             row_index = 1
-            for src in self.missing_source_list:
+            for src in sorted(self.missing_source_list):
                 output_sheet.write(row_index, 0, src)
                 row_index = row_index + 1
 
@@ -1278,17 +1278,17 @@ class CableDesignHelper(PreImportHelper):
             output_sheet.write(0, 2, "non-unique endpoints")
 
             row_index = 1
-            for cable_type_name in self.missing_cable_types:
+            for cable_type_name in sorted(self.missing_cable_types):
                 output_sheet.write(row_index, 0, cable_type_name)
                 row_index = row_index + 1
 
             row_index = 1
-            for endpoint_name in self.missing_endpoints:
+            for endpoint_name in sorted(self.missing_endpoints):
                 output_sheet.write(row_index, 1, endpoint_name)
                 row_index = row_index + 1
 
             row_index = 1
-            for endpoint_name in self.nonunique_endpoints:
+            for endpoint_name in sorted(self.nonunique_endpoints):
                 output_sheet.write(row_index, 2, endpoint_name)
                 row_index = row_index + 1
 
