@@ -871,6 +871,7 @@ class CableTypeHelper(PreImportHelper):
     def input_handler_list(self):
         global name_manager
         handler_list = [
+            NamedRangeHandler(CABLE_TYPE_NAME_KEY, self.args.namedRange),
             SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, self.source_id_manager, self.api, self.missing_source_list),
         ]
         return handler_list
@@ -1590,6 +1591,7 @@ def main():
             input_valid = False
             msg = "validation ERRORS found for row %d" % current_row_num
             logging.error(msg)
+            print()
             print(msg)
             validation_map[current_row_num] = row_valid_messages
 
