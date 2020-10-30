@@ -1591,8 +1591,6 @@ def main():
             input_valid = False
             msg = "validation ERRORS found for row %d" % current_row_num
             logging.error(msg)
-            print()
-            print(msg)
             validation_map[current_row_num] = row_valid_messages
 
     (sheet_valid, sheet_valid_string) = helper.input_is_valid(output_objects)
@@ -1645,11 +1643,14 @@ def main():
         sys.exit("CDB logout failed")
 
     # print validation report
-    for key in validation_map:
-        print("row: %d" % key)
-        for message in validation_map[key]:
-            print("\t%s" % message)
-    write_validation_report(validation_map, args.validationFile)
+    if len(validation_map) > 0:
+        print()
+        print("validation ERRORS found")
+        for key in validation_map:
+            print("row: %d" % key)
+            for message in validation_map[key]:
+                print("\t%s" % message)
+        write_validation_report(validation_map, args.validationFile)
 
     # print summary
     if input_valid:
