@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.SingleColum
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
@@ -155,11 +156,13 @@ public class ImportHelperMachineHierarchy
     private static final String KEY_LOCATION = "location";
     private static final String KEY_PARENT = "importMdItem";
     private static final String KEY_IS_TEMPLATE = "importIsTemplateString";
+    private static final String KEY_SORT_ORDER = "importSortOrder";
     
     private static final String HEADER_PARENT = "Parent ID";
     private static final String HEADER_BASE_LEVEL = "Level";
     private static final String HEADER_ALT_NAME = "Machine Design Alternate Name";
     private static final String HEADER_DESCRIPTION = "Machine Design Item Description";
+    private static final String HEADER_SORT_ORDER = "Sort Order";
     private static final String HEADER_ASSIGNED_ITEM = "Assigned Catalog/Inventory Item Description";
     private static final String HEADER_ASSIGNED_ITEM_ID = "Assigned Catalog/Inventory Item";
     private static final String HEADER_LOCATION = "Location";
@@ -179,6 +182,7 @@ public class ImportHelperMachineHierarchy
         specs.add(new NameHierarchyColumnSpec(HEADER_BASE_LEVEL, KEY_NAME, KEY_INDENT, "Name hierarchy column", 3));
         specs.add(new StringColumnSpec(HEADER_ALT_NAME, "alternateName", "setAlternateName", false, "Alternate machine design item name.", 128));
         specs.add(new StringColumnSpec(HEADER_DESCRIPTION, "description", "setDescription", false, "Textual description of machine design item.", 256));
+        specs.add(new FloatColumnSpec(HEADER_SORT_ORDER, KEY_SORT_ORDER, "setImportSortOrder", false, "Sort order within parent item (as decimal), defaults to order in input sheet."));
         specs.add(new StringColumnSpec(HEADER_ASSIGNED_ITEM, "importAssignedItemDescription", "setImportAssignedItemDescription", false, "Textual description of machine design item.", 256));
 
         AssignedItemHandler assignedItemHandler = new AssignedItemHandler();
@@ -265,6 +269,15 @@ public class ImportHelperMachineHierarchy
 
         boolean isValidAssignedItem = true;
 
+        // determine sort order
+        Float itemSortOrder = (Float) rowMap.get(KEY_SORT_ORDER);
+        if ((itemSortOrder == null) && (itemParent != null)) {
+            // get maximum sort order value for existing children
+            Float maxSortOrder = itemParent.getMaxSortOrder();
+            itemSortOrder = maxSortOrder + 1;
+        }
+        item.setImportSortOrder(itemSortOrder);
+        
         item.setName(itemName);
         item.setImportPath(itemPath);
 
@@ -333,7 +346,7 @@ public class ImportHelperMachineHierarchy
                 validString = appendToString(validString, msg);
                 isValid = false;
             }            
-            item.setImportChildParentRelationship(itemParent);
+            item.setImportChildParentRelationship(itemParent, itemSortOrder);
         }
         
         if (isValidAssignedItem) {

@@ -131,15 +131,15 @@ public class ImportHelperLocation
 
         // determine sort order
         Float itemSortOrder = (Float)rowMap.get(KEY_SORT_ORDER);
-        if (itemSortOrder == null) {
+        if ((itemSortOrder == null) && (itemParent != null)) {
             // need to calculate from number of siblings, not explicitly specified
             Float maxSortOrder = itemParent.getMaxSortOrder();
             itemSortOrder = maxSortOrder + 1;
         }
+        item.setImportSortOrder(itemSortOrder);
         
         item.setName(itemName);
         item.setImportPath(itemPath);
-        item.setImportSortOrder(itemSortOrder);
         itemCount = itemCount + 1;
 
         if (itemParent != null) {
