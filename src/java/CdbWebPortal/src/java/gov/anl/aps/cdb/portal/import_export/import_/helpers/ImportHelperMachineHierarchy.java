@@ -252,18 +252,13 @@ public class ImportHelperMachineHierarchy
     }
             
     @Override
-    protected String getKeySortOrder_() {
-        return "";
-    }
-            
-    @Override
     protected ValidInfo initEntityInstance_(
             ItemDomainMachineDesign item,
             ItemDomainMachineDesign itemParent,
             Map<String, Object> rowMap,
             String itemName,
             String itemPath,
-            Integer itemSortOrderInt) {
+            int itemSiblingNumber) {
         
         boolean isValid = true;
         String validString = "";

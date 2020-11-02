@@ -14,10 +14,8 @@ import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
@@ -1413,5 +1411,19 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         LOGGER.error("getEntityById() invalid reference id: " + id);
         return null;
+    }
+    
+    public Float getMaxSortOrder() {
+        Float maxSortOrder = 0f;
+        List<ItemElement> ieList = getFullItemElementList();
+        for (ItemElement ie : ieList) {
+            Float ieSortOrder = ie.getSortOrder();
+            if (ieSortOrder != null) {
+                if (ieSortOrder > maxSortOrder) {
+                    maxSortOrder = ieSortOrder;
+                }
+            }
+        }
+        return maxSortOrder;
     }
 }

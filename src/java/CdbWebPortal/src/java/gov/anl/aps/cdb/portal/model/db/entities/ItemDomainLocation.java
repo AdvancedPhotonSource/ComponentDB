@@ -23,7 +23,7 @@ public class ItemDomainLocation extends Item {
     
     private transient ItemDomainLocation importParentItem = null;
     private transient String importPath = null;
-    private transient Integer importSortOrder = null;
+    private transient Float importSortOrder = null;
 
     @Override
     public Item createInstance() {
@@ -63,11 +63,11 @@ public class ItemDomainLocation extends Item {
     }
 
     @JsonIgnore
-    public Integer getImportSortOrder() {
+    public Float getImportSortOrder() {
         return importSortOrder;
     }
 
-    public void setImportSortOrder(Integer importSortOrder) {
+    public void setImportSortOrder(Float importSortOrder) {
         this.importSortOrder = importSortOrder;
     }
     
