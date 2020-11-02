@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
@@ -22,6 +23,9 @@ import org.apache.logging.log4j.Logger;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CATALOG_ID + "")  
+@Schema(name = "ItemDomainCatalog",
+        allOf = Item.class
+)
 public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory> {
     
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCatalog.class.getName());

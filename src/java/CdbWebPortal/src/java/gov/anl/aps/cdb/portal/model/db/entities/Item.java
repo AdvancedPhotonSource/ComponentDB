@@ -17,7 +17,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -237,16 +236,6 @@ import org.primefaces.model.TreeNode;
     "createdFromTemplate",
     "itemsCreatedFromThisTemplateItem"
 })
-@Schema(name = "Item",
-        subTypes
-        = {
-            ItemDomainCatalog.class,
-            ItemDomainInventory.class,
-            ItemDomainCable.class,
-            ItemDomainMAARC.class,
-            ItemDomainLocation.class
-        }
-)
 public class Item extends CdbDomainEntity implements Serializable {
 
     private static final Logger LOGGER = LogManager.getLogger(Item.class.getName());
@@ -724,12 +713,13 @@ public class Item extends CdbDomainEntity implements Serializable {
     public List<ItemType> getItemTypeList() {
         return itemTypeList;
     }
-
+   
     public void setItemTypeList(List<ItemType> itemTypeList) {
         this.itemTypeString = null;
         this.itemTypeList = itemTypeList;
     }
-    
+        
+    @JsonIgnore
     public void setItemType(ItemType itemType) {
         List<ItemType> itList = new ArrayList<>();
         itList.add(itemType);
@@ -745,7 +735,8 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.itemProjectString = null;
         this.itemProjectList = itemProjectList;
     }
-
+    
+    @JsonIgnore
     public void setProject(ItemProject project) {
         if (project != null) {
             List<ItemProject> projectList = null;
@@ -795,7 +786,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         return itemProjectString;
     }
 
-    @XmlTransient
+    @XmlTransient    
     public List<ItemElement> getFullItemElementList() {
         return fullItemElementList;
     }
@@ -854,7 +845,8 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         setPropertyValueList(itemPropertyList);
     }
-
+    
+    @JsonIgnore
     public void setItemElementList(List<ItemElement> itemElementDisplayList) {
         this.itemElementDisplayList = itemElementDisplayList;
     }
@@ -895,7 +887,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setDerivedFromItemList(List<Item> derivedFromItemList) {
         this.derivedFromItemList = derivedFromItemList;
     }
-
+    
     public Domain getDomain() {
         return domain;
     }
@@ -904,7 +896,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         itemDomainController = null;
         this.domain = domain;
     }
-
+    
     public Item getDerivedFromItem() {
         return derivedFromItem;
     }
@@ -952,6 +944,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemConnector> getItemConnectorList() {
         return itemConnectorList;
     }
@@ -960,7 +953,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.itemConnectorList = itemConnectorList;
     }
 
-    @XmlTransient
+    @XmlTransient    
     public List<ItemSource> getItemSourceList() {
         return itemSourceList;
     }
@@ -997,6 +990,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemResource> getItemResourceList() {
         return itemResourceList;
     }

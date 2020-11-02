@@ -5,7 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -15,6 +15,9 @@ import javax.persistence.Entity;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.CABLE_ID + "")  
+@Schema(name = "ItemDomainCable",
+        allOf = Item.class
+)
 public class ItemDomainCable extends Item {
 
     @Override

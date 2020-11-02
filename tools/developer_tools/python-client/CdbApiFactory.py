@@ -5,7 +5,7 @@
 import base64
 import os
 
-from cdbApi import ApiException, DomainApi, FileUploadObject
+from cdbApi import ApiException, DomainApi, FileUploadObject, LocationItemsApi
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
 from cdbApi.api.property_type_api import PropertyTypeApi
@@ -33,6 +33,7 @@ class CdbApiFactory:
 		self.sourceApi = SourcesApi(api_client=self.apiClient)
 		self.cableCatalogItemApi = CableCatalogItemsApi(api_client=self.apiClient)
 		self.machineDesignItemApi = MachineDesignItemsApi(api_client=self.apiClient)
+		self.locationItemApi = LocationItemsApi(api_client=self.apiClient)
 
 		self.authApi = AuthenticationApi(api_client=self.apiClient)
 
@@ -59,6 +60,9 @@ class CdbApiFactory:
 
 	def getMachineDesignItemApi(self):
 		return self.machineDesignItemApi
+
+	def getLocationItemApi(self):
+		return self.locationItemApi
 
 	def authenticateUser(self, username, password):
 		response = self.authApi.authenticate_user_with_http_info(username=username, password=password)

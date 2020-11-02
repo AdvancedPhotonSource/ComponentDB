@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -27,7 +28,6 @@ import org.primefaces.model.TreeNode;
  * @author djarosz
  */
 @Entity
-@Table(name = "item")
 @DiscriminatorValue(value = ItemDomainName.INVENTORY_ID + "")
 @NamedStoredProcedureQueries({
     @NamedStoredProcedureQuery(
@@ -48,6 +48,9 @@ import org.primefaces.model.TreeNode;
                 )
             }
     ),})
+@Schema(name = "ItemDomainInventory",
+        allOf = Item.class
+)
 public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatalog> {
 
     public static final String ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Component Instance Status";

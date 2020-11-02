@@ -20,6 +20,7 @@ import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.DefaultSubMenu;
+import org.primefaces.model.menu.MenuElement;
 
 /**
  * DB utility class for item elements.
@@ -165,8 +166,9 @@ public class ItemElementUtility {
 
     /**
      * Generates hierarchy of nodes in the form of MenuModel meant to be used as
-     * a model in a tiered menu. Could be used in other menus.
+     * a model in a tiered menu.Could be used in other menus.
      *
+     * @param firstLevelItemList - List of all children cached in hierarchy. 
      * @param baseNodeName - String that will be displayed on the initial
      * submenu.
      * @param selectionController - [Null accepted] Controller to select item
@@ -174,6 +176,7 @@ public class ItemElementUtility {
      * selection controller to be called for menuitem command.
      * @param activeItemList - [Null accepted] If provided a location selected
      * style will be applied to the location that lead to the lowest location.
+     * @param nullOption - Allows for clearing the selection. if null is provided item cannot be cleared. 
      * @return
      */
     public static DefaultMenuModel generateItemSelectionMenuModel(List<ItemHierarchyCache> firstLevelItemList,
@@ -187,23 +190,29 @@ public class ItemElementUtility {
         DefaultMenuModel generatedMenuModel = new DefaultMenuModel();
 
         if (firstLevelItemList != null) {
-            DefaultSubMenu defaultSubMenu = new DefaultSubMenu(baseNodeName);
-            generatedMenuModel.addElement(defaultSubMenu);
+            DefaultSubMenu defaultSubMenu = DefaultSubMenu.builder()
+                    .label(baseNodeName)
+                    .build();             
+            generatedMenuModel.getElements().add(defaultSubMenu);
 
             // Add null item 
-            DefaultMenuItem nullMenuItem = new DefaultMenuItem();
-            nullMenuItem.setValue(nullOption);
-            String onClick = String.format(CLEAR_ITEM_ONCLICK_TEMPLATE, selectionController, selectionMethod, "null");
-            nullMenuItem.setCommand(onClick);
-            nullMenuItem.setUpdate(updateTarget);
-            nullMenuItem.setProcess(processTarget);
-            defaultSubMenu.getElements().add(nullMenuItem);
+            if (nullOption != null) {
+                DefaultMenuItem nullMenuItem = DefaultMenuItem.builder()
+                        .value(nullOption)
+                        .command(String.format(CLEAR_ITEM_ONCLICK_TEMPLATE, selectionController, selectionMethod, "null"))
+                        .update(updateTarget)
+                        .process(processTarget)
+                        .build();                
+                defaultSubMenu.getElements().add(nullMenuItem);
+            }
 
             generateItemSelectionMenuModel(defaultSubMenu, firstLevelItemList, selectionController, selectionMethod, activeItemList, updateTarget, processTarget);
         } else {
-            DefaultMenuItem menuItem = new DefaultMenuItem(baseNodeName);
-            menuItem.setDisabled(true);
-            generatedMenuModel.addElement(menuItem);
+            DefaultMenuItem menuItem = DefaultMenuItem.builder()
+                    .value(baseNodeName)
+                    .disabled(true)
+                    .build(); 
+            generatedMenuModel.getElements().add(menuItem);
         }
 
         return generatedMenuModel;
@@ -244,7 +253,10 @@ public class ItemElementUtility {
             boolean createSubmenu = (itemChildren != null && itemChildren.size() > 0);
 
             if (createSubmenu) {
-                DefaultSubMenu childSubmenu = new DefaultSubMenu(item.getName());
+                DefaultSubMenu childSubmenu = DefaultSubMenu.builder()
+                        .label(item.getName())
+                        .build();                 
+                
                 if (applyLocationActiveStyle) {
                     childSubmenu.setStyleClass(ACTIVE_LOCATION_MENU_ITEM_STYLE);
                     if (activeItemList.indexOf(item) != activeItemList.size() - 1) {
@@ -289,8 +301,9 @@ public class ItemElementUtility {
             boolean applyActiveLocationStyle,
             String updateTarget,
             String processTarget) {
-        DefaultMenuItem menuItem = new DefaultMenuItem();
-        menuItem.setValue(item.getName());
+        DefaultMenuItem menuItem = DefaultMenuItem.builder()
+                .value(item.getName())
+                .build(); 
 
         if (applyActiveLocationStyle) {
             menuItem.setStyleClass(ACTIVE_LOCATION_MENU_ITEM_STYLE);
