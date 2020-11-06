@@ -11,11 +11,14 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainLocationSettings;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperLocation;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -348,11 +351,18 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         return parentSelectionMenuModel;
     }
 
-    public void updateParentForCurrent(Item item) {
-        updateParentForItem(getCurrent(), item);
+    public void updateParentForCurrent(Item newParent) {
+        updateParentForItem(getCurrent(), newParent);
+        
+        DefaultSubMenu topNode = (DefaultSubMenu) parentSelectionMenuModel.getElements().get(0);
+        topNode.setLabel(newParent.getName());
     }
     
     public void updateParentForItem(ItemDomainLocation item, Item newParentItem) {
+        updateParentForItem(item, newParentItem, null);
+    }
+    
+    public void updateParentForItem(ItemDomainLocation item, Item newParentItem, UserInfo userInfo) {
         if (newParentItem instanceof ItemDomainLocation == false) {
             return;
         }
@@ -369,10 +379,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         }
 
         ItemElement member = item.getParentItemElement();
-        List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
-
-        DefaultSubMenu topNode = (DefaultSubMenu) parentSelectionMenuModel.getElements().get(0);
-        topNode.setLabel(newParent.getName());                
+        List<ItemElement> itemElementMemberList = item.getItemElementMemberList();                   
 
         if (member != null) {            
             String elementName = generateUniqueElementNameForItem(newParent);
@@ -380,7 +387,13 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
             member.setName(elementName);
             member.setParentItem(newParent);
         } else if (itemElementMemberList.isEmpty()) {
-            ItemElement createItemElement = createItemElement(newParent);
+            ItemElement createItemElement = null;
+            if (userInfo == null) {
+                createItemElement = createItemElement(newParent);
+            } else {
+                EntityInfo entityInfo = EntityInfoUtility.createEntityInfo(userInfo); 
+                createItemElement = createItemElement(newParent, entityInfo); 
+            }
             createItemElement.setContainedItem(item);
             itemElementMemberList.add(createItemElement); 
         } else {
