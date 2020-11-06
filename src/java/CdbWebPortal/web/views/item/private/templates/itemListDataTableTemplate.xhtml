@@ -22,6 +22,7 @@ See LICENSE file.
             <ui:param name="cdbDomainEntityObject" value="#{itemListObject}"/>
         </ui:include>
         <ui:include src="../../../propertyValue/private/propertyValueDomainEntityListDataTableColumn.xhtml">
+            <ui:param name="propertyColumnId" value="propertyColumnDisplayMode"/>
             <ui:param name="propertyValueRendered" value="#{entitySettingObject.displayListDataModelScopePropertyTypeSelection}" />
             <ui:param name="cdbDomainEntityObject" value="#{itemListObject}"/>
             <ui:param name="displayModePropertyTypeId" value="#{entitySettingObject.displayListDataModelScopePropertyTypeId}" />

@@ -9,8 +9,10 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
     
     <ui:param name="propertyValueInformation" value="#{cdbDomainEntityObject.getPropertyValueInformation(propertyTypeId)}"/>
-
-    <p:column headerText="Property: #{propertyTypeName}" 
+    
+    <p:column id="#{propertyColumnId}"
+              headerText="Property: #{propertyTypeName}" 
+              field="#{propertyColumnId}-#{propertyTypeId}"
               filterBy="#{propertyValueInformation.filterValue}" filterMatchMode="contains"
               exportFunction="#{facesUtility.getFilterString(propertyValueInformation.filterValue)}"
               filterValue="#{prpoertyValueFilterValue}"
