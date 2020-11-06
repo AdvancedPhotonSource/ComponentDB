@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineHierarchy;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineTemplateInstantiation;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
@@ -921,11 +922,97 @@ public class ItemDomainMachineDesignController
             }
         }
     }
+    
+    public ValidInfo collectItemsForDeletion(
+            ItemDomainMachineDesign parentItem, 
+            List<ItemDomainMachineDesign> collectedItems,
+            List<ItemElement> collectedElements,
+            boolean isRootItem) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        List<ItemElement> displayList = parentItem.getItemElementDisplayList();
+        for (ItemElement ie : displayList) {
+            Item childItem = ie.getContainedItem();
+            if (childItem instanceof ItemDomainMachineDesign) {
+                
+                List<ItemElement> childMemberList = childItem.getItemElementMemberList();
+                if (childMemberList.size() > 1) {
+                    // this code assumes that a child machine design item has only one 'membership'
+                    isValid = false;
+                    validString = "item: " + childItem.getName() + " is member of multiple assemblies";
+                    return new ValidInfo(isValid, validString);
+                    
+                } else {
+                    // depth first ordering is important here, otherwise there are merge errors for deleted items
+                    ValidInfo validInfo = 
+                            collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false);
+                    if (!validInfo.isValid()) {
+                        return validInfo;
+                    }
+                    collectedItems.add((ItemDomainMachineDesign) childItem);
+                    collectedElements.add(ie);
+                }
+            }
+        }
+        
+        if (isRootItem) {
+            collectedItems.add(parentItem);
+
+            // mark ItemElement for relationship from parent to its container for deletion
+            List<ItemElement> memberList = parentItem.getItemElementMemberList();
+            if (memberList.size() > 1) {
+                // parentItem has more than one membership
+                isValid = false;
+                validString = "item: " + parentItem.getName() + " is member of multiple assemblies";
+                return new ValidInfo(isValid, validString);
+            } else if (memberList.size() == 1) {
+                ItemElement containerRelElement = memberList.get(0);
+                collectedElements.add(containerRelElement);
+            }
+        }
+        
+        return new ValidInfo(isValid, validString);
+    }
 
     public void deleteSelectedMachineDesignItemFromDualView() {
+        
         updateCurrentUsingSelectedItemInTreeTable();
 
-        destroy();
+        ItemDomainMachineDesign rootItemToDelete = getCurrent();
+        if (rootItemToDelete == null) {
+            return;
+        }
+
+        // collect list of items to delete
+        List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
+        List<ItemElement> elementsToDelete = new ArrayList<>();
+        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true);
+        if (!validInfo.isValid()) {
+            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
+            return;
+        }
+
+        // mark ItemElements for relationships in hierarchy for deletion and
+        // remove from parent and child items, and find container item
+        ItemDomainMachineDesign containerItem = null;
+        for (ItemElement ie : elementsToDelete) {
+            Item childItem = ie.getContainedItem();
+            Item ieParentItem = ie.getParentItem();
+//            childItem.getItemElementMemberList().remove(ie);
+            ieParentItem.removeItemElement(ie);
+            ie.setMarkedForDeletion(true);
+            if (childItem.equals(rootItemToDelete)) {
+                containerItem = (ItemDomainMachineDesign)childItem;
+            }
+        }        
+
+        if (itemsToDelete.size() == 1) {
+            destroy();
+        } else {
+            destroyList(itemsToDelete, containerItem);
+        }
     }
 
     @Deprecated

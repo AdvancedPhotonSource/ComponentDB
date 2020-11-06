@@ -2598,8 +2598,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     @Override
     protected void prepareEntityDestroy(ItemDomainEntity item) throws CdbException {
         super.prepareEntityDestroy(item);
-        if (item.getItemElementMemberList() != null && item.getItemElementMemberList().isEmpty() == false) {
-            throw new CdbException("Item is part of an assembly.");
+        List<ItemElement> memberList = item.getItemElementMemberList();
+        if (memberList != null && memberList.isEmpty() == false) {
+            for (ItemElement member : memberList) {
+//                System.out.println("parent: " + member.getParentItem().getName());
+//                System.out.println("child: " + member.getContainedItem().getName());
+//                System.out.println("element: " + member.getName());
+                if (!member.isMarkedForDeletion()) {
+                    throw new CdbException("Item " + item.getName() + " is part of an assembly.");
+                }
+            }
         }
     }
 

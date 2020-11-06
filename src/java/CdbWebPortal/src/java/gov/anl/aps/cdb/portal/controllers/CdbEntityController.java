@@ -1319,6 +1319,58 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             return null;
         }
     }
+    
+    public void performListDestroyOperations(
+            List<EntityType> entities,
+            EntityType updateEntity)
+            throws CdbException, RuntimeException {
+
+        try {
+            if (updateEntity != null) {
+                prepareEntityUpdate(updateEntity);
+            }
+            
+            for (EntityType entity : entities) {
+                if ((entity != null) && entity.getId() != null) {
+                    prepareEntityDestroy(entity);
+                }
+            }
+
+            getEntityDbFacade().remove(entities, updateEntity);
+            
+            for (EntityType entity : entities) {
+                completeEntityDestroy(entity);
+            }
+            addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Deleted: " + entities.size() + " entities.");
+            resetListDataModel();
+            resetSelectDataModel();
+            settingObject.clearListFilters();
+            setPersistenceErrorMessageForList(entities, null);
+        } catch (CdbException ex) {
+            setPersistenceErrorMessageForList(entities, ex.getMessage());
+            throw ex;
+        } catch (RuntimeException ex) {
+            setPersistenceErrorMessageForList(entities, ex.getMessage());
+            throw ex;
+        }
+    }
+
+    public void destroyList(List<EntityType> entities, EntityType updateEntity) {
+        
+        logger.debug("Destroying " + entities.size() + " " + getDisplayEntityTypeName() + " instances.");
+        try {
+            performListDestroyOperations(entities, updateEntity);
+            SessionUtility.addInfoMessage("Success", "Deleted " + entities.size() + " " + getDisplayEntityTypeName() + " instances.");
+        } catch (CdbException ex) {
+            logger.error("Could not delete list of " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + "instances: " + ex.getMessage());
+            addCdbEntityWarningSystemLog("Failed to delete list of " + getDisplayEntityTypeName(), ex, current);
+        } catch (RuntimeException ex) {
+            logger.error("Could not delete list of " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            SessionUtility.addErrorMessage("Error", "Could not delete list of " + getDisplayEntityTypeName() + ": " + ex.getMessage());
+            addCdbEntityWarningSystemLog("Failed to delete list of ", ex, current);
+        }
+    }
 
     /**
      * Create data model from list of all available entity instances.
