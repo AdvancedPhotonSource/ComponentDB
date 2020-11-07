@@ -87,30 +87,50 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
      * @throws ObjectNotFound
      */
     @GET
-    @Path("/ByRootAndName/{root}/{name}")
+    @Path("/ByRootAndName/{root}/{container}/{name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ItemDomainMachineDesign> getMdInHierarchyByName(@PathParam("root") String root, @PathParam("name") String name) {
-        LOGGER.debug("Fetching items in hiearchy: " + root + " with name: " + name);
-        List<ItemDomainMachineDesign> itemList = facade.findByName(name);
+    public List<ItemDomainMachineDesign> getMdInHierarchyByName(
+            @PathParam("root") String rootItemName, 
+            @PathParam("container") String containerItemName, 
+            @PathParam("name") String itemName) throws InvalidArgument {
+        
+        LOGGER.debug("Fetching item in hiearchy: " + rootItemName + " in container: " + containerItemName + " named: " + itemName);
+        
+        if ((rootItemName == null) || (rootItemName.isBlank())) {
+            throw new InvalidArgument(("must specify root item name"));
+        }
+        
+        if ((containerItemName == null) || (containerItemName.isBlank())) {
+            throw new InvalidArgument(("must specify container item name"));
+        }
+        
+        List<ItemDomainMachineDesign> itemList = facade.findByName(itemName);
 
         // eliminate items whose top-level parent is not the specified "root" node
         List<ItemDomainMachineDesign> result = new ArrayList<>();
         for (ItemDomainMachineDesign item : itemList) {
 
             // walk up hierarchy to top-level "root" parent
-            ItemDomainMachineDesign parent = item.getParentMachineDesign();
-
-            if (parent == null) {
-                // item is top-level so this is not a match
-                continue;
+            ItemDomainMachineDesign parentItem = item.getParentMachineDesign();
+            boolean foundContainer = false;
+            boolean foundRoot = false;
+            while (parentItem != null) {
+                
+                // check container match
+                if (parentItem.getName().equals(containerItemName)) { 
+                    foundContainer = true;
+                }
+                
+                // check root match
+                if ((parentItem.getParentMachineDesign() == null) && 
+                        (parentItem.getName().equals(rootItemName))) {
+                    foundRoot = true;
+                }
+                
+                parentItem = parentItem.getParentMachineDesign();
             }
 
-            while (parent.getParentMachineDesign() != null) {
-                parent = parent.getParentMachineDesign();
-            }
-
-            if ((parent != null) && (parent.getName().equals(root))) {
-                // add item to result if top-level parent is specified root
+            if (foundContainer && foundRoot) {
                 result.add(item);
             }
         }

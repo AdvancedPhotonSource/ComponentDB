@@ -25,14 +25,13 @@ public abstract class ImportHelperHierarchyBase<EntityType extends CdbEntity, En
     protected abstract String getKeyName_();
     protected abstract String getKeyIndent_();
     protected abstract String getKeyParent_();
-    protected abstract String getKeySortOrder_();
     protected abstract ValidInfo initEntityInstance_(
             EntityType item,
             EntityType itemParent,
             Map<String, Object> rowMap,
             String itemName,
             String itemPath,
-            Integer itemSortOrder);
+            int itemSiblingNumber);
     
     @Override
     protected void reset_() {
@@ -70,10 +69,16 @@ public abstract class ImportHelperHierarchyBase<EntityType extends CdbEntity, En
         }        
         int itemIndentLevel = (int) rowMap.get(getKeyIndent_());
         
-        int calculatedSortOrder = 1; // default sort order for top-level item
-        
         EntityType itemContainer
                 = (EntityType) rowMap.get(getKeyParent_());
+        
+        // calculate sibling number
+        Integer numSiblings = childCountMap.get(itemIndentLevel - 1);
+        if (numSiblings == null) {
+            numSiblings = 0;
+        }
+        int itemSiblingNumber = numSiblings + 1;
+        childCountMap.put(itemIndentLevel - 1, itemSiblingNumber);
         
         String itemPath = "";
         if (itemIndentLevel > 1) {
@@ -88,14 +93,6 @@ public abstract class ImportHelperHierarchyBase<EntityType extends CdbEntity, En
             // find parent at previous indent level
             itemParent = parentIndentMap.get(itemIndentLevel - 1);
             
-            // calculate sort order
-            Integer numSiblings = childCountMap.get(itemIndentLevel - 1);
-            if (numSiblings == null) {
-                numSiblings = 0;
-            }
-            calculatedSortOrder = numSiblings + 1;
-            childCountMap.put(itemIndentLevel - 1, calculatedSortOrder);
-
             if (itemParent == null) {
                 // should have a parent for this item in map
                 String msg = "Unable to determine parent for item";
@@ -120,15 +117,12 @@ public abstract class ImportHelperHierarchyBase<EntityType extends CdbEntity, En
             }
         }
         
-        Integer itemSortOrderInt = null;
-        if ((getKeySortOrder_() != null) && (!getKeySortOrder_().isEmpty())) {
-            itemSortOrderInt = (Integer)rowMap.get(getKeySortOrder_());
+        ValidInfo initValidInfo = 
+                initEntityInstance_(item, itemParent, rowMap, itemName, itemPath, itemSiblingNumber);
+        if (!initValidInfo.isValid()) {
+            isValid = false;
+            validString = appendToString(validString, initValidInfo.getValidString());
         }
-        if (itemSortOrderInt == null) {
-            itemSortOrderInt = calculatedSortOrder;
-        }
-        
-        initEntityInstance_(item, itemParent, rowMap, itemName, itemPath, itemSortOrderInt);
         
         // set current item as last parent at its indent level
         parentIndentMap.put(itemIndentLevel, item);

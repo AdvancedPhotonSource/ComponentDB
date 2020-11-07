@@ -68,6 +68,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_LEAD_TIME_KEY, "Lead Time", "Standard procurement lead time for this type of cable.", ItemCoreMetadataFieldType.NUMERIC, "", null);
 
         List<String> allowedValues = new ArrayList<>();
+        allowedValues.add("Unspecified");
         allowedValues.add("Ordered");
         allowedValues.add("Received");
         info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_PROCUREMENT_STATUS_KEY, "Procurement Status", "Procurement status.", ItemCoreMetadataFieldType.STRING, "", allowedValues);

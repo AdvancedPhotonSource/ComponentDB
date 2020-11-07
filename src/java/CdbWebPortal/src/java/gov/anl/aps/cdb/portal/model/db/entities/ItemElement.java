@@ -155,6 +155,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private static transient Integer sortByPropertyTypeId = null;
     private transient TreeNode childItemElementListTreeTableRootNode = null;
     private transient ItemElementConstraintInformation constraintInformation;
+    private transient boolean markedForDeletion = false;
     
     // <editor-fold defaultstate="collapsed" desc="Import Variables">
     private transient Item importParentItem;
@@ -486,6 +487,15 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public void setConstraintInformation(ItemElementConstraintInformation constraintInformation) {
         this.constraintInformation = constraintInformation;
+    }
+    
+    public void setMarkedForDeletion(boolean markForDeletion) {
+        this.markedForDeletion = markForDeletion;
+    }
+    
+    @XmlTransient
+    public boolean isMarkedForDeletion() {
+        return this.markedForDeletion;
     }
 
     // <editor-fold defaultstate="collapsed" desc="Machine Design Logic">  

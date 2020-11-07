@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
@@ -55,7 +56,7 @@ public class ImportHelperLocation
         specs.add(new IntegerColumnSpec(HEADER_QR, KEY_QR, "setQrId", false, "QR ID of location (9 digit number)."));
         specs.add(new IdOrNameRefColumnSpec(HEADER_TYPE, KEY_TYPE, "setItemType", false, "CDB ID or name of location type. Name must be prefixed with '#'.", ItemTypeController.getInstance(), ItemType.class, ItemDomainName.location.getValue()));
         specs.add(new StringColumnSpec(HEADER_DESCRIPTION, "description", "setDescription", false, "Textual description of location.", 256));
-        specs.add(new IntegerColumnSpec(HEADER_SORT_ORDER, KEY_SORT_ORDER, "setImportSortOrder", false, "Sort order within parent item."));
+        specs.add(new FloatColumnSpec(HEADER_SORT_ORDER, KEY_SORT_ORDER, "setImportSortOrder", false, "Sort order within parent item (as decimal), defaults to order in input sheet."));
         specs.add(ownerUserColumnSpec());
         specs.add(ownerGroupColumnSpec());
         
@@ -117,35 +118,37 @@ public class ImportHelperLocation
     }
             
     @Override
-    protected String getKeySortOrder_() {
-        return KEY_SORT_ORDER;
-    }
-            
-    @Override
     protected ValidInfo initEntityInstance_(
             ItemDomainLocation item,
             ItemDomainLocation itemParent,
             Map<String, Object> rowMap,
             String itemName,
             String itemPath,
-            Integer itemSortOrderInt) {
+            int itemSiblingNumber) {
         
         boolean isValid = true;
         String validString = "";
 
+        // determine sort order
+        Float itemSortOrder = (Float)rowMap.get(KEY_SORT_ORDER);
+        if ((itemSortOrder == null) && (itemParent != null)) {
+            // need to calculate from number of siblings, not explicitly specified
+            Float maxSortOrder = itemParent.getMaxSortOrder();
+            itemSortOrder = maxSortOrder + 1;
+        }
+        item.setImportSortOrder(itemSortOrder);
+        
         item.setName(itemName);
         item.setImportPath(itemPath);
-        item.setImportSortOrder(itemSortOrderInt);
         itemCount = itemCount + 1;
 
         if (itemParent != null) {
-            Float itemSortOrderFloat = itemSortOrderInt.floatValue();
-            String childItemElementName = String.valueOf(itemSortOrderInt);
+            String childItemElementName = String.valueOf(itemSortOrder);
             
             // validate name and sort order are unique for specified parent item
             List<ItemElement> ieList = itemParent.getFullItemElementList();
             for (ItemElement ie : ieList) {
-                if ((ie.getSortOrder() != null) && (ie.getSortOrder().equals(itemSortOrderFloat))) {
+                if ((ie.getSortOrder() != null) && (ie.getSortOrder().equals(itemSortOrder))) {
                     String msg = "duplicate sort order for existing child location";
                     validString = appendToString(validString, msg);
                     isValid = false;
@@ -160,7 +163,7 @@ public class ImportHelperLocation
             UserInfo user = (UserInfo) rowMap.get(KEY_USER);
             UserGroup group = (UserGroup) rowMap.get(KEY_GROUP);
             item.setImportChildParentRelationship(
-                    itemParent, childItemElementName, itemSortOrderFloat, user, group);
+                    itemParent, childItemElementName, itemSortOrder, user, group);
         }
         
         return new ValidInfo(isValid, validString);
