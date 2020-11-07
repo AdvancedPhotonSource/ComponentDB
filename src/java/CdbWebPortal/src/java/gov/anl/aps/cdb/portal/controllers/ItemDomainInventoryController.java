@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesDomai
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainInventorySettings;
+import gov.anl.aps.cdb.portal.model.ItemDomainInventoryLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
@@ -47,6 +48,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
+import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.faces.model.SelectItem;
 import javax.inject.Named;
@@ -95,6 +97,8 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     private ItemDomainCable currentConnectionCable = null;
     private ListDataModel inventoryItemsWithRequiredConnector = null;
     private ItemDomainInventory selectedSecondItemWithRequiredConnection = null;
+    
+    private ItemDomainInventoryLazyDataModel itemDomainInventoryLazyDataModel = null; 
 
     private List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
 
@@ -556,6 +560,23 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     public void resetListDataModel() {
         super.resetListDataModel();
+    } 
+
+    @Override
+    public DataModel getListDataModel() {
+        return getItemDomainInventoryLazyDataModel(); 
+    } 
+
+    @Override
+    protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
+        return true; 
+    }
+
+    public ItemDomainInventoryLazyDataModel getItemDomainInventoryLazyDataModel() {
+        if (itemDomainInventoryLazyDataModel == null) {
+            itemDomainInventoryLazyDataModel = new ItemDomainInventoryLazyDataModel(itemDomainInventoryFacade, getDefaultDomain()); 
+        } 
+        return itemDomainInventoryLazyDataModel;
     }
 
     public boolean isInventoryDomainItem(Item item) {
