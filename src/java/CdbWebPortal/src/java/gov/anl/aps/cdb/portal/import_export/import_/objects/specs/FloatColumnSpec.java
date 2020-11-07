@@ -4,22 +4,23 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.BooleanInputHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.FloatInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 
 /**
  *
  * @author craig
  */
-public class BooleanColumnSpec extends ColumnSpec {
+public class FloatColumnSpec extends ColumnSpec {
 
-    public BooleanColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description) {
+    public FloatColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description) {
         super(header, propertyName, entitySetterMethod, required, description);
     }
 
     @Override
     public InputHandler getInputHandler(int colIndex) {
-        return new BooleanInputHandler(
+        return new FloatInputHandler(
                 colIndex, getHeader(), getPropertyName(), getEntitySetterMethod());
     }
 }
+

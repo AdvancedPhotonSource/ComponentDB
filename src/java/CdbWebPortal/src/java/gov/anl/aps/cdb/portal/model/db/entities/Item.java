@@ -1369,7 +1369,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         if (propertyValue == null) {
             propertyValue = getItemDomainController().prepareCoreMetadataPropertyValue(this);
         }
-
+        
         propertyValue.setPropertyMetadataValue(key, value);
     }
 
@@ -1405,5 +1405,19 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         LOGGER.error("getEntityById() invalid reference id: " + id);
         return null;
+    }
+    
+    public Float getMaxSortOrder() {
+        Float maxSortOrder = 0f;
+        List<ItemElement> ieList = getFullItemElementList();
+        for (ItemElement ie : ieList) {
+            Float ieSortOrder = ie.getSortOrder();
+            if (ieSortOrder != null) {
+                if (ieSortOrder > maxSortOrder) {
+                    maxSortOrder = ieSortOrder;
+                }
+            }
+        }
+        return maxSortOrder;
     }
 }

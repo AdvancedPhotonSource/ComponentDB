@@ -38,6 +38,8 @@ public class ItemDomainCableDesign extends Item {
     private transient String voltage = null;
     private transient String endpoint1Description = null;
     private transient String endpoint2Description = null;
+    private transient String endpoint1Route = null;
+    private transient String endpoint2Route = null;
 
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type";
     public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName";
@@ -48,6 +50,8 @@ public class ItemDomainCableDesign extends Item {
     public final static String CABLE_DESIGN_PROPERTY_VOLTAGE_KEY = "voltage";
     public final static String CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY = "endpoint1Description";
     public final static String CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY = "endpoint2Description";
+    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT1_ROUTE_KEY = "endpoint1Route";
+    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT2_ROUTE_KEY = "endpoint2Route";
 
     private static final String endpointsSeparator = " | ";
 
@@ -306,6 +310,9 @@ public class ItemDomainCableDesign extends Item {
         setItemIdentifier1(n);
     }
 
+    public void setTechnicalSystemList(List<ItemCategory> technicalSystemList) {
+        setItemCategoryList(technicalSystemList);
+    }
     @JsonIgnore
     public String getExternalCableName() throws CdbException {
         if (externalCableName == null) {
@@ -409,9 +416,30 @@ public class ItemDomainCableDesign extends Item {
         endpoint2Description = d;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY, d);
     }
-
-    public void setTechnicalSystemList(List<ItemCategory> technicalSystemList) {
-        setItemCategoryList(technicalSystemList);
+    
+    @JsonIgnore
+    public String getEndpoint1Route() throws CdbException {
+        if (endpoint1Route == null) {
+            endpoint1Route = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT1_ROUTE_KEY);
+        }
+        return endpoint1Route;
     }
 
+    public void setEndpoint1Route(String d) throws CdbException {
+        endpoint1Route = d;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT1_ROUTE_KEY, d);
+    }
+
+    @JsonIgnore
+    public String getEndpoint2Route() throws CdbException {
+        if (endpoint2Route == null) {
+            endpoint2Route = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT2_ROUTE_KEY);
+        }
+        return endpoint2Route;
+    }
+
+    public void setEndpoint2Route(String d) throws CdbException {
+        endpoint2Route = d;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ENDPOINT2_ROUTE_KEY, d);
+    }
 }

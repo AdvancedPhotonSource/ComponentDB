@@ -293,6 +293,18 @@ public class PropertyType extends CdbEntity implements Serializable {
     public List<PropertyTypeMetadata> getPropertyTypeMetadataList() {
         return propertyTypeMetadataList;
     }
+    
+    @XmlTransient
+    public PropertyTypeMetadata getPropertyTypeMetadataForKey(String key) {
+        if (propertyTypeMetadataList != null) {
+            for (PropertyTypeMetadata propertyTypeMetadata : propertyTypeMetadataList) {
+                if (propertyTypeMetadata.getMetadataKey().equals(key)) {
+                    return propertyTypeMetadata;
+                }
+            }
+        }
+        return null;
+    }
 
     public void setPropertyTypeMetadataList(List<PropertyTypeMetadata> propertyTypeMetadataList) {
         this.propertyTypeMetadataList = propertyTypeMetadataList;

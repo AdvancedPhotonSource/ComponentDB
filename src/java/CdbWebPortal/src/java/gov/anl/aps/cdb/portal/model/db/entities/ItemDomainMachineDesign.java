@@ -13,7 +13,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
-import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
@@ -45,9 +44,11 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient String importPath = null;
     private transient ItemDomainCatalog importAssignedCatalogItem = null;
     private transient ItemDomainInventory importAssignedInventoryItem = null;
+    private transient String importAssignedItemDescription = null;
     private transient ItemDomainLocation importLocationItem = null;
     private transient String importLocationItemString = null;
     private transient String importTemplateAndParameters = null;
+    private transient Float importSortOrder = null;
     
     private transient ItemElement currentHierarchyItemElement;
 
@@ -248,8 +249,13 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     
     // <editor-fold defaultstate="collapsed" desc="Import functionality">
     
-    public void setImportAssignedCatalogItem(ItemDomainCatalog item) {
-        importAssignedCatalogItem = item;
+    @JsonIgnore
+    public Float getImportSortOrder() {
+        return importSortOrder;
+    }
+
+    public void setImportSortOrder(Float importSortOrder) {
+        this.importSortOrder = importSortOrder;
     }
     
     @JsonIgnore
@@ -257,6 +263,10 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         return importAssignedCatalogItem;
     }
 
+    public void setImportAssignedCatalogItem(ItemDomainCatalog item) {
+        importAssignedCatalogItem = item;
+    }
+    
     @JsonIgnore
     public String getImportAssignedCatalogItemString() {
         if (importAssignedCatalogItem != null) {
@@ -282,6 +292,25 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         } else {
             return "";
         }
+    }
+
+    @JsonIgnore
+    public String getImportAssignedItemString() {
+        if (importAssignedInventoryItem != null) {
+            return importAssignedInventoryItem.getName();
+        } else if (importAssignedCatalogItem != null) {
+            return importAssignedCatalogItem.getName();
+        } else {
+            return "";
+        }
+    }
+
+    public String getImportAssignedItemDescription() {
+        return importAssignedItemDescription;
+    }
+
+    public void setImportAssignedItemDescription(String importAssignedItemDescription) {
+        this.importAssignedItemDescription = importAssignedItemDescription;
     }
 
     public void setImportLocationItem(ItemDomainLocation locationItem) {
@@ -330,10 +359,13 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
      * 
      * @param childItem 
      */
-    public void setImportChildParentRelationship(ItemDomainMachineDesign parentItem) {        
+    public void setImportChildParentRelationship(
+            ItemDomainMachineDesign parentItem,
+            Float sortOrder) {        
+        
         if (parentItem != null) {
             // create ItemElement for new relationship
-            ItemElement itemElement = importCreateItemElementForParent(parentItem, null, null);            
+            ItemElement itemElement = importCreateItemElementForParent(parentItem, null, null, sortOrder);            
             setImportChildParentRelationship(this, parentItem, itemElement);
         }
     }
@@ -343,46 +375,23 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             ItemDomainMachineDesign parentItem,
             ItemElement itemElement) {
         
-        // set parent-child relationship
-        itemElement.setContainedItem(childItem);
-
-        // add ItemElement to parent
-        parentItem.getFullItemElementList().add(itemElement);
-        parentItem.getItemElementDisplayList().add(0, itemElement);
-
-        // add ItemElement to child
-        if (childItem.getItemElementMemberList() == null) {
-            childItem.setItemElementMemberList(new ArrayList<>());
-        }
-        childItem.getItemElementMemberList().add(itemElement);
-            
+        itemElement.setImportChildItem(childItem);        
     }
     
     private static ItemElement importCreateItemElementForParent(
             ItemDomainMachineDesign parentItem,
             UserInfo user,
-            UserGroup group) {
+            UserGroup group,
+            Float sortOrder) {
         
         ItemElement itemElement = new ItemElement();
-        itemElement.setParentItem(parentItem);
-        
+
         String elementName
                 = ItemDomainMachineDesignController.getInstance().
                         generateUniqueElementNameForItem(parentItem);
         itemElement.setName(elementName);
 
-        int elementSize = parentItem.getItemElementDisplayList().size();
-        float sortOrder = elementSize;
-        itemElement.setSortOrder(sortOrder);
-
-        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-        if (user != null) {
-            entityInfo.setOwnerUser(user);
-        }
-        if (group != null) {
-            entityInfo.setOwnerUserGroup(group);
-        } 
-        itemElement.setEntityInfo(entityInfo);
+        itemElement.setImportParentItem(parentItem, sortOrder, user, group);
         
         return itemElement;
     }  
@@ -400,7 +409,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return null;
         }
         
-        ItemElement itemElement = importCreateItemElementForParent(parentItem, user, group);
+        ItemElement itemElement = importCreateItemElementForParent(parentItem, user, group, null);
         
         ItemDomainMachineDesignController controller = 
                 ItemDomainMachineDesignController.getInstance();

@@ -43,8 +43,8 @@ public class ItemCoreMetadataPropertyInfo {
         this.propertyName = propertyName;
     }
     
-    public void addField(String k, String l, String d, ItemCoreMetadataFieldType t, String u) {
-        ItemCoreMetadataFieldInfo info = new ItemCoreMetadataFieldInfo(k, l, d, t, u);
+    public void addField(String k, String l, String d, ItemCoreMetadataFieldType t, String u, List<String> allowedValues) {
+        ItemCoreMetadataFieldInfo info = new ItemCoreMetadataFieldInfo(k, l, d, t, u, allowedValues);
         fieldList.add(info);
         fieldMap.put(k, info);
     }

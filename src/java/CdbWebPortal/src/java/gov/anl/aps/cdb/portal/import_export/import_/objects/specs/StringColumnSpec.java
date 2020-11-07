@@ -16,15 +16,9 @@ public class StringColumnSpec extends ColumnSpec {
     private int maxLength;
 
     public StringColumnSpec(
-            int columnIndex,
-            String header,
-            String propertyName,
-            String entitySetterMethod,
-            boolean required,
-            String description,
-            int maxLength) {
+            String header, String propertyName, String entitySetterMethod, boolean required, String description, int maxLength) {
 
-        super(columnIndex, header, propertyName, entitySetterMethod, required, description);
+        super(header, propertyName, entitySetterMethod, required, description);
         this.maxLength = maxLength;
     }
 
@@ -33,9 +27,9 @@ public class StringColumnSpec extends ColumnSpec {
     }
 
     @Override
-    public InputHandler createInputHandlerInstance() {
+    public InputHandler getInputHandler(int colIndex) {
         return new StringInputHandler(
-                getColumnIndex(),
+                colIndex,
                 getHeader(),
                 getPropertyName(),
                 getEntitySetterMethod(),

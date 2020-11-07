@@ -30,6 +30,7 @@ public abstract class SimpleInputHandler extends SingleColumnInputHandler {
             String columnName,
             String propertyName,
             String setterMethod) {
+        
         super(columnIndex, columnName);
         this.propertyName = propertyName;
         this.setterMethod = setterMethod;
@@ -56,7 +57,7 @@ public abstract class SimpleInputHandler extends SingleColumnInputHandler {
         boolean isValid = true;
         String validString = "";
 
-        String cellValue = cellValueMap.get(columnIndex);
+        String cellValue = cellValueMap.get(getColumnIndex());
 
         if (cellValue != null && (!cellValue.isEmpty())) {
 

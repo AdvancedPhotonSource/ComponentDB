@@ -9,12 +9,12 @@ import gov.anl.aps.cdb.portal.controllers.ItemElementController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
-import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
-import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,19 +25,23 @@ import java.util.Map;
  */
 public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, ItemElementController> {
 
-    private static final String ROW_KEY_PART_NAME = "importPartName";
-    private static final String ROW_KEY_PARENT_ITEM = "importParentCatalogItem";
+    private static final String KEY_PART_NAME = "importPartName";
+    private static final String KEY_PARENT_ITEM = "importParentItem";
+    private static final String KEY_SORT_ORDER = "sortOrder";
 
+    private static final String HEADER_SORT_ORDER = "Sort Order";
+    
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(0, "Catalog Item", ROW_KEY_PARENT_ITEM, "setImportParentCatalogItem", true, "ID or name of parent catalog item. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));        
-        specs.add(new StringColumnSpec(1, "Part Name", ROW_KEY_PART_NAME, "setImportPartName", true, "Part name for assembly member.", 128));
-        specs.add(new StringColumnSpec(2, "Part Description", "importPartDescription", "setImportPartDescription", false, "Part description for assembly member.", 128));
-        specs.add(new BooleanColumnSpec(3, "Part Required", "importPartRequired", "setImportPartRequired", false, "True/yes if part is required."));
-        specs.add(new StringColumnSpec(4, "Part Catalog Item Name (optional)", "importPartCatalogItemName", "setImportPartCatalogItemName", false, "Catalog item name for part (for documentation purposes only, ignored by import).", 128));
-        specs.add(new IdOrNameRefColumnSpec(5, "Part Catalog Item ID", "importPartCatalogItem", "setImportPartCatalogItem", true, "ID or name of catalog item for part. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));        
+        specs.add(new IdOrNameRefColumnSpec("Catalog Item", KEY_PARENT_ITEM, "", true, "ID or name of parent catalog item. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), Item.class, null));        
+        specs.add(new StringColumnSpec("Part Name", KEY_PART_NAME, "setImportPartName", true, "Part name for assembly member.", 128));
+        specs.add(new StringColumnSpec("Part Description", "importPartDescription", "setImportPartDescription", false, "Part description for assembly member.", 128));
+        specs.add(new FloatColumnSpec(HEADER_SORT_ORDER, KEY_SORT_ORDER, "setSortOrder", false, "Sort order within parent catalog item (as decimal), defaults to order in input sheet."));
+        specs.add(new BooleanColumnSpec("Part Required", "importPartRequired", "setImportPartRequired", false, "True/yes if part is required."));
+        specs.add(new StringColumnSpec("Part Catalog Item Name (optional)", "importChildItemName", "setImportChildItemName", false, "Catalog item name for part (for documentation purposes only, ignored by import).", 128));
+        specs.add(new IdOrNameRefColumnSpec("Part Catalog Item ID", "importChildItem", "setImportChildItem", true, "ID or name of catalog item for part. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), Item.class, null));        
 
         return specs;
     }
@@ -59,22 +63,38 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
         String validString = "";
         
         ItemElement itemElement = new ItemElement();
-        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-        itemElement.setEntityInfo(entityInfo);
         
-        // validate name is unique for specified parent item
-        String itemName = (String) rowMap.get(ROW_KEY_PART_NAME);
-        ItemDomainCatalog itemParentCatalogItem = (ItemDomainCatalog) rowMap.get(ROW_KEY_PARENT_ITEM);
+        ItemDomainCatalog itemParentCatalogItem = (ItemDomainCatalog) rowMap.get(KEY_PARENT_ITEM);
+        
+        // determine sort order
+        Float itemSortOrder = (Float) rowMap.get(KEY_SORT_ORDER);
+        if ((itemSortOrder == null) && (itemParentCatalogItem != null)) {
+            // get maximum sort order value for existing children
+            Float maxSortOrder = itemParentCatalogItem.getMaxSortOrder();
+            itemSortOrder = maxSortOrder + 1;
+        }
+        itemElement.setSortOrder(itemSortOrder);
+        
+        // validate name and sort order unique for specified parent item
+        String itemName = (String) rowMap.get(KEY_PART_NAME);
         if (itemParentCatalogItem != null) {
             // check for duplicate part name
             List<ItemElement> ieList = itemParentCatalogItem.getFullItemElementList();
             for (ItemElement ie : ieList) {
+                if ((ie.getSortOrder() != null) && (ie.getSortOrder().equals(itemSortOrder))) {
+                    String msg = "duplicate sort order for existing child location";
+                    validString = appendToString(validString, msg);
+                    isValid = false;
+                }
                 if ((ie.getName() != null) && (ie.getName().equals(itemName))) {
                     isValid = false;
-                    validString = "duplicate part name for existing item element";
+                    String msg = "duplicate part name for existing item element";
+                    validString = appendToString(validString, msg);
                 }
             }
         }
+        
+        itemElement.setImportParentItem(itemParentCatalogItem, itemSortOrder, null, null);
         
         return new CreateInfo(itemElement, isValid, validString);
     }

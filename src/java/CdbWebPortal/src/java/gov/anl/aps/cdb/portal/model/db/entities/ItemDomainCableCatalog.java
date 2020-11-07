@@ -42,9 +42,11 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     private transient String heatLimit = null;
     private transient String bendRadius = null;
     private transient String radTolerance = null;
-    private transient String team = null;
-    private transient boolean isValid = false;
-    private transient String validString = null;
+    private transient String totalLength = null;
+    private transient String reelLength = null;
+    private transient String reelQuantity = null;
+    private transient String leadTime = null;
+    private transient String procurementStatus = null;
     
     public final static String CABLE_CATALOG_INTERNAL_PROPERTY_TYPE = "cable_catalog_internal_property_type"; 
     public final static String CABLE_PROPERTY_URL_KEY = "url"; 
@@ -60,6 +62,11 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     public final static String CABLE_PROPERTY_HEAT_LIMIT_KEY = "heatLimit"; 
     public final static String CABLE_PROPERTY_BEND_RADIUS_KEY = "bendRadius"; 
     public final static String CABLE_PROPERTY_RAD_TOLERANCE_KEY = "radTolerance"; 
+    public final static String CABLE_PROPERTY_TOTAL_LENGTH_KEY = "totalLength"; 
+    public final static String CABLE_PROPERTY_REEL_LENGTH_KEY = "reelLength"; 
+    public final static String CABLE_PROPERTY_REEL_QUANTITY_KEY = "reelQuantity"; 
+    public final static String CABLE_PROPERTY_LEAD_TIME_KEY = "leadTime"; 
+    public final static String CABLE_PROPERTY_PROCUREMENT_STATUS_KEY = "procurementStatus"; 
     
     @Override
     public Item createInstance() {
@@ -279,21 +286,67 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     }
     
     @JsonIgnore
-    public boolean isIsValid() {
-        return isValid;
+    public String getTotalLength() throws CdbException {
+        if (totalLength == null) {
+            totalLength = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_TOTAL_LENGTH_KEY);
+        }
+        return totalLength;
     }
-
-    public void setIsValid(boolean isValid) {
-        this.isValid = isValid;
+    
+    public void setTotalLength(String w) throws CdbException {
+        totalLength = w;
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_TOTAL_LENGTH_KEY, w);
     }
-
+    
     @JsonIgnore
-    public String getValidString() {
-        return validString;
+    public String getReelLength() throws CdbException {
+        if (reelLength == null) {
+            reelLength = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_REEL_LENGTH_KEY);
+        }
+        return reelLength;
     }
-
-    public void setValidString(String validString) {
-        this.validString = validString;
+    
+    public void setReelLength(String w) throws CdbException {
+        reelLength = w;
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_REEL_LENGTH_KEY, w);
     }
-        
+    
+    @JsonIgnore
+    public String getReelQuantity() throws CdbException {
+        if (reelQuantity == null) {
+            reelQuantity = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_REEL_QUANTITY_KEY);
+        }
+        return reelQuantity;
+    }
+    
+    public void setReelQuantity(String w) throws CdbException {
+        reelQuantity = w;
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_REEL_QUANTITY_KEY, w);
+    }
+    
+    @JsonIgnore
+    public String getLeadTime() throws CdbException {
+        if (leadTime == null) {
+            leadTime = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_LEAD_TIME_KEY);
+        }
+        return leadTime;
+    }
+    
+    public void setLeadTime(String w) throws CdbException {
+        leadTime = w;
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_LEAD_TIME_KEY, w);
+    }
+    
+    @JsonIgnore
+    public String getProcurementStatus() throws CdbException {
+        if (procurementStatus == null) {
+            procurementStatus = getCoreMetadataPropertyFieldValue(CABLE_PROPERTY_PROCUREMENT_STATUS_KEY);
+        }
+        return procurementStatus;
+    }
+    
+    public void setProcurementStatus(String w) throws CdbException {
+        procurementStatus = w;
+        setCoreMetadataPropertyFieldValue(CABLE_PROPERTY_PROCUREMENT_STATUS_KEY, w);
+    }
 }
