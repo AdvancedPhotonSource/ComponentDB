@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -32,13 +33,10 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     @PersistenceContext(unitName = "CdbWebPortalPU")
     protected EntityManager em;
 
-    List<ItemDomainEntity> itemsToAdd;
+    List<ItemDomainEntity> itemsToAdd;   
 
-    private final String QUERY_STRING_START = "SELECT i FROM Item i ";
-    private final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"};
-  
     /**
-     * Returns Item domain for subclass implementation. 
+     * Returns Item domain for subclass implementation.
      */
     public abstract String getDomainName();
 
@@ -128,80 +126,9 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         return null;
     }
 
-    public List<ItemDomainEntity> findByDataTableFilterQueryBuilder(Domain domain, 
-            String entityTypeName, 
-            String name,
-            String description,
-            String itemId,
-            String ownerUsername,
-            String createdByUsername,
-            String modifiedByUsername,
-            String ownerGroupname,
-            String createdOnDate, 
-            String modifiedOnDate) {
-
-        String query = QUERY_STRING_START;
-        String wherePart = "";
-        Boolean appendSelfElement = false; 
-
-        wherePart = appendWhere(wherePart, "=", "i.domain.id", domain.getId());
-
-        if (entityTypeName != null) {
-            query += "JOIN i.entityTypeList etl ";
-            wherePart = appendWhere(wherePart, "=", "etl.name", entityTypeName);
-        }
+    public List<ItemDomainEntity> findByDataTableFilterQueryBuilder(ItemQueryBuilder queryBuilder) {
+        String fullQuery = queryBuilder.getQueryForItems(); 
         
-        if (itemId != null) {
-            wherePart = appendWhere(wherePart, "LIKE", "i.id", itemId); 
-        }
-
-        if (name != null) {
-            wherePart = appendWhere(wherePart, "LIKE", "i.name", name);
-        }
-        
-        if (description != null) {
-            appendSelfElement = true; 
-            wherePart = appendWhere(wherePart, "LIKE", "fiel.description", description);
-        } 
-        
-        if (ownerUsername != null) {
-            appendSelfElement = true; 
-            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.ownerUser.username", ownerUsername); 
-        }
-        
-        if (createdByUsername != null) {
-            appendSelfElement = true; 
-            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.createdByUser.username", createdByUsername); 
-        }
-        
-        if (modifiedByUsername != null) {
-            appendSelfElement = true; 
-            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.lastModifiedByUser.username", modifiedByUsername); 
-        }
-        
-        if (ownerGroupname != null) {
-            appendSelfElement = true; 
-            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.ownerUserGroup.name", ownerGroupname); 
-        }
-        
-        if (createdOnDate != null) {
-            appendSelfElement = true; 
-            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.createdOnDateTime", createdOnDate); 
-        }
-        
-        if (modifiedOnDate != null) {
-            appendSelfElement = true; 
-            wherePart = appendWhere(wherePart, "LIKE", "fiel.entityInfo.lastModifiedOnDateTime", modifiedOnDate); 
-        }
-        
-        if (appendSelfElement) {
-            query += " JOIN i.fullItemElementList fiel "; 
-            wherePart = appendWhere(wherePart, "IS" , "fiel.derivedFromItemElement", null); 
-            wherePart = appendWhere(wherePart, "IS" , "fiel.name", null);                                        
-        }
- 
-        String fullQuery = query + wherePart;
-
         try {
             return (List<ItemDomainEntity>) em.createQuery(fullQuery).getResultList();
         } catch (NoResultException ex) {
@@ -209,32 +136,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         return null;
 
-    }
-
-    public String appendWhere(String where, String comparator, String key, Object object) {
-        if (where.isEmpty()) {
-            where += "WHERE ";
-        } else {
-            where += "AND "; 
-        }
-
-        String value = "NULL"; 
-        if (object != null) {            
-            value = object.toString();
-        }
-
-        if (object != null && object instanceof String) {
-            if (comparator.equalsIgnoreCase("LIKE")) {
-                value = "%" + value + "%";
-            }
-
-            value = "'" + escapeCharacters(value) + "'";
-        }
-
-        where += key + " " + comparator + " " + value + " ";
-
-        return where;
-    }
+    }   
 
     public List<ItemDomainEntity> findByDomainAndEntityType(String domainName, String entityTypeName) {
         try {
@@ -259,7 +161,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
     public List<ItemDomainEntity> findByDomainAndEntityTypeAndTopLevelOrderByDerivedFromItem(String domainName, String entityTypeName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndTopLevelOrderByDerivedFromItem")
@@ -385,23 +287,23 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
     /**
-     * Find unique entity by name.  Returns null if none is found, or raises
+     * Find unique entity by name. Returns null if none is found, or raises
      * CdbException if multiple instances are found.
      */
     public ItemDomainEntity findUniqueByName(String name, String filterDomainName) throws CdbException {
-        
+
         if ((name == null) || (name.isEmpty())) {
             return null;
         }
-        
+
         String domainName = getDomainName();
-        
+
         if ((domainName == null) || domainName.isEmpty()) {
             throw new CdbException("findUniqueByName() not implemented by facade");
         }
-        
+
         List<ItemDomainEntity> items = findByDomainAndName(domainName, name);
         if (items.size() > 1) {
             // ambiguous result, throw exception
@@ -414,7 +316,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
             return items.get(0);
         }
     }
-    
+
     public List<ItemDomainEntity> findByDomainAndName(String domainName, String name) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndName")
@@ -428,20 +330,20 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     public ItemDomainEntity findUniqueByDomainAndEntityTypeAndName(
-            String name, 
-            String entityType, 
+            String name,
+            String entityType,
             String filterDomainName) throws CdbException {
-        
+
         if ((name == null) || (name.isEmpty()) || (entityType == null) || (entityType.isEmpty())) {
             return null;
         }
-        
+
         String domainName = getDomainName();
-        
+
         if ((domainName == null) || domainName.isEmpty()) {
             throw new CdbException("findUniqueByEntityTypeAndName() not implemented by facade");
         }
-        
+
         List<ItemDomainEntity> items = findByDomainAndEntityTypeAndName(domainName, entityType, name);
         if (items.size() > 1) {
             // ambiguous result, throw exception
@@ -454,7 +356,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
             return items.get(0);
         }
     }
-    
+
     public List<ItemDomainEntity> findByDomainAndEntityTypeAndName(String domainName, String entityType, String name) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndName")
@@ -469,33 +371,8 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     public ItemDomainEntity findByUniqueAttributes(Item derivedFromItem, Domain domain,
-            String name, String itemIdentifier1, String itemIdentifier2) {
-        String queryString = QUERY_STRING_START + "WHERE ";
-        if (derivedFromItem == null) {
-            queryString += "i.derivedFromItem is null ";
-        } else {
-            queryString += "i.derivedFromItem.id = " + derivedFromItem.getId() + " ";
-        }
-
-        queryString += " AND i.domain.id = " + domain.getId() + " ";
-
-        if (name == null || name.isEmpty()) {
-            queryString += "AND (i.name is null OR i.name = '') ";
-        } else {
-            queryString += "AND i.name = '" + escapeCharacters(name) + "' ";
-        }
-
-        if (itemIdentifier1 == null || itemIdentifier1.isEmpty()) {
-            queryString += "AND (i.itemIdentifier1 is null OR i.itemIdentifier1 = '') ";
-        } else {
-            queryString += "AND i.itemIdentifier1 = '" + escapeCharacters(itemIdentifier1) + "' ";
-        }
-
-        if (itemIdentifier2 == null || itemIdentifier2.isEmpty()) {
-            queryString += "AND (i.itemIdentifier2 is null OR i.itemIdentifier2 = '') ";
-        } else {
-            queryString += "AND i.itemIdentifier2 = '" + escapeCharacters(itemIdentifier2) + "' ";
-        }
+            String name, String itemIdentifier1, String itemIdentifier2) {        
+        String queryString = ItemQueryBuilder.findByUniqueAttributesQuery(derivedFromItem, domain, name, itemIdentifier1, itemIdentifier2); 
 
         try {
             return (ItemDomainEntity) em.createQuery(queryString).getSingleResult();
@@ -504,16 +381,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         return null;
     }
-
-    private String escapeCharacters(String queryParameter) {
-        for (CharSequence cs : ESCAPE_QUERY_CHARACTERS) {
-            if (queryParameter.contains(cs)) {
-                queryParameter = queryParameter.replace(cs, "'" + cs);
-            }
-        }
-        return queryParameter;
-    }
-
+    
     public List<ItemDomainEntity> findByFilterViewCategoryTypeAttributes(ItemProject itemProject,
             List<ItemCategory> itemCategoryList, ItemType itemType, String itemDomainName) {
         return findByFilterViewAttributes(itemProject, itemCategoryList, itemType, itemDomainName, null, null);
@@ -534,74 +402,14 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
             String itemDomainName,
             List<UserGroup> ownerUserGroupList,
             UserInfo ownerUserName) {
-        String queryString = QUERY_STRING_START;
+        String queryString = ItemQueryBuilder.findByFilterViewAttributesQuery(itemProject,
+                itemCategoryList,
+                itemType,
+                itemDomainName, 
+                ownerUserGroupList,
+                ownerUserName); 
 
-        List<String> queryParameters = new ArrayList<>();
-
-        if (itemDomainName != null) {
-            queryParameters.add("i.domain.name = '" + itemDomainName + "'");
-        }
-
-        if (itemProject != null) {
-            queryString += "JOIN i.itemProjectList ipl ";
-            queryParameters.add("ipl.id = " + itemProject.getId());
-        }
-
-        if (itemCategoryList != null) {
-            if (!itemCategoryList.isEmpty()) {
-                queryString += "JOIN i.itemCategoryList icl ";
-                String queryParameter = "(";
-                for (ItemCategory itemCategory : itemCategoryList) {
-                    if (itemCategoryList.indexOf(itemCategory) != 0) {
-                        queryParameter += " OR ";
-                    }
-                    queryParameter += "icl.id = " + itemCategory.getId();
-                }
-                queryParameter += ")";
-                queryParameters.add(queryParameter);
-            }
-        }
-
-        if (itemType != null) {
-            queryString += " JOIN i.itemTypeList itl ";
-            queryParameters.add("itl.id = " + itemType.getId());
-        }
-
-        if (ownerUserGroupList != null || ownerUserName != null) {
-            queryString += " JOIN i.fullItemElementList fiel ";
-            queryParameters.add("fiel.name is NULL and fiel.derivedFromItemElement is null");
-            if (ownerUserGroupList != null && !ownerUserGroupList.isEmpty()) {
-                String queryParameter = "(";
-                for (UserGroup userGroup : ownerUserGroupList) {
-                    if (ownerUserGroupList.indexOf(userGroup) != 0) {
-                        queryParameter += " OR ";
-                    }
-                    queryParameter += "fiel.entityInfo.ownerUserGroup.name = '" + userGroup.getName() + "'";
-                }
-                queryParameter += ")";
-                queryParameters.add(queryParameter);
-            }
-
-            if (ownerUserName != null) {
-                String queryParameter = "fiel.entityInfo.ownerUser.username = '" + ownerUserName.getUsername() + "'";
-                queryParameters.add(queryParameter);
-            }
-        }
-
-        if (!queryParameters.isEmpty()) {
-
-            queryString += "WHERE ";
-
-            for (String queryParameter : queryParameters) {
-                if (queryParameters.indexOf(queryParameter) == 0) {
-                    queryString += queryParameter + " ";
-                } else {
-                    queryString += "AND " + queryParameter + " ";
-                }
-            }
-
-            queryString += "ORDER BY i.name ASC";
-
+        if (queryString != null) {
             return (List<ItemDomainEntity>) em.createQuery(queryString).getResultList();
         }
 

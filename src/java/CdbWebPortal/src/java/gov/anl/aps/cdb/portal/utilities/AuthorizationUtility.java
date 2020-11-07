@@ -47,10 +47,11 @@ public class AuthorizationUtility {
     }
 
     public static <EntityType extends CdbEntity> boolean isEntityWriteableByUser(EntityType entity, UserInfo userInfo) {
-        if (entity instanceof UserInfo) {
-            return ObjectUtility.equals(entity, userInfo);
+        Object entityInfo = entity.getEntityInfo();
+        if (entityInfo instanceof EntityInfo) {
+            return isEntityWriteableByUser((EntityInfo) entityInfo, userInfo); 
         }
-        return false;
+        return false; 
     }
 
 }

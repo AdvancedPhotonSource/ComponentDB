@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMAARCSettings;
+import gov.anl.aps.cdb.portal.model.ItemDomainMAARCLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
@@ -32,7 +33,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -40,9 +40,6 @@ import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.pdfbox.io.IOUtils;
-import org.primefaces.model.FilterMeta;
-import org.primefaces.model.LazyDataModel;
-import org.primefaces.model.SortOrder;
 import org.primefaces.model.StreamedContent;
 
 /**
@@ -71,7 +68,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
 
     private List<ItemElementRelationship> relatedRelationshipsForCurrent = null;
 
-    private MAARCListDataModel maarcListDataModel;
+    private ItemDomainMAARCLazyDataModel maarcListDataModel;
 
     @EJB
     ItemDomainMAARCFacade itemDomainMAARCFacade;
@@ -605,9 +602,9 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
         return null;
     }
 
-    public MAARCListDataModel getMAARCListDataModel() {
+    public ItemDomainMAARCLazyDataModel getMAARCListDataModel() {
         if (maarcListDataModel == null) {           
-            maarcListDataModel = new MAARCListDataModel(itemDomainMAARCFacade);
+            maarcListDataModel = new ItemDomainMAARCLazyDataModel(itemDomainMAARCFacade, getDefaultDomain()); 
         }
 
         return maarcListDataModel;
@@ -657,97 +654,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return null;
-    }
-
-    public class MAARCListDataModel extends LazyDataModel {
-
-        List<ItemDomainMAARC> itemList;
-        ItemDomainMAARCFacade facade;
-
-        Map lastFilterMap = null;
-
-        private final String ENTITY_TYPE_FILTER = "entityTypeString";
-        private final String NAME_FILTER = "name";
-        private final String DESCRIPTION_FILTER = "description";
-        private final String ITEM_ID_FILTER = "id";
-        private final String CREATED_ON_DATE_TIME_FILTER = "createdOnDateTime";
-        private final String LAST_MODIFIED_ON_DATE_TIME_FILTER = "lastModifiedOnDateTime";
-        private final String OWNER_GROUP_FILTER = "ownerUserGroup.name";
-        private final String CREATED_BY_USERNAME_FILTER = "createdByUser.username";
-        private final String MODIFIED_BY_USERNAME_FILTER = "lastModifiedByUser.username";
-        private final String OWNED_BY_USERNAME_FILTER = "ownerUser.username";
-
-        public MAARCListDataModel(ItemDomainMAARCFacade facade) {
-            this.facade = facade;
-            updateItemList(new ArrayList<>());
-        }
-
-        private void updateItemList(List<ItemDomainMAARC> itemList) {
-            this.itemList = itemList;
-            setRowCount(itemList.size());
-        }
-
-        @Override
-        public List load(int first, int pageSize, String sortField, SortOrder sortOrder, Map filterBy) {
-            if (filterBy.size() == 0) {
-                // Innitial set
-                lastFilterMap = filterBy;
-            }
-
-            if (lastFilterMap.equals(filterBy) == false) {
-                String entityTypeFilter = readFilterValue(filterBy, ENTITY_TYPE_FILTER);
-                String nameFilter = readFilterValue(filterBy, NAME_FILTER);
-                String descriptionFilter = readFilterValue(filterBy, DESCRIPTION_FILTER);
-                String itemIdFilter = readFilterValue(filterBy, ITEM_ID_FILTER);
-                String ownerFilter = readFilterValue(filterBy, OWNED_BY_USERNAME_FILTER); 
-                String createdUserFilter = readFilterValue(filterBy, CREATED_BY_USERNAME_FILTER); 
-                String modifiedUserFilter = readFilterValue(filterBy, MODIFIED_BY_USERNAME_FILTER);
-                String ownerGroupFilter = readFilterValue(filterBy, OWNER_GROUP_FILTER);
-                String createdOnDateFilter = readFilterValue(filterBy, CREATED_ON_DATE_TIME_FILTER);
-                String modifiedOnDateFilter = readFilterValue(filterBy, LAST_MODIFIED_ON_DATE_TIME_FILTER);
-
-                List<ItemDomainMAARC> results = facade.findByDataTableFilterQueryBuilder(
-                        getDefaultDomain(),
-                        entityTypeFilter,
-                        nameFilter,
-                        descriptionFilter,
-                        itemIdFilter,
-                        ownerFilter,
-                        createdUserFilter,
-                        modifiedUserFilter,
-                        ownerGroupFilter,
-                        createdOnDateFilter,
-                        modifiedOnDateFilter);
-                updateItemList(results);
-
-            }
-
-            return paginate(first, pageSize);
-        }
-
-        private String readFilterValue(Map filterMap, String key) {
-            if (filterMap.containsKey(key)) {                
-                FilterMeta filter = (FilterMeta) filterMap.get(key);
-                Object filterValue = filter.getFilterValue();
-                
-                if (filterValue != null) {
-                    return filterValue.toString();
-                }
-            }
-            return null;
-        }
-
-        private List paginate(int first, int pageSize) {
-            int size = itemList.size();
-
-            int last = first + pageSize;
-            if (size < last) {
-                last = size;
-            }
-
-            return itemList.subList(first, last);
-        }
-
-    }
+    }   
 
 }

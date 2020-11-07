@@ -87,7 +87,7 @@ public class LocationItemRoute extends ItemBaseRoute {
         UserInfo currentUser = verifyCurrentUserPermissionForItem(currentItem);                        
         
         ItemDomainLocationController itemDomainController = ItemDomainLocationController.getApiInstance(); 
-        itemDomainController.updateParentForItem(currentItem, newParent);
+        itemDomainController.updateParentForItem(currentItem, newParent, currentUser);
         
         itemDomainController.updateFromApi(currentItem, currentUser);
         
