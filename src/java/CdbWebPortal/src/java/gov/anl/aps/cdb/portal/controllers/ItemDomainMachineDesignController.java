@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
@@ -31,6 +32,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
@@ -992,6 +994,18 @@ public class ItemDomainMachineDesignController
         if (!validInfo.isValid()) {
             SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
             return;
+        }
+        
+        // check permissions for all items
+        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        if (sessionRole != CdbRole.ADMIN) {
+            for (ItemDomainMachineDesign item : itemsToDelete) {
+                UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+                if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
+                    SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
+                    return;
+                }
+            }
         }
 
         // mark ItemElements for relationships in hierarchy for deletion and
