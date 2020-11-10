@@ -7,25 +7,38 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">      
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html">      
 
-    <p:confirmDialog header="Destroy selected machine element" severity="alert"
-                     widgetVar="destroyMachineDesignWidget"
-                     styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
-        <f:facet name="message">
-            All the machine element children will become top level machine elements. 
-            First level children will lose parent membership histories.
-            <br/><b>Proceed with removal of selected Machine Element?</b>
-        </f:facet>
-        <p:commandButton value="Yes" 
-                         actionListener="#{entityController.deleteSelectedMachineDesignItemFromDualView}"
-                         onclick="PF('loadingDialog').show()"                         
-                         update="@form"
-                         oncomplete="PF('loadingDialog').hide();
+    <p:dialog header="Destroy selected machine hierarchy"
+              modal="true"
+              widgetVar="destroyMachineDesignWidget"
+              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+        <p:panelGrid>
+            <p:row>
+                <p:column>
+                    <h:outputText value="Delete hierarchy of nodes whose root is the selected item? You must enter the exact name of the root item below to continue." />
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <p:inputText value="#{entityController.deleteItemName}"/>
+                </p:column>
+            </p:row>
+            <p:row>
+                <p:column>
+                    <p:commandButton value="Yes" 
+                                     actionListener="#{entityController.deleteSelectedMachineDesignItemFromDualView}"
+                                     onclick="PF('loadingDialog').show()"                         
+                                     update="@form"
+                                     oncomplete="PF('loadingDialog').hide();
                                      PF('destroyMachineDesignWidget').hide()"/>
-        <p:commandButton value="No" 
-                         onclick="PF('destroyMachineDesignWidget').hide();"/>
-    </p:confirmDialog>    
+                    <p:commandButton value="No" 
+                                     onclick="PF('destroyMachineDesignWidget').hide();"/>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+    </p:dialog>    
 
     <p:confirmDialog header="Detach machine element from hierarchy?" severity="alert"
                      widgetVar="detachMachineDesignWidget"

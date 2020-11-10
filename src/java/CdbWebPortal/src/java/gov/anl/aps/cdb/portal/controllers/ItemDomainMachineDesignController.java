@@ -139,6 +139,10 @@ public class ItemDomainMachineDesignController
     private static final String JS_DESTINATION_MD_ID_PASSED_KEY = "destinationId";
     // </editor-fold>   
 
+    // <editor-fold defaultstate="collapsed" desc="Delete support variables">
+    private String deleteItemName = null;
+    // </editor-fold>
+    
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
     public void onDropFromJS() {
         LoginController loginController = LoginController.getInstance();
@@ -925,110 +929,6 @@ public class ItemDomainMachineDesignController
         }
     }
     
-    public ValidInfo collectItemsForDeletion(
-            ItemDomainMachineDesign parentItem, 
-            List<ItemDomainMachineDesign> collectedItems,
-            List<ItemElement> collectedElements,
-            boolean isRootItem) {
-        
-        boolean isValid = true;
-        String validString = "";
-        
-        List<ItemElement> displayList = parentItem.getItemElementDisplayList();
-        for (ItemElement ie : displayList) {
-            Item childItem = ie.getContainedItem();
-            if (childItem instanceof ItemDomainMachineDesign) {
-                
-                List<ItemElement> childMemberList = childItem.getItemElementMemberList();
-                if (childMemberList.size() > 1) {
-                    // this code assumes that a child machine design item has only one 'membership'
-                    isValid = false;
-                    validString = "item: " + childItem.getName() + " is member of multiple assemblies";
-                    return new ValidInfo(isValid, validString);
-                    
-                } else {
-                    // depth first ordering is important here, otherwise there are merge errors for deleted items
-                    ValidInfo validInfo = 
-                            collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false);
-                    if (!validInfo.isValid()) {
-                        return validInfo;
-                    }
-                    collectedItems.add((ItemDomainMachineDesign) childItem);
-                    collectedElements.add(ie);
-                }
-            }
-        }
-        
-        if (isRootItem) {
-            collectedItems.add(parentItem);
-
-            // mark ItemElement for relationship from parent to its container for deletion
-            List<ItemElement> memberList = parentItem.getItemElementMemberList();
-            if (memberList.size() > 1) {
-                // parentItem has more than one membership
-                isValid = false;
-                validString = "item: " + parentItem.getName() + " is member of multiple assemblies";
-                return new ValidInfo(isValid, validString);
-            } else if (memberList.size() == 1) {
-                ItemElement containerRelElement = memberList.get(0);
-                collectedElements.add(containerRelElement);
-            }
-        }
-        
-        return new ValidInfo(isValid, validString);
-    }
-
-    public void deleteSelectedMachineDesignItemFromDualView() {
-        
-        updateCurrentUsingSelectedItemInTreeTable();
-
-        ItemDomainMachineDesign rootItemToDelete = getCurrent();
-        if (rootItemToDelete == null) {
-            return;
-        }
-
-        // collect list of items to delete
-        List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
-        List<ItemElement> elementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true);
-        if (!validInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
-            return;
-        }
-        
-        // check permissions for all items
-        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
-        if (sessionRole != CdbRole.ADMIN) {
-            for (ItemDomainMachineDesign item : itemsToDelete) {
-                UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-                if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
-                    SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
-                    return;
-                }
-            }
-        }
-
-        // mark ItemElements for relationships in hierarchy for deletion and
-        // remove from parent and child items, and find container item
-        ItemDomainMachineDesign containerItem = null;
-        for (ItemElement ie : elementsToDelete) {
-            Item childItem = ie.getContainedItem();
-            Item ieParentItem = ie.getParentItem();
-//            childItem.getItemElementMemberList().remove(ie);
-            ieParentItem.removeItemElement(ie);
-            ie.setMarkedForDeletion(true);
-            if (childItem.equals(rootItemToDelete)) {
-                containerItem = (ItemDomainMachineDesign)childItem;
-            }
-        }        
-
-        if (itemsToDelete.size() == 1) {
-            destroy();
-        } else {
-            destroyList(itemsToDelete, containerItem);
-        }
-    }
-
     @Deprecated
     /**
      * Templates are only created fully and only previously partially created md
@@ -2949,4 +2849,130 @@ public class ItemDomainMachineDesignController
         return new DomainImportInfo(formatInfo, completionUrl);
     }
     // </editor-fold>       
+
+    // <editor-fold defaultstate="collapsed" desc="Delete support">   
+    public String getDeleteItemName() {
+        return deleteItemName;
+    }
+
+    public void setDeleteItemName(String deleteItemName) {
+        this.deleteItemName = deleteItemName;
+    }
+    
+    public ValidInfo collectItemsForDeletion(
+            ItemDomainMachineDesign parentItem, 
+            List<ItemDomainMachineDesign> collectedItems,
+            List<ItemElement> collectedElements,
+            boolean isRootItem) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        List<ItemElement> displayList = parentItem.getItemElementDisplayList();
+        for (ItemElement ie : displayList) {
+            Item childItem = ie.getContainedItem();
+            if (childItem instanceof ItemDomainMachineDesign) {
+                
+                List<ItemElement> childMemberList = childItem.getItemElementMemberList();
+                if (childMemberList.size() > 1) {
+                    // this code assumes that a child machine design item has only one 'membership'
+                    isValid = false;
+                    validString = "item: " + childItem.getName() + " is member of multiple assemblies";
+                    return new ValidInfo(isValid, validString);
+                    
+                } else {
+                    // depth first ordering is important here, otherwise there are merge errors for deleted items
+                    ValidInfo validInfo = 
+                            collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false);
+                    if (!validInfo.isValid()) {
+                        return validInfo;
+                    }
+                    collectedItems.add((ItemDomainMachineDesign) childItem);
+                    collectedElements.add(ie);
+                }
+            }
+        }
+        
+        if (isRootItem) {
+            collectedItems.add(parentItem);
+
+            // mark ItemElement for relationship from parent to its container for deletion
+            List<ItemElement> memberList = parentItem.getItemElementMemberList();
+            if (memberList.size() > 1) {
+                // parentItem has more than one membership
+                isValid = false;
+                validString = "item: " + parentItem.getName() + " is member of multiple assemblies";
+                return new ValidInfo(isValid, validString);
+            } else if (memberList.size() == 1) {
+                ItemElement containerRelElement = memberList.get(0);
+                collectedElements.add(containerRelElement);
+            }
+        }
+        
+        return new ValidInfo(isValid, validString);
+    }
+
+    public void deleteSelectedMachineDesignItemFromDualView() {
+        
+        updateCurrentUsingSelectedItemInTreeTable();
+
+        ItemDomainMachineDesign rootItemToDelete = getCurrent();
+        if (rootItemToDelete == null) {
+            return;
+        }
+        
+        // check for match on item name entered by user in confirmation dialog
+        if (!getDeleteItemName().equals(rootItemToDelete.getName())) {
+            SessionUtility.addErrorMessage("Error", "Item name entered by user: " + 
+                            getDeleteItemName() + 
+                            " does not match selected item: " + 
+                            rootItemToDelete.getName());
+            return;
+        }
+
+        // collect list of items to delete
+        List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
+        List<ItemElement> elementsToDelete = new ArrayList<>();
+        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true);
+        if (!validInfo.isValid()) {
+            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
+            return;
+        }
+        
+        // check permissions for all items
+        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        if (sessionRole != CdbRole.ADMIN) {
+            for (ItemDomainMachineDesign item : itemsToDelete) {
+                UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+                if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
+                    SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
+                    return;
+                }
+            }
+        }
+
+        // mark ItemElements for relationships in hierarchy for deletion and
+        // remove from parent and child items, and find container item
+        ItemDomainMachineDesign containerItem = null;
+        for (ItemElement ie : elementsToDelete) {
+            Item childItem = ie.getContainedItem();
+            Item ieParentItem = ie.getParentItem();
+//            childItem.getItemElementMemberList().remove(ie);
+            ieParentItem.removeItemElement(ie);
+            ie.setMarkedForDeletion(true);
+            if (childItem.equals(rootItemToDelete)) {
+                containerItem = (ItemDomainMachineDesign)childItem;
+            }
+        }        
+
+        if (itemsToDelete.size() == 1) {
+            destroy();
+        } else {
+            destroyList(itemsToDelete, containerItem);
+        }
+        
+        setDeleteItemName(null);
+    }
+
+    // </editor-fold>
 }
