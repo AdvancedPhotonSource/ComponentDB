@@ -10,8 +10,10 @@ See LICENSE file.
 
     <p:menuitem value="Delete"
                 icon="fa fa-trash"
-                onclick="PF('destroyMachineDesignWidget').show()"
-                disabled="#{disabledEditContextMenuItemForSelection}"/>
+                action="#{entityController.prepareDelete}"
+                oncomplete="PF('destroyMachineDesignWidget').show()"
+                disabled="#{disabledEditContextMenuItemForSelection}"
+                update="@form:destroyMachineDesignDialogTree"/>
 
 </ui:composition>
 

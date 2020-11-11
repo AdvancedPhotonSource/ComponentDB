@@ -40,6 +40,7 @@ import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -47,6 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.DataModel;
@@ -141,6 +143,7 @@ public class ItemDomainMachineDesignController
 
     // <editor-fold defaultstate="collapsed" desc="Delete support variables">
     private String deleteItemName = null;
+    private TreeNode itemToDeleteNode = new DefaultTreeNode();
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
@@ -2859,6 +2862,41 @@ public class ItemDomainMachineDesignController
         this.deleteItemName = deleteItemName;
     }
     
+    private void addChildrenForItemToDeleteTreeNode(
+            ItemDomainMachineDesign item, 
+            TreeNode itemNode) {
+        
+        itemNode.setExpanded(false);
+        
+        List<ItemElement> childElements = item.getItemElementDisplayList();
+        List<ItemDomainMachineDesign> childItems = childElements.stream()
+                .map((child) -> (ItemDomainMachineDesign) child.getContainedItem())
+                .collect(Collectors.toList());
+
+        for (ItemDomainMachineDesign childItem : childItems) {
+            TreeNode childNode = new DefaultTreeNode(childItem.getName());
+            childNode.setExpanded(false);
+            itemNode.getChildren().add(childNode);
+            addChildrenForItemToDeleteTreeNode(childItem, childNode);
+        }
+    }
+    
+    public void prepareDelete() {
+        updateCurrentUsingSelectedItemInTreeTable();
+
+        if (getCurrent() != null) {
+            itemToDeleteNode = new DefaultTreeNode();
+            itemToDeleteNode.setExpanded(false);   
+            TreeNode childNode = new DefaultTreeNode(getCurrent().getName());
+            itemToDeleteNode.getChildren().add(childNode);
+            addChildrenForItemToDeleteTreeNode(getCurrent(), childNode);
+        }
+    }
+    
+    public TreeNode getItemToDeleteNode() {
+        return itemToDeleteNode;
+    }
+    
     public ValidInfo collectItemsForDeletion(
             ItemDomainMachineDesign parentItem, 
             List<ItemDomainMachineDesign> collectedItems,
@@ -2914,8 +2952,6 @@ public class ItemDomainMachineDesignController
 
     public void deleteSelectedMachineDesignItemFromDualView() {
         
-        updateCurrentUsingSelectedItemInTreeTable();
-
         ItemDomainMachineDesign rootItemToDelete = getCurrent();
         if (rootItemToDelete == null) {
             return;

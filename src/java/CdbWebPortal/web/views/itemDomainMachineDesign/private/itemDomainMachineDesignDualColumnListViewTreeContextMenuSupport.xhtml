@@ -8,36 +8,49 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://java.sun.com/jsf/html">      
+                xmlns:h="http://java.sun.com/jsf/html">  
 
     <p:dialog header="Destroy selected machine hierarchy"
               modal="true"
               widgetVar="destroyMachineDesignWidget"
               styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
-        <p:panelGrid>
-            <p:row>
-                <p:column>
-                    <h:outputText value="Delete hierarchy of nodes whose root is the selected item? You must enter the exact name of the root item below to continue." />
-                </p:column>
-            </p:row>
-            <p:row>
-                <p:column>
-                    <p:inputText value="#{entityController.deleteItemName}"/>
-                </p:column>
-            </p:row>
-            <p:row>
-                <p:column>
-                    <p:commandButton value="Yes" 
-                                     actionListener="#{entityController.deleteSelectedMachineDesignItemFromDualView}"
-                                     onclick="PF('loadingDialog').show()"                         
-                                     update="@form"
-                                     oncomplete="PF('loadingDialog').hide();
-                                     PF('destroyMachineDesignWidget').hide()"/>
-                    <p:commandButton value="No" 
-                                     onclick="PF('destroyMachineDesignWidget').hide();"/>
-                </p:column>
-            </p:row>
-        </p:panelGrid>
+        <p:panel id="destroyMachineDesignDialogPanel">
+            <p:panelGrid>
+                <p:row>
+                    <p:column>
+                        <h:outputText value="Delete hierarchy of nodes whose root is the selected item? You must enter the exact name of the root item below to continue." />
+                    </p:column>
+                    <p:column>
+                        <p:tree id="destroyMachineDesignDialogTree"
+                                value="#{entityController.itemToDeleteNode}" 
+                                var="node"
+                                selectionMode="single">
+                            <p:treeNode>
+                                <h:outputText value="#{node}" />
+                            </p:treeNode>
+
+                        </p:tree>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:inputText value="#{entityController.deleteItemName}"/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:commandButton value="Yes" 
+                                         actionListener="#{entityController.deleteSelectedMachineDesignItemFromDualView}"
+                                         onclick="PF('loadingDialog').show()"                         
+                                         update="@form"
+                                         oncomplete="PF('loadingDialog').hide();
+                                         PF('destroyMachineDesignWidget').hide()"/>
+                        <p:commandButton value="No" 
+                                         onclick="PF('destroyMachineDesignWidget').hide();"/>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </p:panel>
     </p:dialog>    
 
     <p:confirmDialog header="Detach machine element from hierarchy?" severity="alert"
