@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.plugins.support.traveler;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import java.io.Serializable;
@@ -45,11 +46,20 @@ public class ItemTravelerDomainMachineInstanceController extends ItemTravelerDom
         if (!(item instanceof ItemDomainMachineDesign)) {
             return pvList;
         }
-        // add templates for machine design item and template that it's instantiated
-        // from, if any
-        pvList.addAll(item.getPropertyValueInternalList());
-        if (item.getCreatedFromTemplate() != null) {
-            pvList.addAll(item.getCreatedFromTemplate().getPropertyValueInternalList());
+        
+        ItemDomainMachineDesign machineItem = (ItemDomainMachineDesign) item; 
+        
+        // add templates for machine design item and template that it's instantiated      
+        if (machineItem.getCreatedFromTemplate() != null) {
+            pvList.addAll(machineItem.getCreatedFromTemplate().getPropertyValueInternalList());
+        } else {
+            // Try to see assigned item. 
+            Item assignedItem = machineItem.getAssignedItem();
+            if (assignedItem instanceof ItemDomainCatalog) {
+                if (((ItemDomainCatalog) assignedItem).getInventoryItemList().isEmpty()) {
+                    pvList.addAll(assignedItem.getPropertyValueInternalList());
+                }                
+            }            
         }
         return pvList;
     }
