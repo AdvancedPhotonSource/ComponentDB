@@ -142,8 +142,8 @@ public class ItemDomainMachineDesignController
     // </editor-fold>   
 
     // <editor-fold defaultstate="collapsed" desc="Delete support variables">
-    private String deleteItemName = null;
-    private TreeNode itemToDeleteNode = new DefaultTreeNode();
+    private String deleteHierarchyName = null;
+    private TreeNode deleteHierarchyNode = new DefaultTreeNode();
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
@@ -932,6 +932,12 @@ public class ItemDomainMachineDesignController
         }
     }
     
+    public void deleteSelectedMachineDesignItemFromDualView() {
+        updateCurrentUsingSelectedItemInTreeTable();
+
+        destroy();
+    }
+
     @Deprecated
     /**
      * Templates are only created fully and only previously partially created md
@@ -2854,15 +2860,15 @@ public class ItemDomainMachineDesignController
     // </editor-fold>       
 
     // <editor-fold defaultstate="collapsed" desc="Delete support">   
-    public String getDeleteItemName() {
-        return deleteItemName;
+    public String getDeleteHierarchyName() {
+        return deleteHierarchyName;
     }
 
-    public void setDeleteItemName(String deleteItemName) {
-        this.deleteItemName = deleteItemName;
+    public void setDeleteHierarchyName(String deleteHierarchyName) {
+        this.deleteHierarchyName = deleteHierarchyName;
     }
     
-    private void addChildrenForItemToDeleteTreeNode(
+    private void addChildrenForItemToDeleteHierarchyNode(
             ItemDomainMachineDesign item, 
             TreeNode itemNode) {
         
@@ -2877,24 +2883,24 @@ public class ItemDomainMachineDesignController
             TreeNode childNode = new DefaultTreeNode(childItem.getName());
             childNode.setExpanded(false);
             itemNode.getChildren().add(childNode);
-            addChildrenForItemToDeleteTreeNode(childItem, childNode);
+            addChildrenForItemToDeleteHierarchyNode(childItem, childNode);
         }
     }
     
-    public void prepareDelete() {
+    public void prepareDeleteHierarchy() {
         updateCurrentUsingSelectedItemInTreeTable();
 
         if (getCurrent() != null) {
-            itemToDeleteNode = new DefaultTreeNode();
-            itemToDeleteNode.setExpanded(false);   
+            deleteHierarchyNode = new DefaultTreeNode();
+            deleteHierarchyNode.setExpanded(false);   
             TreeNode childNode = new DefaultTreeNode(getCurrent().getName());
-            itemToDeleteNode.getChildren().add(childNode);
-            addChildrenForItemToDeleteTreeNode(getCurrent(), childNode);
+            deleteHierarchyNode.getChildren().add(childNode);
+            addChildrenForItemToDeleteHierarchyNode(getCurrent(), childNode);
         }
     }
     
-    public TreeNode getItemToDeleteNode() {
-        return itemToDeleteNode;
+    public TreeNode getDeleteHierarchyNode() {
+        return deleteHierarchyNode;
     }
     
     public ValidInfo collectItemsForDeletion(
@@ -2950,7 +2956,7 @@ public class ItemDomainMachineDesignController
         return new ValidInfo(isValid, validString);
     }
 
-    public void deleteSelectedMachineDesignItemFromDualView() {
+    public void deleteSelectedHierarchy() {
         
         ItemDomainMachineDesign rootItemToDelete = getCurrent();
         if (rootItemToDelete == null) {
@@ -2958,9 +2964,9 @@ public class ItemDomainMachineDesignController
         }
         
         // check for match on item name entered by user in confirmation dialog
-        if (!getDeleteItemName().equals(rootItemToDelete.getName())) {
+        if (!getDeleteHierarchyName().equals(rootItemToDelete.getName())) {
             SessionUtility.addErrorMessage("Error", "Item name entered by user: " + 
-                            getDeleteItemName() + 
+                            getDeleteHierarchyName() + 
                             " does not match selected item: " + 
                             rootItemToDelete.getName());
             return;
@@ -3007,7 +3013,7 @@ public class ItemDomainMachineDesignController
             destroyList(itemsToDelete, containerItem);
         }
         
-        setDeleteItemName(null);
+        setDeleteHierarchyName(null);
     }
 
     // </editor-fold>
