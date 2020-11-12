@@ -107,6 +107,7 @@ CABLE_DESIGN_IMPORT_ID_KEY = "importId"
 CABLE_DESIGN_QR_ID_KEY = "qrId"
 CABLE_DESIGN_VIA_ROUTE_KEY = "via"
 CABLE_DESIGN_WAYPOINT_ROUTE_KEY = "waypoint"
+CABLE_DESIGN_NOTES_KEY = "notes"
 
 name_manager = None
 
@@ -1170,7 +1171,7 @@ class CableDesignHelper(PreImportHelper):
         return "CableDesign"
 
     def num_input_cols(self):
-        return 23
+        return 24
 
     def input_column_list(self):
         column_list = [
@@ -1197,6 +1198,7 @@ class CableDesignHelper(PreImportHelper):
             InputColumnModel(col_index=20, key=CABLE_DESIGN_QR_ID_KEY, required=False),
             InputColumnModel(col_index=21, key=CABLE_DESIGN_VIA_ROUTE_KEY, required=False),
             InputColumnModel(col_index=22, key=CABLE_DESIGN_WAYPOINT_ROUTE_KEY, required=False),
+            InputColumnModel(col_index=23, key=CABLE_DESIGN_NOTES_KEY, required=False),
         ]
         return column_list
 
