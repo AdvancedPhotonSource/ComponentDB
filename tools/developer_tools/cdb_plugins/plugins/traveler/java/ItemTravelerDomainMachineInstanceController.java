@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import java.io.Serializable;
@@ -55,11 +56,18 @@ public class ItemTravelerDomainMachineInstanceController extends ItemTravelerDom
         } else {
             // Try to see assigned item. 
             Item assignedItem = machineItem.getAssignedItem();
+            ItemDomainCatalog catalogAssignedItem = null; 
+            
             if (assignedItem instanceof ItemDomainCatalog) {
-                if (((ItemDomainCatalog) assignedItem).getInventoryItemList().isEmpty()) {
-                    pvList.addAll(assignedItem.getPropertyValueInternalList());
-                }                
-            }            
+                catalogAssignedItem = (ItemDomainCatalog) assignedItem; 
+            } else if (assignedItem instanceof ItemDomainInventory) {
+                ItemDomainInventory inventoryItem = (ItemDomainInventory) assignedItem;
+                catalogAssignedItem = inventoryItem.getCatalogItem(); 
+            }
+            
+            if (catalogAssignedItem != null) {
+                pvList.addAll(catalogAssignedItem.getPropertyValueInternalList());
+            }
         }
         return pvList;
     }
