@@ -183,6 +183,24 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
     }
     
+    /**
+     * Marks this machine design item as a 'deleted' EntityType.
+     */
+    public void setIsDeleted() {
+        try {
+            List<EntityType> entityTypeList = new ArrayList<>();
+            EntityType templateEntity = 
+                    EntityTypeController.getInstance().
+                            findByName(EntityTypeName.deleted.getValue());
+            entityTypeList.add(templateEntity);
+            setEntityTypeList(entityTypeList);
+        } catch (CdbException ex) {
+            String msg = "Exception setting template entity type for: " + getName() + 
+                    " reason: " + ex.getMessage();
+            LOGGER.error("setIsTemplate() " + msg);
+        }
+    }
+    
     @JsonIgnore
     public ItemDomainMachineDesign getImportMdItem() {
         return importMdItem;

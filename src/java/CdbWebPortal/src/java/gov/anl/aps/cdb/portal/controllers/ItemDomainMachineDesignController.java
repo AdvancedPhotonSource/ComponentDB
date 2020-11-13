@@ -40,7 +40,6 @@ import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -142,6 +141,8 @@ public class ItemDomainMachineDesignController
     // </editor-fold>   
 
     // <editor-fold defaultstate="collapsed" desc="Delete support variables">
+    private String moveToTrashName = null;
+    private TreeNode moveToTrashNode = new DefaultTreeNode();
     private String deleteHierarchyName = null;
     private TreeNode deleteHierarchyNode = new DefaultTreeNode();
     // </editor-fold>
@@ -2860,14 +2861,6 @@ public class ItemDomainMachineDesignController
     // </editor-fold>       
 
     // <editor-fold defaultstate="collapsed" desc="Delete support">   
-    public String getDeleteHierarchyName() {
-        return deleteHierarchyName;
-    }
-
-    public void setDeleteHierarchyName(String deleteHierarchyName) {
-        this.deleteHierarchyName = deleteHierarchyName;
-    }
-    
     private void addChildrenForItemToDeleteHierarchyNode(
             ItemDomainMachineDesign item, 
             TreeNode itemNode) {
@@ -2887,22 +2880,17 @@ public class ItemDomainMachineDesignController
         }
     }
     
-    public void prepareDeleteHierarchy() {
-        updateCurrentUsingSelectedItemInTreeTable();
-
-        if (getCurrent() != null) {
-            deleteHierarchyNode = new DefaultTreeNode();
-            deleteHierarchyNode.setExpanded(false);   
-            TreeNode childNode = new DefaultTreeNode(getCurrent().getName());
-            deleteHierarchyNode.getChildren().add(childNode);
-            addChildrenForItemToDeleteHierarchyNode(getCurrent(), childNode);
+    protected void prepareItemNameHierarchyTree(
+            TreeNode rootNode, ItemDomainMachineDesign rootItem) {
+        
+        if (rootItem != null) {
+            rootNode.setExpanded(false);
+            TreeNode childNode = new DefaultTreeNode(rootItem.getName());
+            rootNode.getChildren().add(childNode);
+            addChildrenForItemToDeleteHierarchyNode(rootItem, childNode);
         }
     }
-    
-    public TreeNode getDeleteHierarchyNode() {
-        return deleteHierarchyNode;
-    }
-    
+
     public ValidInfo collectItemsForDeletion(
             ItemDomainMachineDesign parentItem, 
             List<ItemDomainMachineDesign> collectedItems,
@@ -2955,7 +2943,98 @@ public class ItemDomainMachineDesignController
         
         return new ValidInfo(isValid, validString);
     }
+    
+    public String getMoveToTrashName() {
+        return moveToTrashName;
+    }
 
+    public void setMoveToTrashName(String moveToTrashName) {
+        this.moveToTrashName = moveToTrashName;
+    }
+    
+    public TreeNode getMoveToTrashNode() {
+        return moveToTrashNode;
+    }
+    
+    public void prepareMoveToTrash() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        moveToTrashNode = new DefaultTreeNode();
+        prepareItemNameHierarchyTree(moveToTrashNode, getCurrent());
+    }
+    
+    public void moveToTrash() {
+
+        ItemDomainMachineDesign rootItemToDelete = getCurrent();
+        if (rootItemToDelete == null) {
+            return;
+        }
+        
+        // check for match on item name entered by user in confirmation dialog
+        if (!getMoveToTrashName().equals(rootItemToDelete.getName())) {
+            SessionUtility.addErrorMessage("Error", "Item name entered by user: " + 
+                            getDeleteHierarchyName() + 
+                            " does not match selected item: " + 
+                            rootItemToDelete.getName());
+            return;
+        }
+
+        // collect list of items to delete
+        List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
+        List<ItemElement> elementsToDelete = new ArrayList<>();
+        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true);
+        if (!validInfo.isValid()) {
+            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
+            return;
+        }
+        
+        // check permissions for all items
+        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        if (sessionRole != CdbRole.ADMIN) {
+            for (ItemDomainMachineDesign item : itemsToDelete) {
+                UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+                if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
+                    SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
+                    return;
+                }
+            }
+        }
+
+        // mark all items as deleted entity type (moves them to "trash")
+        for (ItemDomainMachineDesign item : itemsToDelete) {
+            item.setIsDeleted();
+        }
+
+        if (itemsToDelete.size() == 1) {
+            update();
+        } else {
+            try {
+                updateList(itemsToDelete);
+            } catch (CdbException ex) {
+                // handled adequately by thrower
+            }
+        }
+                
+        setDeleteHierarchyName(null);
+    }
+    
+    public String getDeleteHierarchyName() {
+        return deleteHierarchyName;
+    }
+
+    public void setDeleteHierarchyName(String deleteHierarchyName) {
+        this.deleteHierarchyName = deleteHierarchyName;
+    }
+    
+    public TreeNode getDeleteHierarchyNode() {
+        return deleteHierarchyNode;
+    }
+    
+    public void prepareDeleteHierarchy() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        deleteHierarchyNode = new DefaultTreeNode();
+        prepareItemNameHierarchyTree(deleteHierarchyNode, getCurrent());
+    }
+    
     public void deleteSelectedHierarchy() {
         
         ItemDomainMachineDesign rootItemToDelete = getCurrent();
