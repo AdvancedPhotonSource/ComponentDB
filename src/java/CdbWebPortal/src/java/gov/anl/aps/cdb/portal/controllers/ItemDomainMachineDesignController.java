@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
@@ -31,6 +32,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
@@ -38,6 +40,7 @@ import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -45,6 +48,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.DataModel;
@@ -137,6 +141,11 @@ public class ItemDomainMachineDesignController
     private static final String JS_DESTINATION_MD_ID_PASSED_KEY = "destinationId";
     // </editor-fold>   
 
+    // <editor-fold defaultstate="collapsed" desc="Delete support variables">
+    private String deleteHierarchyName = null;
+    private TreeNode deleteHierarchyNode = new DefaultTreeNode();
+    // </editor-fold>
+    
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
     public void onDropFromJS() {
         LoginController loginController = LoginController.getInstance();
@@ -923,96 +932,10 @@ public class ItemDomainMachineDesignController
         }
     }
     
-    public ValidInfo collectItemsForDeletion(
-            ItemDomainMachineDesign parentItem, 
-            List<ItemDomainMachineDesign> collectedItems,
-            List<ItemElement> collectedElements,
-            boolean isRootItem) {
-        
-        boolean isValid = true;
-        String validString = "";
-        
-        List<ItemElement> displayList = parentItem.getItemElementDisplayList();
-        for (ItemElement ie : displayList) {
-            Item childItem = ie.getContainedItem();
-            if (childItem instanceof ItemDomainMachineDesign) {
-                
-                List<ItemElement> childMemberList = childItem.getItemElementMemberList();
-                if (childMemberList.size() > 1) {
-                    // this code assumes that a child machine design item has only one 'membership'
-                    isValid = false;
-                    validString = "item: " + childItem.getName() + " is member of multiple assemblies";
-                    return new ValidInfo(isValid, validString);
-                    
-                } else {
-                    // depth first ordering is important here, otherwise there are merge errors for deleted items
-                    ValidInfo validInfo = 
-                            collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false);
-                    if (!validInfo.isValid()) {
-                        return validInfo;
-                    }
-                    collectedItems.add((ItemDomainMachineDesign) childItem);
-                    collectedElements.add(ie);
-                }
-            }
-        }
-        
-        if (isRootItem) {
-            collectedItems.add(parentItem);
-
-            // mark ItemElement for relationship from parent to its container for deletion
-            List<ItemElement> memberList = parentItem.getItemElementMemberList();
-            if (memberList.size() > 1) {
-                // parentItem has more than one membership
-                isValid = false;
-                validString = "item: " + parentItem.getName() + " is member of multiple assemblies";
-                return new ValidInfo(isValid, validString);
-            } else if (memberList.size() == 1) {
-                ItemElement containerRelElement = memberList.get(0);
-                collectedElements.add(containerRelElement);
-            }
-        }
-        
-        return new ValidInfo(isValid, validString);
-    }
-
     public void deleteSelectedMachineDesignItemFromDualView() {
-        
         updateCurrentUsingSelectedItemInTreeTable();
 
-        ItemDomainMachineDesign rootItemToDelete = getCurrent();
-        if (rootItemToDelete == null) {
-            return;
-        }
-
-        // collect list of items to delete
-        List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
-        List<ItemElement> elementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true);
-        if (!validInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
-            return;
-        }
-
-        // mark ItemElements for relationships in hierarchy for deletion and
-        // remove from parent and child items, and find container item
-        ItemDomainMachineDesign containerItem = null;
-        for (ItemElement ie : elementsToDelete) {
-            Item childItem = ie.getContainedItem();
-            Item ieParentItem = ie.getParentItem();
-//            childItem.getItemElementMemberList().remove(ie);
-            ieParentItem.removeItemElement(ie);
-            ie.setMarkedForDeletion(true);
-            if (childItem.equals(rootItemToDelete)) {
-                containerItem = (ItemDomainMachineDesign)childItem;
-            }
-        }        
-
-        if (itemsToDelete.size() == 1) {
-            destroy();
-        } else {
-            destroyList(itemsToDelete, containerItem);
-        }
+        destroy();
     }
 
     @Deprecated
@@ -2935,4 +2858,163 @@ public class ItemDomainMachineDesignController
         return new DomainImportInfo(formatInfo, completionUrl);
     }
     // </editor-fold>       
+
+    // <editor-fold defaultstate="collapsed" desc="Delete support">   
+    public String getDeleteHierarchyName() {
+        return deleteHierarchyName;
+    }
+
+    public void setDeleteHierarchyName(String deleteHierarchyName) {
+        this.deleteHierarchyName = deleteHierarchyName;
+    }
+    
+    private void addChildrenForItemToDeleteHierarchyNode(
+            ItemDomainMachineDesign item, 
+            TreeNode itemNode) {
+        
+        itemNode.setExpanded(false);
+        
+        List<ItemElement> childElements = item.getItemElementDisplayList();
+        List<ItemDomainMachineDesign> childItems = childElements.stream()
+                .map((child) -> (ItemDomainMachineDesign) child.getContainedItem())
+                .collect(Collectors.toList());
+
+        for (ItemDomainMachineDesign childItem : childItems) {
+            TreeNode childNode = new DefaultTreeNode(childItem.getName());
+            childNode.setExpanded(false);
+            itemNode.getChildren().add(childNode);
+            addChildrenForItemToDeleteHierarchyNode(childItem, childNode);
+        }
+    }
+    
+    public void prepareDeleteHierarchy() {
+        updateCurrentUsingSelectedItemInTreeTable();
+
+        if (getCurrent() != null) {
+            deleteHierarchyNode = new DefaultTreeNode();
+            deleteHierarchyNode.setExpanded(false);   
+            TreeNode childNode = new DefaultTreeNode(getCurrent().getName());
+            deleteHierarchyNode.getChildren().add(childNode);
+            addChildrenForItemToDeleteHierarchyNode(getCurrent(), childNode);
+        }
+    }
+    
+    public TreeNode getDeleteHierarchyNode() {
+        return deleteHierarchyNode;
+    }
+    
+    public ValidInfo collectItemsForDeletion(
+            ItemDomainMachineDesign parentItem, 
+            List<ItemDomainMachineDesign> collectedItems,
+            List<ItemElement> collectedElements,
+            boolean isRootItem) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        List<ItemElement> displayList = parentItem.getItemElementDisplayList();
+        for (ItemElement ie : displayList) {
+            Item childItem = ie.getContainedItem();
+            if (childItem instanceof ItemDomainMachineDesign) {
+                
+                List<ItemElement> childMemberList = childItem.getItemElementMemberList();
+                if (childMemberList.size() > 1) {
+                    // this code assumes that a child machine design item has only one 'membership'
+                    isValid = false;
+                    validString = "item: " + childItem.getName() + " is member of multiple assemblies";
+                    return new ValidInfo(isValid, validString);
+                    
+                } else {
+                    // depth first ordering is important here, otherwise there are merge errors for deleted items
+                    ValidInfo validInfo = 
+                            collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false);
+                    if (!validInfo.isValid()) {
+                        return validInfo;
+                    }
+                    collectedItems.add((ItemDomainMachineDesign) childItem);
+                    collectedElements.add(ie);
+                }
+            }
+        }
+        
+        if (isRootItem) {
+            collectedItems.add(parentItem);
+
+            // mark ItemElement for relationship from parent to its container for deletion
+            List<ItemElement> memberList = parentItem.getItemElementMemberList();
+            if (memberList.size() > 1) {
+                // parentItem has more than one membership
+                isValid = false;
+                validString = "item: " + parentItem.getName() + " is member of multiple assemblies";
+                return new ValidInfo(isValid, validString);
+            } else if (memberList.size() == 1) {
+                ItemElement containerRelElement = memberList.get(0);
+                collectedElements.add(containerRelElement);
+            }
+        }
+        
+        return new ValidInfo(isValid, validString);
+    }
+
+    public void deleteSelectedHierarchy() {
+        
+        ItemDomainMachineDesign rootItemToDelete = getCurrent();
+        if (rootItemToDelete == null) {
+            return;
+        }
+        
+        // check for match on item name entered by user in confirmation dialog
+        if (!getDeleteHierarchyName().equals(rootItemToDelete.getName())) {
+            SessionUtility.addErrorMessage("Error", "Item name entered by user: " + 
+                            getDeleteHierarchyName() + 
+                            " does not match selected item: " + 
+                            rootItemToDelete.getName());
+            return;
+        }
+
+        // collect list of items to delete
+        List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
+        List<ItemElement> elementsToDelete = new ArrayList<>();
+        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true);
+        if (!validInfo.isValid()) {
+            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
+            return;
+        }
+        
+        // check permissions for all items
+        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        if (sessionRole != CdbRole.ADMIN) {
+            for (ItemDomainMachineDesign item : itemsToDelete) {
+                UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+                if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
+                    SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
+                    return;
+                }
+            }
+        }
+
+        // mark ItemElements for relationships in hierarchy for deletion and
+        // remove from parent and child items, and find container item
+        ItemDomainMachineDesign containerItem = null;
+        for (ItemElement ie : elementsToDelete) {
+            Item childItem = ie.getContainedItem();
+            Item ieParentItem = ie.getParentItem();
+//            childItem.getItemElementMemberList().remove(ie);
+            ieParentItem.removeItemElement(ie);
+            ie.setMarkedForDeletion(true);
+            if (childItem.equals(rootItemToDelete)) {
+                containerItem = (ItemDomainMachineDesign)childItem;
+            }
+        }        
+
+        if (itemsToDelete.size() == 1) {
+            destroy();
+        } else {
+            destroyList(itemsToDelete, containerItem);
+        }
+        
+        setDeleteHierarchyName(null);
+    }
+
+    // </editor-fold>
 }
