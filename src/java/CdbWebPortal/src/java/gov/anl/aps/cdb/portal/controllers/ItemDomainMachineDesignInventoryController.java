@@ -86,7 +86,12 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         }
 
         return title;
-    }   
+    } 
+
+    @Override
+    protected String getViewPath() {
+        return "/views/itemDomainMachineDesignInventory/view.xhtml"; 
+    }
 
     @Override
     public String getItemListPageTitle() {
@@ -235,11 +240,10 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     @Override
     protected void prepareEntityView(ItemDomainMachineDesign entity) {
+        processPreRenderList();
         if (isMdInventory(entity)) {
             loadViewModeUrlParameter();
-            return;
-        }
-        super.prepareEntityView(entity);
+        }        
     }
 
     @Override

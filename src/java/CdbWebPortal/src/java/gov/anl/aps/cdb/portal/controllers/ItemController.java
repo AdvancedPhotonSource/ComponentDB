@@ -2433,15 +2433,21 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             return current.getIsItemTemplate();
         }
         return false;
+    } 
+    
+    protected String getViewPath() {
+        Domain defaultDomain = getDefaultDomain();
+        return getDomainPath(defaultDomain) + "/view.xhtml"; 
     }
 
     protected ItemDomainEntity performItemRedirection(ItemDomainEntity item, String paramString, boolean forceRedirection) {
         String currentViewId = SessionUtility.getCurrentViewId();
 
-        Domain itemDomain = item.getDomain();
+        Domain itemDomain = item.getDomain();               
         String desiredViewId;
         if (itemDomain != null) {
-            desiredViewId = getDomainPath(itemDomain) + "/view.xhtml";
+            ItemController itemDomainController = item.getItemDomainController();
+            desiredViewId = itemDomainController.getViewPath(); 
         } else {
             desiredViewId = "/views/item/view.xhtml";
         }
