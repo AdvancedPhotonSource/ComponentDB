@@ -30,10 +30,10 @@ See LICENSE file.
 
         <ui:param name="hideOptionalColumns" value="#{!dualConfigurationViewEnabled}" /> 
         <ui:param name="hideSearchColumns" value="#{true}" /> 
-        <ui:param name="valueModel" value="#{entityController.currentMachineDesignListRootTreeNode}" />
+        <ui:param name="valueModel" value="#{entityController.deletedItemListRootTreeNode}" />
         <ui:param name="selectionModel" value="#{entityController.selectedItemInListTreeTable}" />
         <ui:param name="rendered" value="#{true}" />
-        <ui:param name="enableDragDropToMoveMD" value="false"/> 
+        <ui:param name="enableDragDropToMoveMD" value="#{entityController.currentViewIsStandard}"/> 
         <ui:param name="scrollable" value="#{dualConfigurationViewEnabled}" />        
 
         <ui:define name="treeTableEvents">
@@ -53,5 +53,3 @@ See LICENSE file.
     <ui:include src="itemDomainMachineDesignDualColumnListViewTreeContextMenu.xhtml"/>
 
 </ui:composition>
-
-

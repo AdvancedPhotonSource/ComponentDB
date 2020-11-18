@@ -344,6 +344,8 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient Boolean templateInfoLoaded = false;
     private transient Item createdFromTemplate = null;
     private transient List<Item> itemsCreatedFromThisTemplateItem = null;
+
+    private transient Boolean isItemDeleted = null;
     
     // Item element from which it was added to in the hierarchy. 
     private transient ItemElement hierarchyItemElement = null;
@@ -1306,6 +1308,17 @@ public class Item extends CdbDomainEntity implements Serializable {
             }
         }
         return false;
+    }
+
+    public Boolean getIsItemDeleted() {
+        if (isItemDeleted == null) {
+            isItemDeleted = isItemDeleted(this);
+        }
+        return isItemDeleted;
+    }
+
+    public static boolean isItemDeleted(Item item) {
+        return isItemEntityType(item, EntityTypeName.deleted.getValue());
     }
 
     @Override

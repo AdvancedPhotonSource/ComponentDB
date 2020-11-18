@@ -117,6 +117,13 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
     public boolean getEntityDisplayItemProperties();
 
     /**
+     * Is a list or deleted items provided for the domain.
+     *
+     * @return
+     */
+    public boolean getEntityDisplayDeletedItems();
+
+    /**
      * Do the item elements need to be displayed for the item in default domain.
      *
      * @return

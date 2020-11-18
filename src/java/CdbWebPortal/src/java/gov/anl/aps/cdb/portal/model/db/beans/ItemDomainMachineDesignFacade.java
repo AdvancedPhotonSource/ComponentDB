@@ -35,6 +35,13 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
         ); 
     }
     
+    public List<ItemDomainMachineDesign> getDeletedItems() {
+        return findByDomainAndEntityType(
+                ItemDomainName.machineDesign.getValue(),
+                EntityTypeName.deleted.getValue()
+        ); 
+    }
+    
     public List<ItemDomainMachineDesign> getTopLevelMachineDesignInventory() {        
         return findByDomainAndEntityTypeAndTopLevelOrderByDerivedFromItem(
                 ItemDomainName.machineDesign.getValue(),

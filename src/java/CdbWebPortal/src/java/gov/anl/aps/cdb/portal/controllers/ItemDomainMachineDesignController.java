@@ -436,7 +436,7 @@ public class ItemDomainMachineDesignController
         return rootTreeNode;
     }
 
-    private void expandTreeChildren(Item item, TreeNode rootTreeNode) {
+    protected void expandTreeChildren(Item item, TreeNode rootTreeNode) {
         ItemElement element = new ItemElement();
         ItemElement selfElement = item.getSelfElement();
         Float sortOrder = selfElement.getSortOrder();
@@ -2814,6 +2814,11 @@ public class ItemDomainMachineDesignController
 
     @Override
     public boolean getEntityDisplayTemplates() {
+        return true;
+    }
+
+    @Override
+    public boolean getEntityDisplayDeletedItems() {
         return true;
     }
 
