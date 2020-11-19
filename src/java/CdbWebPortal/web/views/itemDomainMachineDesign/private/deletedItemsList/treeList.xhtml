@@ -26,7 +26,7 @@ See LICENSE file.
               oncomplete="PF('loadingDialog').hide();
                           scrollToSelectedNode();"/>
 
-    <ui:decorate template="templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+    <ui:decorate template="../templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
 
         <ui:param name="hideOptionalColumns" value="#{!dualConfigurationViewEnabled}" /> 
         <ui:param name="hideSearchColumns" value="#{true}" /> 
@@ -48,8 +48,8 @@ See LICENSE file.
 
     </ui:decorate>
 
-    <ui:include src="itemDomainMachineDesignDualColumnListViewTreeBlockUI.xhtml" />
+    <ui:include src="../itemDomainMachineDesignDualColumnListViewTreeBlockUI.xhtml" />
 
-    <ui:include src="itemDomainMachineDesignDualColumnListViewTreeContextMenu.xhtml"/>
+    <ui:include src="contextMenu.xhtml"/>
 
 </ui:composition>

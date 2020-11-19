@@ -8,20 +8,20 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:p="http://primefaces.org/ui"
-                template="../../../item/private/templates/itemListTemplate.xhtml">        
+                template="../../../../item/private/templates/itemListTemplate.xhtml">        
 
     <ui:define name="listActionButtons"/>
     
     <ui:define name="treeListActionButtons"/>
     
     <ui:define name="listDataTable">
-        <ui:include src="../itemDomainMachineDesignDeletedItemsPanelGrid.xhtml" /> 
+        <ui:include src="../panelGrid.xhtml" /> 
     </ui:define>
 
     <ui:define name="additionalListSupport" >       
         <ui:insert name="additionalSupport" />
-        <ui:include src="../itemDomainMachineDesignJavascriptFunctionality.xhtml"/>
-        <ui:include src="../itemDomainMachineDesignReorderOverlayPanel.xhtml"/>
+        <ui:include src="../../itemDomainMachineDesignJavascriptFunctionality.xhtml"/>
+        <ui:include src="../../itemDomainMachineDesignReorderOverlayPanel.xhtml"/>
     </ui:define>
     
 </ui:composition>

@@ -24,12 +24,12 @@ See LICENSE file.
         
         <p:outputPanel id="machineDesignTreeTableColumn"
                        styleClass="#{machineDesignDualListViewLeftStyleClass}">
-            <ui:include src="itemDomainMachineDeletedItemsTreeList.xhtml"/>
+            <ui:include src="treeList.xhtml"/>
         </p:outputPanel>
 
         <p:outputPanel rendered="#{entityController.displayListConfigurationView}"
                        styleClass="#{machineDesignDualListViewRightStyleClass}">            
-            <ui:include src="itemDomainMachineDesignDualColumnListViewDetailsPanel.xhtml" /> 
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewDetailsPanel.xhtml" /> 
             <p:dataTable id="addCatalogToMachineDesignDataTable"/>
         </p:outputPanel>
     </p:outputPanel>
