@@ -823,7 +823,7 @@ public class ItemDomainMachineDesignController
         return displayAddCableBundlePanel;
     }
 
-    private void updateCurrentUsingSelectedItemInTreeTable() {
+    protected void updateCurrentUsingSelectedItemInTreeTable() {
         setCurrent(getItemFromSelectedItemInTreeTable());
         setCurrentHierarchyItemElement(getItemElementFromSelectedItemInTreeTable());
     }

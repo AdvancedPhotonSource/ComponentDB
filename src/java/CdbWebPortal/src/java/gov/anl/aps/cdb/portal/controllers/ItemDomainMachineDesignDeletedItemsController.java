@@ -93,4 +93,8 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
 
         return rootTreeNode;
     }
+    
+    public void prepareViewDetails() {
+        updateCurrentUsingSelectedItemInTreeTable();
+    }
 }
