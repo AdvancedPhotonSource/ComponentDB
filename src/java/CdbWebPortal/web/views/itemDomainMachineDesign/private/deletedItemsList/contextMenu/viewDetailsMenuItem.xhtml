@@ -7,12 +7,9 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
-
-    <p:menuitem value="View Details"
-                icon="fa fa-info"
-                action="#{entityController.prepareViewDetails}"
-                oncomplete="PF('deletedItemDetailsDialogWidget').show()"
-                disabled="false"
-                update="@form:deletedItemDetailsDialogPanel"/>
+        
+    <p:menuitem value="View details" 
+                icon="fa fa-info" 
+                action="#{entityController.showDetailsForCurrentSelectedTreeNode()}"/>      
 
 </ui:composition>

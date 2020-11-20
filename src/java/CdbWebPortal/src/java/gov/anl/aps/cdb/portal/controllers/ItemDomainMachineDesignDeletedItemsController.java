@@ -32,8 +32,6 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     
     private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignDetailsViewSections";
 
-    private TreeNode deletedItemListRootTreeNode = null;
-
     @Override
     public String getItemListPageTitle() {
         return "Deleted Machine Elements";
@@ -73,14 +71,8 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         return itemDomainMachineDesignFacade.getDeletedItems();
     }
 
-    public TreeNode getDeletedItemListRootTreeNode() {
-        if (deletedItemListRootTreeNode == null) {
-            deletedItemListRootTreeNode = loadDeletedItemsRootTreeNode();
-        }
-        return deletedItemListRootTreeNode;
-    }
-
-    public TreeNode loadDeletedItemsRootTreeNode() {
+    @Override
+    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate) {
         TreeNode rootTreeNode = new DefaultTreeNode();
         List<ItemDomainMachineDesign> itemsWithoutParents
                 = getItemsWithoutParents();
@@ -94,7 +86,35 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         return rootTreeNode;
     }
     
-    public void prepareViewDetails() {
-        updateCurrentUsingSelectedItemInTreeTable();
+    @Override
+    public String list() {
+        return "deletedItemsList.xhtml?faces-redirect=true";
     }
+    
+    @Override
+    public String viewForCurrentEntity() {
+        return "viewDeletedItem?id=" + current.getId() + "&faces-redirect=true";
+    }
+
+    @Override
+    protected void prepareEntityView(ItemDomainMachineDesign entity) {
+        if ((entity != null) && (entity.getIsItemDeleted())) {
+            loadViewModeUrlParameter();
+            return;
+        }
+        super.prepareEntityView(entity);
+    }
+
+    @Override
+    protected ItemDomainMachineDesign performItemRedirection(ItemDomainMachineDesign item, String paramString, boolean forceRedirection) {
+        if ((item != null) && (item.getIsItemDeleted())) {
+            setCurrent(item);
+            prepareView(item);
+            return item;
+        }
+
+        // Do default action. 
+        return super.performItemRedirection(item, paramString, forceRedirection); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }
