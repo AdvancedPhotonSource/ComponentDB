@@ -4,11 +4,18 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.constants.CdbRole;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignDeletedItemSettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.ListDataModel;
@@ -31,6 +38,8 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     
     private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignDetailsViewSections";
 
+    private String restoreDeletedItemMessage;
+    
     @Override
     public String getItemListPageTitle() {
         return "Deleted Machine Elements";
@@ -115,5 +124,81 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         // Do default action. 
         return super.performItemRedirection(item, paramString, forceRedirection); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    /**
+     * Returns value model for message in restore deleted item dialog.
+     */
+    public String getRestoreDeletedItemMessage() {
+        return restoreDeletedItemMessage;
+    }
+    
+    /**
+     * Prepares dialog for restoring deleted item.
+     */
+    public void prepareRestoreDeletedItem() {
+        
+        updateCurrentUsingSelectedItemInTreeTable();
+        ItemDomainMachineDesign itemToRestore = getCurrent();
+        
+        String itemType;
+        if (itemToRestore.getIsItemTemplate()) {
+            itemType = "machine template";
+        } else {
+            itemType = "regular machine item";
+        }
+        
+        restoreDeletedItemMessage = "Click 'Yes' to restore '" +
+                itemToRestore.getName() +
+                "' to " + itemType + " list. Click 'No' to cancel.";
+    }
+    
+    /**
+     * Executes action for restore deleted item dialog.
+     */
+    public void restoreDeletedItem() {
+        
+        ItemDomainMachineDesign itemToRestore = getCurrent();
+        
+        // collect list of items to restore
+        List<ItemDomainMachineDesign> itemsToRestore = new ArrayList<>();
+        List<ItemElement> elementsToRestore = new ArrayList<>();
+        ValidInfo validInfo = collectItemsForDeletion(itemToRestore, itemsToRestore, elementsToRestore, true, true);
+        if (!validInfo.isValid()) {
+            SessionUtility.addErrorMessage("Error", "Could not restore: " + itemToRestore + " - " + validInfo.getValidString());
+            return;
+        }
+        
+        // check permissions for all items
+        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+        if (sessionRole != CdbRole.ADMIN) {
+            for (ItemDomainMachineDesign item : itemsToRestore) {
+                if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
+                    SessionUtility.addErrorMessage("Error", "Current user does not have permission to restore selected items");
+                    return;
+                }
+            }
+        }
 
+        // remove 'deleted' entity type for all items
+        for (ItemDomainMachineDesign item : itemsToRestore) {
+            item.unsetIsDeleted();
+        }
+        
+        if (itemsToRestore.size() == 1) {
+            update();
+        } else {
+            try {
+                updateList(itemsToRestore);
+            } catch (CdbException ex) {
+                // handled adequately by thrower
+                return;
+            }
+        }
+                
+        // reset data models to refresh list views with changes (this
+        // controller's models are reset by update/updateList())
+        ItemDomainMachineDesignController.getInstance().resetListDataModel();
+        ItemDomainMachineDesignController.getInstance().resetSelectDataModel();
+    }
 }

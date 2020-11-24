@@ -3000,9 +3000,9 @@ public class ItemDomainMachineDesignController
         
         // check permissions for all items
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionRole != CdbRole.ADMIN) {
             for (ItemDomainMachineDesign item : itemsToUpdate) {
-                UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
                 if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
                     SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
                     return;
@@ -3015,7 +3015,8 @@ public class ItemDomainMachineDesignController
             item.setIsDeleted();
         }
         
-        // remove relationship for root item to its parent and container item to list of items to update
+        // remove relationship for root item to its parent and 
+        // add container item to list of items to update
         if (elementsToDelete.size() > 1) {
             // should be 0 for a top-level item or 1 for internal node
             SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - unexpected relationships exist in hierarchy");

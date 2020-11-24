@@ -709,6 +709,23 @@ public class Item extends CdbDomainEntity implements Serializable {
         entityTypeList.add(entityType);
 
     }
+    
+    public void removeEntityType(String entityTypeName) {
+        
+        EntityType entityType
+                = EntityTypeController.getInstance().
+                        findByName(entityTypeName);
+        
+        if (entityType == null) {
+            return;
+        }
+        
+        if (!entityTypeList.contains(entityType)) {
+            return;
+        }
+        
+        getEntityTypeList().remove(entityType);
+    }
 
     @JsonSetter("entityTypeList")
     public void setEntityTypeListFromApi(List<EntityType> entityTypeList) {

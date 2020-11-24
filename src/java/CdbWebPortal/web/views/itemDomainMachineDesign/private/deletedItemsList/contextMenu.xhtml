@@ -14,13 +14,13 @@ See LICENSE file.
                   value="#{!entityController.isSelectedItemInListTreeViewWriteable()}" />
         <ui:param name="disabledEditContextMenuItemForSelectionParent"
                   value="#{!entityController.isParentOfSelectedItemInListTreeViewWriteable()}" />
-        
 
         <p:contextMenu for="itemMachineDesignListDataTable" style="width: 250px;"
                        id="deletedItemsListContextMenu"
                        widgetVar="deletedItemsListContextMenuWidget"
                        event="select contextmenu">
             <ui:include src="contextMenu/viewDetailsMenuItem.xhtml" />
+            <ui:include src="contextMenu/restoreMenuItem.xhtml" />
         </p:contextMenu>
         
      </p:outputPanel>

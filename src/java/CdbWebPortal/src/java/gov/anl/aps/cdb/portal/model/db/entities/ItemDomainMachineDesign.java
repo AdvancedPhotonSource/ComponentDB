@@ -196,6 +196,13 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
     }
     
+    /**
+     * Removes 'deleted entity type for item.
+     */
+    public void unsetIsDeleted() {
+        removeEntityType(EntityTypeName.deleted.getValue());
+    }
+    
     @JsonIgnore
     public ItemDomainMachineDesign getImportMdItem() {
         return importMdItem;
