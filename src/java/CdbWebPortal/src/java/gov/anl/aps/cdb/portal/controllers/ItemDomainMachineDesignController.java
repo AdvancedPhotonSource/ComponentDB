@@ -421,7 +421,10 @@ public class ItemDomainMachineDesignController
             boolean skip = false;
             if (item.getEntityTypeList().isEmpty() == false) {
                 skip = true;
-                if (isTemplate) {
+                if (item.getIsItemDeleted()) {
+                    skip = true;
+                }
+                else if (isTemplate) {
                     skip = !(item.getIsItemTemplate() == isTemplate);
                 }
             } else {
@@ -2900,7 +2903,8 @@ public class ItemDomainMachineDesignController
             ItemDomainMachineDesign parentItem, 
             List<ItemDomainMachineDesign> collectedItems,
             List<ItemElement> collectedElements,
-            boolean isRootItem) {
+            boolean isRootItem,
+            boolean rootRelationshipOnly) {
         
         boolean isValid = true;
         String validString = "";
@@ -2920,12 +2924,14 @@ public class ItemDomainMachineDesignController
                 } else {
                     // depth first ordering is important here, otherwise there are merge errors for deleted items
                     ValidInfo validInfo = 
-                            collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false);
+                            collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false, rootRelationshipOnly);
                     if (!validInfo.isValid()) {
                         return validInfo;
                     }
                     collectedItems.add((ItemDomainMachineDesign) childItem);
-                    collectedElements.add(ie);
+                    if (!rootRelationshipOnly) {
+                        collectedElements.add(ie);
+                    }
                 }
             }
         }
@@ -2984,9 +2990,9 @@ public class ItemDomainMachineDesignController
         }
 
         // collect list of items to delete
-        List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
+        List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
         List<ItemElement> elementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true);
+        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToUpdate, elementsToDelete, true, true);
         if (!validInfo.isValid()) {
             SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
             return;
@@ -2995,7 +3001,7 @@ public class ItemDomainMachineDesignController
         // check permissions for all items
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
         if (sessionRole != CdbRole.ADMIN) {
-            for (ItemDomainMachineDesign item : itemsToDelete) {
+            for (ItemDomainMachineDesign item : itemsToUpdate) {
                 UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
                 if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
                     SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
@@ -3005,21 +3011,39 @@ public class ItemDomainMachineDesignController
         }
 
         // mark all items as deleted entity type (moves them to "trash")
-        for (ItemDomainMachineDesign item : itemsToDelete) {
+        for (ItemDomainMachineDesign item : itemsToUpdate) {
             item.setIsDeleted();
         }
+        
+        // remove relationship for root item to its parent and container item to list of items to update
+        if (elementsToDelete.size() > 1) {
+            // should be 0 for a top-level item or 1 for internal node
+            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - unexpected relationships exist in hierarchy");
+            return;
+        } else if (elementsToDelete.size() == 1) {
+            ItemElement ie = elementsToDelete.get(0);
+            Item childItem = ie.getContainedItem();
+            Item ieParentItem = ie.getParentItem();
+            ieParentItem.removeItemElement(ie);
+            childItem.getItemElementMemberList().remove(ie);
+            ie.setMarkedForDeletion(true);
+            itemsToUpdate.add((ItemDomainMachineDesign)ieParentItem);
+        }        
 
-        if (itemsToDelete.size() == 1) {
+        if (itemsToUpdate.size() == 1) {
             update();
         } else {
             try {
-                updateList(itemsToDelete);
+                updateList(itemsToUpdate);
             } catch (CdbException ex) {
                 // handled adequately by thrower
             }
         }
                 
         setDeleteHierarchyName(null);
+        
+        ItemDomainMachineDesignDeletedItemsController.getInstance().resetListDataModel();
+        ItemDomainMachineDesignDeletedItemsController.getInstance().resetSelectDataModel();
     }
     
     public String getDeleteHierarchyName() {
@@ -3059,7 +3083,7 @@ public class ItemDomainMachineDesignController
         // collect list of items to delete
         List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
         List<ItemElement> elementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true);
+        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true, false);
         if (!validInfo.isValid()) {
             SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
             return;
@@ -3087,7 +3111,7 @@ public class ItemDomainMachineDesignController
             ieParentItem.removeItemElement(ie);
             ie.setMarkedForDeletion(true);
             if (childItem.equals(rootItemToDelete)) {
-                containerItem = (ItemDomainMachineDesign)childItem;
+                containerItem = (ItemDomainMachineDesign)ieParentItem;
             }
         }        
 

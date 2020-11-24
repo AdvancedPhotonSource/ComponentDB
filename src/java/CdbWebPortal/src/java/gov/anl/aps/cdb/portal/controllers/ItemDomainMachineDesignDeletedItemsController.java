@@ -4,7 +4,6 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import static gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController.controllerNamed;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignDeletedItemSettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -42,9 +41,9 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         return super.isDisplayRowExpansionForItem(item); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public static ItemDomainMachineDesignInventoryController getInstance() {
+    public static ItemDomainMachineDesignDeletedItemsController getInstance() {
         if (SessionUtility.runningFaces()) {
-            return (ItemDomainMachineDesignInventoryController) SessionUtility.findBean(controllerNamed);
+            return (ItemDomainMachineDesignDeletedItemsController) SessionUtility.findBean(CONTROLLER_NAMED);
         } else {
             return null;
         }

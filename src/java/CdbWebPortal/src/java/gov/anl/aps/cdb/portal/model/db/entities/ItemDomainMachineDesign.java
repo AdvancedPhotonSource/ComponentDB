@@ -188,16 +188,11 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
      */
     public void setIsDeleted() {
         try {
-            List<EntityType> entityTypeList = new ArrayList<>();
-            EntityType templateEntity = 
-                    EntityTypeController.getInstance().
-                            findByName(EntityTypeName.deleted.getValue());
-            entityTypeList.add(templateEntity);
-            setEntityTypeList(entityTypeList);
+            addEntityType(EntityTypeName.deleted.getValue());
         } catch (CdbException ex) {
-            String msg = "Exception setting template entity type for: " + getName() + 
+            String msg = "Exception setting deleted entity type for: " + getName() + 
                     " reason: " + ex.getMessage();
-            LOGGER.error("setIsTemplate() " + msg);
+            LOGGER.error("setIsDeleted() " + msg);
         }
     }
     

@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -676,6 +677,37 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         entityTypeString = null;
         this.entityTypeList = entityTypeList;
+    }
+    
+    public void addEntityType(String entityTypeName) throws CdbException {
+        
+        EntityType entityType
+                = EntityTypeController.getInstance().
+                        findByName(entityTypeName);
+        
+        // entity type already set for this entity
+        if (entityTypeList.contains(entityType)) {
+            return;
+        }
+
+        // check to see that entity type is valid for entity's domain
+        if (domain != null) {
+            List<EntityType> allowedEntityTypeList = domain.getAllowedEntityTypeList();
+            if (allowedEntityTypeList.contains(entityType) == false) {
+                throw new CdbException(entityType.getName() + " is not in the domain hanlder allowed list for the item: " + toString());
+            }
+
+        } else {
+            throw new CdbException("Entity Type cannot be set: no domain has been defined for the item " + toString());
+        }
+
+        // add entity type to entity type list
+        List<EntityType> entityTypeList = getEntityTypeList();
+        if ( entityTypeList == null) {
+            entityTypeList = new ArrayList<>();
+        }
+        entityTypeList.add(entityType);
+
     }
 
     @JsonSetter("entityTypeList")
