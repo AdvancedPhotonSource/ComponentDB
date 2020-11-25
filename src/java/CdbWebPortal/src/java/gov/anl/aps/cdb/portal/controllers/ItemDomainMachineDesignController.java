@@ -143,8 +143,6 @@ public class ItemDomainMachineDesignController
     // <editor-fold defaultstate="collapsed" desc="Delete support variables">
     private String moveToTrashName = null;
     private TreeNode moveToTrashNode = new DefaultTreeNode();
-    private String deleteHierarchyName = null;
-    private TreeNode deleteHierarchyNode = new DefaultTreeNode();
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
@@ -2983,7 +2981,7 @@ public class ItemDomainMachineDesignController
         // check for match on item name entered by user in confirmation dialog
         if (!getMoveToTrashName().equals(rootItemToDelete.getName())) {
             SessionUtility.addErrorMessage("Error", "Item name entered by user: " + 
-                            getDeleteHierarchyName() + 
+                            getMoveToTrashName() + 
                             " does not match selected item: " + 
                             rootItemToDelete.getName());
             return;
@@ -3041,89 +3039,11 @@ public class ItemDomainMachineDesignController
             }
         }
                 
-        setDeleteHierarchyName(null);
+        setMoveToTrashName(null);
         
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetListDataModel();
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetSelectDataModel();
     }
     
-    public String getDeleteHierarchyName() {
-        return deleteHierarchyName;
-    }
-
-    public void setDeleteHierarchyName(String deleteHierarchyName) {
-        this.deleteHierarchyName = deleteHierarchyName;
-    }
-    
-    public TreeNode getDeleteHierarchyNode() {
-        return deleteHierarchyNode;
-    }
-    
-    public void prepareDeleteHierarchy() {
-        updateCurrentUsingSelectedItemInTreeTable();
-        deleteHierarchyNode = new DefaultTreeNode();
-        prepareItemNameHierarchyTree(deleteHierarchyNode, getCurrent());
-    }
-    
-    public void deleteSelectedHierarchy() {
-        
-        ItemDomainMachineDesign rootItemToDelete = getCurrent();
-        if (rootItemToDelete == null) {
-            return;
-        }
-        
-        // check for match on item name entered by user in confirmation dialog
-        if (!getDeleteHierarchyName().equals(rootItemToDelete.getName())) {
-            SessionUtility.addErrorMessage("Error", "Item name entered by user: " + 
-                            getDeleteHierarchyName() + 
-                            " does not match selected item: " + 
-                            rootItemToDelete.getName());
-            return;
-        }
-
-        // collect list of items to delete
-        List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
-        List<ItemElement> elementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true, false);
-        if (!validInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
-            return;
-        }
-        
-        // check permissions for all items
-        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
-        if (sessionRole != CdbRole.ADMIN) {
-            for (ItemDomainMachineDesign item : itemsToDelete) {
-                UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-                if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
-                    SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
-                    return;
-                }
-            }
-        }
-
-        // mark ItemElements for relationships in hierarchy for deletion and
-        // remove from parent and child items, and find container item
-        ItemDomainMachineDesign containerItem = null;
-        for (ItemElement ie : elementsToDelete) {
-            Item childItem = ie.getContainedItem();
-            Item ieParentItem = ie.getParentItem();
-//            childItem.getItemElementMemberList().remove(ie);
-            ieParentItem.removeItemElement(ie);
-            ie.setMarkedForDeletion(true);
-            if (childItem.equals(rootItemToDelete)) {
-                containerItem = (ItemDomainMachineDesign)ieParentItem;
-            }
-        }        
-
-        if (itemsToDelete.size() == 1) {
-            destroy();
-        } else {
-            destroyList(itemsToDelete, containerItem);
-        }
-        
-        setDeleteHierarchyName(null);
-    }
-
     // </editor-fold>
 }

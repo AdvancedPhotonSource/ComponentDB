@@ -55,49 +55,6 @@ See LICENSE file.
         </p:panel>
     </p:dialog>    
 
-    <p:dialog header="Delete selected machine hierarchy"
-              modal="true"
-              widgetVar="deleteHierarchyWidget"
-              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
-        <p:panel id="deleteHierarchyDialogPanel">
-            <p:panelGrid>
-                <p:row>
-                    <p:column>
-                        <h:outputText value="Delete hierarchy of nodes whose root is the selected item? You must enter the exact name of the root item below to continue." />
-                    </p:column>
-                    <p:column>
-                        <p:tree id="deleteHierarchyDialogTree"
-                                value="#{entityController.deleteHierarchyNode}" 
-                                var="node"
-                                selectionMode="single">
-                            <p:treeNode>
-                                <h:outputText value="#{node}" />
-                            </p:treeNode>
-
-                        </p:tree>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column>
-                        <p:inputText value="#{entityController.deleteHierarchyName}"/>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column>
-                        <p:commandButton value="Yes" 
-                                         actionListener="#{entityController.deleteSelectedHierarchy}"
-                                         onclick="PF('loadingDialog').show()"                         
-                                         update="@form"
-                                         oncomplete="PF('loadingDialog').hide();
-                                         PF('deleteHierarchyWidget').hide()"/>
-                        <p:commandButton value="No" 
-                                         onclick="PF('deleteHierarchyWidget').hide();"/>
-                    </p:column>
-                </p:row>
-            </p:panelGrid>
-        </p:panel>
-    </p:dialog>   
-
     <p:confirmDialog header="Destroy selected machine element" severity="alert"
                      widgetVar="destroyMachineDesignWidget"
                      styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">

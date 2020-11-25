@@ -38,4 +38,49 @@ See LICENSE file.
         </p:panel>
     </p:dialog>   
 
+    <p:dialog header="Permanently remove item"
+              modal="true"
+              widgetVar="permanentlyRemoveDialogWidget"
+              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+        <p:panel id="permanentlyRemoveDialogPanel">
+            <p:panelGrid>
+                <p:row>
+                    <p:column>
+                        <div style="white-space: pre-wrap">
+                            <h:outputText value="Click 'Yes' to PERMANENTLY remove hierarchy of nodes shown at right. You must enter the exact name of the root item below to continue. This action cannot be undone. Click 'No' to cancel." />
+                        </div>
+                    </p:column>
+                    <p:column rowspan="3">
+                        <p:tree id="permanentlyRemoveDialogTree"
+                                value="#{entityController.permanentlyRemoveNode}" 
+                                var="node"
+                                selectionMode="single">
+                            <p:treeNode>
+                                <h:outputText value="#{node}" />
+                            </p:treeNode>
+
+                        </p:tree>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:inputText value="#{entityController.permanentlyRemoveName}"/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:commandButton value="Yes" 
+                                         actionListener="#{entityController.permanentlyRemove}"
+                                         onclick="PF('loadingDialog').show()"                         
+                                         update="@form"
+                                         oncomplete="PF('loadingDialog').hide();
+                                         PF('permanentlyRemoveDialogWidget').hide()"/>
+                        <p:commandButton value="No" 
+                                         onclick="PF('permanentlyRemoveDialogWidget').hide();"/>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </p:panel>
+    </p:dialog>   
+
 </ui:composition>
