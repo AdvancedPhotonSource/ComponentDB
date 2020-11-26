@@ -2056,12 +2056,29 @@ public class ItemDomainMachineDesignController
                     itemsWithoutParents.remove(parentItem);
                 }
             }
+            
+            removeDeletedItemsFromList(itemsWithoutParents);
 
             removeTemplatesFromList(itemsWithoutParents, !isCurrentViewIsTemplate());
 
             topLevelMachineDesignSelectionList = new ListDataModel(itemsWithoutParents);
         }
         return topLevelMachineDesignSelectionList;
+    }
+
+    private void removeDeletedItemsFromList(List<ItemDomainMachineDesign> itemList) {
+        String entityName = EntityTypeName.deleted.getValue();
+        EntityType entityType = entityTypeFacade.findByName(entityName);
+
+        int index = 0;
+        while (index < itemList.size()) {
+            Item item = itemList.get(index);
+            if (item.getEntityTypeList().contains(entityType)) {
+                itemList.remove(index);
+            } else {
+                index++;
+            }
+        }
     }
 
     private void removeTemplatesFromList(List<ItemDomainMachineDesign> itemList, boolean removeTemplate) {

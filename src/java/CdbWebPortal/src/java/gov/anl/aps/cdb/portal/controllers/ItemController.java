@@ -410,6 +410,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return getEntityDbFacade().findByDomainNameAndExcludeEntityType(getDefaultDomainName(), templateEntityTypeName);
     }
 
+    public List<ItemDomainEntity> getItemListExcludeDeletedItems() {
+        String entityTypeName = EntityTypeName.deleted.getValue();
+        return getEntityDbFacade().findByDomainNameAndExcludeEntityType(getDefaultDomainName(), entityTypeName);
+    }
+
     @Override
     public List<ItemCategory> getDomainItemCategoryList() {
         if (domainItemCategoryList == null) {
