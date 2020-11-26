@@ -396,7 +396,7 @@ class ConnectedMenuHandler(InputHandler):
         parent_value = input_dict[self.parent_key]
         cell_value = input_dict[self.column_key]
         if not name_manager.has_name(parent_value):
-            sys.exit("name manager has no menu range for: %s" % parent_value)
+            sys.exit("name manager has no menu range for: %s column: %s parent column: %s" % (parent_value, self.column_key, self.parent_key))
         has_child = name_manager.value_is_valid_for_name(parent_value, cell_value)
         valid_string = ""
         if not has_child:
@@ -1255,7 +1255,7 @@ class CableDesignHelper(PreImportHelper):
     # Treat a row that contains a single non-empty value in the "import id" column as an empty row.
     def input_row_is_empty_custom(self, input_dict, row_num):
         non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
-        if non_empty_count == 1 and len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0:
+        if non_empty_count == 2 and ((len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0) and (input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []")):
             logging.debug("skipping empty row with non-empty import id: %s row: %d" %
                           (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
             return True
