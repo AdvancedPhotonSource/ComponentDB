@@ -21,7 +21,8 @@ public class ItemHierarchy {
     private List<ItemHierarchy> childItems;
     private Integer elementId;
     private String elementName; 
-    private String derivedElementName; 
+    private Float sortOrder; 
+    private String derivedElementName;         
 
     private ItemHierarchy() {
         
@@ -55,7 +56,8 @@ public class ItemHierarchy {
                 if (child != null) {
                     child.elementId = element.getId(); 
                     child.elementName = element.getName();
-                    addChildItem(child);                    
+                    child.sortOrder = element.getSortOrder(); 
+                    addChildItem(child);
                 }
             }
         }
@@ -121,6 +123,10 @@ public class ItemHierarchy {
 
     public void setElementName(String elementName) {
         this.elementName = elementName;
+    }
+
+    public Float getSortOrder() {
+        return sortOrder;
     }
 
     public String getDerivedElementName() {

@@ -2488,11 +2488,7 @@ public class ItemDomainMachineDesignController
 
         processPreRenderList();
 
-        String redirect = "/list";
-
-        if (isInventory(entity)) {
-            redirect = "Inventory/view";
-        }
+        String redirect = "/list";       
 
         if (loadViewModeUrlParameter()) {
             return;
