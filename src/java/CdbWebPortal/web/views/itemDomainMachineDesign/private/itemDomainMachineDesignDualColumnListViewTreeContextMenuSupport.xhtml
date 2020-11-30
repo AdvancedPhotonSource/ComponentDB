@@ -10,7 +10,8 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:h="http://java.sun.com/jsf/html">  
 
-    <p:dialog header="Move selected machine hierarchy to trash"
+    <p:dialog id="moveToTrashDialog"
+              header="Move '#{entityController.moveToTrashDisplayName}' to trash"
               modal="true"
               widgetVar="moveToTrashDialogWidget"
               styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
@@ -19,14 +20,15 @@ See LICENSE file.
                 <p:row>
                     <p:column>
                         <div style="white-space: pre-wrap">
-                            <h:outputText value="Move selected hierarchy (shown at right) to trash? You must enter the exact name of the root item below and click 'Yes' to continue." />
+                            <h:outputText value="Click 'Yes' to move #{entityController.moveToTrashMessage} to trash. You must enter the exact name of the root item below to continue. Click 'No' to cancel." />
                         </div>
                     </p:column>
                     <p:column rowspan="3">
                         <p:tree id="moveToTrashDialogTree"
                                 value="#{entityController.moveToTrashNode}" 
                                 var="node"
-                                selectionMode="single">
+                                selectionMode="single"
+                                rendered="#{entityController.moveToTrashNode != null}">
                             <p:treeNode>
                                 <h:outputText value="#{node}" />
                             </p:treeNode>

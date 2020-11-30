@@ -143,6 +143,8 @@ public class ItemDomainMachineDesignController
     // <editor-fold defaultstate="collapsed" desc="Delete support variables">
     private String moveToTrashName = null;
     private TreeNode moveToTrashNode = new DefaultTreeNode();
+    private String moveToTrashDisplayName = null;
+    private String moveToTrashMessage = null;
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
@@ -2982,10 +2984,28 @@ public class ItemDomainMachineDesignController
         return moveToTrashNode;
     }
     
+    public String getMoveToTrashDisplayName() {
+        return moveToTrashDisplayName;
+    }
+    
+    public String getMoveToTrashMessage() {
+        return moveToTrashMessage;
+    }
+    
+    /**
+     * Prepares dialog for move to trash operation.
+     */
     public void prepareMoveToTrash() {
         updateCurrentUsingSelectedItemInTreeTable();
-        moveToTrashNode = new DefaultTreeNode();
-        prepareItemNameHierarchyTree(moveToTrashNode, getCurrent());
+        moveToTrashNode = null;
+        moveToTrashDisplayName = getCurrent().getName();
+        moveToTrashMessage = "'" + getCurrent().getName() + "'";
+        if (!getCurrent().getItemElementDisplayList().isEmpty()) {
+            moveToTrashMessage = moveToTrashMessage + 
+                    " and its children (hierarchy shown at right)";
+            moveToTrashNode = new DefaultTreeNode();
+            prepareItemNameHierarchyTree(moveToTrashNode, getCurrent());
+        }
     }
     
     public void moveToTrash() {
@@ -3057,6 +3077,7 @@ public class ItemDomainMachineDesignController
         }
                 
         setMoveToTrashName(null);
+        moveToTrashNode = null;
         
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetListDataModel();
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetSelectDataModel();

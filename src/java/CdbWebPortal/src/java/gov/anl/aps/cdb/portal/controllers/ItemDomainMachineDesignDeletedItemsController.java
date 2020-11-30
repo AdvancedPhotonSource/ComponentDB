@@ -40,8 +40,10 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
 
     private String restoreDeletedItemMessage;
     
-    private String permanentlyRemoveName = null;
+    private String permanentlyRemoveConfirmationName = null;
     private TreeNode permanentlyRemoveNode = new DefaultTreeNode();
+    private String permanentlyRemoveDisplayName = null;
+    private String permanentlyRemoveMessage = null;
 
     @Override
     public String getItemListPageTitle() {
@@ -205,24 +207,45 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         ItemDomainMachineDesignController.getInstance().resetSelectDataModel();
     }
 
-    public String getPermanentlyRemoveName() {
-        return permanentlyRemoveName;
+    public String getPermanentlyRemoveConfirmationName() {
+        return permanentlyRemoveConfirmationName;
     }
 
-    public void setPermanentlyRemoveName(String permanentlyRemoveName) {
-        this.permanentlyRemoveName = permanentlyRemoveName;
+    public void setPermanentlyRemoveConfirmationName(String permanentlyRemoveConfirmationName) {
+        this.permanentlyRemoveConfirmationName = permanentlyRemoveConfirmationName;
+    }
+    
+    public String getPermanentlyRemoveDisplayName() {
+        return permanentlyRemoveDisplayName;
+    }
+    
+    public String getPermanentlyRemoveMessage() {
+        return permanentlyRemoveMessage;
     }
     
     public TreeNode getPermanentlyRemoveNode() {
         return permanentlyRemoveNode;
     }
     
+    /**
+     * Prepares dialog for permanently remove operation.
+     */
     public void preparePermanentlyRemove() {
         updateCurrentUsingSelectedItemInTreeTable();
-        permanentlyRemoveNode = new DefaultTreeNode();
-        prepareItemNameHierarchyTree(permanentlyRemoveNode, getCurrent());
+        permanentlyRemoveNode = null;
+        permanentlyRemoveDisplayName = getCurrent().getName();
+        permanentlyRemoveMessage = "'" + getCurrent().getName() + "'";
+        if (!getCurrent().getItemElementDisplayList().isEmpty()) {
+            permanentlyRemoveMessage = permanentlyRemoveMessage + 
+                    " and its children (hierarchy shown at right)";
+            permanentlyRemoveNode = new DefaultTreeNode();
+            prepareItemNameHierarchyTree(permanentlyRemoveNode, getCurrent());
+        }
     }
     
+    /**
+     * Executes permanently remove operation triggered by dialog 'Yes' button.
+     */
     public void permanentlyRemove() {
         
         ItemDomainMachineDesign rootItemToDelete = getCurrent();
@@ -231,9 +254,9 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         }
         
         // check for match on item name entered by user in confirmation dialog
-        if (!getPermanentlyRemoveName().equals(rootItemToDelete.getName())) {
+        if (!getPermanentlyRemoveConfirmationName().equals(rootItemToDelete.getName())) {
             SessionUtility.addErrorMessage("Error", "Item name entered by user: " + 
-                            getPermanentlyRemoveName() + 
+                            getPermanentlyRemoveConfirmationName() + 
                             " does not match selected item: " + 
                             rootItemToDelete.getName());
             return;
@@ -280,6 +303,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
             destroyList(itemsToDelete, containerItem);
         }
         
-        setPermanentlyRemoveName(null);
+        setPermanentlyRemoveConfirmationName(null);
+        permanentlyRemoveNode = null;
     }
 }

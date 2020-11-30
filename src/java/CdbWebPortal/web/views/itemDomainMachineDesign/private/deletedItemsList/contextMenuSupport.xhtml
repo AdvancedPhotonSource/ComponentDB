@@ -38,7 +38,8 @@ See LICENSE file.
         </p:panel>
     </p:dialog>   
 
-    <p:dialog header="Permanently remove item"
+    <p:dialog id="permanentlyRemoveDialog"
+              header="Permanently remove: #{entityController.permanentlyRemoveDisplayName}"
               modal="true"
               widgetVar="permanentlyRemoveDialogWidget"
               styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
@@ -47,14 +48,15 @@ See LICENSE file.
                 <p:row>
                     <p:column>
                         <div style="white-space: pre-wrap">
-                            <h:outputText value="Click 'Yes' to PERMANENTLY remove hierarchy of nodes shown at right. You must enter the exact name of the root item below to continue. This action cannot be undone. Click 'No' to cancel." />
+                            <h:outputText value="Click 'Yes' to PERMANENTLY remove #{entityController.permanentlyRemoveMessage}. You must enter the exact name of the root item below to continue. This action cannot be undone. Click 'No' to cancel." />
                         </div>
                     </p:column>
                     <p:column rowspan="3">
                         <p:tree id="permanentlyRemoveDialogTree"
                                 value="#{entityController.permanentlyRemoveNode}" 
                                 var="node"
-                                selectionMode="single">
+                                selectionMode="single"
+                                rendered="#{entityController.permanentlyRemoveNode != null}">
                             <p:treeNode>
                                 <h:outputText value="#{node}" />
                             </p:treeNode>
@@ -64,7 +66,7 @@ See LICENSE file.
                 </p:row>
                 <p:row>
                     <p:column>
-                        <p:inputText value="#{entityController.permanentlyRemoveName}"/>
+                        <p:inputText value="#{entityController.permanentlyRemoveConfirmationName}"/>
                     </p:column>
                 </p:row>
                 <p:row>
