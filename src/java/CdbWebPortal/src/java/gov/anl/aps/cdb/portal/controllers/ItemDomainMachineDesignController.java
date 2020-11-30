@@ -936,12 +936,6 @@ public class ItemDomainMachineDesignController
         }
     }
     
-    public void deleteSelectedMachineDesignItemFromDualView() {
-        updateCurrentUsingSelectedItemInTreeTable();
-
-        destroy();
-    }
-
     @Deprecated
     /**
      * Templates are only created fully and only previously partially created md
@@ -2972,14 +2966,6 @@ public class ItemDomainMachineDesignController
         return new ValidInfo(isValid, validString);
     }
     
-    public String getMoveToTrashName() {
-        return moveToTrashName;
-    }
-
-    public void setMoveToTrashName(String moveToTrashName) {
-        this.moveToTrashName = moveToTrashName;
-    }
-    
     public TreeNode getMoveToTrashNode() {
         return moveToTrashNode;
     }
@@ -3008,6 +2994,9 @@ public class ItemDomainMachineDesignController
         }
     }
     
+    /**
+     * Executes move to trash operation initiated by 'Yes' button on dialog.
+     */
     public void moveToTrash() {
 
         ItemDomainMachineDesign rootItemToDelete = getCurrent();
@@ -3015,15 +3004,6 @@ public class ItemDomainMachineDesignController
             return;
         }
         
-        // check for match on item name entered by user in confirmation dialog
-        if (!getMoveToTrashName().equals(rootItemToDelete.getName())) {
-            SessionUtility.addErrorMessage("Error", "Item name entered by user: " + 
-                            getMoveToTrashName() + 
-                            " does not match selected item: " + 
-                            rootItemToDelete.getName());
-            return;
-        }
-
         // collect list of items to delete
         List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
         List<ItemElement> elementsToDelete = new ArrayList<>();
@@ -3076,7 +3056,6 @@ public class ItemDomainMachineDesignController
             }
         }
                 
-        setMoveToTrashName(null);
         moveToTrashNode = null;
         
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetListDataModel();

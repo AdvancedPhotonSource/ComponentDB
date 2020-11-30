@@ -20,7 +20,7 @@ See LICENSE file.
                 <p:row>
                     <p:column>
                         <div style="white-space: pre-wrap">
-                            <h:outputText value="Click 'Yes' to move #{entityController.moveToTrashMessage} to trash. You must enter the exact name of the root item below to continue. Click 'No' to cancel." />
+                            <h:outputText value="Click 'Yes' to move #{entityController.moveToTrashMessage} to trash. Click 'No' to cancel." />
                         </div>
                     </p:column>
                     <p:column rowspan="3">
@@ -38,11 +38,6 @@ See LICENSE file.
                 </p:row>
                 <p:row>
                     <p:column>
-                        <p:inputText value="#{entityController.moveToTrashName}"/>
-                    </p:column>
-                </p:row>
-                <p:row>
-                    <p:column>
                         <p:commandButton value="Yes" 
                                          actionListener="#{entityController.moveToTrash}"
                                          onclick="PF('loadingDialog').show()"                         
@@ -56,24 +51,6 @@ See LICENSE file.
             </p:panelGrid>
         </p:panel>
     </p:dialog>    
-
-    <p:confirmDialog header="Destroy selected machine element" severity="alert"
-                     widgetVar="destroyMachineDesignWidget"
-                     styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
-        <f:facet name="message">
-            All the machine element children will become top level machine elements. 
-            First level children will lose parent membership histories.
-            <br/><b>Proceed with removal of selected Machine Element?</b>
-        </f:facet>
-        <p:commandButton value="Yes" 
-                         actionListener="#{entityController.deleteSelectedMachineDesignItemFromDualView}"
-                         onclick="PF('loadingDialog').show()"                         
-                         update="@form"
-                         oncomplete="PF('loadingDialog').hide();
-                                     PF('destroyMachineDesignWidget').hide()"/>
-        <p:commandButton value="No" 
-                         onclick="PF('destroyMachineDesignWidget').hide();"/>
-    </p:confirmDialog>    
 
     <p:confirmDialog header="Detach machine element from hierarchy?" severity="alert"
                      widgetVar="detachMachineDesignWidget"
