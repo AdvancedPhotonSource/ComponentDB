@@ -788,9 +788,8 @@ class CableTypeHelper(PreImportHelper):
 
     # Adds helper specific command line args.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    @staticmethod
-    def add_parser_args(parser):
-        super.add_parser_args(parser)
+    def add_parser_args(self, parser):
+        super().add_parser_args(parser)
         parser.add_argument("--projectId", help="CDB item category ID for project (item_project table)", required=True)
         parser.add_argument("--techSystemId", help="CDB technical system ID for owner", required=True)
         parser.add_argument("--ownerUserId", help="CDB user ID for owner", required=True)
@@ -1029,9 +1028,8 @@ class CableInventoryHelper(PreImportHelper):
 
     # Adds helper specific command line args.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    @staticmethod
-    def add_parser_args(parser):
-        super.add_parser_args(parser)
+    def add_parser_args(self, parser):
+        super().add_parser_args(parser)
         parser.add_argument("--projectId", help="CDB project ID", required=True)
         parser.add_argument("--ownerUserId", help="CDB owner user ID", required=True)
         parser.add_argument("--ownerGroupId", help="CDB owner group ID", required=True)
