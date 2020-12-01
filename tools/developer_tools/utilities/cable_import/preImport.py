@@ -125,6 +125,7 @@ class PreImportHelper(ABC):
         self.output_columns = {}
         self.args = None
         self.api = None
+        self.validate_only = False
 
     # registers helper concrete classes for lookup by tag
     @classmethod
@@ -147,12 +148,6 @@ class PreImportHelper(ABC):
         helper_class = cls.helperDict[tag]
         helper_instance = helper_class()
         return helper_instance
-
-    # Allows subclasses to add command line parser args.  Default behavior is to do nothing.
-    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    @staticmethod
-    def add_parser_args(parser):
-        pass
 
     # Returns registered tag for subclass.
     @staticmethod
@@ -190,8 +185,15 @@ class PreImportHelper(ABC):
     def get_output_object(self, input_dict):
         pass
 
+    # Allows subclasses to add command line parser args.  Default behavior is to do nothing.
+    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
+    def add_parser_args(self, parser):
+        parser.add_argument("--validateOnly", action="store_true", help="perform basic validation only", required=False)
+
     def set_args(self, args):
         self.args = args
+        print("validateOnly: %s" % args.validateOnly)
+        self.validate_only = args.validateOnly
 
     def get_args(self):
         return self.args
@@ -788,6 +790,7 @@ class CableTypeHelper(PreImportHelper):
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
     @staticmethod
     def add_parser_args(parser):
+        super.add_parser_args(parser)
         parser.add_argument("--projectId", help="CDB item category ID for project (item_project table)", required=True)
         parser.add_argument("--techSystemId", help="CDB technical system ID for owner", required=True)
         parser.add_argument("--ownerUserId", help="CDB user ID for owner", required=True)
@@ -1028,6 +1031,7 @@ class CableInventoryHelper(PreImportHelper):
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
     @staticmethod
     def add_parser_args(parser):
+        super.add_parser_args(parser)
         parser.add_argument("--projectId", help="CDB project ID", required=True)
         parser.add_argument("--ownerUserId", help="CDB owner user ID", required=True)
         parser.add_argument("--ownerGroupId", help="CDB owner group ID", required=True)
@@ -1145,11 +1149,12 @@ class CableDesignHelper(PreImportHelper):
         self.missing_endpoints = set()
         self.missing_cable_types = set()
         self.nonunique_endpoints = set()
+        self.info_file = None
 
     # Adds helper specific command line args.
     # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    @staticmethod
-    def add_parser_args(parser):
+    def add_parser_args(self, parser):
+        super().add_parser_args(parser)
         parser.add_argument("--techSystemId", help="CDB technical system ID for owner", required=True)
         parser.add_argument("--projectId", help="CDB project ID", required=True)
         parser.add_argument("--mdRoot", help="CDB top-level parent machine design node name", required=True)
@@ -1243,9 +1248,12 @@ class CableDesignHelper(PreImportHelper):
             ConnectedMenuHandler(CABLE_DESIGN_DEST_ANS_KEY, CABLE_DESIGN_DEST_LOCATION_KEY),
             ConnectedMenuHandler(CABLE_DESIGN_DEST_ETPM_KEY, CABLE_DESIGN_DEST_ANS_KEY),
             DeviceAddressHandler(CABLE_DESIGN_DEST_ADDRESS_KEY, CABLE_DESIGN_DEST_LOCATION_KEY, CABLE_DESIGN_DEST_ETPM_KEY),
-            EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints),
-            EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints),
         ]
+
+        if not self.validate_only:
+            handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints))
+            handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints))
+
         return handler_list
 
 
@@ -1603,8 +1611,20 @@ def main():
         print()
         print(msg)
 
+    # print validation report
+    print()
+    if len(validation_map) > 0:
+        print("validation ERRORS found")
+        for key in validation_map:
+            print("row: %d" % key)
+            for message in validation_map[key]:
+                print("\t%s" % message)
+        write_validation_report(validation_map, args.validationFile)
+    else:
+        print("no validation errors found")
+
     # create output spreadsheet
-    if input_valid:
+    if input_valid and not helper.validate_only:
         output_book = xlsxwriter.Workbook(args.outputFile)
         output_sheet = output_book.add_worksheet()
 
@@ -1635,6 +1655,14 @@ def main():
 
         output_book.close()
 
+        summary_msg = "SUMMARY: processed %d input rows and wrote %d output rows" % (num_input_rows, num_output_rows)
+
+    elif not input_valid:
+        summary_msg = "ERROR: processed %d input rows but no output spreadsheet generated, see log for errors" % num_input_rows
+
+    else:
+        summary_msg = "VALIDATION ONLY: processed %d input rows but no output spreadsheet generated, see validation file for details" % num_input_rows
+
     # clean up helper
     helper.close()
 
@@ -1644,21 +1672,7 @@ def main():
     except ApiException:
         sys.exit("CDB logout failed")
 
-    # print validation report
-    if len(validation_map) > 0:
-        print()
-        print("validation ERRORS found")
-        for key in validation_map:
-            print("row: %d" % key)
-            for message in validation_map[key]:
-                print("\t%s" % message)
-        write_validation_report(validation_map, args.validationFile)
-
     # print summary
-    if input_valid:
-        summary_msg = "SUMMARY: processed %d input rows and wrote %d output rows" % (num_input_rows, num_output_rows)
-    else:
-        summary_msg = "ERROR: processed %d input rows but no output spreadsheet generated, see log for errors" % num_input_rows
     print()
     print(summary_msg)
     logging.info(summary_msg)
