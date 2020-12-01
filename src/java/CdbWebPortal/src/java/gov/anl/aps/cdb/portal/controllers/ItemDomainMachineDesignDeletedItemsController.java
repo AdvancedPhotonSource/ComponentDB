@@ -154,7 +154,9 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         
         restoreDeletedItemMessage = "Click 'Yes' to restore '" +
                 itemToRestore.getName() +
-                "' to " + itemType + " list. Click 'No' to cancel.";
+                "' to " + itemType + " list. Click 'No' to cancel." +
+                " NOTE: items restored from trash will appear as top-level items and not within their original container.";
+                
     }
     
     /**
