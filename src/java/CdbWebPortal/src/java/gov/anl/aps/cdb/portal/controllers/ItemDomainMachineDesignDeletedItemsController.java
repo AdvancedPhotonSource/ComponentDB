@@ -273,17 +273,12 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
             return;
         }
         
-        // check permissions for all items
+        // admin permission required
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
         if (sessionRole != CdbRole.ADMIN) {
-            for (ItemDomainMachineDesign item : itemsToDelete) {
-                UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-                if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
-                    SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
-                    return;
-                }
-            }
-        }
+            SessionUtility.addErrorMessage("Error", "Admin permission required to permanently delete item");
+            return;
+         }
 
         // mark ItemElements for relationships in hierarchy for deletion and
         // remove from parent and child items, and find container item
