@@ -2053,49 +2053,41 @@ public class ItemDomainMachineDesignController
                 }
             }
             
-            removeDeletedItemsFromList(itemsWithoutParents);
-
-            removeTemplatesFromList(itemsWithoutParents, !isCurrentViewIsTemplate());
+            removeEntityTypesFromList(itemsWithoutParents, !isCurrentViewIsTemplate());
 
             topLevelMachineDesignSelectionList = new ListDataModel(itemsWithoutParents);
         }
         return topLevelMachineDesignSelectionList;
     }
 
-    private void removeDeletedItemsFromList(List<ItemDomainMachineDesign> itemList) {
-        String entityName = EntityTypeName.deleted.getValue();
-        EntityType entityType = entityTypeFacade.findByName(entityName);
-
-        int index = 0;
-        while (index < itemList.size()) {
-            Item item = itemList.get(index);
-            if (item.getEntityTypeList().contains(entityType)) {
-                itemList.remove(index);
-            } else {
-                index++;
-            }
-        }
-    }
-
-    private void removeTemplatesFromList(List<ItemDomainMachineDesign> itemList, boolean removeTemplate) {
+    private void removeEntityTypesFromList(List<ItemDomainMachineDesign> itemList, boolean removeTemplate) {
+        
         String templateEntityName = EntityTypeName.template.getValue();
         EntityType templateEntityType = entityTypeFacade.findByName(templateEntityName);
 
+        String deletedEntityName = EntityTypeName.deleted.getValue();
+        EntityType deletedEntityType = entityTypeFacade.findByName(deletedEntityName);
+
+        String inventoryEntityName = EntityTypeName.inventory.getValue();
+        EntityType inventoryEntityType = entityTypeFacade.findByName(inventoryEntityName);
+
         int index = 0;
         while (index < itemList.size()) {
+            
             Item item = itemList.get(index);
-            if (item.getEntityTypeList().contains(templateEntityType)) {
-                if (removeTemplate) {
-                    itemList.remove(index);
-                } else {
-                    index++;
-                }
+            
+            // remove template items or regular items depending on removeTemplate flag
+            // remove all deleted items
+            // remove all machine inventory
+            if (((item.getEntityTypeList().contains(templateEntityType)) && (removeTemplate)) ||
+                    ((!item.getEntityTypeList().contains(templateEntityType)) && (!removeTemplate)) ||
+                    (item.getEntityTypeList().contains(deletedEntityType)) ||
+                    (item.getEntityTypeList().contains(inventoryEntityType))) {
+                
+                itemList.remove(index);
+                
             } else {
-                if (removeTemplate) {
-                    index++;
-                } else {
-                    itemList.remove(index);
-                }
+                index++;
             }
         }
     }
