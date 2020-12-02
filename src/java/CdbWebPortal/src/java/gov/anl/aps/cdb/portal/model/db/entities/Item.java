@@ -108,6 +108,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelOrderByDerivedFromItem",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY ORDER BY i.derivedFromItem.id DESC"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelExcludeEntityTypeOrderByDerivedFromItem",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and (i.id not in (SELECT DISTINCT(i.id) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :excludeEntityTypeName)) and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY ORDER BY i.derivedFromItem.id DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndExcludeEntityType",
             query = "SELECT DISTINCT(i) FROM Item i LEFT JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and (etl.name != :entityTypeName or etl.name is null) ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameOderByQrId",

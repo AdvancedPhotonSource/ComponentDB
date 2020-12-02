@@ -361,4 +361,8 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         
         return new DomainImportInfo(formatInfo, completionUrl);
     }
+
+    public String deletedItemsList() {
+        return "/views/itemDomainMachineDesign/deletedItemsList?faces-redirect=true";
+    }
 }
