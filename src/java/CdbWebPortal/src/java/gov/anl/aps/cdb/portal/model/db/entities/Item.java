@@ -350,6 +350,8 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     private transient Boolean isItemDeleted = null;
     
+    private transient Boolean isItemInventory = null;
+    
     // Item element from which it was added to in the hierarchy. 
     private transient ItemElement hierarchyItemElement = null;
 
@@ -1370,6 +1372,17 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public static boolean isItemDeleted(Item item) {
         return isItemEntityType(item, EntityTypeName.deleted.getValue());
+    }
+
+    public Boolean getIsItemInventory() {
+        if (isItemInventory == null) {
+            isItemInventory = isItemInventory(this);
+        }
+        return isItemInventory;
+    }
+
+    public static boolean isItemInventory(Item item) {
+        return isItemEntityType(item, EntityTypeName.inventory.getValue());
     }
 
     @Override

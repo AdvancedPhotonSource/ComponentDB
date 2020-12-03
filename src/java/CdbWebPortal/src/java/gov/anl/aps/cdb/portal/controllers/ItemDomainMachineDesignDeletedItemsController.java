@@ -148,6 +148,8 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         String itemType;
         if (itemToRestore.getIsItemTemplate()) {
             itemType = "machine template";
+        } else if (itemToRestore.getIsItemInventory()) {
+            itemType = "machine inventory";
         } else {
             itemType = "regular machine item";
         }
@@ -205,8 +207,13 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
                 
         // reset data models to refresh list views with changes (this
         // controller's models are reset by update/updateList())
-        ItemDomainMachineDesignController.getInstance().resetListDataModel();
-        ItemDomainMachineDesignController.getInstance().resetSelectDataModel();
+        if (itemToRestore.getIsItemInventory()) {
+            ItemDomainMachineDesignInventoryController.getInstance().resetListDataModel();
+            ItemDomainMachineDesignInventoryController.getInstance().resetSelectDataModel();
+        } else {
+            ItemDomainMachineDesignController.getInstance().resetListDataModel();
+            ItemDomainMachineDesignController.getInstance().resetSelectDataModel();
+        }
     }
 
     public String getPermanentlyRemoveConfirmationName() {
