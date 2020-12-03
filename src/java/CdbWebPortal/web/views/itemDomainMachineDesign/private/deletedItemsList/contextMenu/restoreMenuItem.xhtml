@@ -11,6 +11,7 @@ See LICENSE file.
     <p:menuitem value="Put back..."
                 action="#{entityController.prepareRestoreDeletedItem}"
                 oncomplete="PF('restoreDeletedItemDialogWidget').show()"
+                disabled="#{disabledEditContextMenuItemForSelection}"
                 update="@form:restoreDeletedItemDialogText"/>
 
 </ui:composition>
