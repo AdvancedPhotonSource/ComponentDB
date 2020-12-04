@@ -10,6 +10,8 @@ See LICENSE file.
                 template="../item/private/templates/itemListTemplate.xhtml">
 
     <ui:param name="entityController" value="#{itemDomainMachineDesignInventoryController}" />
+    
+    <ui:param name="isEntityWriteable" value="#{false}"/>
 
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
