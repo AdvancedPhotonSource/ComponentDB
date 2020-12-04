@@ -18,6 +18,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -239,6 +240,17 @@ import org.primefaces.model.TreeNode;
     "createdFromTemplate",
     "itemsCreatedFromThisTemplateItem"
 })
+@Schema(name = "Item",
+        subTypes
+        = {
+            ItemDomainCatalog.class,
+            ItemDomainInventory.class,
+            ItemDomainMachineDesign.class,
+            ItemDomainCable.class,
+            ItemDomainMAARC.class,
+            ItemDomainLocation.class
+        }
+)
 public class Item extends CdbDomainEntity implements Serializable {
 
     private static final Logger LOGGER = LogManager.getLogger(Item.class.getName());
