@@ -325,6 +325,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
     }
 
+    @JsonIgnore
     public String getImportAssignedItemDescription() {
         return importAssignedItemDescription;
     }

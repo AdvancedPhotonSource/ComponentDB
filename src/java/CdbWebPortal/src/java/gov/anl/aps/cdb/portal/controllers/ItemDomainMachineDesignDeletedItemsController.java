@@ -301,11 +301,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
             }
         }        
 
-        if (itemsToDelete.size() == 1) {
-            destroy();
-        } else {
-            destroyList(itemsToDelete, containerItem);
-        }
+        destroyList(itemsToDelete, containerItem);
         
         setPermanentlyRemoveConfirmationName(null);
         permanentlyRemoveNode = null;
