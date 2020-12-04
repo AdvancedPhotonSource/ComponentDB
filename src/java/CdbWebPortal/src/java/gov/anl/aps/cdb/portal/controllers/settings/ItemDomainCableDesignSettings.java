@@ -92,6 +92,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
     public ItemDomainCableDesignSettings(ItemDomainCableDesignController parentController) {
         super(parentController);
+        displayNumberOfItemsPerPage = 25;
     }
 
     public Boolean getDisplayEndpoints() {
