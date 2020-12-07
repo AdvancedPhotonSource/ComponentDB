@@ -88,7 +88,8 @@ import org.primefaces.model.TreeNode;
     "mdTypeContainedItem",
     "parentItem",
     "containedItem",
-    "containedItem2"
+    "containedItem2",
+    "markedForDeletion"
 })
 public class ItemElement extends CdbDomainEntity implements Serializable {
 

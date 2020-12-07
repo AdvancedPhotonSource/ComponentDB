@@ -141,6 +141,7 @@ public class ItemDomainCableCatalogSettings extends ItemSettings<ItemDomainCable
     
     public ItemDomainCableCatalogSettings(ItemDomainCableCatalogController parentController) {
         super(parentController);
+        displayNumberOfItemsPerPage = 25;
     }
     
     public boolean isHeatLimitDisplay() {

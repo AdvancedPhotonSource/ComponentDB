@@ -333,6 +333,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
+    public boolean getEntityDisplayDeletedItems() {
+        return false;
+    }
+
+    @Override
     public final String getEntityEntityTypeName() {
         return getItemItemTypeTitle();
     }
@@ -403,6 +408,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public List<ItemDomainEntity> getItemListExcludeTemplates() {
         String templateEntityTypeName = EntityTypeName.template.getValue();
         return getEntityDbFacade().findByDomainNameAndExcludeEntityType(getDefaultDomainName(), templateEntityTypeName);
+    }
+
+    public List<ItemDomainEntity> getItemListExcludeDeletedItems() {
+        String entityTypeName = EntityTypeName.deleted.getValue();
+        return getEntityDbFacade().findByDomainNameAndExcludeEntityType(getDefaultDomainName(), entityTypeName);
     }
 
     @Override
@@ -2314,6 +2324,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public String prepareView(Item item) {
         prepareItemElementListTreeTable(item);
         return "/views/item/view.xhtml?faces-redirect=true&id=" + item.getId();
+    }
+
+    public String prepareDeletedItemsList() {
+        return deletedItemsList();
+    }
+
+    public String deletedItemsList() {
+        return "deletedItemsList.xhtml?faces-redirect=true";
     }
 
     /**

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html">  
+
+    <p:dialog header="Restore deleted item"
+              modal="true"
+              widgetVar="restoreDeletedItemDialogWidget"
+              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+        <p:panel id="restoreDeletedItemDialogPanel">
+            <p:panelGrid>
+                <p:row>
+                    <p:column>
+                        <div style="white-space: pre-wrap">
+                            <h:outputText id="restoreDeletedItemDialogText"
+                                          value="#{entityController.restoreDeletedItemMessage}" />
+                        </div>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:commandButton value="Yes" 
+                                         actionListener="#{entityController.restoreDeletedItem}"
+                                         onclick="PF('loadingDialog').show()"                         
+                                         update="@form"
+                                         oncomplete="PF('loadingDialog').hide();
+                                         PF('restoreDeletedItemDialogWidget').hide()"/>
+                        <p:commandButton value="No" 
+                                         onclick="PF('restoreDeletedItemDialogWidget').hide();"/>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </p:panel>
+    </p:dialog>   
+
+    <p:dialog id="permanentlyRemoveDialog"
+              header="Permanently remove: #{entityController.permanentlyRemoveDisplayName}"
+              modal="true"
+              widgetVar="permanentlyRemoveDialogWidget"
+              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+        <p:panel id="permanentlyRemoveDialogPanel">
+            <p:panelGrid>
+                <p:row>
+                    <p:column>
+                        <div style="white-space: pre-wrap">
+                            <h:outputText value="Click 'Yes' to PERMANENTLY remove #{entityController.permanentlyRemoveMessage}. You must enter the exact name of the root item below to continue. This action cannot be undone. Click 'No' to cancel." />
+                        </div>
+                    </p:column>
+                    <p:column rowspan="3">
+                        <p:tree id="permanentlyRemoveDialogTree"
+                                value="#{entityController.permanentlyRemoveNode}" 
+                                var="node"
+                                selectionMode="single"
+                                rendered="#{entityController.permanentlyRemoveNode != null}">
+                            <p:treeNode>
+                                <h:outputText value="#{node}" />
+                            </p:treeNode>
+
+                        </p:tree>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:inputText value="#{entityController.permanentlyRemoveConfirmationName}"/>
+                    </p:column>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:commandButton value="Yes" 
+                                         actionListener="#{entityController.permanentlyRemove}"
+                                         onclick="PF('loadingDialog').show()"                         
+                                         update="@form"
+                                         oncomplete="PF('loadingDialog').hide();
+                                         PF('permanentlyRemoveDialogWidget').hide()"/>
+                        <p:commandButton value="No" 
+                                         onclick="PF('permanentlyRemoveDialogWidget').hide();"/>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </p:panel>
+    </p:dialog>   
+
+</ui:composition>

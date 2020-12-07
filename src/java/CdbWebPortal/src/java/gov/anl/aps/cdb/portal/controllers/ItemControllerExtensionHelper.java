@@ -149,6 +149,11 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     public boolean getEntityDisplayItemEntityTypes() {
         return getItemController().getEntityDisplayItemEntityTypes();
     }
+    
+    @Override
+    public boolean getEntityDisplayDeletedItems() {
+        return getItemController().getEntityDisplayDeletedItems();
+    }
 
     @Override
     public String getItemIdentifier1Title() {

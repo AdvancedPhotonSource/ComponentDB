@@ -8,11 +8,11 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
 
-    <p:menuitem value="Delete Hierarchy"
+    <p:menuitem value="Move to Trash"
                 icon="fa fa-trash"
-                action="#{entityController.prepareDeleteHierarchy}"
-                oncomplete="PF('deleteHierarchyWidget').show()"
-                disabled="true"
-                update="@form:deleteHierarchyDialogTree"/>
+                action="#{entityController.prepareMoveToTrash}"
+                oncomplete="PF('moveToTrashDialogWidget').show()"
+                disabled="#{disabledEditContextMenuItemForSelection}"
+                update="@form:moveToTrashDialog @form:moveToTrashDialogTree"/>
 
 </ui:composition>

@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -108,6 +109,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelOrderByDerivedFromItem",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY ORDER BY i.derivedFromItem.id DESC"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelExcludeEntityTypeOrderByDerivedFromItem",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and (i.id not in (SELECT DISTINCT(i.id) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :excludeEntityTypeName)) and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY ORDER BY i.derivedFromItem.id DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndExcludeEntityType",
             query = "SELECT DISTINCT(i) FROM Item i LEFT JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and (etl.name != :entityTypeName or etl.name is null) ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameOderByQrId",
@@ -356,6 +359,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient Boolean templateInfoLoaded = false;
     private transient Item createdFromTemplate = null;
     private transient List<Item> itemsCreatedFromThisTemplateItem = null;
+
+    private transient Boolean isItemDeleted = null;
+    
+    private transient Boolean isItemInventory = null;
     
     // Item element from which it was added to in the hierarchy. 
     private transient ItemElement hierarchyItemElement = null;
@@ -686,6 +693,54 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         entityTypeString = null;
         this.entityTypeList = entityTypeList;
+    }
+    
+    public void addEntityType(String entityTypeName) throws CdbException {
+        
+        EntityType entityType
+                = EntityTypeController.getInstance().
+                        findByName(entityTypeName);
+        
+        // entity type already set for this entity
+        if (entityTypeList.contains(entityType)) {
+            return;
+        }
+
+        // check to see that entity type is valid for entity's domain
+        if (domain != null) {
+            List<EntityType> allowedEntityTypeList = domain.getAllowedEntityTypeList();
+            if (allowedEntityTypeList.contains(entityType) == false) {
+                throw new CdbException(entityType.getName() + " is not in the domain hanlder allowed list for the item: " + toString());
+            }
+
+        } else {
+            throw new CdbException("Entity Type cannot be set: no domain has been defined for the item " + toString());
+        }
+
+        // add entity type to entity type list
+        List<EntityType> entityTypeList = getEntityTypeList();
+        if ( entityTypeList == null) {
+            entityTypeList = new ArrayList<>();
+        }
+        entityTypeList.add(entityType);
+
+    }
+    
+    public void removeEntityType(String entityTypeName) {
+        
+        EntityType entityType
+                = EntityTypeController.getInstance().
+                        findByName(entityTypeName);
+        
+        if (entityType == null) {
+            return;
+        }
+        
+        if (!entityTypeList.contains(entityType)) {
+            return;
+        }
+        
+        getEntityTypeList().remove(entityType);
     }
 
     @JsonSetter("entityTypeList")
@@ -1318,6 +1373,28 @@ public class Item extends CdbDomainEntity implements Serializable {
             }
         }
         return false;
+    }
+
+    public Boolean getIsItemDeleted() {
+        if (isItemDeleted == null) {
+            isItemDeleted = isItemDeleted(this);
+        }
+        return isItemDeleted;
+    }
+
+    public static boolean isItemDeleted(Item item) {
+        return isItemEntityType(item, EntityTypeName.deleted.getValue());
+    }
+
+    public Boolean getIsItemInventory() {
+        if (isItemInventory == null) {
+            isItemInventory = isItemInventory(this);
+        }
+        return isItemInventory;
+    }
+
+    public static boolean isItemInventory(Item item) {
+        return isItemEntityType(item, EntityTypeName.inventory.getValue());
     }
 
     @Override

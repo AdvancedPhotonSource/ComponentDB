@@ -365,4 +365,31 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         
         return new DomainImportInfo(formatInfo, completionUrl);
     }
+
+    public String deletedItemsList() {
+        return "/views/itemDomainMachineDesign/deletedItemsList?faces-redirect=true";
+    }
+    
+    /**
+     * Executes move to trash operation invoked from confirmation dialog.
+     * Invokes base implementation, and then redirects to the machine inventory
+     * list view if the root item in the item view is moved to trash.
+     */
+    @Override
+    public void moveToTrash() {
+        ItemDomainMachineDesign item = getCurrent();
+        boolean isTopLevelItem = (item.getParentMachineDesign() == null);
+        ItemDomainMachineDesign rootItem = item;
+        while (rootItem.getParentMachineDesign() != null) {
+            rootItem = rootItem.getParentMachineDesign();
+        }
+        super.moveToTrash();
+        if (isTopLevelItem && (item.getIsItemDeleted())) {
+            // if we deleted root item in item view, redirect to machine inventory list view
+            SessionUtility.navigateTo("list.xhtml?faces-redirect=true");
+        } else {
+            setCurrent(rootItem);
+        }
+    }
+    
 }

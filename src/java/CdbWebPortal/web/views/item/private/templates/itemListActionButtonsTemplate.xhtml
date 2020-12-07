@@ -78,6 +78,16 @@ See LICENSE file.
             <p:tooltip for="#{entityTypeName}#{viewName}ViewItemTemplates" 
                        value="View Available Templates."/>
         </p:commandButton>                
+
+        <p:commandButton id="#{entityTypeName}#{viewName}ViewDeletedItems"
+                         icon="fa fa-trash"
+                         styleClass="actionButtonRight"
+                         action="#{entityController.prepareDeletedItemsList()}"
+                         rendered="#{entityController.entityDisplayDeletedItems}">
+            <p:tooltip for="#{entityTypeName}#{viewName}ViewDeletedItems" 
+                       value="View Deleted Items."/>
+        </p:commandButton>
+        
     </ui:define>  
 
 </ui:composition>

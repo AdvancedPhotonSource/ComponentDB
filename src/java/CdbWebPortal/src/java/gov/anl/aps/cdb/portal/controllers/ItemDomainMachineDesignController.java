@@ -40,7 +40,6 @@ import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -142,8 +141,10 @@ public class ItemDomainMachineDesignController
     // </editor-fold>   
 
     // <editor-fold defaultstate="collapsed" desc="Delete support variables">
-    private String deleteHierarchyName = null;
-    private TreeNode deleteHierarchyNode = new DefaultTreeNode();
+    private String moveToTrashName = null;
+    private TreeNode moveToTrashNode = new DefaultTreeNode();
+    private String moveToTrashDisplayName = null;
+    private String moveToTrashMessage = null;
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
@@ -420,7 +421,10 @@ public class ItemDomainMachineDesignController
             boolean skip = false;
             if (item.getEntityTypeList().isEmpty() == false) {
                 skip = true;
-                if (isTemplate) {
+                if (item.getIsItemDeleted()) {
+                    skip = true;
+                }
+                else if (isTemplate) {
                     skip = !(item.getIsItemTemplate() == isTemplate);
                 }
             } else {
@@ -435,7 +439,7 @@ public class ItemDomainMachineDesignController
         return rootTreeNode;
     }
 
-    private void expandTreeChildren(Item item, TreeNode rootTreeNode) {
+    protected void expandTreeChildren(Item item, TreeNode rootTreeNode) {
         ItemElement element = new ItemElement();
         ItemElement selfElement = item.getSelfElement();
         Float sortOrder = selfElement.getSortOrder();
@@ -822,7 +826,7 @@ public class ItemDomainMachineDesignController
         return displayAddCableBundlePanel;
     }
 
-    private void updateCurrentUsingSelectedItemInTreeTable() {
+    protected void updateCurrentUsingSelectedItemInTreeTable() {
         setCurrent(getItemFromSelectedItemInTreeTable());
         setCurrentHierarchyItemElement(getItemElementFromSelectedItemInTreeTable());
     }
@@ -932,12 +936,6 @@ public class ItemDomainMachineDesignController
         }
     }
     
-    public void deleteSelectedMachineDesignItemFromDualView() {
-        updateCurrentUsingSelectedItemInTreeTable();
-
-        destroy();
-    }
-
     @Deprecated
     /**
      * Templates are only created fully and only previously partially created md
@@ -2054,33 +2052,42 @@ public class ItemDomainMachineDesignController
                     itemsWithoutParents.remove(parentItem);
                 }
             }
-
-            removeTemplatesFromList(itemsWithoutParents, !isCurrentViewIsTemplate());
+            
+            removeEntityTypesFromList(itemsWithoutParents, !isCurrentViewIsTemplate());
 
             topLevelMachineDesignSelectionList = new ListDataModel(itemsWithoutParents);
         }
         return topLevelMachineDesignSelectionList;
     }
 
-    private void removeTemplatesFromList(List<ItemDomainMachineDesign> itemList, boolean removeTemplate) {
+    private void removeEntityTypesFromList(List<ItemDomainMachineDesign> itemList, boolean removeTemplate) {
+        
         String templateEntityName = EntityTypeName.template.getValue();
         EntityType templateEntityType = entityTypeFacade.findByName(templateEntityName);
 
+        String deletedEntityName = EntityTypeName.deleted.getValue();
+        EntityType deletedEntityType = entityTypeFacade.findByName(deletedEntityName);
+
+        String inventoryEntityName = EntityTypeName.inventory.getValue();
+        EntityType inventoryEntityType = entityTypeFacade.findByName(inventoryEntityName);
+
         int index = 0;
         while (index < itemList.size()) {
+            
             Item item = itemList.get(index);
-            if (item.getEntityTypeList().contains(templateEntityType)) {
-                if (removeTemplate) {
-                    itemList.remove(index);
-                } else {
-                    index++;
-                }
+            
+            // remove template items or regular items depending on removeTemplate flag
+            // remove all deleted items
+            // remove all machine inventory
+            if (((item.getEntityTypeList().contains(templateEntityType)) && (removeTemplate)) ||
+                    ((!item.getEntityTypeList().contains(templateEntityType)) && (!removeTemplate)) ||
+                    (item.getEntityTypeList().contains(deletedEntityType)) ||
+                    (item.getEntityTypeList().contains(inventoryEntityType))) {
+                
+                itemList.remove(index);
+                
             } else {
-                if (removeTemplate) {
-                    index++;
-                } else {
-                    itemList.remove(index);
-                }
+                index++;
             }
         }
     }
@@ -2813,6 +2820,11 @@ public class ItemDomainMachineDesignController
     }
 
     @Override
+    public boolean getEntityDisplayDeletedItems() {
+        return true;
+    }
+
+    @Override
     public String getItemsDerivedFromItemTitle() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -2856,14 +2868,6 @@ public class ItemDomainMachineDesignController
     // </editor-fold>       
 
     // <editor-fold defaultstate="collapsed" desc="Delete support">   
-    public String getDeleteHierarchyName() {
-        return deleteHierarchyName;
-    }
-
-    public void setDeleteHierarchyName(String deleteHierarchyName) {
-        this.deleteHierarchyName = deleteHierarchyName;
-    }
-    
     private void addChildrenForItemToDeleteHierarchyNode(
             ItemDomainMachineDesign item, 
             TreeNode itemNode) {
@@ -2883,27 +2887,23 @@ public class ItemDomainMachineDesignController
         }
     }
     
-    public void prepareDeleteHierarchy() {
-        updateCurrentUsingSelectedItemInTreeTable();
-
-        if (getCurrent() != null) {
-            deleteHierarchyNode = new DefaultTreeNode();
-            deleteHierarchyNode.setExpanded(false);   
-            TreeNode childNode = new DefaultTreeNode(getCurrent().getName());
-            deleteHierarchyNode.getChildren().add(childNode);
-            addChildrenForItemToDeleteHierarchyNode(getCurrent(), childNode);
+    protected void prepareItemNameHierarchyTree(
+            TreeNode rootNode, ItemDomainMachineDesign rootItem) {
+        
+        if (rootItem != null) {
+            rootNode.setExpanded(false);
+            TreeNode childNode = new DefaultTreeNode(rootItem.getName());
+            rootNode.getChildren().add(childNode);
+            addChildrenForItemToDeleteHierarchyNode(rootItem, childNode);
         }
     }
-    
-    public TreeNode getDeleteHierarchyNode() {
-        return deleteHierarchyNode;
-    }
-    
+
     public ValidInfo collectItemsForDeletion(
             ItemDomainMachineDesign parentItem, 
             List<ItemDomainMachineDesign> collectedItems,
             List<ItemElement> collectedElements,
-            boolean isRootItem) {
+            boolean isRootItem,
+            boolean rootRelationshipOnly) {
         
         boolean isValid = true;
         String validString = "";
@@ -2923,12 +2923,14 @@ public class ItemDomainMachineDesignController
                 } else {
                     // depth first ordering is important here, otherwise there are merge errors for deleted items
                     ValidInfo validInfo = 
-                            collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false);
+                            collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false, rootRelationshipOnly);
                     if (!validInfo.isValid()) {
                         return validInfo;
                     }
                     collectedItems.add((ItemDomainMachineDesign) childItem);
-                    collectedElements.add(ie);
+                    if (!rootRelationshipOnly) {
+                        collectedElements.add(ie);
+                    }
                 }
             }
         }
@@ -2951,27 +2953,49 @@ public class ItemDomainMachineDesignController
         
         return new ValidInfo(isValid, validString);
     }
+    
+    public TreeNode getMoveToTrashNode() {
+        return moveToTrashNode;
+    }
+    
+    public String getMoveToTrashDisplayName() {
+        return moveToTrashDisplayName;
+    }
+    
+    public String getMoveToTrashMessage() {
+        return moveToTrashMessage;
+    }
+    
+    /**
+     * Prepares dialog for move to trash operation.
+     */
+    public void prepareMoveToTrash() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        moveToTrashNode = null;
+        moveToTrashDisplayName = getCurrent().getName();
+        moveToTrashMessage = "'" + getCurrent().getName() + "'";
+        if (!getCurrent().getItemElementDisplayList().isEmpty()) {
+            moveToTrashMessage = moveToTrashMessage + 
+                    " and its children (hierarchy shown at right)";
+            moveToTrashNode = new DefaultTreeNode();
+            prepareItemNameHierarchyTree(moveToTrashNode, getCurrent());
+        }
+    }
+    
+    /**
+     * Executes move to trash operation initiated by 'Yes' button on dialog.
+     */
+    public void moveToTrash() {
 
-    public void deleteSelectedHierarchy() {
-        
         ItemDomainMachineDesign rootItemToDelete = getCurrent();
         if (rootItemToDelete == null) {
             return;
         }
         
-        // check for match on item name entered by user in confirmation dialog
-        if (!getDeleteHierarchyName().equals(rootItemToDelete.getName())) {
-            SessionUtility.addErrorMessage("Error", "Item name entered by user: " + 
-                            getDeleteHierarchyName() + 
-                            " does not match selected item: " + 
-                            rootItemToDelete.getName());
-            return;
-        }
-
         // collect list of items to delete
-        List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
+        List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
         List<ItemElement> elementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true);
+        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToUpdate, elementsToDelete, true, true);
         if (!validInfo.isValid()) {
             SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
             return;
@@ -2979,9 +3003,9 @@ public class ItemDomainMachineDesignController
         
         // check permissions for all items
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionRole != CdbRole.ADMIN) {
-            for (ItemDomainMachineDesign item : itemsToDelete) {
-                UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+            for (ItemDomainMachineDesign item : itemsToUpdate) {
                 if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
                     SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
                     return;
@@ -2989,28 +3013,42 @@ public class ItemDomainMachineDesignController
             }
         }
 
-        // mark ItemElements for relationships in hierarchy for deletion and
-        // remove from parent and child items, and find container item
-        ItemDomainMachineDesign containerItem = null;
-        for (ItemElement ie : elementsToDelete) {
-            Item childItem = ie.getContainedItem();
-            Item ieParentItem = ie.getParentItem();
-//            childItem.getItemElementMemberList().remove(ie);
-            ieParentItem.removeItemElement(ie);
-            ie.setMarkedForDeletion(true);
-            if (childItem.equals(rootItemToDelete)) {
-                containerItem = (ItemDomainMachineDesign)childItem;
-            }
-        }        
-
-        if (itemsToDelete.size() == 1) {
-            destroy();
-        } else {
-            destroyList(itemsToDelete, containerItem);
+        // mark all items as deleted entity type (moves them to "trash")
+        for (ItemDomainMachineDesign item : itemsToUpdate) {
+            item.setIsDeleted();
         }
         
-        setDeleteHierarchyName(null);
-    }
+        // remove relationship for root item to its parent and 
+        // add container item to list of items to update
+        if (elementsToDelete.size() > 1) {
+            // should be 0 for a top-level item or 1 for internal node
+            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - unexpected relationships exist in hierarchy");
+            return;
+        } else if (elementsToDelete.size() == 1) {
+            ItemElement ie = elementsToDelete.get(0);
+            Item childItem = ie.getContainedItem();
+            Item ieParentItem = ie.getParentItem();
+            ieParentItem.removeItemElement(ie);
+            childItem.getItemElementMemberList().remove(ie);
+            ie.setMarkedForDeletion(true);
+            itemsToUpdate.add((ItemDomainMachineDesign)ieParentItem);
+        }        
 
+        if (itemsToUpdate.size() == 1) {
+            update();
+        } else {
+            try {
+                updateList(itemsToUpdate);
+            } catch (CdbException ex) {
+                // handled adequately by thrower
+            }
+        }
+                
+        moveToTrashNode = null;
+        
+        ItemDomainMachineDesignDeletedItemsController.getInstance().resetListDataModel();
+        ItemDomainMachineDesignDeletedItemsController.getInstance().resetSelectDataModel();
+    }
+    
     // </editor-fold>
 }

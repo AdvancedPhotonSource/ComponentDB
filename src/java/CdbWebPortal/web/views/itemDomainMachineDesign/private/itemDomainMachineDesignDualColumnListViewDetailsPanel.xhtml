@@ -13,8 +13,8 @@ See LICENSE file.
         <ui:param name="itemObject"
                   value="#{entityController.current}" /> 
         <ui:param name="isEntityWriteable" 
-                  value="#{loginController.isEntityWriteable(itemObject.entityInfo)}"/>        
-
+                  value="#{isEntityWriteable == null ? loginController.isEntityWriteable(itemObject.entityInfo) : isEntityWriteable}"/>    
+        
         <p:panel header="Details"
                  id="machineDesignDetailsPanel"
                  styleClass="detailsPanelViewDetailsPanel">
