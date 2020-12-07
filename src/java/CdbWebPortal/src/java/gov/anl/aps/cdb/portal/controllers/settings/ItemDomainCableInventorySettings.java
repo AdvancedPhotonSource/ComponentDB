@@ -78,6 +78,7 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
 
     public ItemDomainCableInventorySettings(ItemDomainCableInventoryController parentController) {
         super(parentController);
+        displayNumberOfItemsPerPage = 25;
     }
     
     public Boolean getDisplaySerialNumber() {

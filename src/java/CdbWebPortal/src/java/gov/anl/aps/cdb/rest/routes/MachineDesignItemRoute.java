@@ -117,7 +117,12 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
             while (parentItem != null) {
                 
                 // check container match
-                if (parentItem.getName().equals(containerItemName)) { 
+                String alternateName = parentItem.getAlternateName();
+                if (alternateName == null) {
+                    alternateName = "";
+                }
+                if ((parentItem.getName().equals(containerItemName)) ||
+                        (alternateName.equals(containerItemName))) { 
                     foundContainer = true;
                 }
                 

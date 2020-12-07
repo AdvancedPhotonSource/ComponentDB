@@ -7,6 +7,7 @@ INSERT INTO `entity_type` VALUES
 (4,'File', 'classification for a file type items'),
 (5,'Template', 'classification for a machine design template items'),
 (6,'Measurement Data', 'classification for MAARC measurment data type items.'),
-(7,'Inventory','Entity type used for marking a sub domain of intevntory type items.'); 
+(7,'Inventory','Entity type used for marking a sub domain of intevntory type items.'),
+(8,'Deleted','Entity type used for marking an item deleted.');
 /*!40000 ALTER TABLE `entity_type` ENABLE KEYS */;
 UNLOCK TABLES;

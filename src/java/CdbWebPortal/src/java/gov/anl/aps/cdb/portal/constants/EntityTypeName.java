@@ -6,7 +6,8 @@ package gov.anl.aps.cdb.portal.constants;
 
 public enum EntityTypeName {
     template("Template"),
-    inventory("Inventory");
+    inventory("Inventory"),
+    deleted("Deleted");
 
     private String value;
 
