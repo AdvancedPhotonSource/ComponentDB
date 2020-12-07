@@ -100,7 +100,7 @@ public class ItemDomainMachineDesignController
     private Item originalForElement = null;
     protected DataModel installedInventorySelectionForCurrentElement;
     protected DataModel machineDesignTemplatesSelectionList;
-    private DataModel topLevelMachineDesignSelectionList;
+    protected DataModel topLevelMachineDesignSelectionList;
     private List<KeyValueObject> machineDesignNameList = null;
     private String machineDesignName = null;
     private boolean displayCreateMachineDesignFromTemplateContent = false;
@@ -146,7 +146,7 @@ public class ItemDomainMachineDesignController
     private String moveToTrashDisplayName = null;
     private String moveToTrashMessage = null;
     // </editor-fold>
-    
+
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
     public void onDropFromJS() {
         LoginController loginController = LoginController.getInstance();
@@ -423,8 +423,7 @@ public class ItemDomainMachineDesignController
                 skip = true;
                 if (item.getIsItemDeleted()) {
                     skip = true;
-                }
-                else if (isTemplate) {
+                } else if (isTemplate) {
                     skip = !(item.getIsItemTemplate() == isTemplate);
                 }
             } else {
@@ -935,7 +934,7 @@ public class ItemDomainMachineDesignController
             }
         }
     }
-    
+
     @Deprecated
     /**
      * Templates are only created fully and only previously partially created md
@@ -2032,27 +2031,8 @@ public class ItemDomainMachineDesignController
     public DataModel getTopLevelMachineDesignSelectionList() {
         if (topLevelMachineDesignSelectionList == null) {
             List<ItemDomainMachineDesign> itemsWithoutParents = getItemsWithoutParents();
-            List<ItemElement> itemElementMemberList = current.getItemElementMemberList();
 
-            if (itemElementMemberList != null) {
-                if (itemElementMemberList.size() == 0) {
-                    // current item has no parents
-                    itemsWithoutParents.remove(current);
-                } else {
-                    // Be definition machine design item should only have one parent
-                    Item parentItem = null;
-
-                    while (itemElementMemberList.size() != 0) {
-                        ItemElement parentElement = itemElementMemberList.get(0);
-                        parentItem = parentElement.getParentItem();
-
-                        itemElementMemberList = parentItem.getItemElementMemberList();
-                    }
-
-                    itemsWithoutParents.remove(parentItem);
-                }
-            }
-            
+            removeTopLevelParentOfItemFromList(current, itemsWithoutParents);
             removeEntityTypesFromList(itemsWithoutParents, !isCurrentViewIsTemplate());
 
             topLevelMachineDesignSelectionList = new ListDataModel(itemsWithoutParents);
@@ -2060,8 +2040,31 @@ public class ItemDomainMachineDesignController
         return topLevelMachineDesignSelectionList;
     }
 
+    protected void removeTopLevelParentOfItemFromList(Item item, List<ItemDomainMachineDesign> topLevelItems) {
+        List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
+
+        if (itemElementMemberList != null) {
+            if (itemElementMemberList.size() == 0) {
+                // current item has no parents
+                topLevelItems.remove(item);
+            } else {
+                // Be definition machine design item should only have one parent
+                Item parentItem = null;
+
+                while (itemElementMemberList.size() != 0) {
+                    ItemElement parentElement = itemElementMemberList.get(0);
+                    parentItem = parentElement.getParentItem();
+
+                    itemElementMemberList = parentItem.getItemElementMemberList();
+                }
+
+                topLevelItems.remove(parentItem);
+            }
+        }
+    }
+
     private void removeEntityTypesFromList(List<ItemDomainMachineDesign> itemList, boolean removeTemplate) {
-        
+
         String templateEntityName = EntityTypeName.template.getValue();
         EntityType templateEntityType = entityTypeFacade.findByName(templateEntityName);
 
@@ -2073,19 +2076,19 @@ public class ItemDomainMachineDesignController
 
         int index = 0;
         while (index < itemList.size()) {
-            
+
             Item item = itemList.get(index);
-            
+
             // remove template items or regular items depending on removeTemplate flag
             // remove all deleted items
             // remove all machine inventory
-            if (((item.getEntityTypeList().contains(templateEntityType)) && (removeTemplate)) ||
-                    ((!item.getEntityTypeList().contains(templateEntityType)) && (!removeTemplate)) ||
-                    (item.getEntityTypeList().contains(deletedEntityType)) ||
-                    (item.getEntityTypeList().contains(inventoryEntityType))) {
-                
+            if (((item.getEntityTypeList().contains(templateEntityType)) && (removeTemplate))
+                    || ((!item.getEntityTypeList().contains(templateEntityType)) && (!removeTemplate))
+                    || (item.getEntityTypeList().contains(deletedEntityType))
+                    || (item.getEntityTypeList().contains(inventoryEntityType))) {
+
                 itemList.remove(index);
-                
+
             } else {
                 index++;
             }
@@ -2305,10 +2308,10 @@ public class ItemDomainMachineDesignController
     }
 
     protected void createMachineDesignFromTemplateHierachically(ItemDomainMachineDesign subTemplate) throws CdbException, CloneNotSupportedException {
-        
+
         UserInfo ownerUser = subTemplate.getOwnerUser();
         UserGroup ownerGroup = subTemplate.getOwnerUserGroup();
-        
+
         List<ItemElement> itemElementDisplayList = subTemplate.getItemElementDisplayList();
         for (ItemElement ie : itemElementDisplayList) {
             createMachineDesignFromTemplate(ie, ie, ownerUser, ownerGroup);
@@ -2327,11 +2330,11 @@ public class ItemDomainMachineDesignController
      * @throws CloneNotSupportedException
      */
     private ItemDomainMachineDesign createMachineDesignFromTemplate(
-            ItemElement itemElement, 
+            ItemElement itemElement,
             ItemElement templateElementItem,
             UserInfo ownerUser,
             UserGroup ownerGroup) throws CdbException, CloneNotSupportedException {
-        
+
         if (templateElementItem.getId() != null) {
             // The key derivedFromItemElement is used for sorting.
             itemElement.setDerivedFromItemElement(templateElementItem);
@@ -2347,15 +2350,15 @@ public class ItemDomainMachineDesignController
     }
 
     public ItemDomainMachineDesign createMachineDesignFromTemplate(
-            ItemElement itemElement, 
+            ItemElement itemElement,
             ItemDomainMachineDesign templateItem,
             UserInfo ownerUser,
             UserGroup ownerGroup) throws CdbException, CloneNotSupportedException {
         cloneProperties = true;
         cloneCreateItemElementPlaceholders = false;
 
-        ItemDomainMachineDesign createItemFromTemplate = 
-                createItemFromTemplate(templateItem, ownerUser, ownerGroup);
+        ItemDomainMachineDesign createItemFromTemplate
+                = createItemFromTemplate(templateItem, ownerUser, ownerGroup);
 
         Item assignedItem = templateItem.getAssignedItem();
         createItemFromTemplate.setAssignedItem(assignedItem);
@@ -2376,7 +2379,7 @@ public class ItemDomainMachineDesignController
             ItemDomainMachineDesign templateItem,
             UserInfo ownerUser,
             UserGroup ownerGroup) throws CdbException, CloneNotSupportedException {
-        
+
         ItemDomainMachineDesign clone = (ItemDomainMachineDesign) templateItem.clone(ownerUser, ownerGroup);
         cloneCreateItemElements(clone, templateItem, true, true);
         setMachineDesginIdentifiersFromTemplateItem(templateItem, clone);
@@ -2439,10 +2442,10 @@ public class ItemDomainMachineDesignController
     public String getItemListPageTitle() {
         return "Machine: Housing Hierarchy";
     }
-    
+
     @Override
     public String getItemTemplateListPageTitle() {
-        return "Machine Element Templates"; 
+        return "Machine Element Templates";
     }
 
     @Override
@@ -2495,7 +2498,7 @@ public class ItemDomainMachineDesignController
 
         processPreRenderList();
 
-        String redirect = "/list";       
+        String redirect = "/list";
 
         if (loadViewModeUrlParameter()) {
             return;
@@ -2762,11 +2765,11 @@ public class ItemDomainMachineDesignController
     @Override
     public boolean getEntityDisplayQrId() {
         return isCurrentViewIsTemplate() == false;
-    } 
+    }
 
     @Override
     public boolean getEntityDisplayQrId(ItemDomainMachineDesign item) {
-        return !item.getIsItemTemplate(); 
+        return !item.getIsItemTemplate();
     }
 
     @Override
@@ -2869,11 +2872,11 @@ public class ItemDomainMachineDesignController
 
     // <editor-fold defaultstate="collapsed" desc="Delete support">   
     private void addChildrenForItemToDeleteHierarchyNode(
-            ItemDomainMachineDesign item, 
+            ItemDomainMachineDesign item,
             TreeNode itemNode) {
-        
+
         itemNode.setExpanded(false);
-        
+
         List<ItemElement> childElements = item.getItemElementDisplayList();
         List<ItemDomainMachineDesign> childItems = childElements.stream()
                 .map((child) -> (ItemDomainMachineDesign) child.getContainedItem())
@@ -2886,10 +2889,10 @@ public class ItemDomainMachineDesignController
             addChildrenForItemToDeleteHierarchyNode(childItem, childNode);
         }
     }
-    
+
     protected void prepareItemNameHierarchyTree(
             TreeNode rootNode, ItemDomainMachineDesign rootItem) {
-        
+
         if (rootItem != null) {
             rootNode.setExpanded(false);
             TreeNode childNode = new DefaultTreeNode(rootItem.getName());
@@ -2899,31 +2902,31 @@ public class ItemDomainMachineDesignController
     }
 
     public ValidInfo collectItemsForDeletion(
-            ItemDomainMachineDesign parentItem, 
+            ItemDomainMachineDesign parentItem,
             List<ItemDomainMachineDesign> collectedItems,
             List<ItemElement> collectedElements,
             boolean isRootItem,
             boolean rootRelationshipOnly) {
-        
+
         boolean isValid = true;
         String validString = "";
-        
+
         List<ItemElement> displayList = parentItem.getItemElementDisplayList();
         for (ItemElement ie : displayList) {
             Item childItem = ie.getContainedItem();
             if (childItem instanceof ItemDomainMachineDesign) {
-                
+
                 List<ItemElement> childMemberList = childItem.getItemElementMemberList();
                 if (childMemberList.size() > 1) {
                     // this code assumes that a child machine design item has only one 'membership'
                     isValid = false;
                     validString = "item: " + childItem.getName() + " is member of multiple assemblies";
                     return new ValidInfo(isValid, validString);
-                    
+
                 } else {
                     // depth first ordering is important here, otherwise there are merge errors for deleted items
-                    ValidInfo validInfo = 
-                            collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false, rootRelationshipOnly);
+                    ValidInfo validInfo
+                            = collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false, rootRelationshipOnly);
                     if (!validInfo.isValid()) {
                         return validInfo;
                     }
@@ -2934,7 +2937,7 @@ public class ItemDomainMachineDesignController
                 }
             }
         }
-        
+
         if (isRootItem) {
             collectedItems.add(parentItem);
 
@@ -2950,22 +2953,22 @@ public class ItemDomainMachineDesignController
                 collectedElements.add(containerRelElement);
             }
         }
-        
+
         return new ValidInfo(isValid, validString);
     }
-    
+
     public TreeNode getMoveToTrashNode() {
         return moveToTrashNode;
     }
-    
+
     public String getMoveToTrashDisplayName() {
         return moveToTrashDisplayName;
     }
-    
+
     public String getMoveToTrashMessage() {
         return moveToTrashMessage;
     }
-    
+
     /**
      * Prepares dialog for move to trash operation.
      */
@@ -2975,13 +2978,13 @@ public class ItemDomainMachineDesignController
         moveToTrashDisplayName = getCurrent().getName();
         moveToTrashMessage = "'" + getCurrent().getName() + "'";
         if (!getCurrent().getItemElementDisplayList().isEmpty()) {
-            moveToTrashMessage = moveToTrashMessage + 
-                    " and its children (hierarchy shown at right)";
+            moveToTrashMessage = moveToTrashMessage
+                    + " and its children (hierarchy shown at right)";
             moveToTrashNode = new DefaultTreeNode();
             prepareItemNameHierarchyTree(moveToTrashNode, getCurrent());
         }
     }
-    
+
     /**
      * Executes move to trash operation initiated by 'Yes' button on dialog.
      */
@@ -2991,7 +2994,7 @@ public class ItemDomainMachineDesignController
         if (rootItemToDelete == null) {
             return;
         }
-        
+
         // collect list of items to delete
         List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
         List<ItemElement> elementsToDelete = new ArrayList<>();
@@ -3000,7 +3003,7 @@ public class ItemDomainMachineDesignController
             SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
             return;
         }
-        
+
         // check permissions for all items
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
@@ -3017,7 +3020,7 @@ public class ItemDomainMachineDesignController
         for (ItemDomainMachineDesign item : itemsToUpdate) {
             item.setIsDeleted();
         }
-        
+
         // remove relationship for root item to its parent and 
         // add container item to list of items to update
         if (elementsToDelete.size() > 1) {
@@ -3031,8 +3034,8 @@ public class ItemDomainMachineDesignController
             ieParentItem.removeItemElement(ie);
             childItem.getItemElementMemberList().remove(ie);
             ie.setMarkedForDeletion(true);
-            itemsToUpdate.add((ItemDomainMachineDesign)ieParentItem);
-        }        
+            itemsToUpdate.add((ItemDomainMachineDesign) ieParentItem);
+        }
 
         if (itemsToUpdate.size() == 1) {
             update();
@@ -3043,12 +3046,12 @@ public class ItemDomainMachineDesignController
                 // handled adequately by thrower
             }
         }
-                
+
         moveToTrashNode = null;
-        
+
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetListDataModel();
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetSelectDataModel();
     }
-    
+
     // </editor-fold>
 }
