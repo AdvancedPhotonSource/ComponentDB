@@ -30,6 +30,7 @@ import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
@@ -121,6 +122,19 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     @Override
     public List<ItemDomainMachineDesign> getItemList() {
         return itemDomainMachineDesignFacade.getTopLevelMachineDesignInventory();
+    } 
+
+    @Override
+    public DataModel getTopLevelMachineDesignSelectionList() {
+        if (topLevelMachineDesignSelectionList == null) {
+            List<ItemDomainMachineDesign> topLevelMachineDesignInventory = itemDomainMachineDesignFacade.getTopLevelMachineDesignInventory();
+            
+            removeTopLevelParentOfItemFromList(current, topLevelMachineDesignInventory);            
+            
+            topLevelMachineDesignSelectionList = new ListDataModel(topLevelMachineDesignInventory); 
+        }
+        
+        return topLevelMachineDesignSelectionList;         
     }
 
     public static ItemDomainMachineDesignInventoryController getInstance() {
