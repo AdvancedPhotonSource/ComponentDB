@@ -109,6 +109,11 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     public String viewForCurrentEntity() {
         return "viewDeletedItem?id=" + current.getId() + "&faces-redirect=true";
     }
+    
+    @Override
+    protected String getViewPath() {
+        return "/views/itemDomainMachineDesign/deletedItemsList.xhtml"; 
+    }
 
     @Override
     protected void prepareEntityView(ItemDomainMachineDesign entity) {
