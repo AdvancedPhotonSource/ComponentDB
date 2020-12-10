@@ -143,7 +143,10 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     public void prepareRestoreDeletedItem() {
         
         updateCurrentUsingSelectedItemInTreeTable();
-        ItemDomainMachineDesign itemToRestore = getCurrent();
+        ItemDomainMachineDesign itemToRestore = findById(getCurrent().getId());
+        if (itemToRestore == null) {
+            return;
+        }
         
         String itemType;
         if (itemToRestore.getIsItemTemplate()) {
@@ -166,7 +169,10 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
      */
     public void restoreDeletedItem() {
         
-        ItemDomainMachineDesign itemToRestore = getCurrent();
+        ItemDomainMachineDesign itemToRestore = findById(getCurrent().getId());
+        if (itemToRestore == null) {
+            return;
+        }
         
         // collect list of items to restore
         List<ItemDomainMachineDesign> itemsToRestore = new ArrayList<>();
@@ -241,14 +247,15 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
      */
     public void preparePermanentlyRemove() {
         updateCurrentUsingSelectedItemInTreeTable();
+        ItemDomainMachineDesign itemToRemove = findById(getCurrent().getId());
         permanentlyRemoveNode = null;
-        permanentlyRemoveDisplayName = getCurrent().getName();
-        permanentlyRemoveMessage = "'" + getCurrent().getName() + "'";
-        if (!getCurrent().getItemElementDisplayList().isEmpty()) {
+        permanentlyRemoveDisplayName = itemToRemove.getName();
+        permanentlyRemoveMessage = "'" + itemToRemove.getName() + "'";
+        if (!itemToRemove.getItemElementDisplayList().isEmpty()) {
             permanentlyRemoveMessage = permanentlyRemoveMessage + 
                     " and its children (hierarchy shown at right)";
             permanentlyRemoveNode = new DefaultTreeNode();
-            prepareItemNameHierarchyTree(permanentlyRemoveNode, getCurrent());
+            prepareItemNameHierarchyTree(permanentlyRemoveNode, itemToRemove);
         }
     }
     
@@ -257,7 +264,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
      */
     public void permanentlyRemove() {
         
-        ItemDomainMachineDesign rootItemToDelete = getCurrent();
+        ItemDomainMachineDesign rootItemToDelete = findById(getCurrent().getId());;
         if (rootItemToDelete == null) {
             return;
         }

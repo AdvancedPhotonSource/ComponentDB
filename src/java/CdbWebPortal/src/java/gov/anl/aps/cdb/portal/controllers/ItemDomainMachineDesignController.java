@@ -141,6 +141,7 @@ public class ItemDomainMachineDesignController
     // </editor-fold>   
 
     // <editor-fold defaultstate="collapsed" desc="Delete support variables">
+    private Boolean moveToTrashAllowed;
     private String moveToTrashName = null;
     private TreeNode moveToTrashNode = new DefaultTreeNode();
     private String moveToTrashDisplayName = null;
@@ -2956,6 +2957,10 @@ public class ItemDomainMachineDesignController
 
         return new ValidInfo(isValid, validString);
     }
+    
+    public Boolean getMoveToTrashAllowed() {
+        return moveToTrashAllowed;
+    }
 
     public TreeNode getMoveToTrashNode() {
         return moveToTrashNode;
@@ -2973,15 +2978,46 @@ public class ItemDomainMachineDesignController
      * Prepares dialog for move to trash operation.
      */
     public void prepareMoveToTrash() {
+        
         updateCurrentUsingSelectedItemInTreeTable();
+        
+        ItemDomainMachineDesign itemToDelete = findById(getCurrent().getId());
+        if (itemToDelete == null) {
+            return;
+        }
+        
+        moveToTrashAllowed = true;
         moveToTrashNode = null;
-        moveToTrashDisplayName = getCurrent().getName();
-        moveToTrashMessage = "'" + getCurrent().getName() + "'";
-        if (!getCurrent().getItemElementDisplayList().isEmpty()) {
-            moveToTrashMessage = moveToTrashMessage
-                    + " and its children (hierarchy shown at right)";
-            moveToTrashNode = new DefaultTreeNode();
-            prepareItemNameHierarchyTree(moveToTrashNode, getCurrent());
+        moveToTrashDisplayName = itemToDelete.getName();
+        moveToTrashMessage = "";
+        
+        // don't allow deleting templates with instances
+        List<Item> templateInstances = itemToDelete.getItemsCreatedFromThisTemplateItem();
+        if ((templateInstances != null) && (templateInstances.size() > 0)) {
+            moveToTrashAllowed = false;
+            moveToTrashMessage = "Unable to move '" + 
+                    itemToDelete.getName() + 
+                    "' to trash because it is a template with instances. " +
+                    " Click 'No' to cancel.";
+        }
+        
+        // don't allow deleting items that are cable endpoints
+        
+        // warn user about items with properties
+        
+        if (moveToTrashAllowed) {
+            String itemDescription = "'" + itemToDelete.getName() + "'";
+            if (!itemToDelete.getItemElementDisplayList().isEmpty()) {
+                itemDescription = itemDescription
+                        + " and its children (hierarchy shown at right) ";
+                moveToTrashNode = new DefaultTreeNode();
+                prepareItemNameHierarchyTree(moveToTrashNode, itemToDelete);
+            }
+            moveToTrashMessage = "Click 'Yes' to move " +
+                    itemDescription + 
+                    "to trash. Click 'No' to cancel. " +
+                    "NOTE: items restored from trash will appear as top-level items " +
+                    "and not within their original container.";
         }
     }
 
@@ -2990,7 +3026,7 @@ public class ItemDomainMachineDesignController
      */
     public void moveToTrash() {
 
-        ItemDomainMachineDesign rootItemToDelete = getCurrent();
+        ItemDomainMachineDesign rootItemToDelete = findById(getCurrent().getId());
         if (rootItemToDelete == null) {
             return;
         }
@@ -3048,6 +3084,7 @@ public class ItemDomainMachineDesignController
         }
 
         moveToTrashNode = null;
+        moveToTrashMessage = null;
 
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetListDataModel();
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetSelectDataModel();

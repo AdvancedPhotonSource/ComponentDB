@@ -391,7 +391,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
      */
     @Override
     public void moveToTrash() {
-        ItemDomainMachineDesign item = getCurrent();
+        ItemDomainMachineDesign item = findById(getCurrent().getId());
         boolean isTopLevelItem = (item.getParentMachineDesign() == null);
         ItemDomainMachineDesign rootItem = item;
         while (rootItem.getParentMachineDesign() != null) {

@@ -20,7 +20,8 @@ See LICENSE file.
                 <p:row>
                     <p:column>
                         <div style="white-space: pre-wrap">
-                            <h:outputText value="Click 'Yes' to move #{entityController.moveToTrashMessage} to trash. Click 'No' to cancel. NOTE: items restored from trash will appear as top-level items and not within their original container." />
+                            <h:outputText id="moveToTrashDialogMessage"
+                                          value="#{entityController.moveToTrashMessage}" />
                         </div>
                     </p:column>
                     <p:column rowspan="3">
@@ -38,7 +39,9 @@ See LICENSE file.
                 </p:row>
                 <p:row>
                     <p:column>
-                        <p:commandButton value="Yes" 
+                        <p:commandButton id="moveToTrashDialogYesButton"
+                                         value="Yes" 
+                                         disabled="#{!entityController.moveToTrashAllowed}"
                                          actionListener="#{entityController.moveToTrash}"
                                          onclick="PF('loadingDialog').show()"                         
                                          update="@form"
