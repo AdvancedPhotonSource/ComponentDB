@@ -770,10 +770,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         displayListDataModelScopeSelectionList = null;
         locationRelationshipCache = null;
     }
+    
+    public boolean isDataTableNotScoped() {        
+        return settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showAll.getValue()); 
+    }
 
     public final DataModel getScopedListDataModel() {
         // Show all
-        if (settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showAll.getValue())) {
+        if (isDataTableNotScoped()) {
             return getListDataModel();
         } else if (scopedListDataModel == null) {
             String templateEntityTypeName = EntityTypeName.template.getValue();
