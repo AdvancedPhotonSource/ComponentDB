@@ -36,7 +36,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     public final static String CONTROLLER_NAMED = "itemDomainMachineDesignDeletedItemsController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignDeletedItemsController.class.getName());
     
-    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignDetailsViewSections";
+    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignDeletedItemsDetailsViewSections";
 
     private String restoreDeletedItemMessage;
     
@@ -68,6 +68,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         return new ItemDomainMachineDesignDeletedItemSettings(this);
     }
 
+    @Override
     public String getPluginItemMachineDesignSectionsName() {
         return pluginItemMachineDesignSectionsName; 
     }
@@ -107,6 +108,11 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     @Override
     public String viewForCurrentEntity() {
         return "viewDeletedItem?id=" + current.getId() + "&faces-redirect=true";
+    }
+    
+    @Override
+    protected String getViewPath() {
+        return "/views/itemDomainMachineDesign/deletedItemsList.xhtml"; 
     }
 
     @Override

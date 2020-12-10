@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
@@ -109,6 +110,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     @Override
     public ItemController getItemDomainController() {
+        if (isItemDeleted(this)) {
+            return ItemDomainMachineDesignDeletedItemsController.getInstance(); 
+        }
         if (isItemInventory(this)) {
             return ItemDomainMachineDesignInventoryController.getInstance(); 
         }
@@ -131,6 +135,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         return super.getLocationDetails(); 
     }
     
+    public static boolean isItemDeleted(Item item) {
+        return isItemEntityType(item, EntityTypeName.deleted.getValue());
+    }
         
     public static boolean isItemInventory(Item item) {
         return isItemEntityType(item, EntityTypeName.inventory.getValue());
