@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
@@ -18,6 +19,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineH
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineTemplateInstantiation;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -30,6 +32,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
@@ -2973,7 +2976,7 @@ public class ItemDomainMachineDesignController
     public String getMoveToTrashMessage() {
         return moveToTrashMessage;
     }
-
+    
     /**
      * Prepares dialog for move to trash operation.
      */
@@ -2991,21 +2994,61 @@ public class ItemDomainMachineDesignController
         moveToTrashDisplayName = itemToDelete.getName();
         moveToTrashMessage = "";
         
-        // don't allow deleting templates with instances
+        String notAllowedError= "";
+        
+        // check restrictions on move to trash for certain situations
         List<Item> templateInstances = itemToDelete.getItemsCreatedFromThisTemplateItem();
         if ((templateInstances != null) && (templateInstances.size() > 0)) {
+            // don't allow move to trash for template with instances
             moveToTrashAllowed = false;
-            moveToTrashMessage = "Unable to move '" + 
-                    itemToDelete.getName() + 
-                    "' to trash because it is a template with instances. " +
-                    " Click 'No' to cancel.";
+            notAllowedError = "is a template with instances";
+        } else {
+            List<ItemElementRelationship> relationshipList = itemToDelete.getFullRelationshipList();
+            boolean hasCableRelationship = false;
+            boolean hasMaarcRelationship = false;
+            boolean hasOtherRelationship = false;
+            for (ItemElementRelationship relationship : relationshipList) {
+                RelationshipType relType = relationship.getRelationshipType();
+                if (relType == null) {
+                    // shouldn't happen, but....
+                    continue;
+                } else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeLocation())) {
+                    // ignore location relationships
+                    continue;
+                } else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeTemplate())) {
+                    // ignore template relationships, handling explicitly already
+                    continue;
+                } else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeCable())) {
+                    hasCableRelationship = true;
+                }  else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeMaarc())) {
+                    hasMaarcRelationship = true;
+                } else {
+                    hasOtherRelationship = true;
+                }
+            }
+            if (hasCableRelationship) {
+                // don't allow move to trash for cable endpoints
+                moveToTrashAllowed = false;
+                notAllowedError = "is an endpoint for one or more cables";
+            }  else if (hasMaarcRelationship) {
+                // don't allow move to trash for MAARC relationships
+                moveToTrashAllowed = false;
+                notAllowedError = "has one or more MAARC items";
+            } else if (hasOtherRelationship) {
+                // don't allow move to trash for other relationships (generic check for now, add specific handling as encountered)
+                moveToTrashAllowed = false;
+                notAllowedError = "has one or more relationships with other items";
+            }
         }
         
-        // don't allow deleting items that are cable endpoints
-        
-        // warn user about items with properties
-        
-        if (moveToTrashAllowed) {
+        if (!moveToTrashAllowed) {
+            moveToTrashMessage = "Unable to move '" + 
+                    itemToDelete.getName() + 
+                    "' to trash because it " + notAllowedError + ". " +
+                    "Consult item detail view for additional information. " +
+                    "Click 'No' to cancel.";
+            
+        } else {
             String itemDescription = "'" + itemToDelete.getName() + "'";
             if (!itemToDelete.getItemElementDisplayList().isEmpty()) {
                 itemDescription = itemDescription
