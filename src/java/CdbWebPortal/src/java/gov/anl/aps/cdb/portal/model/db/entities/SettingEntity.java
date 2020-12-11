@@ -19,13 +19,6 @@ import java.util.List;
  *
  * @author djarosz
  */
-@Schema(name = "SettingEntity",
-        subTypes = 
-                {
-                    UserGroup.class,
-                    UserInfo.class
-                }
-        )
 public abstract class SettingEntity extends CdbEntity implements Serializable {
 
     protected transient HashMap<String, EntitySetting> entitySettingMap = null;
@@ -110,6 +103,7 @@ public abstract class SettingEntity extends CdbEntity implements Serializable {
     }
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
+    @JsonIgnore
     public Date getSettingsModificationDate() {
         if (userSettingsModificationDate == null) {
             updateSettingsModificationDate();

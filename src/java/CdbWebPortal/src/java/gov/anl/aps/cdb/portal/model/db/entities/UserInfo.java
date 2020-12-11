@@ -5,12 +5,10 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import gov.anl.aps.cdb.portal.controllers.LoginController;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -49,15 +47,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "UserInfo.findByEmail", query = "SELECT u FROM UserInfo u WHERE u.email = :email"),
     @NamedQuery(name = "UserInfo.findByPassword", query = "SELECT u FROM UserInfo u WHERE u.password = :password"),
     @NamedQuery(name = "UserInfo.findByDescription", query = "SELECT u FROM UserInfo u WHERE u.description = :description")})
-@JsonIgnoreProperties({
-    "itemElementLists",
-    "password",
-    "entityInfo",
-    
-    //Transient Variables 
-    "userGroupListString",
-    "fullNameForSelection"
-})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserInfo extends SettingEntity implements Serializable {
 
@@ -99,13 +88,13 @@ public class UserInfo extends SettingEntity implements Serializable {
         @JoinColumn(name = "user_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "user_group_id", referencedColumnName = "id")})
     @ManyToMany
-    private List<UserGroup> userGroupList;
+    private List<UserGroup> usersGroupList;
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "enteredByUser")
     private List<Log> logList;
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "enteredByUser")
     private List<PropertyValue> propertyValueList;
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "userInfo")
-    private List<UserRole> userRoleList;
+    private List<UserRole> usersRoleList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
     private List<UserSetting> userSettingList;
     @OneToMany(cascade = CascadeType.MERGE, mappedBy = "enteredByUser")
@@ -186,6 +175,7 @@ public class UserInfo extends SettingEntity implements Serializable {
         this.email = email;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -202,6 +192,7 @@ public class UserInfo extends SettingEntity implements Serializable {
         this.description = description;
     }
 
+    @JsonIgnore
     public String getUserGroupListString() {
         return userGroupListString;
     }
@@ -211,6 +202,7 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ListTbl> getListList() {
         return listList;
     }
@@ -218,17 +210,17 @@ public class UserInfo extends SettingEntity implements Serializable {
     public void setListList(List<ListTbl> listList) {
         this.listList = listList;
     }
-
-    @XmlTransient
+    
     public List<UserGroup> getUserGroupList() {
-        return userGroupList;
+        return usersGroupList;
     }
 
     public void setUserGroupList(List<UserGroup> userGroupList) {
-        this.userGroupList = userGroupList;
+        this.usersGroupList = userGroupList;
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Log> getLogList() {
         return logList;
     }
@@ -238,6 +230,7 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyValue> getPropertyValueList() {
         return propertyValueList;
     }
@@ -245,17 +238,17 @@ public class UserInfo extends SettingEntity implements Serializable {
     public void setPropertyValueList(List<PropertyValue> propertyValueList) {
         this.propertyValueList = propertyValueList;
     }
-
-    @XmlTransient
+    
     public List<UserRole> getUserRoleList() {
-        return userRoleList;
+        return usersRoleList;
     }
 
     public void setUserRoleList(List<UserRole> userRoleList) {
-        this.userRoleList = userRoleList;
+        this.usersRoleList = userRoleList;
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<UserSetting> getUserSettingList() {
         return userSettingList;
     }
@@ -265,6 +258,7 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<PropertyValueHistory> getPropertyValueHistoryList() {
         return propertyValueHistoryList;
     }
@@ -274,6 +268,7 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<EntityInfo> getEntityInfoList() {
         return entityInfoList;
     }
@@ -283,6 +278,7 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<EntityInfo> getEntityInfoList1() {
         return entityInfoList1;
     }
@@ -292,6 +288,7 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<EntityInfo> getEntityInfoList2() {
         return entityInfoList2;
     }
@@ -301,6 +298,7 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<EntityInfo> getEntityInfoList3() {
         return entityInfoList3;
     }
@@ -310,6 +308,7 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElementRelationshipHistory> getItemElementRelationshipHistoryList() {
         return itemElementRelationshipHistoryList;
     }
@@ -318,6 +317,7 @@ public class UserInfo extends SettingEntity implements Serializable {
         this.itemElementRelationshipHistoryList = itemElementRelationshipHistoryList;
     }
     
+    @JsonIgnore
     public boolean isUserAdmin() {
         List<String> adminGroupNameList = LoginController.getAdminGroupNameList();
         for (String adminGroupName : adminGroupNameList) {
@@ -338,6 +338,7 @@ public class UserInfo extends SettingEntity implements Serializable {
         return false;
     }
         
+    @JsonIgnore
     public String getFullNameForSelection() {
         if (fullNameForSelection != null) {
             return fullNameForSelection;
@@ -400,11 +401,13 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
 
     @Override
+    @JsonIgnore
     public List<EntitySetting> getSettingList() {
         return (List<EntitySetting>)(List<?>) getUserSettingList(); 
     }
 
     @Override
+    @JsonIgnore
     public List<ListTbl> getItemElementLists() {
         return getListList(); 
     }
