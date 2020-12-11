@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -55,7 +56,7 @@ public class UserGroup extends SettingEntity implements Serializable {
     private String name;
     @Size(max = 256)
     private String description;
-    @ManyToMany(mappedBy = "userGroupList")
+    @ManyToMany(mappedBy = "usersGroupList")
     @OrderBy("lastName ASC")
     private List<UserInfo> userInfoList;
     @JoinTable(name = "user_group_list", joinColumns = {
@@ -107,6 +108,7 @@ public class UserGroup extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<UserInfo> getUserInfoList() {
         return userInfoList;
     }
@@ -116,6 +118,7 @@ public class UserGroup extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<gov.anl.aps.cdb.portal.model.db.entities.ListTbl> getListList() {
         return listList;
     }
@@ -125,6 +128,7 @@ public class UserGroup extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<UserRole> getUserRoleList() {
         return userRoleList;
     }
@@ -134,6 +138,7 @@ public class UserGroup extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<EntityInfo> getEntityInfoList() {
         return entityInfoList;
     }
@@ -143,6 +148,7 @@ public class UserGroup extends SettingEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<UserGroupSetting> getUserGroupSettingList() {
         return userGroupSettingList;
     }
@@ -185,11 +191,13 @@ public class UserGroup extends SettingEntity implements Serializable {
     }
 
     @Override
+    @JsonIgnore
     public List<EntitySetting> getSettingList() {
         return (List<EntitySetting>)(List<?>) getUserGroupSettingList(); 
     }
 
     @Override
+    @JsonIgnore
     public List<ListTbl> getItemElementLists() {
         return getListList(); 
     }

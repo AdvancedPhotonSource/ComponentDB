@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -127,14 +128,20 @@ public class Log extends CdbEntity implements Serializable {
         this.enteredOnDateTime = enteredOnDateTime;
     }
     
+    @JsonIgnore
     public UserInfo getEnteredByUser() {
         return this.enteredByUser; 
     }
-    
+        
     public void setEnteredByUser(UserInfo userInfo) {
         this.enteredByUser = userInfo; 
     }
+    
+    public String getEnteredByUsername() {
+        return this.enteredByUser.getUsername(); 
+    }
 
+    @JsonIgnore
     public LogTopic getLogTopic() {
         return logTopic;
     }
@@ -162,6 +169,7 @@ public class Log extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<Attachment> getAttachmentList() {
         return attachmentList;
     }
@@ -171,6 +179,7 @@ public class Log extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<LogLevel> getLogLevelList() {
         return logLevelList;
     }
@@ -180,6 +189,7 @@ public class Log extends CdbEntity implements Serializable {
     }
 
     @XmlTransient
+    @JsonIgnore
     public List<ItemElement> getItemElementList() {
         return itemElementList;
     }
@@ -187,7 +197,8 @@ public class Log extends CdbEntity implements Serializable {
     public void setItemElementList(List<ItemElement> itemElementList) {
         this.itemElementList = itemElementList;
     }
-
+    
+    @JsonIgnore
     public UserInfo getEnteredByUserId() {
         return enteredByUser;
     }
@@ -196,6 +207,7 @@ public class Log extends CdbEntity implements Serializable {
         this.enteredByUser = enteredByUserId;
     }
 
+    @JsonIgnore
     public LogTopic getLogTopicId() {
         return logTopic;
     }
@@ -204,6 +216,7 @@ public class Log extends CdbEntity implements Serializable {
         this.logTopic = logTopicId;
     }
     
+    @JsonIgnore
     public String getShortDisplayEnteredOnDateTime() {
         if (enteredOnDateTime == null) {
             return null;

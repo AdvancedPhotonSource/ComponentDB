@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.common.utilities.LdapUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.common.utilities.CryptUtility;
+import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import java.io.Serializable;
 import java.util.List;
@@ -31,10 +32,7 @@ import org.apache.logging.log4j.Logger;
 public class LoginController implements Serializable {
 
     private static final int MilisecondsInSecond = 1000;
-    private static final int SessionTimeoutDecreaseInSeconds = 10;
-    
-    private final String LOGIN_INFO_LOG_LEVEL = "loginInfo"; 
-    private final String LOGIN_WARNING_LOG_LEVEL = "loginWarning"; 
+    private static final int SessionTimeoutDecreaseInSeconds = 10;   
 
     @EJB
     private UserInfoFacade userFacade;
@@ -137,7 +135,7 @@ public class LoginController implements Serializable {
         user = userFacade.findByUsername(username);
         if (user == null) {            
             SessionUtility.addErrorMessage("Unknown User", "Username " + username + " is not registered.");
-            LogUtility.addSystemLog(LOGIN_WARNING_LOG_LEVEL, "Non-registered user login attempt: " + username);
+            LogUtility.addSystemLog(SystemLogLevel.loginWarning.toString(), "Non-registered user login attempt: " + username);
             return (username = password = null);
         }
 
@@ -149,7 +147,7 @@ public class LoginController implements Serializable {
             return getLandingPage();
         } else {
             SessionUtility.addErrorMessage("Invalid Credentials", "Username/password combination could not be verified.");                        
-            LogUtility.addSystemLog(LOGIN_WARNING_LOG_LEVEL, "Authentication Failed: " + username);            
+            LogUtility.addSystemLog(SystemLogLevel.loginWarning.toString(), "Authentication Failed: " + username);            
             return (username = password = null);
         }
 
@@ -188,7 +186,7 @@ public class LoginController implements Serializable {
                 SessionUtility.setRole(CdbRole.USER);
                 SessionUtility.addInfoMessage("Successful Login", "User " + username + " is logged in.");
             }            
-            LogUtility.addSystemLog(LOGIN_INFO_LOG_LEVEL, "Authentication Succeeded: " + username);
+            LogUtility.addSystemLog(SystemLogLevel.loginInfo.toString(), "Authentication Succeeded: " + username);
     }
 
     public String getLandingPage() {

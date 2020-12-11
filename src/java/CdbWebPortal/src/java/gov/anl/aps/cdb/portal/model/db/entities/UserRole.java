@@ -58,6 +58,7 @@ public class UserRole extends CdbEntity implements Serializable {
         this.userRolePK = new UserRolePK(userId, roleTypeId, userGroupId);
     }
 
+    @JsonIgnore
     public UserRolePK getUserRolePK() {
         return userRolePK;
     }
@@ -66,6 +67,7 @@ public class UserRole extends CdbEntity implements Serializable {
         this.userRolePK = userRolePK;
     }
 
+    @JsonIgnore
     public UserInfo getUserInfo() {
         return userInfo;
     }

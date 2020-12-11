@@ -118,4 +118,9 @@ public class CdbEntity implements Serializable, Cloneable {
     public void setValidStringImport(String s) {
         validStringImport = s;
     }
+    
+    @JsonIgnore
+    public String getSystemLogString() {
+        return toString(); 
+    }
 }
