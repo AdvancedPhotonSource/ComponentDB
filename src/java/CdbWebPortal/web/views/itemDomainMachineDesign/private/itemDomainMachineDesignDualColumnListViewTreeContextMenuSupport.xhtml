@@ -29,9 +29,17 @@ See LICENSE file.
                                 value="#{entityController.moveToTrashNode}" 
                                 var="node"
                                 selectionMode="single"
+                                selection="#{entityController.moveToTrashSelectedNode}"
                                 rendered="#{entityController.moveToTrashNode != null}">
-                            <p:treeNode>
-                                <h:outputText value="#{node}" />
+                            <p:ajax event="select" 
+                                    listener="#{entityController.moveToTrashNodeSelected}"/>
+                            <p:ajax event="unselect" 
+                                    listener="#{entityController.moveToTrashNodeUnselected}"/>
+                            <p:treeNode type="regular" >
+                                <h:outputText value="#{node.name}" />
+                            </p:treeNode>
+                            <p:treeNode type="error" styleClass="invalidTableData">
+                                <h:outputText value="#{node.name}" />
                             </p:treeNode>
 
                         </p:tree>

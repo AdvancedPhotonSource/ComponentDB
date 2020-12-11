@@ -46,8 +46,10 @@ import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -60,6 +62,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.DragDropEvent;
 import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -147,8 +150,13 @@ public class ItemDomainMachineDesignController
     private Boolean moveToTrashAllowed;
     private String moveToTrashName = null;
     private TreeNode moveToTrashNode = new DefaultTreeNode();
+    private TreeNode moveToTrashSelectedNode;
     private String moveToTrashDisplayName = null;
     private String moveToTrashMessage = null;
+    private List<ItemDomainMachineDesign> moveToTrashItemsToUpdate = null;
+    private List<ItemElement> moveToTrashElementsToDelete = null;
+    private Map<ItemDomainMachineDesign, String> moveToTrashErrorMap;
+    private String moveToTrashNodeMessage;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
@@ -2877,7 +2885,8 @@ public class ItemDomainMachineDesignController
     // <editor-fold defaultstate="collapsed" desc="Delete support">   
     private void addChildrenForItemToDeleteHierarchyNode(
             ItemDomainMachineDesign item,
-            TreeNode itemNode) {
+            TreeNode itemNode,
+            Map<ItemDomainMachineDesign, String> errorMap) {
 
         itemNode.setExpanded(false);
 
@@ -2887,21 +2896,35 @@ public class ItemDomainMachineDesignController
                 .collect(Collectors.toList());
 
         for (ItemDomainMachineDesign childItem : childItems) {
-            TreeNode childNode = new DefaultTreeNode(childItem.getName());
+            String errorMsg = errorMap.get(childItem);
+            String nodeType = "regular";
+            if (errorMsg != null) {
+                nodeType = "error";
+            }
+            //TreeNode childNode = new DefaultTreeNode(nodeType, childItem.getName(), itemNode);
+            TreeNode childNode = new DefaultTreeNode(nodeType, childItem, itemNode);
             childNode.setExpanded(false);
-            itemNode.getChildren().add(childNode);
-            addChildrenForItemToDeleteHierarchyNode(childItem, childNode);
+            // itemNode.getChildren().add(childNode);
+            addChildrenForItemToDeleteHierarchyNode(childItem, childNode, errorMap);
         }
     }
 
     protected void prepareItemNameHierarchyTree(
-            TreeNode rootNode, ItemDomainMachineDesign rootItem) {
+            TreeNode rootNode, 
+            ItemDomainMachineDesign rootItem, 
+            Map<ItemDomainMachineDesign, String> errorMap) {
 
         if (rootItem != null) {
             rootNode.setExpanded(false);
-            TreeNode childNode = new DefaultTreeNode(rootItem.getName());
-            rootNode.getChildren().add(childNode);
-            addChildrenForItemToDeleteHierarchyNode(rootItem, childNode);
+            String errorMsg = errorMap.get(rootItem);
+            String nodeType = "regular";
+            if (errorMsg != null) {
+                nodeType = "error";
+            }
+            //TreeNode childNode = new DefaultTreeNode(nodeType, rootItem.getName(), rootNode);
+            TreeNode childNode = new DefaultTreeNode(nodeType, rootItem, rootNode);
+            // rootNode.getChildren().add(childNode);
+            addChildrenForItemToDeleteHierarchyNode(rootItem, childNode, errorMap);
         }
     }
 
@@ -2965,10 +2988,6 @@ public class ItemDomainMachineDesignController
         return moveToTrashAllowed;
     }
 
-    public TreeNode getMoveToTrashNode() {
-        return moveToTrashNode;
-    }
-
     public String getMoveToTrashDisplayName() {
         return moveToTrashDisplayName;
     }
@@ -2976,7 +2995,38 @@ public class ItemDomainMachineDesignController
     public String getMoveToTrashMessage() {
         return moveToTrashMessage;
     }
+
+    public Map<ItemDomainMachineDesign, String> getMoveToTrashErrorMap() {
+        return moveToTrashErrorMap;
+    }
+
+    public String getMoveToTrashNodeMessage() {
+        return moveToTrashNodeMessage;
+    }
     
+    public TreeNode getMoveToTrashNode() {
+        return moveToTrashNode;
+    }
+
+    public TreeNode getMoveToTrashSelectedNode() {
+        return moveToTrashSelectedNode;
+    }
+
+    public void setMoveToTrashSelectedNode(TreeNode moveToTrashSelectedNode) {
+        this.moveToTrashSelectedNode = moveToTrashSelectedNode;
+    }
+
+    public void moveToTrashNodeSelected(NodeSelectEvent event) {
+        TreeNode selectedNode = event.getTreeNode();
+        ItemDomainMachineDesign nodeItem = (ItemDomainMachineDesign) selectedNode.getData();
+        moveToTrashNodeMessage = getMoveToTrashErrorMap().get(nodeItem);
+        SessionUtility.addErrorMessage("Error", moveToTrashNodeMessage);
+    }
+
+    public void moveToTrashNodeUnselected(NodeUnselectEvent event) {
+        moveToTrashNodeMessage = "";
+    }
+
     /**
      * Prepares dialog for move to trash operation.
      */
@@ -2989,21 +3039,35 @@ public class ItemDomainMachineDesignController
             return;
         }
         
-        moveToTrashAllowed = true;
         moveToTrashNode = null;
         moveToTrashDisplayName = itemToDelete.getName();
         moveToTrashMessage = "";
+                
+        // collect list of items to delete, for use here in applying restrictions
+        // and in moveToTrash for executing the operation
+        moveToTrashItemsToUpdate = new ArrayList<>();
+        moveToTrashElementsToDelete = new ArrayList<>();
+        ValidInfo validInfo = collectItemsForDeletion(itemToDelete, moveToTrashItemsToUpdate, moveToTrashElementsToDelete, true, true);
+        if (!validInfo.isValid()) {
+            SessionUtility.addErrorMessage("Error", "Could not delete: " + itemToDelete + " - " + validInfo.getValidString());
+            return;
+        }
         
-        String notAllowedError= "";
-        
-        // check restrictions on move to trash for certain situations
-        List<Item> templateInstances = itemToDelete.getItemsCreatedFromThisTemplateItem();
-        if ((templateInstances != null) && (templateInstances.size() > 0)) {
+        // check each item for restriction violations
+        moveToTrashAllowed = true;
+        moveToTrashErrorMap = new HashMap<>();
+        for (ItemDomainMachineDesign itemToCheck : moveToTrashItemsToUpdate) {
+            String errorString = "";
+            
             // don't allow move to trash for template with instances
-            moveToTrashAllowed = false;
-            notAllowedError = "is a template with instances";
-        } else {
-            List<ItemElementRelationship> relationshipList = itemToDelete.getFullRelationshipList();
+            List<Item> templateInstances = itemToCheck.getItemsCreatedFromThisTemplateItem();
+            if ((templateInstances != null) && (templateInstances.size() > 0)) {
+                moveToTrashAllowed = false;
+                errorString = errorString + "Item is a template with instances. ";
+            }
+            
+            // check for various relationships
+            List<ItemElementRelationship> relationshipList = itemToCheck.getFullRelationshipList();
             boolean hasCableRelationship = false;
             boolean hasMaarcRelationship = false;
             boolean hasOtherRelationship = false;
@@ -3020,7 +3084,7 @@ public class ItemDomainMachineDesignController
                     continue;
                 } else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeCable())) {
                     hasCableRelationship = true;
-                }  else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeMaarc())) {
+                } else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeMaarc())) {
                     hasMaarcRelationship = true;
                 } else {
                     hasOtherRelationship = true;
@@ -3029,22 +3093,32 @@ public class ItemDomainMachineDesignController
             if (hasCableRelationship) {
                 // don't allow move to trash for cable endpoints
                 moveToTrashAllowed = false;
-                notAllowedError = "is an endpoint for one or more cables";
-            }  else if (hasMaarcRelationship) {
+                errorString = errorString + "Item is an endpoint for one or more cables. ";
+            }
+            if (hasMaarcRelationship) {
                 // don't allow move to trash for MAARC relationships
                 moveToTrashAllowed = false;
-                notAllowedError = "has one or more MAARC items";
-            } else if (hasOtherRelationship) {
+                errorString = errorString + "Item has one or more MAARC items. ";
+            }
+            if (hasOtherRelationship) {
                 // don't allow move to trash for other relationships (generic check for now, add specific handling as encountered)
                 moveToTrashAllowed = false;
-                notAllowedError = "has one or more relationships with other items";
+                errorString = errorString + "Item has one or more relationships with other items. ";
+            }
+            
+            if (!errorString.isEmpty()) {
+                getMoveToTrashErrorMap().put(itemToCheck, errorString);
             }
         }
+        
+        // build tree node hierarchy for dialog
+        moveToTrashNode = new DefaultTreeNode();
+        prepareItemNameHierarchyTree(moveToTrashNode, itemToDelete, getMoveToTrashErrorMap());
         
         if (!moveToTrashAllowed) {
             moveToTrashMessage = "Unable to move '" + 
                     itemToDelete.getName() + 
-                    "' to trash because it " + notAllowedError + ". " +
+                    "' to trash because there are problems with one or more items. " +
                     "Consult item detail view for additional information. " +
                     "Click 'No' to cancel.";
             
@@ -3053,8 +3127,6 @@ public class ItemDomainMachineDesignController
             if (!itemToDelete.getItemElementDisplayList().isEmpty()) {
                 itemDescription = itemDescription
                         + " and its children (hierarchy shown at right) ";
-                moveToTrashNode = new DefaultTreeNode();
-                prepareItemNameHierarchyTree(moveToTrashNode, itemToDelete);
             }
             moveToTrashMessage = "Click 'Yes' to move " +
                     itemDescription + 
@@ -3074,20 +3146,11 @@ public class ItemDomainMachineDesignController
             return;
         }
 
-        // collect list of items to delete
-        List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
-        List<ItemElement> elementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToUpdate, elementsToDelete, true, true);
-        if (!validInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
-            return;
-        }
-
         // check permissions for all items
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         if (sessionRole != CdbRole.ADMIN) {
-            for (ItemDomainMachineDesign item : itemsToUpdate) {
+            for (ItemDomainMachineDesign item : moveToTrashItemsToUpdate) {
                 if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
                     SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
                     return;
@@ -3096,31 +3159,31 @@ public class ItemDomainMachineDesignController
         }
 
         // mark all items as deleted entity type (moves them to "trash")
-        for (ItemDomainMachineDesign item : itemsToUpdate) {
+        for (ItemDomainMachineDesign item : moveToTrashItemsToUpdate) {
             item.setIsDeleted();
         }
 
         // remove relationship for root item to its parent and 
         // add container item to list of items to update
-        if (elementsToDelete.size() > 1) {
+        if (moveToTrashElementsToDelete.size() > 1) {
             // should be 0 for a top-level item or 1 for internal node
             SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - unexpected relationships exist in hierarchy");
             return;
-        } else if (elementsToDelete.size() == 1) {
-            ItemElement ie = elementsToDelete.get(0);
+        } else if (moveToTrashElementsToDelete.size() == 1) {
+            ItemElement ie = moveToTrashElementsToDelete.get(0);
             Item childItem = ie.getContainedItem();
             Item ieParentItem = ie.getParentItem();
             ieParentItem.removeItemElement(ie);
             childItem.getItemElementMemberList().remove(ie);
             ie.setMarkedForDeletion(true);
-            itemsToUpdate.add((ItemDomainMachineDesign) ieParentItem);
+            moveToTrashItemsToUpdate.add((ItemDomainMachineDesign) ieParentItem);
         }
 
-        if (itemsToUpdate.size() == 1) {
+        if (moveToTrashItemsToUpdate.size() == 1) {
             update();
         } else {
             try {
-                updateList(itemsToUpdate);
+                updateList(moveToTrashItemsToUpdate);
             } catch (CdbException ex) {
                 // handled adequately by thrower
             }
@@ -3128,6 +3191,8 @@ public class ItemDomainMachineDesignController
 
         moveToTrashNode = null;
         moveToTrashMessage = null;
+        moveToTrashItemsToUpdate = null;
+        moveToTrashElementsToDelete = null;
 
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetListDataModel();
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetSelectDataModel();
