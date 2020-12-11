@@ -59,15 +59,6 @@ public abstract class ItemBaseRoute extends BaseRoute {
             return AuthorizationUtility.isEntityWriteableByUser(item, user);
         }
         return false;
-    }
-    
-    protected UserInfo getCurrentRequestUserInfo() {
-        Principal userPrincipal = securityContext.getUserPrincipal();
-        if (userPrincipal instanceof User) {
-            UserInfo user = ((User) userPrincipal).getUser();
-            return user;
-        }
-        return null;
-    }
+    }        
     
 }
