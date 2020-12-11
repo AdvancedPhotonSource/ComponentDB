@@ -4,7 +4,9 @@
  */
 package gov.anl.aps.cdb.rest.routes;
 
+import gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -30,6 +32,9 @@ public class UsersRoute extends BaseRoute {
     @EJB
     UserInfoFacade userInfoFacade; 
     
+    @EJB
+    UserGroupFacade userGroupFacade; 
+    
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
@@ -46,4 +51,19 @@ public class UsersRoute extends BaseRoute {
         return userInfoFacade.findByUsername(username);
     }        
     
+    @GET
+    @Path("/allGroups")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<UserGroup> getAllGroups() { 
+        LOGGER.debug("Fetching all groups.");
+        return userGroupFacade.findAll(); 
+    }
+    
+    @GET
+    @Path("/ByGroupName/{groupName}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public UserGroup getGroupByName(@PathParam("groupName") String groupName) {
+        LOGGER.debug("Fetching user by username: " + groupName); 
+        return userGroupFacade.findByName(groupName); 
+    }           
 }
