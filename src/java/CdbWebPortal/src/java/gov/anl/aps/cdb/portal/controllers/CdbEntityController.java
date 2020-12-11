@@ -24,20 +24,18 @@ import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
+import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
 import java.io.IOException;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
@@ -60,10 +58,7 @@ import org.primefaces.component.datatable.DataTable;
  * @param <EntityType> CDB entity type
  * @param <FacadeType> CDB DB facade type
  */
-public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityFacade<EntityType>, SettingObject extends ICdbSettings> implements Serializable, ICdbEntityController<EntityType> {
-
-    private final String CDB_ENTITY_INFO_LOG_LEVEL = "cdbEntityInfo";
-    private final String CDB_ENTITY_WARNING_LOG_LEVEL = "cdbEntityWarning";
+public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeType extends CdbEntityFacade<EntityType>, SettingObject extends ICdbSettings> implements Serializable, ICdbEntityController<EntityType> {    
 
     private static final Logger logger = LogManager.getLogger(CdbEntityController.class.getName());
 
@@ -865,7 +860,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             warningMessage += ". Exception - " + exception.getMessage();
         }
 
-        addCdbEntitySystemLog(CDB_ENTITY_WARNING_LOG_LEVEL, warningMessage);
+        addCdbEntitySystemLog(SystemLogLevel.entityWarning.toString(), warningMessage);
 
     }
     
@@ -938,7 +933,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             Object newEntityId = newEntity.getId();
 
             if (!skipSystemLog) {
-                addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Created: " + entity.toString());
+                addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), "Created: " + entity.getSystemLogString());
             }
             if (!skipUpdateCurrent) {
                 setCurrent(findById((Integer) newEntityId));
@@ -964,7 +959,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             resetSelectDataModel();
 
             if (!skipSystemLog) {
-                addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Created " + entities.size() + " entities.");
+                addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), "Created " + entities.size() + " entities.");
             }
             setPersistenceErrorMessageForList(entities, null);
 
@@ -1098,7 +1093,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
             prepareEntityUpdate(entity);
             EntityType updatedEntity = getEntityDbFacade().edit(entity);
-            addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Updated: " + entity.toString());
+            addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), "Updated: " + entity.getSystemLogString());
             resetListDataModel();
             resetSelectDataModel();
             resetLogText();
@@ -1143,7 +1138,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             for (EntityType entity : entities) {
                 completeEntityUpdate(entity);
                 entity.setPersitanceErrorMessage(null);
-                addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Updated: " + entity.toString());
+                addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), "Updated: " + entity.getSystemLogString());
             }
             resetListDataModel();
             resetSelectDataModel();
@@ -1280,7 +1275,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             prepareEntityDestroy(entity);
             getEntityDbFacade().remove(entity);
             completeEntityDestroy(entity);
-            addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Deleted: " + entity.toString());
+            addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), "Deleted: " + entity.getSystemLogString());
             resetListDataModel();
             resetSelectDataModel();
             settingObject.clearListFilters();
@@ -1341,7 +1336,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             for (EntityType entity : entities) {
                 completeEntityDestroy(entity);
             }
-            addCdbEntitySystemLog(CDB_ENTITY_INFO_LOG_LEVEL, "Deleted: " + entities.size() + " entities.");
+            addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), "Deleted: " + entities.size() + " entities.");
             resetListDataModel();
             resetSelectDataModel();
             settingObject.clearListFilters();
