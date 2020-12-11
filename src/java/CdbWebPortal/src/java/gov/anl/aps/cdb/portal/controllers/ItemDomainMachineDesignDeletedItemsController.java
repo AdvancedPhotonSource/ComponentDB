@@ -255,7 +255,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
             permanentlyRemoveMessage = permanentlyRemoveMessage + 
                     " and its children (hierarchy shown at right)";
             permanentlyRemoveNode = new DefaultTreeNode();
-            prepareItemNameHierarchyTree(permanentlyRemoveNode, itemToRemove);
+            prepareItemHierarchyTree(permanentlyRemoveNode, itemToRemove);
         }
     }
     

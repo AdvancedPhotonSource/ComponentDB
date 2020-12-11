@@ -150,13 +150,10 @@ public class ItemDomainMachineDesignController
     private Boolean moveToTrashAllowed;
     private String moveToTrashName = null;
     private TreeNode moveToTrashNode = new DefaultTreeNode();
-    private TreeNode moveToTrashSelectedNode;
     private String moveToTrashDisplayName = null;
     private String moveToTrashMessage = null;
     private List<ItemDomainMachineDesign> moveToTrashItemsToUpdate = null;
     private List<ItemElement> moveToTrashElementsToDelete = null;
-    private Map<ItemDomainMachineDesign, String> moveToTrashErrorMap;
-    private String moveToTrashNodeMessage;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
@@ -2883,10 +2880,9 @@ public class ItemDomainMachineDesignController
     // </editor-fold>       
 
     // <editor-fold defaultstate="collapsed" desc="Delete support">   
-    private void addChildrenForItemToDeleteHierarchyNode(
+    private void addChildrenForItemToHierarchyNode(
             ItemDomainMachineDesign item,
-            TreeNode itemNode,
-            Map<ItemDomainMachineDesign, String> errorMap) {
+            TreeNode itemNode) {
 
         itemNode.setExpanded(false);
 
@@ -2896,35 +2892,24 @@ public class ItemDomainMachineDesignController
                 .collect(Collectors.toList());
 
         for (ItemDomainMachineDesign childItem : childItems) {
-            String errorMsg = errorMap.get(childItem);
-            String nodeType = "regular";
-            if (errorMsg != null) {
-                nodeType = "error";
-            }
             //TreeNode childNode = new DefaultTreeNode(nodeType, childItem.getName(), itemNode);
-            TreeNode childNode = new DefaultTreeNode(nodeType, childItem, itemNode);
+            TreeNode childNode = new DefaultTreeNode(childItem, itemNode);
             childNode.setExpanded(false);
             // itemNode.getChildren().add(childNode);
-            addChildrenForItemToDeleteHierarchyNode(childItem, childNode, errorMap);
+            addChildrenForItemToHierarchyNode(childItem, childNode);
         }
     }
 
-    protected void prepareItemNameHierarchyTree(
+    protected void prepareItemHierarchyTree(
             TreeNode rootNode, 
-            ItemDomainMachineDesign rootItem, 
-            Map<ItemDomainMachineDesign, String> errorMap) {
+            ItemDomainMachineDesign rootItem) {
 
         if (rootItem != null) {
             rootNode.setExpanded(false);
-            String errorMsg = errorMap.get(rootItem);
-            String nodeType = "regular";
-            if (errorMsg != null) {
-                nodeType = "error";
-            }
             //TreeNode childNode = new DefaultTreeNode(nodeType, rootItem.getName(), rootNode);
-            TreeNode childNode = new DefaultTreeNode(nodeType, rootItem, rootNode);
+            TreeNode childNode = new DefaultTreeNode(rootItem, rootNode);
             // rootNode.getChildren().add(childNode);
-            addChildrenForItemToDeleteHierarchyNode(rootItem, childNode, errorMap);
+            addChildrenForItemToHierarchyNode(rootItem, childNode);
         }
     }
 
@@ -2996,35 +2981,8 @@ public class ItemDomainMachineDesignController
         return moveToTrashMessage;
     }
 
-    public Map<ItemDomainMachineDesign, String> getMoveToTrashErrorMap() {
-        return moveToTrashErrorMap;
-    }
-
-    public String getMoveToTrashNodeMessage() {
-        return moveToTrashNodeMessage;
-    }
-    
     public TreeNode getMoveToTrashNode() {
         return moveToTrashNode;
-    }
-
-    public TreeNode getMoveToTrashSelectedNode() {
-        return moveToTrashSelectedNode;
-    }
-
-    public void setMoveToTrashSelectedNode(TreeNode moveToTrashSelectedNode) {
-        this.moveToTrashSelectedNode = moveToTrashSelectedNode;
-    }
-
-    public void moveToTrashNodeSelected(NodeSelectEvent event) {
-        TreeNode selectedNode = event.getTreeNode();
-        ItemDomainMachineDesign nodeItem = (ItemDomainMachineDesign) selectedNode.getData();
-        moveToTrashNodeMessage = getMoveToTrashErrorMap().get(nodeItem);
-        SessionUtility.addErrorMessage("Error", moveToTrashNodeMessage);
-    }
-
-    public void moveToTrashNodeUnselected(NodeUnselectEvent event) {
-        moveToTrashNodeMessage = "";
     }
 
     /**
@@ -3055,7 +3013,6 @@ public class ItemDomainMachineDesignController
         
         // check each item for restriction violations
         moveToTrashAllowed = true;
-        moveToTrashErrorMap = new HashMap<>();
         for (ItemDomainMachineDesign itemToCheck : moveToTrashItemsToUpdate) {
             String errorString = "";
             
@@ -3107,26 +3064,37 @@ public class ItemDomainMachineDesignController
             }
             
             if (!errorString.isEmpty()) {
-                getMoveToTrashErrorMap().put(itemToCheck, errorString);
+                itemToCheck.setMoveToTrashErrorMsg(errorString);
             }
         }
         
         // build tree node hierarchy for dialog
-        moveToTrashNode = new DefaultTreeNode();
-        prepareItemNameHierarchyTree(moveToTrashNode, itemToDelete, getMoveToTrashErrorMap());
+        if (moveToTrashItemsToUpdate.size() > 1) {
+            moveToTrashNode = new DefaultTreeNode();
+            prepareItemHierarchyTree(moveToTrashNode, itemToDelete);
+        }
         
         if (!moveToTrashAllowed) {
-            moveToTrashMessage = "Unable to move '" + 
-                    itemToDelete.getName() + 
-                    "' to trash because there are problems with one or more items. " +
-                    "Consult item detail view for additional information. " +
-                    "Click 'No' to cancel.";
-            
+            if (moveToTrashItemsToUpdate.size() == 1) {
+                moveToTrashMessage = "Unable to move '" + 
+                        itemToDelete.getName() + 
+                        "' to trash. " +
+                        itemToDelete.getMoveToTrashErrorMsg() +
+                        " Consult item detail view for additional information. " +
+                        "Click 'No' to cancel.";
+            } else {
+                moveToTrashMessage = "Unable to move '" + 
+                        itemToDelete.getName() + 
+                        "' to trash because there are problems with one or more items. " +
+                        "Items with problems are shown in red in the table below. " +
+                        "Consult item detail view for additional information. " +
+                        "Click 'No' to cancel.";
+            }
         } else {
             String itemDescription = "'" + itemToDelete.getName() + "'";
             if (!itemToDelete.getItemElementDisplayList().isEmpty()) {
                 itemDescription = itemDescription
-                        + " and its children (hierarchy shown at right) ";
+                        + " and its children (hierarchy shown in table below) ";
             }
             moveToTrashMessage = "Click 'Yes' to move " +
                     itemDescription + 

@@ -24,25 +24,25 @@ See LICENSE file.
                                           value="#{entityController.moveToTrashMessage}" />
                         </div>
                     </p:column>
-                    <p:column rowspan="3">
-                        <p:tree id="moveToTrashDialogTree"
-                                value="#{entityController.moveToTrashNode}" 
-                                var="node"
-                                selectionMode="single"
-                                selection="#{entityController.moveToTrashSelectedNode}"
-                                rendered="#{entityController.moveToTrashNode != null}">
-                            <p:ajax event="select" 
-                                    listener="#{entityController.moveToTrashNodeSelected}"/>
-                            <p:ajax event="unselect" 
-                                    listener="#{entityController.moveToTrashNodeUnselected}"/>
-                            <p:treeNode type="regular" >
-                                <h:outputText value="#{node.name}" />
-                            </p:treeNode>
-                            <p:treeNode type="error" styleClass="invalidTableData">
-                                <h:outputText value="#{node.name}" />
-                            </p:treeNode>
+                </p:row>
+                <p:row>
+                    <p:column>
+                        <p:treeTable id="moveToTrashDialogTree"
+                                     value="#{entityController.moveToTrashNode}" 
+                                     var="node"
+                                     styleClass="machineDesignListTreeTable"
+                                     rowStyleClass="#{node.moveToTrashErrorMsg == null ? null : 'invalidTableData'}"
+                                     rendered="#{entityController.moveToTrashNode != null}">
+                            <p:column headerText="Name"
+                                      styleClass="leftAlignedText">
+                                <h:outputText value="#{node.name}"/>
+                            </p:column>
+                            <p:column headerText="Error Info"
+                                      styleClass="leftAlignedText">
+                                <h:outputText value="#{node.moveToTrashErrorMsg}"/>
+                            </p:column>
 
-                        </p:tree>
+                        </p:treeTable>
                     </p:column>
                 </p:row>
                 <p:row>
