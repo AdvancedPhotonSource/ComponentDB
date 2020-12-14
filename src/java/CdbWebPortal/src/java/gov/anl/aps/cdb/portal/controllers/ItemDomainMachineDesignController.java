@@ -2886,7 +2886,7 @@ public class ItemDomainMachineDesignController
             ItemDomainMachineDesign item,
             TreeNode itemNode) {
 
-        itemNode.setExpanded(false);
+        itemNode.setExpanded(true);
 
         List<ItemElement> childElements = item.getItemElementDisplayList();
         List<ItemDomainMachineDesign> childItems = childElements.stream()
@@ -2896,7 +2896,7 @@ public class ItemDomainMachineDesignController
         for (ItemDomainMachineDesign childItem : childItems) {
             //TreeNode childNode = new DefaultTreeNode(nodeType, childItem.getName(), itemNode);
             TreeNode childNode = new DefaultTreeNode(childItem, itemNode);
-            childNode.setExpanded(false);
+            childNode.setExpanded(true);
             // itemNode.getChildren().add(childNode);
             addChildrenForItemToHierarchyNode(childItem, childNode);
         }
@@ -2907,7 +2907,7 @@ public class ItemDomainMachineDesignController
             ItemDomainMachineDesign rootItem) {
 
         if (rootItem != null) {
-            rootNode.setExpanded(false);
+            rootNode.setExpanded(true);
             //TreeNode childNode = new DefaultTreeNode(nodeType, rootItem.getName(), rootNode);
             TreeNode childNode = new DefaultTreeNode(rootItem, rootNode);
             // rootNode.getChildren().add(childNode);

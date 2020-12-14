@@ -32,7 +32,9 @@ See LICENSE file.
                                      var="node"
                                      styleClass="machineDesignListTreeTable"
                                      rowStyleClass="#{node.moveToTrashRowStyle}"
-                                     rendered="#{entityController.moveToTrashNode != null}">
+                                     rendered="#{entityController.moveToTrashNode != null}"
+                                     scrollable="true" 
+                                     scrollHeight="150">
                             
                             <p:column headerText="Name"
                                       styleClass="leftAlignedText">
