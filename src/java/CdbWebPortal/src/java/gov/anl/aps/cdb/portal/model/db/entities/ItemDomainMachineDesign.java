@@ -285,6 +285,16 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         this.moveToTrashWarningMsg = moveToTrashWarningMsg;
     }
     
+    public String getMoveToTrashRowStyle() {
+        if (moveToTrashErrorMsg != null && !moveToTrashErrorMsg.isBlank()) {
+            return "invalidTableData";
+        } else if (moveToTrashWarningMsg != null && !moveToTrashWarningMsg.isBlank()) {
+            return "warningTableData";
+        } else {
+            return null;
+        }
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="Import functionality">
     
     @JsonIgnore

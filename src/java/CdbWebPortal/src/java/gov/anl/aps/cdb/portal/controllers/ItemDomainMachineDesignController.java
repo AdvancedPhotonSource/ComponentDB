@@ -32,6 +32,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -148,6 +149,7 @@ public class ItemDomainMachineDesignController
 
     // <editor-fold defaultstate="collapsed" desc="Delete support variables">
     private Boolean moveToTrashAllowed;
+    private Boolean moveToTrashHasWarnings;
     private String moveToTrashName = null;
     private TreeNode moveToTrashNode = new DefaultTreeNode();
     private String moveToTrashDisplayName = null;
@@ -2972,6 +2974,10 @@ public class ItemDomainMachineDesignController
     public Boolean getMoveToTrashAllowed() {
         return moveToTrashAllowed;
     }
+    
+    public Boolean getMoveToTrashHasWarnings() {
+        return moveToTrashHasWarnings;
+    }
 
     public String getMoveToTrashDisplayName() {
         return moveToTrashDisplayName;
@@ -3000,6 +3006,7 @@ public class ItemDomainMachineDesignController
         moveToTrashNode = null;
         moveToTrashDisplayName = itemToDelete.getName();
         moveToTrashMessage = "";
+        moveToTrashHasWarnings = false;
                 
         // collect list of items to delete, for use here in applying restrictions
         // and in moveToTrash for executing the operation
@@ -3017,6 +3024,7 @@ public class ItemDomainMachineDesignController
         UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         for (ItemDomainMachineDesign itemToCheck : moveToTrashItemsToUpdate) {
             String errorString = "";
+            String warningString = "";
             
             // don't allow move to trash for template with instances
             List<Item> templateInstances = itemToCheck.getItemsCreatedFromThisTemplateItem();
@@ -3073,32 +3081,38 @@ public class ItemDomainMachineDesignController
                 }
             }
             
+            // check if need to warn about property values
+            List<PropertyValue> itemProperties = itemToCheck.getPropertyValueDisplayList();
+            if (!itemProperties.isEmpty()) {
+                moveToTrashHasWarnings = true;
+                warningString = warningString + "Item has property values. ";
+            }
+            
             if (!errorString.isEmpty()) {
                 itemToCheck.setMoveToTrashErrorMsg(errorString);
+            }
+            if (!warningString.isEmpty()) {
+                itemToCheck.setMoveToTrashWarningMsg(warningString);
             }
         }
         
         // build tree node hierarchy for dialog
-        if (moveToTrashItemsToUpdate.size() > 1) {
+        if (moveToTrashItemsToUpdate.size() > 1 || !moveToTrashAllowed || moveToTrashHasWarnings) {
             moveToTrashNode = new DefaultTreeNode();
             prepareItemHierarchyTree(moveToTrashNode, itemToDelete);
         }
         
         if (!moveToTrashAllowed) {
-            if (moveToTrashItemsToUpdate.size() == 1) {
-                moveToTrashMessage = "Unable to move '" + 
-                        itemToDelete.getName() + 
-                        "' to trash. " +
-                        itemToDelete.getMoveToTrashErrorMsg() +
-                        " Consult item detail view for additional information. " +
-                        "Click 'No' to cancel.";
-            } else {
-                moveToTrashMessage = "Unable to move '" + 
-                        itemToDelete.getName() + 
-                        "' to trash because there are problems with one or more items. " +
-                        "Items with problems are shown in red in the table below. " +
-                        "Consult item detail view for additional information. " +
-                        "Click 'No' to cancel.";
+            moveToTrashMessage = "Unable to move '"
+                    + itemToDelete.getName()
+                    + "' to trash because there are problems with one or more items in hierarchy. "
+                    + "Items with problems are shown in red in the table below. "
+                    + "Consult item detail view for additional information. "
+                    + "Click 'No' to cancel. ";
+            if (moveToTrashHasWarnings) {
+                moveToTrashMessage = moveToTrashMessage
+                        + "WARNING: there are warnings for one or more items. "
+                        + "Items with warnings can be moved to trash.";
             }
         } else {
             String itemDescription = "'" + itemToDelete.getName() + "'";
@@ -3106,11 +3120,17 @@ public class ItemDomainMachineDesignController
                 itemDescription = itemDescription
                         + " and its children (hierarchy shown in table below) ";
             }
-            moveToTrashMessage = "Click 'Yes' to move " +
-                    itemDescription + 
-                    "to trash. Click 'No' to cancel. " +
-                    "NOTE: items restored from trash will appear as top-level items " +
-                    "and not within their original container.";
+            moveToTrashMessage = "Click 'Yes' to move "
+                    + itemDescription
+                    + " to trash. Click 'No' to cancel. "
+                    + "NOTE: items restored from trash will appear as top-level items "
+                    + "and not within their original container. ";
+            if (moveToTrashHasWarnings) {
+                moveToTrashMessage = moveToTrashMessage
+                        + "WARNING: there are warnings for one or more items. "
+                        + "Items with warnings are shown in green in the table below. "
+                        + "Items with warnings can be moved to trash.";
+            }
         }
     }
 

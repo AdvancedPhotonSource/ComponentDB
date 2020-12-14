@@ -31,17 +31,24 @@ See LICENSE file.
                                      value="#{entityController.moveToTrashNode}" 
                                      var="node"
                                      styleClass="machineDesignListTreeTable"
-                                     rowStyleClass="#{node.moveToTrashErrorMsg == null ? null : 'invalidTableData'}"
+                                     rowStyleClass="#{node.moveToTrashRowStyle}"
                                      rendered="#{entityController.moveToTrashNode != null}">
+                            
                             <p:column headerText="Name"
                                       styleClass="leftAlignedText">
                                 <h:outputText value="#{node.name}"/>
                             </p:column>
-                            <p:column id="moveToTrashDialogTreeErrorColumn"
-                                      headerText="Error Info"
+                            
+                            <p:column headerText="Error Info"
                                       styleClass="leftAlignedText"
                                       rendered="#{!entityController.moveToTrashAllowed}">
                                 <h:outputText value="#{node.moveToTrashErrorMsg}"/>
+                            </p:column>
+
+                            <p:column headerText="Warning Info"
+                                      styleClass="leftAlignedText"
+                                      rendered="#{entityController.moveToTrashHasWarnings}">
+                                <h:outputText value="#{node.moveToTrashWarningMsg}"/>
                             </p:column>
 
                         </p:treeTable>
