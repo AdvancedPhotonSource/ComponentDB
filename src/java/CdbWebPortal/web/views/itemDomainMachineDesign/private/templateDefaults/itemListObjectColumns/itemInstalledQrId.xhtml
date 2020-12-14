@@ -13,7 +13,7 @@ See LICENSE file.
               value="#{itemElementListObject.mdTypeContainedItem}"/> 
     
     <ui:param name="assignedItem"
-              value="#{mdTreeListObject != null ? mdTreeListObject.assignedItem : itemListObject}"/> 
+              value="#{mdTreeListObject != null ? mdTreeListObject.assignedItem : itemListObject.assignedItem}"/> 
 
     <p:column sortBy="#{assignedItem.qrId}" headerText="Installed QrId"
               filterBy="#{assignedItem.qrIdFilter}" filterMatchMode="contains"                          
