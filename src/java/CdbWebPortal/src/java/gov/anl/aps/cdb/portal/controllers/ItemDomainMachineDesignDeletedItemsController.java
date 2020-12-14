@@ -200,15 +200,11 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
             item.unsetIsDeleted();
         }
         
-        if (itemsToRestore.size() == 1) {
-            update();
-        } else {
-            try {
-                updateList(itemsToRestore);
-            } catch (CdbException ex) {
-                // handled adequately by thrower
-                return;
-            }
+        try {
+            updateList(itemsToRestore);
+        } catch (CdbException ex) {
+            // handled adequately by thrower
+            return;
         }
                 
         // reset data models to refresh list views with changes (this

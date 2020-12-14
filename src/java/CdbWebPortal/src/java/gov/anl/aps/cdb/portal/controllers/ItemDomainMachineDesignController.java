@@ -3173,16 +3173,12 @@ public class ItemDomainMachineDesignController
             moveToTrashItemsToUpdate.add((ItemDomainMachineDesign) ieParentItem);
         }
 
-        if (moveToTrashItemsToUpdate.size() == 1) {
-            update();
-        } else {
-            try {
-                updateList(moveToTrashItemsToUpdate);
-            } catch (CdbException ex) {
-                // handled adequately by thrower
-            }
+        try {
+            updateList(moveToTrashItemsToUpdate);
+        } catch (CdbException ex) {
+            // handled adequately by thrower
         }
-
+            
         moveToTrashNode = null;
         moveToTrashMessage = null;
         moveToTrashItemsToUpdate = null;
