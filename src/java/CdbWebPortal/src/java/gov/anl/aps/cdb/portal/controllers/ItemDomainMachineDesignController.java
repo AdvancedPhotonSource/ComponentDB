@@ -32,6 +32,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
@@ -3083,9 +3084,16 @@ public class ItemDomainMachineDesignController
             
             // check if need to warn about property values
             List<PropertyValue> itemProperties = itemToCheck.getPropertyValueDisplayList();
-            if (!itemProperties.isEmpty()) {
+            if (itemProperties != null && !itemProperties.isEmpty()) {
                 moveToTrashHasWarnings = true;
                 warningString = warningString + "Item has property values. ";
+            }
+            
+            // check if need to warn about log entries
+            List<Log> itemLogs = itemToCheck.getLogList();
+            if (itemLogs != null && !itemLogs.isEmpty()) {
+                moveToTrashHasWarnings = true;
+                warningString = warningString + "Item has log entries. ";
             }
             
             if (!errorString.isEmpty()) {
