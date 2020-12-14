@@ -3013,6 +3013,8 @@ public class ItemDomainMachineDesignController
         
         // check each item for restriction violations
         moveToTrashAllowed = true;
+        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
         for (ItemDomainMachineDesign itemToCheck : moveToTrashItemsToUpdate) {
             String errorString = "";
             
@@ -3061,6 +3063,14 @@ public class ItemDomainMachineDesignController
                 // don't allow move to trash for other relationships (generic check for now, add specific handling as encountered)
                 moveToTrashAllowed = false;
                 errorString = errorString + "Item has one or more relationships with other items. ";
+            }
+            
+            // check permissions for current user
+            if (sessionRole != CdbRole.ADMIN) {
+                if (!AuthorizationUtility.isEntityWriteableByUser(itemToCheck, sessionUser)) {
+                    moveToTrashAllowed = false;
+                    errorString = errorString + "Current user does not have permission to delete item. ";
+                }
             }
             
             if (!errorString.isEmpty()) {
@@ -3112,18 +3122,6 @@ public class ItemDomainMachineDesignController
         ItemDomainMachineDesign rootItemToDelete = findById(getCurrent().getId());
         if (rootItemToDelete == null) {
             return;
-        }
-
-        // check permissions for all items
-        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionRole != CdbRole.ADMIN) {
-            for (ItemDomainMachineDesign item : moveToTrashItemsToUpdate) {
-                if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
-                    SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
-                    return;
-                }
-            }
         }
 
         // mark all items as deleted entity type (moves them to "trash")
