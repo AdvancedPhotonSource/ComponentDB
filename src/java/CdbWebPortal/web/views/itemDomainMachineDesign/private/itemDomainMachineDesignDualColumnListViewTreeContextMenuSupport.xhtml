@@ -37,8 +37,10 @@ See LICENSE file.
                                       styleClass="leftAlignedText">
                                 <h:outputText value="#{node.name}"/>
                             </p:column>
-                            <p:column headerText="Error Info"
-                                      styleClass="leftAlignedText">
+                            <p:column id="moveToTrashDialogTreeErrorColumn"
+                                      headerText="Error Info"
+                                      styleClass="leftAlignedText"
+                                      rendered="#{!entityController.moveToTrashAllowed}">
                                 <h:outputText value="#{node.moveToTrashErrorMsg}"/>
                             </p:column>
 
