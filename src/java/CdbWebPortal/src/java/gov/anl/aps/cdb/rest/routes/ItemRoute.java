@@ -113,24 +113,33 @@ public class ItemRoute extends ItemBaseRoute {
     ItemProjectFacade itemProjectFacade;
 
     @GET
-    @Path("/ById/{id}")
+    @Path("/ById/{itemId}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Fetch an item by its id.")
-    public Item getItemById(@PathParam("id") int id) throws ObjectNotFound {
+    public Item getItemById(@PathParam("itemId") int id) throws ObjectNotFound {
         LOGGER.debug("Fetching item by id: " + id);
         return getItemByIdBase(id);
+    }
+    
+    @GET
+    @Path("/ById/{itemId}/Hierarchy")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Fetch an item by its id.")
+    public ItemHierarchy getItemHierarchyById(@PathParam("itemId") int id) throws ObjectNotFound {
+        Item itemByIdBase = getItemByIdBase(id);
+
+        ItemHierarchy hierarchy = new ItemHierarchy(itemByIdBase, true);
+
+        return hierarchy;
     }
 
     @GET
     @Path("/HierarchyById/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(summary = "Fetch an item by its id.")
-    public ItemHierarchy getItemHierarchyById(@PathParam("id") int id) throws ObjectNotFound {
-        Item itemByIdBase = getItemByIdBase(id);
-
-        ItemHierarchy hierarchy = new ItemHierarchy(itemByIdBase, true);
-
-        return hierarchy;
+    @Deprecated
+    public ItemHierarchy getItemHierarchyByIdDeprecated(@PathParam("id") int id) throws ObjectNotFound {
+        return getItemHierarchyById(id); 
     }
 
     @POST
@@ -201,20 +210,28 @@ public class ItemRoute extends ItemBaseRoute {
         }
         return pt;
     }
-
+    
     @GET
-    @Path("/ItemsDerivedFromItemByItemId/{id}")
+    @Path("/ById/{itemId}/ItemsDerivedFromItem")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<Item> getItemsDerivedFromItemByItemId(@PathParam("id") int id) throws ObjectNotFound {
+    public List<Item> getItemsDerivedFromItemByItemId(@PathParam("itemId") int id) throws ObjectNotFound {
         LOGGER.debug("Fetching derived from item list for item id: " + id);
         Item itemById = getItemByIdBase(id);
         return itemById.getDerivedFromItemList();
     }
+    
+    @GET
+    @Path("/ItemsDerivedFromItemByItemId/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
+    public List<Item> getItemsDerivedFromItemByItemIdDeprecated(@PathParam("id") int id) throws ObjectNotFound {
+        return getItemsDerivedFromItemByItemId(id); 
+    }
 
     @GET
-    @Path("/ById/{id}/Status")
+    @Path("/ById/{itemId}/Status")
     @Produces(MediaType.APPLICATION_JSON)
-    public PropertyValue getItemStatus(@PathParam("id") int id) throws ObjectNotFound {
+    public PropertyValue getItemStatus(@PathParam("itemId") int id) throws ObjectNotFound {
         LOGGER.debug("Fetching status for item id: " + id);
         Item item = getItemByIdBase(id);
 
@@ -226,9 +243,9 @@ public class ItemRoute extends ItemBaseRoute {
     }
 
     @GET
-    @Path("/ById/{id}/Permissions")
+    @Path("/ById/{itemId}/Permissions")
     @Produces(MediaType.APPLICATION_JSON)
-    public ItemPermissions getItemPermissions(@PathParam("id") int id) throws ObjectNotFound {
+    public ItemPermissions getItemPermissions(@PathParam("itemId") int id) throws ObjectNotFound {
         LOGGER.debug("Fetching permissions for item id: " + id);
 
         Item item = getItemByIdBase(id);
@@ -237,18 +254,18 @@ public class ItemRoute extends ItemBaseRoute {
     }
 
     @GET
-    @Path("/ById/{id}/EntityInfo")
+    @Path("/ById/{itemId}/EntityInfo")
     @Produces(MediaType.APPLICATION_JSON)
-    public EntityInfo getItemEntityInfo(@PathParam("id") int id) throws ObjectNotFound {
+    public EntityInfo getItemEntityInfo(@PathParam("itemId") int id) throws ObjectNotFound {
         Item itemById = getItemByIdBase(id);
 
         return itemById.getEntityInfo();
     }
 
     @GET
-    @Path("/ById/{id}/Location")
+    @Path("/ById/{itemId}/Location")
     @Produces(MediaType.APPLICATION_JSON)
-    public ItemLocationInformation getItemLocation(@PathParam("id") int id) throws ObjectNotFound, InvalidArgument {
+    public ItemLocationInformation getItemLocation(@PathParam("itemId") int id) throws ObjectNotFound, InvalidArgument {
         LOGGER.debug("Fetching location for item with id: " + id);
         Item itemById = getItemByIdBase(id);
 
@@ -268,9 +285,9 @@ public class ItemRoute extends ItemBaseRoute {
     }
 
     @GET
-    @Path("/ById/{id}/LocationHistory")
+    @Path("/ById/{itemId}/LocationHistory")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<LocationHistoryObject> getItemLocationHistory(@PathParam("id") int id) throws ObjectNotFound, InvalidArgument {
+    public List<LocationHistoryObject> getItemLocationHistory(@PathParam("itemId") int id) throws ObjectNotFound, InvalidArgument {
         LOGGER.debug("Fetching location history for item with id: " + id);
         Item itemById = getItemByIdBase(id);
 
@@ -294,9 +311,9 @@ public class ItemRoute extends ItemBaseRoute {
     }
 
     @GET
-    @Path("/ById/{id}/Memberships")
+    @Path("/ById/{itemId}/Memberships")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ItemMembership> getItemMemberships(@PathParam("id") int id) throws ObjectNotFound {
+    public List<ItemMembership> getItemMemberships(@PathParam("itemId") int id) throws ObjectNotFound {
         LOGGER.debug("Fetching memberships for item with id: " + id);
         Item itemById = getItemByIdBase(id);
 
@@ -312,13 +329,13 @@ public class ItemRoute extends ItemBaseRoute {
 
         return itemMemberships;
     }
-
+    
     @GET
-    @Path("/ById/{id}/Permission")
+    @Path("/ById/{itemId}/VerifyPermission")
     @Produces(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public boolean verifyUserPermissionForItem(@PathParam("id") int id) throws ObjectNotFound {
+    public boolean verifyUserPermissionForItem(@PathParam("itemId") int id) throws ObjectNotFound {
         LOGGER.debug("Performing permission verification for item: " + id);
         Item itemById = getItemByIdBase(id);
         if (itemById != null) {
@@ -327,6 +344,16 @@ public class ItemRoute extends ItemBaseRoute {
             return verifyUserPermissionForItem(user, itemById);
         }
         return false;
+    }
+
+    @GET
+    @Path("/ById/{itemId}/Permission")
+    @Produces(MediaType.APPLICATION_JSON)
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    @Deprecated
+    public boolean verifyUserPermissionForItemDeprecated(@PathParam("itemId") int id) throws ObjectNotFound {
+        return verifyUserPermissionForItem(id); 
     }
 
     @POST
@@ -602,7 +629,7 @@ public class ItemRoute extends ItemBaseRoute {
     }
 
     @POST
-    @Path("/UpdatePropertyMetadata/{itemId}/{propertyValueId}") //TODO propertyValueID instead of property type name
+    @Path("/UpdatePropertyMetadata/{itemId}/{propertyValueId}") 
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
@@ -841,33 +868,57 @@ public class ItemRoute extends ItemBaseRoute {
         }
         return findByQrId;
     }
-
+    
     @GET
-    @Path("/PropertiesForItem/{itemId}")
+    @Path("/ById/{itemId}/Properties")
     @Produces(MediaType.APPLICATION_JSON)
     public List<PropertyValue> getPropertiesForItem(@PathParam("itemId") int itemId) throws ObjectNotFound {
         LOGGER.debug("Fetching properties for item by id: " + itemId);
         Item itemById = getItemByIdBase(itemId);
         return itemById.getPropertyValueList();
     }
-
+    
     @GET
-    @Path("/LogsForItem/{itemId}")
+    @Path("/ById/{itemId}/Logs")
     @Produces(MediaType.APPLICATION_JSON)
     public List<Log> getLogsForItem(@PathParam("itemId") int itemId) throws ObjectNotFound {
         LOGGER.debug("Fetching logs for item by id: " + itemId);
         Item itemById = getItemByIdBase(itemId);
         return itemById.getLogList();
     }
-
+        
     @GET
-    @Path("/ImagePropertiesForItem/{itemId}")
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/ById/{itemId}/ImageProperties")
+    @Produces(MediaType.APPLICATION_JSON)    
     public List<PropertyValue> getImagePropertiesForItem(@PathParam("itemId") int itemId) throws ObjectNotFound {
         LOGGER.debug("Fetching image properties for item by id: " + itemId);
         Item itemById = getItemByIdBase(itemId);
         List<PropertyValue> propertyValueList = itemById.getPropertyValueList();
         return PropertyValueUtility.prepareImagePropertyValueList(propertyValueList);
+    }
+    
+    @GET
+    @Path("/PropertiesForItem/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
+    public List<PropertyValue> getPropertiesForItemDeprecated(@PathParam("itemId") int itemId) throws ObjectNotFound {
+        return getPropertiesForItem(itemId); 
+    }
+    
+    @GET
+    @Path("/LogsForItem/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
+    public List<Log> getLogsForItemDeprecated(@PathParam("itemId") int itemId) throws ObjectNotFound {
+        return getLogsForItem(itemId); 
+    }
+
+    @GET
+    @Path("/ImagePropertiesForItem/{itemId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Deprecated
+    public List<PropertyValue> getImagePropertiesForItemDeprecated(@PathParam("itemId") int itemId) throws ObjectNotFound {
+        return getImagePropertiesForItem(itemId); 
     }
 
     @GET
