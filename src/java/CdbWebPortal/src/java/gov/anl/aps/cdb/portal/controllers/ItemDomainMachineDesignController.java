@@ -33,6 +33,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
@@ -3055,7 +3056,13 @@ public class ItemDomainMachineDesignController
                 } else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeMaarc())) {
                     hasMaarcRelationship = true;
                 } else {
-                    hasOtherRelationship = true;
+                    moveToTrashAllowed = false;
+                    String relTypeName = relType.getName();
+                    if (relTypeName != null) {
+                        errorString = errorString + "Item has " + relTypeName + " relationship. ";
+                    } else {
+                        hasOtherRelationship = true; 
+                    }
                 }
             }
             if (hasCableRelationship) {
@@ -3070,8 +3077,7 @@ public class ItemDomainMachineDesignController
             }
             if (hasOtherRelationship) {
                 // don't allow move to trash for other relationships (generic check for now, add specific handling as encountered)
-                moveToTrashAllowed = false;
-                errorString = errorString + "Item has one or more relationships with other items. ";
+                errorString = errorString + "Item has one or more relationships of unspecified type. ";
             }
             
             // check permissions for current user
@@ -3083,10 +3089,19 @@ public class ItemDomainMachineDesignController
             }
             
             // check if need to warn about property values
-            List<PropertyValue> itemProperties = itemToCheck.getPropertyValueDisplayList();
+            List<PropertyValue> itemProperties = itemToCheck.getPropertyValueList();
             if (itemProperties != null && !itemProperties.isEmpty()) {
                 moveToTrashHasWarnings = true;
-                warningString = warningString + "Item has property values. ";
+                warningString = warningString 
+                        + "Item has property values and/or traveler templates/instances, including: (";
+                for (PropertyValue propValue : itemProperties) {
+                    PropertyType propType = propValue.getPropertyType();
+                    if (propType != null && propType.getName() != null) {
+                        warningString = warningString 
+                                + propValue.getPropertyType().getName() + ", ";
+                    }
+                    warningString = warningString.substring(0, warningString.length()-2) + "). ";
+                }
             }
             
             // check if need to warn about log entries
@@ -3183,6 +3198,7 @@ public class ItemDomainMachineDesignController
         moveToTrashMessage = null;
         moveToTrashItemsToUpdate = null;
         moveToTrashElementsToDelete = null;
+        moveToTrashHasWarnings = false;
 
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetListDataModel();
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetSelectDataModel();

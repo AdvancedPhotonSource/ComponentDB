@@ -37,18 +37,21 @@ See LICENSE file.
                                      scrollHeight="150">
                             
                             <p:column headerText="Name"
-                                      styleClass="leftAlignedText">
+                                      styleClass="leftAlignedText"
+                                      style="white-space: normal !important; word-break: keep-all !important;">
                                 <h:outputText value="#{node.name}"/>
                             </p:column>
                             
                             <p:column headerText="Error Info"
                                       styleClass="leftAlignedText"
+                                      style="white-space: normal !important; word-break: keep-all !important;"
                                       rendered="#{!entityController.moveToTrashAllowed}">
                                 <h:outputText value="#{node.moveToTrashErrorMsg}"/>
                             </p:column>
 
                             <p:column headerText="Warning Info"
                                       styleClass="leftAlignedText"
+                                      style="white-space: normal !important; word-break: keep-all !important;"
                                       rendered="#{entityController.moveToTrashHasWarnings}">
                                 <h:outputText value="#{node.moveToTrashWarningMsg}"/>
                             </p:column>
