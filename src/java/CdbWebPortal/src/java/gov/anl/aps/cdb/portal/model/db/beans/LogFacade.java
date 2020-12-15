@@ -7,10 +7,13 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogLevel;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TemporalType;
 
 /**
  *
@@ -31,6 +34,28 @@ public class LogFacade extends CdbEntityFacade<Log> {
 
     public LogFacade() {
         super(Log.class);
+    }
+    
+    public List<Log> findByLogLevel(String logLevelName) {
+        return findByLogLevel(logLevelName, null); 
+    }
+        
+    public List<Log> findByLogLevel(String logLevelName, Date sinceEnteredDate) {
+        String queryString = QUERY_STRING_START; 
+        
+        queryString += " JOIN l.logLevelList sll WHERE";
+        queryString += " sll.name = '" + logLevelName + "'";
+        if (sinceEnteredDate != null) {
+            queryString += " AND l.enteredOnDateTime > :sinceDate ";
+        }
+        queryString += " ORDER BY l.id DESC";
+        
+        Query query = em.createQuery(queryString);
+        if (sinceEnteredDate != null) {
+            query.setParameter("sinceDate", sinceEnteredDate, TemporalType.DATE); 
+        }
+        
+        return (List<Log>) query.getResultList();        
     }
     
     public List<Log> findByFilterViewSystemLogAttributes(

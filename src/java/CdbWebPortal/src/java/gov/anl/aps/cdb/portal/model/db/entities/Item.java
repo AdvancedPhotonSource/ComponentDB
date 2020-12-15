@@ -1420,6 +1420,15 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public static boolean isItemInventory(Item item) {
         return isItemEntityType(item, EntityTypeName.inventory.getValue());
+    } 
+
+    @Override
+    public String getSystemLogString() {
+        String result = toString();
+        if (getId() != null) {
+            result += " [Item Id: " + getId() + "]"; 
+        }
+        return result; 
     }
 
     @Override

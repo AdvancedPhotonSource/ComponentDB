@@ -309,6 +309,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         return newMdInventoryItem;
     }
     
+    @Override
     public String getPluginItemMachineDesignSectionsName() {
         return pluginItemMachineDesignSectionsName; 
     }
