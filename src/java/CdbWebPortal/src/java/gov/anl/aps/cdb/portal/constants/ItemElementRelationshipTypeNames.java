@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.constants;
 public enum ItemElementRelationshipTypeNames {
         itemLocation("Location"),
         itemCableConnection("Cable Connection"),
+        maarc("MAARC Connection"),
         template("Created From Template");
 
         private String value;

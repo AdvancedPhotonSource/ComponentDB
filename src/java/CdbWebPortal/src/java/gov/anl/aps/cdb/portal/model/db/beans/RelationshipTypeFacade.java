@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
@@ -26,6 +27,34 @@ public class RelationshipTypeFacade extends CdbEntityFacade<RelationshipType> {
         return em;
     }
     
+    public static RelationshipType getRelationshipTypeLocation() {
+        RelationshipType relationshipType
+                = RelationshipTypeFacade.getInstance().findByName(
+                        ItemElementRelationshipTypeNames.itemLocation.getValue());
+        return relationshipType;
+    }
+
+    public static RelationshipType getRelationshipTypeTemplate() {
+        RelationshipType relationshipType
+                = RelationshipTypeFacade.getInstance().findByName(
+                        ItemElementRelationshipTypeNames.template.getValue());
+        return relationshipType;
+    }
+
+    public static RelationshipType getRelationshipTypeCable() {
+        RelationshipType relationshipType
+                = RelationshipTypeFacade.getInstance().findByName(
+                        ItemElementRelationshipTypeNames.itemCableConnection.getValue());
+        return relationshipType;
+    }
+
+    public static RelationshipType getRelationshipTypeMaarc() {
+        RelationshipType relationshipType
+                = RelationshipTypeFacade.getInstance().findByName(
+                        ItemElementRelationshipTypeNames.maarc.getValue());
+        return relationshipType;
+    }
+
     public RelationshipType findByName(String name) {
         try{
             return (RelationshipType) em.createNamedQuery("RelationshipType.findByName")

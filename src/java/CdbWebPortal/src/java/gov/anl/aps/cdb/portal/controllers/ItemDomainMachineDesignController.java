@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
@@ -18,6 +19,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineH
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineTemplateInstantiation;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -30,6 +32,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementHistory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.Log;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
@@ -43,8 +49,10 @@ import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -57,6 +65,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.DragDropEvent;
 import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -141,10 +150,14 @@ public class ItemDomainMachineDesignController
     // </editor-fold>   
 
     // <editor-fold defaultstate="collapsed" desc="Delete support variables">
+    private Boolean moveToTrashAllowed;
+    private Boolean moveToTrashHasWarnings;
     private String moveToTrashName = null;
     private TreeNode moveToTrashNode = new DefaultTreeNode();
     private String moveToTrashDisplayName = null;
     private String moveToTrashMessage = null;
+    private List<ItemDomainMachineDesign> moveToTrashItemsToUpdate = null;
+    private List<ItemElement> moveToTrashElementsToDelete = null;
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop implementation">
@@ -2871,11 +2884,11 @@ public class ItemDomainMachineDesignController
     // </editor-fold>       
 
     // <editor-fold defaultstate="collapsed" desc="Delete support">   
-    private void addChildrenForItemToDeleteHierarchyNode(
+    private void addChildrenForItemToHierarchyNode(
             ItemDomainMachineDesign item,
             TreeNode itemNode) {
 
-        itemNode.setExpanded(false);
+        itemNode.setExpanded(true);
 
         List<ItemElement> childElements = item.getItemElementDisplayList();
         List<ItemDomainMachineDesign> childItems = childElements.stream()
@@ -2883,21 +2896,24 @@ public class ItemDomainMachineDesignController
                 .collect(Collectors.toList());
 
         for (ItemDomainMachineDesign childItem : childItems) {
-            TreeNode childNode = new DefaultTreeNode(childItem.getName());
-            childNode.setExpanded(false);
-            itemNode.getChildren().add(childNode);
-            addChildrenForItemToDeleteHierarchyNode(childItem, childNode);
+            //TreeNode childNode = new DefaultTreeNode(nodeType, childItem.getName(), itemNode);
+            TreeNode childNode = new DefaultTreeNode(childItem, itemNode);
+            childNode.setExpanded(true);
+            // itemNode.getChildren().add(childNode);
+            addChildrenForItemToHierarchyNode(childItem, childNode);
         }
     }
 
-    protected void prepareItemNameHierarchyTree(
-            TreeNode rootNode, ItemDomainMachineDesign rootItem) {
+    protected void prepareItemHierarchyTree(
+            TreeNode rootNode, 
+            ItemDomainMachineDesign rootItem) {
 
         if (rootItem != null) {
-            rootNode.setExpanded(false);
-            TreeNode childNode = new DefaultTreeNode(rootItem.getName());
-            rootNode.getChildren().add(childNode);
-            addChildrenForItemToDeleteHierarchyNode(rootItem, childNode);
+            rootNode.setExpanded(true);
+            //TreeNode childNode = new DefaultTreeNode(nodeType, rootItem.getName(), rootNode);
+            TreeNode childNode = new DefaultTreeNode(rootItem, rootNode);
+            // rootNode.getChildren().add(childNode);
+            addChildrenForItemToHierarchyNode(rootItem, childNode);
         }
     }
 
@@ -2956,9 +2972,13 @@ public class ItemDomainMachineDesignController
 
         return new ValidInfo(isValid, validString);
     }
-
-    public TreeNode getMoveToTrashNode() {
-        return moveToTrashNode;
+    
+    public Boolean getMoveToTrashAllowed() {
+        return moveToTrashAllowed;
+    }
+    
+    public Boolean getMoveToTrashHasWarnings() {
+        return moveToTrashHasWarnings;
     }
 
     public String getMoveToTrashDisplayName() {
@@ -2969,19 +2989,171 @@ public class ItemDomainMachineDesignController
         return moveToTrashMessage;
     }
 
+    public TreeNode getMoveToTrashNode() {
+        return moveToTrashNode;
+    }
+
     /**
      * Prepares dialog for move to trash operation.
      */
     public void prepareMoveToTrash() {
+        
         updateCurrentUsingSelectedItemInTreeTable();
+        
+        ItemDomainMachineDesign itemToDelete = findById(getCurrent().getId());
+        if (itemToDelete == null) {
+            return;
+        }
+        
         moveToTrashNode = null;
-        moveToTrashDisplayName = getCurrent().getName();
-        moveToTrashMessage = "'" + getCurrent().getName() + "'";
-        if (!getCurrent().getItemElementDisplayList().isEmpty()) {
-            moveToTrashMessage = moveToTrashMessage
-                    + " and its children (hierarchy shown at right)";
+        moveToTrashDisplayName = itemToDelete.getName();
+        moveToTrashMessage = "";
+        moveToTrashHasWarnings = false;
+                
+        // collect list of items to delete, for use here in applying restrictions
+        // and in moveToTrash for executing the operation
+        moveToTrashItemsToUpdate = new ArrayList<>();
+        moveToTrashElementsToDelete = new ArrayList<>();
+        ValidInfo validInfo = collectItemsForDeletion(itemToDelete, moveToTrashItemsToUpdate, moveToTrashElementsToDelete, true, true);
+        if (!validInfo.isValid()) {
+            SessionUtility.addErrorMessage("Error", "Could not delete: " + itemToDelete + " - " + validInfo.getValidString());
+            return;
+        }
+        
+        // check each item for restriction violations
+        moveToTrashAllowed = true;
+        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
+        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
+        for (ItemDomainMachineDesign itemToCheck : moveToTrashItemsToUpdate) {
+            String errorString = "";
+            String warningString = "";
+            
+            // don't allow move to trash for template with instances
+            List<Item> templateInstances = itemToCheck.getItemsCreatedFromThisTemplateItem();
+            if ((templateInstances != null) && (templateInstances.size() > 0)) {
+                moveToTrashAllowed = false;
+                errorString = errorString + "Item is a template with instances. ";
+            }
+            
+            // check for various relationships
+            List<ItemElementRelationship> relationshipList = itemToCheck.getFullRelationshipList();
+            boolean hasCableRelationship = false;
+            boolean hasMaarcRelationship = false;
+            boolean hasOtherRelationship = false;
+            for (ItemElementRelationship relationship : relationshipList) {
+                RelationshipType relType = relationship.getRelationshipType();
+                if (relType == null) {
+                    // shouldn't happen, but....
+                    continue;
+                } else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeLocation())) {
+                    // ignore location relationships
+                    continue;
+                } else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeTemplate())) {
+                    // ignore template relationships, handling explicitly already
+                    continue;
+                } else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeCable())) {
+                    hasCableRelationship = true;
+                } else if (relType.equals(RelationshipTypeFacade.getRelationshipTypeMaarc())) {
+                    hasMaarcRelationship = true;
+                } else {
+                    moveToTrashAllowed = false;
+                    String relTypeName = relType.getName();
+                    if (relTypeName != null) {
+                        errorString = errorString + "Item has " + relTypeName + " relationship. ";
+                    } else {
+                        hasOtherRelationship = true; 
+                    }
+                }
+            }
+            if (hasCableRelationship) {
+                // don't allow move to trash for cable endpoints
+                moveToTrashAllowed = false;
+                errorString = errorString + "Item is an endpoint for one or more cables. ";
+            }
+            if (hasMaarcRelationship) {
+                // don't allow move to trash for MAARC relationships
+                moveToTrashAllowed = false;
+                errorString = errorString + "Item has one or more MAARC items. ";
+            }
+            if (hasOtherRelationship) {
+                // don't allow move to trash for other relationships (generic check for now, add specific handling as encountered)
+                errorString = errorString + "Item has one or more relationships of unspecified type. ";
+            }
+            
+            // check permissions for current user
+            if (sessionRole != CdbRole.ADMIN) {
+                if (!AuthorizationUtility.isEntityWriteableByUser(itemToCheck, sessionUser)) {
+                    moveToTrashAllowed = false;
+                    errorString = errorString + "Current user does not have permission to delete item. ";
+                }
+            }
+            
+            // check if need to warn about property values
+            List<PropertyValue> itemProperties = itemToCheck.getPropertyValueList();
+            if (itemProperties != null && !itemProperties.isEmpty()) {
+                moveToTrashHasWarnings = true;
+                warningString = warningString 
+                        + "Item has property values and/or traveler templates/instances, including: (";
+                for (PropertyValue propValue : itemProperties) {
+                    PropertyType propType = propValue.getPropertyType();
+                    if (propType != null && propType.getName() != null) {
+                        warningString = warningString 
+                                + propValue.getPropertyType().getName() + ", ";
+                    }
+                    warningString = warningString.substring(0, warningString.length()-2) + "). ";
+                }
+            }
+            
+            // check if need to warn about log entries
+            List<Log> itemLogs = itemToCheck.getLogList();
+            if (itemLogs != null && !itemLogs.isEmpty()) {
+                moveToTrashHasWarnings = true;
+                warningString = warningString + "Item has log entries. ";
+            }
+            
+            if (!errorString.isEmpty()) {
+                itemToCheck.setMoveToTrashErrorMsg(errorString);
+            }
+            if (!warningString.isEmpty()) {
+                itemToCheck.setMoveToTrashWarningMsg(warningString);
+            }
+        }
+        
+        // build tree node hierarchy for dialog
+        if (moveToTrashItemsToUpdate.size() > 1 || !moveToTrashAllowed || moveToTrashHasWarnings) {
             moveToTrashNode = new DefaultTreeNode();
-            prepareItemNameHierarchyTree(moveToTrashNode, getCurrent());
+            prepareItemHierarchyTree(moveToTrashNode, itemToDelete);
+        }
+        
+        if (!moveToTrashAllowed) {
+            moveToTrashMessage = "Unable to move '"
+                    + itemToDelete.getName()
+                    + "' to trash because there are problems with one or more items in hierarchy. "
+                    + "Items with problems are shown in red in the table below. "
+                    + "Consult item detail view for additional information. "
+                    + "Click 'No' to cancel. ";
+            if (moveToTrashHasWarnings) {
+                moveToTrashMessage = moveToTrashMessage
+                        + "WARNING: there are warnings for one or more items. "
+                        + "Items with warnings can be moved to trash.";
+            }
+        } else {
+            String itemDescription = "'" + itemToDelete.getName() + "'";
+            if (!itemToDelete.getItemElementDisplayList().isEmpty()) {
+                itemDescription = itemDescription
+                        + " and its children (hierarchy shown in table below) ";
+            }
+            moveToTrashMessage = "Click 'Yes' to move "
+                    + itemDescription
+                    + " to trash. Click 'No' to cancel. "
+                    + "NOTE: items restored from trash will appear as top-level items "
+                    + "and not within their original container. ";
+            if (moveToTrashHasWarnings) {
+                moveToTrashMessage = moveToTrashMessage
+                        + "WARNING: there are warnings for one or more items. "
+                        + "Items with warnings are shown in green in the table below. "
+                        + "Items with warnings can be moved to trash.";
+            }
         }
     }
 
@@ -2990,64 +3162,43 @@ public class ItemDomainMachineDesignController
      */
     public void moveToTrash() {
 
-        ItemDomainMachineDesign rootItemToDelete = getCurrent();
+        ItemDomainMachineDesign rootItemToDelete = findById(getCurrent().getId());
         if (rootItemToDelete == null) {
             return;
         }
 
-        // collect list of items to delete
-        List<ItemDomainMachineDesign> itemsToUpdate = new ArrayList<>();
-        List<ItemElement> elementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToUpdate, elementsToDelete, true, true);
-        if (!validInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
-            return;
-        }
-
-        // check permissions for all items
-        CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
-        UserInfo sessionUser = (UserInfo) SessionUtility.getUser();
-        if (sessionRole != CdbRole.ADMIN) {
-            for (ItemDomainMachineDesign item : itemsToUpdate) {
-                if (!AuthorizationUtility.isEntityWriteableByUser(item, sessionUser)) {
-                    SessionUtility.addErrorMessage("Error", "Current user does not have permission to delete selected items");
-                    return;
-                }
-            }
-        }
-
         // mark all items as deleted entity type (moves them to "trash")
-        for (ItemDomainMachineDesign item : itemsToUpdate) {
+        for (ItemDomainMachineDesign item : moveToTrashItemsToUpdate) {
             item.setIsDeleted();
         }
 
         // remove relationship for root item to its parent and 
         // add container item to list of items to update
-        if (elementsToDelete.size() > 1) {
+        if (moveToTrashElementsToDelete.size() > 1) {
             // should be 0 for a top-level item or 1 for internal node
             SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - unexpected relationships exist in hierarchy");
             return;
-        } else if (elementsToDelete.size() == 1) {
-            ItemElement ie = elementsToDelete.get(0);
+        } else if (moveToTrashElementsToDelete.size() == 1) {
+            ItemElement ie = moveToTrashElementsToDelete.get(0);
             Item childItem = ie.getContainedItem();
             Item ieParentItem = ie.getParentItem();
             ieParentItem.removeItemElement(ie);
             childItem.getItemElementMemberList().remove(ie);
             ie.setMarkedForDeletion(true);
-            itemsToUpdate.add((ItemDomainMachineDesign) ieParentItem);
+            moveToTrashItemsToUpdate.add((ItemDomainMachineDesign) ieParentItem);
         }
 
-        if (itemsToUpdate.size() == 1) {
-            update();
-        } else {
-            try {
-                updateList(itemsToUpdate);
-            } catch (CdbException ex) {
-                // handled adequately by thrower
-            }
+        try {
+            updateList(moveToTrashItemsToUpdate);
+        } catch (CdbException ex) {
+            // handled adequately by thrower
         }
-
+            
         moveToTrashNode = null;
+        moveToTrashMessage = null;
+        moveToTrashItemsToUpdate = null;
+        moveToTrashElementsToDelete = null;
+        moveToTrashHasWarnings = false;
 
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetListDataModel();
         ItemDomainMachineDesignDeletedItemsController.getInstance().resetSelectDataModel();

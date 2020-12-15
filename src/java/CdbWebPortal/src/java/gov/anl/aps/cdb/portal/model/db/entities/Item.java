@@ -595,6 +595,31 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setItemElementRelationshipList2(List<ItemElementRelationship> itemElementRelationshipList2) {
         getSelfElement().setItemElementRelationshipList2(itemElementRelationshipList2);
     }
+    
+    /**
+     * Returns merged list of itemElementRelationshipList, itemElementRelationshipList1, itemElementRelationshipList2.
+     */
+    public List<ItemElementRelationship> getFullRelationshipList() {
+        
+        List<ItemElementRelationship> fullList = new ArrayList<>();
+        
+        List<ItemElementRelationship> ierList = getItemElementRelationshipList();
+        if (ierList != null) {
+            fullList.addAll(ierList);
+        }
+        
+        List<ItemElementRelationship> ierList1 = getItemElementRelationshipList1();
+        if (ierList1 != null) {
+            fullList.addAll(ierList1);
+        }
+        
+        List<ItemElementRelationship> ierList2 = getItemElementRelationshipList2();
+        if (ierList2 != null) {
+            fullList.addAll(ierList2);
+        }
+        
+        return fullList;
+    }
 
     /**
      * Function is used to limit the length of description for list column.
