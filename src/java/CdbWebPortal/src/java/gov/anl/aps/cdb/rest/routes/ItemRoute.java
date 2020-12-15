@@ -19,8 +19,10 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade;
@@ -28,6 +30,7 @@ import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
@@ -111,6 +114,12 @@ public class ItemRoute extends ItemBaseRoute {
 
     @EJB
     ItemProjectFacade itemProjectFacade;
+    
+    @EJB
+    ItemTypeFacade itemTypeFacade;
+    
+    @EJB
+    ItemCategoryFacade itemCategoryFacade;
 
     @GET
     @Path("/ById/{itemId}")
@@ -472,8 +481,50 @@ public class ItemRoute extends ItemBaseRoute {
         dbItem.setItemIdentifier1(item.getItemIdentifier1());
         dbItem.setItemIdentifier2(item.getItemIdentifier2());
         dbItem.setDescription(item.getDescriptionFromAPI());
-        dbItem.setItemTypeList(item.getItemTypeList());
-        dbItem.setItemCategoryList(item.getItemCategoryList());
+        
+        Domain domain = dbItem.getDomain();
+        
+        List<ItemType> itemTypeList = dbItem.getItemTypeList();
+        
+        if (item.getItemTypeList() != null) {
+            itemTypeList.clear();
+            
+            for (ItemType type : item.getItemTypeList()) {
+                ItemType dbType = itemTypeFacade.find(type.getId());
+                
+                if (dbType != null) {
+                    if (dbType.getDomain().equals(domain)) {
+                        itemTypeList.add(dbType); 
+                    } else {
+                        throw new InvalidArgument("Invalid item type provided: " + type.toString());
+                    }
+                } else {
+                    throw new InvalidArgument("Invalid item type provided: " + type.toString());
+                }
+            }
+        } 
+        dbItem.setItemTypeList(itemTypeList);
+        
+        List<ItemCategory> itemCategoryList = dbItem.getItemCategoryList();
+        if (item.getItemCategoryList() != null) {
+            itemCategoryList.clear();
+            
+            for (ItemCategory category : item.getItemCategoryList()) {
+                ItemCategory dbCategory = itemCategoryFacade.find(category.getId());
+                 
+                if (dbCategory != null) {
+                    if (dbCategory.getDomain().equals(domain)) {
+                        itemCategoryList.add(dbCategory); 
+                    } else {
+                        throw new InvalidArgument("Invalid item category provided: " + category.toString());
+                    }
+                } else {
+                    throw new InvalidArgument("Invalid item category provided: " + category.toString());
+                }
+            }
+        }
+        
+        dbItem.setItemCategoryList(itemCategoryList);
 
         ItemController itemDomainControllerForApi = dbItem.getItemDomainController();
 
