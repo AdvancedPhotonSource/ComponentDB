@@ -50,6 +50,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient String importLocationItemString = null;
     private transient String importTemplateAndParameters = null;
     private transient Float importSortOrder = null;
+    private transient String moveToTrashErrorMsg = null;
+    private transient String moveToTrashWarningMsg = null;
     
     private transient ItemElement currentHierarchyItemElement;
 
@@ -272,6 +274,32 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     @Override
     public String getStatusPropertyTypeName() {
         return MD_INTERNAL_STATUS_PROPERTY_TYPE; 
+    }
+
+    public String getMoveToTrashErrorMsg() {
+        return moveToTrashErrorMsg;
+    }
+
+    public void setMoveToTrashErrorMsg(String moveToTrashErrorMsg) {
+        this.moveToTrashErrorMsg = moveToTrashErrorMsg;
+    }
+
+    public String getMoveToTrashWarningMsg() {
+        return moveToTrashWarningMsg;
+    }
+
+    public void setMoveToTrashWarningMsg(String moveToTrashWarningMsg) {
+        this.moveToTrashWarningMsg = moveToTrashWarningMsg;
+    }
+    
+    public String getMoveToTrashRowStyle() {
+        if (moveToTrashErrorMsg != null && !moveToTrashErrorMsg.isBlank()) {
+            return "invalidTableData";
+        } else if (moveToTrashWarningMsg != null && !moveToTrashWarningMsg.isBlank()) {
+            return "warningTableData";
+        } else {
+            return null;
+        }
     }
     
     // <editor-fold defaultstate="collapsed" desc="Import functionality">

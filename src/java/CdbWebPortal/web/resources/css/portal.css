@@ -924,6 +924,10 @@ h2 {
     color: red !important;
 }
 
+.warningTableData {
+    color: green !important;
+}
+
 .ui-panelgrid > tbody > tr.ui-widget-content, .ui-panelgrid-even, .ui-panelgrid-odd {
     background: transparent;
 }
