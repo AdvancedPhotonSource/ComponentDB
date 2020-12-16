@@ -223,7 +223,6 @@ public class Domain extends CdbEntity implements Serializable {
 
     @Override
     public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Domain)) {
             return false;
         }
@@ -231,7 +230,10 @@ public class Domain extends CdbEntity implements Serializable {
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
-        return true;
+        if (this.id != null && other.id != null && this.id == other.id) {
+            return true; 
+        }
+        return false;
     }
 
     @Override
