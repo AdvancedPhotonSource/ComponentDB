@@ -280,6 +280,10 @@ public class ImportHelperMachineHierarchy
         
         item.setName(itemName);
         item.setImportPath(itemPath);
+        
+        // set uuid in case there are duplicate names
+        String viewUUID = item.getViewUUID();
+        item.setItemIdentifier2(viewUUID);
 
         // set flag indicating item is template
         Boolean itemIsTemplate = (Boolean) rowMap.get(KEY_IS_TEMPLATE);
