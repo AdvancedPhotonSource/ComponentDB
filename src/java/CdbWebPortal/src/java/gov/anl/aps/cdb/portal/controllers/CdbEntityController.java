@@ -73,6 +73,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
     protected DataTable listDataTable = null;
     protected boolean listDataModelReset = true;
     protected List<EntityType> filteredObjectList = null;
+    protected List<EntityType> allObjectList = null; 
 
     protected DataModel selectDataModel = null;
     protected DataTable selectDataTable = null;
@@ -1371,7 +1372,18 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
      * Create data model from list of all available entity instances.
      */
     public void createListDataModel() {
-        listDataModel = new ListDataModel(getEntityDbFacade().findAll());
+        listDataModel = new ListDataModel(getAllObjectList());
+    }
+
+    public List<EntityType> getAllObjectList() {
+        if (allObjectList == null) {
+            allObjectList = getAllEntities(); 
+        }
+        return allObjectList;
+    }
+    
+    public List<EntityType> getAllEntities() {
+        return getEntityDbFacade().findAll(); 
     }
 
     public void setListDataModel(ListDataModel listDataModel) {
@@ -1554,6 +1566,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         listDataTable = null;
         listDataModelReset = true;
         filteredObjectList = null;
+        allObjectList = null; 
         // Flush cache 
         //getFacade().flush();
     }
@@ -1666,10 +1679,8 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
         } else {
             searchPattern = Pattern.compile(Pattern.quote(searchString));
         }
-        DataModel<EntityType> dataModel = getListDataModel();
-        Iterator<EntityType> iterator = dataModel.iterator();
-        while (iterator.hasNext()) {
-            EntityType entity = iterator.next();
+        List<EntityType> allObjectList = getAllObjectList();
+        for (EntityType entity : allObjectList) {
             try {
                 SearchResult searchResult = entity.search(searchPattern);
                 if (!searchResult.isEmpty()) {

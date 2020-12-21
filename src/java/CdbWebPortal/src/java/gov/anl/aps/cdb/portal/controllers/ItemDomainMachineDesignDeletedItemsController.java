@@ -72,10 +72,10 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     public String getPluginItemMachineDesignSectionsName() {
         return pluginItemMachineDesignSectionsName; 
     }
-
+    
     @Override
     public void createListDataModel() {
-        List<ItemDomainMachineDesign> itemList = getItemList();
+        List<ItemDomainMachineDesign> itemList = getAllObjectList();
         ListDataModel newListDataModel = new ListDataModel(itemList);
         setListDataModel(newListDataModel);
     }
