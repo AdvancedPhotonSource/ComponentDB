@@ -253,8 +253,12 @@ public class ItemDomainMachineDesignController
     public boolean isItemCatalog(Item item) {
         return item instanceof ItemDomainCatalog;
     }
+    
+    public boolean isItemMachineDesign(Item item) {
+        return isItemMachineDesignStatic(item); 
+    }
 
-    public static boolean isItemMachineDesign(Item item) {
+    public static boolean isItemMachineDesignStatic(Item item) {
         return item instanceof ItemDomainMachineDesign;
     }
 
@@ -1135,7 +1139,7 @@ public class ItemDomainMachineDesignController
             for (TreeNode treeNode : children) {
                 ItemElement data = (ItemElement) treeNode.getData();
                 Item containedItem = data.getContainedItem();
-                if (isItemMachineDesign(containedItem)) {
+                if (isItemMachineDesignStatic(containedItem)) {
                     if (containedItem.equals(pop)) {
                         if (machineDesingItemStack.isEmpty()) {
                             result = treeNode;
@@ -2633,7 +2637,7 @@ public class ItemDomainMachineDesignController
             Item containedItem = itemElement.getContainedItem();
 
             if (containedItem != null) {
-                if (isItemMachineDesign(containedItem)) {
+                if (isItemMachineDesignStatic(containedItem)) {
                     value = super.getPrimaryImageValueForItem(containedItem);
                 } else {
                     ItemController itemItemController = getItemItemController(containedItem);
