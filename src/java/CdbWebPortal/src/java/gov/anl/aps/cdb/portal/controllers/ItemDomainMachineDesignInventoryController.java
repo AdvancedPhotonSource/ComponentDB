@@ -56,7 +56,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     @Override
     public void createListDataModel() {
-        List<ItemDomainMachineDesign> itemList = getItemList();
+        List<ItemDomainMachineDesign> itemList = getAllObjectList();
         ListDataModel listDataModel = new ListDataModel(itemList);
         setListDataModel(listDataModel);
     }
