@@ -401,6 +401,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
+    public List<ItemDomainEntity> getAllEntities() {
+        return getItemList(); 
+    }
+
+    @Override
     public List<ItemDomainEntity> getItemList() {
         return getEntityDbFacade().findByDomain(getDefaultDomainName());
     }
@@ -568,7 +573,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
             if (currentItemProject != null) {
                 itemList = getItemListWithProject(currentItemProject);
             } else {
-                itemList = getItemList();
+                itemList = getAllObjectList();
             }
         }
 

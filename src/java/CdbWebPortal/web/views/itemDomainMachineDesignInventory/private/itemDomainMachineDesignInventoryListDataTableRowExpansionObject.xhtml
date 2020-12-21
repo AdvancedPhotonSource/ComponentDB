@@ -20,6 +20,9 @@ See LICENSE file.
                 <ui:include src="../../itemDomainMachineDesign/private/templateDefaults/itemListObjectColumns/itemInstalledQrId.xhtml" >
                     <ui:param name="rendered"
                               value="#{true}" />
+                    <ui:param name="itemListObject"
+                              value="#{itemDomainMachineDesignInventoryController.isItemMachineDesign(itemListObject) ?
+                                       itemListObject.assignedItem : itemListObject }" />
                 </ui:include>
             </ui:define>     
             
