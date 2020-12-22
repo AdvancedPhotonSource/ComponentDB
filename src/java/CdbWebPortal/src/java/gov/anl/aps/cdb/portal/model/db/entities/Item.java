@@ -217,6 +217,7 @@ import org.primefaces.model.TreeNode;
     "itemElementRelationshipList",
     "itemElementRelationshipList1",
     "itemElementRelationshipList2",
+    "fullRelationshipList", 
     "itemElementMemberList",
     "itemElementMemberList2",
     "historyMemberList",
