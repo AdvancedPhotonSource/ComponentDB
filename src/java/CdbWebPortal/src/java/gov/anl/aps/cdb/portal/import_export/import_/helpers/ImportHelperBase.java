@@ -65,7 +65,14 @@ import org.primefaces.model.file.UploadedFile;
  */
 public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityControllerType extends CdbEntityController> {
 
+    enum ImportMode {
+        CREATE, UPDATE;
+    }
+    
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperBase.class.getName());
+    
+    private static final String MODE_CREATE = "create";
+    private static final String MODE_UPDATE = "update";
 
     private static final String HEADER_IS_VALID = "Is Valid";
     private static final String PROPERTY_IS_VALID = "isValidImportString";
@@ -78,6 +85,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private static final String INDICATOR_COMMENT = "//";
 
     protected List<EntityType> rows = new ArrayList<>();
+    
+    protected ImportMode importMode;
     
     protected SortedMap<Integer, InputColumnModel> inputColumnMap = new TreeMap<>();
     
@@ -97,6 +106,21 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
     public List<EntityType> getRows() {
         return rows;
+    }
+    
+    public ImportMode getImportMode() {
+        if (importMode == null) {
+            importMode  = ImportMode.CREATE;
+        }
+        return importMode;
+    }
+    
+    public void setImportMode(String importModeString) {
+        if (importModeString.equals(MODE_CREATE)) {
+            importMode = ImportMode.CREATE;
+        } else if (importModeString.equals(MODE_UPDATE)) {
+            importMode = ImportMode.UPDATE;
+        }
     }
 
     public List<OutputColumnModel> getTableViewColumns() {
@@ -486,14 +510,25 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         if (validInput) {
             String summaryDetails = newItemCount + " new items ";
+            
+            String modeString = "";
+            if (getImportMode() == ImportMode.UPDATE) {
+                modeString = "update";
+            } else {
+                modeString = "create";
+            }
+            
             String customSummaryDetails = getCustomSummaryDetails();
             if (!customSummaryDetails.isEmpty()) {
                 summaryDetails = customSummaryDetails;
             }
+            
             if (newItemCount > 0) {
                 summaryMessage
                         = "Press 'Next Step' to complete the import process. "
-                        + "This will create "
+                        + "This will " 
+                        + modeString 
+                        + " "
                         + summaryDetails
                         + " displayed in table above.";
             } else {
@@ -601,8 +636,30 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
        
-        CreateInfo createInfo = createEntityInstance(rowDict);
-        EntityType newEntity = (EntityType) createInfo.getEntity();
+        // create or retrieve instance depending on import mode
+        CreateInfo createInfo = null;
+        EntityType newEntity = null;
+        
+        if (getImportMode() == ImportMode.CREATE) {
+            // create new instance and check result
+            createInfo = createEntityInstance(rowDict);
+            newEntity = (EntityType) createInfo.getEntity();
+            if (newEntity == null) {
+                // helper returns null from createInstance to indicate that it won't create an item for this row
+                isValid = createInfo.getValidInfo().isValid();
+                validString = appendToString(validString, createInfo.getValidInfo().getValidString());
+            }
+            
+        } else if (getImportMode() == ImportMode.UPDATE) {
+            // retrieve existing instance and check result
+            createInfo = retrieveEntityInstance(rowDict);
+            newEntity = (EntityType) createInfo.getEntity();
+            if (newEntity == null) {
+                // helper returns null if instance cannot be located, mark invalid
+                isValid = false;
+                validString = appendToString(validString, createInfo.getValidInfo().getValidString());
+            }
+        }
         if (newEntity != null) {
             ValidInfo createValidInfo = createInfo.getValidInfo();
             if (!createValidInfo.isValid()) {
@@ -653,9 +710,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             rows.add(newEntity);
 
         } else {
-            // helper returns null from createInstance to indicate that it won't create an item for this row
-            isValid = createInfo.getValidInfo().isValid();
-            validString = createInfo.getValidInfo().getValidString();
         }
         
         return new ValidInfo(isValid, validString, isDuplicate);
@@ -704,22 +758,53 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     .collect(Collectors.toList());
         }
 
-        String message;
+        String message = "";
         try {
-            controller.createList(rows);
-            message = "Import succeeded, created " + rows.size() + " instances";
+            if (getImportMode() == ImportMode.CREATE) {
+                controller.createList(rows);
+                message = "Import succeeded, created " + rows.size() + " instances";
+                ValidInfo result = postCreate();
+                message = appendToString(message, result.getValidString());
+            } else if (getImportMode() == ImportMode.UPDATE) {
+                controller.updateList(rows);
+                message = "Import succeeded, updated " + rows.size() + " instances";
+            }
+
         } catch (CdbException | RuntimeException ex) {
             return new ImportInfo(false, "Import failed. " + ex.getClass().getName());
         }
-        
-        ValidInfo result = postImport();
-        message = appendToString(message, result.getValidString());
         
         return new ImportInfo(true, message);
     }
     
     /**
-     * Provide pre-import hook for subclasses to override, e.g., to migrate
+     * Specifies helper class format name to use in GUI.  Default returns empty
+     * string, subclasses override to customize.  Note that this is currently
+     * specified in call to ImportFormatInfo constructor, but should change
+     * subclasses to override this method instead as we add import update support.
+     */
+    public static String getFormatName() {
+        return "";
+    }
+    
+    /**
+     * Specifies whether helper supports creation of new instances.  Defaults
+     * to true. Subclasses override to customize.
+     */
+    public boolean supportsModeCreate() {
+        return true;
+    }
+
+    /**
+     * Specifies whether helper supports updating existing instances.  Defaults
+     * to false. Subclasses override to customize.
+     */
+    public boolean supportsModeUpdate() {
+        return false;
+    }
+
+    /**
+     * Provides pre-import hook for subclasses to override, e.g., to migrate
      * metadata property fields etc.
      */
     protected ValidInfo preImport() {
@@ -727,15 +812,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
     
     /**
-     * Provides callback for helper subclass to do post processing after the
-     * import commit completes.  For example, the helper may need to update some
-     * attribute of the imported rows based on the identifier created during the
-     * database commit. Default behavior is to do nothing, subclasses override to
-     * customize.
-     * @return 
+     * Retrieves entity instance using values in rowMap.  Implemented only by
+     * helpers that support update mode.  Default implementation returns null.
      */
-    protected ValidInfo postImport() {
-        return new ValidInfo(true, "");
+    protected CreateInfo retrieveEntityInstance(Map<String, Object> rowMap) {
+        return null;
     }
     
     /**
@@ -768,6 +849,18 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     public TreeNode getRootTreeNode() {
         return rootTreeNode;
+    }
+    
+    /**
+     * Provides callback for helper subclass to do post processing after the
+     * import commit completes.  For example, the helper may need to update some
+     * attribute of the imported rows based on the identifier created during the
+     * database commit. Default behavior is to do nothing, subclasses override to
+     * customize.
+     * @return 
+     */
+    protected ValidInfo postCreate() {
+        return new ValidInfo(true, "");
     }
     
     protected abstract List<ColumnSpec> getColumnSpecs();

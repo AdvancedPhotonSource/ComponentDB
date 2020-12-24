@@ -164,7 +164,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     * and replace them with the internal cdb identifier.
     */
     @Override
-    protected ValidInfo postImport() {
+    protected ValidInfo postCreate() {
         
         String idRegexPattern = "#cdbid[^#]*#";
         idRegexPattern = Matcher.quoteReplacement(idRegexPattern);

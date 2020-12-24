@@ -8,10 +8,12 @@ import gov.anl.aps.cdb.portal.controllers.SourceController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
+import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.EJB;
 
 /**
  *
@@ -19,12 +21,16 @@ import java.util.Map;
  */
 public class ImportHelperSource extends ImportHelperBase<Source, SourceController> {
 
+    private static final String KEY_NAME = "name";
+    
+    private SourceFacade sourceFacade;
+    
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new StringColumnSpec("Name", "name", "setName", true, "Name of vendor/manufacturer", 64));
+        specs.add(new StringColumnSpec("Name", KEY_NAME, "setName", true, "Name of vendor/manufacturer", 64));
         specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of vendor/manufacturer", 256));
         specs.add(new StringColumnSpec("Contact Info", "contactInfo", "setContactInfo", false, "Contact name and phone number etc", 64));
         specs.add(new StringColumnSpec("URL", "url", "setUrl", false, "URL for vendor/manufacturer", 256));
@@ -36,16 +42,57 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     public SourceController getEntityController() {
         return SourceController.getInstance();
     }
+    
+    private SourceFacade getSourceFacade() {
+        if (sourceFacade == null) {
+            sourceFacade = sourceFacade.getInstance();
+        }
+        return sourceFacade;
+    }
+
+    /**
+     * Specifies whether helper supports updating existing instances.  Defaults
+     * to false. Subclasses override to customize.
+     */
+    @Override
+    public boolean supportsModeUpdate() {
+        return true;
+    }
 
     @Override
     public String getTemplateFilename() {
         return "Source Template";
     }
-
+    
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         Source entity = getEntityController().createEntityInstance();
         return new CreateInfo(entity, true, "");
+    }  
+
+    @Override
+    protected CreateInfo retrieveEntityInstance(Map<String, Object> rowMap) {
+        
+        boolean isValid = true;
+        String validString = "";
+
+        Source item = null;
+        
+        // retrieve by cdb id or source name
+        String itemName = (String) rowMap.get(KEY_NAME);
+        if (itemName != null) {
+            item = getSourceFacade().findByName(itemName);
+            if (item == null) {
+                // no item found with specified name
+                Source invalidInstance = new Source();
+                invalidInstance.setName(itemName);
+                isValid = false;
+                validString = "No source object found with specified name: " + itemName;
+                return new CreateInfo(invalidInstance, isValid, validString);
+            }
+        }
+
+        return new CreateInfo(item, isValid, validString);
     }  
 
     @Override
