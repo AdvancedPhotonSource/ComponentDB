@@ -120,6 +120,15 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
         userInfo.setUserSettingList(userSettingList);
         passwordEntry = null;
         return super.prepareEdit(userInfo);
+    } 
+
+    @Override
+    protected boolean verifyUserIsAuthorizedToEdit(UserInfo entity, UserInfo userInfo) {
+        if (entity.equals(userInfo)) {
+            // User can edit their own user profile. 
+            return true; 
+        }
+        return super.verifyUserIsAuthorizedToEdit(entity, userInfo); 
     }
 
     @Override
