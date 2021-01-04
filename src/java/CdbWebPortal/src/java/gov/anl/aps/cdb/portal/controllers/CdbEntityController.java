@@ -426,7 +426,7 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             if (sessionRole != CdbRole.ADMIN) {
                 // Make sure user is authorized to edit entity
                 // Try entity info first, then entity itself second
-                boolean userAuthorized = AuthorizationUtility.isEntityWriteableByUser(getEntityInfo(current), sessionUser);
+                boolean userAuthorized = verifyUserIsAuthorizedToEdit(current, sessionUser); 
                 if (!userAuthorized) {
                     userAuthorized = AuthorizationUtility.isEntityWriteableByUser(current, sessionUser);
                     if (!userAuthorized) {
@@ -437,6 +437,10 @@ public abstract class CdbEntityController<EntityType extends CdbEntity, FacadeTy
             }
         }
         return current;
+    }
+    
+    protected boolean verifyUserIsAuthorizedToEdit(EntityType entity, UserInfo userInfo) {
+        return AuthorizationUtility.isEntityWriteableByUser(getEntityInfo(entity), userInfo); 
     }
 
     /**
