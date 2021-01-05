@@ -415,7 +415,8 @@ class NamedRangeHandler(InputHandler):
     def handle_input(self, input_dict):
         global name_manager
         if not name_manager.has_name(self.range_name):
-            sys.exit("name manager has no named range for: %s" % self.range_name)
+            # sys.exit("name manager has no named range for: %s" % self.range_name)
+            return False, "name manager has no named range for: %s" % self.range_name
         cell_value = input_dict[self.column_key]
         has_child = name_manager.value_is_valid_for_name(self.range_name, cell_value)
         valid_string = ""
@@ -448,7 +449,8 @@ class DeviceAddressHandler(InputHandler):
             range_name = "_RACK_AREA_"
 
         if not name_manager.has_name(range_name):
-            sys.exit("name manager has no named address range for: %s" % range_name)
+            # sys.exit("name manager has no named address range for: %s" % range_name)
+            return False, "name manager has no named address range for: %s" % range_name
 
         has_child = name_manager.value_is_valid_for_name(range_name, cell_value)
         valid_string = ""
@@ -1260,15 +1262,22 @@ class CableDesignHelper(PreImportHelper):
 
     # Treat a row that contains a single non-empty value in the "import id" column as an empty row.
     def input_row_is_empty_custom(self, input_dict, row_num):
+
         non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
+
         if non_empty_count == 2 and ((len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0) and (input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []")):
             logging.debug("skipping empty row with non-empty import id: %s row: %d" %
                           (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
             return True
-        if non_empty_count == 1 and ((input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []")):
+
+        if non_empty_count == 1 and (input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []"):
             logging.debug("skipping empty row with non-empty import id: %s row: %d" %
                           (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
             return True
+
+        # the following block allows any row whose name is "[] | []", which I'd like to avoid to detect copy/paste errors
+        # if input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []":
+        #     return True
 
     def get_output_object(self, input_dict):
 
