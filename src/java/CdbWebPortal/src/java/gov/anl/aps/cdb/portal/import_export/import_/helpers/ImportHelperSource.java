@@ -13,7 +13,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJB;
 
 /**
  *
@@ -29,7 +28,7 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
-        
+        specs.add(existingItemIdColumnSpec());
         specs.add(new StringColumnSpec("Name", KEY_NAME, "setName", true, "Name of vendor/manufacturer", 64));
         specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of vendor/manufacturer", 256));
         specs.add(new StringColumnSpec("Contact Info", "contactInfo", "setContactInfo", false, "Contact name and phone number etc", 64));
@@ -69,31 +68,51 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
         Source entity = getEntityController().createEntityInstance();
         return new CreateInfo(entity, true, "");
     }  
-
+    
     @Override
-    protected CreateInfo retrieveEntityInstance(Map<String, Object> rowMap) {
-        
-        boolean isValid = true;
-        String validString = "";
+    protected Source newInvalidUpdateInstance() {
+        return new Source();
+    }
 
-        Source item = null;
-        
-        // retrieve by cdb id or source name
-        String itemName = (String) rowMap.get(KEY_NAME);
-        if (itemName != null) {
-            item = getSourceFacade().findByName(itemName);
-            if (item == null) {
-                // no item found with specified name
-                Source invalidInstance = new Source();
-                invalidInstance.setName(itemName);
-                isValid = false;
-                validString = "No source object found with specified name: " + itemName;
-                return new CreateInfo(invalidInstance, isValid, validString);
-            }
-        }
-
-        return new CreateInfo(item, isValid, validString);
-    }  
+//    @Override
+//    protected CreateInfo retrieveEntityInstance(Map<String, Object> rowMap) {
+//        
+//        boolean isValid = true;
+//        String validString = "";
+//
+//        // create item in case we don't find one by name or id, need to return an instance
+//        Source invalidInstance = new Source();
+//        Source item;
+//        
+//        // retrieve by id if specified
+//        Integer itemId = (Integer) rowMap.get(KEY_EXISTING_ITEM_ID);
+//        if (itemId != null) {
+//            item = getEntityController().findById(itemId);
+//            if (item == null) {
+//                item = invalidInstance;
+//                isValid = false;
+//                validString = "Unable to retrieve existing item with id: " + itemId;
+//            }
+//        } else {
+//            // retrieve by name
+//            String itemName = (String) rowMap.get(KEY_NAME);
+//            if (itemName != null) {
+//                item = getSourceFacade().findByName(itemName);
+//                if (item == null) {
+//                    // no item found with specified name
+//                    item = invalidInstance;
+//                    isValid = false;
+//                    validString = "No source object found with specified name: " + itemName;
+//                }
+//            } else {
+//                item = invalidInstance;
+//                isValid = false;
+//                validString = "Must specify existing item id or name to update Source item.";
+//            }
+//        }
+//               
+//        return new CreateInfo(item, isValid, validString);
+//    }  
 
     @Override
     protected boolean ignoreDuplicates() {
