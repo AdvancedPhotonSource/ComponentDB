@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
@@ -23,6 +24,7 @@ public abstract class ColumnSpec {
     private String entitySetterMethod;
     private boolean required;
     private String description;
+    private String exportGetterMethod;
     
     public ColumnSpec() {
     }
@@ -45,6 +47,16 @@ public abstract class ColumnSpec {
 
         this(header, propertyName, required, description);
         this.entitySetterMethod = entitySetterMethod;
+    }
+
+    /**
+     * Creates a column spec appropriate for import and export.
+     */
+    public ColumnSpec(
+            String header, String importPropertyName, String importSetterMethod, boolean importRequired, String description, String exportGetterMethod) {
+
+        this(header, importPropertyName, importSetterMethod, importRequired, description);
+        this.exportGetterMethod = exportGetterMethod;
     }
 
     public String getHeader() {
@@ -105,5 +117,12 @@ public abstract class ColumnSpec {
     }
 
     public abstract InputHandler getInputHandler(int colIndex);
+    
+    public OutputHandler getOutputHandler(int colIndex) {
+        if (exportGetterMethod == null || exportGetterMethod.isBlank()) {
+            return null;
+        }
+        return null;
+    }
 
 }
