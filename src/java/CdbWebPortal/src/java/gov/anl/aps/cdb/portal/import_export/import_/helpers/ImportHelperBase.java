@@ -12,6 +12,10 @@ import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
 import gov.anl.aps.cdb.portal.controllers.UserGroupController;
 import gov.anl.aps.cdb.portal.controllers.UserInfoController;
+import gov.anl.aps.cdb.portal.import_export.export.objects.ExportColumnData;
+import gov.anl.aps.cdb.portal.import_export.export.objects.GenerateExportResult;
+import gov.anl.aps.cdb.portal.import_export.export.objects.HandleOutputResult;
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
@@ -87,6 +91,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private static final String INDICATOR_COMMENT = "//";
 
     protected List<EntityType> rows = new ArrayList<>();
+    private List<CdbEntity> exportEntityList;
     
     protected ImportMode importMode;
     
@@ -108,6 +113,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
     public List<EntityType> getRows() {
         return rows;
+    }
+
+    public List<CdbEntity> getExportEntityList() {
+        return exportEntityList;
+    }
+
+    public void setExportEntityList(List<CdbEntity> exportEntityList) {
+        this.exportEntityList = exportEntityList;
     }
     
     public ImportMode getImportMode() {
@@ -316,6 +329,112 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         } catch (IOException ex) {
             LOGGER.error("buildTemplateExcelFile() " + ex);
         }
+    }
+
+    public GenerateExportResult generateExportFile() {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        // get export content via output handlers for each column
+        List<ExportColumnData> exportContent = new ArrayList<>();
+        List<CdbEntity> entities = getExportEntityList();
+        for (ColumnSpec spec : getColumnSpecs()) {
+            OutputHandler handler = spec.getOutputHandler();
+            if (handler == null) {                
+                ValidInfo validInfo = new ValidInfo(false, "Unexpected error, no output handler for column: " + spec.getHeader());
+                return new GenerateExportResult(validInfo, null);
+            }
+            
+            HandleOutputResult handleOutputResult = handler.handleOutput(entities);
+            if (!handleOutputResult.getValidInfo().isValid()) {                
+                ValidInfo validInfo = new ValidInfo(false, handleOutputResult.getValidInfo().getValidString());
+                return new GenerateExportResult(validInfo, null);
+            }
+            
+            if ((handleOutputResult.getColumnData() == null) || 
+                    (handleOutputResult.getColumnData().isEmpty())) {
+                
+                ValidInfo validInfo = new ValidInfo(false, "Unexpected error, no column data for column: " + spec.getHeader());
+                return new GenerateExportResult(validInfo, null);
+            }
+            exportContent.addAll(handleOutputResult.getColumnData());
+        }
+        
+        // create excel workbook
+        Workbook wb = new XSSFWorkbook();
+        CreationHelper createHelper = wb.getCreationHelper();
+        Sheet sheet = wb.createSheet("export");
+        Drawing drawing = sheet.createDrawingPatriarch();
+        
+        // create header row content
+        int rowIndex = 0;
+        int colIndex = 0;
+        Row headerRow = sheet.createRow(rowIndex);
+        for (ExportColumnData columnData : exportContent) {
+            
+            Cell headerCell = headerRow.createCell(colIndex);
+            headerCell.setCellValue(columnData.getColumnName());
+            
+            // set up box for comment/description
+            ClientAnchor anchor = createHelper.createClientAnchor();
+            anchor.setCol1(headerCell.getColumnIndex());
+            anchor.setCol2(headerCell.getColumnIndex() + 2);
+            anchor.setRow1(headerRow.getRowNum());
+            anchor.setRow2(headerRow.getRowNum() + 3);
+            
+            Comment headerComment = drawing.createCellComment(anchor);
+            RichTextString str = createHelper.createRichTextString(columnData.getDescription());
+            headerComment.setString(str);
+            headerCell.setCellComment(headerComment);
+            
+            colIndex = colIndex + 1;
+        }
+        
+        // create empty data rows
+        rowIndex = 1;
+        for (ExportColumnData columnData : exportContent) {
+            Row dataRow = sheet.createRow(rowIndex);
+            rowIndex = rowIndex + 1;
+        }
+        
+        // create data row content, one column at a time
+        colIndex = 0;
+        for (ExportColumnData columnData : exportContent) {
+            rowIndex = 1;
+            Row dataRow = sheet.getRow(rowIndex);
+            if (dataRow == null) {
+                dataRow = sheet.createRow(rowIndex);
+            }
+            for (String columnValue : columnData.getColumnValues()) {
+                Cell dataCell = dataRow.createCell(colIndex);
+                dataCell.setCellValue(columnValue);
+                rowIndex = rowIndex + 1;
+            }
+            colIndex = colIndex + 1;
+        }
+        
+        // create byte array containing excel binary file data
+        byte[] exportFile = null;
+        try (ByteArrayOutputStream outStream = new ByteArrayOutputStream()) {
+            wb.write(outStream);
+            exportFile = outStream.toByteArray();
+        } catch (IOException ex) {
+            LOGGER.error("generateExportFile() " + ex);
+        }
+        
+        // create streamed content from byte array
+        StreamedContent content = null;
+        if (exportFile != null) {
+            InputStream inStream = new ByteArrayInputStream(exportFile);
+            content = new DefaultStreamedContent(inStream, "xlsx", getExportFilename() + ".xlsx");
+        } else {
+            isValid = false;
+            validString = "Unexpected error creating Excel file content";
+        }
+        
+        ValidInfo validInfo = new ValidInfo(isValid, validString);
+        return new GenerateExportResult(validInfo, content);
     }
 
     public List<String> getSheetNames(UploadedFile f) {
@@ -841,39 +960,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
 
     /**
-     * Retrieves entity instance using values in rowMap.  Default implementation
-     * returns null if helper is not configured to support update mode, otherwise
-     * provides generic mechanism for looking up by id.  To customize, subclasses
-     * can override this method, or invoke it and customize further using the result.
-     */
-    protected CreateInfo retrieveEntityInstance(Map<String, Object> rowMap) {
-        
-        if (!supportsModeUpdate()) {
-            return null;
-        }
-        
-        boolean isValid = true;
-        String validString = "";
-        
-        EntityType existingItem = null;
-        Integer itemId = (Integer) rowMap.get(KEY_EXISTING_ITEM_ID);
-        if (itemId != null) {
-            existingItem = (EntityType) getEntityController().findById(itemId);
-            if (existingItem == null) {
-                existingItem = newInvalidUpdateInstance();
-                isValid = false;
-                validString = "Unable to retrieve existing item with id: " + itemId;
-            }
-        } else {
-            existingItem = newInvalidUpdateInstance();
-            isValid = false;
-            validString = "Must specify existing id to update item";
-        }
-        
-        return new CreateInfo(existingItem, isValid, validString);
-    }
-    
-    /**
      * Specifies whether the helper class ignores rows in the input data that
      * duplicate existing database rows.  Default behavior is to not ignore
      * duplicates, subclasses override to change the default.
@@ -925,6 +1011,43 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     protected abstract CreateInfo createEntityInstance(Map<String, Object> rowMap);
     
+    /**
+     * Retrieves entity instance using values in rowMap.  Default implementation
+     * returns null if helper is not configured to support update mode, otherwise
+     * provides generic mechanism for looking up by id.  To customize, subclasses
+     * can override this method, or invoke it and customize further using the result.
+     */
+    protected CreateInfo retrieveEntityInstance(Map<String, Object> rowMap) {
+        
+        if (!supportsModeUpdate()) {
+            return null;
+        }
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        EntityType existingItem = null;
+        Integer itemId = (Integer) rowMap.get(KEY_EXISTING_ITEM_ID);
+        if (itemId != null) {
+            existingItem = (EntityType) getEntityController().findById(itemId);
+            if (existingItem == null) {
+                existingItem = newInvalidUpdateInstance();
+                isValid = false;
+                validString = "Unable to retrieve existing item with id: " + itemId;
+            }
+        } else {
+            existingItem = newInvalidUpdateInstance();
+            isValid = false;
+            validString = "Must specify existing id to update item";
+        }
+        
+        return new CreateInfo(existingItem, isValid, validString);
+    }
+    
+    public String getExportFilename() {
+        return "export";
+    }
+    
     public IdOrNameRefColumnSpec ownerUserColumnSpec() {
         return new IdOrNameRefColumnSpec("Owner User", KEY_USER, "setOwnerUser", false, "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", UserInfoController.getInstance(), UserInfo.class, "");
     }
@@ -954,6 +1077,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
     
     public IntegerColumnSpec existingItemIdColumnSpec() {
-        return new IntegerColumnSpec("Existing Item ID", KEY_EXISTING_ITEM_ID, "setImportExistingItemId", false, "CDB ID of existing item to update.");
+        return new IntegerColumnSpec("Existing Item ID", KEY_EXISTING_ITEM_ID, "setImportExistingItemId", false, "CDB ID of existing item to update.", "getId");
     }
 }

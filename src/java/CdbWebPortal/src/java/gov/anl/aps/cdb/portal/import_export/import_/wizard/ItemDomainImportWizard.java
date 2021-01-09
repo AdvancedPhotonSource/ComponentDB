@@ -9,8 +9,8 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +49,7 @@ public class ItemDomainImportWizard implements Serializable {
     private Boolean disableButtonFinish = true;
     private Boolean disableButtonCancel = false;
     
-    private DomainImportInfo domainInfo = null;
+    private DomainImportExportInfo domainInfo = null;
     
     // models for select format tab
     private String selectedFormatName = null;
@@ -80,12 +80,12 @@ public class ItemDomainImportWizard implements Serializable {
                 ItemDomainImportWizard.CONTROLLER_NAMED);
     }
 
-    public void setDomainInfo(DomainImportInfo info) {
+    public void setDomainInfo(DomainImportExportInfo info) {
         reset();
         domainInfo = info;
     }
     
-    public List<ImportFormatInfo> getFormatInfoList() {
+    public List<ImportExportFormatInfo> getFormatInfoList() {
         if (domainInfo != null) {
             return domainInfo.getFormatInfoList();
         } else {
@@ -457,9 +457,9 @@ public class ItemDomainImportWizard implements Serializable {
     }
     
     protected void createHelperForSelectedFormat() {
-        List<ImportFormatInfo> infoList = getFormatInfoList();
-        ImportFormatInfo selectedFormatInfo = null;
-        for (ImportFormatInfo info : infoList) {
+        List<ImportExportFormatInfo> infoList = getFormatInfoList();
+        ImportExportFormatInfo selectedFormatInfo = null;
+        for (ImportExportFormatInfo info : infoList) {
             if (info.getFormatName().equals(getSelectedFormatName())) {
                 selectedFormatInfo = info;
                 break;
@@ -467,7 +467,7 @@ public class ItemDomainImportWizard implements Serializable {
         }
         try {
             if (selectedFormatInfo != null) {
-                Class helperClass = selectedFormatInfo.getImportHelperClass();
+                Class helperClass = selectedFormatInfo.getHelperClass();
                 importHelper = (ImportHelperBase) helperClass.newInstance();
             }
         } catch (InstantiationException | IllegalAccessException ex) {

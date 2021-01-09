@@ -11,22 +11,18 @@ package gov.anl.aps.cdb.portal.import_export.export.objects.handlers;
 public abstract class SingleColumnOutputHandler extends OutputHandler {
     
     protected String columnName;
+    private String description;
 
-    public SingleColumnOutputHandler(String columnName) {
-        super();
+    public SingleColumnOutputHandler(String columnName, String description) {
         this.columnName = columnName;
-    }
-    
-    public SingleColumnOutputHandler(int colIndex, String columnName) {
-        super(colIndex);
-        this.columnName = columnName;
-    }
-
-    public int getColumnIndex() {
-        return getFirstColumnIndex();
+        this.description = description;
     }
     
     public String getColumnName() {
         return columnName;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

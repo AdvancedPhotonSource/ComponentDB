@@ -9,13 +9,11 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperSource;
 import gov.anl.aps.cdb.portal.controllers.settings.SourceSettings;
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperSourceApsKabel;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -196,19 +194,33 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
         return true;
     }
 
-    protected ImportHelperBase createImportHelperInstance() throws CdbException {
-        return new ImportHelperSource();
-    }
-    
     @Override
-    protected DomainImportInfo initializeDomainImportInfo() {
+    protected DomainImportExportInfo initializeDomainImportInfo() {
         
-        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
-        formatInfo.add(new ImportFormatInfo("Basic Source Create/Update Format", ImportHelperSource.class));
+        formatInfo.add(new ImportExportFormatInfo("Basic Source Create/Update Format", ImportHelperSource.class));
         
         String completionUrl = "/views/source/list?faces-redirect=true";
         
-        return new DomainImportInfo(formatInfo, completionUrl);
+        return new DomainImportExportInfo(formatInfo, completionUrl);
     }
+    
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+    
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo("Basic Source Create/Update Format", ImportHelperSource.class));
+        
+        String completionUrl = "/views/source/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
 }

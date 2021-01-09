@@ -22,9 +22,9 @@ import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.FilterViewItemHierarchySelection;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemHierarchyCache;
 import java.util.ArrayList;
 import java.util.List;
@@ -543,13 +543,13 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     }
 
     @Override
-    protected DomainImportInfo initializeDomainImportInfo() {
+    protected DomainImportExportInfo initializeDomainImportInfo() {
 
-        List<ImportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportFormatInfo("Hierarchical Location Format", ImportHelperLocation.class));
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportExportFormatInfo("Hierarchical Location Format", ImportHelperLocation.class));
 
         String completionUrl = "/views/itemDomainLocation/list?faces-redirect=true";
 
-        return new DomainImportInfo(formatInfo, completionUrl);
+        return new DomainImportExportInfo(formatInfo, completionUrl);
     }
 }

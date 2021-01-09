@@ -398,7 +398,8 @@ class ConnectedMenuHandler(InputHandler):
         parent_value = input_dict[self.parent_key]
         cell_value = input_dict[self.column_key]
         if not name_manager.has_name(parent_value):
-            sys.exit("name manager has no menu range for: %s column: %s parent column: %s" % (parent_value, self.column_key, self.parent_key))
+            #sys.exit("name manager has no menu range for: %s column: %s parent column: %s" % (parent_value, self.column_key, self.parent_key))
+            return False, "name manager has no menu range for: %s column: %s parent column: %s" % (parent_value, self.column_key, self.parent_key)
         has_child = name_manager.value_is_valid_for_name(parent_value, cell_value)
         valid_string = ""
         if not has_child:
