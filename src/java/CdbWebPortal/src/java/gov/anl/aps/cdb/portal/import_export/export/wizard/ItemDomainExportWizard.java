@@ -300,7 +300,7 @@ public class ItemDomainExportWizard implements Serializable {
 
         } else if (tab.endsWith(TAB_DOWNLOAD_FILE)) {
             disableButtonPrev = true;
-            disableButtonCancel = false;
+            disableButtonCancel = true;
             disableButtonFinish = false;
             disableButtonNext = true;
         }

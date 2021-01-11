@@ -391,22 +391,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             colIndex = colIndex + 1;
         }
         
-        // create empty data rows
-        rowIndex = 1;
-        for (ExportColumnData columnData : exportContent) {
-            Row dataRow = sheet.createRow(rowIndex);
-            rowIndex = rowIndex + 1;
-        }
-        
         // create data row content, one column at a time
         colIndex = 0;
         for (ExportColumnData columnData : exportContent) {
             rowIndex = 1;
-            Row dataRow = sheet.getRow(rowIndex);
-            if (dataRow == null) {
-                dataRow = sheet.createRow(rowIndex);
-            }
             for (String columnValue : columnData.getColumnValues()) {
+                Row dataRow = sheet.getRow(rowIndex);
+                if (dataRow == null) {
+                    dataRow = sheet.createRow(rowIndex);
+                }
                 Cell dataCell = dataRow.createCell(colIndex);
                 dataCell.setCellValue(columnValue);
                 rowIndex = rowIndex + 1;
