@@ -29,9 +29,10 @@ public class IntegerColumnSpec extends ColumnSpec {
             String entitySetterMethod, 
             boolean required, 
             String description,
-            String exportGetterMethod) {
+            String exportGetterMethod,
+            boolean updateOnly) {
         
-        super(header, propertyName, entitySetterMethod, required, description, exportGetterMethod);
+        super(header, propertyName, entitySetterMethod, required, description, exportGetterMethod, updateOnly);
     }
 
     @Override

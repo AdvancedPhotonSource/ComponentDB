@@ -32,11 +32,11 @@ public class StringColumnSpec extends ColumnSpec {
             String propertyName, 
             String entitySetterMethod, 
             boolean required, 
-            String description, 
-            String exportGetterMethod, 
-            int maxLength) {
+            String description,
+            int maxLength, 
+            String exportGetterMethod) {
 
-        super(header, propertyName, entitySetterMethod, required, description, exportGetterMethod);
+        super(header, propertyName, entitySetterMethod, required, description, exportGetterMethod, false);
         this.maxLength = maxLength;
     }
 

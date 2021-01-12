@@ -274,7 +274,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         String parsedValue;
 
         if (cell == null) {
-            parsedValue = "";
+            parsedValue = null;
         } else {
             cell.setCellType(CellType.STRING);
             parsedValue = cell.getStringCellValue().trim();
@@ -745,6 +745,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 validString = appendToString(validString, 
                         "Required value missing for " + columnNameForIndex(col.getColumnIndex()));
             }
+            
+            // check that updateOnly column value not specified in create mode
+            if ((col.isUpdateOnly()) && (getImportMode() == ImportMode.CREATE) && ((cellValue != null) && (!cellValue.isEmpty()))) {
+                isValid = false;
+                validString = appendToString(validString, 
+                        "Value should not be specified in create mode for " + columnNameForIndex(col.getColumnIndex()));
+            }
         }
         
         // skip blank and comment rows
@@ -1070,6 +1077,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
     
     public IntegerColumnSpec existingItemIdColumnSpec() {
-        return new IntegerColumnSpec("Existing Item ID", KEY_EXISTING_ITEM_ID, "setImportExistingItemId", false, "CDB ID of existing item to update.", "getId");
+        return new IntegerColumnSpec("Existing Item ID", KEY_EXISTING_ITEM_ID, "setImportExistingItemId", false, "CDB ID of existing item to update.", "getId", true);
     }
 }

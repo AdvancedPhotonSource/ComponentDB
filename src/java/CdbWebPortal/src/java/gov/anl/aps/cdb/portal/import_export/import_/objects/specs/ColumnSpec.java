@@ -27,6 +27,9 @@ public abstract class ColumnSpec {
     private String description;
     private String exportGetterMethod;
     
+    // column value can only be specified in update mode
+    private boolean updateOnly = false;
+    
     public ColumnSpec() {
     }
     
@@ -59,10 +62,12 @@ public abstract class ColumnSpec {
             String importSetterMethod, 
             boolean importRequired, 
             String description, 
-            String exportGetterMethod) {
+            String exportGetterMethod,
+            boolean updateOnly) {
 
         this(header, importPropertyName, importSetterMethod, importRequired, description);
         this.exportGetterMethod = exportGetterMethod;
+        this.updateOnly = updateOnly;
     }
 
     public String getHeader() {
@@ -87,6 +92,10 @@ public abstract class ColumnSpec {
     
     public String getExportGetterMethod() {
         return exportGetterMethod;
+    }
+    
+    public boolean isUpdateOnly() {
+        return updateOnly;
     }
 
     public int getInputTemplateColumns(
@@ -117,7 +126,8 @@ public abstract class ColumnSpec {
                 colIndex,
                 getHeader(),
                 isRequired(),
-                getDescription());
+                getDescription(),
+                isUpdateOnly());
     }
     
     public OutputColumnModel getOutputColumnModel(int colIndex) {
