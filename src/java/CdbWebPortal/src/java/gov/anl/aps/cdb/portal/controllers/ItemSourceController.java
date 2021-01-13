@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSourceSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemSourceControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemSourceFacade;
 
@@ -21,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named("itemSourceController")
 @SessionScoped
-public class ItemSourceController extends CdbEntityController<ItemSource, ItemSourceFacade, ItemSourceSettings> implements Serializable {
+public class ItemSourceController extends CdbEntityController<ItemSourceControllerUtility, ItemSource, ItemSourceFacade, ItemSourceSettings> implements Serializable {
     
 
     @EJB
@@ -42,24 +43,6 @@ public class ItemSourceController extends CdbEntityController<ItemSource, ItemSo
         return itemSource;
     }
 
-    @Override
-    public String getEntityTypeName() {
-        return "itemSource";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "item source";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getId().toString();
-        }
-        return "";
-    }
-
     /*
     @Override
     public List<ComponentSource> getAvailableItems() {
@@ -78,6 +61,11 @@ public class ItemSourceController extends CdbEntityController<ItemSource, ItemSo
     @Override
     protected ItemSourceSettings createNewSettingObject() {
         return new ItemSourceSettings(this);
+    }
+
+    @Override
+    protected ItemSourceControllerUtility createControllerUtilityInstance() {
+        return new ItemSourceControllerUtility(); 
     }
 
     /**

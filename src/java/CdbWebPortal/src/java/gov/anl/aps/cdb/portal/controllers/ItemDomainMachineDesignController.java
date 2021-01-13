@@ -10,11 +10,11 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineHierarchy;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineTemplateInstantiation;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
@@ -49,10 +49,8 @@ import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -65,7 +63,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.DragDropEvent;
 import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -76,7 +73,7 @@ import org.primefaces.model.TreeNode;
 @Named(ItemDomainMachineDesignController.controllerNamed)
 @SessionScoped
 public class ItemDomainMachineDesignController
-        extends ItemController<ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings>
+        extends ItemController<ItemDomainMachineDesignControllerUtility, ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings>
         implements ItemDomainCableDesignWizardClient {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignController.class.getName());
@@ -196,12 +193,13 @@ public class ItemDomainMachineDesignController
         // Continue to reassignment of parent.
         setCurrent(parent);
         if (currentItemElement != null) {
-            String uniqueName = generateUniqueElementNameForItem(parent);
+            String uniqueName = getControllerUtility().generateUniqueElementNameForItem(parent);
             currentItemElement.setName(uniqueName);
             currentItemElement.setParentItem(parent);
         } else {
             // Dragging in top level
-            currentItemElement = createItemElement(parent);
+            UserInfo user = SessionUtility.getUser();
+            currentItemElement = getControllerUtility().createItemElement(parent, user);
             currentItemElement.setContainedItem(child);
         }
 
@@ -1058,7 +1056,7 @@ public class ItemDomainMachineDesignController
         if (currentViewIsTemplate) {
             for (int i = 0; i < derivedItems.size(); i++) {
                 Item item = derivedItems.get(i);
-                String uniqueName = generateUniqueElementNameForItem((ItemDomainMachineDesign) item);
+                String uniqueName = getControllerUtility().generateUniqueElementNameForItem((ItemDomainMachineDesign) item);
                 ItemElement newItemElement = cloneCreateItemElement(newTemplateElement, item, true, true);
                 newItemElement.setName(uniqueName);
                 try {
@@ -1422,7 +1420,7 @@ public class ItemDomainMachineDesignController
         // Verify valid machine desings 
         for (ItemDomainMachineDesign md : idmList) {
             try {
-                checkItem(md);
+                getControllerUtility().checkItem(md);
             } catch (CdbException ex) {
                 SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
                 LOGGER.error(ex);
@@ -1435,8 +1433,9 @@ public class ItemDomainMachineDesignController
         for (int i = 0; i < catalogItemsDraggedAsChildren.size(); i++) {
             ItemDomainMachineDesign mdItem = idmList.get(i);
             Item catalogItem = catalogItemsDraggedAsChildren.get(i);
-
-            ItemElement newItemElement = createItemElement(current);
+            
+            UserInfo user = SessionUtility.getUser();
+            ItemElement newItemElement = getControllerUtility().createItemElement(current, user);
 
             newItemElement.setContainedItem(mdItem);
             mdItem.setAssignedItem(catalogItem);
@@ -1832,25 +1831,7 @@ public class ItemDomainMachineDesignController
     }
 
     // </editor-fold>    
-    // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">
-    public boolean verifyValidTemplateName(String templateName, boolean printMessage) {
-        boolean validTitle = false;
-        if (templateName.contains("{")) {
-            int openBraceIndex = templateName.indexOf("{");
-            int closeBraceIndex = templateName.indexOf("}");
-            if (openBraceIndex < closeBraceIndex) {
-                validTitle = true;
-            }
-        }
-        if (!validTitle && printMessage) {
-            SessionUtility.addWarningMessage(
-                    "Template names require parameters",
-                    "Place parements within {} in template name. Example: 'templateName {paramName}'");
-
-        }
-
-        return validTitle;
-    }
+    // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">    
 
     public boolean isCollapseContentsOfInventoryItem() {
         return current.getDerivedFromItemList().size() == 0;
@@ -2309,7 +2290,7 @@ public class ItemDomainMachineDesignController
             containedItem.getItemElementMemberList().add(currentEditItemElement);
         }
 
-        checkItem(containedItem);
+        getControllerUtility().checkItem(containedItem);
 
     }
 
@@ -2547,66 +2528,7 @@ public class ItemDomainMachineDesignController
         if (displayListViewItemDetailsView) {
             expandToSpecificMachineDesignItem(entity);
         }
-    }
-
-    @Override
-    protected void checkItem(ItemDomainMachineDesign item) throws CdbException {
-        super.checkItem(item);
-
-        if (item.getIsItemTemplate()) {
-            List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
-            if (itemElementMemberList == null || itemElementMemberList.isEmpty()) {
-                // Item is not a child of another item. 
-                if (!verifyValidTemplateName(item.getName(), false)) {
-                    throw new CdbException("Place parements within {} in template name. Example: 'templateName {paramName}'");
-                }
-            }
-        }
-
-        Item newAssignedItem = item.getAssignedItem();
-        if (newAssignedItem != null) {
-            if ((newAssignedItem instanceof ItemDomainCatalog || newAssignedItem instanceof ItemDomainInventory) == false) {
-                throw new CdbException("The new assigned item must be either catalog or inventory item.");
-            }
-
-            Integer itemId = item.getId();
-            if (itemId != null) {
-                ItemDomainMachineDesign originalItem = findById(itemId);
-
-                Item origAssignedItem = originalItem.getAssignedItem();
-
-                if (origAssignedItem != null) {
-                    ItemDomainCatalog catItem = null;
-                    if (origAssignedItem instanceof ItemDomainInventory) {
-                        catItem = ((ItemDomainInventory) origAssignedItem).getCatalogItem();
-                    } else if (origAssignedItem instanceof ItemDomainCatalog) {
-                        catItem = (ItemDomainCatalog) origAssignedItem;
-                    }
-
-                    if (newAssignedItem instanceof ItemDomainInventory) {
-                        List<ItemDomainInventory> inventoryItemList = catItem.getInventoryItemList();
-                        if (inventoryItemList.contains(newAssignedItem) == false) {
-                            throw new CdbException("The new assigned inventory item must be of catalog item: " + catItem.getName() + ".");
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    protected boolean verifyItemNameCombinationUniqueness(Item item) {
-        boolean unique = super.verifyItemNameCombinationUniqueness(item);
-
-        // Ensure all machine designs are unique
-        if (!unique) {
-            String viewUUID = item.getViewUUID();
-            item.setItemIdentifier2(viewUUID);
-            unique = true;
-        }
-
-        return unique;
-    }
+    }   
 
     @Override
     protected void resetVariablesForCurrent() {
@@ -2737,16 +2659,6 @@ public class ItemDomainMachineDesignController
     }
 
     @Override
-    public String getEntityTypeName() {
-        return "itemMachineDesign";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Machine Design Item";
-    }
-
-    @Override
     public String getDefaultDomainName() {
         return ItemDomainName.machineDesign.getValue();
     }
@@ -2760,28 +2672,13 @@ public class ItemDomainMachineDesignController
     }
 
     @Override
-    public boolean getEntityDisplayItemIdentifier2() {
-        return false;
-    }
-
-    @Override
     public boolean getEntityDisplayItemConnectors() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemName() {
         return true;
     }
 
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
         return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
-        return isCurrentViewIsTemplate() == false;
     }
 
     @Override
@@ -2825,11 +2722,6 @@ public class ItemDomainMachineDesignController
     }
 
     @Override
-    public boolean getEntityDisplayItemProject() {
-        return true;
-    }
-
-    @Override
     public boolean getEntityDisplayItemEntityTypes() {
         return false;
     }
@@ -2846,11 +2738,6 @@ public class ItemDomainMachineDesignController
 
     @Override
     public String getItemsDerivedFromItemTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getDerivedFromItemTitle() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -3209,4 +3096,9 @@ public class ItemDomainMachineDesignController
     }
 
     // </editor-fold>
+
+    @Override
+    protected ItemDomainMachineDesignControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainMachineDesignControllerUtility(); 
+    }
 }

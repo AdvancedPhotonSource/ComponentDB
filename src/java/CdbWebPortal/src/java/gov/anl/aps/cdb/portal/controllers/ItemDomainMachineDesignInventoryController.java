@@ -11,6 +11,8 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignInventorySettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -102,11 +104,6 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
         return true;
-    }
-
-    @Override
-    public String getDerivedFromItemTitle() {
-        return "Machine Template";
     }
 
     @Override
@@ -383,6 +380,11 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     public String deletedItemsList() {
         return "/views/itemDomainMachineDesign/deletedItemsList?faces-redirect=true";
+    } 
+
+    @Override
+    protected ItemDomainMachineDesignControllerUtility getControllerUtility() {
+        return new ItemDomainMachineDesignInventoryControllerUtility(); 
     }
     
     /**

@@ -5,12 +5,12 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableCatalog;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableCatalogSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog.CABLE_CATALOG_INTERNAL_PROPERTY_TYPE;
@@ -30,7 +30,7 @@ import javax.inject.Named;
  */
 @Named(ItemDomainCableCatalogController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseController<ItemDomainCableCatalog, ItemDomainCableCatalogFacade, ItemDomainCableCatalogSettings> {
+public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseController<ItemDomainCableCatalogControllerUtility, ItemDomainCableCatalog, ItemDomainCableCatalogFacade, ItemDomainCableCatalogSettings> {
     
     public static final String CONTROLLER_NAMED = "itemDomainCableCatalogController";
     
@@ -104,16 +104,6 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     }
 
     @Override
-    public String getEntityTypeName() {
-        return "cableCatalog"; 
-    } 
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Cable Catalog";
-    }
-
-    @Override
     public String getDefaultDomainName() {
         return ItemDomainName.cableCatalog.getValue(); 
     }
@@ -131,11 +121,6 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     @Override
     public String getItemsDerivedFromItemTitle() {
         return "Cable Inventory";
-    }
-
-    @Override
-    public String getDerivedFromItemTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -167,6 +152,11 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         String completionUrl = "/views/itemDomainCableCatalog/list?faces-redirect=true";
         
         return new DomainImportInfo(formatInfo, completionUrl);
+    }
+
+    @Override
+    protected ItemDomainCableCatalogControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainCableCatalogControllerUtility(); 
     }
     
 }

@@ -4,7 +4,6 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
@@ -14,8 +13,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCable;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -28,7 +27,7 @@ import javax.inject.Named;
 
 @Named("itemDomainCableController")
 @SessionScoped
-public class ItemDomainCableController extends ItemController<ItemDomainCable, ItemDomainCableFacade, ItemDomainCableSettings> {
+public class ItemDomainCableController extends ItemController<ItemDomainCableControllerUtility, ItemDomainCable, ItemDomainCableFacade, ItemDomainCableSettings> {
     
     private final String DOMAIN_TYPE_NAME = ItemDomainName.cable.getValue();
     
@@ -85,12 +84,7 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
         // Cascade nature of item relationship list will remove all connection relationships automatically. 
         this.setCurrent(cableItem);
         this.destroy(); 
-    }
-
-    @Override
-    public void checkItemUniqueness(ItemDomainCable entity) throws CdbException {        
-        // Cables are only unique by primary key (id). 
-    }
+    }   
     
     public static List<ItemElementRelationship> getConnectionRelationshipList(Item item, boolean second) {
         List<ItemElementRelationship> itemElementRelationshipList;
@@ -117,7 +111,7 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
         propertyType.setIsInternal(true);
         propertyType.setName(CABLE_INTERNAL_PROPERTY_TYPE);
         propertyTypeController.setCurrent(propertyType);
-        propertyTypeController.create(true, false); 
+        propertyTypeController.create(true); 
         return propertyType; 
     }
     
@@ -264,17 +258,7 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
     }   
 
     @Override
-    public boolean getEntityDisplayItemName() {
-        return false; 
-    }
-
-    @Override
     public boolean getEntityDisplayDerivedFromItem() {
-        return false; 
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
         return false; 
     }
 
@@ -314,11 +298,6 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
     }
 
     @Override
-    public boolean getEntityDisplayItemProject() {
-        return false; 
-    }
-
-    @Override
     public boolean getEntityDisplayItemEntityTypes() {
         return false; 
     }
@@ -326,12 +305,7 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
     @Override
     public String getItemsDerivedFromItemTitle() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getDerivedFromItemTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    }   
 
     @Override
     public String getStyleName() {
@@ -346,12 +320,7 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "cable";
-    }
+    }   
 
     @Override
     protected ItemDomainCable instenciateNewItemDomainEntity() {
@@ -366,6 +335,11 @@ public class ItemDomainCableController extends ItemController<ItemDomainCable, I
     @Override
     protected ItemDomainCableSettings createNewSettingObject() {
         return new ItemDomainCableSettings(this); 
+    }
+
+    @Override
+    protected ItemDomainCableControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainCableControllerUtility();
     }
     
 }
