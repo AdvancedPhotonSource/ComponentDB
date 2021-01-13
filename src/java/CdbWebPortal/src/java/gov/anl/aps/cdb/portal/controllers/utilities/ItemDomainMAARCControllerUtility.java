@@ -47,7 +47,7 @@ public class ItemDomainMAARCControllerUtility extends ItemControllerUtility<Item
                 ItemElement ie = itemElementDisplayList.get(0);
                 itemElementDisplayList.remove(0);
 
-                destroyFile(ie, item, userInfo);
+                destroyFile(ie, userInfo);
             }
 
             // Clear Relationships
@@ -71,8 +71,9 @@ public class ItemDomainMAARCControllerUtility extends ItemControllerUtility<Item
      * Destroys a full file reference from a study
      *
      * @param itemElement
+     * @param userInfo
      */
-    public void destroyFile(ItemElement itemElement, ItemDomainMAARC currentItem, UserInfo userInfo) throws CdbException {
+    public void destroyFile(ItemElement itemElement, UserInfo userInfo) throws CdbException {
         ItemDomainMAARC containedItem = (ItemDomainMAARC) itemElement.getContainedItem();
 
         ItemElementControllerUtility instance = new ItemElementControllerUtility(); 
