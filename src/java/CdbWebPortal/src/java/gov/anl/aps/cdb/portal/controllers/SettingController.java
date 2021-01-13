@@ -189,7 +189,7 @@ public class SettingController implements Serializable {
     }
 
     private UserInfo getSessionUser() {
-        return (UserInfo) SessionUtility.getUser();
+        return SessionUtility.getUser();
     }
 
     public String getDefaultSelectionLabel() {

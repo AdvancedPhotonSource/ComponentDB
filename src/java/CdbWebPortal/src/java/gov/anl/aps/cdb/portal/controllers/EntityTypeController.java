@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.EntityTypeSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.EntityTypeControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -20,7 +21,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named("entityTypeController")
 @SessionScoped
-public class EntityTypeController extends CdbEntityController<EntityType, EntityTypeFacade, EntityTypeSettings> implements Serializable {
+public class EntityTypeController extends CdbEntityController<EntityTypeControllerUtility, EntityType, EntityTypeFacade, EntityTypeSettings> implements Serializable {
 
     @EJB
     EntityTypeFacade entityTypeFacade;
@@ -43,16 +44,6 @@ public class EntityTypeController extends CdbEntityController<EntityType, Entity
     }
 
     @Override
-    public String getEntityTypeName() {
-        return "entityType"; 
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public EntityType findById(Integer id) {
         return entityTypeFacade.find(id);
     }    
@@ -64,6 +55,11 @@ public class EntityTypeController extends CdbEntityController<EntityType, Entity
     @Override
     protected EntityTypeSettings createNewSettingObject() {
         return new EntityTypeSettings();
+    }
+
+    @Override
+    protected EntityTypeControllerUtility createControllerUtilityInstance() {
+        return new EntityTypeControllerUtility();
     }
 
     @FacesConverter(value = "entityTypeConverter", forClass = EntityType.class)

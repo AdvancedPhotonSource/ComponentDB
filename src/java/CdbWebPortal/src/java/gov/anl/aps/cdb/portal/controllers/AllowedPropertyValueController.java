@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.AllowedPropertyValueSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.AllowedPropertyValueControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import java.io.Serializable;
@@ -23,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named("allowedPropertyValueController")
 @SessionScoped
-public class AllowedPropertyValueController extends CdbEntityController<AllowedPropertyValue, AllowedPropertyValueFacade, AllowedPropertyValueSettings> implements Serializable {    
+public class AllowedPropertyValueController extends CdbEntityController<AllowedPropertyValueControllerUtility, AllowedPropertyValue, AllowedPropertyValueFacade, AllowedPropertyValueSettings> implements Serializable {    
 
     @EJB
     private AllowedPropertyValueFacade allowedPropertyValueFacade;
@@ -41,25 +42,7 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     protected AllowedPropertyValue createEntityInstance() {
         AllowedPropertyValue allowedPropertyValue = new AllowedPropertyValue();
         return allowedPropertyValue;
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "allowedPropertyValue";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "allowed property value";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getId().toString();
-        }
-        return "";
-    }
+    }   
 
     @Override
     public List<AllowedPropertyValue> getAvailableItems() {
@@ -103,6 +86,11 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     @Override
     protected AllowedPropertyValueSettings createNewSettingObject() {
         return new AllowedPropertyValueSettings(this);
+    }
+
+    @Override
+    protected AllowedPropertyValueControllerUtility createControllerUtilityInstance() {
+        return new AllowedPropertyValueControllerUtility(); 
     }
 
     /**
