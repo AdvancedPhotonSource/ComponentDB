@@ -249,9 +249,25 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         return displayEntityTypeName; 
     }
     
+    /**
+     * Prepare entity insert.
+     *
+     * This method should be overridden in the derived controller.
+     *
+     * @param entity entity instance
+     * @throws CdbException in case of any errors
+     */
     protected void prepareEntityInsert(EntityType entity, UserInfo userInfo) throws CdbException {        
     }
     
+    /**
+     * Prepare entity update.
+     *
+     * This method should be overridden in the derived controller.
+     *
+     * @param entity entity instance
+     * @throws CdbException in case of any errors
+     */
     protected void prepareEntityUpdate(EntityType entity, UserInfo updatedByUser) throws CdbException {        
     }
     
