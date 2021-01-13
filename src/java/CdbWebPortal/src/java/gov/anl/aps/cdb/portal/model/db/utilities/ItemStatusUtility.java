@@ -107,7 +107,7 @@ public class ItemStatusUtility {
         propertyType.setDefaultValue(propInfo.getDefaultValue());
 
         propertyTypeController.setCurrent(propertyType);
-        propertyTypeController.create(true, false); 
+        propertyTypeController.create(true); 
         return propertyType; 
     }
     
