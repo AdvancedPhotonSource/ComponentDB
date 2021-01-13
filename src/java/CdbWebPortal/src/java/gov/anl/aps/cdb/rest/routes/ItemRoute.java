@@ -1139,11 +1139,12 @@ public class ItemRoute extends ItemBaseRoute {
             ItemDomainLocation parentLocation = (ItemDomainLocation) parentItem;
 
             EntityInfo entityInfo = EntityInfoUtility.createEntityInfo(currentUser);
-            ItemElement ie = locController.createItemElementFromApi(parentLocation, entityInfo);
+            // TODO update this in next itteration of changes. 
+            /*ItemElement ie = locController.createItemElementFromApi(parentLocation, entityInfo);
             ie.setContainedItem(newLocationItem);
 
             newLocationItem.setItemElementMemberList(new ArrayList<>());
-            newLocationItem.getItemElementMemberList().add(ie);
+            newLocationItem.getItemElementMemberList().add(ie); */
         }
 
         locController.createFromApi(newLocationItem, currentUser);
