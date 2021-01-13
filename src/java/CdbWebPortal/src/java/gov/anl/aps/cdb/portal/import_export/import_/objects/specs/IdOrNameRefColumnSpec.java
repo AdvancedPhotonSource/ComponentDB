@@ -16,8 +16,32 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
 
     protected String domainNameFilter = null;
 
-    public IdOrNameRefColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType, String domainNameFilter) {
+    public IdOrNameRefColumnSpec(
+            String header, 
+            String propertyName, 
+            String entitySetterMethod, 
+            boolean required, 
+            String description, 
+            CdbEntityController controller, 
+            Class paramType, 
+            String domainNameFilter) {
+        
         super(header, propertyName, entitySetterMethod, required, description, controller, paramType);
+        this.domainNameFilter = domainNameFilter;
+    }
+
+    public IdOrNameRefColumnSpec(
+            String header, 
+            String propertyName, 
+            String entitySetterMethod, 
+            boolean required, 
+            String description, 
+            CdbEntityController controller, 
+            Class paramType, 
+            String domainNameFilter,
+            String exportGetterMethod) {
+        
+        super(header, propertyName, entitySetterMethod, required, description, controller, paramType, exportGetterMethod);
         this.domainNameFilter = domainNameFilter;
     }
 

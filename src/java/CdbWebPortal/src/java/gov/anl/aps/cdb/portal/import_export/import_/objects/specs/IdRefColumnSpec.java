@@ -17,8 +17,31 @@ public class IdRefColumnSpec extends ColumnSpec {
     protected CdbEntityController controller;
     protected Class paramType;
 
-    public IdRefColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType) {
+    public IdRefColumnSpec(
+            String header, 
+            String propertyName, 
+            String entitySetterMethod, 
+            boolean required, 
+            String description, 
+            CdbEntityController controller, 
+            Class paramType) {
+        
         super(header, propertyName, entitySetterMethod, required, description);
+        this.controller = controller;
+        this.paramType = paramType;
+    }
+
+    public IdRefColumnSpec(
+            String header, 
+            String propertyName, 
+            String entitySetterMethod, 
+            boolean required, 
+            String description, 
+            CdbEntityController controller, 
+            Class paramType,
+            String exportGetterMethod) {
+        
+        super(header, propertyName, entitySetterMethod, required, description, exportGetterMethod, false);
         this.controller = controller;
         this.paramType = paramType;
     }

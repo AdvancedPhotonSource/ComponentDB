@@ -46,7 +46,7 @@ See LICENSE file.
         
         <p:commandButton value="Export"
                          icon="fa fa-file-excel-o"
-                         action="#{entityController[importEntityActionFunctionName]}"
+                         action="#{entityController[exportEntityActionFunctionName]}"
                          rendered="#{entityController.entityDisplayExportButton}"
                          onstart="PF('loadingDialog').show();"
                          oncomplete="PF('loadingDialog').hide();"/> 

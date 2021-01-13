@@ -25,7 +25,7 @@ public abstract class ColumnSpec {
     private String entitySetterMethod;
     private boolean required;
     private String description;
-    private String exportGetterMethod;
+    protected String exportGetterMethod;
     
     // column value can only be specified in update mode
     private boolean updateOnly = false;

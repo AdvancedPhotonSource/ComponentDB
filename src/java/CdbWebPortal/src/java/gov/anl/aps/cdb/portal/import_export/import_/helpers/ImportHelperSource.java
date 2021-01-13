@@ -59,15 +59,9 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Source Template";
+    public String getFilenameBase() {
+        return "Source";
     }
-    
-    @Override
-    protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
-        Source entity = getEntityController().createEntityInstance();
-        return new CreateInfo(entity, true, "");
-    }  
     
     @Override
     protected Source newInvalidUpdateInstance() {
@@ -75,9 +69,10 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     }
 
     @Override
-    public String getExportFilename() {
-        return "Source Export";
-    }
+    protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
+        Source entity = getEntityController().createEntityInstance();
+        return new CreateInfo(entity, true, "");
+    }  
     
 //    @Override
 //    protected CreateInfo retrieveEntityInstance(Map<String, Object> rowMap) {

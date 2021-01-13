@@ -616,7 +616,24 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     protected DomainImportExportInfo initializeDomainImportInfo() {
         
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Format", ImportHelperCableDesign.class));
+        formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
+        
+        String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+    
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
         
         String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
         

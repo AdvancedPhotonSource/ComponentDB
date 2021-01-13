@@ -283,12 +283,16 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return parsedValue;
     }
 
+    private String getTemplateExcelFilename() {
+        return getFilenameBase() + " Template";
+    }
+    
     public StreamedContent getTemplateExcelFile() {
         if (templateExcelFile == null) {
             buildTemplateExcelFile();
         }
         InputStream inStream = new ByteArrayInputStream(templateExcelFile);
-        return new DefaultStreamedContent(inStream, "xlsx", getTemplateFilename() + ".xlsx");
+        return new DefaultStreamedContent(inStream, "xlsx", getTemplateExcelFilename() + ".xlsx");
     }
 
     private void buildTemplateExcelFile() {
@@ -1007,7 +1011,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     public abstract EntityControllerType getEntityController();
     
-    public abstract String getTemplateFilename();
+    public abstract String getFilenameBase();
     
     protected abstract CreateInfo createEntityInstance(Map<String, Object> rowMap);
     
@@ -1045,7 +1049,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
     
     public String getExportFilename() {
-        return "export";
+        return getFilenameBase() + " Export";
     }
     
     public IdOrNameRefColumnSpec ownerUserColumnSpec() {
