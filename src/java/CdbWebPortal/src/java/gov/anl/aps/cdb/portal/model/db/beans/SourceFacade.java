@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -79,6 +80,10 @@ public class SourceFacade extends CdbEntityFacade<Source> {
         cq.select(s);
         cq.orderBy(cb.asc(s.get("name")));
         return getEntityManager().createQuery(cq).getResultList();
+    }
+    
+    public static SourceFacade getInstance() {
+        return (SourceFacade) SessionUtility.findFacade(SourceFacade.class.getSimpleName()); 
     }
     
 }

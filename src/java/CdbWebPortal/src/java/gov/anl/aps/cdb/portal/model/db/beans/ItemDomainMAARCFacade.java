@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMAARC;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 
 /**
@@ -22,6 +23,10 @@ public class ItemDomainMAARCFacade extends ItemFacadeBase<ItemDomainMAARC> {
     
     public ItemDomainMAARCFacade() {
         super(ItemDomainMAARC.class);
+    }
+    
+    public static ItemDomainMAARCFacade getInstance() {
+        return (ItemDomainMAARCFacade) SessionUtility.findFacade(ItemDomainMAARCFacade.class.getSimpleName()); 
     }
     
 }
