@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.import_export.export.objects.handlers;
 
+import gov.anl.aps.cdb.common.objects.CdbObject;
 import gov.anl.aps.cdb.portal.import_export.export.objects.ExportColumnData;
 import gov.anl.aps.cdb.portal.import_export.export.objects.HandleOutputResult;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
@@ -38,6 +39,10 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
     }
 
     public HandleOutputResult handleOutput(List<CdbEntity> entities) {
+        return handleOutput(entities, false);
+    }
+        
+    public HandleOutputResult handleOutput(List<CdbEntity> entities, boolean useIdValues) {
 
         boolean isValid = true;
         String validString = "";
@@ -71,7 +76,26 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
             
             String columnValue = "";
             if (returnValue != null) {
-                columnValue = returnValue.toString();
+                if (useIdValues) {
+                    if (returnValue instanceof List) {
+                        List<CdbEntity> objList = (List<CdbEntity>) returnValue;
+                        boolean isFirstItem = true;
+                        for (CdbEntity obj : objList) {
+                            if (!isFirstItem) {
+                                columnValue = columnValue + ", ";
+                            } else {
+                                isFirstItem = false;
+                            }
+                            columnValue = columnValue + obj.getId().toString();
+                        }
+                        
+                    } else if (returnValue instanceof CdbEntity) {
+                        CdbEntity obj = (CdbEntity) returnValue;
+                        columnValue = obj.getId().toString();
+                    }
+                } else {
+                    columnValue = returnValue.toString();
+                }
             }
             
             columnValues.add(columnValue);

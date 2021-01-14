@@ -1053,31 +1053,31 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
     
     public IdOrNameRefColumnSpec ownerUserColumnSpec() {
-        return new IdOrNameRefColumnSpec("Owner User", KEY_USER, "setOwnerUser", false, "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", UserInfoController.getInstance(), UserInfo.class, "");
+        return new IdOrNameRefColumnSpec("Owner User", KEY_USER, "setOwnerUser", false, "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", UserInfoController.getInstance(), UserInfo.class, "", "getOwnerUser");
     }
     
     public IdOrNameRefColumnSpec ownerGroupColumnSpec() {
-        return new IdOrNameRefColumnSpec("Owner Group", KEY_GROUP, "setOwnerUserGroup", false, "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", UserGroupController.getInstance(), UserGroup.class, "");
+        return new IdOrNameRefColumnSpec("Owner Group", KEY_GROUP, "setOwnerUserGroup", false, "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", UserGroupController.getInstance(), UserGroup.class, "", "getOwnerUserGroup");
     }
     
     public IdOrNameRefListColumnSpec projectListColumnSpec() {
-        return new IdOrNameRefListColumnSpec("Project", "itemProjectString", "setItemProjectList", true, "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'.", ItemProjectController.getInstance(), List.class, "");
+        return new IdOrNameRefListColumnSpec("Project", "itemProjectString", "setItemProjectList", true, "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'.", ItemProjectController.getInstance(), List.class, "", "getItemProjectList");
     }
     
     public IdOrNameRefListColumnSpec technicalSystemListColumnSpec(String domainName) {
-        return new IdOrNameRefListColumnSpec("Technical System", "itemCategoryString", "setItemCategoryList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemCategoryController.getInstance(), List.class, domainName);
+        return new IdOrNameRefListColumnSpec("Technical System", "itemCategoryString", "setItemCategoryList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemCategoryController.getInstance(), List.class, domainName, "getItemCategoryList");
     }
     
     public IdOrNameRefListColumnSpec functionListColumnSpec(String domainName) {
-        return new IdOrNameRefListColumnSpec("Function", "itemTypeString", "setItemTypeList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemTypeController.getInstance(), List.class, domainName);
+        return new IdOrNameRefListColumnSpec("Function", "itemTypeString", "setItemTypeList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemTypeController.getInstance(), List.class, domainName, "getItemTypeList");
     }
     
     public IdOrNameRefColumnSpec locationColumnSpec() {
-        return new IdOrNameRefColumnSpec("Location", "importLocationItemString", "setImportLocationItem", false, "Item location.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, "");
+        return new IdOrNameRefColumnSpec("Location", "importLocationItemString", "setImportLocationItem", false, "Item location.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, "", "getLocationItem");
     }
     
     public StringColumnSpec locationDetailsColumnSpec() {
-        return new StringColumnSpec("Location Details", "locationDetails", "setLocationDetails", false, "Location details for item.", 256);
+        return new StringColumnSpec("Location Details", "locationDetails", "setLocationDetails", false, "Location details for item.", 256, "getLocationDetails");
     }
     
     public IntegerColumnSpec existingItemIdColumnSpec() {
