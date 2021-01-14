@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemTypeSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemTypeControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -23,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named("itemTypeController")
 @SessionScoped
-public class ItemTypeController extends ItemTypeCategoryController<ItemType, ItemTypeFacade, ItemTypeSettings> implements Serializable {       
+public class ItemTypeController extends ItemTypeCategoryController<ItemTypeControllerUtility, ItemType, ItemTypeFacade, ItemTypeSettings> implements Serializable {       
 
     private static final Logger logger = LogManager.getLogger(ItemTypeController.class.getName());
 
@@ -60,24 +61,6 @@ public class ItemTypeController extends ItemTypeCategoryController<ItemType, Ite
     }
 
     @Override
-    public String getEntityTypeName() {
-        return "itemType";
-    }
-
-    @Override
-    public String getDefaultDisplayEntityTypeName() {
-        return "Item Type";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getName();
-        }
-        return "";
-    }
-
-    @Override
     public ItemType findById(Integer id) {
         return itemTypeFacade.find(id);
     }
@@ -99,6 +82,11 @@ public class ItemTypeController extends ItemTypeCategoryController<ItemType, Ite
     @Override
     protected ItemTypeSettings createNewSettingObject() {
         return new ItemTypeSettings(this);
+    }
+
+    @Override
+    protected ItemTypeControllerUtility createControllerUtilityInstance() {
+        return new ItemTypeControllerUtility(); 
     }
 
     /**

@@ -9,6 +9,8 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
@@ -67,6 +69,11 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
     @Override
     public Item createInstance() {
         return new ItemDomainInventory();
+    } 
+
+    @Override
+    public ItemControllerUtility getItemControllerUtility() {
+        return new ItemDomainInventoryControllerUtility(); 
     }
     
     @JsonIgnore

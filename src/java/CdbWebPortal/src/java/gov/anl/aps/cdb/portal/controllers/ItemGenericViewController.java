@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemGenericViewSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemGenericControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
@@ -22,7 +23,7 @@ import javax.inject.Named;
  */
 @Named("itemGenericViewController")
 @SessionScoped
-public class ItemGenericViewController extends ItemController<Item, ItemFacade, ItemGenericViewSettings> {
+public class ItemGenericViewController extends ItemController<ItemGenericControllerUtility, Item, ItemFacade, ItemGenericViewSettings> {
     
     @EJB
     private DomainFacade domainFacade; 
@@ -38,21 +39,6 @@ public class ItemGenericViewController extends ItemController<Item, ItemFacade, 
     }
 
     @Override
-    public boolean getEntityDisplayItemIdentifier1() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemIdentifier2() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemName() {
-        return true;
-    }
-
-    @Override
     public boolean getEntityDisplayItemType() {
         return true;
     }
@@ -64,11 +50,6 @@ public class ItemGenericViewController extends ItemController<Item, ItemFacade, 
 
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
-        return true;
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
         return true;
     }
 
@@ -123,23 +104,8 @@ public class ItemGenericViewController extends ItemController<Item, ItemFacade, 
     }
 
     @Override
-    public String getDerivedFromItemTitle() {
-        return "Derived from Item";
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "item"; 
-    }
-
-    @Override
     public String getStyleName() {
         return "items"; 
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Item"; 
     }
 
     @Override
@@ -172,11 +138,6 @@ public class ItemGenericViewController extends ItemController<Item, ItemFacade, 
     }
 
     @Override
-    public boolean getEntityDisplayItemProject() {
-        return true; 
-    }
-
-    @Override
     public boolean getEntityDisplayItemEntityTypes() {
         return true;
     }
@@ -204,6 +165,11 @@ public class ItemGenericViewController extends ItemController<Item, ItemFacade, 
     @Override
     protected ItemGenericViewSettings createNewSettingObject() {
         return new ItemGenericViewSettings(this);
+    }
+
+    @Override
+    protected ItemGenericControllerUtility createControllerUtilityInstance() {
+        return new ItemGenericControllerUtility(); 
     }
     
 }

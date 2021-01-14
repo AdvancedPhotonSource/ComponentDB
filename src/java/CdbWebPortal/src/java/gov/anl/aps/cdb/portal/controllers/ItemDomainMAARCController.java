@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMAARCSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMAARCControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMAARCLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
@@ -21,6 +22,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.GalleryUtility;
@@ -34,6 +36,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -48,9 +51,8 @@ import org.primefaces.model.StreamedContent;
  */
 @Named("itemDomainMAARCController")
 @SessionScoped
-public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, ItemDomainMAARCFacade, ItemDomainMAARCSettings> {
-
-    protected final String FILE_ENTITY_TYPE_NAME = "File";
+public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCControllerUtility, ItemDomainMAARC, ItemDomainMAARCFacade, ItemDomainMAARCSettings> {
+    
     public static final String MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME = "MAARC Connection";
     protected final String FILE_PROPERTY_TYPE_NAME = "File";
 
@@ -92,22 +94,12 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     @Override
     protected ItemDomainMAARCFacade getEntityDbFacade() {
         return itemDomainMAARCFacade;
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "itemMAARC";
-    }
+    }   
 
     @Override
     public String getDefaultDomainName() {
         return ItemDomainName.maarc.getValue();
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "MAARC Item";
-    }
+    }   
 
     @Override
     public boolean getEntityDisplayItemConnectors() {
@@ -115,17 +107,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     }
 
     @Override
-    public boolean getEntityDisplayItemName() {
-        return true;
-    }
-
-    @Override
     public boolean getEntityDisplayDerivedFromItem() {
-        return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
         return false;
     }
 
@@ -165,11 +147,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     }
 
     @Override
-    public boolean getEntityDisplayItemProject() {
-        return false;
-    }
-
-    @Override
     public boolean getEntityDisplayItemEntityTypes() {
         return true;
     }
@@ -204,66 +181,21 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
         ierc.destroy(ier);
 
         relatedRelationshipsForCurrent.remove(ier);
-    }
-
+    }   
+    
     /**
      * Destroys a full file reference from a study
      *
      * @param itemElement
      */
     public void destroyFile(ItemElement itemElement) {
-        ItemDomainMAARC containedItem = (ItemDomainMAARC) itemElement.getContainedItem();
-
-        ItemElementController instance = ItemElementController.getInstance();
-        instance.destroy(itemElement);
-
-        ItemDomainMAARC currentItem = getCurrent();
-        destroy(containedItem);
-        current = currentItem;
-    }
-
-    @Override
-    protected void prepareEntityDestroy(ItemDomainMAARC item) throws CdbException {
-        if (isEntityTypeFile(item)) {
-            List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
-
-            // A file should be a member of 1 Study 
-            if (itemElementMemberList.size() == 1) {
-                // Destroy the element before proceeding to destroy the file. 
-                ItemElement itemElement = itemElementMemberList.get(0);
-                ItemElementController instance = ItemElementController.getInstance();
-                instance.destroy(itemElement);
-                itemElementMemberList.clear();
-            } else if (itemElementMemberList.size() == 0) {
-                // Do Nothing. 
-            } else {
-                throw new CdbException("File should be a member of one study. Something went wrong! please notify Admin of this error.");
-            }
-        } else {
-            // Study
-            List<ItemElement> itemElementDisplayList = item.getItemElementDisplayList();
-            while (itemElementDisplayList.size() > 0) {
-                ItemElement ie = itemElementDisplayList.get(0);
-                itemElementDisplayList.remove(0);
-
-                destroyFile(ie);
-            }
-
-            // Clear Relationships
-            List<ItemElementRelationship> ierList = item.getItemElementRelationshipList1();
-            if (ierList.size() > 0) {
-                ItemElementRelationshipController ierc = ItemElementRelationshipController.getInstance();
-
-                while (ierList.size() > 0) {
-                    ItemElementRelationship ier = ierList.get(0);
-                    ierList.remove(0);
-
-                    ierc.destroy(ier);
-                }
-
-            }
+        UserInfo user = SessionUtility.getUser();
+        
+        try {
+            getControllerUtility().destroyFile(itemElement, user);
+        } catch (CdbException ex) {
+            SessionUtility.addErrorMessage("Error", "An error occurred deleting file.");
         }
-        super.prepareEntityDestroy(item);
     }
 
     public List<ItemElementRelationship> getRelatedRelationshipsForCurrent() {
@@ -304,20 +236,8 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     }
 
     public boolean isCurrentEntityTypeFile() {
-        return isEntityTypeFile(getCurrent());
-    }
-
-    public boolean isEntityTypeFile(ItemDomainMAARC item) {
-        List<EntityType> entityTypeList = item.getEntityTypeList();
-        for (EntityType entityType : entityTypeList) {
-            if (entityType.getName().equals(FILE_ENTITY_TYPE_NAME)) {
-                return true;
-
-            }
-        }
-
-        return false;
-    }
+        return getControllerUtility().isEntityTypeFile(getCurrent());
+    }   
 
     public Integer getFilePropertyTypeId() {
         if (filePropertyTypeId == null && !attemptedFetchFilePropertyType) {
@@ -401,7 +321,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     }
 
     public String getPreviewPath(ItemDomainMAARC item, boolean storedOnly) {
-        if (!isEntityTypeFile(item)) {
+        if (!getControllerUtility().isEntityTypeFile(item)) {
             return null;
         }
 
@@ -528,7 +448,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
      */
     public boolean isLoadGallery() {
         if (loadGallery == null) {
-            if (isEntityTypeFile(getCurrent())) {
+            if (getControllerUtility().isEntityTypeFile(getCurrent())) {
                 // File
                 loadGallery = loadGalleryForItemNeeded(getCurrent());
             } else {
@@ -637,11 +557,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     }
 
     @Override
-    public String getDerivedFromItemTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getStyleName() {
         return "maarc";
     }
@@ -655,5 +570,10 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARC, I
     public String getDefaultDomainDerivedToDomainName() {
         return null;
     }   
+
+    @Override
+    protected ItemDomainMAARCControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainMAARCControllerUtility(); 
+    }
 
 }

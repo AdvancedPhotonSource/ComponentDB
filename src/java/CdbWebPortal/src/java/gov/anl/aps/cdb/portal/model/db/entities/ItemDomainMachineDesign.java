@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
@@ -441,10 +442,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             Float sortOrder) {
         
         ItemElement itemElement = new ItemElement();
-
+        
+        ItemDomainMachineDesignControllerUtility controllerUtility; 
+        controllerUtility = new ItemDomainMachineDesignControllerUtility(); 
+        
         String elementName
-                = ItemDomainMachineDesignController.getInstance().
-                        generateUniqueElementNameForItem(parentItem);
+                = controllerUtility.generateUniqueElementNameForItem(parentItem);
         itemElement.setName(elementName);
 
         itemElement.setImportParentItem(parentItem, sortOrder, user, group);
