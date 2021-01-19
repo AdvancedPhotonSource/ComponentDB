@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.controllers.settings.CdbDomainEntitySettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.CdbDomainEntityControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
@@ -42,7 +43,7 @@ import org.primefaces.event.RowEditEvent;
  * @param <EntityType>
  * @param <FacadeType>
  */
-public abstract class CdbDomainEntityController<EntityType extends CdbDomainEntity, FacadeType extends CdbEntityFacade<EntityType>, DomainEntitySettingsObject extends CdbDomainEntitySettings> extends CdbEntityController<EntityType, FacadeType, DomainEntitySettingsObject> implements Serializable, ICdbDomainEntityController<EntityType> {
+public abstract class CdbDomainEntityController<ControllerUtility extends CdbDomainEntityControllerUtility<EntityType, FacadeType>, EntityType extends CdbDomainEntity, FacadeType extends CdbEntityFacade<EntityType>, DomainEntitySettingsObject extends CdbDomainEntitySettings> extends CdbEntityController<ControllerUtility, EntityType, FacadeType, DomainEntitySettingsObject> implements Serializable, ICdbDomainEntityController<EntityType> {
 
     private PropertyValue currentEditPropertyValue;
     

@@ -5,13 +5,13 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CableWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
@@ -39,7 +39,12 @@ import org.primefaces.model.TreeNode;
  */
 @Named(ItemDomainCableDesignController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainCableDesignController extends ItemController<ItemDomainCableDesign, ItemDomainCableDesignFacade, ItemDomainCableDesignSettings> {
+public class ItemDomainCableDesignController extends ItemController<ItemDomainCableDesignControllerUtility, ItemDomainCableDesign, ItemDomainCableDesignFacade, ItemDomainCableDesignSettings> {
+
+    @Override
+    protected ItemDomainCableDesignControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainCableDesignControllerUtility(); 
+    }
 
     public class EndpointDialog {
 
@@ -498,24 +503,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
 
     @Override
-    public String getEntityTypeName() {
-        return "cableDesign";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Cable Design";
-    }
-
-    @Override
     public String getDefaultDomainName() {
         return ItemDomainName.cableDesign.getValue();
-    }
-
-    @Override
-    public boolean getEntityDisplayItemIdentifier2() {
-        return false;
-    }
+    }   
 
     @Override
     public boolean getEntityDisplayItemConnectors() {
@@ -523,17 +513,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
 
     @Override
-    public boolean getEntityDisplayItemName() {
-        return true;
-    }
-
-    @Override
     public boolean getEntityDisplayDerivedFromItem() {
-        return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
         return false;
     }
 
@@ -573,22 +553,12 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
 
     @Override
-    public boolean getEntityDisplayItemProject() {
-        return true;
-    }
-
-    @Override
     public boolean getEntityDisplayItemEntityTypes() {
         return false;
     }
 
     @Override
     public String getItemsDerivedFromItemTitle() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public String getDerivedFromItemTitle() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

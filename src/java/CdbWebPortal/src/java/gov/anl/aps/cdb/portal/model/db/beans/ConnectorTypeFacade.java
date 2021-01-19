@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,10 @@ public class ConnectorTypeFacade extends CdbEntityFacade<ConnectorType> {
 
     public ConnectorTypeFacade() {
         super(ConnectorType.class);
+    }
+    
+    public static ConnectorTypeFacade getInstance() {
+        return (ConnectorTypeFacade) SessionUtility.findFacade(ConnectorTypeFacade.class.getSimpleName()); 
     }
     
 }

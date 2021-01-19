@@ -4,8 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.controllers.settings.PropertyTypeHandlerSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.PropertyTypeHandlerControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeHandlerFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.plugins.CdbPluginManager;
@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named("propertyTypeHandlerController")
 @SessionScoped
-public class PropertyTypeHandlerController extends CdbEntityController<PropertyTypeHandler, PropertyTypeHandlerFacade, PropertyTypeHandlerSettings> implements Serializable {
+public class PropertyTypeHandlerController extends CdbEntityController<PropertyTypeHandlerControllerUtility, PropertyTypeHandler, PropertyTypeHandlerFacade, PropertyTypeHandlerSettings> implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(PropertyTypeHandlerController.class.getName());
     
@@ -47,25 +47,7 @@ public class PropertyTypeHandlerController extends CdbEntityController<PropertyT
     protected PropertyTypeHandler createEntityInstance() {
         PropertyTypeHandler propertyHandler = new PropertyTypeHandler();
         return propertyHandler;
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "propertyTypeHandler";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "property type handler";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getName();
-        }
-        return "";
-    }
+    }   
 
     @Override
     public List<PropertyTypeHandler> getAvailableItems() {
@@ -117,24 +99,16 @@ public class PropertyTypeHandlerController extends CdbEntityController<PropertyT
         }
        }
        return getEntity(id);
-   }
-
-    @Override
-    public void prepareEntityInsert(PropertyTypeHandler propertyTypeHandler) throws ObjectAlreadyExists {
-        PropertyTypeHandler existingPropertyTypeHandler = propertyTypeHandlerFacade.findByName(propertyTypeHandler.getName());
-        if (existingPropertyTypeHandler != null) {
-            throw new ObjectAlreadyExists("Property type handler " + propertyTypeHandler.getName() + " already exists.");
-        }
-        logger.debug("Inserting new property type " + propertyTypeHandler.getName());
-    }
-
-    @Override
-    public void prepareEntityUpdate(PropertyTypeHandler propertyHandler) throws ObjectAlreadyExists {
-    }   
+   }      
 
     @Override
     protected PropertyTypeHandlerSettings createNewSettingObject() {
         return new PropertyTypeHandlerSettings(this);
+    }
+
+    @Override
+    protected PropertyTypeHandlerControllerUtility createControllerUtilityInstance() {
+        return new PropertyTypeHandlerControllerUtility(); 
     }
 
     /**

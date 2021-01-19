@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperSource;
 import gov.anl.aps.cdb.portal.controllers.settings.SourceSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.SourceControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -30,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named(SourceController.CONTROLLER_NAMED)
 @SessionScoped
-public class SourceController extends CdbEntityController<Source, SourceFacade, SourceSettings> implements Serializable {    
+public class SourceController extends CdbEntityController<SourceControllerUtility, Source, SourceFacade, SourceSettings> implements Serializable {    
 
     private static final Logger logger = LogManager.getLogger(SourceController.class.getName());   
     public static final String CONTROLLER_NAMED = "sourceController";
@@ -57,19 +58,6 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
     }
 
     @Override
-    public String getEntityTypeName() {
-        return "source";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getName();
-        }
-        return "";
-    }
-
-    @Override
     public Source findById(Integer id) {
         return sourceFacade.findById(id);
     }
@@ -86,28 +74,15 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
     public List<Source> getAvailableSourcesSortedByName() {
         return sourceFacade.findAllSortedByName();
     }
-
-    @Override
-    public void prepareEntityInsert(Source source) throws ObjectAlreadyExists {
-        Source existingSource = sourceFacade.findByName(source.getName());
-        if (existingSource != null) {
-            throw new ObjectAlreadyExists("Source " + source.getName() + " already exists.");
-        }
-        logger.debug("Inserting new source " + source.getName());
-    }
-
-    @Override
-    public void prepareEntityUpdate(Source source) throws ObjectAlreadyExists {
-        Source existingSource = sourceFacade.findByName(source.getName());
-        if (existingSource != null && !existingSource.getId().equals(source.getId())) {
-            throw new ObjectAlreadyExists("Source " + source.getName() + " already exists.");
-        }
-        logger.debug("Updating source " + source.getName());
-    }
     
     @Override
     protected SourceSettings createNewSettingObject() {
         return new SourceSettings(this);
+    }
+
+    @Override
+    protected SourceControllerUtility createControllerUtilityInstance() {
+        return new SourceControllerUtility(); 
     }
 
     /**

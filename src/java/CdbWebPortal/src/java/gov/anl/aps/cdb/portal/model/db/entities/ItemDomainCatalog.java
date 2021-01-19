@@ -9,6 +9,8 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +37,12 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     @Override
     public Item createInstance() {
         return new ItemDomainCatalog(); 
-    }        
+    } 
+
+    @Override
+    public ItemControllerUtility getItemControllerUtility() {
+        return new ItemDomainCatalogControllerUtility(); 
+    }
 
     @JsonIgnore
     public String getMachineDesignPlaceholderName() {

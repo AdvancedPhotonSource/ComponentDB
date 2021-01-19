@@ -8,17 +8,16 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainLocationSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperLocation;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -39,7 +38,7 @@ import org.primefaces.model.menu.DefaultSubMenu;
 
 @Named(ItemDomainLocationController.controllerNamed)
 @SessionScoped
-public class ItemDomainLocationController extends ItemController<ItemDomainLocation, ItemDomainLocationFacade, ItemDomainLocationSettings> {
+public class ItemDomainLocationController extends ItemController<ItemDomainLocationControllerUtility, ItemDomainLocation, ItemDomainLocationFacade, ItemDomainLocationSettings> {
 
     private final String DOMAIN_TYPE_NAME = ItemDomainName.location.getValue();
     private static final String DOMAIN_NAME = "Location";
@@ -382,18 +381,18 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         List<ItemElement> itemElementMemberList = item.getItemElementMemberList();                   
 
         if (member != null) {            
-            String elementName = generateUniqueElementNameForItem(newParent);
+            String elementName = getControllerUtility().generateUniqueElementNameForItem(newParent);
 
             member.setName(elementName);
             member.setParentItem(newParent);
         } else if (itemElementMemberList.isEmpty()) {
             ItemElement createItemElement = null;
+            ItemDomainLocationControllerUtility controllerUtility = getControllerUtility();
             if (userInfo == null) {
-                createItemElement = createItemElement(newParent);
-            } else {
-                EntityInfo entityInfo = EntityInfoUtility.createEntityInfo(userInfo); 
-                createItemElement = createItemElement(newParent, entityInfo); 
-            }
+                userInfo = SessionUtility.getUser();                
+            } 
+            
+            createItemElement = controllerUtility.createItemElement(newParent, userInfo);             
             createItemElement.setContainedItem(item);
             itemElementMemberList.add(createItemElement); 
         } else {
@@ -402,18 +401,8 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     }
 
     @Override
-    public boolean getEntityDisplayItemName() {
-        return true;
-    }
-
-    @Override
     public boolean getEntityDisplayDerivedFromItem() {
         return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
-        return true;
     }
 
     @Override
@@ -457,23 +446,8 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     }
 
     @Override
-    public String getDerivedFromItemTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getStyleName() {
         return "content";
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "location";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Location";
     }
 
     @Override
@@ -484,11 +458,6 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     @Override
     public String getDefaultDomainDerivedFromDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean getEntityDisplayItemProject() {
-        return false;
     }
 
     @Override
@@ -551,5 +520,10 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         String completionUrl = "/views/itemDomainLocation/list?faces-redirect=true";
 
         return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+
+    @Override
+    protected ItemDomainLocationControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainLocationControllerUtility(); 
     }
 }

@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.RoleType;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,10 @@ public class RoleTypeFacade extends CdbEntityFacade<RoleType> {
 
     public RoleTypeFacade() {
         super(RoleType.class);
+    }
+    
+    public static RoleTypeFacade getInstance() {
+        return (RoleTypeFacade) SessionUtility.findFacade(RoleTypeFacade.class.getSimpleName()); 
     }
     
 }

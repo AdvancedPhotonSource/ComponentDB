@@ -5,12 +5,12 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableInventory;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainCableInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableInventorySettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
@@ -33,7 +33,7 @@ import javax.inject.Named;
  */
 @Named(ItemDomainCableInventoryController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseController<ItemDomainCableInventory, ItemDomainCableInventoryFacade, ItemDomainCableInventorySettings> {
+public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseController<ItemDomainCableInventoryControllerUtility, ItemDomainCableInventory, ItemDomainCableInventoryFacade, ItemDomainCableInventorySettings> {
     
     public static final String ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME = "Cable Instance Status";
     public static final String CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE = "cable_inventory_internal_property_type";
@@ -147,27 +147,12 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     @Override
     public List<ItemDomainCableInventory> getItemList() {
         return itemDomainCableInventoryFacade.findByDomainOrderByDerivedFromItemAndItemName(getDefaultDomainName());
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "cableInventory"; 
-    } 
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Cable Inventory Item";
-    }
+    }   
 
     @Override
     public String getDefaultDomainName() {
         return DEFAULT_DOMAIN_NAME; 
-    }
-
-    @Override
-    public String getDerivedFromItemTitle() {
-        return "Cable Catalog Item";
-    }
+    }   
 
     @Override
     public boolean getEntityDisplayItemElements() {
@@ -193,5 +178,10 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
         String completionUrl = "/views/itemDomainCableInventory/list?faces-redirect=true";
         
         return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+
+    @Override
+    protected ItemDomainCableInventoryControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainCableInventoryControllerUtility(); 
     }
 }

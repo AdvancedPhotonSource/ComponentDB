@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -33,6 +34,10 @@ public class AllowedPropertyValueFacade extends CdbEntityFacade<AllowedPropertyV
         return (List<AllowedPropertyValue>) em.createNamedQuery("AllowedPropertyType.findAllByPropertyTypeId")
                 .setParameter("propertyTypeId", propertyTypeId)
                 .getResultList();
+    }
+    
+    public static AllowedPropertyValueFacade getInstance() {
+        return (AllowedPropertyValueFacade) SessionUtility.findBean(AllowedPropertyValueFacade.class.getSimpleName()); 
     }
     
 }
