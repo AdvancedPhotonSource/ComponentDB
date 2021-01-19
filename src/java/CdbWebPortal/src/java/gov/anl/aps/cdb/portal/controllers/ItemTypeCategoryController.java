@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.controllers.settings.CdbEntitySettingsBase;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemTypeCategoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemTypeCategoryEntity;
@@ -13,7 +14,7 @@ import java.util.List;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 
-public abstract class ItemTypeCategoryController<EntityType extends ItemTypeCategoryEntity, FacadeType extends CdbEntityFacade<EntityType>, SettingObject extends CdbEntitySettingsBase> extends CdbEntityController<EntityType, FacadeType, SettingObject> {
+public abstract class ItemTypeCategoryController<ControllerUtility extends ItemTypeCategoryControllerUtility<EntityType, FacadeType>, EntityType extends ItemTypeCategoryEntity, FacadeType extends CdbEntityFacade<EntityType>, SettingObject extends CdbEntitySettingsBase> extends CdbEntityController<ControllerUtility, EntityType, FacadeType, SettingObject> {
 
     protected Domain currentViewDomain = null;
 
@@ -21,9 +22,7 @@ public abstract class ItemTypeCategoryController<EntityType extends ItemTypeCate
 
     public abstract List<EntityType> getItemTypeCategoryEntityListByDomainName(String domainName);
 
-    public abstract EntityType createItemTypeCategoryEntity();
-
-    public abstract String getDefaultDisplayEntityTypeName();
+    public abstract EntityType createItemTypeCategoryEntity();   
 
     @Override
     protected EntityType createEntityInstance() {
@@ -56,7 +55,7 @@ public abstract class ItemTypeCategoryController<EntityType extends ItemTypeCate
             return currentDomainListDataModel;
         }
     }
-    
+
     private String getCompleteItemTypeCategoryTitle(String itemControllerTitle) {
         return currentViewDomain.getName() + " Item " + itemControllerTitle; 
     }
@@ -93,7 +92,7 @@ public abstract class ItemTypeCategoryController<EntityType extends ItemTypeCate
         String displayEntityTypeName;
         displayEntityTypeName = getCurrentViewDisplayEntityTypeName();
         if (displayEntityTypeName == null) {
-            displayEntityTypeName = getDefaultDisplayEntityTypeName();
+            displayEntityTypeName = super.getDisplayEntityTypeName(); 
         }
         return displayEntityTypeName;
     }

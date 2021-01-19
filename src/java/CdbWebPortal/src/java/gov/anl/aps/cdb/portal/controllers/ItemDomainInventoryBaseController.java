@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryBaseControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -21,8 +22,19 @@ import javax.ejb.EJB;
 /**
  *
  * @author craig
+ * @param <InventoryControllerUtility>
+ * @param <ItemInventoryBaseDomainEntity>
+ * @param <ItemDomainInventoryEntityBaseFacade>
+ * @param <ItemInventoryEntityBaseSettingsObject>
  */
-public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainEntity extends ItemDomainInventoryBase, ItemDomainInventoryEntityBaseFacade extends ItemFacadeBase<ItemInventoryBaseDomainEntity>, ItemInventoryEntityBaseSettingsObject extends ItemSettings> extends ItemController<ItemInventoryBaseDomainEntity, ItemDomainInventoryEntityBaseFacade, ItemInventoryEntityBaseSettingsObject> implements IItemStatusController {
+public abstract class ItemDomainInventoryBaseController
+        <
+            InventoryControllerUtility extends ItemDomainInventoryBaseControllerUtility<ItemInventoryBaseDomainEntity, ItemDomainInventoryEntityBaseFacade>, 
+            ItemInventoryBaseDomainEntity extends ItemDomainInventoryBase, 
+            ItemDomainInventoryEntityBaseFacade extends ItemFacadeBase<ItemInventoryBaseDomainEntity>, 
+            ItemInventoryEntityBaseSettingsObject extends ItemSettings
+        > 
+        extends ItemController<InventoryControllerUtility, ItemInventoryBaseDomainEntity, ItemDomainInventoryEntityBaseFacade, ItemInventoryEntityBaseSettingsObject> implements IItemStatusController {
 
     // Inventory status variables
     protected InventoryStatusPropertyTypeInfo inventoryStatusPropertyTypeInfo = null;
@@ -159,18 +171,8 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
     }
 
     @Override
-    public boolean getEntityDisplayItemName() {
-        return true;
-    }
-
-    @Override
     public boolean getEntityDisplayDerivedFromItem() {
         return true; 
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
-        return true;
     }
 
     @Override
@@ -201,11 +203,6 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
     @Override
     public boolean getEntityDisplayItemsDerivedFromItem() {
         return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemProject() {
-        return true; 
     }
 
     @Override

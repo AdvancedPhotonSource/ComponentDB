@@ -4,12 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCatalog;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCatalogAssembly;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Named(ItemDomainCatalogController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainCatalogController extends ItemDomainCatalogBaseController<ItemDomainCatalog, ItemDomainCatalogFacade, ItemDomainCatalogSettings> {
+public class ItemDomainCatalogController extends ItemDomainCatalogBaseController<ItemDomainCatalogControllerUtility, ItemDomainCatalog, ItemDomainCatalogFacade, ItemDomainCatalogSettings> {
 
     private static final Logger logger = LogManager.getLogger(ItemDomainCatalogController.class.getName());
 
@@ -196,6 +196,11 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
             displayInventorySpares = SparePartsBean.isItemContainSparePartConfiguration(getCurrent());
         }
         return displayInventorySpares;
+    }
+
+    @Override
+    protected ItemDomainCatalogControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainCatalogControllerUtility();
     }
 
 }

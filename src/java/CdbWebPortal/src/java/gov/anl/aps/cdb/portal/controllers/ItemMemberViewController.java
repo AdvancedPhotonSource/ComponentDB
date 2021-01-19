@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemMemberViewSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemGenericControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -18,28 +19,13 @@ import javax.inject.Named;
  */
 @Named("itemMemberViewController")
 @SessionScoped
-public class ItemMemberViewController extends ItemController<Item, ItemFacade, ItemMemberViewSettings> {    
+public class ItemMemberViewController extends ItemController<ItemGenericControllerUtility, Item, ItemFacade, ItemMemberViewSettings> {    
     
     @EJB
-    ItemFacade itemFacade; 
-
-    @Override
-    public boolean getEntityDisplayItemIdentifier1() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean getEntityDisplayItemIdentifier2() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    ItemFacade itemFacade;     
 
     @Override
     public boolean getEntityDisplayItemSources() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean getEntityDisplayItemName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -59,32 +45,12 @@ public class ItemMemberViewController extends ItemController<Item, ItemFacade, I
     }
 
     @Override
-    public String getEntityTypeName() {
-        return "designMember"; 
-    } 
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Design Member";
-    }
-
-    @Override
     public boolean getEntityDisplayDerivedFromItem() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public String getItemsDerivedFromItemTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getDerivedFromItemTitle() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -144,11 +110,6 @@ public class ItemMemberViewController extends ItemController<Item, ItemFacade, I
     }
 
     @Override
-    public boolean getEntityDisplayItemProject() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public boolean getEntityDisplayItemEntityTypes() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -176,6 +137,11 @@ public class ItemMemberViewController extends ItemController<Item, ItemFacade, I
     @Override
     protected ItemMemberViewSettings createNewSettingObject() {
         return new ItemMemberViewSettings(this);
+    }
+
+    @Override
+    protected ItemGenericControllerUtility createControllerUtilityInstance() {
+        return new ItemGenericControllerUtility(); 
     }
 
 }

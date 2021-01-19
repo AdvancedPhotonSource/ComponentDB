@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
@@ -217,6 +218,7 @@ import org.primefaces.model.TreeNode;
     "itemElementRelationshipList",
     "itemElementRelationshipList1",
     "itemElementRelationshipList2",
+    "fullRelationshipList", 
     "itemElementMemberList",
     "itemElementMemberList2",
     "historyMemberList",
@@ -455,6 +457,12 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         return clonedItem;
     }
+    
+    @JsonIgnore      
+    public ItemControllerUtility getItemControllerUtility() {
+        return null; 
+    }
+    
 
     @JsonIgnore
     public ItemController getItemDomainController() {

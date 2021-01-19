@@ -112,6 +112,7 @@ public class UserInfo extends SettingEntity implements Serializable {
             
     private transient String fullNameForSelection = null;
     private transient String userGroupListString = null; 
+    private transient String passwordEntry = null;   
     
     public UserInfo() {
     }
@@ -182,6 +183,15 @@ public class UserInfo extends SettingEntity implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @JsonIgnore
+    public String getPasswordEntry() {
+        return passwordEntry;
+    }
+
+    public void setPasswordEntry(String passwordEntry) {
+        this.passwordEntry = passwordEntry;
     }
 
     public String getDescription() {
