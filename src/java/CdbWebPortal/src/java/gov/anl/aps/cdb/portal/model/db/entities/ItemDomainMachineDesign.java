@@ -14,7 +14,10 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
@@ -120,6 +123,17 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return ItemDomainMachineDesignInventoryController.getInstance(); 
         }
         return ItemDomainMachineDesignController.getInstance();
+    } 
+
+    @Override
+    public ItemControllerUtility getItemControllerUtility() {
+        if (isItemDeleted(this)) {
+            return new ItemDomainMachineDesignDeletedControllerUtility(); 
+        }
+        if (isItemInventory(this)) {
+            return new ItemDomainMachineDesignInventoryControllerUtility(); 
+        }
+        return new ItemDomainMachineDesignControllerUtility(); 
     }
 
     @Override

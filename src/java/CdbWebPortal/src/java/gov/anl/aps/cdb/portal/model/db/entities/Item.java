@@ -1498,7 +1498,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         PropertyValue propertyValue = getCoreMetadataPropertyValue();
 
         if (propertyValue == null) {
-            propertyValue = getItemDomainController().prepareCoreMetadataPropertyValue(this);
+            propertyValue = getItemControllerUtility().prepareCoreMetadataPropertyValue(this);
         }
         
         propertyValue.setPropertyMetadataValue(key, value);
@@ -1517,7 +1517,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
-        return getItemDomainController().getCoreMetadataPropertyInfo();
+        return getItemControllerUtility().createCoreMetadataPropertyInfo(); 
     }
 
     protected CdbEntity getEntityById(CdbEntityController controller, String id) {

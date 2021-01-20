@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
@@ -29,7 +31,13 @@ public class ItemDomainLocation extends Item {
     private transient Float importSortOrder = null;
     
     private transient ItemElement parentItemElement = null; 
+    
 
+    @Override
+    public ItemDomainLocationControllerUtility getItemControllerUtility() {
+        return new ItemDomainLocationControllerUtility(); 
+    }
+    
     @JsonIgnore
     public ItemElement getParentItemElement() {
         if (parentItemElement == null) {
@@ -39,7 +47,7 @@ public class ItemDomainLocation extends Item {
             }
         }
         return parentItemElement;
-    }        
+    }
     
     public ItemDomainLocation getParentItem() {
         ItemElement parentItemElement = getParentItemElement();

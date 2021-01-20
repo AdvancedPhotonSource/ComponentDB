@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableInventoryControllerUtility;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -28,6 +29,11 @@ public class ItemDomainCableInventory extends ItemDomainInventoryBase<ItemDomain
     @Override
     public Item createInstance() {
         return new ItemDomainCableInventory(); 
+    } 
+
+    @Override
+    public ItemDomainCableInventoryControllerUtility getItemControllerUtility() {
+        return new ItemDomainCableInventoryControllerUtility(); 
     }
     
     @JsonIgnore
