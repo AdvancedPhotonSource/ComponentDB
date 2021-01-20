@@ -206,8 +206,8 @@ public class ImportHelperMachineHierarchy
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Machine Hierarchy Template";
+    public String getFilenameBase() {
+        return "Machine Hierarchy";
     }
     
     @Override

@@ -85,25 +85,24 @@ public abstract class SimpleInputHandler extends SingleColumnInputHandler {
 
         // get row dictionary value
         Object parsedValue = rowMap.get(getPropertyName());
-        if (parsedValue != null) {
-            try {
-                String setterMethodName = getSetterMethod();
-                if ((setterMethodName != null) && (!setterMethodName.equals(""))) {
-                    // use reflection to invoke setter method on entity instance
-                    Method method;
-                    Class paramType = getParamType();
-                    method = entity.getClass().getMethod(getSetterMethod(), paramType);
-                    method.invoke(entity, parsedValue);
-                }
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                isValid = false;
-                validString
-                        = "Unable to invoke setter method: " + getSetterMethod()
-                        + " for column: " + getColumnName()
-                        + " reason: " + ex.getClass().getName();
-                LOGGER.info(methodLogName + validString);
-                return new ValidInfo(isValid, validString);
+            
+        try {
+            String setterMethodName = getSetterMethod();
+            if ((setterMethodName != null) && (!setterMethodName.equals(""))) {
+                // use reflection to invoke setter method on entity instance
+                Method method;
+                Class paramType = getParamType();
+                method = entity.getClass().getMethod(getSetterMethod(), paramType);
+                method.invoke(entity, parsedValue);
             }
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            isValid = false;
+            validString
+                    = "Unable to invoke setter method: " + getSetterMethod()
+                    + " for column: " + getColumnName()
+                    + " reason: " + ex.getClass().getName();
+            LOGGER.info(methodLogName + validString);
+            return new ValidInfo(isValid, validString);
         }
 
         return new ValidInfo(isValid, validString);

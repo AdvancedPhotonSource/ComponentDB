@@ -110,24 +110,26 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         
         List<ColumnSpec> specs = new ArrayList<>();
         
+        specs.add(existingItemIdColumnSpec());
+
         InputHandler nameHandler = new NameHandler(128);
-        specs.add(new CustomColumnSpec(LABEL_NAME, "name", true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", nameHandler));
+        specs.add(new CustomColumnSpec(LABEL_NAME, "name", true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", nameHandler, "getName"));
         
-        specs.add(new StringColumnSpec("Alt Name", "alternateName", "setAlternateName", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 128));
-        specs.add(new StringColumnSpec("Ext Cable Name", "externalCableName", "setExternalCableName", false, "Cable name in external system (e.g., CAD, routing tool).", 256));
-        specs.add(new StringColumnSpec("Import Cable ID", "importCableId", "setImportCableId", false, "Import cable identifier.", 256));
-        specs.add(new StringColumnSpec("Alternate Cable ID", "alternateCableId", "setAlternateCableId", false, "Alternate (e.g., group-specific) cable identifier.", 256));
-        specs.add(new StringColumnSpec("Legacy QR ID", "legacyQrId", "setLegacyQrId", false, "Legacy QR identifier, e.g., for cables that have already been assigned a QR code.", 256));
-        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of cable.", 256));
-        specs.add(new StringColumnSpec("Laying", "laying", "setLaying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 256));
-        specs.add(new StringColumnSpec("Voltage", "voltage", "setVoltage", false, "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 256));
-        specs.add(new IdOrNameRefColumnSpec("Type", "catalogItemString", "setCatalogItem", false, "Numeric ID or name of CDB cable type catalog item. Name must be unique and prefixed with '#'.", ItemDomainCableCatalogController.getInstance(), Item.class, ""));
-        specs.add(new IdOrNameRefColumnSpec("Endpoint1", "endpoint1String", "setEndpoint1", false, "Numeric ID or name of CDB machine design item for first endpoint. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), Item.class, ""));
-        specs.add(new StringColumnSpec("Endpoint1 Desc", "endpoint1Description", "setEndpoint1Description", false, "Endpoint details useful for external editing.", 256));
-        specs.add(new StringColumnSpec("Endpoint1 Route", "endpoint1Route", "setEndpoint1Route", false, "Routing waypoint for first endpoint.", 256));        
-        specs.add(new IdOrNameRefColumnSpec("Endpoint2", "endpoint2String", "setEndpoint2", false, "Numeric ID or name of CDB machine design item for second endpoint. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), Item.class, ""));
-        specs.add(new StringColumnSpec("Endpoint2 Desc", "endpoint2Description", "setEndpoint2Description", false, "Endpoint details useful for external editing.", 256));
-        specs.add(new StringColumnSpec("Endpoint2 Route", "endpoint2Route", "setEndpoint2Route", false, "Routing waypoint for second endpoint.", 256));        
+        specs.add(new StringColumnSpec("Alt Name", "alternateName", "setAlternateName", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 128, "getAlternateName"));
+        specs.add(new StringColumnSpec("Ext Cable Name", "externalCableName", "setExternalCableName", false, "Cable name in external system (e.g., CAD, routing tool).", 256, "getExternalCableName"));
+        specs.add(new StringColumnSpec("Import Cable ID", "importCableId", "setImportCableId", false, "Import cable identifier.", 256, "getImportCableId"));
+        specs.add(new StringColumnSpec("Alternate Cable ID", "alternateCableId", "setAlternateCableId", false, "Alternate (e.g., group-specific) cable identifier.", 256, "getAlternateCableId"));
+        specs.add(new StringColumnSpec("Legacy QR ID", "legacyQrId", "setLegacyQrId", false, "Legacy QR identifier, e.g., for cables that have already been assigned a QR code.", 256, "getLegacyQrId"));
+        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of cable.", 256, "getDescription"));
+        specs.add(new StringColumnSpec("Laying", "laying", "setLaying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 256, "getLaying"));
+        specs.add(new StringColumnSpec("Voltage", "voltage", "setVoltage", false, "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 256, "getVoltage"));
+        specs.add(new IdOrNameRefColumnSpec("Type", "catalogItemString", "setCatalogItem", false, "Numeric ID or name of CDB cable type catalog item. Name must be unique and prefixed with '#'.", ItemDomainCableCatalogController.getInstance(), Item.class, "", "getCatalogItem"));
+        specs.add(new IdOrNameRefColumnSpec("Endpoint1", "endpoint1String", "setEndpoint1", false, "Numeric ID or name of CDB machine design item for first endpoint. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), Item.class, "", "getEndpoint1"));
+        specs.add(new StringColumnSpec("Endpoint1 Desc", "endpoint1Description", "setEndpoint1Description", false, "Endpoint details useful for external editing.", 256, "getEndpoint1Description"));
+        specs.add(new StringColumnSpec("Endpoint1 Route", "endpoint1Route", "setEndpoint1Route", false, "Routing waypoint for first endpoint.", 256, "getEndpoint1Route"));        
+        specs.add(new IdOrNameRefColumnSpec("Endpoint2", "endpoint2String", "setEndpoint2", false, "Numeric ID or name of CDB machine design item for second endpoint. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), Item.class, "", "getEndpoint2"));
+        specs.add(new StringColumnSpec("Endpoint2 Desc", "endpoint2Description", "setEndpoint2Description", false, "Endpoint details useful for external editing.", 256, "getEndpoint2Description"));
+        specs.add(new StringColumnSpec("Endpoint2 Route", "endpoint2Route", "setEndpoint2Route", false, "Routing waypoint for second endpoint.", 256, "getEndpoint2Route"));        
         specs.add(projectListColumnSpec());
         specs.add(technicalSystemListColumnSpec(ItemDomainName.cableDesign.getValue()));
         specs.add(ownerUserColumnSpec());
@@ -142,11 +144,25 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         return ItemDomainCableDesignController.getInstance();
     }
 
+    /**
+     * Specifies whether helper supports updating existing instances.  Defaults
+     * to false. Subclasses override to customize.
+     */
     @Override
-    public String getTemplateFilename() {
-        return "Cable Design Template";
+    public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public String getFilenameBase() {
+        return "Cable Design";
     }
     
+    @Override
+    protected ItemDomainCableDesign newInvalidUpdateInstance() {
+        return getEntityController().createEntityInstance();
+    }
+
     @Override 
     protected ValidInfo preImport() {
         getEntityController().migrateCoreMetadataPropertyType();
@@ -164,7 +180,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     * and replace them with the internal cdb identifier.
     */
     @Override
-    protected ValidInfo postImport() {
+    protected ValidInfo postCreate() {
         
         String idRegexPattern = "#cdbid[^#]*#";
         idRegexPattern = Matcher.quoteReplacement(idRegexPattern);

@@ -14,4 +14,10 @@ See LICENSE file.
                      action="#{sourceController.prepareImport()}"
                      rendered="#{loginController.loggedInAsAdmin}"/>
 
+    <p:commandButton value="Export"
+                     icon="fa fa-file-excel-o"
+                     action="#{entityController.prepareExport()}"
+                     onstart="PF('loadingDialog').show();"
+                     oncomplete="PF('loadingDialog').hide();"/> 
+
 </ui:composition>

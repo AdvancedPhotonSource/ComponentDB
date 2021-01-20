@@ -10,21 +10,21 @@ import java.util.List;
  *
  * @author craig
  */
-public class DomainImportInfo {
+public class DomainImportExportInfo {
     
-    private List<ImportFormatInfo> formatInfoList;
+    private List<ImportExportFormatInfo> formatInfoList;
     private String completionUrl;
     
-    public DomainImportInfo(List<ImportFormatInfo> formatList, String url) {
+    public DomainImportExportInfo(List<ImportExportFormatInfo> formatList, String url) {
         formatInfoList = formatList;
         completionUrl = url;
     }
 
-    public List<ImportFormatInfo> getFormatInfoList() {
+    public List<ImportExportFormatInfo> getFormatInfoList() {
         return formatInfoList;
     }
 
-    public void setFormatInfoList(List<ImportFormatInfo> formatInfoList) {
+    public void setFormatInfoList(List<ImportExportFormatInfo> formatInfoList) {
         this.formatInfoList = formatInfoList;
     }
 

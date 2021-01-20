@@ -52,8 +52,8 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Catalog Assembly Template";
+    public String getFilenameBase() {
+        return "Catalog Assembly";
     }
     
     @Override

@@ -69,8 +69,8 @@ public class ImportHelperLocation
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Location Template";
+    public String getFilenameBase() {
+        return "Location";
     }
     
     @Override

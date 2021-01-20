@@ -55,8 +55,8 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Cable Inventory Template";
+    public String getFilenameBase() {
+        return "Cable Inventory";
     }
     
     @Override

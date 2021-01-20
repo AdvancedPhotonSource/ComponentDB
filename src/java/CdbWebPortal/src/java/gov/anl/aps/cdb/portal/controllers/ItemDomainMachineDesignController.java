@@ -41,8 +41,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
@@ -2751,15 +2751,15 @@ public class ItemDomainMachineDesignController
     }
 
     @Override
-    protected DomainImportInfo initializeDomainImportInfo() {
+    protected DomainImportExportInfo initializeDomainImportInfo() {
 
-        List<ImportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportFormatInfo("Machine Hierarchy Creation", ImportHelperMachineHierarchy.class));
-        formatInfo.add(new ImportFormatInfo("Machine Template Instantiation", ImportHelperMachineTemplateInstantiation.class));
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportExportFormatInfo("Machine Hierarchy Creation", ImportHelperMachineHierarchy.class));
+        formatInfo.add(new ImportExportFormatInfo("Machine Template Instantiation", ImportHelperMachineTemplateInstantiation.class));
 
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
-        return new DomainImportInfo(formatInfo, completionUrl);
+        return new DomainImportExportInfo(formatInfo, completionUrl);
     }
     // </editor-fold>       
 

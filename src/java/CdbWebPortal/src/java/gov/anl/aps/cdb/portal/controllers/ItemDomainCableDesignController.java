@@ -22,8 +22,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import java.util.ArrayList;
 import java.util.List;
@@ -555,13 +555,30 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
 
     @Override
-    protected DomainImportInfo initializeDomainImportInfo() {
+    protected DomainImportExportInfo initializeDomainImportInfo() {
         
-        List<ImportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportFormatInfo("Basic Cable Design Format", ImportHelperCableDesign.class));
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
         
         String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
         
-        return new DomainImportInfo(formatInfo, completionUrl);
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+    
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
+        
+        String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
     }
 }

@@ -12,6 +12,10 @@ import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
 import gov.anl.aps.cdb.portal.controllers.UserGroupController;
 import gov.anl.aps.cdb.portal.controllers.UserInfoController;
+import gov.anl.aps.cdb.portal.import_export.export.objects.ExportColumnData;
+import gov.anl.aps.cdb.portal.import_export.export.objects.GenerateExportResult;
+import gov.anl.aps.cdb.portal.import_export.export.objects.HandleOutputResult;
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
@@ -23,6 +27,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
@@ -65,7 +70,14 @@ import org.primefaces.model.file.UploadedFile;
  */
 public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityControllerType extends CdbEntityController> {
 
+    enum ImportMode {
+        CREATE, UPDATE;
+    }
+    
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperBase.class.getName());
+    
+    private static final String MODE_CREATE = "create";
+    private static final String MODE_UPDATE = "update";
 
     private static final String HEADER_IS_VALID = "Is Valid";
     private static final String PROPERTY_IS_VALID = "isValidImportString";
@@ -74,10 +86,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     protected static final String KEY_USER = "ownerUserName";
     protected static final String KEY_GROUP = "ownerUserGroupName";
+    protected static final String KEY_EXISTING_ITEM_ID = "importExistingItemId";
     
     private static final String INDICATOR_COMMENT = "//";
 
     protected List<EntityType> rows = new ArrayList<>();
+    private List<CdbEntity> exportEntityList;
+    
+    protected ImportMode importMode;
     
     protected SortedMap<Integer, InputColumnModel> inputColumnMap = new TreeMap<>();
     
@@ -97,6 +113,29 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
     public List<EntityType> getRows() {
         return rows;
+    }
+
+    public List<CdbEntity> getExportEntityList() {
+        return exportEntityList;
+    }
+
+    public void setExportEntityList(List<CdbEntity> exportEntityList) {
+        this.exportEntityList = exportEntityList;
+    }
+    
+    public ImportMode getImportMode() {
+        if (importMode == null) {
+            importMode  = ImportMode.CREATE;
+        }
+        return importMode;
+    }
+    
+    public void setImportMode(String importModeString) {
+        if (importModeString.equals(MODE_CREATE)) {
+            importMode = ImportMode.CREATE;
+        } else if (importModeString.equals(MODE_UPDATE)) {
+            importMode = ImportMode.UPDATE;
+        }
     }
 
     public List<OutputColumnModel> getTableViewColumns() {
@@ -235,7 +274,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         String parsedValue;
 
         if (cell == null) {
-            parsedValue = "";
+            parsedValue = null;
         } else {
             cell.setCellType(CellType.STRING);
             parsedValue = cell.getStringCellValue().trim();
@@ -244,12 +283,16 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return parsedValue;
     }
 
+    private String getTemplateExcelFilename() {
+        return getFilenameBase() + " Template";
+    }
+    
     public StreamedContent getTemplateExcelFile() {
         if (templateExcelFile == null) {
             buildTemplateExcelFile();
         }
         InputStream inStream = new ByteArrayInputStream(templateExcelFile);
-        return new DefaultStreamedContent(inStream, "xlsx", getTemplateFilename() + ".xlsx");
+        return new DefaultStreamedContent(inStream, "xlsx", getTemplateExcelFilename() + ".xlsx");
     }
 
     private void buildTemplateExcelFile() {
@@ -290,6 +333,105 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         } catch (IOException ex) {
             LOGGER.error("buildTemplateExcelFile() " + ex);
         }
+    }
+
+    public GenerateExportResult generateExportFile() {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        // get export content via output handlers for each column
+        List<ExportColumnData> exportContent = new ArrayList<>();
+        List<CdbEntity> entities = getExportEntityList();
+        for (ColumnSpec spec : getColumnSpecs()) {
+            OutputHandler handler = spec.getOutputHandler();
+            if (handler == null) {                
+                ValidInfo validInfo = new ValidInfo(false, "Unexpected error, no output handler for column: " + spec.getHeader());
+                return new GenerateExportResult(validInfo, null);
+            }
+            
+            HandleOutputResult handleOutputResult = handler.handleOutput(entities);
+            if (!handleOutputResult.getValidInfo().isValid()) {                
+                ValidInfo validInfo = new ValidInfo(false, handleOutputResult.getValidInfo().getValidString());
+                return new GenerateExportResult(validInfo, null);
+            }
+            
+            if ((handleOutputResult.getColumnData() == null) || 
+                    (handleOutputResult.getColumnData().isEmpty())) {
+                
+                ValidInfo validInfo = new ValidInfo(false, "Unexpected error, no column data for column: " + spec.getHeader());
+                return new GenerateExportResult(validInfo, null);
+            }
+            exportContent.addAll(handleOutputResult.getColumnData());
+        }
+        
+        // create excel workbook
+        Workbook wb = new XSSFWorkbook();
+        CreationHelper createHelper = wb.getCreationHelper();
+        Sheet sheet = wb.createSheet("export");
+        Drawing drawing = sheet.createDrawingPatriarch();
+        
+        // create header row content
+        int rowIndex = 0;
+        int colIndex = 0;
+        Row headerRow = sheet.createRow(rowIndex);
+        for (ExportColumnData columnData : exportContent) {
+            
+            Cell headerCell = headerRow.createCell(colIndex);
+            headerCell.setCellValue(columnData.getColumnName());
+            
+            // set up box for comment/description
+            ClientAnchor anchor = createHelper.createClientAnchor();
+            anchor.setCol1(headerCell.getColumnIndex());
+            anchor.setCol2(headerCell.getColumnIndex() + 2);
+            anchor.setRow1(headerRow.getRowNum());
+            anchor.setRow2(headerRow.getRowNum() + 3);
+            
+            Comment headerComment = drawing.createCellComment(anchor);
+            RichTextString str = createHelper.createRichTextString(columnData.getDescription());
+            headerComment.setString(str);
+            headerCell.setCellComment(headerComment);
+            
+            colIndex = colIndex + 1;
+        }
+        
+        // create data row content, one column at a time
+        colIndex = 0;
+        for (ExportColumnData columnData : exportContent) {
+            rowIndex = 1;
+            for (String columnValue : columnData.getColumnValues()) {
+                Row dataRow = sheet.getRow(rowIndex);
+                if (dataRow == null) {
+                    dataRow = sheet.createRow(rowIndex);
+                }
+                Cell dataCell = dataRow.createCell(colIndex);
+                dataCell.setCellValue(columnValue);
+                rowIndex = rowIndex + 1;
+            }
+            colIndex = colIndex + 1;
+        }
+        
+        // create byte array containing excel binary file data
+        byte[] exportFile = null;
+        try (ByteArrayOutputStream outStream = new ByteArrayOutputStream()) {
+            wb.write(outStream);
+            exportFile = outStream.toByteArray();
+        } catch (IOException ex) {
+            LOGGER.error("generateExportFile() " + ex);
+        }
+        
+        // create streamed content from byte array
+        StreamedContent content = null;
+        if (exportFile != null) {
+            InputStream inStream = new ByteArrayInputStream(exportFile);
+            content = new DefaultStreamedContent(inStream, "xlsx", getExportFilename() + ".xlsx");
+        } else {
+            isValid = false;
+            validString = "Unexpected error creating Excel file content";
+        }
+        
+        ValidInfo validInfo = new ValidInfo(isValid, validString);
+        return new GenerateExportResult(validInfo, content);
     }
 
     public List<String> getSheetNames(UploadedFile f) {
@@ -457,14 +599,26 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         for (int rowNumber = rowNumberFirstData ; rowNumber <= rowNumberLastData ; rowNumber ++) {
             Row row = sheet.getRow(rowNumber);
             if (row != null) {
-                ValidInfo rowValidInfo = parseRow(row);
-                if (!rowValidInfo.isValid()) {
+                ValidInfo rowValidInfo = null;
+                try {
+                    rowValidInfo = parseRow(row);
+                } catch (CdbException ex) {
                     validInput = false;
-                    invalidCount = invalidCount + 1;
+                    validationMessage = ex.getMessage();
+                    summaryMessage
+                            = "Press 'Cancel' to terminate the import process."
+                            + " No new items will be created.";
+                    return;
                 }
-                if (rowValidInfo.isDuplicate()) {
-                    dupCount = dupCount + 1;
-                    dupString = appendToString(dupString, rowValidInfo.getValidString());
+                if (rowValidInfo != null) {
+                    if (!rowValidInfo.isValid()) {
+                        validInput = false;
+                        invalidCount = invalidCount + 1;
+                    }
+                    if (rowValidInfo.isDuplicate()) {
+                        dupCount = dupCount + 1;
+                        dupString = appendToString(dupString, rowValidInfo.getValidString());
+                    }
                 }
             }
         }
@@ -486,14 +640,25 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         if (validInput) {
             String summaryDetails = newItemCount + " new items ";
+            
+            String modeString = "";
+            if (getImportMode() == ImportMode.UPDATE) {
+                modeString = "update";
+            } else {
+                modeString = "create";
+            }
+            
             String customSummaryDetails = getCustomSummaryDetails();
             if (!customSummaryDetails.isEmpty()) {
                 summaryDetails = customSummaryDetails;
             }
+            
             if (newItemCount > 0) {
                 summaryMessage
                         = "Press 'Next Step' to complete the import process. "
-                        + "This will create "
+                        + "This will " 
+                        + modeString 
+                        + " "
                         + summaryDetails
                         + " displayed in table above.";
             } else {
@@ -563,7 +728,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new ValidInfo(isValid, validMessage);
     }
     
-    private ValidInfo parseRow(Row row) {
+    private ValidInfo parseRow(Row row) throws CdbException {
 
         boolean isValid = true;
         String validString = "";
@@ -584,6 +749,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 validString = appendToString(validString, 
                         "Required value missing for " + columnNameForIndex(col.getColumnIndex()));
             }
+            
+            // check that updateOnly column value not specified in create mode
+            if ((col.isUpdateOnly()) && (getImportMode() == ImportMode.CREATE) && ((cellValue != null) && (!cellValue.isEmpty()))) {
+                isValid = false;
+                validString = appendToString(validString, 
+                        "Value should not be specified in create mode for " + columnNameForIndex(col.getColumnIndex()));
+            }
         }
         
         // skip blank and comment rows
@@ -601,8 +773,37 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
        
-        CreateInfo createInfo = createEntityInstance(rowDict);
-        EntityType newEntity = (EntityType) createInfo.getEntity();
+        // create or retrieve instance depending on import mode
+        CreateInfo createInfo = null;
+        EntityType newEntity = null;
+        
+        if (getImportMode() == ImportMode.CREATE) {
+            // create new instance and check result
+            createInfo = createEntityInstance(rowDict);
+            newEntity = (EntityType) createInfo.getEntity();
+            if (newEntity == null) {
+                // helper returns null from createInstance to indicate that it won't create an item for this row
+                isValid = createInfo.getValidInfo().isValid();
+                validString = appendToString(validString, createInfo.getValidInfo().getValidString());
+            }
+            
+        } else if (getImportMode() == ImportMode.UPDATE) {
+            // retrieve existing instance and check result
+            createInfo = retrieveEntityInstance(rowDict);
+            if (createInfo == null) {
+                // indicates helper doesn't support update mode
+                String msg = "Unexpected error, import helper not properly configured for update operation.";
+                throw new CdbException(msg);
+            }
+            newEntity = (EntityType) createInfo.getEntity();
+            if (newEntity == null) {
+                // helper must return an instance for use in the validation table,
+                // even if the specified item is not located
+                String msg = "Unexpected error, import helper not properly configured to retrieve items for update operation.";
+                throw new CdbException(msg);
+            }
+        }
+        
         if (newEntity != null) {
             ValidInfo createValidInfo = createInfo.getValidInfo();
             if (!createValidInfo.isValid()) {
@@ -619,32 +820,36 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 }
             }
 
-            if (rows.contains(newEntity)) {
-                validString = appendToString(validString, "Duplicates another row in spreadsheet.");
-                isDuplicate = true;
-                if (ignoreDuplicates()) {
-                    isValid = true;
-                    
-                } else {
-                    isValid = false;
-                }
-            } else {
-                try {
-                    getEntityController().checkItemUniqueness(newEntity);
-                } catch (CdbException ex) {
-                    if (ex.getErrorMessage().startsWith("Uniqueness check not implemented by controller")) {
-                        // ignore this?
-                    } else if (ignoreDuplicates()) {
-                        validString = appendToString(validString, "Duplicates existing item in database.");
-                        isDuplicate = true;
+            if (!(getImportMode() == ImportMode.UPDATE && !isValid)) {
+                // skip uniqueness checks in update mode for rows already flagged as invalid,
+                // otherwise error reporting is confusing
+                if (rows.contains(newEntity)) {
+                    validString = appendToString(validString, "Duplicates another row in spreadsheet.");
+                    isDuplicate = true;
+                    if (ignoreDuplicates()) {
                         isValid = true;
+
                     } else {
-                        validString = appendToString(validString, ex.getMessage());
-                        isDuplicate = true;
                         isValid = false;
                     }
+                } else {
+                    try {
+                        getEntityController().checkItemUniqueness(newEntity);
+                    } catch (CdbException ex) {
+                        if (ex.getErrorMessage().startsWith("Uniqueness check not implemented by controller")) {
+                            // ignore this?
+                        } else if (ignoreDuplicates()) {
+                            validString = appendToString(validString, "Duplicates existing item in database.");
+                            isDuplicate = true;
+                            isValid = true;
+                        } else {
+                            validString = appendToString(validString, ex.getMessage());
+                            isDuplicate = true;
+                            isValid = false;
+                        }
+                    }
                 }
-            } 
+            }
 
             newEntity.setIsValidImport(isValid);
             newEntity.setIsDuplicateImport(isDuplicate);
@@ -653,9 +858,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             rows.add(newEntity);
 
         } else {
-            // helper returns null from createInstance to indicate that it won't create an item for this row
-            isValid = createInfo.getValidInfo().isValid();
-            validString = createInfo.getValidInfo().getValidString();
         }
         
         return new ValidInfo(isValid, validString, isDuplicate);
@@ -704,40 +906,63 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     .collect(Collectors.toList());
         }
 
-        String message;
+        String message = "";
         try {
-            controller.createList(rows);
-            message = "Import succeeded, created " + rows.size() + " instances";
+            if (getImportMode() == ImportMode.CREATE) {
+                controller.createList(rows);
+                message = "Import succeeded, created " + rows.size() + " instances";
+                ValidInfo result = postCreate();
+                message = appendToString(message, result.getValidString());
+            } else if (getImportMode() == ImportMode.UPDATE) {
+                controller.updateList(rows);
+                message = "Import succeeded, updated " + rows.size() + " instances";
+            }
+
         } catch (CdbException | RuntimeException ex) {
             return new ImportInfo(false, "Import failed. " + ex.getClass().getName());
         }
-        
-        ValidInfo result = postImport();
-        message = appendToString(message, result.getValidString());
         
         return new ImportInfo(true, message);
     }
     
     /**
-     * Provide pre-import hook for subclasses to override, e.g., to migrate
+     * Specifies helper class format name to use in GUI.  Default returns empty
+     * string, subclasses override to customize.  Note that this is currently
+     * specified in call to ImportFormatInfo constructor, but should change
+     * subclasses to override this method instead as we add import update support.
+     */
+    public static String getFormatName() {
+        return "";
+    }
+    
+    /**
+     * Specifies whether helper supports creation of new instances.  Defaults
+     * to true. Subclasses override to customize.
+     */
+    public boolean supportsModeCreate() {
+        return true;
+    }
+
+    /**
+     * Specifies whether helper supports updating existing instances.  Defaults
+     * to false. Subclasses override to customize.
+     */
+    public boolean supportsModeUpdate() {
+        return false;
+    }
+
+    /**
+     * Provides pre-import hook for subclasses to override, e.g., to migrate
      * metadata property fields etc.
      */
     protected ValidInfo preImport() {
         return new ValidInfo(true, "");
     }
     
-    /**
-     * Provides callback for helper subclass to do post processing after the
-     * import commit completes.  For example, the helper may need to update some
-     * attribute of the imported rows based on the identifier created during the
-     * database commit. Default behavior is to do nothing, subclasses override to
-     * customize.
-     * @return 
-     */
-    protected ValidInfo postImport() {
-        return new ValidInfo(true, "");
+    protected EntityType newInvalidUpdateInstance() {
+        return null;
     }
-    
+
     /**
      * Specifies whether the helper class ignores rows in the input data that
      * duplicate existing database rows.  Default behavior is to not ignore
@@ -770,39 +995,92 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return rootTreeNode;
     }
     
+    /**
+     * Provides callback for helper subclass to do post processing after the
+     * import commit completes.  For example, the helper may need to update some
+     * attribute of the imported rows based on the identifier created during the
+     * database commit. Default behavior is to do nothing, subclasses override to
+     * customize.
+     * @return 
+     */
+    protected ValidInfo postCreate() {
+        return new ValidInfo(true, "");
+    }
+    
     protected abstract List<ColumnSpec> getColumnSpecs();
     
     public abstract EntityControllerType getEntityController();
     
-    public abstract String getTemplateFilename();
+    public abstract String getFilenameBase();
     
     protected abstract CreateInfo createEntityInstance(Map<String, Object> rowMap);
     
+    /**
+     * Retrieves entity instance using values in rowMap.  Default implementation
+     * returns null if helper is not configured to support update mode, otherwise
+     * provides generic mechanism for looking up by id.  To customize, subclasses
+     * can override this method, or invoke it and customize further using the result.
+     */
+    protected CreateInfo retrieveEntityInstance(Map<String, Object> rowMap) {
+        
+        if (!supportsModeUpdate()) {
+            return null;
+        }
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        EntityType existingItem = null;
+        Integer itemId = (Integer) rowMap.get(KEY_EXISTING_ITEM_ID);
+        if (itemId != null) {
+            existingItem = (EntityType) getEntityController().findById(itemId);
+            if (existingItem == null) {
+                existingItem = newInvalidUpdateInstance();
+                isValid = false;
+                validString = "Unable to retrieve existing item with id: " + itemId;
+            }
+        } else {
+            existingItem = newInvalidUpdateInstance();
+            isValid = false;
+            validString = "Must specify existing id to update item";
+        }
+        
+        return new CreateInfo(existingItem, isValid, validString);
+    }
+    
+    public String getExportFilename() {
+        return getFilenameBase() + " Export";
+    }
+    
     public IdOrNameRefColumnSpec ownerUserColumnSpec() {
-        return new IdOrNameRefColumnSpec("Owner User", KEY_USER, "setOwnerUser", false, "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", UserInfoController.getInstance(), UserInfo.class, "");
+        return new IdOrNameRefColumnSpec("Owner User", KEY_USER, "setOwnerUser", false, "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", UserInfoController.getInstance(), UserInfo.class, "", "getOwnerUser");
     }
     
     public IdOrNameRefColumnSpec ownerGroupColumnSpec() {
-        return new IdOrNameRefColumnSpec("Owner Group", KEY_GROUP, "setOwnerUserGroup", false, "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", UserGroupController.getInstance(), UserGroup.class, "");
+        return new IdOrNameRefColumnSpec("Owner Group", KEY_GROUP, "setOwnerUserGroup", false, "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", UserGroupController.getInstance(), UserGroup.class, "", "getOwnerUserGroup");
     }
     
     public IdOrNameRefListColumnSpec projectListColumnSpec() {
-        return new IdOrNameRefListColumnSpec("Project", "itemProjectString", "setItemProjectList", true, "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'.", ItemProjectController.getInstance(), List.class, "");
+        return new IdOrNameRefListColumnSpec("Project", "itemProjectString", "setItemProjectList", true, "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'.", ItemProjectController.getInstance(), List.class, "", "getItemProjectList");
     }
     
     public IdOrNameRefListColumnSpec technicalSystemListColumnSpec(String domainName) {
-        return new IdOrNameRefListColumnSpec("Technical System", "itemCategoryString", "setItemCategoryList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemCategoryController.getInstance(), List.class, domainName);
+        return new IdOrNameRefListColumnSpec("Technical System", "itemCategoryString", "setItemCategoryList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemCategoryController.getInstance(), List.class, domainName, "getItemCategoryList");
     }
     
     public IdOrNameRefListColumnSpec functionListColumnSpec(String domainName) {
-        return new IdOrNameRefListColumnSpec("Function", "itemTypeString", "setItemTypeList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemTypeController.getInstance(), List.class, domainName);
+        return new IdOrNameRefListColumnSpec("Function", "itemTypeString", "setItemTypeList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemTypeController.getInstance(), List.class, domainName, "getItemTypeList");
     }
     
     public IdOrNameRefColumnSpec locationColumnSpec() {
-        return new IdOrNameRefColumnSpec("Location", "importLocationItemString", "setImportLocationItem", false, "Item location.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, "");
+        return new IdOrNameRefColumnSpec("Location", "importLocationItemString", "setImportLocationItem", false, "Item location.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, "", "getLocationItem");
     }
     
     public StringColumnSpec locationDetailsColumnSpec() {
-        return new StringColumnSpec("Location Details", "locationDetails", "setLocationDetails", false, "Location details for item.", 256);
+        return new StringColumnSpec("Location Details", "locationDetails", "setLocationDetails", false, "Location details for item.", 256, "getLocationDetails");
+    }
+    
+    public IntegerColumnSpec existingItemIdColumnSpec() {
+        return new IntegerColumnSpec("Existing Item ID", KEY_EXISTING_ITEM_ID, "setImportExistingItemId", false, "CDB ID of existing item to update.", "getId", true);
     }
 }

@@ -36,8 +36,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
@@ -1009,16 +1009,16 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     }
 
     @Override
-    protected DomainImportInfo initializeDomainImportInfo() {
-
-        List<ImportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportFormatInfo("Basic Inventory Format", ImportHelperInventory.class));
-
+    protected DomainImportExportInfo initializeDomainImportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportExportFormatInfo("Basic Inventory Format", ImportHelperInventory.class));
+        
         String completionUrl = "/views/itemDomainInventory/list?faces-redirect=true";
-
-        return new DomainImportInfo(formatInfo, completionUrl);
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
     }
-
+    
     @Override
     public String getDefaultDomainName() {
         return DEFAULT_DOMAIN_NAME;

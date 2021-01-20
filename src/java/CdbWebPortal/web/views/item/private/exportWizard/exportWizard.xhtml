@@ -12,10 +12,10 @@ See LICENSE file.
 
     <p:panel>
 
-        <ui:param name="rootViewId" value="importWizard" />
-        <ui:param name="wizardController" value="#{importWizard}" />
+        <ui:param name="rootViewId" value="exportWizard" />
+        <ui:param name="wizardController" value="#{exportWizard}" />
 
-        <p:wizard id="importWizard"
+        <p:wizard id="exportWizard"
                   flowListener="#{wizardController.onFlowProcess}" 
                   widgetVar="#{rootViewId}"
                   showStepStatus="false" 
@@ -26,22 +26,12 @@ See LICENSE file.
                 <ui:param name="wizardController" value="#{wizardController}" />
             </ui:decorate>
 
-            <ui:decorate template="templates/selectModeTabTemplate.xhtml">
+            <ui:decorate template="templates/selectOptionsTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />                
                 <ui:param name="wizardController" value="#{wizardController}" />
             </ui:decorate>
 
-            <ui:decorate template="templates/selectFileTabTemplate.xhtml">
-                <ui:param name="viewId" value="#{rootViewId}" />                
-                <ui:param name="wizardController" value="#{wizardController}" />
-            </ui:decorate>
-
-            <ui:decorate template="templates/validateTabTemplate.xhtml">
-                <ui:param name="viewId" value="#{rootViewId}" />                
-                <ui:param name="wizardController" value="#{wizardController}" />
-            </ui:decorate>
-
-            <ui:decorate template="templates/resultsTabTemplate.xhtml">
+            <ui:decorate template="templates/downloadFileTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />                
                 <ui:param name="wizardController" value="#{wizardController}" />
             </ui:decorate>

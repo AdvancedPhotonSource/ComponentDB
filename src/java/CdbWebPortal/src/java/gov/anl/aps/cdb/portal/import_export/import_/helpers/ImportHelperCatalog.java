@@ -46,8 +46,8 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Component Catalog Template";
+    public String getFilenameBase() {
+        return "Component Catalog";
     }
     
     @Override

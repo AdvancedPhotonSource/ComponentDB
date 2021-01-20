@@ -13,8 +13,26 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandle
  */
 public class IntegerColumnSpec extends ColumnSpec {
 
-    public IntegerColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description) {
+    public IntegerColumnSpec(
+            String header, 
+            String propertyName, 
+            String entitySetterMethod, 
+            boolean required, 
+            String description) {
+        
         super(header, propertyName, entitySetterMethod, required, description);
+    }
+
+    public IntegerColumnSpec(
+            String header, 
+            String propertyName, 
+            String entitySetterMethod, 
+            boolean required, 
+            String description,
+            String exportGetterMethod,
+            boolean updateOnly) {
+        
+        super(header, propertyName, entitySetterMethod, required, description, exportGetterMethod, updateOnly);
     }
 
     @Override
@@ -22,4 +40,5 @@ public class IntegerColumnSpec extends ColumnSpec {
         return new IntegerInputHandler(
                 colIndex, getHeader(), getPropertyName(), getEntitySetterMethod());
     }
+
 }
