@@ -1501,6 +1501,10 @@ public class Item extends CdbDomainEntity implements Serializable {
             propertyValue = getItemDomainController().prepareCoreMetadataPropertyValue(this);
         }
         
+        if (value == null) {
+            value = ""; // this is the default value in prepare value add
+        }
+        
         propertyValue.setPropertyMetadataValue(key, value);
     }
 
