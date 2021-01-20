@@ -8,14 +8,14 @@ package gov.anl.aps.cdb.portal.view.objects;
  *
  * @author craig
  */
-public class ImportFormatInfo {
+public class ImportExportFormatInfo {
     
     private String formatName;
-    private Class importHelperClass;
+    private Class helperClass;
     
-    public ImportFormatInfo(String name, Class helperClass) {
+    public ImportExportFormatInfo(String name, Class helperClass) {
         formatName = name;
-        importHelperClass = helperClass;
+        this.helperClass = helperClass;
     }
 
     public String getFormatName() {
@@ -26,12 +26,12 @@ public class ImportFormatInfo {
         this.formatName = formatName;
     }
 
-    public Class getImportHelperClass() {
-        return importHelperClass;
+    public Class getHelperClass() {
+        return helperClass;
     }
 
-    public void setImportHelperClass(Class importHelperClass) {
-        this.importHelperClass = importHelperClass;
+    public void setHelperClass(Class helperClass) {
+        this.helperClass = helperClass;
     }
     
     @Override

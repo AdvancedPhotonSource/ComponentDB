@@ -54,8 +54,8 @@ public class ImportHelperInventory
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Component Inventory Template";
+    public String getFilenameBase() {
+        return "Component Inventory";
     }
     
     @Override

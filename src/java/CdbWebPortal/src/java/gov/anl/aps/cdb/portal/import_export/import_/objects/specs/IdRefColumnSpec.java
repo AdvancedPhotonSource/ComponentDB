@@ -6,6 +6,8 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.RefOutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
 
 /**
@@ -17,8 +19,31 @@ public class IdRefColumnSpec extends ColumnSpec {
     protected CdbEntityController controller;
     protected Class paramType;
 
-    public IdRefColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType) {
+    public IdRefColumnSpec(
+            String header, 
+            String propertyName, 
+            String entitySetterMethod, 
+            boolean required, 
+            String description, 
+            CdbEntityController controller, 
+            Class paramType) {
+        
         super(header, propertyName, entitySetterMethod, required, description);
+        this.controller = controller;
+        this.paramType = paramType;
+    }
+
+    public IdRefColumnSpec(
+            String header, 
+            String propertyName, 
+            String entitySetterMethod, 
+            boolean required, 
+            String description, 
+            CdbEntityController controller, 
+            Class paramType,
+            String exportGetterMethod) {
+        
+        super(header, propertyName, entitySetterMethod, required, description, exportGetterMethod, false);
         this.controller = controller;
         this.paramType = paramType;
     }
@@ -33,6 +58,15 @@ public class IdRefColumnSpec extends ColumnSpec {
                 controller,
                 paramType,
                 true,
+                true);
+    }
+
+    @Override
+    public OutputHandler getOutputHandler() {
+        return new RefOutputHandler(
+                getHeader(),
+                getDescription(),
+                getExportGetterMethod(),
                 true);
     }
 }

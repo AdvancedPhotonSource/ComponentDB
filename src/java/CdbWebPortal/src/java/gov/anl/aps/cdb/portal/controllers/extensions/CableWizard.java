@@ -6,7 +6,6 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignWizardBase;
-import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
