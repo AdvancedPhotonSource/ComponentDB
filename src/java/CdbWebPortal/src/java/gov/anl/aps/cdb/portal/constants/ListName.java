@@ -4,14 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.constants;
 
-public enum EntityTypeName {
-    template("Template"),
-    inventory("Inventory"),
-    deleted("Deleted");
+public enum ListName {
+    favorite("Favorites");
 
     private String value;
 
-    private EntityTypeName(String value) {
+    private ListName(String value) {
         this.value = value;
     }
 
