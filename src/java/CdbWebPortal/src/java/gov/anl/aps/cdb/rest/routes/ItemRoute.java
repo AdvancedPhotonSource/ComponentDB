@@ -11,13 +11,12 @@ import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.IItemStatusController;
-import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
-import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.LocatableItemControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
@@ -38,14 +37,12 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
-import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
-import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueDocumentUploadBean;
 import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueImageUploadBean;
@@ -194,8 +191,8 @@ public class ItemRoute extends ItemBaseRoute {
             throw new CdbException("Unexpected error occurred. Could not reference element from its parent.");
         }
 
-        ItemController itemDomainController = parentItem.getItemDomainController();
-        itemDomainController.updateFromApi(parentItem, updatedByUser);
+        ItemControllerUtility itemDomainController = parentItem.getItemControllerUtility();
+        itemDomainController.update(parentItem, updatedByUser);
 
         return getItemHierarchyById(parentItem.getId());
     }
@@ -280,7 +277,7 @@ public class ItemRoute extends ItemBaseRoute {
 
         if (itemById instanceof LocatableItem) {
             LocatableItem locatableItem = (LocatableItem) itemById;
-            LocatableItemController controller = LocatableItemController.getApiInstance();
+            LocatableItemControllerUtility controller = new LocatableItemControllerUtility();
 
             controller.setItemLocationInfo(locatableItem);
 
@@ -302,13 +299,13 @@ public class ItemRoute extends ItemBaseRoute {
 
         if (itemById instanceof LocatableItem) {
             LocatableItem locatableItem = (LocatableItem) itemById;
-            LocatableItemController controller = LocatableItemController.getApiInstance();
+            LocatableItemControllerUtility controllerUtility = new LocatableItemControllerUtility();
 
-            List<LocationHistoryObject> histories = controller.getLocationHistoryObjectList(locatableItem);
+            List<LocationHistoryObject> histories = controllerUtility.getLocationHistoryObjectList(locatableItem);
 
             // When trees are loaded than the ItemHierarchy nodes can be loaded. 
             for (LocationHistoryObject hist : histories) {
-                controller.getLocationTreeForLocationHistoryObject(hist);
+                controllerUtility.getLocationTreeForLocationHistoryObject(hist);
             }
 
             return histories;
@@ -396,8 +393,8 @@ public class ItemRoute extends ItemBaseRoute {
         }
 
         // Load current location info
-        LocatableItemController locationController = LocatableItemController.getApiInstance();
-        locationController.setItemLocationInfo(locatableItem);
+        LocatableItemControllerUtility locationControllerUtility = new LocatableItemControllerUtility(); 
+        locationControllerUtility.setItemLocationInfo(locatableItem);
 
         // Use the location information provided 
         locatableItem.setLocation(locationItem);
@@ -405,12 +402,12 @@ public class ItemRoute extends ItemBaseRoute {
 
         // Perfrom update        
         UserInfo currentUser = verifyCurrentUserPermissionForItem(locatableItem);
-        ItemController controller = locatableItem.getItemDomainController();
-        controller.updateFromApi(locatableItem, currentUser);
+        ItemControllerUtility controller = locatableItem.getItemControllerUtility();
+        controller.update(locatableItem, currentUser);
 
         // Get the latest item after update to respond
         locatableItem = (LocatableItem) getItemByIdBase(locatableItem.getId());
-        locationController.setItemLocationInfo(locatableItem);
+        locationControllerUtility.setItemLocationInfo(locatableItem);
 
         return new ItemLocationInformation(locatableItem);
     }
@@ -456,9 +453,9 @@ public class ItemRoute extends ItemBaseRoute {
             dbItem.getEntityInfo().setIsGroupWriteable(groupWriteable);
         }
 
-        ItemController itemDomainControllerForApi = dbItem.getItemDomainController();
+        ItemControllerUtility itemDomainControllerForApi = dbItem.getItemControllerUtility(); 
 
-        itemDomainControllerForApi.updateFromApi(dbItem, currentUser);
+        itemDomainControllerForApi.update(dbItem, currentUser);
 
         return getItemPermissions(dbItem.getId());
     }
@@ -526,9 +523,9 @@ public class ItemRoute extends ItemBaseRoute {
         
         dbItem.setItemCategoryList(itemCategoryList);
 
-        ItemController itemDomainControllerForApi = dbItem.getItemDomainController();
+        ItemControllerUtility itemDomainControllerForApi = dbItem.getItemControllerUtility();
 
-        itemDomainControllerForApi.updateFromApi(dbItem, currentUser);
+        itemDomainControllerForApi.update(dbItem, currentUser);
 
         return dbItem;
     }
@@ -551,7 +548,9 @@ public class ItemRoute extends ItemBaseRoute {
 
         UserInfo currentUser = verifyCurrentUserPermissionForItem(itemById);
 
-        ItemController ic = itemById.getItemDomainController();
+        ItemControllerUtility ic = itemById.getItemControllerUtility(); 
+        //TODO adress this one...
+        /*
         IItemStatusController controller = null;
         LocatableStatusItem item = null;
 
@@ -575,7 +574,8 @@ public class ItemRoute extends ItemBaseRoute {
         inventoryStatusPropertyValue.setEffectiveFromDateTime(status.getEffectiveFromDate());
 
         ic.updateFromApi(item, currentUser);
-        return item.getInventoryStatusPropertyValue();
+        return item.getInventoryStatusPropertyValue(); */
+        return null;
     }
 
     private void updateDbPropertyValueWithPassedInDate(PropertyValue dbPropertyValue, PropertyValue userPassedValue) {
@@ -612,8 +612,8 @@ public class ItemRoute extends ItemBaseRoute {
             throw ex;
         }
 
-        ItemController itemController = dbItem.getItemDomainController();
-        itemController.destroyFromApi(dbItem, updatedByUser);
+        ItemControllerUtility itemController = dbItem.getItemControllerUtility(); 
+        itemController.destroy(dbItem, updatedByUser);
     }
 
     @POST
@@ -633,7 +633,7 @@ public class ItemRoute extends ItemBaseRoute {
             throw ex;
         }
 
-        ItemController itemController = dbItem.getItemDomainController();
+        ItemControllerUtility ItemControllerUtility = dbItem.getItemControllerUtility(); 
         PropertyValue dbPropertyValue = null;
 
         int propIdx = -1;
@@ -667,9 +667,9 @@ public class ItemRoute extends ItemBaseRoute {
 
         propertyValueAllowedValueCheck(dbPropertyValue);
 
-        itemController.updateFromApi(dbItem, updatedByUser);
+        ItemControllerUtility.update(dbItem, updatedByUser);
 
-        dbItem = (Item) itemController.getCurrent();
+        dbItem = (Item) ItemControllerUtility.findById(itemId); 
 
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
         if (propIdx >= 0) {
@@ -696,7 +696,7 @@ public class ItemRoute extends ItemBaseRoute {
             throw ex;
         }
 
-        ItemController itemController = dbItem.getItemDomainController();
+        ItemControllerUtility itemControllerUtility = dbItem.getItemControllerUtility(); 
         PropertyValue dbPropertyValue = null;
 
         int propIdx = -1;
@@ -725,9 +725,9 @@ public class ItemRoute extends ItemBaseRoute {
 
         propertyValueAllowedValueCheck(dbPropertyValue);
 
-        itemController.updateFromApi(dbItem, updatedByUser);
+        itemControllerUtility.update(dbItem, updatedByUser);
 
-        dbItem = (Item) itemController.getCurrent();
+        dbItem = (Item) itemControllerUtility.findById(itemId); 
 
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
         if (propIdx >= 0) {
@@ -754,7 +754,7 @@ public class ItemRoute extends ItemBaseRoute {
             throw ex;
         }
 
-        ItemController itemController = dbItem.getItemDomainController();
+        ItemControllerUtility itemControllerUtility = dbItem.getItemControllerUtility();
         PropertyValue dbPropertyValue = null;
 
         PropertyType propertyType = propertyValue.getPropertyType();
@@ -771,14 +771,14 @@ public class ItemRoute extends ItemBaseRoute {
         propertyValueInternalCheck(propertyValue);
 
         LOGGER.debug("Creating new property.");
-        dbPropertyValue = itemController.preparePropertyTypeValueAdd(dbItem, propertyType, null, null, updatedByUser);
+        dbPropertyValue = itemControllerUtility.preparePropertyTypeValueAdd(dbItem, propertyType, null, null, updatedByUser);
 
         // Set passed in property value to match db property value 
         updateDbPropertyValueWithPassedInDate(dbPropertyValue, propertyValue);
 
-        itemController.updateFromApi(dbItem, updatedByUser);
+        itemControllerUtility.update(dbItem, updatedByUser);
 
-        dbItem = (Item) itemController.getCurrent();
+        dbItem = (Item) itemControllerUtility.findById(itemId);
 
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
         int propIdx = pvList.size() - 1;
@@ -798,17 +798,17 @@ public class ItemRoute extends ItemBaseRoute {
         int itemId = logEntryEditInformation.getItemId();
         Item itemById = getItemByIdBase(itemId);
 
-        ItemController controller = itemById.getItemDomainController();
+        ItemControllerUtility controllerUtility = itemById.getItemControllerUtility(); 
 
         UserInfo updateUser = verifyCurrentUserPermissionForItem(itemById);
-        Log newLog = controller.prepareAddLog(itemById, updateUser);
+        Log newLog = controllerUtility.prepareAddLog(itemById, updateUser);
 
         newLog.setText(logEntryEditInformation.getLogEntry());
         if (logEntryEditInformation.getEffectiveDate() != null) {
             newLog.setEffectiveFromDateTime(logEntryEditInformation.getEffectiveDate());
         }
 
-        controller.updateFromApi(itemById, updateUser);
+        controllerUtility.update(itemById, updateUser);
 
         return newLog;
     }
@@ -868,7 +868,7 @@ public class ItemRoute extends ItemBaseRoute {
         byte[] decode = decoder.decode(fileUpload.getBase64Binary());
         ByteArrayInputStream stream = new ByteArrayInputStream(decode);
 
-        ItemController itemController = dbItem.getItemDomainController();
+        ItemControllerUtility itemControllerUtility = dbItem.getItemControllerUtility();
         PropertyType uploadPropertyType = null;
 
         if (mode == 0) {
@@ -883,7 +883,7 @@ public class ItemRoute extends ItemBaseRoute {
             throw dbError;
         }
 
-        PropertyValue pv = itemController.preparePropertyTypeValueAdd(dbItem, uploadPropertyType, null, null, updatedByUser);
+        PropertyValue pv = itemControllerUtility.preparePropertyTypeValueAdd(dbItem, uploadPropertyType, null, null, updatedByUser);
         String fileName = fileUpload.getFileName();
 
         try {
@@ -897,7 +897,7 @@ public class ItemRoute extends ItemBaseRoute {
             throw ex;
         }
 
-        itemController.updateFromApi(dbItem, updatedByUser);
+        itemControllerUtility.update(dbItem, updatedByUser);
 
         List<PropertyValue> pvList = dbItem.getPropertyValueList();
         int lastIdx = pvList.size() - 1;
@@ -993,7 +993,7 @@ public class ItemRoute extends ItemBaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public List<ItemDomainCatalog> getFavoriteCatalogItems() {
-        ItemDomainCatalogController controller = ItemDomainCatalogController.getApiInstance();
+        ItemDomainCatalogControllerUtility controller = new ItemDomainCatalogControllerUtility(); 
         UserInfo currentUser = getCurrentRequestUserInfo();
         LOGGER.debug("Fetching favorite catalog items for user: " + currentUser.getUsername());
         currentUser = userFacade.find(currentUser.getId());
@@ -1095,10 +1095,9 @@ public class ItemRoute extends ItemBaseRoute {
             throw new AuthorizationError("Only adminstrators can create locations.");
         }
 
-        ItemDomainLocationController locController = ItemDomainLocationController.getApiInstance();
-
-        EntityInfo createEntityInfo = EntityInfoUtility.createEntityInfo(currentUser);
-        ItemDomainLocation newLocationItem = locController.createEntityInstanceFromApi(createEntityInfo);
+        ItemDomainLocationControllerUtility locControllerUtility = new ItemDomainLocationControllerUtility(); 
+       
+        ItemDomainLocation newLocationItem = locControllerUtility.createEntityInstance(currentUser);
 
         newLocationItem.setName(newLocationName);
         newLocationItem.setDescription(locationDescription);
@@ -1128,7 +1127,7 @@ public class ItemRoute extends ItemBaseRoute {
 
         Integer parentLocationId = newLocationInformation.getParentLocationId();
         if (parentLocationId != null) {
-            Item parentItem = locController.findById(parentLocationId);
+            Item parentItem = locControllerUtility.findById(parentLocationId);
             if (parentItem == null) {
                 throw new InvalidArgument("Could not find item with parent location item id: " + parentLocationId);
             }
@@ -1138,16 +1137,14 @@ public class ItemRoute extends ItemBaseRoute {
 
             ItemDomainLocation parentLocation = (ItemDomainLocation) parentItem;
 
-            EntityInfo entityInfo = EntityInfoUtility.createEntityInfo(currentUser);
-            // TODO update this in next itteration of changes. 
-            /*ItemElement ie = locController.createItemElementFromApi(parentLocation, entityInfo);
+            ItemElement ie = locControllerUtility.createItemElement(parentLocation, currentUser);
             ie.setContainedItem(newLocationItem);
 
             newLocationItem.setItemElementMemberList(new ArrayList<>());
-            newLocationItem.getItemElementMemberList().add(ie); */
+            newLocationItem.getItemElementMemberList().add(ie); 
         }
 
-        locController.createFromApi(newLocationItem, currentUser);
+        locControllerUtility.create(newLocationItem, currentUser);
 
         return newLocationItem;
     }
@@ -1164,16 +1161,13 @@ public class ItemRoute extends ItemBaseRoute {
     public ItemSearchResults getSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
         LOGGER.debug("Performing an item search for search query: " + searchText);
 
-        ItemDomainCatalogController catalogInstance = ItemDomainCatalogController.getApiInstance();
-        ItemDomainInventoryController inventoryInstance = ItemDomainInventoryController.getApiInstance();
-        ItemDomainMachineDesignController mdInstance = ItemDomainMachineDesignController.getApiInstance();
+        ItemDomainCatalogControllerUtility catalogControllerUtility = new ItemDomainCatalogControllerUtility();
+        ItemDomainInventoryControllerUtility inventoryInstance = new ItemDomainInventoryControllerUtility();
+        ItemDomainMachineDesignControllerUtility mdInstance = new ItemDomainMachineDesignControllerUtility();
 
-        catalogInstance.performEntitySearch(searchText, true);
-        LinkedList<SearchResult> catalogResults = catalogInstance.getSearchResultList();
-        inventoryInstance.performEntitySearch(searchText, true);
-        LinkedList<SearchResult> inventoryResults = inventoryInstance.getSearchResultList();
-        mdInstance.performEntitySearch(searchText, true);
-        LinkedList<SearchResult> mdResults = mdInstance.getSearchResultList();
+        LinkedList<SearchResult> catalogResults = catalogControllerUtility.performEntitySearch(searchText, true);         
+        LinkedList<SearchResult> inventoryResults = inventoryInstance.performEntitySearch(searchText, true);        
+        LinkedList<SearchResult> mdResults = mdInstance.performEntitySearch(searchText, true);        
 
         return new ItemSearchResults(catalogResults, inventoryResults, mdResults);
     }
@@ -1184,14 +1178,14 @@ public class ItemRoute extends ItemBaseRoute {
     public List<ItemDomainCatalogSearchResult> getDetailedCatalogSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
         LOGGER.debug("Performing a detailed catalog item search for search query: " + searchText);
 
-        ItemDomainCatalogController catalogInstance = ItemDomainCatalogController.getApiInstance();
+        ItemDomainCatalogControllerUtility catalogUtility = new ItemDomainCatalogControllerUtility();
 
-        catalogInstance.performEntitySearch(searchText, true);
-        LinkedList<SearchResult> catalogResults = catalogInstance.getSearchResultList();
+        LinkedList<SearchResult> catalogResults = catalogUtility.performEntitySearch(searchText, true);
+        
 
         List<ItemDomainCatalogSearchResult> detailedSearchResults = new ArrayList<>();
         for (SearchResult result : catalogResults) {
-            ItemDomainCatalog item = (ItemDomainCatalog) catalogInstance.getItem(result.getObjectId());
+            ItemDomainCatalog item = (ItemDomainCatalog) catalogUtility.findById(result.getObjectId());
 
             detailedSearchResults.add(new ItemDomainCatalogSearchResult(result, item));
         }

@@ -7,7 +7,7 @@ package gov.anl.aps.cdb.rest.routes;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
@@ -92,10 +92,10 @@ public class LocationItemRoute extends ItemBaseRoute {
 
         UserInfo currentUser = verifyCurrentUserPermissionForItem(currentItem);                        
         
-        ItemDomainLocationController itemDomainController = ItemDomainLocationController.getApiInstance(); 
+        ItemDomainLocationControllerUtility itemDomainController = new ItemDomainLocationControllerUtility();
         itemDomainController.updateParentForItem(currentItem, newParent, currentUser);
         
-        itemDomainController.updateFromApi(currentItem, currentUser);
+        itemDomainController.update(currentItem, currentUser);
         
         return getLocationItemById(locationItemId);
     }

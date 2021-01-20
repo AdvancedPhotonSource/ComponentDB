@@ -7,8 +7,8 @@ package gov.anl.aps.cdb.rest.routes;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
-import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -149,7 +149,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     public List<ItemDomainMdSearchResult> getDetailedMdSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
         LOGGER.debug("Performing a detailed machine design item search for search query: " + searchText);
 
-        ItemDomainMachineDesignController mdInstance = ItemDomainMachineDesignController.getApiInstance();
+        ItemDomainMachineDesignControllerUtility mdInstance = new ItemDomainMachineDesignControllerUtility(); 
 
         TreeNode rootNode = mdInstance.getSearchResults(searchText, true);
 
@@ -185,9 +185,9 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         
         mdItem.setAssignedItem(assignedItem);
         
-        ItemController itemDomainController = mdItem.getItemDomainController();
+        ItemControllerUtility itemControllerUtility = mdItem.getItemControllerUtility();
         
-        itemDomainController.updateFromApi(mdItem, currentUser);
+        itemControllerUtility.update(mdItem, currentUser);
         
         return getMachineDesignItemById(mdItemId);
     }
