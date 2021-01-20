@@ -45,11 +45,6 @@ public class UserGroupController extends CdbEntityController<UserGroupController
     }
 
     @Override
-    protected UserGroup createEntityInstance() {
-        return new UserGroup();
-    }
-
-    @Override
     public List<UserGroup> getAvailableItems() {
         return super.getAvailableItems();
     }

@@ -55,5 +55,10 @@ public class PropertyTypeCategoryControllerUtility extends CdbEntityControllerUt
     public String getEntityTypeName() {
         return "propertyTypeCategory";
     }
+
+    @Override
+    public PropertyTypeCategory createEntityInstance(UserInfo sessionUser) {
+        return new PropertyTypeCategory();
+    }
     
 }

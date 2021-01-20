@@ -47,11 +47,6 @@ public class ItemElementRelationshipController extends CdbEntityController<ItemE
     }
 
     @Override
-    protected ItemElementRelationship createEntityInstance() {
-        return new ItemElementRelationship(); 
-    }
-
-    @Override
     protected ItemElementRelationshipControllerUtility createControllerUtilityInstance() {
         return new ItemElementRelationshipControllerUtility(); 
     }   

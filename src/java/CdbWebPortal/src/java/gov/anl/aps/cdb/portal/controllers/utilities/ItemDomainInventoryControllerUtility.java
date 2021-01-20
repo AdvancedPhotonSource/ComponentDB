@@ -300,5 +300,19 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
     public String getDisplayEntityTypeName() {
         return "Inventory Item";
     }
-
+        
+    @Override
+    public List<ItemDomainInventory> getItemList() {
+        return itemFacade.findByDomainOrderByDerivedFromItem(getDefaultDomainName());
+    }
+    
+    @Override
+    protected ItemDomainInventory instenciateNewItemDomainEntity() {
+        return new ItemDomainInventory();
+    }   
+    
+    @Override
+    public String getStatusPropertyTypeName() {
+        return ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
+    }
 }

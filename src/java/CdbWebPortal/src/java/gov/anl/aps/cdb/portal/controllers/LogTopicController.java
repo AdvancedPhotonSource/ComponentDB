@@ -40,11 +40,6 @@ public class LogTopicController extends CdbEntityController<LogTopicControllerUt
     }
 
     @Override
-    protected LogTopic createEntityInstance() {
-        return new LogTopic();
-    }
-
-    @Override
     public List<LogTopic> getAvailableItems() {
         return super.getAvailableItems();
     }

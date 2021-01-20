@@ -731,12 +731,6 @@ public class ItemDomainMachineDesignController
         currentMachineDesignListRootTreeNode = null;
     }
 
-    @Override
-    public ItemDomainMachineDesign createEntityInstance() {
-        ItemDomainMachineDesign item = super.createEntityInstance();
-        return item;
-    }
-
     public ItemDomainMachineDesign createEntityInstanceForDualTreeView() {
         ItemDomainMachineDesign newInstance = createEntityInstance();
 
@@ -1508,7 +1502,7 @@ public class ItemDomainMachineDesignController
         searchResultsTreeNode = null;
     }
 
-    public synchronized TreeNode getSearchResults(String searchString, boolean caseInsensitive) {
+    public TreeNode getSearchResults(String searchString, boolean caseInsensitive) {
         this.performEntitySearch(searchString, caseInsensitive);
         return getHierarchicalSearchResults();
     }
@@ -2641,11 +2635,6 @@ public class ItemDomainMachineDesignController
 
     private void setCurrentHierarchyItemElement(ItemElement currentHierarchyItemElement) {
         this.currentHierarchyItemElement = currentHierarchyItemElement;
-    }
-
-    @Override
-    protected ItemDomainMachineDesign instenciateNewItemDomainEntity() {
-        return new ItemDomainMachineDesign();
     }
 
     @Override

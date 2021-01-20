@@ -327,23 +327,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     public static ItemDomainCableDesignController getInstance() {
         return (ItemDomainCableDesignController) SessionUtility.findBean(ItemDomainCableDesignController.CONTROLLER_NAMED);
-    }
-    
-    @Override
-    protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
-        ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Design Metadata", CABLE_DESIGN_INTERNAL_PROPERTY_TYPE);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY, "Ext Cable Name", "External cable name (e.g., from CAD or routing tool).", ItemCoreMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY, "Import Cable ID", "Import cable identifier.", ItemCoreMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY, "Alt Cable ID", "Alternate (e.g., group-specific) cable identifier.", ItemCoreMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_LEGACY_QR_ID_KEY, "Legacy QR ID", "Legacy QR identifier, e.g., for cables that have already been assigned a QR code.", ItemCoreMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_LAYING_KEY, "Laying", "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", ItemCoreMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, "Voltage", "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", ItemCoreMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY, "Endpoint1 Desc", "Endpoint details useful for external editing.", ItemCoreMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY, "Endpoint2 Desc", "Endpoint details useful for external editing.", ItemCoreMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ENDPOINT1_ROUTE_KEY, "Endpoint1 Route", "Routing waypoint for first endpoint.", ItemCoreMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ENDPOINT2_ROUTE_KEY, "Endpoint2 Route", "Routing waypoint for second endpoint.", ItemCoreMetadataFieldType.STRING, "", null);
-        return info;
-    }
+    }        
 
     /**
      * Creates a cable design object and sets the core variables.
@@ -478,18 +462,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public String prepareWizardBundle() {        
         BundleWizard.getInstance().reset();
         return "/views/itemDomainCableDesign/createBundle?faces-redirect=true";
-    }
-
-    @Override
-    public ItemDomainCableDesign createEntityInstance() {
-        ItemDomainCableDesign item = super.createEntityInstance();
-        setCurrent(item);
-        return item;
-    }
-
-    @Override
-    protected ItemDomainCableDesign instenciateNewItemDomainEntity() {
-        return new ItemDomainCableDesign();
     }
 
     @Override

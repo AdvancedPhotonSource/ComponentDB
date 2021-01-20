@@ -87,6 +87,16 @@ public class PropertyTypeControllerUtility extends CdbEntityControllerUtility<Pr
             }
         }
     }
+    
+    @Override
+    public PropertyType createEntityInstance(UserInfo sessionUser) {
+        PropertyType propertyType = new PropertyType();
+        propertyType.setIsInternal(false);
+        propertyType.setIsActive(true);
+        propertyType.setIsUserWriteable(false);
+        propertyType.setIsDynamic(false);
+        return propertyType;
+    } 
 
     @Override
     protected PropertyTypeFacade getEntityDbFacade() {

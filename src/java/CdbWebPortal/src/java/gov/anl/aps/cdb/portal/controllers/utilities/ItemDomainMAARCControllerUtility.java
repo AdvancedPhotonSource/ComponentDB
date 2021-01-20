@@ -134,4 +134,9 @@ public class ItemDomainMAARCControllerUtility extends ItemControllerUtility<Item
         return "MAARC Item";
     }
     
+    @Override
+    protected ItemDomainMAARC instenciateNewItemDomainEntity() {
+        return new ItemDomainMAARC();
+    }
+    
 }

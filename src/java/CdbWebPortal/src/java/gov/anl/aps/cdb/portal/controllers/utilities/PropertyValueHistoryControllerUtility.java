@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueHistoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 /**
  *
@@ -21,6 +22,11 @@ public class PropertyValueHistoryControllerUtility extends CdbEntityControllerUt
     @Override
     public String getEntityTypeName() {
         return "propertyValueHistory";
+    }
+
+    @Override
+    public PropertyValueHistory createEntityInstance(UserInfo sessionUser) {
+        return new PropertyValueHistory();
     }
     
 }

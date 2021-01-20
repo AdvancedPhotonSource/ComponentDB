@@ -73,11 +73,6 @@ public class PropertyValueController extends CdbEntityController<PropertyValueCo
     }
 
     @Override
-    protected PropertyValue createEntityInstance() {
-        return new PropertyValue();
-    }
-
-    @Override
     public List<PropertyValue> getAvailableItems() {
         return super.getAvailableItems();
     }

@@ -40,11 +40,6 @@ public class LogLevelController extends CdbEntityController<LogLevelControllerUt
     }
 
     @Override
-    protected LogLevel createEntityInstance() {
-        return new LogLevel(); 
-    }
-
-    @Override
     protected LogLevelSettings createNewSettingObject() {
         return new LogLevelSettings();
     }

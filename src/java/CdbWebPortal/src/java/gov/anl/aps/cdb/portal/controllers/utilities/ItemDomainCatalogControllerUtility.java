@@ -23,5 +23,10 @@ public class ItemDomainCatalogControllerUtility extends ItemDomainCatalogBaseCon
     protected ItemDomainCatalogFacade getItemFacadeInstance() {
         return ItemDomainCatalogFacade.getInstance(); 
     }
+    
+    @Override
+    protected ItemDomainCatalog instenciateNewItemDomainEntity() {
+        return new ItemDomainCatalog();
+    }
        
 }

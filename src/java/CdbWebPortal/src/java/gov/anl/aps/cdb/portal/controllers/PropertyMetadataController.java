@@ -34,11 +34,6 @@ public class PropertyMetadataController extends CdbEntityController<PropertyMeta
         return propertyMetadataFacade; 
     }
 
-    @Override
-    protected PropertyMetadata createEntityInstance() {
-        return new PropertyMetadata(); 
-    }
-
     public PropertyValueBase getCurrentMetadataShown() {
         return currentMetadataShown;
     }

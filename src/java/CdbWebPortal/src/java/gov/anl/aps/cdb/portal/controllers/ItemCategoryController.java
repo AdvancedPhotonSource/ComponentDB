@@ -59,13 +59,7 @@ public class ItemCategoryController extends ItemTypeCategoryController<ItemCateg
     @Override
     public List<ItemCategory> getItemTypeCategoryEntityListByDomainName(String domainName) {
         return itemCategoryFacade.findByDomainName(domainName);
-    }
-
-    @Override
-    public ItemCategory createItemTypeCategoryEntity() {
-        ItemCategory itemCategory = new ItemCategory();
-        return itemCategory; 
-    }
+    }   
 
     @Override
     protected ItemCategorySettings createNewSettingObject() {

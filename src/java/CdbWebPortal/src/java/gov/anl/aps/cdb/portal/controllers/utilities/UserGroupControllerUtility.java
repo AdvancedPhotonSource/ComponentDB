@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 
 /**
@@ -35,6 +36,11 @@ public class UserGroupControllerUtility extends CdbEntityControllerUtility<UserG
     @Override
     public String getEntityTypeName() {
         return "userGroup";
+    }
+
+    @Override
+    public UserGroup createEntityInstance(UserInfo sessionUser) {
+        return new UserGroup();
     }
 
     

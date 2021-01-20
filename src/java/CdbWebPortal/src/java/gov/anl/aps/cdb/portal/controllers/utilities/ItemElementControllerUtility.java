@@ -163,6 +163,16 @@ public class ItemElementControllerUtility extends CdbDomainEntityControllerUtili
     protected ItemElementFacade getEntityDbFacade() {
         return ItemElementFacade.getInstance(); 
     }
+    
+    @Override
+    public ItemElement createEntityInstance(UserInfo sessionUser) {
+        ItemElement designElement = new ItemElement();
+        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+        designElement.setEntityInfo(entityInfo);
+
+        // clear selection lists
+        return designElement;
+    }
 
     @Override
     public String getEntityInstanceName(ItemElement entity) {

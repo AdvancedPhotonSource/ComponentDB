@@ -44,11 +44,6 @@ public class RelationshipTypeController extends CdbEntityController<Relationship
     }
 
     @Override
-    protected RelationshipType createEntityInstance() {
-        return new RelationshipType(); 
-    }
-
-    @Override
     protected RelationshipTypeSettings createNewSettingObject() {
         return new RelationshipTypeSettings();
     }

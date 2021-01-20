@@ -14,7 +14,6 @@ import gov.anl.aps.cdb.portal.model.ItemDomainMAARCLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMAARCFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMAARC;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -36,7 +35,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -79,12 +77,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
     PropertyTypeFacade propertyTypeFacade;
 
     @EJB
-    PropertyMetadataFacade propertyMetadataFacade;
-
-    @Override
-    protected ItemDomainMAARC instenciateNewItemDomainEntity() {
-        return new ItemDomainMAARC();
-    }
+    PropertyMetadataFacade propertyMetadataFacade;   
 
     @Override
     protected ItemDomainMAARCSettings createNewSettingObject() {

@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.UserRoleFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserRole;
 
 /**
@@ -22,5 +23,10 @@ public class UserRoleControllerUtility extends CdbEntityControllerUtility<UserRo
     public String getEntityTypeName() {
         return "userRole";
     }    
+
+    @Override
+    public UserRole createEntityInstance(UserInfo sessionUser) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

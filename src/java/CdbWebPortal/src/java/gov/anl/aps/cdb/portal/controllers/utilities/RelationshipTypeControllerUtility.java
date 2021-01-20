@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 /**
  *
@@ -21,6 +22,11 @@ public class RelationshipTypeControllerUtility extends CdbEntityControllerUtilit
     @Override
     public String getEntityTypeName() {
         return "relationshipType";
+    }
+
+    @Override
+    public RelationshipType createEntityInstance(UserInfo sessionUser) {
+        return new RelationshipType();
     }
     
 }

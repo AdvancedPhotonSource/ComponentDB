@@ -9,7 +9,10 @@ import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,7 +35,13 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
      * @return entity DB facade
      */
     protected abstract FacadeType getEntityDbFacade();
-        
+    
+    /**
+     * Abstract method for creating new entity instance.
+     *
+     * @return created entity instance
+     */
+    public abstract EntityType createEntityInstance(UserInfo sessionUser);        
     
     public EntityType create(EntityType entity, UserInfo createdByUserInfo) throws CdbException, RuntimeException {
         try {            
@@ -325,6 +334,45 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         for (EntityType entity : entities) {
             entity.setPersitanceErrorMessage(msg);
         }
+    }        
+
+    public List<EntityType> getAllEntities() {
+        return getEntityDbFacade().findAll();
+    }
+    
+    /**
+     * Search all entities for a given string.
+     *
+     * @param searchString search string
+     * @param caseInsensitive use case insensitive search
+     */
+    public LinkedList<SearchResult> performEntitySearch(String searchString, boolean caseInsensitive) {
+        LinkedList<SearchResult> searchResultList = new LinkedList<>(); 
+        if (searchString == null || searchString.isEmpty()) {            
+            return searchResultList;
+        }
+        
+        // Start new search        
+        Pattern searchPattern;
+        if (caseInsensitive) {
+            searchPattern = Pattern.compile(Pattern.quote(searchString), Pattern.CASE_INSENSITIVE);
+        } else {
+            searchPattern = Pattern.compile(Pattern.quote(searchString));
+        }
+        List<EntityType> allObjectList = getAllEntities();
+        for (EntityType entity : allObjectList) {
+            try {
+                SearchResult searchResult = entity.search(searchPattern);
+                if (!searchResult.isEmpty()) {
+                    searchResultList.add(searchResult);
+                }
+            } catch (RuntimeException ex) {
+                logger.warn("Could not search entity " + entity.toString() + " (Error: " + ex.toString() + ")");
+            }
+
+        }
+        
+        return searchResultList; 
     }
     
 }

@@ -35,13 +35,7 @@ public class ItemSourceController extends CdbEntityController<ItemSourceControll
     @Override
     protected ItemSourceFacade getEntityDbFacade() {
         return itemSourceFacade;
-    }
-
-    @Override
-    protected ItemSource createEntityInstance() {
-        ItemSource itemSource = new ItemSource();
-        return itemSource;
-    }
+    }   
 
     /*
     @Override

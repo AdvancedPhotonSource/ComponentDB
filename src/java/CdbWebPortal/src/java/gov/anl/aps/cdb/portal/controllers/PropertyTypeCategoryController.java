@@ -46,12 +46,6 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
     }
 
     @Override
-    protected PropertyTypeCategory createEntityInstance() {
-        PropertyTypeCategory propertyCategory = new PropertyTypeCategory();
-        return propertyCategory;
-    }
-
-    @Override
     public PropertyTypeCategory findById(Integer id) {
         return propertyTypeCategoryFacade.findById(id);
     }

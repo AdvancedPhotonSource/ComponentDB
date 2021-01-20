@@ -11,6 +11,9 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.view.objects.LocationHistoryObject;
+import java.util.List;
+import org.primefaces.model.TreeNode;
 
 /**
  *
@@ -32,5 +35,15 @@ public class LocatableItemControllerUtility {
         locatableItemController.updateItemLocation(item, updateUser);
     }
     
+    public void setItemLocationInfo(LocatableItem locatableItem) {
+        locatableItemController.setItemLocationInfo(locatableItem);
+    }
     
+    public List<LocationHistoryObject> getLocationHistoryObjectList(LocatableItem locatableItem) {
+        return locatableItemController.getLocationHistoryObjectList(locatableItem); 
+    }
+    
+    public TreeNode getLocationTreeForLocationHistoryObject(LocationHistoryObject locationHistoryObject) {
+        return locatableItemController.getLocationTreeForLocationHistoryObject(locationHistoryObject); 
+    }
 }

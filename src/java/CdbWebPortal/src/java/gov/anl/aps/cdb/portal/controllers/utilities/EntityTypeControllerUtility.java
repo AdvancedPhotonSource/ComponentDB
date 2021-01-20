@@ -4,9 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
-import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 /**
  *
@@ -17,6 +17,12 @@ public class EntityTypeControllerUtility extends CdbEntityControllerUtility<Enti
     @Override
     protected EntityTypeFacade getEntityDbFacade() {
         return EntityTypeFacade.getInstance();
+    }
+    
+    @Override
+    public EntityType createEntityInstance(UserInfo sessionUser) {
+        EntityType entityType = new EntityType(); 
+        return entityType; 
     }
 
     @Override

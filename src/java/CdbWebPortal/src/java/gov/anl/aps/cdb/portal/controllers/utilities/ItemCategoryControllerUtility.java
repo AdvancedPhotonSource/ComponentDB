@@ -5,7 +5,9 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 
 /**
  *
@@ -16,6 +18,12 @@ public class ItemCategoryControllerUtility extends ItemTypeCategoryControllerUti
     @Override
     protected ItemCategoryFacade getEntityDbFacade() {
         return ItemCategoryFacade.getInstance(); 
+    }
+    
+    @Override
+    protected ItemCategory createItemTypeCategoryEntity() {
+        ItemCategory itemCategory = new ItemCategory();
+        return itemCategory; 
     }
 
     @Override

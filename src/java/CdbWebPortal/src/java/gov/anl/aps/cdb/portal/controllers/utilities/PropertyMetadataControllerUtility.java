@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 /**
  *
@@ -21,6 +22,11 @@ public class PropertyMetadataControllerUtility extends CdbEntityControllerUtilit
     @Override
     public String getEntityTypeName() {
         return "propertyMetadata";
+    }
+
+    @Override
+    public PropertyMetadata createEntityInstance(UserInfo sessionUser) {
+        return new PropertyMetadata(); 
     }
     
 }

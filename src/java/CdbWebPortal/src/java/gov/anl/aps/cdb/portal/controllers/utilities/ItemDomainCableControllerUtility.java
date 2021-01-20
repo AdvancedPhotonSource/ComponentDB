@@ -6,7 +6,11 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCable;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import java.util.ArrayList;
 
 /**
  *
@@ -52,6 +56,11 @@ public class ItemDomainCableControllerUtility extends ItemControllerUtility<Item
     @Override
     public void checkItemUniqueness(ItemDomainCable entity) throws CdbException {        
         // Cables are only unique by primary key (id). 
+    }
+    
+    @Override
+    protected ItemDomainCable instenciateNewItemDomainEntity() {
+        return new ItemDomainCable();
     }
     
 }

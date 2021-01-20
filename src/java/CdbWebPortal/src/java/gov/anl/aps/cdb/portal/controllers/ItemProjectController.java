@@ -50,11 +50,6 @@ public class ItemProjectController extends CdbEntityController<ItemProjectContro
     protected ItemProjectFacade getEntityDbFacade() {
         return itemProjectFacade;
     }
-
-    @Override
-    protected ItemProject createEntityInstance() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }   
     
     public void addItemControllerProjectChangeListener(IItemController itemDomainView) {
         if (itemProjectChangeListeners == null) {

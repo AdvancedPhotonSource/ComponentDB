@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 /**
  *
@@ -29,5 +30,10 @@ public class ItemProjectControllerUtility extends CdbEntityControllerUtility<Ite
     @Override
     public String getEntityTypeName() {
         return "itemProject";
+    }
+
+    @Override
+    public ItemProject createEntityInstance(UserInfo sessionUser) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

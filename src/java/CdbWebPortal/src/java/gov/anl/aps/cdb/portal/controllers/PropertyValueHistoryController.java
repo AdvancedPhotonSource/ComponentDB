@@ -53,11 +53,6 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     }
 
     @Override
-    protected PropertyValueHistory createEntityInstance() {
-        return new PropertyValueHistory();
-    }
-
-    @Override
     public List<PropertyValueHistory> getAvailableItems() {
         return super.getAvailableItems();
     }

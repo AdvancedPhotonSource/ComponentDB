@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import javax.ejb.EJB;
 
@@ -70,16 +71,6 @@ public abstract class ItemDomainInventoryBaseController
         int itemNumber = numExistingItems + newInstanceCount;
         return generatePaddedUnitName(itemNumber);
     }
-   
-    @Override
-    public ItemInventoryBaseDomainEntity createEntityInstance() {
-        ItemInventoryBaseDomainEntity item = super.createEntityInstance();
-        setCurrent(item);
-
-        ItemStatusUtility.updateDefaultStatusProperty(item, this);       
-        
-        return item;
-    }
     
     @Override
     public String prepareCreate() {
@@ -118,39 +109,35 @@ public abstract class ItemDomainInventoryBaseController
         }
         return null;
 
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="Inventory status implementation">
-
-    public InventoryStatusPropertyTypeInfo getInventoryStatusPropertyTypeInfo() {
-        inventoryStatusPropertyTypeInfo = ItemStatusUtility.getInventoryStatusPropertyTypeInfo(this, inventoryStatusPropertyTypeInfo);
-        return inventoryStatusPropertyTypeInfo;
-    }
-
-    public PropertyType getInventoryStatusPropertyType() {
-        inventoryStatusPropertyType = ItemStatusUtility.getInventoryStatusPropertyType(this, propertyTypeFacade, inventoryStatusPropertyType);
-        return inventoryStatusPropertyType;
-    }
-
-    public PropertyValue getCurrentStatusPropertyValue() {
-        return ItemStatusUtility.getCurrentStatusPropertyValue(this);
-    }
-    
-    public PropertyValue getItemStatusPropertyValue(LocatableStatusItem item) {
-        return ItemStatusUtility.getItemStatusPropertyValue(item); 
-    }
-
-    public void prepareEditInventoryStatus() {
-        ItemStatusUtility.prepareEditInventoryStatus(this);
-    }
-
-    public void prepareEditInventoryStatus(LocatableStatusItem item) {
-        ItemStatusUtility.prepareEditInventoryStatus(this, item);
     } 
 
     @Override
-    public void prepareEditInventoryStatus(LocatableStatusItem item, UserInfo apiUser) {        
-        ItemStatusUtility.prepareEditInventoryStatus(this, item, apiUser);
+    public ItemInventoryBaseDomainEntity createEntityInstance() {
+        return super.createEntityInstance(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="Inventory status implementation">
+ 
+    @Override
+    public final PropertyValue getCurrentStatusPropertyValue() {
+        ItemInventoryBaseDomainEntity current = getCurrent();
+        return getControllerUtility().getItemStatusPropertyValue(current); 
+    }    
+
+    @Override
+    public final void prepareEditInventoryStatus() {
+        ItemInventoryBaseDomainEntity current = getCurrent();
+        prepareEditInventoryStatus(current);
+    } 
+
+    public final void prepareEditInventoryStatus(LocatableStatusItem item) {
+        UserInfo user = SessionUtility.getUser();
+        getControllerUtility().prepareEditInventoryStatus(item, user);
+    }
+    
+    @Override
+    public final PropertyType getInventoryStatusPropertyType() {
+        return getControllerUtility().getInventoryStatusPropertyType(); 
     }
     
     // </editor-fold>      

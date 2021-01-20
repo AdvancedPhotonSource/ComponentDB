@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.UserSettingFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 
 /**
@@ -21,6 +22,11 @@ public class UserSettingControllerUtility extends CdbEntityControllerUtility<Use
     @Override
     public String getEntityTypeName() {
         return "userSetting";
+    }
+
+    @Override
+    public UserSetting createEntityInstance(UserInfo sessionUser) {
+        return new UserSetting(); 
     }
     
 }

@@ -66,11 +66,6 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
     }
 
     @Override
-    protected UserInfo createEntityInstance() {
-        return new UserInfo();
-    }   
-
-    @Override
     public String getEntityTypeGroupName() {
         return "userGroup";
     }  

@@ -51,14 +51,7 @@ public class ItemTypeController extends ItemTypeCategoryController<ItemTypeContr
     @Override
     protected ItemTypeFacade getEntityDbFacade() {
         return itemTypeFacade;
-    }
-
-    @Override
-    public ItemType createItemTypeCategoryEntity() {
-        ItemType itemType = new ItemType();
-        itemType.setDomain(getCurrentViewDomain());
-        return itemType;
-    }
+    }   
 
     @Override
     public ItemType findById(Integer id) {

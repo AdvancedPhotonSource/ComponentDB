@@ -129,17 +129,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     }
 
     @Override
-    protected ItemDomainInventory instenciateNewItemDomainEntity() {
-        return new ItemDomainInventory();
-    }
-
-    @Override
-    public ItemDomainInventory createEntityInstance() {
-        ItemDomainInventory item = super.createEntityInstance();
-        return item;
-    }
-
-    @Override
     protected ItemDomainInventoryFacade getEntityDbFacade() {
         return itemDomainInventoryFacade;
     }
@@ -147,17 +136,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     protected ItemDomainInventorySettings createNewSettingObject() {
         return new ItemDomainInventorySettings(this);
-    }
-
-    @Override
-    public String getStatusPropertyTypeName() {
-        return ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
-    }
-
-    @Override
-    public InventoryStatusPropertyTypeInfo initializeInventoryStatusPropertyTypeInfo() {
-        return ItemStatusUtility.initializeInventoryStatusPropertyTypeInfo();
-    }
+    }   
 
     @Override
     protected String generatePaddedUnitName(int itemNumber) {
@@ -229,11 +208,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     public List<ItemDomainInventory> getItemListWithProject(ItemProject itemProject) {
         String projectName = itemProject.getName();
         return itemDomainInventoryFacade.findByDomainAndProjectOrderByDerivedFromItem(getDefaultDomainName(), projectName);
-    }
-
-    @Override
-    public List<ItemDomainInventory> getItemList() {
-        return itemDomainInventoryFacade.findByDomainOrderByDerivedFromItem(getDefaultDomainName());
     }
 
     @Override

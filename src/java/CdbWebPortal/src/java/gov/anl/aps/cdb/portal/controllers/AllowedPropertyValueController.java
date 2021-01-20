@@ -39,12 +39,6 @@ public class AllowedPropertyValueController extends CdbEntityController<AllowedP
     }
 
     @Override
-    protected AllowedPropertyValue createEntityInstance() {
-        AllowedPropertyValue allowedPropertyValue = new AllowedPropertyValue();
-        return allowedPropertyValue;
-    }   
-
-    @Override
     public List<AllowedPropertyValue> getAvailableItems() {
         return super.getAvailableItems();
     }
