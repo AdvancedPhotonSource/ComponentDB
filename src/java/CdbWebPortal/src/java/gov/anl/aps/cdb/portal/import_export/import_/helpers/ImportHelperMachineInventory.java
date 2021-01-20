@@ -59,8 +59,8 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Machine Inventory Template";
+    public String getFilenameBase() {
+        return "Machine Inventory";
     }
     
     @Override

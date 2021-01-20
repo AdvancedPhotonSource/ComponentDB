@@ -66,8 +66,8 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Cable Type Catalog Template";
+    public String getFilenameBase() {
+        return "Cable Type Catalog";
     }
     
     @Override 

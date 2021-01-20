@@ -23,6 +23,10 @@ public class SourceFacade extends CdbEntityFacade<Source> {
     @PersistenceContext(unitName = "CdbWebPortalPU")
     private EntityManager em;
 
+    public static SourceFacade getInstance() {
+        return (SourceFacade) SessionUtility.findFacade(SourceFacade.class.getSimpleName()); 
+    }
+    
     @Override
     protected EntityManager getEntityManager() {
         return em;
@@ -80,10 +84,6 @@ public class SourceFacade extends CdbEntityFacade<Source> {
         cq.select(s);
         cq.orderBy(cb.asc(s.get("name")));
         return getEntityManager().createQuery(cq).getResultList();
-    }
-    
-    public static SourceFacade getInstance() {
-        return (SourceFacade) SessionUtility.findFacade(SourceFacade.class.getSimpleName()); 
     }
     
 }

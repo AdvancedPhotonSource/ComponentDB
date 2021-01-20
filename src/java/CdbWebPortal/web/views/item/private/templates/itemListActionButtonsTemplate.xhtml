@@ -31,11 +31,23 @@ See LICENSE file.
                        ? importEntityActionFunctionName 
                        : 'prepareImport'}" /> 
 
+        <ui:param name="exportEntityActionFunctionName" 
+                  value="#{exportEntityActionFunctionName != null 
+                       ? exportEntityActionFunctionName 
+                       : 'prepareExport'}" /> 
+
         <p:commandButton value="Import"
                          icon="fa fa-plus"
                          action="#{entityController[importEntityActionFunctionName]}"
                          rendered="#{loginController.loggedInAsAdmin
                                      and entityController.entityDisplayImportButton}"
+                         onstart="PF('loadingDialog').show();"
+                         oncomplete="PF('loadingDialog').hide();"/> 
+        
+        <p:commandButton value="Export"
+                         icon="fa fa-file-excel-o"
+                         action="#{entityController[exportEntityActionFunctionName]}"
+                         rendered="#{entityController.entityDisplayExportButton}"
                          onstart="PF('loadingDialog').show();"
                          oncomplete="PF('loadingDialog').hide();"/> 
         

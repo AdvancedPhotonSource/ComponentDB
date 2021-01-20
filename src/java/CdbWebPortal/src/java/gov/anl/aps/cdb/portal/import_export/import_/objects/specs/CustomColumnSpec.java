@@ -25,6 +25,19 @@ public class CustomColumnSpec extends ColumnSpec {
         this.inputHandler = handler;
     }
     
+    public CustomColumnSpec(
+            String header, 
+            String propertyName, 
+            boolean required, 
+            String description,
+            InputHandler handler,
+            String exportGetterMethod) {
+        
+        super(header, propertyName, required, description);
+        this.exportGetterMethod = exportGetterMethod;
+        this.inputHandler = handler;
+    }
+    
     public InputHandler getInputHandler(int colIndex) {
         inputHandler.setFirstColumnIndex(colIndex);
         return inputHandler;

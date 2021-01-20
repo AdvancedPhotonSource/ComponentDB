@@ -4,6 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.SimpleOutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
@@ -23,6 +25,10 @@ public abstract class ColumnSpec {
     private String entitySetterMethod;
     private boolean required;
     private String description;
+    protected String exportGetterMethod;
+    
+    // column value can only be specified in update mode
+    private boolean updateOnly = false;
     
     public ColumnSpec() {
     }
@@ -47,6 +53,23 @@ public abstract class ColumnSpec {
         this.entitySetterMethod = entitySetterMethod;
     }
 
+    /**
+     * Creates a column spec appropriate for import and export.
+     */
+    public ColumnSpec(
+            String header, 
+            String importPropertyName, 
+            String importSetterMethod, 
+            boolean importRequired, 
+            String description, 
+            String exportGetterMethod,
+            boolean updateOnly) {
+
+        this(header, importPropertyName, importSetterMethod, importRequired, description);
+        this.exportGetterMethod = exportGetterMethod;
+        this.updateOnly = updateOnly;
+    }
+
     public String getHeader() {
         return header;
     }
@@ -67,6 +90,14 @@ public abstract class ColumnSpec {
         return description;
     }
     
+    public String getExportGetterMethod() {
+        return exportGetterMethod;
+    }
+    
+    public boolean isUpdateOnly() {
+        return updateOnly;
+    }
+
     public int getInputTemplateColumns(
             int colIndex,
             List<InputColumnModel> inputColumns_io) {
@@ -95,15 +126,23 @@ public abstract class ColumnSpec {
                 colIndex,
                 getHeader(),
                 isRequired(),
-                getDescription());
+                getDescription(),
+                isUpdateOnly());
     }
     
     public OutputColumnModel getOutputColumnModel(int colIndex) {
         return new OutputColumnModel(
-                                getHeader(),
+                getHeader(),
                 getPropertyName());
     }
 
     public abstract InputHandler getInputHandler(int colIndex);
+    
+    public OutputHandler getOutputHandler() {
+        if (exportGetterMethod == null || exportGetterMethod.isBlank()) {
+            return null;
+        }
+        return new SimpleOutputHandler(getHeader(), getDescription(), getExportGetterMethod());
+    }
 
 }

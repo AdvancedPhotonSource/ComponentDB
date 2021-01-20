@@ -27,9 +27,10 @@ import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.export.wizard.ItemDomainExportWizard;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import java.io.IOException;
 
 import java.io.Serializable;
@@ -99,8 +100,9 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     protected boolean apiMode = false;
     protected UserInfo apiUser;
-
-    private DomainImportInfo domainImportInfo;
+    
+    private DomainImportExportInfo domainImportInfo;
+    private DomainImportExportInfo domainExportInfo;
     
     ControllerUtility controllerUtility = null; 
 
@@ -1413,6 +1415,10 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     public List<EntityType> getFilteredItems() {
         return filteredObjectList;
     }
+    
+    public List<CdbEntity> getFilteredEntities() {
+        return (List<CdbEntity>) filteredObjectList;
+    }
 
     /**
      * Reset selected object list to null.
@@ -1701,15 +1707,41 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         ItemDomainImportWizard.getInstance().setDomainInfo(getDomainImportInfo());
         return "import?faces-redirect=true";
     }
-
-    protected DomainImportInfo initializeDomainImportInfo() {
+    
+    protected DomainImportExportInfo initializeDomainImportInfo() {
         return null;
     }
-
-    public DomainImportInfo getDomainImportInfo() {
+    
+    public DomainImportExportInfo getDomainImportInfo() {
         if (domainImportInfo == null) {
             domainImportInfo = initializeDomainImportInfo();
         }
         return domainImportInfo;
     }
+    
+    public boolean getEntityDisplayExportButton() {
+        return false;
+    }
+    
+    /**
+     * Prepares export wizard.
+     */
+    public String prepareExport() throws CdbException {  
+        ItemDomainExportWizard wizard = ItemDomainExportWizard.getInstance();
+        wizard.setDomainInfo(getDomainExportInfo());
+        wizard.setExportEntityList(getFilteredEntities());
+        return "export?faces-redirect=true";
+    }
+    
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        return null;
+    }
+    
+    public DomainImportExportInfo getDomainExportInfo() {
+        if (domainExportInfo == null) {
+            domainExportInfo = initializeDomainExportInfo();
+        }
+        return domainExportInfo;
+    }
+    
 }

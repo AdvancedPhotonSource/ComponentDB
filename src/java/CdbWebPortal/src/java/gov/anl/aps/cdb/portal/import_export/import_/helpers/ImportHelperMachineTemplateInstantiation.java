@@ -66,8 +66,8 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Machine Template Instantiation Template";
+    public String getFilenameBase() {
+        return "Machine Template Instantiation";
     }
     
     @Override

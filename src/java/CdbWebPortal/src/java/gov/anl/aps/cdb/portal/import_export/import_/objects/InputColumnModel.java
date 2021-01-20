@@ -14,6 +14,7 @@ public class InputColumnModel {
     protected String name;
     protected String description = null;
     protected boolean required = false;
+    protected boolean updateOnly = false;
 
     public InputColumnModel(
             int columnIndex,
@@ -25,6 +26,17 @@ public class InputColumnModel {
         this.name = name;
         this.description = description;
         this.required = required;
+    }
+
+    public InputColumnModel(
+            int columnIndex,
+            String name,
+            boolean required,
+            String description,
+            boolean updateOnly) {
+
+        this(columnIndex, name, required, description);
+        this.updateOnly = updateOnly;
     }
 
     public int getColumnIndex() {
@@ -41,6 +53,10 @@ public class InputColumnModel {
 
     public boolean isRequired() {
         return this.required;
+    }
+    
+    public boolean isUpdateOnly() {
+        return this.updateOnly;
     }
 
 }

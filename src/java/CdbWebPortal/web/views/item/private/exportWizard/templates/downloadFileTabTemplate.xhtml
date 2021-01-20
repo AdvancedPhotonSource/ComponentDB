@@ -14,20 +14,15 @@ See LICENSE file.
     
     <ui:param name="rootViewId" value="#{viewId}"/>
     
-    <p:tab id="#{rootViewId}SelectFormatTab">
-        <p:panel header="Choose spreadsheet format to use for import, then click 'Next Step' to select import mode.">
-            <p:outputPanel id="#{rootViewId}SelectFormatPanel">
+    <p:tab id="#{rootViewId}DownloadFileTab">
+        <p:panel header="Click 'Download' button to save file, then click 'Finished'.">
+            <p:outputPanel id="#{rootViewId}DownloadFilePanel">
                 <p:panelGrid>
                     <p:row>
                         <p:column>
-                            <p:selectOneMenu id="#{rootViewId}SelectFormatMenu" 
-                                             value="#{wizardController.selectedFormatName}">
-                                <p:ajax listener="#{wizardController.selectListenerFormat}"
-                                        oncomplete="update#{rootViewId}WizardButtons();"/>
-                                <f:selectItem itemLabel="Select Format" 
-                                              itemValue=""/>
-                                <f:selectItems value="#{wizardController.formatNames}"/>
-                            </p:selectOneMenu>
+                            <p:commandButton value="Download" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="fa fa-file-excel-o">
+                                <p:fileDownload value="#{wizardController.downloadFile}" />
+                            </p:commandButton>      
                         </p:column>
                     </p:row>
 
