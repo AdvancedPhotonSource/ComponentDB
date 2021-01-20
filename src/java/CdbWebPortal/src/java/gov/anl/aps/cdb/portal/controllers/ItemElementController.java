@@ -206,16 +206,6 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     @Override
-    protected ItemElement createEntityInstance() {
-        ItemElement designElement = new ItemElement();
-        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-        designElement.setEntityInfo(entityInfo);
-
-        // clear selection lists
-        return designElement;
-    }
-
-    @Override
     public ItemElement findById(Integer id) {
         return itemElementFacade.findById(id);
     }

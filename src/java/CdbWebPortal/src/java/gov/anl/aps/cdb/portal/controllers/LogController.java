@@ -68,12 +68,7 @@ public class LogController extends CdbEntityController<LogControllerUtility, Log
     @Override
     protected LogFacade getEntityDbFacade() {
         return logFacade;
-    }
-
-    @Override
-    protected Log createEntityInstance() {
-        return new Log();
-    }
+    }   
 
     @Override
     public List<Log> getAvailableItems() {

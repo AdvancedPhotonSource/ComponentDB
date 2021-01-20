@@ -81,17 +81,6 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     protected ItemDomainCatalogFacade getEntityDbFacade() {
         return itemDomainCatalogFacade;
     }
-    
-    @Override
-    protected ItemDomainCatalog instenciateNewItemDomainEntity() {
-        return new ItemDomainCatalog();
-    }
-    
-    @Override
-    public ItemDomainCatalog createEntityInstance() {
-        ItemDomainCatalog item = super.createEntityInstance();
-        return item;
-    }
 
     @Override
     protected ItemDomainCatalogSettings createNewSettingObject() {

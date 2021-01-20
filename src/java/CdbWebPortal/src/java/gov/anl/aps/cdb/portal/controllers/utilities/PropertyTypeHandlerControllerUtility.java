@@ -45,5 +45,10 @@ public class PropertyTypeHandlerControllerUtility extends CdbEntityControllerUti
     public String getEntityTypeName() {
         return "propertyTypeHandler";
     }
+
+    @Override
+    public PropertyTypeHandler createEntityInstance(UserInfo sessionUser) {
+        return new PropertyTypeHandler(); 
+    }
     
 }

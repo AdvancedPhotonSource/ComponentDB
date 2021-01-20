@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.ItemSourceFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 /**
  *
@@ -21,6 +22,12 @@ public class ItemSourceControllerUtility extends CdbEntityControllerUtility<Item
     @Override
     public String getEntityTypeName() {
         return "itemSource";
+    }
+
+    @Override
+    public ItemSource createEntityInstance(UserInfo sessionUser) {
+        ItemSource itemSource = new ItemSource();
+        return itemSource; 
     }
     
 }

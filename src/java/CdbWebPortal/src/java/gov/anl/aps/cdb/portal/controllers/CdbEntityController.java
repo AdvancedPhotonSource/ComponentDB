@@ -172,14 +172,17 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      *
      * @return entity DB facade
      */
-    protected abstract FacadeType getEntityDbFacade();
+    protected abstract FacadeType getEntityDbFacade();   
 
     /**
      * Abstract method for creating new entity instance.
      *
      * @return created entity instance
      */
-    protected abstract EntityType createEntityInstance();
+    protected EntityType createEntityInstance() {
+        UserInfo user = SessionUtility.getUser();
+        return getControllerUtility().createEntityInstance(user); 
+    }
 
     /**
      * Abstract method for retrieving entity type name.
@@ -1276,14 +1279,14 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         listDataModel = new ListDataModel(getAllObjectList());
     }
 
-    public List<EntityType> getAllObjectList() {
+    public final List<EntityType> getAllObjectList() {
         if (allObjectList == null) {
-            allObjectList = getAllEntities();
+            allObjectList = getControllerUtility().getAllEntities();
         }
         return allObjectList;
     }
 
-    public List<EntityType> getAllEntities() {
+    public final List<EntityType> getAllEntities() {
         return getEntityDbFacade().findAll();
     }
 
@@ -1563,39 +1566,16 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @param searchString search string
      * @param caseInsensitive use case insensitive search
      */
-    public void performEntitySearch(String searchString, boolean caseInsensitive) {
-        if (searchString == null || searchString.isEmpty()) {
-            searchResultList = new LinkedList<>();
-            return;
-        }
+    public final void performEntitySearch(String searchString, boolean caseInsensitive) {        
         if (searchString.equals(this.searchString) && caseInsensitive == this.caseInsensitive) {
             // Return old results
             return;
         }
-
-        // Start new search
         this.searchString = searchString;
         this.caseInsensitive = caseInsensitive;
         resetSearchVariables();
-
-        Pattern searchPattern;
-        if (caseInsensitive) {
-            searchPattern = Pattern.compile(Pattern.quote(searchString), Pattern.CASE_INSENSITIVE);
-        } else {
-            searchPattern = Pattern.compile(Pattern.quote(searchString));
-        }
-        List<EntityType> allObjectList = getAllObjectList();
-        for (EntityType entity : allObjectList) {
-            try {
-                SearchResult searchResult = entity.search(searchPattern);
-                if (!searchResult.isEmpty()) {
-                    searchResultList.add(searchResult);
-                }
-            } catch (RuntimeException ex) {
-                logger.warn("Could not search entity " + entity.toString() + " (Error: " + ex.toString() + ")");
-            }
-
-        }
+        
+        searchResultList = getControllerUtility().performEntitySearch(searchString, caseInsensitive); 
     }
 
     public void resetSearchVariables() {

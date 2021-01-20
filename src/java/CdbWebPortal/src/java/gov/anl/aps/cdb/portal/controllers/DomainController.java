@@ -39,11 +39,6 @@ public class DomainController extends CdbEntityController<DomainControllerUtilit
     }
 
     @Override
-    protected Domain createEntityInstance() {
-        return new Domain(); 
-    }   
-
-    @Override
     protected DomainSettings createNewSettingObject() {
         return new DomainSettings(); 
     }

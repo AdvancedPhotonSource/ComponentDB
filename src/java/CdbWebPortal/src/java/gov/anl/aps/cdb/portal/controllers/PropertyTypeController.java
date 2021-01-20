@@ -76,17 +76,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyTypeCont
     protected PropertyTypeFacade getEntityDbFacade() {
         return propertyTypeFacade;
     }
-
-    @Override
-    protected PropertyType createEntityInstance() {
-        PropertyType propertyType = new PropertyType();
-        propertyType.setIsInternal(false);
-        propertyType.setIsActive(true);
-        propertyType.setIsUserWriteable(false);
-        propertyType.setIsDynamic(false);
-        return propertyType;
-    } 
-
+    
     @Override
     public void resetListDataModel() {
         super.resetListDataModel(); 

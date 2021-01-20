@@ -49,12 +49,11 @@ public class SourceController extends CdbEntityController<SourceControllerUtilit
     @Override
     protected SourceFacade getEntityDbFacade() {
         return sourceFacade;
-    }
+    } 
 
     @Override
     public Source createEntityInstance() {
-        Source source = new Source();
-        return source;
+        return super.createEntityInstance(); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

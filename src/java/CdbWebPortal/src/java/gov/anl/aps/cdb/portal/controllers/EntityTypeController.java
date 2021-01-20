@@ -35,13 +35,7 @@ public class EntityTypeController extends CdbEntityController<EntityTypeControll
     @Override
     protected EntityTypeFacade getEntityDbFacade() {
         return entityTypeFacade; 
-    }
-
-    @Override
-    protected EntityType createEntityInstance() {
-        EntityType entityType = new EntityType(); 
-        return entityType; 
-    }
+    }   
 
     @Override
     public EntityType findById(Integer id) {

@@ -11,6 +11,8 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.RelationshipTypeController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +60,11 @@ public class ItemDomainCableDesign extends Item {
     @Override
     public Item createInstance() {
         return new ItemDomainCableDesign();
+    } 
+
+    @Override
+    public ItemDomainCableDesignControllerUtility getItemControllerUtility() {
+        return new ItemDomainCableDesignControllerUtility();
     }
 
     private RelationshipType getCableConnectionRelationshipType() {

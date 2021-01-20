@@ -28,12 +28,7 @@ public class ConnectorTypeController extends CdbEntityController<ConnectorTypeCo
     @Override
     protected ConnectorTypeFacade getEntityDbFacade() {
         return connectorTypeFacade;
-    }
-
-    @Override
-    protected ConnectorType createEntityInstance() {
-        return new ConnectorType(); 
-    }
+    }   
     
     @Override
     protected ConnectorTypeSettings createNewSettingObject() {

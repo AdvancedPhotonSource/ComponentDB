@@ -102,5 +102,10 @@ public class LogControllerUtility extends CdbEntityControllerUtility<Log, LogFac
         return "log";
     }
 
+    @Override
+    public Log createEntityInstance(UserInfo sessionUser) {
+        return new Log(); 
+    }
+
     
 }

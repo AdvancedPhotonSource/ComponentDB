@@ -40,16 +40,6 @@ public class ItemConnectorController extends CdbEntityController<ItemConnectorCo
         return itemConnectorFacade;
     }
 
-    @Override
-    protected ItemConnector createEntityInstance() {
-        ItemConnector itemConnector = new ItemConnector();
-        Connector connector = new Connector();
-        itemConnector.setConnector(connector);
-        itemConnector.setQuantity(1);
-
-        return itemConnector;
-    }   
-
     public String getConnectorGender(ItemConnector connector) {
         if (connector == null) {            
             return ""; 

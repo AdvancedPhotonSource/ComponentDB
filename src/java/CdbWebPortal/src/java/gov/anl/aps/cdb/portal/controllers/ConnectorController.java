@@ -36,11 +36,6 @@ public class ConnectorController extends CdbEntityController<ConnectorController
     }
 
     @Override
-    protected Connector createEntityInstance() {
-        return new Connector(); 
-    }
-
-    @Override
     protected ConnectorSettings createNewSettingObject() {
         return new ConnectorSettings();
     }
