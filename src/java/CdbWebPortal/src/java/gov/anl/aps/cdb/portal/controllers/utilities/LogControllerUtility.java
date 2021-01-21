@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.model.db.beans.LogFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.LogLevelFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
@@ -57,7 +58,8 @@ public class LogControllerUtility extends CdbEntityControllerUtility<Log, LogFac
         return systemLogInstance;
     }
     
-    public void addSystemLog(String logLevelName, String logMessage) throws CdbException {
+    public void addSystemLog(SystemLogLevel systemlogLevel, String logMessage) throws CdbException {
+        String logLevelName = systemlogLevel.toString(); 
         UserInfo enteredByUser = userInfoFacade.findByUsername(DEFAULT_SYSTEM_ADMIN_USERNAME);
         if (enteredByUser == null) {
             throw new CdbException("User '" + DEFAULT_SYSTEM_ADMIN_USERNAME + "' needs to be in the system. Please notify system administrator.");

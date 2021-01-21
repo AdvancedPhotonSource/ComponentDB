@@ -73,7 +73,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             }
             getEntityDbFacade().create(entities);            
             
-            addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), "Created " + entities.size() + " entities.", createdByUserInfo);            
+            addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Created " + entities.size() + " entities.", createdByUserInfo);            
             setPersistenceErrorMessageForList(entities, null);
 
         } catch (CdbException ex) {
@@ -95,7 +95,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             logger.debug("Updating " + getDisplayEntityTypeName() + " " + getEntityInstanceName(entity));
             prepareEntityUpdate(entity, updatedByUserInfo);
             EntityType updatedEntity = getEntityDbFacade().edit(entity);
-            addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), "Updated: " + entity.getSystemLogString(), updatedByUserInfo);
+            addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Updated: " + entity.getSystemLogString(), updatedByUserInfo);
             entity.setPersitanceErrorMessage(null);
             
             return updatedEntity; 
@@ -147,7 +147,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             getEntityDbFacade().edit(entities);
             for (EntityType entity : entities) {                
                 entity.setPersitanceErrorMessage(null);
-                addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), "Updated: " + entity.getSystemLogString(), updatedByUserInfo);
+                addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Updated: " + entity.getSystemLogString(), updatedByUserInfo);
             }            
         } catch (CdbException ex) {
             logger.error("Could not update " + getDisplayEntityTypeName() + " entities: " + ex.getMessage());
@@ -168,7 +168,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             prepareEntityDestroy(entity, destroyedByUserInfo);
             getEntityDbFacade().remove(entity);
             
-            addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), "Deleted: " + entity.getSystemLogString(), destroyedByUserInfo);            
+            addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Deleted: " + entity.getSystemLogString(), destroyedByUserInfo);            
         } catch (CdbException ex) {
             entity.setPersitanceErrorMessage(ex.getMessage());
             addCdbEntityWarningSystemLog("Failed to destroy", ex, entity, destroyedByUserInfo);
@@ -203,7 +203,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
 
             getEntityDbFacade().remove(entities, updateEntity);
 
-            addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), "Deleted: " + entities.size() + " entities.", destroyedByUserInfo);
+            addCdbEntitySystemLog(SystemLogLevel.entityInfo, "Deleted: " + entities.size() + " entities.", destroyedByUserInfo);
             setPersistenceErrorMessageForList(entities, null);
         } catch (CdbException ex) {
             logger.error("Could not delete list of " + getDisplayEntityTypeName() + ": " + ex.getMessage());
@@ -288,7 +288,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
     
     protected void addCreatedSystemLog(EntityType entity, UserInfo createdByUserInfo) throws CdbException {
         String message = "Created: " + entity.getSystemLogString(); 
-        addCdbEntitySystemLog(SystemLogLevel.entityInfo.toString(), message, createdByUserInfo);  
+        addCdbEntitySystemLog(SystemLogLevel.entityInfo, message, createdByUserInfo);  
     }
     
     protected void addCreatedWarningSystemLog(Exception exception, EntityType entity, UserInfo createdByUserInfo) throws CdbException {
@@ -302,6 +302,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
      * @param warningMessage - Generic warning message.
      * @param exception - [OPTIONAL] will append the message of the exception.
      * @param entity - [OPTIONAL] will append the toString of the entity.
+     * @param sessionUser
      */
     protected void addCdbEntityWarningSystemLog(String warningMessage, Exception exception, CdbEntity entity, UserInfo sessionUser) throws CdbException {
         if (entity != null) {
@@ -311,7 +312,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
             warningMessage += ". Exception - " + exception.getMessage();
         }
 
-        addCdbEntitySystemLog(SystemLogLevel.entityWarning.toString(), warningMessage, sessionUser);
+        addCdbEntitySystemLog(SystemLogLevel.entityWarning, warningMessage, sessionUser);
     }
     
      /**
@@ -320,8 +321,9 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
      *
      * @param logLevel
      * @param message
+     * @param sessionUser
      */
-    protected void addCdbEntitySystemLog(String logLevel, String message, UserInfo sessionUser) throws CdbException {        
+    protected void addCdbEntitySystemLog(SystemLogLevel logLevel, String message, UserInfo sessionUser) throws CdbException {        
         if (sessionUser != null) {
             String username = sessionUser.getUsername();
             message = "User: " + username + " | " + message;
@@ -345,6 +347,7 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
      *
      * @param searchString search string
      * @param caseInsensitive use case insensitive search
+     * @return 
      */
     public LinkedList<SearchResult> performEntitySearch(String searchString, boolean caseInsensitive) {
         LinkedList<SearchResult> searchResultList = new LinkedList<>(); 
