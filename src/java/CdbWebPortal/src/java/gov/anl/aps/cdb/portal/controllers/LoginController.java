@@ -135,7 +135,7 @@ public class LoginController implements Serializable {
         user = userFacade.findByUsername(username);
         if (user == null) {            
             SessionUtility.addErrorMessage("Unknown User", "Username " + username + " is not registered.");
-            LogUtility.addSystemLog(SystemLogLevel.loginWarning.toString(), "Non-registered user login attempt: " + username);
+            LogUtility.addSystemLog(SystemLogLevel.loginWarning, "Non-registered user login attempt: " + username);
             return (username = password = null);
         }
 
@@ -147,7 +147,7 @@ public class LoginController implements Serializable {
             return getLandingPage();
         } else {
             SessionUtility.addErrorMessage("Invalid Credentials", "Username/password combination could not be verified.");                        
-            LogUtility.addSystemLog(SystemLogLevel.loginWarning.toString(), "Authentication Failed: " + username);            
+            LogUtility.addSystemLog(SystemLogLevel.loginWarning, "Authentication Failed: " + username);            
             return (username = password = null);
         }
 
@@ -186,7 +186,7 @@ public class LoginController implements Serializable {
                 SessionUtility.setRole(CdbRole.USER);
                 SessionUtility.addInfoMessage("Successful Login", "User " + username + " is logged in.");
             }            
-            LogUtility.addSystemLog(SystemLogLevel.loginInfo.toString(), "Authentication Succeeded: " + username);
+            LogUtility.addSystemLog(SystemLogLevel.loginInfo, "Authentication Succeeded: " + username);
     }
 
     public String getLandingPage() {

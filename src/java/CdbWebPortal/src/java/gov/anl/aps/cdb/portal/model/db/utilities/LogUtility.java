@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.controllers.utilities.LogControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
@@ -61,7 +62,7 @@ public class LogUtility {
     }
     
     
-    public static void addSystemLog(String logLevelName, String logMessage) {
+    public static void addSystemLog(SystemLogLevel logLevelName, String logMessage) {
         LogControllerUtility logControllerUtility = LogControllerUtility.getSystemLogInstance();    
                    
         try {

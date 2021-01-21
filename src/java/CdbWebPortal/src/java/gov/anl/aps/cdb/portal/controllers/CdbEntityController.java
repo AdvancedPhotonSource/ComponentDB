@@ -24,7 +24,6 @@ import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
-import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.export.wizard.ItemDomainExportWizard;
@@ -38,7 +37,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.event.ActionEvent;
@@ -96,10 +94,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     // TODO create a base cdbentitycontrollerextension helper. 
     private Set<ItemControllerExtensionHelper> subscribedResetForCurrentControllerHelpers;
-    private Set<ItemControllerExtensionHelper> subscribePrepareInsertForCurrentControllerHelpers;
-
-    protected boolean apiMode = false;
-    protected UserInfo apiUser;
+    private Set<ItemControllerExtensionHelper> subscribePrepareInsertForCurrentControllerHelpers;   
     
     private DomainImportExportInfo domainImportInfo;
     private DomainImportExportInfo domainExportInfo;
@@ -131,15 +126,6 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     @PostConstruct
     public void initialize() {
         settingObject.updateSettings();
-    }
-
-    protected void prepareApiInstance() {
-        apiMode = true;
-        loadEJBResourcesManually();
-    }
-
-    protected void loadEJBResourcesManually() {
-        // Will be abstract --- testing now. 
     }
 
     public void registerSearchable() {
@@ -835,57 +821,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
                 }
             }
         }
-    }
-
-    /**
-     * Allows the controller to quickly add a log entry to system logs with
-     * current session user stamp.
-     *
-     * @param logLevel
-     * @param message
-     */
-    private void addCdbEntitySystemLog(String logLevel, String message) {
-        UserInfo sessionUser;
-        if (apiMode) {
-            sessionUser = apiUser;
-        } else {
-            sessionUser = (UserInfo) SessionUtility.getUser();
-        }
-        if (sessionUser != null) {
-            String username = sessionUser.getUsername();
-            message = "User: " + username + " | " + message;
-
-            if (apiMode) {
-                message += " | REST API";
-            }
-        }
-        LogUtility.addSystemLog(logLevel, message);
-    }
-
-    /**
-     * Allows the controller to quickly add a warning log entry while
-     * automatically appending appropriate info.
-     *
-     * @param warningMessage - Generic warning message.
-     * @param exception - [OPTIONAL] will append the message of the exception.
-     * @param entity - [OPTIONAL] will append the toString of the entity.
-     */
-    public void addCdbEntityWarningSystemLog(String warningMessage, Exception exception, CdbEntity entity) {
-        if (entity != null) {
-            warningMessage += ": " + entity.toString();
-        }
-        if (exception != null) {
-            warningMessage += ". Exception - " + exception.getMessage();
-        }
-
-        addCdbEntitySystemLog(SystemLogLevel.entityWarning.toString(), warningMessage);
-    }
-
-    public synchronized void createFromApi(EntityType entity, UserInfo updateUser) throws CdbException {
-        setApiUser(updateUser);
-        setCurrent(entity);
-        performCreateOperations(current);
-    }
+    }      
 
     public String create() {
         return create(false);
@@ -1009,12 +945,6 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     public void updateWithoutRedirect() {
         update();
-    }
-
-    public synchronized void updateFromApi(EntityType entity, UserInfo updateUser) throws CdbException {
-        setApiUser(updateUser);
-        setCurrent(entity);
-        performUpdateOperations(current);
     }
 
     /**
@@ -1160,11 +1090,6 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     protected void completeEntityDestroy(EntityType entity) {
     }
 
-    public synchronized void destroyFromApi(EntityType entity, UserInfo updateUser) throws CdbException {
-        setApiUser(updateUser);
-        performDestroyOperations(entity);
-    }
-
     /**
      * Remove entity instance from the database.
      *
@@ -1228,15 +1153,13 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
             SessionUtility.addInfoMessage("Success", "Deleted " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             return prepareList();
         } catch (CdbException ex) {
-            SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());
-            addCdbEntityWarningSystemLog("Failed to delete", ex, current);
+            SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + ex.getMessage());            
             return null;
         } catch (RuntimeException ex) {
             Throwable t = ExceptionUtils.getRootCause(ex);
             logger.error("Could not delete " + getDisplayEntityTypeName() + " "
                     + getCurrentEntityInstanceName() + ": " + t.getMessage());
-            SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + t.getMessage());
-            addCdbEntityWarningSystemLog("Failed to delete", ex, current);
+            SessionUtility.addErrorMessage("Error", "Could not delete " + getDisplayEntityTypeName() + ": " + t.getMessage());            
             return null;
         }
     }
@@ -1680,10 +1603,6 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     public void setBreadcrumbViewParam(String breadcrumbViewParam) {
         this.breadcrumbViewParam = breadcrumbViewParam;
-    }
-
-    private void setApiUser(UserInfo apiUser) {
-        this.apiUser = apiUser;
     }
 
     /**

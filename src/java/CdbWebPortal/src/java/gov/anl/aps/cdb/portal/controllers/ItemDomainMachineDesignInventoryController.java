@@ -10,7 +10,6 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignInventorySettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -26,7 +25,6 @@ import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
-import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
@@ -45,9 +43,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
     
-    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";
-
-    private static ItemDomainMachineDesignInventoryController apiInstance;
+    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";   
 
     private ItemDomainMachineDesign newMdInventoryItem = null;
 
@@ -124,20 +120,8 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         return topLevelMachineDesignSelectionList;         
     }
 
-    public static ItemDomainMachineDesignInventoryController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainMachineDesignInventoryController) SessionUtility.findBean(controllerNamed);
-        } else {
-            return getApiInstance();
-        }
-    }
-
-    public static synchronized ItemDomainMachineDesignInventoryController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainMachineDesignInventoryController();
-            apiInstance.prepareApiInstance();
-        }
-        return apiInstance;
+    public static ItemDomainMachineDesignInventoryController getInstance() {        
+        return (ItemDomainMachineDesignInventoryController) SessionUtility.findBean(controllerNamed);        
     }
 
     public void prepareCreateInventoryFromTemplate(ItemDomainMachineDesign template) {

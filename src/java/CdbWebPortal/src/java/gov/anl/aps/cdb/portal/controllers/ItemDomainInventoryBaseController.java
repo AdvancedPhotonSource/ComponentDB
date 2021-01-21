@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryBaseControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
@@ -18,7 +17,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
-import javax.ejb.EJB;
 
 /**
  *
@@ -38,17 +36,7 @@ public abstract class ItemDomainInventoryBaseController
         extends ItemController<InventoryControllerUtility, ItemInventoryBaseDomainEntity, ItemDomainInventoryEntityBaseFacade, ItemInventoryEntityBaseSettingsObject> implements IItemStatusController {
 
     // Inventory status variables
-    protected InventoryStatusPropertyTypeInfo inventoryStatusPropertyTypeInfo = null;
-    private PropertyType inventoryStatusPropertyType;
-
-    @EJB
-    private PropertyTypeFacade propertyTypeFacade;
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-        propertyTypeFacade = PropertyTypeFacade.getInstance();
-    }
+    protected InventoryStatusPropertyTypeInfo inventoryStatusPropertyTypeInfo = null;    
     
     protected abstract String generatePaddedUnitName(int itemNumber);
     

@@ -89,9 +89,7 @@ public class ItemDomainMachineDesignController
     private MachineDesignConnectorCableMapperItem mdccmi;
     private List<MachineDesignConnectorListObject> mdConnectorList;
 
-    private TreeNode searchResultsTreeNode;
-
-    private static ItemDomainMachineDesignController apiInstance;
+    private TreeNode searchResultsTreeNode;   
 
     // <editor-fold defaultstate="collapsed" desc="Favorites toggle variables">
     private boolean favoritesShown = false;
@@ -222,26 +220,8 @@ public class ItemDomainMachineDesignController
     @EJB
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
 
-    public static ItemDomainMachineDesignController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
-        } else {
-            return getApiInstance();
-        }
-    }
-
-    public static synchronized ItemDomainMachineDesignController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainMachineDesignController();
-            apiInstance.prepareApiInstance();
-        }
-        return apiInstance;
-    }
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-        itemDomainMachineDesignFacade = ItemDomainMachineDesignFacade.getInstance();
+    public static ItemDomainMachineDesignController getInstance() {        
+        return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);        
     }
 
     public boolean isItemInventory(Item item) {
