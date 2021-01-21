@@ -67,6 +67,12 @@ public class ItemDomainCableDesign extends Item {
         }
         return deletedRelationshipList;
     }
+    
+    public void clearDeletedRelationshipList() {
+        if (deletedRelationshipList != null) {
+            deletedRelationshipList.clear();
+        }
+    }
 
     private RelationshipType getCableConnectionRelationshipType() {
         RelationshipType relationshipType

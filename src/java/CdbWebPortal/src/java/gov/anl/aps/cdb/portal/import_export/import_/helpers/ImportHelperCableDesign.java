@@ -240,6 +240,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         List<ItemElementRelationship> deletedRelationships = new ArrayList<>();
         for (ItemDomainCableDesign item : rows) {
             deletedRelationships.addAll(item.getDeletedRelationshipList());
+            item.clearDeletedRelationshipList();
         }
         
         UserInfo user = SessionUtility.getUser();
