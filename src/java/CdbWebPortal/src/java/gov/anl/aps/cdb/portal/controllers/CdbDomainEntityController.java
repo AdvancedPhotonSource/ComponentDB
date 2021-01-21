@@ -238,10 +238,7 @@ public abstract class CdbDomainEntityController<ControllerUtility extends CdbDom
      * @param preProcessListDataModel dataModel that will be used for pre
      * process actions.
      */
-    protected void loadPreProcessListDataModelIfNeeded(DataModel preProcessListDataModel) {
-        if (apiMode) {
-            return;
-        }
+    protected void loadPreProcessListDataModelIfNeeded(DataModel preProcessListDataModel) {        
         if (preProcessListDataModel != null) {
             preProcessDomainEntityListDataModel = preProcessListDataModel;
 

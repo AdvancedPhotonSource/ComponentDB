@@ -14,7 +14,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import java.util.ArrayList;
@@ -35,26 +34,13 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     public static final String CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE = "cable_inventory_internal_property_type";
     public static final String CONTROLLER_NAMED = "itemDomainCableInventoryController";
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "CableCatalog";                        
-    private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.cableInventory.getValue();
-    private static ItemDomainCableInventoryController apiInstance;        
+    private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.cableInventory.getValue();      
     
     @EJB
     ItemDomainCableInventoryFacade itemDomainCableInventoryFacade; 
 
-    public static synchronized ItemDomainCableInventoryController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainCableInventoryController();            
-            apiInstance.prepareApiInstance(); 
-        }
-        return apiInstance;
-    }
-    
-    public static ItemDomainCableInventoryController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainCableInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);
-        } else {
-            return getApiInstance(); 
-        }
+    public static ItemDomainCableInventoryController getInstance() {        
+        return (ItemDomainCableInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);        
     }
 
     @Override

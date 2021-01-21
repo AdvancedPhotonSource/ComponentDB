@@ -29,7 +29,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
@@ -72,7 +71,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -191,22 +189,6 @@ public abstract class ItemController<
     protected PropertyType coreMetadataPropertyType = null;
 
     public ItemController() {
-    }
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-        itemElementFacade = ItemElementFacade.getInstance();
-        domainFacade = DomainFacade.getInstance();
-        itemTypeFacade = ItemTypeFacade.getInstance();
-        entityTypeFacade = EntityTypeFacade.getInstance();
-        itemCategoryFacade = ItemCategoryFacade.getInstance();
-        listFacade = ListFacade.getInstance();
-        userInfoFacade = UserInfoFacade.getInstance();
-        propertyTypeCategoryFacade = PropertyTypeCategoryFacade.getInstance();
-        propertyTypeFacade = PropertyTypeFacade.getInstance();
-        relationshipTypeFacade = RelationshipTypeFacade.getInstance();
-        itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance();
     }
 
     /**
@@ -2440,9 +2422,6 @@ public abstract class ItemController<
     public LocatableItemController getLocatableItemController() {
         if (locatableItemController == null) {
             locatableItemController = LocatableItemController.getInstance();
-        }
-        if (apiMode) {
-            locatableItemController.apiUser = apiUser;
         }
         return locatableItemController;
     }

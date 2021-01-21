@@ -34,13 +34,11 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
-import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
 import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInformation;
-import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,16 +112,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @EJB
     private ConnectorFacade connectorFacade;
 
-    private static ItemDomainInventoryController apiInstance;
-
-    public static synchronized ItemDomainInventoryController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainInventoryController();
-            apiInstance.prepareApiInstance();
-        }
-        return apiInstance;
-    }
-
     public boolean isInventory(Item item) {
         return item instanceof ItemDomainInventory;
     }
@@ -143,21 +131,8 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         return ItemDomainInventory.generatePaddedUnitName(itemNumber);
     }
 
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-        itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance();
-        relationshipTypeFacade = RelationshipTypeFacade.getInstance();
-        itemDomainInventoryFacade = ItemDomainInventoryFacade.getInstance();
-        connectorFacade = ConnectorFacade.getInstance();
-    }
-
-    public static ItemDomainInventoryController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);
-        } else {
-            return getApiInstance();
-        }
+    public static ItemDomainInventoryController getInstance() {        
+        return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);        
     }
 
     @Override

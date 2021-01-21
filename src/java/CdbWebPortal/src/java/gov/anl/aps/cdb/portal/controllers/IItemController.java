@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
@@ -532,15 +531,7 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * @return URL to current entity instance view page or null when exception occurs.
      */
     public String update();         
-    
-    /**
-     * Add a system log message 
-     * 
-     * @param warningMessage
-     * @param exception
-     * @param entity 
-     */
-    public void addCdbEntityWarningSystemLog(String warningMessage, Exception exception, CdbEntity entity);
+        
     
     /**
      * Get boolean if a value is filterable 

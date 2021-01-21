@@ -15,7 +15,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -60,35 +59,13 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
 
     private ItemController currentSettingsItemController = null;
 
-    private ItemController currentItemReorderController = null;
-    
-    private static ItemElementController apiInstance; 
+    private ItemController currentItemReorderController = null;        
 
     public ItemElementController() {
     }
-    
-    public static synchronized ItemElementController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemElementController();            
-            apiInstance.prepareApiInstance(); 
-        }
-        return apiInstance;
-    } 
 
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually(); 
-        
-        itemElementFacade = ItemElementFacade.getInstance(); 
-    }
-
-    public static ItemElementController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemElementController) SessionUtility.findBean("itemElementController");
-        } else {
-            return getApiInstance(); 
-        }
-        
+    public static ItemElementController getInstance() {        
+        return (ItemElementController) SessionUtility.findBean("itemElementController");
     }
 
     public void resetCurrentItemVariables() {
