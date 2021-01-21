@@ -914,7 +914,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 ValidInfo result = postCreate();
                 message = appendToString(message, result.getValidString());
             } else if (getImportMode() == ImportMode.UPDATE) {
-                controller.updateList(rows);
+                updateList();
                 message = "Import succeeded, updated " + rows.size() + " instances";
             }
 
@@ -1007,14 +1007,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new ValidInfo(true, "");
     }
     
-    protected abstract List<ColumnSpec> getColumnSpecs();
-    
-    public abstract EntityControllerType getEntityController();
-    
-    public abstract String getFilenameBase();
-    
-    protected abstract CreateInfo createEntityInstance(Map<String, Object> rowMap);
-    
     /**
      * Retrieves entity instance using values in rowMap.  Default implementation
      * returns null if helper is not configured to support update mode, otherwise
@@ -1046,6 +1038,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         
         return new CreateInfo(existingItem, isValid, validString);
+    }
+    
+    /**
+     * Updates list of items in update mode.  Allows subclasses to override with
+     * custom behavior.
+     */
+    protected void updateList() throws CdbException, RuntimeException {
+        EntityControllerType controller = this.getEntityController();
+        controller.updateList(rows);
     }
     
     public String getExportFilename() {
@@ -1083,4 +1084,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public IntegerColumnSpec existingItemIdColumnSpec() {
         return new IntegerColumnSpec("Existing Item ID", KEY_EXISTING_ITEM_ID, "setImportExistingItemId", false, "CDB ID of existing item to update.", "getId", true);
     }
+
+    protected abstract List<ColumnSpec> getColumnSpecs();
+    
+    public abstract EntityControllerType getEntityController();
+    
+    public abstract String getFilenameBase();
+    
+    protected abstract CreateInfo createEntityInstance(Map<String, Object> rowMap);
+    
 }

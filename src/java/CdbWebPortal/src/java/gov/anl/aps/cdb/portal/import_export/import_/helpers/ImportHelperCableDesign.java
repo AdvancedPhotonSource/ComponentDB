@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
@@ -20,6 +21,9 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSp
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -222,5 +226,26 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         }
         
         return new ValidInfo(true, message);
+    }
+    
+    /**
+     * Updates list of items in update mode.  Overridden here to customize by
+     * deleting list of cable relationships for endpoints updated to null
+     * in import/update process.
+     */
+    @Override
+    protected void updateList() throws CdbException, RuntimeException {
+        
+        // collect list of deleted relationships
+        List<ItemElementRelationship> deletedRelationships = new ArrayList<>();
+        for (ItemDomainCableDesign item : rows) {
+            deletedRelationships.addAll(item.getDeletedRelationshipList());
+        }
+        
+        UserInfo user = SessionUtility.getUser();
+        ItemDomainCableDesignControllerUtility utility = new ItemDomainCableDesignControllerUtility();
+        utility.updateListAndDestroyRelationships(rows, deletedRelationships, user);
+        
+        getEntityController().resetListForView();
     }
 }

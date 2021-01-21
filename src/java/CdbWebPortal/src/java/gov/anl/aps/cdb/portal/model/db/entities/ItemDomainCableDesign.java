@@ -40,6 +40,7 @@ public class ItemDomainCableDesign extends Item {
     private transient String endpoint2Description = null;
     private transient String endpoint1Route = null;
     private transient String endpoint2Route = null;
+    private transient List<ItemElementRelationship> deletedRelationshipList = null;
 
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type";
     public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName";
@@ -58,6 +59,13 @@ public class ItemDomainCableDesign extends Item {
     @Override
     public Item createInstance() {
         return new ItemDomainCableDesign();
+    }
+    
+    public List<ItemElementRelationship> getDeletedRelationshipList() {
+        if (deletedRelationshipList == null) {
+            deletedRelationshipList = new ArrayList<>();
+        }
+        return deletedRelationshipList;
     }
 
     private RelationshipType getCableConnectionRelationshipType() {
@@ -125,6 +133,26 @@ public class ItemDomainCableDesign extends Item {
         addItemElementRelationshipToItem(this, relationship, true);
     }
     
+    private void removeCableRelationship(ItemElementRelationship relationship) {
+        this.getSelfElement().getItemElementRelationshipList1().remove(relationship);
+        // remove relationship from old endpoint's relationship list
+        relationship.getFirstItemElement().getItemElementRelationshipList().remove(relationship);
+        getDeletedRelationshipList().add(relationship);
+    }
+    
+    private void updateCableRelationshipToEndpoint(
+            Item itemEndpoint,
+            ItemElementRelationship cableRelationship) {
+        
+        if (itemEndpoint == null) {
+            // remove relationship from cable's relationship list
+            removeCableRelationship(cableRelationship);
+        } else {
+            // update existing relationship with new endpoint
+            setEndpointItemInRelationship(itemEndpoint, cableRelationship);
+        }
+    }
+    
     private void setEndpointItemInRelationship(Item itemEndpoint, ItemElementRelationship cableRelationship) {
         cableRelationship.setFirstItemElement(itemEndpoint.getSelfElement());
         // null out connector too, for when we add support for port-level connections
@@ -134,8 +162,7 @@ public class ItemDomainCableDesign extends Item {
     public void setEndpoint1(Item itemEndpoint) {
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
         if (cableRelationship != null) {
-            // update existing relationship with new endpoint
-            setEndpointItemInRelationship(itemEndpoint, cableRelationship);
+            updateCableRelationshipToEndpoint(itemEndpoint, cableRelationship);
         } else {
             this.addCableRelationship(itemEndpoint, 1.0f);
         }
@@ -153,8 +180,7 @@ public class ItemDomainCableDesign extends Item {
     public void setEndpoint2(Item itemEndpoint) {
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
         if (cableRelationship != null) {
-            // update existing relationship with new endpoint
-            setEndpointItemInRelationship(itemEndpoint, cableRelationship);
+            updateCableRelationshipToEndpoint(itemEndpoint, cableRelationship);
         } else {
             this.addCableRelationship(itemEndpoint, 2.0f);
         }
