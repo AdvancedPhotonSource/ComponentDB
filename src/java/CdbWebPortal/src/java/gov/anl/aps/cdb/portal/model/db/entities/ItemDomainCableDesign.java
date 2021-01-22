@@ -125,6 +125,11 @@ public class ItemDomainCableDesign extends Item {
     }
 
     private void addCableRelationship(Item endpoint, float sortOrder) {
+        
+        if (endpoint == null) {
+            return;
+        }
+        
         // create relationships from cable to endpoints
         ItemElementRelationship relationship = createRelationship(endpoint, sortOrder);
 
