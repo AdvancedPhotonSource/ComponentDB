@@ -1066,7 +1066,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
     
     public IdOrNameRefListColumnSpec technicalSystemListColumnSpec(String domainName) {
-        return new IdOrNameRefListColumnSpec("Technical System", "itemCategoryString", "setItemCategoryList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemCategoryController.getInstance(), List.class, domainName, "getItemCategoryList");
+        return new IdOrNameRefListColumnSpec("Technical System", "itemCategoryString", "setItemCategoryListImport", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemCategoryController.getInstance(), List.class, domainName, "getItemCategoryList");
     }
     
     public IdOrNameRefListColumnSpec functionListColumnSpec(String domainName) {
