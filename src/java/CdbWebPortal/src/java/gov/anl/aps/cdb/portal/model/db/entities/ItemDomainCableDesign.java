@@ -139,20 +139,26 @@ public class ItemDomainCableDesign extends Item {
         addItemElementRelationshipToItem(this, relationship, true);
     }
     
-    private void removeCableRelationship(ItemElementRelationship relationship) {
+    private void removeCableRelationship(
+            ItemElementRelationship relationship,
+            boolean isImport) {
+        
         this.getSelfElement().getItemElementRelationshipList1().remove(relationship);
         // remove relationship from old endpoint's relationship list
         relationship.getFirstItemElement().getItemElementRelationshipList().remove(relationship);
-        getDeletedRelationshipList().add(relationship);
+        if (isImport) {
+            getDeletedRelationshipList().add(relationship);
+        }
     }
     
     private void updateCableRelationshipToEndpoint(
             Item itemEndpoint,
-            ItemElementRelationship cableRelationship) {
+            ItemElementRelationship cableRelationship,
+            boolean isImport) {
         
         if (itemEndpoint == null) {
             // remove relationship from cable's relationship list
-            removeCableRelationship(cableRelationship);
+            removeCableRelationship(cableRelationship, isImport);
         } else {
             // update existing relationship with new endpoint
             setEndpointItemInRelationship(itemEndpoint, cableRelationship);
@@ -165,13 +171,21 @@ public class ItemDomainCableDesign extends Item {
         cableRelationship.setFirstItemConnector(null);
     }
 
-    public void setEndpoint1(Item itemEndpoint) {
-        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
+    public void setEndpoint(Item itemEndpoint, float sortOrder, boolean isImport) {
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(sortOrder);
         if (cableRelationship != null) {
-            updateCableRelationshipToEndpoint(itemEndpoint, cableRelationship);
+            updateCableRelationshipToEndpoint(itemEndpoint, cableRelationship, isImport);
         } else {
-            this.addCableRelationship(itemEndpoint, 1.0f);
+            this.addCableRelationship(itemEndpoint, sortOrder);
         }
+    }
+
+    public void setEndpoint1(Item itemEndpoint) {
+        setEndpoint(itemEndpoint, 1.0f, false);
+    }
+
+    public void setEndpoint1Import(Item itemEndpoint) {
+        setEndpoint(itemEndpoint, 1.0f, true);
     }
 
     public void setEndpoint1Id(String id) {
@@ -184,12 +198,11 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint2(Item itemEndpoint) {
-        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-        if (cableRelationship != null) {
-            updateCableRelationshipToEndpoint(itemEndpoint, cableRelationship);
-        } else {
-            this.addCableRelationship(itemEndpoint, 2.0f);
-        }
+        setEndpoint(itemEndpoint, 2.0f, false);
+    }
+
+    public void setEndpoint2Import(Item itemEndpoint) {
+        setEndpoint(itemEndpoint, 2.0f, true);
     }
 
     public void setEndpoint2Id(String id) {
