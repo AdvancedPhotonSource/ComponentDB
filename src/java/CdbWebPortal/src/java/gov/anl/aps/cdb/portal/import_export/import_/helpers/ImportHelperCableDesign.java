@@ -13,100 +13,22 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControl
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.SingleColumnInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.poi.ss.usermodel.Row;
 
 /**
  *
  * @author craig
  */
 public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDesign, ItemDomainCableDesignController> {
-
-    public class NameHandler extends SingleColumnInputHandler {
-        
-        private static final String PROPERTY = "name";
-        
-        protected int maxLength = 0;
-        protected String importName = null;
-        protected int entityNum = 0;
-        
-        public NameHandler(int maxLength) {
-            super(LABEL_NAME);
-            this.maxLength = maxLength;
-        }
-        
-        public int getMaxLength() {
-            return maxLength;
-        }
-
-        protected String getImportName() {
-            if (importName == null) {
-                importName = "import-" + java.time.Instant.now().getEpochSecond();
-            }
-            return importName;
-        }
-        
-        protected String getUniqueId() {
-            return getImportName() + "-" + entityNum;
-        }
-        
-        @Override
-        public ValidInfo handleInput(
-                Row row,
-                Map<Integer, String> cellValueMap,
-                Map<String, Object> rowMap) {
-            
-            boolean isValid = true;
-            String validString = "";
-            
-            String parsedValue = cellValueMap.get(getColumnIndex());
-
-            // check column length is valid
-            if ((getMaxLength() > 0) && (parsedValue.length() > getMaxLength())) {
-                isValid = false;
-                validString = 
-                        "Value length exceeds " + 
-                        String.valueOf(getMaxLength()) + 
-                        " characters for column: " + LABEL_NAME;
-            }
-                
-            // replace "#cdbid#" with a unique identifier
-            entityNum = entityNum + 1;
-            String idPattern = "#cdbid#";
-            String replacePattern = "#cdbid-" + getUniqueId() + "#";
-            String result = parsedValue.replaceAll(idPattern, replacePattern);
-            rowMap.put(PROPERTY, result);
-            
-            return new ValidInfo(isValid, validString);
-        }
-
-        @Override
-        public ValidInfo updateEntity(
-                Map<String, Object> rowMap, 
-                CdbEntity entity) {
-            
-            ((ItemDomainCableDesign)entity).setName((String)rowMap.get(PROPERTY));
-            
-            return new ValidInfo(true, "");
-        }
-    }
-    
+   
     private static final String LABEL_NAME = "Name";
 
     @Override
@@ -115,10 +37,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         List<ColumnSpec> specs = new ArrayList<>();
         
         specs.add(existingItemIdColumnSpec());
-
-        InputHandler nameHandler = new NameHandler(128);
-        specs.add(new CustomColumnSpec(LABEL_NAME, "name", true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", nameHandler, "getName"));
-        
+        specs.add(new StringColumnSpec("Name", "name", "setName", true, "Cable name, uniquely identifies cable.", 128, "getName"));
         specs.add(new StringColumnSpec("Alt Name", "alternateName", "setAlternateName", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 128, "getAlternateName"));
         specs.add(new StringColumnSpec("Ext Cable Name", "externalCableName", "setExternalCableName", false, "Cable name in external system (e.g., CAD, routing tool).", 256, "getExternalCableName"));
         specs.add(new StringColumnSpec("Import Cable ID", "importCableId", "setImportCableId", false, "Import cable identifier.", 256, "getImportCableId"));
@@ -177,55 +96,6 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         ItemDomainCableDesign entity = getEntityController().createEntityInstance();
         return new CreateInfo(entity, true, "");
-    }
-    
-    /*
-    * Finds strings matching the pattern "#cdbid*#" in the name and alt name fields
-    * and replace them with the internal cdb identifier.
-    */
-    @Override
-    protected ValidInfo postCreate() {
-        
-        String idRegexPattern = "#cdbid[^#]*#";
-        idRegexPattern = Matcher.quoteReplacement(idRegexPattern);
-        Pattern pattern = Pattern.compile(idRegexPattern);
-        
-        List<ItemDomainCableDesign> updatedRows = new ArrayList<>();
-        for (ItemDomainCableDesign cable : rows) {
-            
-            boolean updated = false;
-            
-            Matcher nameMatcher = pattern.matcher(cable.getName());
-            if (nameMatcher.find()) {
-                updated = true;
-                String nameValue = cable.getName().replaceAll(idRegexPattern, String.valueOf(cable.getId()));
-                cable.setName(nameValue);
-            }
-            
-            Matcher altNameMatcher = pattern.matcher(cable.getAlternateName());
-            if (altNameMatcher.find()) {
-                updated = true;
-                String altNameValue = cable.getAlternateName().replaceAll(idRegexPattern, String.valueOf(cable.getId()));
-                cable.setAlternateName(altNameValue);
-            }
-            
-            if (updated) {
-                updatedRows.add(cable);
-            }
-        }
-        
-        String message = "";
-        if (updatedRows.size() > 0) {
-            try {
-                getEntityController().updateList(updatedRows);
-                message = "Updated attributes for " + updatedRows.size() + " instance(s).";
-            } catch (CdbException | RuntimeException ex) {
-                Throwable t = ExceptionUtils.getRootCause(ex);
-                message = "Post commit attribute update failed. Additional action required to update name and alternate name fields. " + ex.getMessage() + ": " + t.getMessage() + ".";
-            }
-        }
-        
-        return new ValidInfo(true, message);
     }
     
     /**
