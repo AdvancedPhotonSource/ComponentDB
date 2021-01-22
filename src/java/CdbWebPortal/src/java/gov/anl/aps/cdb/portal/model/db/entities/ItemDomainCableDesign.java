@@ -176,7 +176,9 @@ public class ItemDomainCableDesign extends Item {
         if (cableRelationship != null) {
             updateCableRelationshipToEndpoint(itemEndpoint, cableRelationship, isImport);
         } else {
-            this.addCableRelationship(itemEndpoint, sortOrder);
+            if (itemEndpoint != null) {
+                this.addCableRelationship(itemEndpoint, sortOrder);
+            }
         }
     }
 
