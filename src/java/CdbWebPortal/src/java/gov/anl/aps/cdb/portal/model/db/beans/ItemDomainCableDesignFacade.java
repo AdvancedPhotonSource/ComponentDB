@@ -8,7 +8,6 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import java.util.List;
 import javax.ejb.Stateless;
 
 /**
@@ -31,17 +30,15 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
         return (ItemDomainCableDesignFacade) SessionUtility.findFacade(ItemDomainCableDesignFacade.class.getSimpleName()); 
     }
     
-    public void editEntitiesAndDestroyRelationships(
-            List<ItemDomainCableDesign> entities,
-            List<ItemElementRelationship> relationships) {
+    public ItemDomainCableDesign edit(ItemDomainCableDesign entity) {
         
-        for (ItemDomainCableDesign entity : entities) {
-            edit(entity);
-        }
+        ItemDomainCableDesign result = super.edit(entity);
         
-        for (ItemElementRelationship relationship : relationships) {
+        for (ItemElementRelationship relationship : entity.getDeletedRelationshipList()) {
             ItemElementRelationshipFacade.getInstance().remove(relationship);
         }
+        
+        return result;
     }
 
 }

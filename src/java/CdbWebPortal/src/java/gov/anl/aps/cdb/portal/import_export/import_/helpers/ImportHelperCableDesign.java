@@ -236,16 +236,13 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     @Override
     protected void updateList() throws CdbException, RuntimeException {
         
-        // collect list of deleted relationships
-        List<ItemElementRelationship> deletedRelationships = new ArrayList<>();
-        for (ItemDomainCableDesign item : rows) {
-            deletedRelationships.addAll(item.getDeletedRelationshipList());
-            item.clearDeletedRelationshipList();
-        }
+        // domain object keeps track of relationships that need to be destroyed,
+        // e.g., when an endpoint is set to null in the import spreadsheet.
+        // updateList in facade is overridden to also destroy those relationships
         
         UserInfo user = SessionUtility.getUser();
         ItemDomainCableDesignControllerUtility utility = new ItemDomainCableDesignControllerUtility();
-        utility.updateListAndDestroyRelationships(rows, deletedRelationships, user);
+        utility.updateList(rows, user);
         
         getEntityController().resetListForView();
     }
