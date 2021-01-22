@@ -19,11 +19,11 @@ public class StringColumnSpec extends ColumnSpec {
             String header, 
             String propertyName, 
             String entitySetterMethod, 
-            boolean required, 
+            boolean requiredForCreate, 
             String description, 
             int maxLength) {
 
-        super(header, propertyName, entitySetterMethod, required, description);
+        super(header, propertyName, entitySetterMethod, requiredForCreate, description);
         this.maxLength = maxLength;
     }
 
@@ -31,12 +31,20 @@ public class StringColumnSpec extends ColumnSpec {
             String header, 
             String propertyName, 
             String entitySetterMethod, 
-            boolean required, 
+            boolean requiredForCreate, 
             String description,
             int maxLength, 
             String exportGetterMethod) {
 
-        super(header, propertyName, entitySetterMethod, required, description, exportGetterMethod, false);
+        super(
+                header, 
+                propertyName, 
+                entitySetterMethod, 
+                requiredForCreate, 
+                description, 
+                exportGetterMethod, 
+                false, 
+                requiredForCreate);
         this.maxLength = maxLength;
     }
 

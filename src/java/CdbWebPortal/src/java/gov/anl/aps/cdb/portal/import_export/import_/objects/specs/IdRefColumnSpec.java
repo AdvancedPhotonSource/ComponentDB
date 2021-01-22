@@ -23,12 +23,12 @@ public class IdRefColumnSpec extends ColumnSpec {
             String header, 
             String propertyName, 
             String entitySetterMethod, 
-            boolean required, 
+            boolean requiredForCreate, 
             String description, 
             CdbEntityController controller, 
             Class paramType) {
         
-        super(header, propertyName, entitySetterMethod, required, description);
+        super(header, propertyName, entitySetterMethod, requiredForCreate, description);
         this.controller = controller;
         this.paramType = paramType;
     }
@@ -37,13 +37,24 @@ public class IdRefColumnSpec extends ColumnSpec {
             String header, 
             String propertyName, 
             String entitySetterMethod, 
-            boolean required, 
+            boolean requiredForCreate, 
             String description, 
             CdbEntityController controller, 
             Class paramType,
-            String exportGetterMethod) {
+            String exportGetterMethod,
+            boolean updateOnly,
+            boolean requiredForUpdate) {
         
-        super(header, propertyName, entitySetterMethod, required, description, exportGetterMethod, false);
+        super(
+                header, 
+                propertyName, 
+                entitySetterMethod, 
+                requiredForCreate, 
+                description, 
+                exportGetterMethod, 
+                updateOnly,
+                requiredForUpdate);
+        
         this.controller = controller;
         this.paramType = paramType;
     }
