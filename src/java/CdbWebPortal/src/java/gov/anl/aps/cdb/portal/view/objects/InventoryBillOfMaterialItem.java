@@ -6,8 +6,8 @@ package gov.anl.aps.cdb.portal.view.objects;
 
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemElementController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -40,7 +40,7 @@ public class InventoryBillOfMaterialItem {
     protected ItemElement inventoryItemElement = null;
 
     // an event needs to be processon state change. SelectOneButton does not support this.
-    protected ItemDomainInventoryController itemDomainInventoryController = null;
+    protected ItemDomainInventoryControllerUtility itemDomainInventoryController = null;
 
     protected boolean applyPermissionToAllNewParts = false;
 
@@ -258,7 +258,7 @@ public class InventoryBillOfMaterialItem {
 
     public void loadItemDomainInventoryController() {
         if (itemDomainInventoryController == null) {
-            itemDomainInventoryController = ItemDomainInventoryController.getInstance();
+            itemDomainInventoryController = new ItemDomainInventoryControllerUtility(); 
         }
     }
 
