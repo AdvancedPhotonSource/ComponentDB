@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.utilities.IItemStatusControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
@@ -37,6 +38,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
+import gov.anl.aps.cdb.portal.model.db.entities.LocatableStatusItem;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -548,14 +550,12 @@ public class ItemRoute extends ItemBaseRoute {
 
         UserInfo currentUser = verifyCurrentUserPermissionForItem(itemById);
 
-        ItemControllerUtility ic = itemById.getItemControllerUtility(); 
-        //TODO adress this one...
-        /*
-        IItemStatusController controller = null;
+        ItemControllerUtility ic = itemById.getItemControllerUtility();         
+        IItemStatusControllerUtility controller = null;
         LocatableStatusItem item = null;
 
-        if (ic instanceof IItemStatusController) {
-            controller = (IItemStatusController) ic;
+        if (ic instanceof IItemStatusControllerUtility) {
+            controller = (IItemStatusControllerUtility) ic;
             item = (LocatableStatusItem) itemById;
         } else {
             throw new InvalidArgument("The item id provided is not of type with a status");
@@ -573,9 +573,8 @@ public class ItemRoute extends ItemBaseRoute {
 
         inventoryStatusPropertyValue.setEffectiveFromDateTime(status.getEffectiveFromDate());
 
-        ic.updateFromApi(item, currentUser);
-        return item.getInventoryStatusPropertyValue(); */
-        return null;
+        ic.update(item, currentUser);
+        return item.getInventoryStatusPropertyValue(); 
     }
 
     private void updateDbPropertyValueWithPassedInDate(PropertyValue dbPropertyValue, PropertyValue userPassedValue) {
@@ -1156,6 +1155,7 @@ public class ItemRoute extends ItemBaseRoute {
         return itemProjectFacade.findAll();
     }
 
+    @GET
     @Path("/Search/{searchText}")
     @Produces(MediaType.APPLICATION_JSON)
     public ItemSearchResults getSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
