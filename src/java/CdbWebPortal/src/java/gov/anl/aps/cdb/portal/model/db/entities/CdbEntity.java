@@ -31,6 +31,7 @@ public class CdbEntity implements Serializable, Cloneable {
     private transient boolean isDuplicateImport = false;
     private transient String validStringImport;
     private transient Integer importExistingItemId;
+    private transient Boolean importDeleteExistingItem;
     
     protected static final long serialVersionUID = 1L;
     @Override
@@ -76,6 +77,11 @@ public class CdbEntity implements Serializable, Cloneable {
     }
     
     @JsonIgnore
+    public String getSystemLogString() {
+        return toString(); 
+    }
+    
+    @JsonIgnore
     public boolean getIsValidImport() {
         return isValidImport;
     }
@@ -117,6 +123,10 @@ public class CdbEntity implements Serializable, Cloneable {
         return validStringImport;
     }
     
+    public void setValidStringImport(String s) {
+        validStringImport = s;
+    }
+    
     public void setImportExistingItemId(Integer id) {
         importExistingItemId = id;
     }
@@ -126,12 +136,13 @@ public class CdbEntity implements Serializable, Cloneable {
         return importExistingItemId;
     }
     
-    public void setValidStringImport(String s) {
-        validStringImport = s;
+    public void setImportDeleteExistingItem(Boolean b) {
+        importDeleteExistingItem = b;
     }
     
     @JsonIgnore
-    public String getSystemLogString() {
-        return toString(); 
+    public Boolean getImportDeleteExistingItem() {
+        return importDeleteExistingItem;
     }
+    
 }

@@ -15,7 +15,7 @@ See LICENSE file.
     <ui:param name="rootViewId" value="#{viewId}"/>
     
     <p:tab id="#{rootViewId}SelectModeTab">
-        <p:panel header="Specify whether to create new items or update existing ones, then click 'Next Step' to select file.">
+        <p:panel header="Select desired mode, then click 'Next Step'.">
             <p:outputPanel id="#{rootViewId}SelectModePanel">
                 <p:panelGrid>
                     <p:row>
@@ -30,6 +30,12 @@ See LICENSE file.
                                 <f:selectItem itemLabel="Update Existing Items" 
                                               itemValue="update"  
                                               itemDisabled="#{!wizardController.supportsModeUpdate()}"/>
+                                <f:selectItem itemLabel="Compare To Existing Items" 
+                                              itemValue="compare"  
+                                              itemDisabled="#{!wizardController.supportsModeUpdate()}"/>
+                                <f:selectItem itemLabel="Delete Existing Items" 
+                                              itemValue="delete"  
+                                              itemDisabled="#{!wizardController.supportsModeDelete()}"/>
 
                                 <p:ajax event="click"
                                         listener="#{wizardController.clickListenerMode}"
@@ -52,6 +58,20 @@ See LICENSE file.
                                                itemIndex="1" />
                                 <p:outputLabel for="#{rootViewId}RadioUpdate" 
                                                value="Update Existing Items" />
+
+                                <p:radioButton id="#{rootViewId}RadioCompare" 
+                                               for="#{rootViewId}SelectModeRadio" 
+                                               disabled="#{!wizardController.supportsModeUpdate()}"
+                                               itemIndex="2" />
+                                <p:outputLabel for="#{rootViewId}RadioCompare" 
+                                               value="Compare To Existing Items" />
+
+                                <p:radioButton id="#{rootViewId}RadioDelete" 
+                                               for="#{rootViewId}SelectModeRadio" 
+                                               disabled="#{!wizardController.supportsModeDelete()}"
+                                               itemIndex="3" />
+                                <p:outputLabel for="#{rootViewId}RadioDelete" 
+                                               value="Delete Existing Items" />
 
                             </p:panelGrid>
 

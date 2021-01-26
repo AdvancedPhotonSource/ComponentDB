@@ -29,6 +29,7 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
         
         List<ColumnSpec> specs = new ArrayList<>();
         specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
         specs.add(new StringColumnSpec("Name", KEY_NAME, "setName", true, "Name of vendor/manufacturer", 64, "getName"));
         specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of vendor/manufacturer", 256, "getDescription"));
         specs.add(new StringColumnSpec("Contact Info", "contactInfo", "setContactInfo", false, "Contact name and phone number etc", 64, "getContactInfo"));
@@ -55,6 +56,11 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
      */
     @Override
     public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeDelete() {
         return true;
     }
 

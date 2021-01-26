@@ -25,6 +25,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefListColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnSpec;
@@ -87,6 +88,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected static final String KEY_USER = "ownerUserName";
     protected static final String KEY_GROUP = "ownerUserGroupName";
     protected static final String KEY_EXISTING_ITEM_ID = "importExistingItemId";
+    protected static final String KEY_DELETE_EXISTING_ITEM = "importDeleteExistingItem";
+    
     
     private static final String INDICATOR_COMMENT = "//";
 
@@ -965,6 +968,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
 
     /**
+     * Specifies whether helper supports deleting existing instances.  Defaults
+     * to false. Subclasses override to customize.
+     */
+    public boolean supportsModeDelete() {
+        return false;
+    }
+
+    /**
      * Provides pre-import hook for subclasses to override, e.g., to migrate
      * metadata property fields etc.
      */
@@ -1176,6 +1187,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "CDB ID of existing item to update.", 
                 "getId", 
                 true);
+    }
+
+    public BooleanColumnSpec deleteExistingItemColumnSpec() {
+        return new BooleanColumnSpec(
+                "Delete Existing Item", 
+                KEY_DELETE_EXISTING_ITEM, 
+                "setImportDeleteExistingItem", 
+                false, 
+                "Specify TRUE to delete existing item in delete mode.");
     }
 
     protected abstract List<ColumnSpec> getColumnSpecs();

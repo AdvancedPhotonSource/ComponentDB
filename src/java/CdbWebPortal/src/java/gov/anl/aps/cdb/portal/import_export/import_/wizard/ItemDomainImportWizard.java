@@ -307,6 +307,10 @@ public class ItemDomainImportWizard implements Serializable {
         return importHelper.supportsModeUpdate();
     }
 
+    public Boolean supportsModeDelete() {
+        return importHelper.supportsModeDelete();
+    }
+
     public String getValidationMessage() {
         return importHelper.getValidationMessage();
     }
