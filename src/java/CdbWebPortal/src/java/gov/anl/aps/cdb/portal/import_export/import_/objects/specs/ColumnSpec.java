@@ -6,11 +6,14 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
 import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
 import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.SimpleOutputHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,9 +30,9 @@ public abstract class ColumnSpec {
     private boolean requiredForUpdate;
     private String description;
     protected String exportGetterMethod;
-    
-    // column value can only be specified in update mode
     private boolean updateOnly = false;
+    
+    private List<ColumnModeOptions> columnModeOptions;
     
     public ColumnSpec() {
     }
@@ -136,10 +139,8 @@ public abstract class ColumnSpec {
         return new InputColumnModel(
                 colIndex,
                 getHeader(),
-                isRequiredForCreate(),
                 getDescription(),
-                isUpdateOnly(),
-                isRequiredForUpdate());
+                getColumnModeOptions());
     }
     
     public OutputColumnModel getOutputColumnModel(int colIndex) {
@@ -156,5 +157,13 @@ public abstract class ColumnSpec {
         }
         return new SimpleOutputHandler(getHeader(), getDescription(), getExportGetterMethod());
     }
-
+    
+    public List<ColumnModeOptions> getColumnModeOptions() {
+        return columnModeOptions;
+    }
+    
+    public void addColumnModeOptions(ColumnModeOptions options) {
+        columnModeOptions.add(options);
+    }
+    
 }

@@ -4,7 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
@@ -48,8 +50,10 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
         int colNum = 1;
         for (int i = colIndex ; i < colIndex + numTemplateColumns ; i++) {
             String columnHeader = colNamePattern + " " + String.valueOf(colNum);
-            inputColumns_io.add(
-                    new InputColumnModel(i, columnHeader, false, getDescription()));
+            InputColumnModel inputColumnModel = 
+                    new InputColumnModel(i, columnHeader, getDescription());
+            inputColumnModel.addColumnModeOptions(new ColumnModeOptions(ImportMode.CREATE, false));
+            inputColumns_io.add(inputColumnModel);
             colNum = colNum + 1;
         }
         return numTemplateColumns;
@@ -76,9 +80,10 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
             String columnHeader = headerValueMap.get(currIndex);
             // check to see if this is a "level" column
             if (columnHeader.startsWith(colNamePattern)) {
-                inputColumns_io.add(
-                        new InputColumnModel(
-                                currIndex, columnHeader, false, getDescription()));
+                InputColumnModel inputColumnModel = 
+                        new InputColumnModel(currIndex, columnHeader, getDescription());
+                inputColumnModel.addColumnModeOptions(new ColumnModeOptions(ImportMode.CREATE, false));
+                inputColumns_io.add(inputColumnModel);
                 foundLevel = true;
                 if (firstLevelIndex == -1) {
                     firstLevelIndex = currIndex;

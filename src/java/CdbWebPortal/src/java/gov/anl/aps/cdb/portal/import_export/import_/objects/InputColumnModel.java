@@ -4,6 +4,10 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author craig
@@ -13,33 +17,29 @@ public class InputColumnModel {
     protected int columnIndex;
     protected String name;
     protected String description = null;
-    protected boolean requiredForCreate = false;
-    protected boolean requiredForUpdate = false;
-    protected boolean updateOnly = false;
 
+    private Map<ImportMode, ColumnModeOptions> columnModeOptionsMap = new HashMap<>();
+    
     public InputColumnModel(
             int columnIndex,
             String name,
-            boolean required,
             String description) {
 
         this.columnIndex = columnIndex;
         this.name = name;
         this.description = description;
-        this.requiredForCreate = required;
     }
 
     public InputColumnModel(
             int columnIndex,
             String name,
-            boolean requiredForCreate,
             String description,
-            boolean updateOnly,
-            boolean requiredForUpdate) {
+            List<ColumnModeOptions> columnModeOptions) {
 
-        this(columnIndex, name, requiredForCreate, description);
-        this.updateOnly = updateOnly;
-        this.requiredForUpdate = requiredForUpdate;
+        this(columnIndex, name, description);
+        for (ColumnModeOptions options : columnModeOptions) {
+            addColumnModeOptions(options);
+        }
     }
 
     public int getColumnIndex() {
@@ -53,17 +53,21 @@ public class InputColumnModel {
     public String getDescription() {
         return description;
     }
+    
+    public void addColumnModeOptions(ColumnModeOptions options) {
+        columnModeOptionsMap.put(options.getMode(), options);
+    }
 
-    public boolean isRequiredForCreate() {
-        return this.requiredForCreate;
+    public boolean isUsedForMode(ImportMode mode) {
+        return columnModeOptionsMap.containsKey(mode);
     }
     
-    public boolean isRequiredForUpdate() {
-        return this.requiredForUpdate;
-    }
-    
-    public boolean isUpdateOnly() {
-        return this.updateOnly;
+    public boolean isRequiredForMode(ImportMode mode) {
+        if (!columnModeOptionsMap.containsKey(mode)) {
+            return false;
+        } else {
+            return columnModeOptionsMap.get(mode).isRequired();
+        }
     }
 
 }

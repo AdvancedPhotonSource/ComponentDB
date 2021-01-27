@@ -20,6 +20,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InitializeInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
@@ -71,10 +72,6 @@ import org.primefaces.model.file.UploadedFile;
  */
 public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityControllerType extends CdbEntityController> {
 
-    enum ImportMode {
-        CREATE, UPDATE;
-    }
-    
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperBase.class.getName());
     
     private static final String MODE_CREATE = "create";
@@ -585,7 +582,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         // pre-import hook for helper subclass
         ValidInfo preImportValidInfo = preImport();
         
-        // parse / validate header row  
+        // parse / validate header row - initializes helper data structures based on actual columns
         Row headerRow = sheet.getRow(rowNumberHeader);
         ValidInfo headerValidInfo = parseHeader(headerRow);
         if (!headerValidInfo.isValid()) {
@@ -594,7 +591,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             summaryMessage
                     = "Press 'Cancel' to terminate the import process and fix "
                     + "problems with import spreadsheet."
-                    + " No new items will be created.";
+                    + " No action will be taken.";
             return;
         }
             
@@ -675,7 +672,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             summaryMessage = 
                     "Press 'Cancel' to terminate the import process and fix " +
                     "problems with import spreadsheet." +
-                    " No new items will be created.";
+                    " No action will be taken.";
         }
     }
     
@@ -747,29 +744,21 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             cellValueMap.put(colIndex, cellValue);
             
             // check that value is present for required columns
-            if (getImportMode() == ImportMode.CREATE) {
-                if (col.isRequiredForCreate() && ((cellValue == null) || (cellValue.isEmpty()))) {
-                    isValid = false;
-                    validString = appendToString(validString,
-                            "Required value missing for " + columnNameForIndex(col.getColumnIndex()));
-                }
-            } else if (getImportMode() == ImportMode.UPDATE) {
-                if (col.isRequiredForUpdate() && ((cellValue == null) || (cellValue.isEmpty()))) {
-                    isValid = false;
-                    validString = appendToString(validString,
-                            "Required value missing for " + columnNameForIndex(col.getColumnIndex()));
-                }
+            if ((col.isRequiredForMode(getImportMode()))
+                    && ((cellValue == null) || (cellValue.isEmpty()))) {
+
+                isValid = false;
+                validString = appendToString(validString,
+                        "Required value missing for " + columnNameForIndex(col.getColumnIndex()));
             }
             
-            // check that updateOnly column value not specified in create mode
-            if (
-                    (col.isUpdateOnly()) && 
-                    (getImportMode() == ImportMode.CREATE) && 
-                    ((cellValue != null) && (!cellValue.isEmpty()))) {
+            // check that value not provide in column not used in this mode
+            if ((!col.isUsedForMode(getImportMode()))
+                    && ((cellValue != null) && (!cellValue.isEmpty()))) {                
                 
                 isValid = false;
                 validString = appendToString(validString, 
-                        "Value should not be specified in create mode for " 
+                        "Value should not be specified in current mode for " 
                                 + columnNameForIndex(col.getColumnIndex()));
             }
         }
@@ -788,94 +777,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 isValid = false;
             }
         }
-       
-        // create or retrieve instance depending on import mode
-        CreateInfo createInfo = null;
-        EntityType newEntity = null;
         
-        if (getImportMode() == ImportMode.CREATE) {
-            // create new instance and check result
-            createInfo = createEntityInstance(rowDict);
-            newEntity = (EntityType) createInfo.getEntity();
-            if (newEntity == null) {
-                // helper returns null from createInstance to indicate that it won't create an item for this row
-                isValid = createInfo.getValidInfo().isValid();
-                validString = appendToString(validString, createInfo.getValidInfo().getValidString());
-            }
-            
-        } else if (getImportMode() == ImportMode.UPDATE) {
-            // retrieve existing instance and check result
-            createInfo = retrieveEntityInstance(rowDict);
-            if (createInfo == null) {
-                // indicates helper doesn't support update mode
-                String msg = "Unexpected error, import helper not properly configured for update operation.";
-                throw new CdbException(msg);
-            }
-            newEntity = (EntityType) createInfo.getEntity();
-            if (newEntity == null) {
-                // helper must return an instance for use in the validation table,
-                // even if the specified item is not located
-                String msg = "Unexpected error, import helper not properly configured to retrieve items for update operation.";
-                throw new CdbException(msg);
-            }
+        // handle parsed row as appropriate for mode
+        ValidInfo handleValidInfo = handleParsedRow(rowDict);
+        if (!handleValidInfo.isValid()) {
+            isValid = false;
+            validString = appendToString(validString, handleValidInfo.getValidString());
+            isDuplicate = handleValidInfo.isDuplicate();
         }
-        
-        if (newEntity != null) {
-            ValidInfo createValidInfo = createInfo.getValidInfo();
-            if (!createValidInfo.isValid()) {
-                validString = appendToString(validString, createValidInfo.getValidString());
-                isValid = false;
-            }
-
-            // invoke each input handler to update the entity with row dictionary values
-            for (InputHandler handler : inputHandlers) {
-                ValidInfo validInfo = handler.updateEntity(rowDict, newEntity);
-                if (!validInfo.isValid()) {
-                    validString = appendToString(validString, validInfo.getValidString());
-                    isValid = false;
-                }
-            }
-
-            if (!(getImportMode() == ImportMode.UPDATE && !isValid)) {
-                // skip uniqueness checks in update mode for rows already flagged as invalid,
-                // otherwise error reporting is confusing
-                if (rows.contains(newEntity)) {
-                    validString = appendToString(validString, "Duplicates another row in spreadsheet.");
-                    isDuplicate = true;
-                    if (ignoreDuplicates()) {
-                        isValid = true;
-
-                    } else {
-                        isValid = false;
-                    }
-                } else {
-                    try {
-                        getEntityController().checkItemUniqueness(newEntity);
-                    } catch (CdbException ex) {
-                        if (ex.getErrorMessage().startsWith("Uniqueness check not implemented by controller")) {
-                            // ignore this?
-                        } else if (ignoreDuplicates()) {
-                            validString = appendToString(validString, "Duplicates existing item in database.");
-                            isDuplicate = true;
-                            isValid = true;
-                        } else {
-                            validString = appendToString(validString, ex.getMessage());
-                            isDuplicate = true;
-                            isValid = false;
-                        }
-                    }
-                }
-            }
-
-            newEntity.setIsValidImport(isValid);
-            newEntity.setIsDuplicateImport(isDuplicate);
-            newEntity.setValidStringImport(validString);
-            
-            rows.add(newEntity);
-
-        } else {
-        }
-        
+               
         return new ValidInfo(isValid, validString, isDuplicate);
     }
     
@@ -896,6 +806,173 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
         return false;
+    }
+    
+    private ValidInfo handleParsedRow(Map<String, Object> rowDict) throws CdbException {
+        
+        if (getImportMode() == ImportMode.CREATE) {
+            return handleParsedRowCreateMode(rowDict);
+            
+        } else if (getImportMode() == ImportMode.UPDATE) {
+            return handleParsedRowUpdateMode(rowDict);
+            
+        } else if (getImportMode() == ImportMode.DELETE) {
+            return handleParsedRowDeleteMode(rowDict);
+            
+        }
+        
+        return new ValidInfo(false, "Unexpected import mode.");
+    }
+    
+    private ValidInfo handleParsedRowDeleteMode(Map<String, Object> rowDict) throws CdbException {
+        
+        boolean isValid = true;
+        String validString = "";
+
+        return new ValidInfo(isValid, validString);
+    }
+    
+    private ValidInfo handleParsedRowUpdateMode(Map<String, Object> rowDict) throws CdbException {
+        
+        boolean isValid = true;
+        String validString = "";
+        boolean isDuplicate = false;
+    
+        // retrieve existing instance and check result
+        CreateInfo createInfo = null;
+        EntityType entity = null;
+        createInfo = retrieveEntityInstance(rowDict);
+        if (createInfo == null) {
+            // indicates helper doesn't support update mode
+            String msg = "Unexpected error, import helper not properly configured for update operation.";
+            throw new CdbException(msg);
+        }
+        
+        entity = (EntityType) createInfo.getEntity();
+        if (entity == null) {
+            // helper must return an instance for use in the validation table,
+            // even if the specified item is not located
+            String msg = "Unexpected error, import helper not properly configured to retrieve items for update operation.";
+            throw new CdbException(msg);
+        }
+        
+        ValidInfo createValidInfo = createInfo.getValidInfo();
+        if (!createValidInfo.isValid()) {
+            validString = appendToString(validString, createValidInfo.getValidString());
+            isValid = false;
+        }
+
+        // invoke each input handler to update the entity with row dictionary values
+        for (InputHandler handler : inputHandlers) {
+            ValidInfo validInfo = handler.updateEntity(rowDict, entity);
+            if (!validInfo.isValid()) {
+                validString = appendToString(validString, validInfo.getValidString());
+                isValid = false;
+            }
+        }
+
+        // skip uniqueness checks in update mode for rows already flagged as invalid,
+        // otherwise error reporting is confusing
+        if (isValid) {
+            ValidInfo uniqueValidInfo = checkEntityUniqueness(entity);
+            if (!uniqueValidInfo.isValid()) {
+                isValid = false;
+                validString = appendToString(validString, uniqueValidInfo.getValidString());
+                isDuplicate = uniqueValidInfo.isDuplicate();
+            }
+        }
+
+        entity.setIsValidImport(isValid);
+        entity.setIsDuplicateImport(isDuplicate);
+        entity.setValidStringImport(validString);
+
+        rows.add(entity);
+
+        return new ValidInfo(isValid, validString, isDuplicate);
+    }
+    
+    private ValidInfo handleParsedRowCreateMode(Map<String, Object> rowDict) throws CdbException {
+        
+        boolean isValid = true;
+        String validString = "";
+        boolean isDuplicate = false;
+
+        // create new instance and check result
+        CreateInfo createInfo = null;
+        EntityType newEntity = null;
+        createInfo = createEntityInstance(rowDict);
+        newEntity = (EntityType) createInfo.getEntity();
+        if (newEntity == null) {
+            // helper returns null from createInstance to indicate that it won't create an item for this row
+            isValid = createInfo.getValidInfo().isValid();
+            validString = appendToString(validString, createInfo.getValidInfo().getValidString());
+        }
+            
+        ValidInfo createValidInfo = createInfo.getValidInfo();
+        if (!createValidInfo.isValid()) {
+            validString = appendToString(validString, createValidInfo.getValidString());
+            isValid = false;
+        }
+
+        // invoke each input handler to update the entity with row dictionary values
+        for (InputHandler handler : inputHandlers) {
+            ValidInfo validInfo = handler.updateEntity(rowDict, newEntity);
+            if (!validInfo.isValid()) {
+                validString = appendToString(validString, validInfo.getValidString());
+                isValid = false;
+            }
+        }
+
+        ValidInfo uniqueValidInfo = checkEntityUniqueness(newEntity);
+        if (!uniqueValidInfo.isValid()) {
+            isValid = false;
+            validString = appendToString(validString, uniqueValidInfo.getValidString());
+            isDuplicate = uniqueValidInfo.isDuplicate();
+        }
+
+        newEntity.setIsValidImport(isValid);
+        newEntity.setIsDuplicateImport(isDuplicate);
+        newEntity.setValidStringImport(validString);
+
+        rows.add(newEntity);
+
+        return new ValidInfo(isValid, validString, isDuplicate);
+    }
+    
+    private ValidInfo checkEntityUniqueness(EntityType entity) {
+        
+        boolean isValid = true;
+        String validString = "";
+        boolean isDuplicate = false;
+        
+        if (rows.contains(entity)) {
+            validString = appendToString(validString, "Duplicates another row in spreadsheet.");
+            isDuplicate = true;
+            if (ignoreDuplicates()) {
+                isValid = true;
+
+            } else {
+                isValid = false;
+            }
+        } else {
+            try {
+                getEntityController().checkItemUniqueness(entity);
+            } catch (CdbException ex) {
+                if (ex.getErrorMessage().startsWith("Uniqueness check not implemented by controller")) {
+                    // ignore this?
+                } else if (ignoreDuplicates()) {
+                    validString = appendToString(validString, "Duplicates existing item in database.");
+                    isDuplicate = true;
+                    isValid = true;
+                } else {
+                    validString = appendToString(validString, ex.getMessage());
+                    isDuplicate = true;
+                    isValid = false;
+                }
+            }
+        }
+
+        return new ValidInfo(isValid, validString, isDuplicate);
     }
     
     /**
