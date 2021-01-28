@@ -575,9 +575,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             int rowNumberLastData) {
 
         int entityNum = 0;
-        int dupCount = 0;
         int invalidCount = 0;
-        String dupString = "";
         
         // pre-import hook for helper subclass
         ValidInfo preImportValidInfo = preImport();
@@ -615,22 +613,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                         validInput = false;
                         invalidCount = invalidCount + 1;
                     }
-                    if (rowValidInfo.isDuplicate()) {
-                        dupCount = dupCount + 1;
-                        dupString = appendToString(dupString, rowValidInfo.getValidString());
-                    }
                 }
             }
         }
         
         int newItemCount = rows.size();        
-        if (ignoreDuplicates() && (dupCount > 0)) {
-            validationMessage = appendToString(
-                    validationMessage, 
-                    "Ignoring " + dupCount + " duplicate rows that exist in spreadsheet or database");
-            newItemCount = newItemCount - dupCount;
-        }
-        
         if (newItemCount == 0) {
             // nothing to import, this will disable the "next" button
             validationMessage = appendToString(
@@ -732,7 +719,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         boolean isValid = true;
         String validString = "";
-        boolean isDuplicate = false;
         
         // parse each column value into a map (cellIndex -> cellValue)        
         int colIndex;
@@ -783,10 +769,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (!handleValidInfo.isValid()) {
             isValid = false;
             validString = appendToString(validString, handleValidInfo.getValidString());
-            isDuplicate = handleValidInfo.isDuplicate();
         }
                
-        return new ValidInfo(isValid, validString, isDuplicate);
+        return new ValidInfo(isValid, validString);
     }
     
     protected boolean isBlankRow(Map<Integer, String> cellValues) {
@@ -836,7 +821,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         boolean isValid = true;
         String validString = "";
-        boolean isDuplicate = false;
     
         // retrieve existing instance and check result
         CreateInfo createInfo = null;
@@ -878,24 +862,21 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             if (!uniqueValidInfo.isValid()) {
                 isValid = false;
                 validString = appendToString(validString, uniqueValidInfo.getValidString());
-                isDuplicate = uniqueValidInfo.isDuplicate();
             }
         }
 
         entity.setIsValidImport(isValid);
-        entity.setIsDuplicateImport(isDuplicate);
         entity.setValidStringImport(validString);
 
         rows.add(entity);
 
-        return new ValidInfo(isValid, validString, isDuplicate);
+        return new ValidInfo(isValid, validString);
     }
     
     private ValidInfo handleParsedRowCreateMode(Map<String, Object> rowDict) throws CdbException {
         
         boolean isValid = true;
         String validString = "";
-        boolean isDuplicate = false;
 
         // create new instance and check result
         CreateInfo createInfo = null;
@@ -927,52 +908,41 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (!uniqueValidInfo.isValid()) {
             isValid = false;
             validString = appendToString(validString, uniqueValidInfo.getValidString());
-            isDuplicate = uniqueValidInfo.isDuplicate();
         }
 
         newEntity.setIsValidImport(isValid);
-        newEntity.setIsDuplicateImport(isDuplicate);
         newEntity.setValidStringImport(validString);
 
         rows.add(newEntity);
 
-        return new ValidInfo(isValid, validString, isDuplicate);
+        return new ValidInfo(isValid, validString);
     }
     
     private ValidInfo checkEntityUniqueness(EntityType entity) {
         
         boolean isValid = true;
         String validString = "";
-        boolean isDuplicate = false;
         
         if (rows.contains(entity)) {
+            // check for duplicates in spreadsheet rows
             validString = appendToString(validString, "Duplicates another row in spreadsheet.");
-            isDuplicate = true;
-            if (ignoreDuplicates()) {
-                isValid = true;
-
-            } else {
-                isValid = false;
-            }
+            isValid = false;
+            
         } else {
+            // check for existing duplicates in database
             try {
                 getEntityController().checkItemUniqueness(entity);
             } catch (CdbException ex) {
                 if (ex.getErrorMessage().startsWith("Uniqueness check not implemented by controller")) {
                     // ignore this?
-                } else if (ignoreDuplicates()) {
-                    validString = appendToString(validString, "Duplicates existing item in database.");
-                    isDuplicate = true;
-                    isValid = true;
                 } else {
                     validString = appendToString(validString, ex.getMessage());
-                    isDuplicate = true;
                     isValid = false;
                 }
             }
         }
 
-        return new ValidInfo(isValid, validString, isDuplicate);
+        return new ValidInfo(isValid, validString);
     }
     
     /**
@@ -991,14 +961,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         EntityControllerType controller = this.getEntityController();
         
-        // remove duplicate items if helper configured to ignore them
-        if (ignoreDuplicates()) {
-            rows = rows
-                    .stream()
-                    .filter(entity -> !entity.getIsDuplicateImport())
-                    .collect(Collectors.toList());
-        }
-
         String message = "";
         try {
             if (getImportMode() == ImportMode.CREATE) {
@@ -1064,16 +1026,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return null;
     }
 
-    /**
-     * Specifies whether the helper class ignores rows in the input data that
-     * duplicate existing database rows.  Default behavior is to not ignore
-     * duplicates, subclasses override to change the default.
-     * @return 
-     */
-    protected boolean ignoreDuplicates() {
-        return false;
-    }
-    
     /**
      * Specifies whether to display components on import wizard's select file tab
      * for customizing row numbers for header and first/last data rows.

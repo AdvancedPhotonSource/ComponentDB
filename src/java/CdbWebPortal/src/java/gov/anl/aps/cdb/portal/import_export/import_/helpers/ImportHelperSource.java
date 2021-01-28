@@ -119,9 +119,4 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
 //               
 //        return new CreateInfo(item, isValid, validString);
 //    }  
-
-    @Override
-    protected boolean ignoreDuplicates() {
-        return false;
-    }
 }

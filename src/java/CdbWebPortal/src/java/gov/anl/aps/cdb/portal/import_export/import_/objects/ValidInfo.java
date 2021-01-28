@@ -12,16 +12,10 @@ public class ValidInfo {
 
     protected boolean isValid = false;
     protected String validString = "";
-    protected boolean isDuplicate = false;
 
     public ValidInfo(boolean iv, String s) {
         isValid = iv;
         validString = s;
-    }
-
-    public ValidInfo(boolean iv, String s, boolean d) {
-        this(iv, s);
-        isDuplicate = d;
     }
 
     public boolean isValid() {
@@ -38,9 +32,5 @@ public class ValidInfo {
 
     public void setValidString(String s) {
         validString = s;
-    }
-
-    public boolean isDuplicate() {
-        return isDuplicate;
     }
 }

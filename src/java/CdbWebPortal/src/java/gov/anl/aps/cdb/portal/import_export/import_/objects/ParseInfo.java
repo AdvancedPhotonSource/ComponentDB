@@ -18,11 +18,6 @@ public class ParseInfo<ValueType extends Object> {
         validInfo = new ValidInfo(iv, s);
     }
 
-    public ParseInfo(ValueType v, boolean iv, String s, boolean d) {
-        value = v;
-        validInfo = new ValidInfo(iv, s, d);
-    }
-
     public ValidInfo getValidInfo() {
         return validInfo;
     }
