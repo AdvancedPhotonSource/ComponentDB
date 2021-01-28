@@ -4,8 +4,10 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.IntegerInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
+import java.util.List;
 
 /**
  *
@@ -41,6 +43,23 @@ public class IntegerColumnSpec extends ColumnSpec {
                 exportGetterMethod, 
                 updateOnly,
                 requiredForCreate);
+    }
+
+    public IntegerColumnSpec(
+            String header, 
+            String propertyName, 
+            String entitySetterMethod, 
+            String description,
+            String exportGetterMethod,
+            List<ColumnModeOptions> options) {
+        
+        super(
+                header, 
+                propertyName, 
+                entitySetterMethod, 
+                description, 
+                exportGetterMethod,
+                options);
     }
 
     @Override

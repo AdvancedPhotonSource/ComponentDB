@@ -4,8 +4,10 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.StringInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
+import java.util.List;
 
 /**
  *
@@ -45,6 +47,25 @@ public class StringColumnSpec extends ColumnSpec {
                 exportGetterMethod, 
                 false, 
                 requiredForCreate);
+        this.maxLength = maxLength;
+    }
+
+    public StringColumnSpec(
+            String header, 
+            String propertyName, 
+            String entitySetterMethod, 
+            String description,
+            int maxLength, 
+            String exportGetterMethod,
+            List<ColumnModeOptions> options) {
+
+        super(
+                header, 
+                propertyName, 
+                entitySetterMethod, 
+                description, 
+                exportGetterMethod, 
+                options);
         this.maxLength = maxLength;
     }
 

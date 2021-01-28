@@ -454,9 +454,8 @@ public class ItemDomainImportWizard implements Serializable {
         }
 
         setEnablement(nextStep);
-
         currentTab = nextStep;
-
+        
         return nextStep;
     }
     

@@ -83,6 +83,28 @@ public abstract class ColumnSpec {
         this.addColumnModeOptions(new ColumnModeOptions(ImportMode.UPDATE, requiredForUpdate));
     }
 
+    /**
+     * Creates a column spec appropriate for import and export.
+     */
+    public ColumnSpec(
+            String header, 
+            String importPropertyName, 
+            String importSetterMethod, 
+            String description, 
+            String exportGetterMethod,
+            List<ColumnModeOptions> options) {
+
+        this.description = description;
+        this.header = header;
+        this.propertyName = importPropertyName;
+        this.entitySetterMethod = importSetterMethod;
+        this.exportGetterMethod = exportGetterMethod;
+
+        for (ColumnModeOptions option : options) {
+            this.addColumnModeOptions(option);
+        }
+    }
+
     public String getHeader() {
         return header;
     }

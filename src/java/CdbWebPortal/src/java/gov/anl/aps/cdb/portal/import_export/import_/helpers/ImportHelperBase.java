@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.import_export.export.objects.ExportColumnData;
 import gov.anl.aps.cdb.portal.import_export.export.objects.GenerateExportResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.HandleOutputResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
@@ -76,6 +77,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     private static final String MODE_CREATE = "create";
     private static final String MODE_UPDATE = "update";
+    private static final String MODE_DELETE = "delete";
 
     private static final String HEADER_IS_VALID = "Is Valid";
     private static final String PROPERTY_IS_VALID = "isValidImportString";
@@ -135,6 +137,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             importMode = ImportMode.CREATE;
         } else if (importModeString.equals(MODE_UPDATE)) {
             importMode = ImportMode.UPDATE;
+        } else if (importModeString.equals(MODE_DELETE)) {
+            importMode = ImportMode.DELETE;
         }
     }
 
@@ -602,9 +606,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     rowValidInfo = parseRow(row);
                 } catch (CdbException ex) {
                     validInput = false;
-                    validationMessage = ex.getMessage();
+                    validationMessage = "Unexpected exception parsing spreadsheet row: "
+                            + rowNumber + " message: "
+                            + ex.getMessage();
                     summaryMessage
-                            = "Press 'Cancel' to terminate the import process."
+                            = " Press 'Cancel' to terminate the import process."
                             + " No new items will be created.";
                     return;
                 }
@@ -738,7 +744,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                         "Required value missing for " + columnNameForIndex(col.getColumnIndex()));
             }
             
-            // check that value not provide in column not used in this mode
+            // check that value not provided in column not used in this mode
             if ((!col.isUsedForMode(getImportMode()))
                     && ((cellValue != null) && (!cellValue.isEmpty()))) {                
                 
@@ -765,12 +771,23 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         
         // handle parsed row as appropriate for mode
-        ValidInfo handleValidInfo = handleParsedRow(rowDict);
-        if (!handleValidInfo.isValid()) {
+        EntityType entity;
+        CreateInfo handleCreateInfo = handleParsedRow(rowDict);
+        if (!handleCreateInfo.getValidInfo().isValid()) {
             isValid = false;
-            validString = appendToString(validString, handleValidInfo.getValidString());
+            validString = appendToString(validString, handleCreateInfo.getValidInfo().getValidString());
         }
-               
+
+        entity = (EntityType) handleCreateInfo.getEntity();
+        if (entity == null) {
+            throw new CdbException("failed to create or retrieve specified item");
+            
+        } else {
+            entity.setIsValidImport(isValid);
+            entity.setValidStringImport(validString);
+            rows.add(entity);
+        }
+
         return new ValidInfo(isValid, validString);
     }
     
@@ -793,7 +810,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return false;
     }
     
-    private ValidInfo handleParsedRow(Map<String, Object> rowDict) throws CdbException {
+    private CreateInfo handleParsedRow(Map<String, Object> rowDict) throws CdbException {
         
         if (getImportMode() == ImportMode.CREATE) {
             return handleParsedRowCreateMode(rowDict);
@@ -806,18 +823,52 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             
         }
         
-        return new ValidInfo(false, "Unexpected import mode.");
+        return new CreateInfo(null, false, "Unexpected import mode.");
     }
     
-    private ValidInfo handleParsedRowDeleteMode(Map<String, Object> rowDict) throws CdbException {
+    private CreateInfo handleParsedRowDeleteMode(Map<String, Object> rowDict) throws CdbException {
         
         boolean isValid = true;
         String validString = "";
 
-        return new ValidInfo(isValid, validString);
+        // retrieve existing instance and check result
+        CreateInfo createInfo = null;
+        EntityType entity = null;
+        createInfo = retrieveEntityInstance(rowDict);
+        if (createInfo == null) {
+            // indicates helper doesn't support delete mode
+            String msg = "Unexpected error, import helper not properly configured for delete operation.";
+            throw new CdbException(msg);
+        }
+        
+        entity = (EntityType) createInfo.getEntity();
+        if (entity == null) {
+            // helper must return an instance for use in the validation table,
+            // even if the specified item is not located
+            String msg = "Unexpected error, import helper not properly configured to retrieve items for delete operation.";
+            throw new CdbException(msg);
+        }
+        
+        ValidInfo createValidInfo = createInfo.getValidInfo();
+        if (!createValidInfo.isValid()) {
+            validString = appendToString(validString, createValidInfo.getValidString());
+            isValid = false;
+        }
+
+        // invoke each input handler to update the entity with row dictionary values
+        // do this to display existing item id, delete existing item column values
+        for (InputHandler handler : inputHandlers) {
+            ValidInfo validInfo = handler.updateEntity(rowDict, entity);
+            if (!validInfo.isValid()) {
+                validString = appendToString(validString, validInfo.getValidString());
+                isValid = false;
+            }
+        }
+
+        return new CreateInfo(entity, isValid, validString);
     }
     
-    private ValidInfo handleParsedRowUpdateMode(Map<String, Object> rowDict) throws CdbException {
+    private CreateInfo handleParsedRowUpdateMode(Map<String, Object> rowDict) throws CdbException {
         
         boolean isValid = true;
         String validString = "";
@@ -865,15 +916,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
         }
 
-        entity.setIsValidImport(isValid);
-        entity.setValidStringImport(validString);
-
-        rows.add(entity);
-
-        return new ValidInfo(isValid, validString);
+        return new CreateInfo(entity, isValid, validString);
     }
     
-    private ValidInfo handleParsedRowCreateMode(Map<String, Object> rowDict) throws CdbException {
+    private CreateInfo handleParsedRowCreateMode(Map<String, Object> rowDict) throws CdbException {
         
         boolean isValid = true;
         String validString = "";
@@ -910,12 +956,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             validString = appendToString(validString, uniqueValidInfo.getValidString());
         }
 
-        newEntity.setIsValidImport(isValid);
-        newEntity.setValidStringImport(validString);
-
-        rows.add(newEntity);
-
-        return new ValidInfo(isValid, validString);
+        return new CreateInfo(newEntity, isValid, validString);
     }
     
     private ValidInfo checkEntityUniqueness(EntityType entity) {
@@ -1208,23 +1249,27 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
     
     public IntegerColumnSpec existingItemIdColumnSpec() {
+        List<ColumnModeOptions> options = new ArrayList<>();
+        options.add(new ColumnModeOptions(ImportMode.UPDATE, true));
+        options.add(new ColumnModeOptions(ImportMode.DELETE, true));
         return new IntegerColumnSpec(
                 "Existing Item ID", 
                 KEY_EXISTING_ITEM_ID, 
                 "setImportExistingItemId", 
-                false, 
                 "CDB ID of existing item to update.", 
-                "getId", 
-                true);
+                "getId",
+                options);
     }
 
     public BooleanColumnSpec deleteExistingItemColumnSpec() {
+        List<ColumnModeOptions> options = new ArrayList<>();
+        options.add(new ColumnModeOptions(ImportMode.DELETE, true));
         return new BooleanColumnSpec(
                 "Delete Existing Item", 
                 KEY_DELETE_EXISTING_ITEM, 
                 "setImportDeleteExistingItem", 
-                false, 
-                "Specify TRUE to delete existing item in delete mode.");
+                "Specify TRUE to delete existing item in delete mode.",
+                options);
     }
 
     protected abstract List<ColumnSpec> getColumnSpecs();
