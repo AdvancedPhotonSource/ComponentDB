@@ -122,6 +122,6 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
 
     @Override
     protected boolean ignoreDuplicates() {
-        return true;
+        return false;
     }
 }

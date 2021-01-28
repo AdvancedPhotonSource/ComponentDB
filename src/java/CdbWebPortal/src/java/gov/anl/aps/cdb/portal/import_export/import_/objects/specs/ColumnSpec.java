@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +27,8 @@ public abstract class ColumnSpec {
     private String header;
     private String propertyName;
     private String entitySetterMethod;
-    private boolean requiredForCreate;
-    private boolean requiredForUpdate;
     private String description;
     protected String exportGetterMethod;
-    private boolean updateOnly = false;
     
     private List<ColumnModeOptions> columnModeOptions;
     
@@ -47,7 +45,8 @@ public abstract class ColumnSpec {
         this(description);
         this.header = header;
         this.propertyName = propertyName;
-        this.requiredForCreate = requiredForCreate;
+        
+        this.addColumnModeOptions(new ColumnModeOptions(ImportMode.CREATE, requiredForCreate));
     }
 
     public ColumnSpec(
@@ -74,10 +73,14 @@ public abstract class ColumnSpec {
             boolean updateOnly,
             boolean requiredForUpdate) {
 
-        this(header, importPropertyName, importSetterMethod, requiredForCreate, description);
+        this.description = description;
+        this.header = header;
+        this.propertyName = importPropertyName;
+        this.entitySetterMethod = importSetterMethod;
         this.exportGetterMethod = exportGetterMethod;
-        this.updateOnly = updateOnly;
-        this.requiredForUpdate = requiredForUpdate;
+
+        this.addColumnModeOptions(new ColumnModeOptions(ImportMode.CREATE, requiredForCreate));
+        this.addColumnModeOptions(new ColumnModeOptions(ImportMode.UPDATE, requiredForUpdate));
     }
 
     public String getHeader() {
@@ -92,14 +95,6 @@ public abstract class ColumnSpec {
         return entitySetterMethod;
     }
 
-    public boolean isRequiredForCreate() {
-        return requiredForCreate;
-    }
-
-    public boolean isRequiredForUpdate() {
-        return requiredForUpdate;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -108,10 +103,6 @@ public abstract class ColumnSpec {
         return exportGetterMethod;
     }
     
-    public boolean isUpdateOnly() {
-        return updateOnly;
-    }
-
     public int getInputTemplateColumns(
             int colIndex,
             List<InputColumnModel> inputColumns_io) {
@@ -159,11 +150,14 @@ public abstract class ColumnSpec {
     }
     
     public List<ColumnModeOptions> getColumnModeOptions() {
+        if (columnModeOptions == null) {
+            columnModeOptions = new ArrayList<>();
+        }
         return columnModeOptions;
     }
     
     public void addColumnModeOptions(ColumnModeOptions options) {
-        columnModeOptions.add(options);
+        getColumnModeOptions().add(options);
     }
     
 }
