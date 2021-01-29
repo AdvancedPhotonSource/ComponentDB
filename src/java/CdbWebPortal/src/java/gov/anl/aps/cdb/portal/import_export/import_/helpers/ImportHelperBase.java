@@ -667,7 +667,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                         + modeString 
                         + " "
                         + summaryDetails
-                        + " displayed in table above.";
+                        + " displayed in table above. This action cannot be undone.";
             } else {
                 summaryMessage = "Press 'Cancel' to terminate the "
                         + modeString
@@ -1036,20 +1036,26 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         EntityControllerType controller = this.getEntityController();
         
         String message = "";
+        String modeString = "";
         try {
             if (getImportMode() == ImportMode.CREATE) {
                 controller.createList(rows);
-                message = "Import succeeded, created " + rows.size() + " instances";
+                modeString = "created";
                 ValidInfo result = postCreate();
                 message = appendToString(message, result.getValidString());
             } else if (getImportMode() == ImportMode.UPDATE) {
                 updateList();
-                message = "Import succeeded, updated " + rows.size() + " instances";
+                modeString = "updated";
+            } else if (getImportMode() == ImportMode.DELETE) {
+                deleteList();
+                modeString = "deleted";
             }
 
         } catch (CdbException | RuntimeException ex) {
             return new ImportInfo(false, "Import failed. " + ex.getClass().getName());
         }
+        
+        message = "Operation succeeded, " + modeString + " " + rows.size() + " instances";
         
         return new ImportInfo(true, message);
     }
@@ -1174,6 +1180,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected void updateList() throws CdbException, RuntimeException {
         EntityControllerType controller = this.getEntityController();
         controller.updateList(rows);
+    }
+    
+    /**
+     * Deletes list of items in delete mode.  Allows subclasses to override with
+     * custom behavior.
+     */
+    protected void deleteList() throws CdbException, RuntimeException {
+        EntityControllerType controller = this.getEntityController();
+        controller.destroyList(rows, null);
     }
     
     public String getExportFilename() {
