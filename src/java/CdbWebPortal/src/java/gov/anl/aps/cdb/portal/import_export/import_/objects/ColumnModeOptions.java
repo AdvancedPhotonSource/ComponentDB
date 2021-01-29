@@ -12,7 +12,7 @@ public class ColumnModeOptions {
 
     private ImportMode mode;
     private boolean required;
-    
+                    
     public ColumnModeOptions(ImportMode mode, boolean required) {
         this.mode = mode;
         this.required = required;

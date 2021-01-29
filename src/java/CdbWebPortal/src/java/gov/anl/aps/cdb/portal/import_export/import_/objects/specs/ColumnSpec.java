@@ -30,8 +30,8 @@ public abstract class ColumnSpec {
     private String description;
     protected String exportGetterMethod;
     
-    private List<ColumnModeOptions> columnModeOptions;
-    
+    private Map<ImportMode, ColumnModeOptions> columnModeOptionsMap = new HashMap<>();
+        
     public ColumnSpec() {
     }
     
@@ -135,34 +135,55 @@ public abstract class ColumnSpec {
     
     public ColumnSpecInitInfo initialize(
             int colIndex,
-            Map<Integer, String> headerValueMap,
-            List<InputColumnModel> inputColumns_io,
-            List<InputHandler> inputHandlers_io,
-            List<OutputColumnModel> outputColumns_io) {
+            Map<Integer, String> headerValueMap) {
+        
+        ColumnSpecInitInfo initInfo = initialize_(colIndex, headerValueMap);
+        
+        for (InputHandler handler : initInfo.getInputHandlers()) {
+            handler.setColumnSpec(this);
+        }
+        
+        for (InputColumnModel inputColumn : initInfo.getInputColumns()) {
+            inputColumn.setColumnSpec(this);
+        }
 
-        inputColumns_io.add(getInputColumnModel(colIndex));
-        inputHandlers_io.add(getInputHandler(colIndex));
-        outputColumns_io.add(getOutputColumnModel(colIndex));
+        return initInfo;
+    }
+    
+    /**
+     * Initializes lists of input columns, input handlers, and output columns.
+     * Subclass can override default implementation to customize.
+     */
+    protected ColumnSpecInitInfo initialize_(
+            int colIndex,
+            Map<Integer, String> headerValueMap) {
+        
+        List<InputColumnModel> inputColumns = new ArrayList<>();
+        List<InputHandler> inputHandlers = new ArrayList<>();
+        List<OutputColumnModel> outputColumns = new ArrayList<>();
+
+        inputColumns.add(getInputColumnModel(colIndex));
+        inputHandlers.add(getInputHandler(colIndex));
+        outputColumns.add(getOutputColumnModel(colIndex));
 
         ValidInfo validInfo = new ValidInfo(true, "");
-        return new ColumnSpecInitInfo(validInfo, 1);
-}
+        return new ColumnSpecInitInfo(validInfo, 1, inputColumns, inputHandlers, outputColumns);
+    }
     
-    public InputColumnModel getInputColumnModel(int colIndex) {
+    private InputColumnModel getInputColumnModel(int colIndex) {
         return new InputColumnModel(
                 colIndex,
                 getHeader(),
-                getDescription(),
-                getColumnModeOptions());
+                getDescription());
     }
     
-    public OutputColumnModel getOutputColumnModel(int colIndex) {
+    private OutputColumnModel getOutputColumnModel(int colIndex) {
         return new OutputColumnModel(
                 getHeader(),
                 getPropertyName());
     }
 
-    public abstract InputHandler getInputHandler(int colIndex);
+    protected abstract InputHandler getInputHandler(int colIndex);
     
     public OutputHandler getOutputHandler() {
         if (exportGetterMethod == null || exportGetterMethod.isBlank()) {
@@ -171,15 +192,20 @@ public abstract class ColumnSpec {
         return new SimpleOutputHandler(getHeader(), getDescription(), getExportGetterMethod());
     }
     
-    public List<ColumnModeOptions> getColumnModeOptions() {
-        if (columnModeOptions == null) {
-            columnModeOptions = new ArrayList<>();
-        }
-        return columnModeOptions;
-    }
-    
     public void addColumnModeOptions(ColumnModeOptions options) {
-        getColumnModeOptions().add(options);
+        columnModeOptionsMap.put(options.getMode(), options);
+    }
+
+    public boolean isUsedForMode(ImportMode mode) {
+        return columnModeOptionsMap.containsKey(mode);
     }
     
+    public boolean isRequiredForMode(ImportMode mode) {
+        if (!columnModeOptionsMap.containsKey(mode)) {
+            return false;
+        } else {
+            return columnModeOptionsMap.get(mode).isRequired();
+        }
+    }
+
 }

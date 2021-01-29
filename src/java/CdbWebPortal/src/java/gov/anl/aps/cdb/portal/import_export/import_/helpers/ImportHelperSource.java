@@ -33,21 +33,13 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
         ColumnModeOptions optionalForCreate = new ColumnModeOptions(ImportMode.CREATE, false);
         ColumnModeOptions optionalForUpdate = new ColumnModeOptions(ImportMode.UPDATE, false);
         
-        List<ColumnModeOptions> requiredList = new ArrayList<>();
-        requiredList.add(requiredForCreate);
-        requiredList.add(optionalForUpdate);
-
-        List<ColumnModeOptions> optionalList = new ArrayList<>();
-        requiredList.add(optionalForCreate);
-        requiredList.add(optionalForUpdate);
-        
         List<ColumnSpec> specs = new ArrayList<>();
         specs.add(existingItemIdColumnSpec());
         specs.add(deleteExistingItemColumnSpec());
-        specs.add(new StringColumnSpec("Name", KEY_NAME, "setName", "Name of vendor/manufacturer", 64, "getName", requiredList));
-        specs.add(new StringColumnSpec("Description", "description", "setDescription", "Description of vendor/manufacturer", 256, "getDescription", optionalList));
-        specs.add(new StringColumnSpec("Contact Info", "contactInfo", "setContactInfo", "Contact name and phone number etc", 64, "getContactInfo", optionalList));
-        specs.add(new StringColumnSpec("URL", "url", "setUrl", "URL for vendor/manufacturer", 256, "getUrl", optionalList));
+        specs.add(new StringColumnSpec("Name", KEY_NAME, "setName", "Name of vendor/manufacturer", 64, "getName", List.of(requiredForCreate, optionalForUpdate)));
+        specs.add(new StringColumnSpec("Description", "description", "setDescription", "Description of vendor/manufacturer", 256, "getDescription", List.of(optionalForCreate, optionalForUpdate)));
+        specs.add(new StringColumnSpec("Contact Info", "contactInfo", "setContactInfo", "Contact name and phone number etc", 64, "getContactInfo", List.of(optionalForCreate, optionalForUpdate)));
+        specs.add(new StringColumnSpec("URL", "url", "setUrl", "URL for vendor/manufacturer", 256, "getUrl", List.of(optionalForCreate, optionalForUpdate)));
         
         return specs;
     } 

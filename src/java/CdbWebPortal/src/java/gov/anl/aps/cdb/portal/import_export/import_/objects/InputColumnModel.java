@@ -4,9 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 
 /**
  *
@@ -14,12 +12,11 @@ import java.util.Map;
  */
 public class InputColumnModel {
 
+    private ColumnSpec columnSpec;
     protected int columnIndex;
     protected String name;
     protected String description = null;
 
-    private Map<ImportMode, ColumnModeOptions> columnModeOptionsMap = new HashMap<>();
-    
     public InputColumnModel(
             int columnIndex,
             String name,
@@ -30,16 +27,8 @@ public class InputColumnModel {
         this.description = description;
     }
 
-    public InputColumnModel(
-            int columnIndex,
-            String name,
-            String description,
-            List<ColumnModeOptions> columnModeOptions) {
-
-        this(columnIndex, name, description);
-        for (ColumnModeOptions options : columnModeOptions) {
-            addColumnModeOptions(options);
-        }
+    public void setColumnSpec(ColumnSpec columnSpec) {
+        this.columnSpec = columnSpec;
     }
 
     public int getColumnIndex() {
@@ -54,20 +43,12 @@ public class InputColumnModel {
         return description;
     }
     
-    public void addColumnModeOptions(ColumnModeOptions options) {
-        columnModeOptionsMap.put(options.getMode(), options);
-    }
-
     public boolean isUsedForMode(ImportMode mode) {
-        return columnModeOptionsMap.containsKey(mode);
+        return columnSpec.isUsedForMode(mode);
     }
     
     public boolean isRequiredForMode(ImportMode mode) {
-        if (!columnModeOptionsMap.containsKey(mode)) {
-            return false;
-        } else {
-            return columnModeOptionsMap.get(mode).isRequired();
-        }
+        return columnSpec.isRequiredForMode(mode);
     }
 
 }

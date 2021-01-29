@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.HierarchyHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +53,6 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
             String columnHeader = colNamePattern + " " + String.valueOf(colNum);
             InputColumnModel inputColumnModel = 
                     new InputColumnModel(i, columnHeader, getDescription());
-            inputColumnModel.addColumnModeOptions(new ColumnModeOptions(ImportMode.CREATE, false));
             inputColumns_io.add(inputColumnModel);
             colNum = colNum + 1;
         }
@@ -60,12 +60,9 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
     }
     
     @Override
-    public ColumnSpecInitInfo initialize(
+    public ColumnSpecInitInfo initialize_(
             int colIndex,
-            Map<Integer, String> headerValueMap,
-            List<InputColumnModel> inputColumns_io,
-            List<InputHandler> inputHandlers_io,
-            List<OutputColumnModel> outputColumns_io) {
+            Map<Integer, String> headerValueMap) {
 
         boolean isValid = true;
         String validString = "";
@@ -76,14 +73,16 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
         int lastLevelIndex = -1;
         int currIndex = colIndex;
         
+        List<InputColumnModel> inputColumns = new ArrayList<>();
+        List<InputHandler> inputHandlers = new ArrayList<>();
+        List<OutputColumnModel> outputColumns = new ArrayList<>();
+        
         while (!done) {
             String columnHeader = headerValueMap.get(currIndex);
             // check to see if this is a "level" column
             if (columnHeader.startsWith(colNamePattern)) {
                 InputColumnModel inputColumnModel = 
                         new InputColumnModel(currIndex, columnHeader, getDescription());
-                inputColumnModel.addColumnModeOptions(new ColumnModeOptions(ImportMode.CREATE, false));
-                inputColumns_io.add(inputColumnModel);
                 foundLevel = true;
                 if (firstLevelIndex == -1) {
                     firstLevelIndex = currIndex;
@@ -105,14 +104,14 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
             // add single handler for multiple "level" columns
             inputHandler = new HierarchyHandler(
                     firstLevelIndex, lastLevelIndex, 128, keyName, keyIndent);
-            inputHandlers_io.add(inputHandler);
-            outputColumns_io.add(new OutputColumnModel("Parent Path", "importPath"));
-            outputColumns_io.add(new OutputColumnModel("Name", "name"));
+            inputHandlers.add(inputHandler);
+            outputColumns.add(new OutputColumnModel("Parent Path", "importPath"));
+            outputColumns.add(new OutputColumnModel("Name", "name"));
         }
 
         ValidInfo validInfo = new ValidInfo(isValid, validString);
         int numColumns = lastLevelIndex - firstLevelIndex + 1;
-        return new ColumnSpecInitInfo(validInfo, numColumns);
+        return new ColumnSpecInitInfo(validInfo, numColumns, inputColumns, inputHandlers, outputColumns);
 }
     
     @Override
