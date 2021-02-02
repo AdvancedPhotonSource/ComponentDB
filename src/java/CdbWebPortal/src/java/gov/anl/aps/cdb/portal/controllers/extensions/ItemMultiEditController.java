@@ -400,17 +400,25 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     }
 
     public void editAllItemsDerivedFromItem(Item item) {
-        resetMultiEditVariables();
-        setActiveIndex(MultipleEditMenu.updateItems.ordinal());
-        multiEditMode = MultiEditMode.update;
+        resetMultiEditVariables();                
 
         LoginController loginController = LoginController.getInstance();
         List<Item> derivedFromItemList = item.getDerivedFromItemList();
-        selectedItemsToEdit = new ArrayList<>();
+        List<Item> editableItems = new ArrayList<>();        
         for (Item derivedItem : derivedFromItemList) {
             if (loginController.isEntityWriteable(derivedItem.getEntityInfo())) {
-                selectedItemsToEdit.add(derivedItem);
+                editableItems.add(derivedItem);
             }
+        }
+        
+        editableListDataModel = new ListDataModel(editableItems); 
+        
+        if (editableItems.size() > 25) {            
+            selectedItemsToEdit = new ArrayList<>(); 
+        } else {
+            selectedItemsToEdit = editableItems; 
+            setActiveIndex(MultipleEditMenu.updateItems.ordinal());
+            multiEditMode = MultiEditMode.update;
         }
 
         String desiredPath = getEntityApplicationViewPath() + "/" + EDIT_MULTIPLE_REDIRECT;
