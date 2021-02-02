@@ -1272,7 +1272,12 @@ class CableDesignHelper(PreImportHelper):
             return True
 
         if non_empty_count == 1 and (input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []"):
-            logging.debug("skipping empty row with non-empty import id: %s row: %d" %
+            logging.debug("skipping empty row with no import id: %s row: %d" %
+                          (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
+            return True
+
+        if non_empty_count == 1 and (len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0):
+            logging.debug("skipping empty row with id: %s row: %d" %
                           (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
             return True
 
