@@ -730,13 +730,6 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         this.selectedItemsToEdit = selectedItemsToEdit;
     }
 
-    public void onRowReorder(ReorderEvent event) {
-        int index = event.getFromIndex();
-        Item item = this.selectedItemsToEdit.remove(index);
-        int toIndex = event.getToIndex();
-        this.selectedItemsToEdit.add(toIndex, item);
-    }
-
     public MultiEditPropertyRecord getCurrentMultiEditPropertyRecord() {
         return currentMultiEditPropertyRecord;
     }
