@@ -12,7 +12,12 @@ import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
 import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
 import gov.anl.aps.cdb.portal.controllers.UserGroupController;
 import gov.anl.aps.cdb.portal.controllers.UserInfoController;
+import gov.anl.aps.cdb.portal.import_export.export.objects.ColumnValueResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.ExportColumnData;
+import gov.anl.aps.cdb.portal.import_export.export.objects.FieldValueDifference;
+import gov.anl.aps.cdb.portal.import_export.export.objects.FieldValueDifferenceMap;
+import gov.anl.aps.cdb.portal.import_export.export.objects.FieldValueMap;
+import gov.anl.aps.cdb.portal.import_export.export.objects.FieldValueMapResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.GenerateExportResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.HandleOutputResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
@@ -83,6 +88,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private static final String PROPERTY_IS_VALID = "isValidImportString";
     private static final String HEADER_VALID_STRING = "Valid String";
     private static final String PROPERTY_VALID_STRING = "validStringImport";
+    private static final String HEADER_UPDATE_DIFF = "Update Differences";
+    private static final String PROPERTY_UPDATE_DIFF = "importUpdateDiffs";
     
     protected static final String KEY_USER = "ownerUserName";
     protected static final String KEY_GROUP = "ownerUserGroupName";
@@ -222,6 +229,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         // these are special columns for displaying validation info for each row
         columns.add(new OutputColumnModel(HEADER_IS_VALID, PROPERTY_IS_VALID));
         columns.add(new OutputColumnModel(HEADER_VALID_STRING, PROPERTY_VALID_STRING));
+        if (getImportMode() == ImportMode.UPDATE) {
+            columns.add(new OutputColumnModel(HEADER_UPDATE_DIFF, PROPERTY_UPDATE_DIFF));
+        }
         outputColumns = columns;
     }
 
@@ -440,6 +450,38 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new GenerateExportResult(validInfo, content);
     }
 
+    private FieldValueMapResult getFieldValueMap(EntityType entity) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        // get field values via output handlers for each column
+        FieldValueMap valueMap = new FieldValueMap();
+        for (ColumnSpec spec : getColumnSpecs()) {
+            
+            // skip columns not used for update mode
+            if (!spec.isUsedForMode(ImportMode.UPDATE)) {
+                continue;
+            }
+            
+            OutputHandler handler = spec.getOutputHandler();
+            if (handler == null) {                
+                ValidInfo validInfo = new ValidInfo(false, "Unexpected error, no output handler for column: " + spec.getHeader());
+                return new FieldValueMapResult(validInfo, valueMap);
+            }
+            
+            ColumnValueResult columnValueResult = handler.handleOutput(entity);
+            if (!columnValueResult.getValidInfo().isValid()) {
+                return new FieldValueMapResult(columnValueResult.getValidInfo(), valueMap);
+            }
+            
+            valueMap.put(spec.getHeader(), columnValueResult.getColumnValue());            
+        }
+        
+        ValidInfo validInfo = new ValidInfo(isValid, validString);
+        return new FieldValueMapResult(validInfo, valueMap);
+    }
+    
     public List<String> getSheetNames(UploadedFile f) {
         
         List<String> sheetNames = new ArrayList<>();
@@ -933,6 +975,17 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             validString = appendToString(validString, createValidInfo.getValidString());
             isValid = false;
         }
+        
+        // capture item field values for comparison later with updated field values
+        FieldValueMapResult preUpdateValueMapResult = getFieldValueMap(entity);
+        if (!preUpdateValueMapResult.getValidInfo().isValid()) {
+            isValid = false;
+            validString = appendToString(
+                    validString, 
+                    "Pre update field snapshot failed: " 
+                            + preUpdateValueMapResult.getValidInfo().getValidString()); 
+        }
+        FieldValueMap preUpdateMap = preUpdateValueMapResult.getValueMap();
 
         // invoke each input handler to update the entity with row dictionary values
         ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(entity, rowDict);
@@ -940,6 +993,39 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             validString = appendToString(validString, updateValidInfo.getValidString());
             isValid = false;
         }
+
+        // capture item field values for comparison later with updated field values
+        FieldValueMapResult postUpdateValueMapResult = getFieldValueMap(entity);
+        if (!postUpdateValueMapResult.getValidInfo().isValid()) {
+            isValid = false;
+            validString = appendToString(
+                    validString, 
+                    "Post update field snapshot failed: " 
+                            + postUpdateValueMapResult.getValidInfo().getValidString()); 
+        }
+        FieldValueMap postUpdateMap = postUpdateValueMapResult.getValueMap();
+        
+        // get difference for field value snapshots, set update diffs string on entity if there are diffs
+        FieldValueDifferenceMap fieldDiffMap = FieldValueMap.difference(preUpdateMap, postUpdateMap);
+        String diffString = "";
+        boolean first = true;
+        for (String key : fieldDiffMap.keySet()) {
+            if (!first) {
+                diffString = diffString + "<br>";
+            } else {
+                first = false;
+            }
+            FieldValueDifference diff = fieldDiffMap.get(key);
+            diffString = diffString + key + ": ";
+            diffString = diffString + "<span style=\"color:red\">";
+            diffString = diffString + "'" + diff.getOldValue() + "'";
+            diffString = diffString + "</span>";
+            diffString = diffString + " -> ";
+            diffString = diffString + "<span style=\"color:green\">";
+            diffString = diffString + "'" + diff.getNewValue() + "'";
+            diffString = diffString + "</span>";
+        }
+        entity.setImportUpdateDiffs(diffString);
 
         // skip uniqueness checks in update mode for rows already flagged as invalid,
         // otherwise error reporting is confusing

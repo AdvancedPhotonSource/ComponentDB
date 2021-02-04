@@ -31,6 +31,7 @@ public class CdbEntity implements Serializable, Cloneable {
     private transient String validStringImport;
     private transient Integer importExistingItemId;
     private transient Boolean importDeleteExistingItem;
+    private transient String importUpdateDiffs;
     
     protected static final long serialVersionUID = 1L;
     @Override
@@ -125,4 +126,13 @@ public class CdbEntity implements Serializable, Cloneable {
         return importDeleteExistingItem;
     }
     
+    @JsonIgnore
+    public String getImportUpdateDiffs() {
+        return importUpdateDiffs;
+    }
+    
+    public void setImportUpdateDiffs(String diffString) {
+        importUpdateDiffs = diffString;
+    }
+            
 }
