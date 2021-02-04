@@ -135,7 +135,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     
     @Override
     public boolean getEntityDisplayItemConnectors() {
-        return false; 
+        return true; 
     }    
 
     @Override
