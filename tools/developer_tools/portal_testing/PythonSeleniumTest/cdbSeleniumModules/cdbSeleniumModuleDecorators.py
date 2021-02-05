@@ -12,8 +12,9 @@ from selenium.common.exceptions import StaleElementReferenceException
 STALE_ELEMENT_RETRY_COUNT = 5
 STALE_ELEMENT_SLEEP_TIME = 0.1
 
-def addStaleProtection(func):
-	def decoratedFunc(*args, **kwargs):
+
+def add_stale_protection(func):
+	def decorated_func(*args, **kwargs):
 		for i in range(0, STALE_ELEMENT_RETRY_COUNT):
 			try:
 				return func(*args, **kwargs)
@@ -23,4 +24,4 @@ def addStaleProtection(func):
 
 		raise Exception('Stale Element Fetching failed')
 
-	return decoratedFunc
+	return decorated_func

@@ -12,47 +12,57 @@ See LICENSE file.
     <p:outputPanel styleClass="mainMenuBar">
         <p:menubar>
             <p:submenu label="Browse"
+                       id="browseByDropdownButton"
                        icon="fa fa-search"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') 
                                      or fn:startsWith(view.viewId, '/views/itemDomainInventory/browse')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Browse By Function" 
+                            id="browseByFunctionButton"
                             icon="ui-icon-catalog" 
                             url="#{request.contextPath}/views/itemDomainCatalog/browseCategoryType"  
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browseCategoryType') ? 'activeMenuItem' : ''} "/>
                 <p:menuitem value="Browse By Owner"
+                            id="browseByOwnerButton"
                             icon="ui-icon-catalog" 
                             url="#{request.contextPath}/views/itemDomainCatalog/browseOwner"  
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/browseOwner') ? 'activeMenuItem' : ''} "/>
                 <p:menuitem value="Browse By Location" 
+                            id="browseByLocationButton"
                             icon="ui-icon-inventory"
                             url="#{request.contextPath}/views/itemDomainInventory/browseLocation"  
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/browseLocation') ? 'activeMenuItem' : ''} "/>
 
             </p:submenu>
             <p:submenu label="Catalog"
+                       id="catalogDropdownButton"
                        icon="ui-icon-catalog"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/list') 
                                      or fn:startsWith(view.viewId, '/views/itemDomainCableCatalog/list')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Component"
+                            id="componentCatalogButton"
                             icon="ui-icon-catalog"
                             url="#{request.contextPath}/views/itemDomainCatalog/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCatalog/list') ? 'activeMenuItem' : ''} "/>
                 <p:menuitem value="Cable Type"
                             icon="ui-icon-catalog"
+                            id="cableCatalogButton"
                             url="#{request.contextPath}/views/itemDomainCableCatalog/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableCatalog/list') ? 'activeMenuItem' : ''} "/>
             </p:submenu>
             
             <p:submenu label="Inventory"
                        icon="ui-icon-inventory"
+                       id="inventoryDropdownButton"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainInventory/list') 
                                      or fn:startsWith(view.viewId, '/views/itemDomainCableInventory/list')
                                      or fn:startsWith(view.viewId, '/views/itemDomainMachineDesignInventory/list')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Component"
+                            id="componentInstanceButton"
                             icon="ui-icon-inventory"
                             url="#{request.contextPath}/views/itemDomainInventory/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainInventory/list') ? 'activeMenuItem' : ''} "/>
                 <p:menuitem value="Cable"
+                            id="cableInventoryButton"
                             icon="ui-icon-inventory"
                             url="#{request.contextPath}/views/itemDomainCableInventory/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableInventory/list') ? 'activeMenuItem' : ''} "/>
@@ -63,14 +73,17 @@ See LICENSE file.
             </p:submenu>
             
             <p:submenu label="Design"
+                       id="designMenubarDropdownButton"
                        icon="ui-icon-design"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') 
                                      or fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Machine"
+                            id="machineDesignMenubarButton"
                             icon="ui-icon-machine-design"
                             url="#{request.contextPath}/views/itemDomainMachineDesign/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') ? 'activeMenuItem' : ''} "/>
                 <p:menuitem value="Cable"
+                            id="cableDesignMenubarButton"
                             icon="ui-icon-cable-design"
                             url="#{request.contextPath}/views/itemDomainCableDesign/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list') ? 'activeMenuItem' : ''} "/>
@@ -112,6 +125,7 @@ See LICENSE file.
                                                   or fn:startsWith(view.viewId, '/views/connectorType')) ? 'activeSubMenuParentItem' : ''} ">
                             <p:menuitem value="Locations" 
                                     rendered="#{loginController.loggedInAsAdmin}"
+                                    id="adminLocationsButton"
                                     icon="fa fa-building"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainLocation/') ? 'activeMenuItem' : ''} "
                                     action="#{itemDomainLocationController.prepareListFromViewPath('/views/itemDomainLocation')}"/>
@@ -137,6 +151,7 @@ See LICENSE file.
                             
                             <p:menuitem value="Sources"
                                     icon="fa fa-globe"
+                                    id="adminSourcesButton"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/source/') ? 'activeMenuItem' : ''} "
                                     action="#{sourceController.prepareListFromViewPath('/views/source')}"/>
@@ -144,11 +159,13 @@ See LICENSE file.
                             <p:menuitem value="Users"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     icon="fa fa-users"
+                                    id="usersButton"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/userInfo/') ? 'activeMenuItem' : ''} "
                                     action="#{userInfoController.prepareListFromViewPath('/views/userInfo')}"/>                        
                             
                             <p:menuitem value="Connector Types"
                                     rendered="#{loginController.loggedInAsAdmin and resources.EnabledConnectorAndConnectionsFunctionality}"
+                                    id="connectorTypesButton"
                                     icon="ui-icon-connector"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/connectorType/') ? 'activeMenuItem' : ''} "
                                     action="#{connectorTypeController.prepareListFromViewPath('/views/connectorType')}"/>                        
