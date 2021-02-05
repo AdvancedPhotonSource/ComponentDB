@@ -28,4 +28,14 @@ See LICENSE file.
         <ui:decorate template="private/templates/additionPanelGridContentTemplate.xhtml" />
     </ui:define>
 
+    <ui:define name="additionalRightItemPanels">        
+        <p:panel header="Device Connections" 
+                 toggleable="true" 
+                 collapsed="#{!entityController.displayConnectionsList}">
+            
+            <ui:include src="private/itemDomainCableDesignConnectionsList.xhtml"/>
+                
+        </p:panel>
+    </ui:define>
+    
 </ui:composition>

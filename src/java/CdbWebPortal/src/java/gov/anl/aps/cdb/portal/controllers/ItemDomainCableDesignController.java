@@ -13,15 +13,19 @@ import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDes
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
@@ -306,6 +310,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     private CatalogDialog dialogCatalog = new CatalogDialog();
     private EndpointDialog dialogEndpoint = new EndpointDialog();
+    
+    private List<CableDesignConnectionListObject> connectionListForCurrent;
 
     protected ImportHelperCableDesign importHelper = new ImportHelperCableDesign();
     
@@ -609,4 +615,29 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
+    
+    public List<CableDesignConnectionListObject> getConnectionListForCurrent() {
+        if (connectionListForCurrent == null) {
+            ItemDomainCableDesign item = getCurrent();
+            connectionListForCurrent = getConnectionListForItem(item);
+        }
+        return connectionListForCurrent;
+    }
+
+    public List<CableDesignConnectionListObject> getConnectionListForItem(ItemDomainCableDesign item) {
+        this.getControllerUtility().syncConnectors(item);
+        return CableDesignConnectionListObject.getConnectionList(item);
+    }
+
+    public boolean getDisplayConnectionsList() {
+        return getConnectionListForCurrent().size() > 0;
+    }
+    
+    /**
+     * Handles add button on cable design view connections list.
+     */
+    public void prepareAddConnection() {
+        System.out.println("TODO: implement prepareAddConnection");
+    }
+
 }

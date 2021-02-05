@@ -4,15 +4,15 @@
  */
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Connector;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import java.util.List;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -63,4 +63,69 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
     public String getEntityTypeName() {
         return "cableDesign";
     }
+
+    public void syncConnectors(ItemDomainCableDesign item) {
+        
+        List<ItemConnector> itemConnectorList = item.getItemConnectorList();
+        List<ItemConnector> connectorsFromAssignedCatalogItem = getConnectorsFromAssignedCatalogItem(item);
+
+        if (connectorsFromAssignedCatalogItem == null) {
+            return;
+        }
+
+        if (itemConnectorList.isEmpty()) {
+            // Sync all connectors into cable design
+            for (ItemConnector connector : connectorsFromAssignedCatalogItem) {
+                ItemConnector clone = cloneInheritedConnector(connector, item);
+
+                itemConnectorList.add(clone);
+            }
+            
+        } else {
+            // Verify if any new connections were created on the catalog             
+            catConnFor:
+            for (ItemConnector catalogItemConn : connectorsFromAssignedCatalogItem) {
+                for (ItemConnector itemConn : itemConnectorList) {
+                    Connector itemCconnector = itemConn.getConnector();
+                    Connector catConnector = catalogItemConn.getConnector();
+
+                    if (itemCconnector.equals(catConnector)) {
+                        continue catConnFor;
+                    }
+                }
+                ItemConnector itemCconnector = cloneInheritedConnector(catalogItemConn, item);
+                itemConnectorList.add(itemCconnector);
+            }
+        }
+    }
+
+    private static List<ItemConnector> getConnectorsFromAssignedCatalogItem(ItemDomainCableDesign item) {
+        
+        Item assignedItem = item.getCatalogItem();
+
+        Item catalogItem = null;
+        if (assignedItem instanceof ItemDomainCableInventory) {
+            catalogItem = ((ItemDomainCableInventory) assignedItem).getCatalogItem();
+        } else if (assignedItem instanceof ItemDomainCableCatalog) {
+            catalogItem = assignedItem;
+        }
+
+        if (catalogItem != null) {
+            return catalogItem.getItemConnectorList();
+        }
+        return null;
+    }
+
+    private ItemConnector cloneInheritedConnector(
+            ItemConnector catalogConnector, 
+            ItemDomainCableDesign item) {
+        
+        ItemConnector clone = new ItemConnector();
+
+        clone.setConnector(catalogConnector.getConnector());
+        clone.setItem(item);
+
+        return clone;
+    }
+    
 }
