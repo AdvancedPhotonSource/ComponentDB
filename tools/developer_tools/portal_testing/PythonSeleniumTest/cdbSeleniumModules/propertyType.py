@@ -4,6 +4,7 @@
 Copyright (c) UChicago Argonne, LLC. All rights reserved.
 See LICENSE file.
 """
+import time
 
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support.wait import WebDriverWait
@@ -17,56 +18,49 @@ SAMPLE_PROPERTY_TYPE_NAME = '0000000000000Sample'
 class PropertyType(CdbSeleniumModuleBase):
 
 	def _navigateToAdminPropertyType(self):
-		# Open the property types page
-		adminButton = self._findById('administrativeButton')
-		ActionChains(self.driver).move_to_element(adminButton).perform()
+		self._navigate_to_dropdown('administrativeButton', 'adminPropertyTypesButton', 'propertyType/list')
 
-		adminPropertyTypesButton = self._waitForVisibleId('adminPropertyTypesButton')
-		adminPropertyTypesButton.click()
-
-		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(EC.url_contains('propertyType/list'))
-
-	def addSampleTestPropertyType(self):
+	def add_sample_test_property_type(self):
 		self._navigateToAdminPropertyType()
 
-		addBtn = self._waitForXpath('//*[@id="viewPropertyTypeListForm:propertyTypeAddButton"]/span[2]')
+		addBtn = self._wait_for_xpath('//*[@id="viewPropertyTypeListForm:propertyTypeAddButton"]/span[2]')
 		addBtn.click()
 
-		nameInput = self._waitForId('addPropertyTypeForm:name')
+		nameInput = self._wait_for_id('addPropertyTypeForm:name')
 		nameInput.send_keys(SAMPLE_PROPERTY_TYPE_NAME)
 
-		descriptionInput = self._findById('addPropertyTypeForm:description')
+		descriptionInput = self._find_by_id('addPropertyTypeForm:description')
 		descriptionInput.send_keys("Sample Property Type created for tests")
 
-		self._clickOnId('addPropertyTypeForm:allowedDomain')
+		self._click_on_id('addPropertyTypeForm:allowedDomain')
 		catalogCheckboxXpath = '//*[@id="addPropertyTypeForm:allowedDomain_panel"]/div[2]/ul/li[2]'
-		catalogCheckbox = self._waitForVisibleXpath(catalogCheckboxXpath)
-		inventoryCheckbox = self._waitForVisibleXpath('//*[@id="addPropertyTypeForm:allowedDomain_panel"]/div[2]/ul/li[3]')
+		catalogCheckbox = self._wait_for_visible_xpath(catalogCheckboxXpath)
+		inventoryCheckbox = self._wait_for_visible_xpath('//*[@id="addPropertyTypeForm:allowedDomain_panel"]/div[2]/ul/li[3]')
 		catalogCheckbox.click()
 		inventoryCheckbox.click()
-		self._clickOnId('addPropertyTypeForm:allowedDomain')
+		self._click_on_id('addPropertyTypeForm:allowedDomain')
 
 		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(EC.invisibility_of_element_located((By.XPATH, '//*[@id="addPropertyTypeForm:allowedDomain_panel"]/div[2]/ul/li[2]')))
 
-
-		self._clickOnId('addPropertyTypeForm:category')
-		firstCategory = self._waitForVisibleId('addPropertyTypeForm:category_1')
+		self._click_on_id('addPropertyTypeForm:category')
+		firstCategory = self._wait_for_visible_id('addPropertyTypeForm:category_1')
 		firstCategory.click()
 
-		self._clickOnId("addPropertyTypeForm:propertyTypeCreateSaveButton")
+		self._click_on_id("addPropertyTypeForm:propertyTypeCreateSaveButton")
 		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(EC.url_contains('/view'))
+		self._wait_for_id('viewPropertyTypeForm:name')
 
-	def deleteSampleTestPropertyType(self):
+	def delete_sample_test_property_type(self):
 		self._navigateToAdminPropertyType()
 
-		nameFilter = self._waitForId("viewPropertyTypeListForm:propertyTypeListDataTable:propertyTypeNameFilter:filter")
+		nameFilter = self._wait_for_id("viewPropertyTypeListForm:propertyTypeListDataTable:propertyTypeNameFilter:filter")
 		nameFilter.send_keys(SAMPLE_PROPERTY_TYPE_NAME)
 
-		samplePropertyLink = self._waitFor(By.LINK_TEXT, SAMPLE_PROPERTY_TYPE_NAME)
+		samplePropertyLink = self._wait_for(By.LINK_TEXT, SAMPLE_PROPERTY_TYPE_NAME)
 		samplePropertyLink.click()
-		self._waitForIdAndClick('viewPropertyTypeForm:propertyTypeViewDeleteButton')
+		self._wait_for_id_and_click('viewPropertyTypeForm:propertyTypeViewDeleteButton')
 
-		confirmDelete = self._waitForVisibleXpath('//*[@id="viewPropertyTypeForm:confirmDestroyPropertyType"]')
+		confirmDelete = self._wait_for_visible_xpath('//*[@id="viewPropertyTypeForm:confirmDestroyPropertyType"]')
 		confirmDelete.click()
 
 		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(EC.url_contains('/list'))

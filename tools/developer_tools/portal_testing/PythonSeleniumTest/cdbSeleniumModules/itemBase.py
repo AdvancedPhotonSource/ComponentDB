@@ -13,9 +13,9 @@ from cdbSeleniumModules.cdbSeleniumModuleBase import CdbSeleniumModuleBase
 
 class ItemBase(CdbSeleniumModuleBase):
 
-	def deleteCurrentItem(self):
-		self._clickOnId('componentViewForm:componentViewDeleteButton')
-		confirmButton = self._findById('componentViewForm:componentDestroyDialogYesConfirmButton')
+	def delete_current_item(self):
+		self._click_on_id('componentViewForm:componentViewDeleteButton')
+		confirmButton = self._find_by_id('componentViewForm:componentDestroyDialogYesConfirmButton')
 		confirmButton.click()
 
 		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(EC.url_contains('/list'))

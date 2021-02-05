@@ -12,17 +12,18 @@ CDB_PASSWORD = 'cdb'
 LOGIN_BUTTON_ID = 'loginButton'
 LOGOUT_BUTTON_ID = 'logoutButton'
 
+
 class Portal(CdbSeleniumModuleBase):
 
 	def login(self, login=CDB_LOGIN, password=CDB_PASSWORD):
-		self._clickOnId(LOGIN_BUTTON_ID)
+		self._click_on_id(LOGIN_BUTTON_ID)
 
-		self._typeInId('loginForm:username', login)
-		self._typeInId('loginForm:password', password)
-		self._clickOnId('loginForm:loginButton')
+		self._type_in_id('loginForm:username', login)
+		self._type_in_id('loginForm:password', password)
+		self._click_on_id('loginForm:loginButton')
 
-		self._waitForId(LOGOUT_BUTTON_ID)
+		self._wait_for_id(LOGOUT_BUTTON_ID)
 
 	def logout(self):
-		self._clickOnId(LOGOUT_BUTTON_ID)
-		self._waitForId(LOGIN_BUTTON_ID)
+		self._click_on_id(LOGOUT_BUTTON_ID)
+		self._wait_for_id(LOGIN_BUTTON_ID)
