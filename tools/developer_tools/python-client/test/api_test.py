@@ -8,18 +8,21 @@ from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformati
 
 class MyTestCase(unittest.TestCase):
     TEST_USER_USERNAME = "testUser"
-    CATALOG_ITEM_ID=2103
-    INVENTORY_ITEM_ID=2160
-    INVENTORY_ITEM_QRID=1358
-    INVENTORY_ITEM_CHILDREN=1
-    INVENTORY_FIRST_CONTAINED_ITEM_ID= 3080
-    INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID = 3097
-    INVENTORY_FIRST_CONTAINED_INVALID_ITEM_ID = 586
-    MACHINE_DESIGN_ID = 5910
-    TEST_PROPERTY_TYPE_NAME = "Quantity"
+    TEST_USER_PASSWORD = 'cdb'
+    ADMIN_USERNAME = 'cdb'
+    ADMIN_PASSWORD = 'cdb'
+    CATALOG_ITEM_ID = 2
+    INVENTORY_ITEM_ID = 56
+    INVENTORY_ITEM_QRID = 1010001
+    INVENTORY_ITEM_CHILDREN = 3
+    INVENTORY_FIRST_CONTAINED_ITEM_ID = 45
+    INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID = 41
+    INVENTORY_FIRST_CONTAINED_INVALID_ITEM_ID = 97
+    MACHINE_DESIGN_ID = 93
+    TEST_PROPERTY_TYPE_NAME = "Test Property"
+    LOCATION_QRID_TESTUSER_PERMISSIONS = 101111101
     SAMPLE_IMAGE_PATH = './data/AnlLogo.png'
     SAMPLE_DOC_PATH = './data/CdbSchema-v3.0-3.pdf'
-
 
     def setUp(self):
         self.factory = CdbApiFactory('http://127.0.0.1:8080/cdb')
@@ -43,13 +46,13 @@ class MyTestCase(unittest.TestCase):
         if self.loggedIn:
             self.factory.logOutUser()
         self.loggedIn = True
-        self.factory.authenticateUser('cdb', 'cdb')
+        self.factory.authenticateUser(self.ADMIN_USERNAME, self.ADMIN_PASSWORD)
 
     def loginAsUser(self):
         if self.loggedIn:
             self.factory.logOutUser()
         self.loggedIn = True
-        self.factory.authenticateUser(self.TEST_USER_USERNAME, 'cdb')
+        self.factory.authenticateUser(self.TEST_USER_USERNAME, self.TEST_USER_PASSWORD)
 
     def is_item_parent(self, parent, child):
         '''
@@ -92,7 +95,7 @@ class MyTestCase(unittest.TestCase):
     def test_update_location_parent_as_user(self):
         self.loginAsUser()
 
-        location_with_permissions = self.itemApi.get_item_by_qr_id(999111500)
+        location_with_permissions = self.itemApi.get_item_by_qr_id(self.LOCATION_QRID_TESTUSER_PERMISSIONS)
         permission_result = self.itemApi.verify_user_permission_for_item(location_with_permissions.id)
         self.assertEqual(permission_result, True, msg="No Permission to location owned by %s" % self.TEST_USER_USERNAME)
 
