@@ -733,12 +733,11 @@ public class ItemDomainMachineDesignController
         return newInstance;
     }
 
-    public void prepareAddPlaceholder() {
+    public void prepareAddPlaceholder() {        
+        ItemDomainMachineDesign newItem = createEntityInstanceForDualTreeView();
         prepareAddNewMachineDesignListConfiguration();
 
         displayAddMDPlaceholderListConfigurationPanel = true;
-        ItemDomainMachineDesign newItem = createEntityInstanceForDualTreeView();
-
         currentEditItemElement.setContainedItem(newItem);
     }
 
