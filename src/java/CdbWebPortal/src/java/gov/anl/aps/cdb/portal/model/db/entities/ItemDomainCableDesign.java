@@ -227,7 +227,7 @@ public class ItemDomainCableDesign extends Item {
      * @param oldEndpoint
      * @param newEndpoint
      */
-    public Boolean updateEndpoint(Item oldEndpoint, Item newEndpoint) {
+    public Boolean updateEndpoint(Integer relationshipId, Item newEndpoint) {
 
         ItemElement selfElement = this.getSelfElement();
         List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
@@ -240,14 +240,15 @@ public class ItemDomainCableDesign extends Item {
 
             // find cable relationship for old endpoint
             ItemElementRelationship cableRelationship = ierList.stream()
-                    .filter(ier -> (ier.getRelationshipType().getName().equals(cableIerType.getName()))
-                    && (ier.getFirstItemElement().equals(oldEndpoint.getSelfElement())))
+                    .filter(ier -> (ier.getId().equals(relationshipId)))
                     .findAny()
                     .orElse(null);
 
             // update cable relationship to new endpoint
             if (cableRelationship != null) {
                 setEndpointItemInRelationship(newEndpoint, cableRelationship);
+            } else {
+                return false;
             }
         }
 

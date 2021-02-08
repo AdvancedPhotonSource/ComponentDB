@@ -45,17 +45,31 @@ See LICENSE file.
               value="#{connection.mdItem}"/>
     <ui:param name="connectedToPort"
               value="#{connection.mdConnector.connector}"/>
+    <ui:param name="relationshipId"
+              value="#{connection.cableRelationship.id}"/> 
 
     <ui:include src="../../itemConnector/private/itemConnectorListObject.xhtml" />
-
+        
     <p:column headerText="Device"
               exportFunction="#{facesUtility.getToString(connectedToItem)}">
-        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
-            <ui:param name="itemObject"
-                      value="#{connectedToItem}"/>
-            <ui:param name="viewName"
-                      value="connDevice"/>
-        </ui:include>
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <p:commandLink id="editEndpointLink"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
+                           action='#{entityController.prepareEditEndpoint(connectedToItem, relationshipId)}'
+                           rendered="#{isEntityWriteable}"
+                           update="@form:dialogEndpoint">
+                <p:tooltip for="editEndpointLink"
+                           value="Edit Connection"/>
+            </p:commandLink>
+            <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="itemObject"
+                          value="#{connectedToItem}"/>
+                <ui:param name="viewName"
+                          value="connDevice"/>
+            </ui:include>
+        </p:outputPanel>
     </p:column>
 
     <p:column headerText="Port"
@@ -65,5 +79,5 @@ See LICENSE file.
                       value="#{connectedToPort}" />
         </ui:include>
     </p:column>
-
+    
 </ui:composition>

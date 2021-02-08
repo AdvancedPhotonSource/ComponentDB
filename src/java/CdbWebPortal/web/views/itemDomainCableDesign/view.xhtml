@@ -14,7 +14,7 @@ See LICENSE file.
     <ui:param name="entityController" value="#{itemDomainCableDesignController}" />        
     <ui:param name="itemObject" value="#{entityController.current}" />    
     <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}" />
-
+    
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainCableDesignController.processViewRequestParams}"/>
@@ -32,6 +32,8 @@ See LICENSE file.
         <p:panel header="Device Connections" 
                  toggleable="true" 
                  collapsed="#{!entityController.displayConnectionsList}">
+            
+            <ui:include src="private/endpointDialog.xhtml" />
             
             <ui:include src="private/itemDomainCableDesignConnectionsList.xhtml"/>
                 

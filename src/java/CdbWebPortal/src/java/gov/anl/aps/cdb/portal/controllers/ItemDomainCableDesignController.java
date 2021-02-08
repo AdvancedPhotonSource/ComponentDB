@@ -13,14 +13,11 @@ import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDes
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
@@ -56,6 +53,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         private Item itemEndpoint = null;
         private TreeNode valueModelTree = null;
         private TreeNode selectionModelEndpoint = null;
+        private Integer relationshipId;
         
         public Boolean getDisableButtonSave() {
             return disableButtonSave;
@@ -80,6 +78,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             } else {
                 return itemEndpoint.getName();
             }
+        }
+
+        public Integer getRelationshipId() {
+            return relationshipId;
+        }
+
+        public void setRelationshipId(Integer relationshipId) {
+            this.relationshipId = relationshipId;
         }
 
         public TreeNode getValueModelTree() {
@@ -113,7 +119,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
             // endpoint changed, update cable and save
             if (!selectedItemEndpoint.equals(getItemEndpoint())) {
-                if (getCurrent().updateEndpoint(getItemEndpoint(), selectedItemEndpoint)) {
+                if (getCurrent().updateEndpoint(getRelationshipId(), selectedItemEndpoint)) {
 
                     String updateResult = update();
 
@@ -122,6 +128,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                         reloadCurrent();
                         return view();
                     }
+                    
+                    refreshConnectionListForCurrent();
 
                     SessionUtility.executeRemoteCommand(remoteCommandSuccess);
                 }
@@ -446,20 +454,10 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         dialogCatalog.setItemCatalog(getCurrent().getCatalogItem());
     }
 
-    /**
-     * Prepares endpoint dialog for editing endpoint1.
-     */
-    public void prepareDialogEndpoint1() {
+    public void prepareEditEndpoint(ItemDomainMachineDesign endpoint, Integer id) {
         dialogEndpoint.reset();
-        dialogEndpoint.setItemEndpoint(getCurrent().getEndpoint1());
-    }
-
-    /**
-     * Prepares endpoint dialog for editing endpoint2.
-     */
-    public void prepareDialogEndpoint2() {
-        dialogEndpoint.reset();
-        dialogEndpoint.setItemEndpoint(getCurrent().getEndpoint2());
+        dialogEndpoint.setItemEndpoint(endpoint);
+        dialogEndpoint.setRelationshipId(id);
     }
     
     /**
@@ -627,6 +625,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public List<CableDesignConnectionListObject> getConnectionListForItem(ItemDomainCableDesign item) {
         this.getControllerUtility().syncConnectors(item);
         return CableDesignConnectionListObject.getConnectionList(item);
+    }
+    
+    private void refreshConnectionListForCurrent() {
+        ItemDomainCableDesign item = getCurrent();
+        connectionListForCurrent = getConnectionListForItem(item);
     }
 
     public boolean getDisplayConnectionsList() {
