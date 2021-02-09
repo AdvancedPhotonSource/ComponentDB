@@ -13,8 +13,10 @@ import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDes
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE;
@@ -32,6 +34,7 @@ import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -47,12 +50,15 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return new ItemDomainCableDesignControllerUtility(); 
     }
 
-    public class EndpointDialog {
+    public class ConnectionDialog {
 
         private Boolean disableButtonSave = true;
         private Item itemEndpoint = null;
         private TreeNode valueModelTree = null;
         private TreeNode selectionModelEndpoint = null;
+        private ItemConnector itemConnector;
+        private ItemConnector selectionModelConnector;
+        private List<ItemConnector> valueModelConnectors;
         private Integer relationshipId;
         
         public Boolean getDisableButtonSave() {
@@ -108,6 +114,30 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             this.selectionModelEndpoint = selectionModelEndpoint;
         }
 
+        public ItemConnector getItemConnector() {
+            return itemConnector;
+        }
+
+        public void setItemConnector(ItemConnector itemConnector) {
+            this.itemConnector = itemConnector;
+        }
+
+        public ItemConnector getSelectionModelConnector() {
+            return selectionModelConnector;
+        }
+
+        public void setSelectionModelConnector(ItemConnector selectionModelConnector) {
+            this.selectionModelConnector = selectionModelConnector;
+        }
+
+        public List<ItemConnector> getValueModelConnectors() {
+            return valueModelConnectors;
+        }
+
+        public void setValueModelConnectors(List<ItemConnector> valueModelConnectors) {
+            this.valueModelConnectors = valueModelConnectors;
+        }
+
         /**
          * Determines whether endpoint changed, and call update if it did to
          * save the change.
@@ -117,27 +147,32 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             Item selectedItemEndpoint
                     = ((ItemElement) (selectionModelEndpoint.getData())).getContainedItem();
 
-            // endpoint changed, update cable and save
-            if (!selectedItemEndpoint.equals(getItemEndpoint())) {
-                if (getCurrent().updateEndpoint(getRelationshipId(), selectedItemEndpoint)) {
+            if (getCurrent().updateConnection(
+                    getRelationshipId(),
+                    selectedItemEndpoint,
+                    null,
+                    getSelectionModelConnector())) {
 
-                    String updateResult = update();
+                String updateResult = update();
 
-                    // An error occured, reload the page with correct information. 
-                    if (updateResult == null) {
-                        reloadCurrent();
-                        return view();
-                    }
-                    
-                    refreshConnectionListForCurrent();
-
-                    SessionUtility.executeRemoteCommand(remoteCommandSuccess);
+                // An error occured, reload the page with correct information. 
+                if (updateResult == null) {
+                    reloadCurrent();
+                    return view();
                 }
+
+                refreshConnectionListForCurrent();
+
+                SessionUtility.executeRemoteCommand(remoteCommandSuccess);
             }
             return null;
         }
 
         public void cancel() {
+        }
+        
+        public void selectListenerConnector(SelectEvent event){
+            setEnablement();
         }
 
         /**
@@ -158,6 +193,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         public void reset() {
             setSelectionModelEndpoint(null);
             valueModelTree = null;
+            setItemConnector(null);
+            setSelectionModelConnector(null);
+            setValueModelConnectors(null);
             setEnablement();
         }
 
@@ -175,9 +213,14 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
                 Item selectedItemEndpoint
                         = ((ItemElement) (selectionModelEndpoint.getData())).getContainedItem();
+                
+                ItemConnector selectedConnector = getSelectionModelConnector();
 
-                if (selectedItemEndpoint.equals(getItemEndpoint())) {
+                if ((selectedItemEndpoint.equals(getItemEndpoint())) 
+                        && (selectedConnector == getItemConnector())) {
+                    
                     setDisableButtonSave((Boolean) true);
+                    
                 } else {
                     setDisableButtonSave((Boolean) false);
                 }
@@ -317,7 +360,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     ItemDomainCableDesignFacade itemDomainCableDesignFacade;
 
     private CatalogDialog dialogCatalog = new CatalogDialog();
-    private EndpointDialog dialogEndpoint = new EndpointDialog();
+    private ConnectionDialog dialogConnection = new ConnectionDialog();
     
     private List<CableDesignConnectionListObject> connectionListForCurrent;
 
@@ -331,12 +374,12 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         this.dialogCatalog = dialogCatalog;
     }
 
-    public EndpointDialog getDialogEndpoint() {
-        return dialogEndpoint;
+    public ConnectionDialog getDialogConnection() {
+        return dialogConnection;
     }
 
-    public void setDialogEndpoint(EndpointDialog endpoint2Dialog) {
-        this.dialogEndpoint = dialogEndpoint;
+    public void setDialogConnection(ConnectionDialog endpoint2Dialog) {
+        this.dialogConnection = dialogConnection;
     }
 
     public static ItemDomainCableDesignController getInstance() {
@@ -454,10 +497,24 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         dialogCatalog.setItemCatalog(getCurrent().getCatalogItem());
     }
 
-    public void prepareEditEndpoint(ItemDomainMachineDesign endpoint, Integer id) {
-        dialogEndpoint.reset();
-        dialogEndpoint.setItemEndpoint(endpoint);
-        dialogEndpoint.setRelationshipId(id);
+    public void prepareEditEndpoint(CableDesignConnectionListObject connection) {
+        
+        dialogConnection.reset();
+        dialogConnection.setItemEndpoint(connection.getMdItem());
+        dialogConnection.setRelationshipId(connection.getCableRelationship().getId());
+        dialogConnection.setItemConnector(connection.getItemConnector());
+        
+        // get list of unmapped connectors, plus connector for this connection if any
+        List<ItemConnector> unmappedConnectors = getUnmappedConnectorsForCurrent();
+        if (connection.getItemConnector() != null) {
+            unmappedConnectors.add(connection.getItemConnector());
+            dialogConnection.setSelectionModelConnector(connection.getItemConnector());
+        }
+        dialogConnection.setValueModelConnectors(unmappedConnectors);
+    }
+    
+    public Boolean renderEditLinkForConnection(CableDesignConnectionListObject connection) {
+        return (connection.getMdItem() != null);
     }
     
     /**
@@ -620,6 +677,16 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             connectionListForCurrent = getConnectionListForItem(item);
         }
         return connectionListForCurrent;
+    }
+    
+    private List<ItemConnector> getUnmappedConnectorsForCurrent() {
+        List<ItemConnector> unmappedConnectors = new ArrayList<>();
+        for (CableDesignConnectionListObject connection : getConnectionListForCurrent()) {
+            if ((connection.getItemConnector() != null) && (connection.getMdItem() == null)) {
+                unmappedConnectors.add(connection.getItemConnector());
+            }
+        }
+        return unmappedConnectors;
     }
 
     public List<CableDesignConnectionListObject> getConnectionListForItem(ItemDomainCableDesign item) {

@@ -166,14 +166,19 @@ public class ItemDomainCableDesign extends Item {
             removeCableRelationship(cableRelationship, isImport);
         } else {
             // update existing relationship with new endpoint
-            setEndpointItemInRelationship(itemEndpoint, cableRelationship);
+            updateCableRelationship(cableRelationship, itemEndpoint, null, null);
         }
     }
     
-    private void setEndpointItemInRelationship(Item itemEndpoint, ItemElementRelationship cableRelationship) {
+    private void updateCableRelationship(
+            ItemElementRelationship cableRelationship, 
+            Item itemEndpoint,
+            ItemConnector endpointConnector,
+            ItemConnector cableConnector) {
+        
         cableRelationship.setFirstItemElement(itemEndpoint.getSelfElement());
-        // null out connector too, for when we add support for port-level connections
-        cableRelationship.setFirstItemConnector(null);
+        cableRelationship.setFirstItemConnector(endpointConnector);
+        cableRelationship.setSecondItemConnector(cableConnector);
     }
 
     public void setEndpoint(Item itemEndpoint, float sortOrder, boolean isImport) {
@@ -221,22 +226,16 @@ public class ItemDomainCableDesign extends Item {
         }
     }
 
-    /**
-     * Updates oldEndpoint to newEndpoint.
-     *
-     * @param oldEndpoint
-     * @param newEndpoint
-     */
-    public Boolean updateEndpoint(Integer relationshipId, Item newEndpoint) {
+    public Boolean updateConnection(
+            Integer relationshipId, 
+            Item newEndpoint,
+            ItemConnector endpointConnector,
+            ItemConnector cableConnector) {
 
         ItemElement selfElement = this.getSelfElement();
         List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
 
         if (ierList != null) {
-
-            RelationshipType cableIerType
-                    = RelationshipTypeFacade.getInstance().findByName(
-                            ItemElementRelationshipTypeNames.itemCableConnection.getValue());
 
             // find cable relationship for old endpoint
             ItemElementRelationship cableRelationship = ierList.stream()
@@ -246,7 +245,7 @@ public class ItemDomainCableDesign extends Item {
 
             // update cable relationship to new endpoint
             if (cableRelationship != null) {
-                setEndpointItemInRelationship(newEndpoint, cableRelationship);
+                updateCableRelationship(cableRelationship, newEndpoint, endpointConnector, cableConnector);
             } else {
                 return false;
             }
