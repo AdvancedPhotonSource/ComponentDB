@@ -781,11 +781,12 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.entityTypeList = entityTypeList;
     }
 
-    @XmlTransient
+    @XmlTransient    
     public List<ItemCategory> getItemCategoryList() {
         return itemCategoryList;
     }
 
+    @JsonIgnore
     public String getItemCategoryString() {
         if (itemCategoryString == null) {
             itemCategoryString = StringUtility.getStringifyCdbList(itemCategoryList);
@@ -826,11 +827,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         setItemTypeList(itList);
     }
 
-    @XmlTransient
+    @XmlTransient    
     public List<ItemProject> getItemProjectList() {
         return itemProjectList;
     }
-
+    
     public void setItemProjectList(List<ItemProject> itemProjectList) {
         this.itemProjectString = null;
         this.itemProjectList = itemProjectList;
@@ -988,6 +989,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.derivedFromItemList = derivedFromItemList;
     }
     
+    public Integer getDomainId() {
+        return domain.getId(); 
+    }
+
+    @JsonIgnore
     public Domain getDomain() {
         return domain;
     }
@@ -996,7 +1002,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         itemDomainController = null;
         this.domain = domain;
     }
-    
+          
     public Item getDerivedFromItem() {
         return derivedFromItem;
     }
@@ -1285,6 +1291,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         getSelfElement().setPropertyValueByIndex(5, propertyValue5);
     }
 
+    @JsonIgnore
     public boolean isIsCloned() {
         return isCloned;
     }
@@ -1408,6 +1415,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         return false;
     }
 
+    @JsonIgnore
     public Boolean getIsItemDeleted() {
         if (isItemDeleted == null) {
             isItemDeleted = isItemDeleted(this);
@@ -1419,13 +1427,14 @@ public class Item extends CdbDomainEntity implements Serializable {
         return isItemEntityType(item, EntityTypeName.deleted.getValue());
     }
 
+    @JsonIgnore
     public Boolean getIsItemInventory() {
         if (isItemInventory == null) {
             isItemInventory = isItemInventory(this);
         }
         return isItemInventory;
     }
-
+    
     public static boolean isItemInventory(Item item) {
         return isItemEntityType(item, EntityTypeName.inventory.getValue());
     } 
