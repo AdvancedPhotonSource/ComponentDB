@@ -53,12 +53,13 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public class ConnectionDialog {
 
         private Boolean disableButtonSave = true;
-        private Item itemEndpoint = null;
-        private TreeNode valueModelTree = null;
-        private TreeNode selectionModelEndpoint = null;
-        private ItemConnector itemConnector;
-        private ItemConnector selectionModelConnector;
-        private List<ItemConnector> valueModelConnectors;
+        private Item origMdItem = null;
+        private TreeNode mdTree = null;
+        private TreeNode selectedMdItem = null;
+        private ItemConnector origMdConnector;
+        private ItemConnector origCableConnector;
+        private ItemConnector selectedCableConnector;
+        private List<ItemConnector> availableCableConnectors;
         private Integer relationshipId;
         
         public Boolean getDisableButtonSave() {
@@ -69,20 +70,19 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             this.disableButtonSave = disableButtonSave;
         }
 
-        public Item getItemEndpoint() {
-            return itemEndpoint;
+        public Item getOrigMdItem() {
+            return origMdItem;
         }
 
-        public void setItemEndpoint(Item itemEndpoint) {
-            this.itemEndpoint = itemEndpoint;
-            expandToSpecificMachineDesignItem((ItemDomainMachineDesign) itemEndpoint);
+        public void setOrigMdItem(Item origMdItem) {
+            this.origMdItem = origMdItem;
         }
 
         public String getItemEndpointString() {
-            if (itemEndpoint == null) {
+            if (origMdItem == null) {
                 return "";
             } else {
-                return itemEndpoint.getName();
+                return origMdItem.getName();
             }
         }
 
@@ -94,48 +94,56 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             this.relationshipId = relationshipId;
         }
 
-        public TreeNode getValueModelTree() {
-            if (valueModelTree == null) {
+        public TreeNode getMdTree() {
+            if (mdTree == null) {
                 ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
-                valueModelTree = controller.loadMachineDesignRootTreeNode(false);
+                mdTree = controller.loadMachineDesignRootTreeNode(false, false, true);
             }
-            return valueModelTree;
+            return mdTree;
         }
 
-        public void setValueModelTree(TreeNode valueModelTree) {
-            this.valueModelTree = valueModelTree;
+        public void setMdTree(TreeNode mdTree) {
+            this.mdTree = mdTree;
         }
 
-        public TreeNode getSelectionModelEndpoint() {
-            return selectionModelEndpoint;
+        public TreeNode getSelectedMdItem() {
+            return selectedMdItem;
         }
 
-        public void setSelectionModelEndpoint(TreeNode selectionModelEndpoint) {
-            this.selectionModelEndpoint = selectionModelEndpoint;
+        public void setSelectedMdItem(TreeNode selectedMdItem) {
+            this.selectedMdItem = selectedMdItem;
         }
 
-        public ItemConnector getItemConnector() {
-            return itemConnector;
+        public ItemConnector getOrigMdConnector() {
+            return origMdConnector;
         }
 
-        public void setItemConnector(ItemConnector itemConnector) {
-            this.itemConnector = itemConnector;
+        public void setOrigMdConnector(ItemConnector origMdConnector) {
+            this.origMdConnector = origMdConnector;
         }
 
-        public ItemConnector getSelectionModelConnector() {
-            return selectionModelConnector;
+        public ItemConnector getOrigCableConnector() {
+            return origCableConnector;
         }
 
-        public void setSelectionModelConnector(ItemConnector selectionModelConnector) {
-            this.selectionModelConnector = selectionModelConnector;
+        public void setOrigCableConnector(ItemConnector origCableConnector) {
+            this.origCableConnector = origCableConnector;
         }
 
-        public List<ItemConnector> getValueModelConnectors() {
-            return valueModelConnectors;
+        public ItemConnector getSelectedCableConnector() {
+            return selectedCableConnector;
         }
 
-        public void setValueModelConnectors(List<ItemConnector> valueModelConnectors) {
-            this.valueModelConnectors = valueModelConnectors;
+        public void setSelectedCableConnector(ItemConnector selectedCableConnector) {
+            this.selectedCableConnector = selectedCableConnector;
+        }
+
+        public List<ItemConnector> getAvailableCableConnectors() {
+            return availableCableConnectors;
+        }
+
+        public void setAvailableCableConnectors(List<ItemConnector> availableCableConnectors) {
+            this.availableCableConnectors = availableCableConnectors;
         }
 
         /**
@@ -144,14 +152,19 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
          */
         public String save(String remoteCommandSuccess) {
 
-            Item selectedItemEndpoint
-                    = ((ItemElement) (selectionModelEndpoint.getData())).getContainedItem();
+            Item selectedMdItem = null;
+            ItemConnector selectedMdConnector = null;
+            if (this.selectedMdItem.getType().equals("Connector")) {
+                selectedMdConnector = ((ItemElement) (this.selectedMdItem.getData())).getMdConnector();
+                selectedMdItem = selectedMdConnector.getItem();
+            } else {
+                selectedMdItem = ((ItemElement) (this.selectedMdItem.getData())).getContainedItem();
+            }
 
-            if (getCurrent().updateConnection(
-                    getRelationshipId(),
-                    selectedItemEndpoint,
-                    null,
-                    getSelectionModelConnector())) {
+            if (getCurrent().updateConnection(getRelationshipId(),
+                    selectedMdItem,
+                    selectedMdConnector,
+                    getSelectedCableConnector())) {
 
                 String updateResult = update();
 
@@ -190,13 +203,16 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         /**
          * Resets the dialog components when closing.
          */
-        public void reset() {
-            setSelectionModelEndpoint(null);
-            valueModelTree = null;
-            setItemConnector(null);
-            setSelectionModelConnector(null);
-            setValueModelConnectors(null);
-            setEnablement();
+        public void reset() {            
+            setOrigMdItem(null);
+            setMdTree(null);
+            setSelectedMdItem(null);
+            setOrigMdConnector(null);
+            setOrigCableConnector(null);
+            setSelectedCableConnector(null);
+            setAvailableCableConnectors(null);
+            setRelationshipId(null);
+            setEnablement();            
         }
 
         /**
@@ -205,19 +221,26 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
          */
         private void setEnablement() {
 
-            if (selectionModelEndpoint == null) {
+            if (selectedMdItem == null) {
 
                 setDisableButtonSave((Boolean) true);
 
             } else {
-
-                Item selectedItemEndpoint
-                        = ((ItemElement) (selectionModelEndpoint.getData())).getContainedItem();
                 
-                ItemConnector selectedConnector = getSelectionModelConnector();
+                Item selectedMdItem = null;
+                ItemConnector selectedMdConnector = null;
+                if (this.selectedMdItem.getType().equals("Connector")) {
+                    selectedMdConnector = ((ItemElement) (this.selectedMdItem.getData())).getMdConnector();
+                    selectedMdItem = selectedMdConnector.getItem();
+                } else {
+                    selectedMdItem = ((ItemElement) (this.selectedMdItem.getData())).getContainedItem();
+                }
+                
+                ItemConnector selectedCableConnector = getSelectedCableConnector();
 
-                if ((selectedItemEndpoint.equals(getItemEndpoint())) 
-                        && (selectedConnector == getItemConnector())) {
+                if ((selectedMdItem.equals(getOrigMdItem())) 
+                        && (selectedMdConnector == getOrigMdConnector())
+                        && (selectedCableConnector == getOrigCableConnector())) {
                     
                     setDisableButtonSave((Boolean) true);
                     
@@ -227,18 +250,36 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             }
         }
 
-        private void expandToSpecificMachineDesignItem(ItemDomainMachineDesign item) {
+        private void expandTreeAndSelectNode() {
 
-            TreeNode machineDesignTreeRootTreeNode = getValueModelTree();
+            TreeNode machineDesignTreeRootTreeNode = getMdTree();
 
-            if (selectionModelEndpoint != null) {
-                selectionModelEndpoint.setSelected(false);
-                selectionModelEndpoint = null;
+            if (selectedMdItem != null) {
+                selectedMdItem.setSelected(false);
+                selectedMdItem = null;
             }
 
-            TreeNode selectedNode = ItemDomainMachineDesignController.
-                    expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, item);
-            selectionModelEndpoint = selectedNode;
+            TreeNode selectedNode = ItemDomainMachineDesignController.expandToSpecificMachineDesignItem(
+                    machineDesignTreeRootTreeNode, 
+                    (ItemDomainMachineDesign)getOrigMdItem());
+            
+            selectedMdItem = selectedNode;
+            
+            if ((selectedNode != null) && (getOrigMdConnector() != null)) {
+                selectedNode.setSelected(false);
+                selectedNode.setExpanded(true);
+                List<TreeNode> children = selectedNode.getChildren();
+                for (TreeNode child : children) {
+                    if (child.getType().equals("Connector")) {
+                        ItemConnector connectorChild = 
+                                ((ItemElement) (child.getData())).getMdConnector();
+                        if (connectorChild.equals(getOrigMdConnector())) {
+                            child.setSelected(true);
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
     }
@@ -500,17 +541,22 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public void prepareEditEndpoint(CableDesignConnectionListObject connection) {
         
         dialogConnection.reset();
-        dialogConnection.setItemEndpoint(connection.getMdItem());
+        
+        dialogConnection.setOrigMdItem(connection.getMdItem());
+        dialogConnection.setOrigMdConnector(connection.getMdConnector());
         dialogConnection.setRelationshipId(connection.getCableRelationship().getId());
-        dialogConnection.setItemConnector(connection.getItemConnector());
+        dialogConnection.setOrigCableConnector(connection.getItemConnector());
         
         // get list of unmapped connectors, plus connector for this connection if any
         List<ItemConnector> unmappedConnectors = getUnmappedConnectorsForCurrent();
         if (connection.getItemConnector() != null) {
             unmappedConnectors.add(connection.getItemConnector());
-            dialogConnection.setSelectionModelConnector(connection.getItemConnector());
+            dialogConnection.setSelectedCableConnector(connection.getItemConnector());
         }
-        dialogConnection.setValueModelConnectors(unmappedConnectors);
+        dialogConnection.setAvailableCableConnectors(unmappedConnectors);
+        
+        // expand MD tree to specified md item and connector
+        dialogConnection.expandTreeAndSelectNode();
     }
     
     public Boolean renderEditLinkForConnection(CableDesignConnectionListObject connection) {

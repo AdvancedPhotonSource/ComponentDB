@@ -394,14 +394,14 @@ public class ItemDomainMachineDesignController
 
     public TreeNode getMachineDesignTreeRootTreeNode() {
         if (machineDesignTreeRootTreeNode == null) {
-            machineDesignTreeRootTreeNode = loadMachineDesignRootTreeNode(false);
+            machineDesignTreeRootTreeNode = loadMachineDesignRootTreeNode(false, cablesShown, false);
         }
         return machineDesignTreeRootTreeNode;
     }
 
     public TreeNode getMachineDesignTemplateRootTreeNode() {
         if (machineDesignTemplateRootTreeNode == null) {
-            machineDesignTemplateRootTreeNode = loadMachineDesignRootTreeNode(true);
+            machineDesignTemplateRootTreeNode = loadMachineDesignRootTreeNode(true, cablesShown, false);
         }
         return machineDesignTemplateRootTreeNode;
     }
@@ -420,14 +420,14 @@ public class ItemDomainMachineDesignController
             // get latest version
             parentMachineDesign = findById(parentMachineDesign.getId());
 
-            expandTreeChildren(parentMachineDesign, subAssemblyRootTreeNode);
+            expandTreeChildren(parentMachineDesign, subAssemblyRootTreeNode, cablesShown, false);
             subAssemblyRootTreeNode.getChildren().get(0).setExpanded(true);
 
         }
         return subAssemblyRootTreeNode;
     }
 
-    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate) {
+    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate, Boolean showCables, Boolean showConnectorsWithoutCables) {
         TreeNode rootTreeNode = new DefaultTreeNode();
         List<ItemDomainMachineDesign> itemsWithoutParents
                 = getItemsWithoutParents();
@@ -446,14 +446,14 @@ public class ItemDomainMachineDesignController
             }
 
             if (skip == false) {
-                expandTreeChildren(item, rootTreeNode);
+                expandTreeChildren(item, rootTreeNode, showCables, showConnectorsWithoutCables);
             }
         }
 
         return rootTreeNode;
     }
 
-    protected void expandTreeChildren(Item item, TreeNode rootTreeNode) {
+    protected void expandTreeChildren(Item item, TreeNode rootTreeNode, Boolean showCables, Boolean showConnectorsWithoutCables) {
         ItemElement element = new ItemElement();
         ItemElement selfElement = item.getSelfElement();
         Float sortOrder = selfElement.getSortOrder();
@@ -463,10 +463,10 @@ public class ItemDomainMachineDesignController
         rootTreeNode.getChildren().add(parent);
         parent.setParent(rootTreeNode);
         setTreeNodeTypeMachineDesignTreeList(parent);
-        expandTreeChildren(parent);
+        expandTreeChildren(parent, showCables, showConnectorsWithoutCables);
     }
 
-    private void expandTreeChildren(TreeNode treeNode) {
+    private void expandTreeChildren(TreeNode treeNode, Boolean showCables, Boolean showConnectorsWithoutCables) {
         Object data = treeNode.getData();
         ItemElement ie = (ItemElement) data;
         Item item = ie.getContainedItem();
@@ -486,7 +486,7 @@ public class ItemDomainMachineDesignController
                 TreeNode newTreeNode = new DefaultTreeNode(itemElement);
                 Item containedItem = itemElement.getContainedItem();
 
-                if (cablesShown) {
+                if (showCables || showConnectorsWithoutCables) {
                     if (containedItem instanceof ItemDomainMachineDesign) {
                         List<MachineDesignConnectorListObject> connList = getMdConnectorListForItem((ItemDomainMachineDesign) containedItem);
 
@@ -504,14 +504,16 @@ public class ItemDomainMachineDesignController
                                 parentNode = connectorNode;
                             }
 
-                            if (connObj.getCableItem() != null) {
-                                ItemDomainCableDesign cableItem = connObj.getCableItem();
-                                ItemElement mockIE = new ItemElement();
-                                mockIE.setContainedItem(cableItem);
+                            if (showCables) {
+                                if (connObj.getCableItem() != null) {
+                                    ItemDomainCableDesign cableItem = connObj.getCableItem();
+                                    ItemElement mockIE = new ItemElement();
+                                    mockIE.setContainedItem(cableItem);
 
-                                TreeNode cableNode = new DefaultTreeNode(mockIE);
-                                cableNode.setType(ItemDomainName.cableDesign.getValue());
-                                parentNode.getChildren().add(cableNode);
+                                    TreeNode cableNode = new DefaultTreeNode(mockIE);
+                                    cableNode.setType(ItemDomainName.cableDesign.getValue());
+                                    parentNode.getChildren().add(cableNode);
+                                }
                             }
                         }
                     }
@@ -530,7 +532,7 @@ public class ItemDomainMachineDesignController
                         }
                     }
                     if (!skipExpansion) {
-                        expandTreeChildren(newTreeNode);
+                        expandTreeChildren(newTreeNode, showCables, showConnectorsWithoutCables);
                     }
                 } else {
                     newTreeNode.setType("Blank");
@@ -1918,7 +1920,7 @@ public class ItemDomainMachineDesignController
             favoriteMachineDesignTreeRootTreeNode.getChildren().add(parent);
             parent.setParent(favoriteMachineDesignTreeRootTreeNode);
             setTreeNodeTypeMachineDesignTreeList(parent);
-            expandTreeChildren(parent);
+            expandTreeChildren(parent, cablesShown, false);
         }
 
         return favoriteMachineDesignTreeRootTreeNode;

@@ -138,7 +138,7 @@ public abstract class ItemDomainCableDesignWizardBase {
     public TreeNode getMachineDesignTreeEndpoint1() {
         if (machineDesignTreeEndpoint1 == null) {
             ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
-            machineDesignTreeEndpoint1 = controller.loadMachineDesignRootTreeNode(false);
+            machineDesignTreeEndpoint1 = controller.loadMachineDesignRootTreeNode(false, false, true);
         }
         return machineDesignTreeEndpoint1;
     }
@@ -157,7 +157,7 @@ public abstract class ItemDomainCableDesignWizardBase {
     public TreeNode getMachineDesignTreeEndpoint2() {
         if (machineDesignTreeEndpoint2 == null) {
             ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
-            machineDesignTreeEndpoint2 = controller.loadMachineDesignRootTreeNode(false);
+            machineDesignTreeEndpoint2 = controller.loadMachineDesignRootTreeNode(false, false, true);
         }
         return machineDesignTreeEndpoint2;
     }

@@ -19,9 +19,9 @@ See LICENSE file.
         
         <p:outputLabel for="@next" value="Select Cable Connector"/>
         <p:selectOneMenu id="cableConnectorMenu" 
-                         value="#{itemDomainCableDesignController.dialogConnection.selectionModelConnector}">
+                         value="#{itemDomainCableDesignController.dialogConnection.selectedCableConnector}">
             <f:selectItem itemLabel="Select Connector" itemValue=""/>
-            <f:selectItems value="#{itemDomainCableDesignController.dialogConnection.valueModelConnectors}"
+            <f:selectItems value="#{itemDomainCableDesignController.dialogConnection.availableCableConnectors}"
                            var="connector"
                            itemLabel="#{connector.connector.toString()}"
                            itemValue="#{connector}"/>
@@ -33,8 +33,8 @@ See LICENSE file.
         <ui:decorate template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
             <ui:param name="viewId" value="endpointDialogTree" />
             <ui:param name="hideOptionalColumns" value="#{false}" />
-            <ui:param name="valueModel" value="#{itemDomainCableDesignController.dialogConnection.valueModelTree}" />
-            <ui:param name="selectionModel" value="#{itemDomainCableDesignController.dialogConnection.selectionModelEndpoint}" />
+            <ui:param name="valueModel" value="#{itemDomainCableDesignController.dialogConnection.mdTree}" />
+            <ui:param name="selectionModel" value="#{itemDomainCableDesignController.dialogConnection.selectedMdItem}" />
             <ui:param name="rendered" value="#{true}" />
             <ui:param name="scrollable" value="#{true}" />
             <ui:define name="treeTableEvents">
