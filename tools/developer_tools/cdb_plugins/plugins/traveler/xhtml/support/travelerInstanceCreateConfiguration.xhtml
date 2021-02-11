@@ -12,6 +12,9 @@ See LICENSE file.
               value="#{travelerDomainInstanceController != null
                        ? travelerDomainInstanceController
                        : itemTravelerDomainInventoryController}" />
+    
+    <ui:param name="renderedTravelerTitle"
+              value="#{renderedTravelerTitle != null ? renderedTravelerTitle : true}" />
 
     <p:outputPanel id="#{viewName}travelerInstanceCreateConfigurationPanel">
 
@@ -52,7 +55,7 @@ See LICENSE file.
                     </p:outputPanel>
                 </p:column>
             </p:row>
-            <p:row>
+            <p:row rendered="#{renderedTravelerTitle}">
                 <p:column>
                     <p:outputLabel value="Traveler Instance Title" styleClass="entityDataLabel" />
                 </p:column>
@@ -70,7 +73,7 @@ See LICENSE file.
                          onstart="PF('loadingDialog').show();"
                          onerror="PF('loadingDialog').hide();"
                          process="@this"
-                         update="#{viewName}travelerInstanceCreateConfigurationPanel"
+                         update="#{viewName}travelerInstanceCreateConfigurationPanel #{additionalUpdateOnRowSelection}"
                          oncomplete="PF('loadingDialog').hide();"/>
 
     </p:outputPanel>
