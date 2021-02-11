@@ -29,11 +29,16 @@ public class ItemDomainMachineDesignInventorySettings extends ItemDomainMachineD
     private static final String DisplayLastModifiedByUserSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.LastModifiedByUser";
     private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.LastModifiedOnDateTime";
     private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.NumberOfItemsPerPage";
+    
+    private static final String DisplayPropertyTypeId1SettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.PropertyTypeId1";
+    private static final String DisplayPropertyTypeId2SettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.PropertyTypeId2";
+    private static final String DisplayPropertyTypeId3SettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.PropertyTypeId3";
+    private static final String DisplayPropertyTypeId4SettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.PropertyTypeId4";
+    private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.PropertyTypeId5";
 
 
     public ItemDomainMachineDesignInventorySettings(ItemDomainMachineDesignController parentController) {
-        super(parentController);
-        displayNumberOfItemsPerPage = 25; 
+        super(parentController);        
     }  
     
     @Override
@@ -55,6 +60,12 @@ public class ItemDomainMachineDesignInventorySettings extends ItemDomainMachineD
         displayLastModifiedOnDateTime = Boolean.parseBoolean(settingTypeMap.get(DisplayLastModifiedOnDateTimeSettingTypeKey).getDefaultValue());
         
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
+        
+        displayPropertyTypeId1 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId1SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId2 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId2SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId3 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId3SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId4 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId4SettingTypeKey).getDefaultValue());
+        displayPropertyTypeId5 = parseSettingValueAsInteger(settingTypeMap.get(DisplayPropertyTypeId5SettingTypeKey).getDefaultValue());
     }
 
     @Override
@@ -76,6 +87,12 @@ public class ItemDomainMachineDesignInventorySettings extends ItemDomainMachineD
         displayLastModifiedOnDateTime = settingEntity.getSettingValueAsBoolean(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
         
         displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        
+        displayPropertyTypeId1 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
+        displayPropertyTypeId2 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
+        displayPropertyTypeId3 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
+        displayPropertyTypeId4 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
+        displayPropertyTypeId5 = settingEntity.getSettingValueAsInteger(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
     }
 
     @Override
@@ -97,6 +114,12 @@ public class ItemDomainMachineDesignInventorySettings extends ItemDomainMachineD
         settingEntity.setSettingValue(DisplayLastModifiedOnDateTimeSettingTypeKey, displayLastModifiedOnDateTime);
         
         settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
+        
+        settingEntity.setSettingValue(DisplayPropertyTypeId1SettingTypeKey, displayPropertyTypeId1);
+        settingEntity.setSettingValue(DisplayPropertyTypeId2SettingTypeKey, displayPropertyTypeId2);
+        settingEntity.setSettingValue(DisplayPropertyTypeId3SettingTypeKey, displayPropertyTypeId3);
+        settingEntity.setSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
+        settingEntity.setSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
     }
 
     @Override
