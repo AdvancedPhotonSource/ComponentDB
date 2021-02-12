@@ -17,36 +17,51 @@ See LICENSE file.
               closable="false"
               width="500">
         
-        <p:outputLabel for="@next" value="Select Cable Connector"/>
-        <p:selectOneMenu id="cableConnectorMenu" 
-                         value="#{itemDomainCableDesignController.dialogConnection.selectedCableConnector}">
-            <f:selectItem itemLabel="Select Connector" itemValue=""/>
-            <f:selectItems value="#{itemDomainCableDesignController.dialogConnection.availableCableConnectors}"
-                           var="connector"
-                           itemLabel="#{connector.connector.toString()}"
-                           itemValue="#{connector}"/>
-            <p:ajax event="itemSelect"
-                    listener="#{itemDomainCableDesignController.dialogConnection.selectListenerConnector}"
-                    oncomplete="updateButtonsDialogEndpoint();" />        
-        </p:selectOneMenu>
+        <p:panel id="dialogConnectionContentPanel">
 
-        <ui:decorate template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
-            <ui:param name="viewId" value="endpointDialogTree" />
-            <ui:param name="hideOptionalColumns" value="#{false}" />
-            <ui:param name="valueModel" value="#{itemDomainCableDesignController.dialogConnection.mdTree}" />
-            <ui:param name="selectionModel" value="#{itemDomainCableDesignController.dialogConnection.selectedMdItem}" />
-            <ui:param name="rendered" value="#{true}" />
-            <ui:param name="scrollable" value="#{true}" />
-            <ui:define name="treeTableEvents">
-                <p:ajax event="select"
-                        listener="#{itemDomainCableDesignController.dialogConnection.selectListenerEndpoint}"
-                        oncomplete="updateButtonsDialogEndpoint();" />
-                <p:ajax event="unselect"
-                        listener="#{itemDomainCableDesignController.dialogConnection.selectListenerEndpoint}"
-                        oncomplete="updateButtonsDialogEndpoint();" />
-            </ui:define>
-            <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
-        </ui:decorate>
+            <p:outputLabel for="cableConnectorMenu" value="Select Cable Connector"/>
+
+            <p:selectOneMenu id="cableConnectorMenu" 
+                             value="#{itemDomainCableDesignController.dialogConnection.selectedCableConnector}">
+                <f:selectItem itemLabel="Select Connector" itemValue=""/>
+                <f:selectItems value="#{itemDomainCableDesignController.dialogConnection.availableCableConnectors}"
+                               var="connector"
+                               itemLabel="#{connector.connector.toString()}"
+                               itemValue="#{connector}"/>
+                <p:ajax event="itemSelect"
+                        listener="#{itemDomainCableDesignController.dialogConnection.selectListenerConnector}"
+                        oncomplete="updateButtonsDialogEndpoint();" />        
+            </p:selectOneMenu>
+        </p:panel>
+
+        <p:panel>
+            <ui:decorate template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+                <ui:param name="viewId" value="endpointDialogTree" />
+                <ui:param name="hideOptionalColumns" value="#{false}" />
+                <ui:param name="valueModel" value="#{itemDomainCableDesignController.dialogConnection.mdTree}" />
+                <ui:param name="selectionModel" value="#{itemDomainCableDesignController.dialogConnection.selectedMdTreeNode}" />
+                <ui:param name="rendered" value="#{true}" />
+                <ui:param name="scrollable" value="#{true}" />
+                <ui:define name="treeTableEvents">
+                    <p:ajax event="select"
+                            listener="#{itemDomainCableDesignController.dialogConnection.selectListenerEndpoint}"
+                            oncomplete="updateButtonsDialogEndpoint();updateMessageDialogEndpoint();" />
+                    <p:ajax event="unselect"
+                            listener="#{itemDomainCableDesignController.dialogConnection.selectListenerEndpoint}"
+                            oncomplete="updateButtonsDialogEndpoint();updateMessageDialogEndpoint();" />
+                </ui:define>
+                <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+            </ui:decorate>
+        </p:panel>
+
+        <p:panel id="connectionDialogMessagePanel">
+            <div>
+                <h3>
+                    <h:outputText value="#{itemDomainCableDesignController.dialogConnection.message}" 
+                                  escape="false" />
+                </h3>
+            </div>
+        </p:panel>
 
         <f:facet name="footer" class="dialog">
 
@@ -74,6 +89,9 @@ See LICENSE file.
 
         <p:remoteCommand name="updateButtonsDialogEndpoint" 
                          update="dialogConnectionButtonPanel"/>
+
+        <p:remoteCommand name="updateMessageDialogEndpoint" 
+                         update="connectionDialogMessagePanel"/>
 
         <p:remoteCommand name="updateTreeDialogEndpoint" 
                          update="itemMachineDesignListDataTableendpointDialogTree"/>
