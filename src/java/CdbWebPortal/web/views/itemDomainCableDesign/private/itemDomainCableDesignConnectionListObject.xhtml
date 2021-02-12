@@ -12,18 +12,39 @@ See LICENSE file.
 
     <p:columnGroup type="header">
         <p:row>
-            <p:column colspan="3" headerText="Cable Connector"/>
+            <p:column id="cableConnectorColumn" colspan="3">
+                <f:facet name="header">
+                    <h:outputText value="Cable Connector" />
+                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
+                               for="cableConnectorColumn" />
+                </f:facet> 
+            </p:column>
             <p:column colspan="2" headerText="Device Connection"/>
         </p:row>
         <p:row>
-            <p:column headerText="Name"/>
-            <p:column headerText="Type">
+            <p:column id="cableConnectorNameColumn">
                 <f:facet name="header">
+                    <h:outputText value="Name" />
+                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
+                               for="cableConnectorNameColumn" />
+                </f:facet> 
+            </p:column>
+            <p:column id="cableConnectorTypeColumn" headerText="Type">
+                <f:facet name="header">
+                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
+                               for="cableConnectorTypeColumn" />
                     <h:outputText styleClass="ui-icon ui-icon-connector" />
                     Type
                 </f:facet>
             </p:column>
-            <p:column headerText="Gender"/>
+            <p:column id="cableConnectorGenderColumn" headerText="Gender">
+                <f:facet name="header">
+                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
+                               for="cableConnectorGenderColumn" />
+                    <h:outputText styleClass="ui-icon ui-icon-connector" />
+                    Gender
+                </f:facet>
+            </p:column>
             <p:column>
                 <f:facet name="header">
                     <h:outputText styleClass="ui-icon ui-icon-machine-design" />
