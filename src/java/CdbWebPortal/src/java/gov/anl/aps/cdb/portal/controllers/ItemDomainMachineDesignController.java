@@ -427,7 +427,7 @@ public class ItemDomainMachineDesignController
         return subAssemblyRootTreeNode;
     }
 
-    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate, Boolean showCables, Boolean showConnectorsWithoutCables) {
+    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate, Boolean showCables, Boolean showConnectorsOnly) {
         TreeNode rootTreeNode = new DefaultTreeNode();
         List<ItemDomainMachineDesign> itemsWithoutParents
                 = getItemsWithoutParents();
@@ -446,14 +446,14 @@ public class ItemDomainMachineDesignController
             }
 
             if (skip == false) {
-                expandTreeChildren(item, rootTreeNode, showCables, showConnectorsWithoutCables);
+                expandTreeChildren(item, rootTreeNode, showCables, showConnectorsOnly);
             }
         }
 
         return rootTreeNode;
     }
 
-    protected void expandTreeChildren(Item item, TreeNode rootTreeNode, Boolean showCables, Boolean showConnectorsWithoutCables) {
+    protected void expandTreeChildren(Item item, TreeNode rootTreeNode, Boolean showCables, Boolean showConnectorsOnly) {
         ItemElement element = new ItemElement();
         ItemElement selfElement = item.getSelfElement();
         Float sortOrder = selfElement.getSortOrder();
@@ -463,10 +463,10 @@ public class ItemDomainMachineDesignController
         rootTreeNode.getChildren().add(parent);
         parent.setParent(rootTreeNode);
         setTreeNodeTypeMachineDesignTreeList(parent);
-        expandTreeChildren(parent, showCables, showConnectorsWithoutCables);
+        expandTreeChildren(parent, showCables, showConnectorsOnly);
     }
 
-    private void expandTreeChildren(TreeNode treeNode, Boolean showCables, Boolean showConnectorsWithoutCables) {
+    private void expandTreeChildren(TreeNode treeNode, Boolean showCables, Boolean showConnectorsOnly) {
         Object data = treeNode.getData();
         ItemElement ie = (ItemElement) data;
         Item item = ie.getContainedItem();
@@ -486,7 +486,7 @@ public class ItemDomainMachineDesignController
                 TreeNode newTreeNode = new DefaultTreeNode(itemElement);
                 Item containedItem = itemElement.getContainedItem();
 
-                if (showCables || showConnectorsWithoutCables) {
+                if (showCables || showConnectorsOnly) {
                     if (containedItem instanceof ItemDomainMachineDesign) {
                         List<MachineDesignConnectorListObject> connList = getMdConnectorListForItem((ItemDomainMachineDesign) containedItem);
 
@@ -532,7 +532,7 @@ public class ItemDomainMachineDesignController
                         }
                     }
                     if (!skipExpansion) {
-                        expandTreeChildren(newTreeNode, showCables, showConnectorsWithoutCables);
+                        expandTreeChildren(newTreeNode, showCables, showConnectorsOnly);
                     }
                 } else {
                     newTreeNode.setType("Blank");

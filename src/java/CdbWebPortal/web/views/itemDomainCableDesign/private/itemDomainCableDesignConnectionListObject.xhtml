@@ -57,7 +57,7 @@ See LICENSE file.
                            styleClass="fa-link-icon fa-icon fa fa-pencil"
                            onstart="PF('loadingDialog').show()"
                            oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
-                           action='#{entityController.prepareEditEndpoint(connection)}'
+                           action='#{entityController.prepareEditConnection(connection)}'
                            rendered="#{isEntityWriteable and entityController.renderEditLinkForConnection(connection)}"
                            update="@form:dialogConnection">
                 <p:tooltip for="editEndpointLink"

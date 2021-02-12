@@ -19,11 +19,11 @@ See LICENSE file.
         
         <p:panel id="dialogConnectionContentPanel">
 
-            <p:outputLabel for="cableConnectorMenu" value="Select Cable Connector"/>
+            <p:outputLabel for="cableConnectorMenu" value="Optionally select cable connector"/>
 
             <p:selectOneMenu id="cableConnectorMenu" 
                              value="#{itemDomainCableDesignController.dialogConnection.selectedCableConnector}">
-                <f:selectItem itemLabel="Select Connector" itemValue=""/>
+                <f:selectItem itemLabel="Unspecified" itemValue=""/>
                 <f:selectItems value="#{itemDomainCableDesignController.dialogConnection.availableCableConnectors}"
                                var="connector"
                                itemLabel="#{connector.connector.toString()}"
@@ -35,6 +35,7 @@ See LICENSE file.
         </p:panel>
 
         <p:panel>
+            <p:outputLabel for="@next" value="Select endpoint item or optional connector"/>
             <ui:decorate template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
                 <ui:param name="viewId" value="endpointDialogTree" />
                 <ui:param name="hideOptionalColumns" value="#{false}" />

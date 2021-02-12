@@ -20,7 +20,10 @@ See LICENSE file.
             <p:commandButton value="Add Connection"
                              rendered="#{isEntityWriteable}"
                              immediate="true"
-                             action='#{entityController.prepareAddConnection()}'/>
+                             action='#{entityController.prepareAddConnection()}'
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
+                             update="@form:dialogConnection"/>
         </ui:define>        
     </ui:decorate>
 

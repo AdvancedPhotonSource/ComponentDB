@@ -13,7 +13,9 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -67,7 +69,16 @@ public class CableDesignConnectionListObject {
 
         // add entries for each cable relationship (connection to MD item)
         List<ItemElementRelationship> cableRelationshipList;
-        cableRelationshipList = ItemUtility.getItemRelationshipList(item, ItemElementRelationshipTypeNames.itemCableConnection.getValue(), false);
+        cableRelationshipList = 
+                ItemUtility.getItemRelationshipList(
+                        item, 
+                        ItemElementRelationshipTypeNames.itemCableConnection.getValue(), 
+                        false);
+        // sort relationships by sort order
+        cableRelationshipList = 
+                cableRelationshipList.stream()
+                        .sorted(Comparator.comparing(ItemElementRelationship::getSecondSortOrder))
+                        .collect(Collectors.toList());
         for (ItemElementRelationship cableRelationship : cableRelationshipList) {
             CableDesignConnectionListObject connection = new CableDesignConnectionListObject();
             connection.setCableRelationship(cableRelationship, item);
