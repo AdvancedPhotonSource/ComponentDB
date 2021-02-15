@@ -44,12 +44,6 @@ public class PropertyTypeHandlerController extends CdbEntityController<PropertyT
     }
 
     @Override
-    protected PropertyTypeHandler createEntityInstance() {
-        PropertyTypeHandler propertyHandler = new PropertyTypeHandler();
-        return propertyHandler;
-    }   
-
-    @Override
     public List<PropertyTypeHandler> getAvailableItems() {
         return super.getAvailableItems();
     }

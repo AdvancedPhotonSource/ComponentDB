@@ -90,6 +90,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     private Forms activeTravelerTemplates;
 
     private String travelerInstanceTitle;
+    protected String currentPostfixValueToColumn = null;
+    protected Integer currentSequenceStartValueToColumn = null;
 
     private List<Form> availableTemplates;
     private List<Form> defaultTemplates;
@@ -441,6 +443,9 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
     public void prepareMultiEditAppplyInstanceToAllItems() {
         List<Item> selectedItemsToEdit = getItemController().getItemMultiEditController().getSelectedItemsToEdit();
         multiEditAvailableTemplateForApplyAll = null;
+        currentSequenceStartValueToColumn = null;
+        currentPostfixValueToColumn = null; 
+        setSelectedTravelerInstanceTemplate(null);
 
         for (Item item : selectedItemsToEdit) {
             if (multiEditAvailableTemplateForApplyAll == null) {
@@ -470,14 +475,34 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         }
     }
 
+    public boolean getHasSequenceValueToSet() {
+        return currentSequenceStartValueToColumn != null;
+    }
+
     public void createTravelerInstanceForEachSelectedItem(String onSuccess) {
         if (selectedTravelerInstanceTemplate != null) {
             if (travelerInstanceTitle != null && !travelerInstanceTitle.isEmpty()) {
+
+                String prefix = null;
+                Integer currentSequence = null;
+                if (getHasSequenceValueToSet()) {
+                    prefix = travelerInstanceTitle;
+                    currentSequence = currentSequenceStartValueToColumn;
+                }
+
                 List<Item> selectedItemsToEdit = getItemController().getItemMultiEditController().getSelectedItemsToEdit();
                 for (int i = 0; i < selectedItemsToEdit.size(); i++) {
+                    if (prefix != null) {
+                        travelerInstanceTitle = prefix + currentSequence + currentPostfixValueToColumn; 
+                        currentSequence += 1; 
+                    }
                     Item item = selectedItemsToEdit.get(i);
                     setCurrent(item);
                     saveMultiEditTravelerInstance(null);
+                }
+
+                if (prefix != null) {
+                    travelerInstanceTitle = prefix; 
                 }
             } else {
                 SessionUtility.addWarningMessage("e-Traveler title empty", "Please provide a traveler instance title before proceeding.");
@@ -743,10 +768,10 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             if (forms != null) {
                 if (forms.size() > 0) {
                     referenceId = forms.get(0).getId();
-                }                
+                }
             }
         }
-        return referenceId; 
+        return referenceId;
     }
 
     public String getFormName(BinderTraveler binderTraveler) {
@@ -1070,10 +1095,10 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
         }
         return defaultTemplates;
     }
-    
+
     /**
-     * Default implementation returns internal property values for specified item.
-     * Subclasses override to customize.
+     * Default implementation returns internal property values for specified
+     * item. Subclasses override to customize.
      */
     protected List<PropertyValue> getInternalPropertyValueListForItem(Item item) {
         List<PropertyValue> pvList = new ArrayList<>();
@@ -1587,6 +1612,22 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
 
     public String getTravelerInstanceTitle() {
         return travelerInstanceTitle;
+    }
+
+    public String getCurrentPostfixValueToColumn() {
+        return currentPostfixValueToColumn;
+    }
+
+    public void setCurrentPostfixValueToColumn(String currentPostfixValueToColumn) {
+        this.currentPostfixValueToColumn = currentPostfixValueToColumn;
+    }
+
+    public Integer getCurrentSequenceStartValueToColumn() {
+        return currentSequenceStartValueToColumn;
+    }
+
+    public void setCurrentSequenceStartValueToColumn(Integer currentSequenceStartValueToColumn) {
+        this.currentSequenceStartValueToColumn = currentSequenceStartValueToColumn;
     }
 
     public void setSelectedTravelerInstanceTemplate(Form selectedTravelerInstanceTemplate) {

@@ -8,6 +8,8 @@ import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignDeletedItemSettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -78,11 +80,6 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         List<ItemDomainMachineDesign> itemList = getAllObjectList();
         ListDataModel newListDataModel = new ListDataModel(itemList);
         setListDataModel(newListDataModel);
-    }
-    
-    @Override
-    public List<ItemDomainMachineDesign> getItemList() {
-        return itemDomainMachineDesignFacade.getDeletedItems();
     }
 
     @Override
@@ -314,5 +311,10 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         
         setPermanentlyRemoveConfirmationName(null);
         permanentlyRemoveNode = null;
+    }
+
+    @Override
+    protected ItemDomainMachineDesignDeletedControllerUtility getControllerUtility() {
+        return new ItemDomainMachineDesignDeletedControllerUtility();
     }
 }

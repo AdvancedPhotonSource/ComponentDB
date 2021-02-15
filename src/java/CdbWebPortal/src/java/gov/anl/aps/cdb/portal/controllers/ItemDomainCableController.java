@@ -55,30 +55,6 @@ public class ItemDomainCableController extends ItemController<ItemDomainCableCon
         setCableLengthAttribute = false; 
         
     }
-
-    @Override
-    protected ItemDomainCable createEntityInstance() { 
-       ItemDomainCable item = super.createEntityInstance(); 
-        setCurrent(item);
-        
-        // Create the two connectors
-        item.setItemConnectorList(new ArrayList<>());
-        this.prepareAddItemConnector(item);
-        this.prepareAddItemConnector(item);
-        
-        // Add cable internal property type
-        PropertyType propertyType = propertyTypeFacade.findByName(CABLE_INTERNAL_PROPERTY_TYPE);
-        
-        if (propertyType == null) {
-            // Will happen only once. 
-            propertyType = createRequiredPropertyTypeForCables();
-        }
-        
-        item.setPropertyValueList(new ArrayList<>());
-        preparePropertyTypeValueAdd(propertyType);
-        
-        return item; 
-    }
     
     public void destroyCableConnection(ItemDomainCable cableItem) {
         // Cascade nature of item relationship list will remove all connection relationships automatically. 
@@ -320,12 +296,7 @@ public class ItemDomainCableController extends ItemController<ItemDomainCableCon
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }   
-
-    @Override
-    protected ItemDomainCable instenciateNewItemDomainEntity() {
-        return new ItemDomainCable();
-    }
+    }      
 
     @Override
     protected ItemDomainCableFacade getEntityDbFacade() {

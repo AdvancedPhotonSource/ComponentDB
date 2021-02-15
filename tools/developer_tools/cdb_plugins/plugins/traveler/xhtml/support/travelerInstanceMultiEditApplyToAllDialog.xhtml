@@ -7,9 +7,10 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
-    
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+
 
     <ui:param name="travelerDomainInstanceController"
               value="#{travelerDomainInstanceController != null
@@ -22,19 +23,56 @@ See LICENSE file.
               styleClass="viewTransparentBackgroundDialog"
               modal="true"
               resizable="false">
-        
+
         <ui:include src="travelerInstanceCreateConfiguration.xhtml">
             <ui:param name="overrideTravelerTemplateList"
                       value="#{true}" />
+            <ui:param name="renderedTravelerTitle"
+                      value="#{false}" /> 
             <ui:param name="travelerTemplateList"
                       value="#{travelerDomainInstanceController.multiEditAvailableTemplateForApplyAll}" />
             <ui:param name="viewName"
                       value="multiEditApplyAll"/>
             <ui:param name="additonalTravelerTemplateEmptyMessage"
                       value="Parent catalog items in the list do not share a common template." /> 
-        </ui:include>                        
-        
-        
+            <ui:param name="additionalUpdateOnRowSelection"
+                      value="multiEditTravelerTitleConfiguration" /> 
+        </ui:include>
+
+        <p:outputPanel id="multiEditTravelerTitleConfiguration">
+            <ui:param name="withSequence"
+                      value="#{travelerDomainInstanceController.hasSequenceValueToSet}" />
+
+            <p:panelGrid styleClass="centeredContent"                     
+                         columns="2">
+
+                <h:outputText value="#{withSequence ? 'Title Prefix' : 'Traveler Title'}" />
+                <p:inputText value="#{travelerDomainInstanceController.travelerInstanceTitle}"/>
+
+                <h:outputText value="Needs Sequence?"
+                              rendered="#{!withSequence}"/>
+                <p:commandButton update="multiEditTravelerTitleConfiguration"
+                                 value="Add sequence"
+                                 rendered="#{!withSequence}">
+                    <f:setPropertyActionListener target="#{travelerDomainInstanceController.currentSequenceStartValueToColumn}"
+                                                 value="0"/>
+                </p:commandButton>
+
+                <ui:include src="../../../../itemMultiEdit/private/applyValuesTo/common/sequenceStart.xhtml">
+                    <ui:param name="rendered"
+                              value="#{withSequence}" />
+                    <ui:param name="entityController"
+                              value="#{travelerDomainInstanceController}" />
+                </ui:include>  
+
+                <h:outputText value="Postfix"
+                              rendered="#{withSequence}"/>
+                <p:inputText value="#{travelerDomainInstanceController.currentPostfixValueToColumn}"
+                             rendered="#{withSequence}"/>
+            </p:panelGrid>
+        </p:outputPanel>
+
+
         <f:facet name="footer">
             <p:commandButton id="travelerInstanceMultiEditApplyToAllCommandButton"
                              icon="fa fa-plus"
@@ -47,8 +85,8 @@ See LICENSE file.
             <p:remoteCommand name="travelerInstanceMultiEditApplyToAllSuccess"
                              update="@form:#{entityTypeName}MultiEditItemDataTable"
                              oncomplete="PF('travelerInstanceMultiEditApplyToAllDialogWidget').hide()" />
-            
-            
+
+
         </f:facet>
 
 

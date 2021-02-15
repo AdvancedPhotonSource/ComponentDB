@@ -30,8 +30,10 @@ See LICENSE file.
 
     <ui:define name="firstFilter">
         Choose a Location
-        <ui:repeat value="#{itemDomainLocationController.filterViewLocationSelectionList}" var="filterViewLocationSelection">
-            <p:outputPanel styleClass="filterViewItemHierarchySelectionRepeatPanel" >
+        <ui:repeat value="#{itemDomainLocationController.filterViewLocationSelectionList}" 
+                   id="filterViewItemHierarchySelectLevel"
+                   var="filterViewLocationSelection">
+            <p:outputPanel styleClass="filterViewItemHierarchySelectionRepeatPanel">
                 <p:selectOneListbox id="filterViewItemLocationSelection"
                                     converter="itemConverter"
                                     value="#{filterViewLocationSelection.itemSelection}"

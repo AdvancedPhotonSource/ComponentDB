@@ -113,11 +113,6 @@ public class ItemGenericViewController extends ItemController<ItemGenericControl
         return null;
     }
 
-    @Override
-    public List<Item> getItemList() {
-        return itemFacade.findAll(); 
-    }
-
     /**
      * Generic controller does not have a list domain. 
      * @return 
@@ -145,12 +140,7 @@ public class ItemGenericViewController extends ItemController<ItemGenericControl
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return null;
-    }
-
-    @Override
-    protected Item instenciateNewItemDomainEntity() {
-        return new Item();         
-    }
+    }   
 
     @Override
     protected ItemFacade getEntityDbFacade() {

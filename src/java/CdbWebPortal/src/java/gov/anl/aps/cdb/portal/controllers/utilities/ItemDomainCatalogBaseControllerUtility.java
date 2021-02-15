@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
@@ -122,7 +123,7 @@ public abstract class ItemDomainCatalogBaseControllerUtility<ItemCatalogBaseDoma
                 throw new CdbException("No item specified for element: " + itemElement.getName());
             }
         }
-    }
+    }    
 
     @Override
     public boolean isEntityHasName() {
@@ -137,8 +138,7 @@ public abstract class ItemDomainCatalogBaseControllerUtility<ItemCatalogBaseDoma
     @Override
     public boolean isEntityHasProject() {
         return true; 
-    }
-    
+    }    
     
     @Override
     public String getDerivedFromItemTitle() {

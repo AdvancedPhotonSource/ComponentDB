@@ -89,9 +89,7 @@ public class ItemDomainMachineDesignController
     private MachineDesignConnectorCableMapperItem mdccmi;
     private List<MachineDesignConnectorListObject> mdConnectorList;
 
-    private TreeNode searchResultsTreeNode;
-
-    private static ItemDomainMachineDesignController apiInstance;
+    private TreeNode searchResultsTreeNode;   
 
     // <editor-fold defaultstate="collapsed" desc="Favorites toggle variables">
     private boolean favoritesShown = false;
@@ -222,26 +220,8 @@ public class ItemDomainMachineDesignController
     @EJB
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
 
-    public static ItemDomainMachineDesignController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
-        } else {
-            return getApiInstance();
-        }
-    }
-
-    public static synchronized ItemDomainMachineDesignController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainMachineDesignController();
-            apiInstance.prepareApiInstance();
-        }
-        return apiInstance;
-    }
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-        itemDomainMachineDesignFacade = ItemDomainMachineDesignFacade.getInstance();
+    public static ItemDomainMachineDesignController getInstance() {        
+        return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);        
     }
 
     public boolean isItemInventory(Item item) {
@@ -733,12 +713,6 @@ public class ItemDomainMachineDesignController
         currentMachineDesignListRootTreeNode = null;
     }
 
-    @Override
-    public ItemDomainMachineDesign createEntityInstance() {
-        ItemDomainMachineDesign item = super.createEntityInstance();
-        return item;
-    }
-
     public ItemDomainMachineDesign createEntityInstanceForDualTreeView() {
         ItemDomainMachineDesign newInstance = createEntityInstance();
 
@@ -761,12 +735,11 @@ public class ItemDomainMachineDesignController
         return newInstance;
     }
 
-    public void prepareAddPlaceholder() {
+    public void prepareAddPlaceholder() {        
+        ItemDomainMachineDesign newItem = createEntityInstanceForDualTreeView();
         prepareAddNewMachineDesignListConfiguration();
 
         displayAddMDPlaceholderListConfigurationPanel = true;
-        ItemDomainMachineDesign newItem = createEntityInstanceForDualTreeView();
-
         currentEditItemElement.setContainedItem(newItem);
     }
 
@@ -1510,7 +1483,7 @@ public class ItemDomainMachineDesignController
         searchResultsTreeNode = null;
     }
 
-    public synchronized TreeNode getSearchResults(String searchString, boolean caseInsensitive) {
+    public TreeNode getSearchResults(String searchString, boolean caseInsensitive) {
         this.performEntitySearch(searchString, caseInsensitive);
         return getHierarchicalSearchResults();
     }
@@ -2643,11 +2616,6 @@ public class ItemDomainMachineDesignController
 
     private void setCurrentHierarchyItemElement(ItemElement currentHierarchyItemElement) {
         this.currentHierarchyItemElement = currentHierarchyItemElement;
-    }
-
-    @Override
-    protected ItemDomainMachineDesign instenciateNewItemDomainEntity() {
-        return new ItemDomainMachineDesign();
     }
 
     @Override

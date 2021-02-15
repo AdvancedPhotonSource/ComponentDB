@@ -10,6 +10,8 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemTypeCategoryControllerUt
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemTypeCategoryEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
@@ -20,16 +22,12 @@ public abstract class ItemTypeCategoryController<ControllerUtility extends ItemT
 
     protected DataModel currentDomainListDataModel = null;
 
-    public abstract List<EntityType> getItemTypeCategoryEntityListByDomainName(String domainName);
-
-    public abstract EntityType createItemTypeCategoryEntity();   
+    public abstract List<EntityType> getItemTypeCategoryEntityListByDomainName(String domainName);   
 
     @Override
     protected EntityType createEntityInstance() {
-        EntityType itemTypeCategory;
-        itemTypeCategory = createItemTypeCategoryEntity();
-        itemTypeCategory.setDomain(currentViewDomain);
-        return itemTypeCategory;
+        UserInfo user = SessionUtility.getUser();
+        return getControllerUtility().createEntityInstance(user, currentViewDomain); 
     }
 
     @Override

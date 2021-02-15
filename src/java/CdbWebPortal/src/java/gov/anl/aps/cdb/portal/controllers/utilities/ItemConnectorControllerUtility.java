@@ -5,7 +5,9 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.ItemConnectorFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 /**
  *
@@ -17,6 +19,16 @@ public class ItemConnectorControllerUtility extends CdbEntityControllerUtility<I
     protected ItemConnectorFacade getEntityDbFacade() {
         return ItemConnectorFacade.getInstance();
     }
+    
+    @Override
+    public ItemConnector createEntityInstance(UserInfo sessionUser) {
+        ItemConnector itemConnector = new ItemConnector();
+        Connector connector = new Connector();
+        itemConnector.setConnector(connector);
+        itemConnector.setQuantity(1);
+
+        return itemConnector;
+    } 
     
     @Override
     public String getEntityTypeName() {

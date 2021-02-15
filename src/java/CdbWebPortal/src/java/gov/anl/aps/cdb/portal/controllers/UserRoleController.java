@@ -38,11 +38,6 @@ public class UserRoleController extends CdbEntityController<UserRoleControllerUt
     protected UserRoleFacade getEntityDbFacade() {
         return userRoleFacade; 
     }
-
-    @Override
-    protected UserRole createEntityInstance() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
     
     public void prepareAddUserRole(UserInfo userInfoObject) {
         UserRole userRole = new UserRole();

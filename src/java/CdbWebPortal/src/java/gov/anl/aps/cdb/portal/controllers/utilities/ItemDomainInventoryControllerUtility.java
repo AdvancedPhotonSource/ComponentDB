@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -160,6 +161,15 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
             }
         }
     }
+    
+    public void changeBillOfMaterialsState(InventoryBillOfMaterialItem bomItem, String previousState) {
+        if (SessionUtility.runningFaces()) {
+            // TODO rewrite the BOM to not require this.
+            // Run only within view mode 
+            ItemDomainInventoryController controller = ItemDomainInventoryController.getInstance();
+            controller.changeBillOfMaterialsState(bomItem, previousState);
+        }
+    }
 
     public void addItemElementsFromBillOfMaterials(ItemDomainInventory item) throws CdbException {
         // Bill of materials list.
@@ -300,5 +310,19 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
     public String getDisplayEntityTypeName() {
         return "Inventory Item";
     }
-
+        
+    @Override
+    public List<ItemDomainInventory> getItemList() {
+        return itemFacade.findByDomainOrderByDerivedFromItem(getDefaultDomainName());
+    }
+    
+    @Override
+    protected ItemDomainInventory instenciateNewItemDomainEntity() {
+        return new ItemDomainInventory();
+    }   
+    
+    @Override
+    public String getStatusPropertyTypeName() {
+        return ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
+    }
 }

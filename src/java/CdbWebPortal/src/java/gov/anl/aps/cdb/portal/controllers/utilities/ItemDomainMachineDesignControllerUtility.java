@@ -6,19 +6,37 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.primefaces.model.DefaultTreeNode;
+import org.primefaces.model.TreeNode;
 
 /**
  *
  * @author darek
  */
 public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtility<ItemDomainMachineDesign, ItemDomainMachineDesignFacade> {
+    
+    private static final Logger logger = LogManager.getLogger(ItemDomainMachineDesignControllerUtility.class.getName());
+    
+    EntityTypeFacade entityTypeFacade; 
+
+    public ItemDomainMachineDesignControllerUtility() {
+        super();
+        entityTypeFacade = EntityTypeFacade.getInstance(); 
+    }
     
     @Override    
     protected boolean verifyItemNameCombinationUniqueness(Item item) {
@@ -136,6 +154,84 @@ public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtil
     @Override
     public String getDisplayEntityTypeName() {
         return "Machine Design Item";
+    }     
+    
+    @Override
+    protected ItemDomainMachineDesign instenciateNewItemDomainEntity() {
+        return new ItemDomainMachineDesign();
     }
     
+    public TreeNode getSearchResults(String searchString, boolean caseInsensitive) {
+        LinkedList<SearchResult> searchResultList = this.performEntitySearch(searchString, caseInsensitive);
+        return getHierarchicalSearchResults(searchResultList);
+    }
+
+    public TreeNode getHierarchicalSearchResults(LinkedList<SearchResult> searchResultList) {
+        TreeNode searchResultsTreeNode; 
+                
+        TreeNode rootTreeNode = new DefaultTreeNode();
+        if (searchResultList != null) {
+            for (SearchResult result : searchResultList) {
+                result.setRowStyle(SearchResult.SEARCH_RESULT_ROW_STYLE);
+
+                ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) result.getCdbEntity();
+
+                ItemDomainMachineDesign parent = mdItem.getParentMachineDesign();
+
+                TreeNode resultNode = new DefaultTreeNode(result);
+
+                List<ItemDomainMachineDesign> parents = new ArrayList<>();
+
+                while (parent != null) {
+                    parents.add(parent);
+                    parent = parent.getParentMachineDesign();
+                }
+
+                TreeNode currentRoot = rootTreeNode;
+
+                // Combine common parents 
+                parentSearch:
+                for (int i = parents.size() - 1; i >= 0; i--) {
+                    ItemDomainMachineDesign currentParent = parents.get(i);
+
+                    for (TreeNode node : currentRoot.getChildren()) {
+                        Object data = node.getData();
+                        SearchResult searchResult = (SearchResult) data;
+                        CdbEntity cdbEntity = searchResult.getCdbEntity();
+                        ItemDomainMachineDesign itemResult = (ItemDomainMachineDesign) cdbEntity;
+
+                        if (itemResult.equals(currentParent)) {
+                            currentRoot = node;
+                            continue parentSearch;
+                        }
+                    }
+
+                    // Need to create parentNode
+                    SearchResult parentResult = new SearchResult(currentParent, currentParent.getId(), currentParent.getName());
+                    parentResult.addAttributeMatch("Reason", "Parent of Result");
+
+                    TreeNode newRoot = new DefaultTreeNode(parentResult);
+                    newRoot.setExpanded(true);
+                    currentRoot.getChildren().add(newRoot);
+                    currentRoot = newRoot;
+                }
+
+                currentRoot.getChildren().add(resultNode);
+
+                List<ItemElement> childElements = mdItem.getItemElementDisplayList();
+
+                for (ItemElement childElement : childElements) {
+                    Item mdChild = childElement.getContainedItem();
+                    SearchResult childResult = new SearchResult(mdChild, mdChild.getId(), mdChild.getName());
+                    childResult.addAttributeMatch("Reason", "Child of result");
+
+                    TreeNode resultChildNode = new DefaultTreeNode(childResult);
+                    resultNode.getChildren().add(resultChildNode);
+                }
+            }
+        }
+        searchResultsTreeNode = rootTreeNode;
+        return searchResultsTreeNode;
+    }
+
 }

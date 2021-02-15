@@ -130,4 +130,9 @@ public class UserInfoControllerUtility extends CdbEntityControllerUtility<UserIn
         return "user";
     }   
 
+    @Override
+    public UserInfo createEntityInstance(UserInfo sessionUser) {
+        return new UserInfo();
+    }
+
 }

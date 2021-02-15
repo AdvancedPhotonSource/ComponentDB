@@ -4,7 +4,6 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableInventory;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
@@ -15,12 +14,8 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
-import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
-import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -39,31 +34,13 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     public static final String CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE = "cable_inventory_internal_property_type";
     public static final String CONTROLLER_NAMED = "itemDomainCableInventoryController";
     private final String DEFAULT_DOMAIN_DERIVED_FROM_ITEM_DOMAIN_NAME = "CableCatalog";                        
-    private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.cableInventory.getValue();
-    private static ItemDomainCableInventoryController apiInstance;        
+    private static final String DEFAULT_DOMAIN_NAME = ItemDomainName.cableInventory.getValue();      
     
     @EJB
     ItemDomainCableInventoryFacade itemDomainCableInventoryFacade; 
 
-    public static synchronized ItemDomainCableInventoryController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainCableInventoryController();            
-            apiInstance.prepareApiInstance(); 
-        }
-        return apiInstance;
-    }
-    
-    public static ItemDomainCableInventoryController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainCableInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);
-        } else {
-            return getApiInstance(); 
-        }
-    }        
-
-    @Override
-    protected ItemDomainCableInventory instenciateNewItemDomainEntity() {
-        return new ItemDomainCableInventory();
+    public static ItemDomainCableInventoryController getInstance() {        
+        return (ItemDomainCableInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);        
     }
 
     @Override
@@ -74,38 +51,11 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
     @Override
     protected ItemDomainCableInventoryFacade getEntityDbFacade() {
         return itemDomainCableInventoryFacade; 
-    }
-
-    @Override
-    public ItemDomainCableInventory createEntityInstance() {
-        ItemDomainCableInventory item = super.createEntityInstance();
-        return item;
-    }
-
-    @Override
-    public String getStatusPropertyTypeName() {
-        return ItemDomainCableInventory.ITEM_DOMAIN_CABLE_INVENTORY_STATUS_PROPERTY_TYPE_NAME;
-    }
-            
-    @Override
-    public InventoryStatusPropertyTypeInfo initializeInventoryStatusPropertyTypeInfo() {
-        InventoryStatusPropertyTypeInfo info = ItemStatusUtility.initializeInventoryStatusPropertyTypeInfo();     
-        
-        info.setDefaultValue("Planned");
-        
-        return info;
-    }
+    }   
             
     @Override
     protected String generatePaddedUnitName(int itemNumber) {
         return ItemDomainCableInventory.generatePaddedUnitName(itemNumber);
-    }
-
-    @Override
-    protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
-        ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Inventory Metadata", ItemDomainCableInventory.CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE);
-        info.addField(ItemDomainCableInventory.CABLE_INVENTORY_PROPERTY_LENGTH_KEY, "Length", "Installed length of cable.", ItemCoreMetadataFieldType.STRING, "", null);
-        return info;
     }
 
     @Override
@@ -142,12 +92,7 @@ public class ItemDomainCableInventoryController extends ItemDomainInventoryBaseC
                 }
             }
         }
-    }
-    
-    @Override
-    public List<ItemDomainCableInventory> getItemList() {
-        return itemDomainCableInventoryFacade.findByDomainOrderByDerivedFromItemAndItemName(getDefaultDomainName());
-    }   
+    }        
 
     @Override
     public String getDefaultDomainName() {
