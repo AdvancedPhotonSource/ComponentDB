@@ -810,6 +810,16 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.itemCategoryList = itemCategoryList;
     }
 
+    public void setItemCategoryListImport(List<ItemCategory> itemCategoryList) {
+        if (itemCategoryList != null) {
+            this.itemCategoryString = null;
+            this.itemCategoryList = itemCategoryList;
+        } else if (this.itemCategoryList != null) {
+            // if the new list value is null, but the old value is not null, then clear the list
+            this.itemCategoryList.clear();
+        }
+    }
+
     @XmlTransient
     public List<ItemType> getItemTypeList() {
         return itemTypeList;
@@ -1508,6 +1518,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         if (propertyValue == null) {
             propertyValue = getItemControllerUtility().prepareCoreMetadataPropertyValue(this);
+        }
+        
+        if (value == null) {
+            value = ""; // this is the default value in prepare value add
         }
         
         propertyValue.setPropertyMetadataValue(key, value);

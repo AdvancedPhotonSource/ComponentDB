@@ -42,6 +42,7 @@ public class ItemDomainCableDesign extends Item {
     private transient String endpoint2Description = null;
     private transient String endpoint1Route = null;
     private transient String endpoint2Route = null;
+    private transient List<ItemElementRelationship> deletedRelationshipList = null;
 
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type";
     public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName";
@@ -65,6 +66,19 @@ public class ItemDomainCableDesign extends Item {
     @Override
     public ItemDomainCableDesignControllerUtility getItemControllerUtility() {
         return new ItemDomainCableDesignControllerUtility();
+    }
+    
+    public List<ItemElementRelationship> getDeletedRelationshipList() {
+        if (deletedRelationshipList == null) {
+            deletedRelationshipList = new ArrayList<>();
+        }
+        return deletedRelationshipList;
+    }
+    
+    public void clearDeletedRelationshipList() {
+        if (deletedRelationshipList != null) {
+            deletedRelationshipList.clear();
+        }
     }
 
     private RelationshipType getCableConnectionRelationshipType() {
@@ -117,7 +131,18 @@ public class ItemDomainCableDesign extends Item {
         ierList.add(ier);
     }
 
-    private void addCableRelationship(Item endpoint, float sortOrder) {
+    public ItemElementRelationship addCableRelationship(Item endpoint, Float sortOrder) {
+        
+        if (endpoint == null) {
+            return null;
+        }
+        
+        // calculate sortOrder if not provided
+        if (sortOrder == null) {
+            float maxSortOrder = this.getMaxRelationshipSortOrder();
+            sortOrder = maxSortOrder + 1;
+        }
+        
         // create relationships from cable to endpoints
         ItemElementRelationship relationship = createRelationship(endpoint, sortOrder);
 
@@ -130,22 +155,64 @@ public class ItemDomainCableDesign extends Item {
         // Add appropriate item relationships to model.
         addItemElementRelationshipToItem(endpoint, relationship, false);
         addItemElementRelationshipToItem(this, relationship, true);
+        
+        return relationship;
     }
     
-    private void setEndpointItemInRelationship(Item itemEndpoint, ItemElementRelationship cableRelationship) {
+    private void removeCableRelationship(
+            ItemElementRelationship relationship,
+            boolean isImport) {
+        
+        this.getSelfElement().getItemElementRelationshipList1().remove(relationship);
+        // remove relationship from old endpoint's relationship list
+        relationship.getFirstItemElement().getItemElementRelationshipList().remove(relationship);
+        if (isImport) {
+            getDeletedRelationshipList().add(relationship);
+        }
+    }
+    
+    private void updateCableRelationshipToEndpoint(
+            Item itemEndpoint,
+            ItemElementRelationship cableRelationship,
+            boolean isImport) {
+        
+        if (itemEndpoint == null) {
+            // remove relationship from cable's relationship list
+            removeCableRelationship(cableRelationship, isImport);
+        } else {
+            // update existing relationship with new endpoint
+            updateCableRelationship(cableRelationship, itemEndpoint, null, null);
+        }
+    }
+    
+    public void updateCableRelationship(
+            ItemElementRelationship cableRelationship, 
+            Item itemEndpoint,
+            ItemConnector endpointConnector,
+            ItemConnector cableConnector) {
+        
         cableRelationship.setFirstItemElement(itemEndpoint.getSelfElement());
-        // null out connector too, for when we add support for port-level connections
-        cableRelationship.setFirstItemConnector(null);
+        cableRelationship.setFirstItemConnector(endpointConnector);
+        cableRelationship.setSecondItemConnector(cableConnector);
+    }
+
+    public void setEndpoint(Item itemEndpoint, float sortOrder, boolean isImport) {
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(sortOrder);
+        if (cableRelationship != null) {
+            updateCableRelationshipToEndpoint(itemEndpoint, cableRelationship, isImport);
+        } else {
+            if (itemEndpoint != null) {
+                this.addCableRelationship(itemEndpoint, sortOrder);
+            }
+        }
     }
 
     public void setEndpoint1(Item itemEndpoint) {
-        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-        if (cableRelationship != null) {
-            // update existing relationship with new endpoint
-            setEndpointItemInRelationship(itemEndpoint, cableRelationship);
-        } else {
-            this.addCableRelationship(itemEndpoint, 1.0f);
-        }
+        setEndpoint(itemEndpoint, 1.0f, false);
+    }
+
+    public void setEndpoint1Import(Item itemEndpoint) {
+        setEndpoint(itemEndpoint, 1.0f, true);
     }
 
     public void setEndpoint1Id(String id) {
@@ -158,13 +225,11 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint2(Item itemEndpoint) {
-        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-        if (cableRelationship != null) {
-            // update existing relationship with new endpoint
-            setEndpointItemInRelationship(itemEndpoint, cableRelationship);
-        } else {
-            this.addCableRelationship(itemEndpoint, 2.0f);
-        }
+        setEndpoint(itemEndpoint, 2.0f, false);
+    }
+
+    public void setEndpoint2Import(Item itemEndpoint) {
+        setEndpoint(itemEndpoint, 2.0f, true);
     }
 
     public void setEndpoint2Id(String id) {
@@ -174,39 +239,6 @@ public class ItemDomainCableDesign extends Item {
         } else {
             LOGGER.error("setEndpoint2Id() unknown machine design item id " + id);
         }
-    }
-
-    /**
-     * Updates oldEndpoint to newEndpoint.
-     *
-     * @param oldEndpoint
-     * @param newEndpoint
-     */
-    public Boolean updateEndpoint(Item oldEndpoint, Item newEndpoint) {
-
-        ItemElement selfElement = this.getSelfElement();
-        List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
-
-        if (ierList != null) {
-
-            RelationshipType cableIerType
-                    = RelationshipTypeFacade.getInstance().findByName(
-                            ItemElementRelationshipTypeNames.itemCableConnection.getValue());
-
-            // find cable relationship for old endpoint
-            ItemElementRelationship cableRelationship = ierList.stream()
-                    .filter(ier -> (ier.getRelationshipType().getName().equals(cableIerType.getName()))
-                    && (ier.getFirstItemElement().equals(oldEndpoint.getSelfElement())))
-                    .findAny()
-                    .orElse(null);
-
-            // update cable relationship to new endpoint
-            if (cableRelationship != null) {
-                setEndpointItemInRelationship(newEndpoint, cableRelationship);
-            }
-        }
-
-        return true;
     }
 
     public List<Item> getEndpointList() {
@@ -249,6 +281,28 @@ public class ItemDomainCableDesign extends Item {
             }
         }
         return null;
+    }
+
+    public float getMaxRelationshipSortOrder() {
+        float maxSortOrder = 0;
+        ItemElement selfElement = this.getSelfElement();
+        List<ItemElementRelationship> ierList
+                = selfElement.getItemElementRelationshipList1();
+        if (ierList != null) {
+            // find just the cable relationship items
+            RelationshipType cableIerType
+                    = RelationshipTypeFacade.getInstance().findByName(
+                            ItemElementRelationshipTypeNames.itemCableConnection.getValue());
+            if (cableIerType != null) {
+                for (ItemElementRelationship rel : ierList) {
+                    if ((rel.getRelationshipType().getName().equals(cableIerType.getName()))
+                            && (rel.getSecondSortOrder() > maxSortOrder)) {
+                        maxSortOrder = rel.getSecondSortOrder();
+                    }
+                }
+            }
+        }
+        return maxSortOrder;
     }
 
     /**

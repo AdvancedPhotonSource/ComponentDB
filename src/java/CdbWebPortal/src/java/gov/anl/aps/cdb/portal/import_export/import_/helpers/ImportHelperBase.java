@@ -743,18 +743,31 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             String cellValue = parseStringCell(cell);
             cellValueMap.put(colIndex, cellValue);
             
-            // check that value is present for required column
-            if (col.isRequired() && ((cellValue == null) || (cellValue.isEmpty()))) {
-                isValid = false;
-                validString = appendToString(validString, 
-                        "Required value missing for " + columnNameForIndex(col.getColumnIndex()));
+            // check that value is present for required columns
+            if (getImportMode() == ImportMode.CREATE) {
+                if (col.isRequiredForCreate() && ((cellValue == null) || (cellValue.isEmpty()))) {
+                    isValid = false;
+                    validString = appendToString(validString,
+                            "Required value missing for " + columnNameForIndex(col.getColumnIndex()));
+                }
+            } else if (getImportMode() == ImportMode.UPDATE) {
+                if (col.isRequiredForUpdate() && ((cellValue == null) || (cellValue.isEmpty()))) {
+                    isValid = false;
+                    validString = appendToString(validString,
+                            "Required value missing for " + columnNameForIndex(col.getColumnIndex()));
+                }
             }
             
             // check that updateOnly column value not specified in create mode
-            if ((col.isUpdateOnly()) && (getImportMode() == ImportMode.CREATE) && ((cellValue != null) && (!cellValue.isEmpty()))) {
+            if (
+                    (col.isUpdateOnly()) && 
+                    (getImportMode() == ImportMode.CREATE) && 
+                    ((cellValue != null) && (!cellValue.isEmpty()))) {
+                
                 isValid = false;
                 validString = appendToString(validString, 
-                        "Value should not be specified in create mode for " + columnNameForIndex(col.getColumnIndex()));
+                        "Value should not be specified in create mode for " 
+                                + columnNameForIndex(col.getColumnIndex()));
             }
         }
         
@@ -914,7 +927,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 ValidInfo result = postCreate();
                 message = appendToString(message, result.getValidString());
             } else if (getImportMode() == ImportMode.UPDATE) {
-                controller.updateList(rows);
+                updateList();
                 message = "Import succeeded, updated " + rows.size() + " instances";
             }
 
@@ -1007,14 +1020,6 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new ValidInfo(true, "");
     }
     
-    protected abstract List<ColumnSpec> getColumnSpecs();
-    
-    public abstract EntityControllerType getEntityController();
-    
-    public abstract String getFilenameBase();
-    
-    protected abstract CreateInfo createEntityInstance(Map<String, Object> rowMap);
-    
     /**
      * Retrieves entity instance using values in rowMap.  Default implementation
      * returns null if helper is not configured to support update mode, otherwise
@@ -1048,39 +1053,137 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new CreateInfo(existingItem, isValid, validString);
     }
     
+    /**
+     * Updates list of items in update mode.  Allows subclasses to override with
+     * custom behavior.
+     */
+    protected void updateList() throws CdbException, RuntimeException {
+        EntityControllerType controller = this.getEntityController();
+        controller.updateList(rows);
+    }
+    
     public String getExportFilename() {
         return getFilenameBase() + " Export";
     }
     
     public IdOrNameRefColumnSpec ownerUserColumnSpec() {
-        return new IdOrNameRefColumnSpec("Owner User", KEY_USER, "setOwnerUser", false, "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", UserInfoController.getInstance(), UserInfo.class, "", "getOwnerUser");
+        return new IdOrNameRefColumnSpec(
+                "Owner User", 
+                KEY_USER, 
+                "setOwnerUser", 
+                false, 
+                "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", 
+                UserInfoController.getInstance(), 
+                UserInfo.class, 
+                "", 
+                "getOwnerUser",
+                false,
+                true);
     }
     
     public IdOrNameRefColumnSpec ownerGroupColumnSpec() {
-        return new IdOrNameRefColumnSpec("Owner Group", KEY_GROUP, "setOwnerUserGroup", false, "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", UserGroupController.getInstance(), UserGroup.class, "", "getOwnerUserGroup");
+        return new IdOrNameRefColumnSpec(
+                "Owner Group", 
+                KEY_GROUP, 
+                "setOwnerUserGroup", 
+                false, 
+                "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", 
+                UserGroupController.getInstance(), 
+                UserGroup.class, 
+                "", 
+                "getOwnerUserGroup", 
+                false, 
+                true);
     }
     
     public IdOrNameRefListColumnSpec projectListColumnSpec() {
-        return new IdOrNameRefListColumnSpec("Project", "itemProjectString", "setItemProjectList", true, "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'.", ItemProjectController.getInstance(), List.class, "", "getItemProjectList");
+        return new IdOrNameRefListColumnSpec(
+                "Project", 
+                "itemProjectString", 
+                "setItemProjectList", 
+                true, 
+                "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'.", 
+                ItemProjectController.getInstance(), 
+                List.class, 
+                "", 
+                "getItemProjectList", 
+                false, 
+                true);
     }
     
     public IdOrNameRefListColumnSpec technicalSystemListColumnSpec(String domainName) {
-        return new IdOrNameRefListColumnSpec("Technical System", "itemCategoryString", "setItemCategoryList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemCategoryController.getInstance(), List.class, domainName, "getItemCategoryList");
+        return new IdOrNameRefListColumnSpec(
+                "Technical System", 
+                "itemCategoryString", 
+                "setItemCategoryListImport", 
+                false, 
+                "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", 
+                ItemCategoryController.getInstance(), 
+                List.class, 
+                domainName, 
+                "getItemCategoryList", 
+                false, 
+                false);
     }
     
     public IdOrNameRefListColumnSpec functionListColumnSpec(String domainName) {
-        return new IdOrNameRefListColumnSpec("Function", "itemTypeString", "setItemTypeList", false, "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", ItemTypeController.getInstance(), List.class, domainName, "getItemTypeList");
+        return new IdOrNameRefListColumnSpec(
+                "Function", 
+                "itemTypeString", 
+                "setItemTypeList", 
+                false, 
+                "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", 
+                ItemTypeController.getInstance(), 
+                List.class, 
+                domainName, 
+                "getItemTypeList", 
+                false, 
+                false);
     }
     
     public IdOrNameRefColumnSpec locationColumnSpec() {
-        return new IdOrNameRefColumnSpec("Location", "importLocationItemString", "setImportLocationItem", false, "Item location.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, "", "getLocationItem");
+        return new IdOrNameRefColumnSpec(
+                "Location", 
+                "importLocationItemString", 
+                "setImportLocationItem", 
+                false, 
+                "Item location.", 
+                ItemDomainLocationController.getInstance(), 
+                ItemDomainLocation.class, 
+                "", 
+                "getLocationItem", 
+                false, 
+                false);
     }
     
     public StringColumnSpec locationDetailsColumnSpec() {
-        return new StringColumnSpec("Location Details", "locationDetails", "setLocationDetails", false, "Location details for item.", 256, "getLocationDetails");
+        return new StringColumnSpec(
+                "Location Details", 
+                "locationDetails", 
+                "setLocationDetails", 
+                false, 
+                "Location details for item.", 
+                256, 
+                "getLocationDetails");
     }
     
     public IntegerColumnSpec existingItemIdColumnSpec() {
-        return new IntegerColumnSpec("Existing Item ID", KEY_EXISTING_ITEM_ID, "setImportExistingItemId", false, "CDB ID of existing item to update.", "getId", true);
+        return new IntegerColumnSpec(
+                "Existing Item ID", 
+                KEY_EXISTING_ITEM_ID, 
+                "setImportExistingItemId", 
+                false, 
+                "CDB ID of existing item to update.", 
+                "getId", 
+                true);
     }
+
+    protected abstract List<ColumnSpec> getColumnSpecs();
+    
+    public abstract EntityControllerType getEntityController();
+    
+    public abstract String getFilenameBase();
+    
+    protected abstract CreateInfo createEntityInstance(Map<String, Object> rowMap);
+    
 }
