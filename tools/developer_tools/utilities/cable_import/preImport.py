@@ -101,10 +101,10 @@ CABLE_DESIGN_DEST_ADDRESS_KEY = "destAddress"
 CABLE_DESIGN_DEST_DESCRIPTION_KEY = "destDescription"
 CABLE_DESIGN_LEGACY_ID_KEY = "legacyId"
 CABLE_DESIGN_FROM_DEVICE_NAME_KEY = "fromDeviceName"
+CABLE_DESIGN_FROM_PORT_NAME_KEY = "fromPortName"
 CABLE_DESIGN_TO_DEVICE_NAME_KEY = "toDeviceName"
-CABLE_DESIGN_MBA_ID_KEY = "mbaId"
+CABLE_DESIGN_TO_PORT_NAME_KEY = "toPortName"
 CABLE_DESIGN_IMPORT_ID_KEY = "importId"
-CABLE_DESIGN_QR_ID_KEY = "qrId"
 CABLE_DESIGN_VIA_ROUTE_KEY = "via"
 CABLE_DESIGN_WAYPOINT_ROUTE_KEY = "waypoint"
 CABLE_DESIGN_NOTES_KEY = "notes"
@@ -315,8 +315,9 @@ class ConnectedMenuManager:
                 values = []
                 for row_ind in range(first_cell_row, last_cell_row + 1):
                     for col_ind in range(first_cell_col, last_cell_col + 1):
-                        values.append(sheet.cell(row_ind, col_ind).value)
+                        # print("ref: %s sheet: %s row_ind: %d col_ind: %d" % (ref, sheet_name, row_ind, col_ind))
                         # print("\t%s" % sheet.cell(row_ind, col_ind).value)
+                        values.append(sheet.cell(row_ind, col_ind).value)
                 self.add_name(name.name, values)
 
     def has_name(self, range_name):
@@ -532,6 +533,10 @@ class CableTypeHandler(InputHandler):
             # check to see if cable type exists in CDB by name
             cable_type_object = None
             try:
+                if (cable_type_name is None) or (len(cable_type_name) == 0):
+                    error_msg = "skipping cable type API lookup, no type name specified"
+                    logging.error(error_msg)
+                    return False, error_msg
                 cable_type_object = self.api.getCableCatalogItemApi().get_cable_catalog_item_by_name(cable_type_name)
             except ApiException as ex:
                 if "ObjectNotFound" not in ex.body:
@@ -1056,9 +1061,7 @@ class CableInventoryHelper(PreImportHelper):
             InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
             InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, required=True),
             InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
-            InputColumnModel(col_index=18, key=CABLE_DESIGN_MBA_ID_KEY),
-            InputColumnModel(col_index=19, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
-            InputColumnModel(col_index=20, key=CABLE_DESIGN_QR_ID_KEY, required=False),
+            InputColumnModel(col_index=20, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
         ]
         return column_list
 
@@ -1198,10 +1201,10 @@ class CableDesignHelper(PreImportHelper):
             InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY, required=True),
             InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
             InputColumnModel(col_index=16, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
-            InputColumnModel(col_index=17, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
-            InputColumnModel(col_index=18, key=CABLE_DESIGN_MBA_ID_KEY),
-            InputColumnModel(col_index=19, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
-            InputColumnModel(col_index=20, key=CABLE_DESIGN_QR_ID_KEY, required=False),
+            InputColumnModel(col_index=17, key=CABLE_DESIGN_FROM_PORT_NAME_KEY, required=False),
+            InputColumnModel(col_index=18, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
+            InputColumnModel(col_index=19, key=CABLE_DESIGN_TO_PORT_NAME_KEY, required=False),
+            InputColumnModel(col_index=20, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
             InputColumnModel(col_index=21, key=CABLE_DESIGN_VIA_ROUTE_KEY, required=False),
             InputColumnModel(col_index=22, key=CABLE_DESIGN_WAYPOINT_ROUTE_KEY, required=False),
             InputColumnModel(col_index=23, key=CABLE_DESIGN_NOTES_KEY, required=False),
@@ -1272,7 +1275,12 @@ class CableDesignHelper(PreImportHelper):
             return True
 
         if non_empty_count == 1 and (input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []"):
-            logging.debug("skipping empty row with non-empty import id: %s row: %d" %
+            logging.debug("skipping empty row with no import id: %s row: %d" %
+                          (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
+            return True
+
+        if non_empty_count == 1 and (len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0):
+            logging.debug("skipping empty row with id: %s row: %d" %
                           (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
             return True
 
@@ -1331,11 +1339,6 @@ class CableDesignOutputObject(OutputObject):
         if len(legacy_id) > 0:
             return legacy_id
 
-        # next try MBA cable id
-        mba_id = row_dict[CABLE_DESIGN_MBA_ID_KEY]
-        if len(mba_id) > 0:
-            return mba_id
-
         # otherwise use import_id prefixed with "CA "
         return "CA " + cls.get_import_id_cls(row_dict)
 
@@ -1361,7 +1364,7 @@ class CableDesignOutputObject(OutputObject):
         return self.input_dict[CABLE_DESIGN_LEGACY_ID_KEY]
 
     def get_qr_id(self):
-        return self.input_dict[CABLE_DESIGN_QR_ID_KEY]
+        return ""
 
     def get_description(self):
         return ""
@@ -1626,7 +1629,7 @@ def main():
     # print validation report
     print()
     if len(validation_map) > 0:
-        print("validation ERRORS found")
+        print("%d validation ERRORS found" % len(validation_map))
         for key in validation_map:
             print("row: %d" % key)
             for message in validation_map[key]:

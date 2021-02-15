@@ -83,14 +83,14 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     }
 
     @Override
-    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate) {
+    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate, Boolean showCables, Boolean showConnectorsWithoutCables) {
         TreeNode rootTreeNode = new DefaultTreeNode();
         List<ItemDomainMachineDesign> itemsWithoutParents
                 = getItemsWithoutParents();
 
         for (Item item : itemsWithoutParents) {
             if (item.getIsItemDeleted()) {
-                expandTreeChildren(item, rootTreeNode);
+                expandTreeChildren(item, rootTreeNode, showCables, showConnectorsWithoutCables);
             }
         }
 

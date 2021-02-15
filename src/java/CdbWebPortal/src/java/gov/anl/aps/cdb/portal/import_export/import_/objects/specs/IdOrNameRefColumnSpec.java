@@ -22,13 +22,13 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
             String header, 
             String propertyName, 
             String entitySetterMethod, 
-            boolean required, 
+            boolean requiredForCreate, 
             String description, 
             CdbEntityController controller, 
             Class paramType, 
             String domainNameFilter) {
         
-        super(header, propertyName, entitySetterMethod, required, description, controller, paramType);
+        super(header, propertyName, entitySetterMethod, requiredForCreate, description, controller, paramType);
         this.domainNameFilter = domainNameFilter;
     }
 
@@ -36,14 +36,26 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
             String header, 
             String propertyName, 
             String entitySetterMethod, 
-            boolean required, 
+            boolean requiredForCreate, 
             String description, 
             CdbEntityController controller, 
             Class paramType, 
             String domainNameFilter,
-            String exportGetterMethod) {
+            String exportGetterMethod,
+            boolean updateOnly,
+            boolean requiredForUpdate) {
         
-        super(header, propertyName, entitySetterMethod, required, description, controller, paramType, exportGetterMethod);
+        super(
+                header, 
+                propertyName, 
+                entitySetterMethod, 
+                requiredForCreate, 
+                description, 
+                controller, 
+                paramType, 
+                exportGetterMethod,
+                updateOnly,
+                requiredForUpdate);
         this.domainNameFilter = domainNameFilter;
     }
 
