@@ -32,7 +32,9 @@ import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
@@ -68,7 +70,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         private ItemConnector origMdConnector;
         private ItemConnector origCableConnector;
         private ItemConnector selectedCableConnector;
-        private List<ItemConnector> availableCableConnectors;
+        private Map<String, ItemConnector> cableConnectorNameMap;
+        private List<String> availableCableConnectorNames;
+        private String selectedCableConnectorName;
         private String message;
 
         public ItemElementRelationship getCableRelationship() {
@@ -157,15 +161,55 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             this.selectedCableConnector = selectedCableConnector;
         }
 
-        public List<ItemConnector> getAvailableCableConnectors() {
-            return availableCableConnectors;
+        /**
+         * Prepares list of available cable connectors to use as model for menu,
+         * and map for looking up connector by name when menu selection changes.
+         * This is called in preparing the dialog. This is to work around issue
+         * where newly cloned connector doesn't have an id, which causes an 
+         * exception in the framework code trying to look up connector by id
+         * when the menu selection changes.
+        */
+        public void setAvailableCableConnectors(
+                List<ItemConnector> availableCableConnectors,
+                ItemConnector currentConnector) {
+            
+            availableCableConnectorNames = new ArrayList<>();
+            cableConnectorNameMap = new HashMap<>();
+            for (ItemConnector connector : availableCableConnectors) {
+                String connectorName = connector.getConnector().toString();
+                availableCableConnectorNames.add(connectorName);
+                cableConnectorNameMap.put(connectorName, connector);
+            }
+            
+            // set selected item and original item
+            setOrigCableConnector(currentConnector);
+            if (currentConnector != null) {
+                String currentConnectorName = currentConnector.getConnector().toString();
+                setSelectedCableConnectorName(currentConnectorName);
+            } else {
+                setSelectedCableConnectorName("");
+            }
+            
         }
 
-        public void setAvailableCableConnectors(List<ItemConnector> availableCableConnectors) {
-            this.availableCableConnectors = availableCableConnectors;
+        public List<String> getAvailableCableConnectorNames() {
+            return availableCableConnectorNames;
+        }
+
+        public String getSelectedCableConnectorName() {
+            return selectedCableConnectorName;
+        }
+
+        public void setSelectedCableConnectorName(String selectedCableConnectorName) {
+            this.selectedCableConnectorName = selectedCableConnectorName;
         }
 
         public void selectListenerConnector(SelectEvent event){
+            if ((selectedCableConnectorName != null) && (!selectedCableConnectorName.isBlank()))  {
+                setSelectedCableConnector(cableConnectorNameMap.get(selectedCableConnectorName));
+            } else {
+                setSelectedCableConnector(null);
+            }
             setEnablement();
         }
         
@@ -205,7 +249,10 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             setOrigMdConnector(null);
             setOrigCableConnector(null);
             setSelectedCableConnector(null);
-            setAvailableCableConnectors(null);
+            setSelectedCableConnectorName(null);
+            availableCableConnectorNames = null;
+            cableConnectorNameMap = null;
+            setSelectedCableConnectorName(null);
             setMessage(DEFAULT_MESSAGE);
             setEnablement();            
         }
@@ -653,7 +700,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         dialogConnection.setOrigMdItem(connection.getMdItem());
         dialogConnection.setOrigMdConnector(connection.getMdConnector());
         dialogConnection.setCableRelationship(connection.getCableRelationship());
-        dialogConnection.setOrigCableConnector(connection.getItemConnector());
         
         // get list of unmapped connectors, plus connector for this connection if any
         List<ItemConnector> unmappedConnectors = getUnmappedConnectorsForCurrent();
@@ -661,7 +707,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             unmappedConnectors.add(connection.getItemConnector());
             dialogConnection.setSelectedCableConnector(connection.getItemConnector());
         }
-        dialogConnection.setAvailableCableConnectors(unmappedConnectors);
+        dialogConnection.setAvailableCableConnectors(unmappedConnectors, connection.getItemConnector());
         
         // expand MD tree to specified md item and connector
         dialogConnection.expandTreeAndSelectNode();
@@ -677,7 +723,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         
         // get list of unmapped connectors
         List<ItemConnector> unmappedConnectors = getUnmappedConnectorsForCurrent();
-        dialogConnection.setAvailableCableConnectors(unmappedConnectors);
+        dialogConnection.setAvailableCableConnectors(unmappedConnectors, null);
     }
     
     public Boolean renderEditLinkForConnection(CableDesignConnectionListObject connection) {

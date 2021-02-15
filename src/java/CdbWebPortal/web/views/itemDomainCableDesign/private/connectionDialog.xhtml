@@ -22,12 +22,10 @@ See LICENSE file.
             <p:outputLabel for="cableConnectorMenu" value="Optionally select cable connector"/>
 
             <p:selectOneMenu id="cableConnectorMenu" 
-                             value="#{itemDomainCableDesignController.dialogConnection.selectedCableConnector}">
+                             value="#{itemDomainCableDesignController.dialogConnection.selectedCableConnectorName}">
                 <f:selectItem itemLabel="Unspecified" itemValue=""/>
-                <f:selectItems value="#{itemDomainCableDesignController.dialogConnection.availableCableConnectors}"
-                               var="connector"
-                               itemLabel="#{connector.connector.toString()}"
-                               itemValue="#{connector}"/>
+                <f:selectItems value="#{itemDomainCableDesignController.dialogConnection.availableCableConnectorNames}"
+                               var="connector"/>
                 <p:ajax event="itemSelect"
                         listener="#{itemDomainCableDesignController.dialogConnection.selectListenerConnector}"
                         oncomplete="updateButtonsDialogEndpoint();" />        
