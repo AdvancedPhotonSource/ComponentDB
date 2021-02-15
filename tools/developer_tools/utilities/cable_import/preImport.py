@@ -315,8 +315,9 @@ class ConnectedMenuManager:
                 values = []
                 for row_ind in range(first_cell_row, last_cell_row + 1):
                     for col_ind in range(first_cell_col, last_cell_col + 1):
-                        values.append(sheet.cell(row_ind, col_ind).value)
+                        # print("ref: %s sheet: %s row_ind: %d col_ind: %d" % (ref, sheet_name, row_ind, col_ind))
                         # print("\t%s" % sheet.cell(row_ind, col_ind).value)
+                        values.append(sheet.cell(row_ind, col_ind).value)
                 self.add_name(name.name, values)
 
     def has_name(self, range_name):
@@ -1625,7 +1626,7 @@ def main():
     # print validation report
     print()
     if len(validation_map) > 0:
-        print("validation ERRORS found")
+        print("%d validation ERRORS found" % len(validation_map))
         for key in validation_map:
             print("row: %d" % key)
             for message in validation_map[key]:
