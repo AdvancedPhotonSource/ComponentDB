@@ -1363,6 +1363,9 @@ class CableDesignOutputObject(OutputObject):
     def get_alt_id(self):
         return self.input_dict[CABLE_DESIGN_LEGACY_ID_KEY]
 
+    def get_qr_id(self):
+        return ""
+
     def get_description(self):
         return ""
 
