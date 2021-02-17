@@ -180,11 +180,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         // collect list of items to restore
         List<ItemDomainMachineDesign> itemsToRestore = new ArrayList<>();
         List<ItemElement> elementsToRestore = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(itemToRestore, itemsToRestore, elementsToRestore, true, true);
-        if (!validInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Could not restore: " + itemToRestore + " - " + validInfo.getValidString());
-            return;
-        }
+        collectItemsForDeletion(itemToRestore, itemsToRestore, elementsToRestore, true, true);
         
         // check permissions for all items
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
@@ -280,11 +276,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         // collect list of items to delete
         List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
         List<ItemElement> elementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true, false);
-        if (!validInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
-            return;
-        }
+        collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true, false);
         
         // admin permission required
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
