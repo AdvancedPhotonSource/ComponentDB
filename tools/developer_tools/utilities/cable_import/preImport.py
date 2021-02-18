@@ -41,9 +41,12 @@
 #   * contains 2 or more rows, header is on row 1, data starts on row 2
 #   * there are no empty rows within the data
 
+import os
+print("working directory: %s" % os.getcwd())
 
 import argparse
 import logging
+import configparser
 import sys
 from abc import ABC, abstractmethod
 import re
@@ -123,7 +126,6 @@ class PreImportHelper(ABC):
     def __init__(self):
         self.input_columns = {}
         self.output_columns = {}
-        self.args = None
         self.api = None
         self.validate_only = False
 
@@ -185,18 +187,12 @@ class PreImportHelper(ABC):
     def get_output_object(self, input_dict):
         pass
 
-    # Allows subclasses to add command line parser args.  Default behavior is to do nothing.
-    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    def add_parser_args(self, parser):
-        parser.add_argument("--validateOnly", action="store_true", help="perform basic validation only", required=False)
-
-    def set_args(self, args):
-        self.args = args
-        print("validateOnly: %s" % args.validateOnly)
-        self.validate_only = args.validateOnly
-
-    def get_args(self):
-        return self.args
+    def set_config(self, config):
+        if 'validateOnly' in config['SCRIPT CONTROL']:
+            self.validate_only = True
+        else:
+            self.validate_only = False
+        print("[SCRIPT CONTROL] validateOnly: %s" % self.validate_only)
 
     def set_api(self, api):
         self.api = api
@@ -742,11 +738,11 @@ class SourceHelper(PreImportHelper):
     def close(self):
         if len(self.new_sources) > 0 or len(self.existing_sources) > 0:
 
-            if not self.args.infoFile:
+            if not self.file_info:
                 print("provide command line arg 'infoFile' to generate debugging output file")
                 return
 
-            output_book = xlsxwriter.Workbook(self.args.infoFile)
+            output_book = xlsxwriter.Workbook(self.file_info)
             output_sheet = output_book.add_worksheet()
 
             output_sheet.write(0, 0, "new sources")
@@ -793,24 +789,53 @@ class CableTypeHelper(PreImportHelper):
         super().__init__()
         self.source_id_manager = IdManager()
         self.missing_source_list = []
+        self.project_id = None
+        self.tech_system_id = None
+        self.owner_user_id = None
+        self.owner_group_id = None
+        self.named_range = None
 
-    # Adds helper specific command line args.
-    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    def add_parser_args(self, parser):
-        super().add_parser_args(parser)
-        parser.add_argument("--projectId", help="CDB item category ID for project (item_project table)", required=True)
-        parser.add_argument("--techSystemId", help="CDB technical system ID for owner", required=True)
-        parser.add_argument("--ownerUserId", help="CDB user ID for owner", required=True)
-        parser.add_argument("--ownerGroupId", help="CDB group ID for owner", required=True)
-        parser.add_argument("--namedRange", help="Excel named range for technical system's cable types", required=True)
+    def get_project_id(self):
+        return self.project_id
 
-    def set_args(self, args):
-        super().set_args(args)
-        print("CDB project id: %s" % args.projectId)
-        print("CDB technical system id: %s" % args.techSystemId)
-        print("CDB owner user id: %s" % args.ownerUserId)
-        print("CDB owner group id: %s" % args.ownerGroupId)
-        print("Excel named range for technical system cable types: %s" % args.namedRange)
+    def get_tech_system_id(self):
+        return self.tech_system_id
+
+    def get_owner_user_id(self):
+        return self.owner_user_id
+
+    def get_owner_group_id(self):
+        return self.owner_group_id
+
+    def set_config(self, config):
+
+        super().set_config(config)
+
+        self.project_id = config['CDB DEFAULTS']['projectId']
+        if len(self.project_id) == 0:
+            sys.exit("[CDB DEFAULTS] projectId required option missing, exiting")
+
+        self.tech_system_id = config['CDB DEFAULTS']['techSystemId']
+        if len(self.tech_system_id) == 0:
+            sys.exit("[CDB DEFAULTS] techSystemId required option missing, exiting")
+
+        self.owner_user_id = config['CDB DEFAULTS']['ownerUserId']
+        if len(self.owner_user_id) == 0:
+            sys.exit("[CDB DEFAULTS] ownerUserId required option missing, exiting")
+
+        self.owner_group_id = config['CDB DEFAULTS']['ownerGroupId']
+        if len(self.owner_group_id) == 0:
+            sys.exit("[CDB DEFAULTS] ownerGroupId required option missing, exiting")
+
+        self.named_range = config['VALIDATION']['excelCableTypeRangeName']
+        if len(self.named_range) == 0:
+            sys.exit("[VALIDATION] excelCableTypeRangeName required option missing, exiting")
+
+        print("[CDB DEFAULTS] projectId: %s" % self.project_id)
+        print("[CDB DEFAULTS] techSystemId: %s" % self.tech_system_id)
+        print("[CDB DEFAULTS] ownerUserId: %s" % self.owner_user_id)
+        print("[CDB DEFAULTS] ownerGroupId: %s" % self.owner_group_id)
+        print("[VALIDATION] excelCableTypeRangeName: %s" % self.named_range)
 
     @staticmethod
     def tag():
@@ -882,7 +907,7 @@ class CableTypeHelper(PreImportHelper):
     def input_handler_list(self):
         global name_manager
         handler_list = [
-            NamedRangeHandler(CABLE_TYPE_NAME_KEY, self.args.namedRange),
+            NamedRangeHandler(CABLE_TYPE_NAME_KEY, self.named_range),
             SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, self.source_id_manager, self.api, self.missing_source_list),
         ]
         return handler_list
@@ -897,7 +922,7 @@ class CableTypeHelper(PreImportHelper):
 
         global name_manager
 
-        cable_type_named_range = self.args.namedRange
+        cable_type_named_range = self.named_range
 
         if len(output_objects) < name_manager.num_values_for_name(cable_type_named_range):
             return False, "fewer rows in output spreadsheet than named range of cable types for technical system"
@@ -907,11 +932,11 @@ class CableTypeHelper(PreImportHelper):
     def close(self):
         if len(self.missing_source_list) > 0:
 
-            if not self.args.infoFile:
+            if not self.file_info:
                 print("provide command line arg 'infoFile' to generate debugging output file")
                 return
 
-            output_book = xlsxwriter.Workbook(self.args.infoFile)
+            output_book = xlsxwriter.Workbook(self.file_info)
             output_sheet = output_book.add_worksheet()
 
             output_sheet.write(0, 0, "missing sources")
@@ -1014,16 +1039,16 @@ class CableTypeOutputObject(OutputObject):
         return proc_info
 
     def get_project_id(self):
-        return self.helper.get_args().projectId
+        return self.helper.get_project_id()
 
     def get_tech_system_id(self):
-        return self.helper.get_args().techSystemId
+        return self.helper.get_tech_system_id()
 
     def get_owner_user_id(self):
-        return self.helper.get_args().ownerUserId
+        return self.helper.get_owner_user_id()
 
     def get_owner_group_id(self):
-        return self.helper.get_args().ownerGroupId
+        return self.helper.get_owner_group_id()
 
 
 @register
@@ -1033,20 +1058,38 @@ class CableInventoryHelper(PreImportHelper):
         super().__init__()
         self.cable_type_id_manager = IdManager()
         self.missing_cable_types = set()
+        self.project_id = None
+        self.owner_user_id = None
+        self.owner_group_id = None
 
-    # Adds helper specific command line args.
-    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    def add_parser_args(self, parser):
-        super().add_parser_args(parser)
-        parser.add_argument("--projectId", help="CDB project ID", required=True)
-        parser.add_argument("--ownerUserId", help="CDB owner user ID", required=True)
-        parser.add_argument("--ownerGroupId", help="CDB owner group ID", required=True)
+    def get_project_id(self):
+        return self.project_id
 
-    def set_args(self, args):
-        super().set_args(args)
-        print("CDB project id: %s" % args.projectId)
-        print("CDB owner user id: %s" % args.ownerUserId)
-        print("CDB owner group id: %s" % args.ownerGroupId)
+    def get_owner_user_id(self):
+        return self.owner_user_id
+
+    def get_owner_group_id(self):
+        return self.owner_group_id
+
+    def set_config(self, config):
+
+        super().set_config(config)
+
+        self.project_id = config['CDB DEFAULTS']['projectId']
+        if len(self.project_id) == 0:
+            sys.exit("[CDB DEFAULTS] projectId required option missing, exiting")
+
+        self.owner_user_id = config['CDB DEFAULTS']['ownerUserId']
+        if len(self.owner_user_id) == 0:
+            sys.exit("[CDB DEFAULTS] ownerUserId required option missing, exiting")
+
+        self.owner_group_id = config['CDB DEFAULTS']['ownerGroupId']
+        if len(self.owner_group_id) == 0:
+            sys.exit("[CDB DEFAULTS] ownerGroupId required option missing, exiting")
+
+        print("[CDB DEFAULTS] projectId: %s" % self.project_id)
+        print("[CDB DEFAULTS] ownerUserId: %s" % self.owner_user_id)
+        print("[CDB DEFAULTS] ownerGroupId: %s" % self.owner_group_id)
 
     @staticmethod
     def tag():
@@ -1115,7 +1158,7 @@ class CableInventoryOutputObject(OutputObject):
         return "auto"
 
     def get_qr_id(self):
-        return self.input_dict[CABLE_DESIGN_QR_ID_KEY]
+        return ""
 
     def get_description(self):
         return None
@@ -1133,13 +1176,13 @@ class CableInventoryOutputObject(OutputObject):
         return None
 
     def get_project_id(self):
-        return self.helper.get_args().projectId
+        return self.helper.get_project_id()
 
     def get_owner_user_id(self):
-        return self.helper.get_args().ownerUserId
+        return self.helper.get_owner_user_id()
 
     def get_owner_group_id(self):
-        return self.helper.get_args().ownerGroupId
+        return self.helper.get_owner_group_id()
 
 
 @register
@@ -1154,26 +1197,43 @@ class CableDesignHelper(PreImportHelper):
         self.missing_cable_types = set()
         self.nonunique_endpoints = set()
         self.info_file = None
+        self.project_id = None
+        self.tech_system_id = None
+        self.owner_user_id = None
+        self.owner_group_id = None
 
-    # Adds helper specific command line args.
-    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    def add_parser_args(self, parser):
-        super().add_parser_args(parser)
-        parser.add_argument("--techSystemId", help="CDB technical system ID for owner", required=True)
-        parser.add_argument("--projectId", help="CDB project ID", required=True)
-        parser.add_argument("--mdRoot", help="CDB top-level parent machine design node name", required=True)
-        parser.add_argument("--ownerUserId", help="CDB owner user ID", required=True)
-        parser.add_argument("--ownerGroupId", help="CDB owner group ID", required=True)
+    def set_config(self, config):
 
-    def set_args(self, args):
-        super().set_args(args)
-        print("CDB technical system id: %s" % args.techSystemId)
-        print("CDB project id: %s" % args.projectId)
-        print("CDB owner user id: %s" % args.ownerUserId)
-        print("CDB owner group id: %s" % args.ownerGroupId)
-        print("top-level parent machine design node name: %s" % args.mdRoot)
-        self.md_root = args.mdRoot
-        self.info_file = args.infoFile
+        super().set_config(config)
+
+        self.project_id = config['CDB DEFAULTS']['projectId']
+        if len(self.project_id) == 0:
+            sys.exit("[CDB DEFAULTS] projectId required option missing, exiting")
+
+        self.tech_system_id = config['CDB DEFAULTS']['techSystemId']
+        if len(self.tech_system_id) == 0:
+            sys.exit("[CDB DEFAULTS] techSystemId required option missing, exiting")
+
+        self.owner_user_id = config['CDB DEFAULTS']['ownerUserId']
+        if len(self.owner_user_id) == 0:
+            sys.exit("[CDB DEFAULTS] ownerUserId required option missing, exiting")
+
+        self.owner_group_id = config['CDB DEFAULTS']['ownerGroupId']
+        if len(self.owner_group_id) == 0:
+            sys.exit("[CDB DEFAULTS] ownerGroupId required option missing, exiting")
+
+        self.md_root = config['VALIDATION']['mdRoot']
+        if len(self.md_root) == 0:
+            sys.exit("[VALIDATION] mdRoot required option missing, exiting")
+
+        print("[CDB DEFAULTS] projectId: %s" % self.project_id)
+        print("[CDB DEFAULTS] techSystemId: %s" % self.tech_system_id)
+        print("[CDB DEFAULTS] ownerUserId: %s" % self.owner_user_id)
+        print("[CDB DEFAULTS] ownerGroupId: %s" % self.owner_group_id)
+        print("[VALIDATION] mdRoot: %s" % self.md_root)
+
+        # grab info_file while we're at it
+        self.info_file = config['OUTPUTS']['infoFile']
 
     @staticmethod
     def tag():
@@ -1297,11 +1357,11 @@ class CableDesignHelper(PreImportHelper):
 
         if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
 
-            if not self.args.infoFile:
+            if not self.file_info:
                 print("provide command line arg 'infoFile' to generate debugging output file")
                 return
 
-            output_book = xlsxwriter.Workbook(self.args.infoFile)
+            output_book = xlsxwriter.Workbook(self.file_info)
             output_sheet = output_book.add_worksheet()
 
             output_sheet.write(0, 0, "missing cable types")
@@ -1411,16 +1471,16 @@ class CableDesignOutputObject(OutputObject):
         return str(self.input_dict[CABLE_DESIGN_WAYPOINT_ROUTE_KEY])
 
     def get_project_id(self):
-        return self.helper.get_args().projectId
+        return self.helper.get_project_id()
 
     def get_tech_system_id(self):
-        return self.helper.get_args().techSystemId
+        return self.helper.get_tech_system_id()
 
     def get_owner_user_id(self):
-        return self.helper.get_args().ownerUserId
+        return self.helper.get_owner_user_id()
 
     def get_owner_group_id(self):
-        return self.helper.get_args().ownerGroupId
+        return self.helper.get_owner_group_id()
 
 
 range_parts = re.compile(r'(\$?)([A-Z]{1,3})(\$?)(\d+)')
@@ -1480,100 +1540,249 @@ def main():
 
     global name_manager
 
-    # find --type command line parameter so we can create the appropriate helper subclass before proceeding
-    type_arg = "--type"
-    if type_arg not in sys.argv:
-        sys.exit("--type command line parameter not specified, exiting")
-    else:
-        type_index = sys.argv.index(type_arg)
-        if type_index < (len(sys.argv) - 1):
-            type_arg_value = sys.argv[type_index+1]
-        else:
-            sys.exit("no value specified for --type command line parameter, exiting")
+    # parse command line args
+    parser = argparse.ArgumentParser()
+    parser.add_argument("optionsFile", help="File containing script options and settings")
+    parser.add_argument("--deploymentName", help="Name to use for looking up URL/user/password in deploymentInfoFile")
+    parser.add_argument("--cdbUrl", help="CDB system URL")
+    parser.add_argument("--cdbUser", help="CDB User ID for API login")
+    parser.add_argument("--cdbPassword", help="CDB User password for API login")
+    args = parser.parse_args()
+
+    print()
+    print("COMMAND LINE ARGS ====================")
+    print()
+    print("optionsFile: %s" % args.optionsFile)
+    print("deploymentName: %s" % args.deploymentName)
+    print("cdbUrl: %s" % args.cdbUrl)
+    print("cdbUser: %s" % args.cdbUser)
+    print("cdbPassword: %s" % args.cdbPassword)
+
+    #
+    # process options and args
+    #
+
+    # read options file
+    options_file = args.optionsFile
+    if len(options_file) == 0:
+        sys.exit("optionsFile command line parameter is required, exiting")
+    if not os.path.isfile(options_file):
+        sys.exit("specified optionsFile: %s does not exit, exiting" % options_file)
+    config = configparser.ConfigParser()
+    config.read(options_file)
+
+    # process inputDir option
+    option_input_dir = config['INPUTS']['inputDir']
+    if len(option_input_dir) == 0:
+        sys.exit("required option '[INPUTS] inputDir' not specified, exiting")
+    if not os.path.isdir(option_input_dir):
+        sys.exit("'[INPUTS] inputDir' directory: %s does not exist, exiting" % option_input_dir)
+
+    # process inputExcelFile option
+    option_input_file = config['INPUTS']['inputExcelFile']
+    if len(option_input_file) == 0:
+        sys.exit("required option '[INPUTS] inputExcelFile' not specified, exiting")
+    file_input = option_input_dir + "/" + option_input_file
+    if not os.path.isfile(file_input):
+        sys.exit("'[INPUTS] inputExcelFile' file: %s does not exist in directory: %s, exiting" % (option_input_file, option_input_dir))
+
+    # process (optional) deploymentInfoFile option
+    option_deployment_info_file = config['INPUTS']['deploymentInfoFile']
+
+    # process outputDir option
+    option_output_dir = config['OUTPUTS']['outputDir']
+    if len(option_output_dir) == 0:
+        sys.exit("required option '[OUTPUTS] outputDir' not specified, exiting")
+    if not os.path.isdir(option_output_dir):
+        sys.exit("'[OUTPUTS] outputDir' directory: %s does not exist, exiting" % option_output_dir)
+
+    # process outputExcelFile option
+    option_output_file = config['OUTPUTS']['outputExcelFile']
+    if len(option_output_file) == 0:
+        sys.exit("required option '[OUTPUTS] outputExcelFile' not specified, exiting")
+    file_output = option_output_dir + "/" + option_output_file
+
+    # process logFile option
+    option_log_file = config['OUTPUTS']['logFile']
+    if len(option_log_file) == 0:
+        sys.exit("required option '[OUTPUTS] logFile' not specified, exiting")
+    file_log = option_output_dir + "/" + option_log_file
+
+    # process validationFile option
+    option_validation_file = config['OUTPUTS']['validationFile']
+    if len(option_validation_file) == 0:
+        sys.exit("required option '[OUTPUTS] validationFile' not specified, exiting")
+    file_validation = option_output_dir + "/" + option_validation_file
+
+    # process infoFile option
+    option_info_file = config['OUTPUTS']['infoFile']
+    if len(option_info_file) == 0:
+        sys.exit("required option '[OUTPUTS] infoFile' not specified, exiting")
+    file_info = option_output_dir + "/" + option_info_file
+
+    # process type option
+    option_type = config['SCRIPT CONTROL']['type']
+    if len(option_type) == 0:
+        sys.exit("required option '[SCRIPT CONTROL] type' not specified, exiting")
+    if not PreImportHelper.is_valid_type(option_type):
+        sys.exit("unknown value for '[SCRIPT CONTROL] type' option: %s, exiting" % option_type)
+
+    # process sheetNumber option
+    option_sheet_number = config['SCRIPT CONTROL']['sheetNumber']
+    if len(option_sheet_number) == 0:
+        sys.exit("required option '[SCRIPT CONTROL] sheetNumber' not specified, exiting")
+
+    # process headerRow option
+    option_header_row = config['SCRIPT CONTROL']['headerRow']
+    if len(option_header_row) == 0:
+        sys.exit("required option '[SCRIPT CONTROL] headerRow' not specified, exiting")
+
+    # process firstDataRow option
+    option_first_data_row = config['SCRIPT CONTROL']['firstDataRow']
+    if len(option_first_data_row) == 0:
+        sys.exit("required option '[SCRIPT CONTROL] firstDataRow' not specified, exiting")
+
+    # process lastDataRow option
+    option_last_data_row = config['SCRIPT CONTROL']['lastDataRow']
+    if len(option_last_data_row) == 0:
+        sys.exit("required option '[SCRIPT CONTROL] lastDataRow' not specified, exiting")
+
+    print()
+    print("COMMON SCRIPT OPTIONS ====================")
+    print()
+    print("[INPUTS] inputDir: %s" % option_input_dir)
+    print("[INPUTS] inputExcelFile: %s" % option_input_file)
+    print("[INPUTS] deploymentInfoFile: %s" % option_deployment_info_file)
+    print("[OUTPUTS] outputDir: %s" % option_output_dir)
+    print("[OUTPUTS] outputExcelFile: %s" % option_output_file)
+    print("[OUTPUTS] logFile: %s" % option_log_file)
+    print("[OUTPUTS] validationFile: %s" % option_validation_file)
+    print("[OUTPUTS] infoFile: %s" % option_info_file)
+    print("[SCRIPT CONTROL] type: %s" % option_type)
+    print("[SCRIPT CONTROL] sheetNumber: %s" % option_sheet_number)
+    print("[SCRIPT CONTROL] headerRow: %s" % option_header_row)
+    print("[SCRIPT CONTROL] firstDataRow: %s" % option_first_data_row)
+    print("[SCRIPT CONTROL] lastDataRow: %s" % option_last_data_row)
 
     # create instance of appropriate helper subclass
-    if not PreImportHelper.is_valid_type(type_arg_value):
-        sys.exit("unknown value for type parameter, expected Source, CableType, or CableDesign, got: %s" % type_arg_value)
-    helper = PreImportHelper.create_helper(type_arg_value)
+    helper = PreImportHelper.create_helper(option_type)
 
-    # process other command line arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument("inputFile", help="Data collection workbook xlsx file with 'cable specs' tab")
-    parser.add_argument("outputFile", help="Official CDB Sources import format xlsx file")
-    parser.add_argument(type_arg, help="Type of pre-import processing (Source, CableType, or CableDesign)", required=True)
-    parser.add_argument("--logFile", help="File for log output", required=True)
-    parser.add_argument("--validationFile", help="File for validation output", required=True)
-    parser.add_argument("--infoFile", help="domain specific xlsx file for reviewing helper actions", required=False)
-    parser.add_argument("--cdbUrl", help="CDB system URL", required=True)
-    parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)
-    parser.add_argument("--cdbPassword", help="CDB User password for API login", required=True)
-    parser.add_argument("--sheetNumber", help="Worksheet number within workbook (1-based)", required=True)
-    parser.add_argument("--headerRow", help="Input spreadsheet row number of header row (1-based)", required=True)
-    parser.add_argument("--firstDataRow", help="Input spreadsheet row number of first data row (1-based)", required=True)
-    parser.add_argument("--lastDataRow", help="Input spreadsheet row number of last data row (1-based)", required=True)
-    helper.add_parser_args(parser)
-    args = parser.parse_args()
-    print("using inputFile: %s" % args.inputFile)
-    print("using outputFile: %s" % args.outputFile)
-    print("using logFile: %s" % args.logFile)
-    print("using validation file: %s" % args.validationFile)
-    print("debugging info xlsx file: %s" % args.infoFile)
-    print("pre-import type: %s" % args.type)
-    print("cdb url: %s" % args.cdbUrl)
-    print("cdb user id: %s" % args.cdbUser)
-    print("cdb user password: %s" % args.cdbPassword)
-    print("worksheet number: %s" % args.sheetNumber)
-    print("header row number: %s" % args.headerRow)
-    print("first data row number: %s" % args.firstDataRow)
-    print("last data row number: %s" % args.lastDataRow)
-    helper.set_args(args)
+    # allow helper class to read config options
+    print()
+    print("TYPE-SPECIFIC SCRIPT OPTIONS ====================")
+    print()
+    helper.set_config(config)
 
-    sheetNum = int(args.sheetNumber)
-    headerRowNum = int(args.headerRow)
-    firstDataRowNum = int(args.firstDataRow)
-    lastDataRowNum = int(args.lastDataRow)
+    #
+    # determine whether to use args or config for url/user/password
+    #
 
-    sheetIndex = sheetNum - 1
-    headerIndex = headerRowNum - 1
-    firstDataIndex = firstDataRowNum - 1
-    lastDataIndex = lastDataRowNum - 1
+    # get cdb url, user, password from config, if specified
+    option_cdb_url = None
+    option_cdb_user = None
+    option_cdb_password = None
+
+    if len(args.deploymentName) > 0:
+        if len(option_deployment_info_file) == 0:
+            # must have deployment info file
+            sys.exit(
+                "[INPUTS] deploymentInfoFile not specified but required to look up deployment name: %s" % args.deploymentName)
+        else:
+            if not os.path.isfile(option_deployment_info_file):
+                sys.exit("'[INPUTS] deploymentInfoFile' file: %s does not exist, exiting" % option_deployment_info_file)
+            else:
+                deployment_config = configparser.ConfigParser()
+                deployment_config.read(option_deployment_info_file)
+                if not args.deploymentName in deployment_config:
+                    sys.exit("specified deploymentName: %s not found in deploymentInfoFile: %s" % (
+                    args.deploymentName, option_deployment_info_file))
+                option_cdb_url = deployment_config[args.deploymentName]['cdbUrl']
+                option_cdb_user = deployment_config[args.deploymentName]['cdbUser']
+                option_cdb_password = deployment_config[args.deploymentName]['cdbPassword']
+                print()
+                print("DEPLOYMENT INFO CONFIG ====================")
+                print()
+                print("[%s] cdbUrl: %s" % (args.deploymentName, option_cdb_url))
+                print("[%s] cdbUser: %s" % (args.deploymentName, option_cdb_user))
+                print("[%s] cdbPassword: %s" % (args.deploymentName, option_cdb_password))
+
+    if args.cdbUrl is not None:
+        cdb_url = args.cdbUrl
+    else:
+        if option_cdb_url is None:
+            sys.exit("cdbUser must be specified on command line or via deployment info file, exiting")
+        else:
+            cdb_url = option_cdb_url
+
+    if args.cdbUser is not None:
+        cdb_user = args.cdbUser
+    else:
+        if option_cdb_user is None:
+            sys.exit("cdbUser must be specified on command line or via deployment info file, exiting")
+        else:
+            cdb_user = option_cdb_user
+
+    if args.cdbPassword is not None:
+        cdb_password = args.cdbPassword
+    else:
+        if option_cdb_password is None:
+            sys.exit("cdbUser must be specified on command line or via deployment info file, exiting")
+        else:
+            cdb_password = option_cdb_password
+
+    print()
+    print("CDB URL/USER/PASSWORD SETTINGS (COMMAND LINE TAKES PRECEDENCE OVER CONFIG)====================")
+    print()
+    print("cdbUrl: %s" % cdb_url)
+    print("cdbUser: %s" % cdb_user)
+    print("cdbPassword: %s" % cdb_password)
+
+    sheet_num = int(option_sheet_number)
+    header_row_num = int(option_header_row)
+    first_data_row_num = int(option_first_data_row)
+    last_data_row_num = int(option_last_data_row)
+
+    sheet_index = sheet_num - 1
+    header_index = header_row_num - 1
+    first_data_index = first_data_row_num - 1
+    last_data_index = last_data_row_num - 1
 
     # initialize input and output columns
     helper.initialize_input_columns()
     helper.initialize_output_columns()
 
     # configure logging
-    logging.basicConfig(filename=args.logFile, filemode='w', level=logging.DEBUG, format='%(levelname)s - %(message)s')
+    logging.basicConfig(filename=file_log, filemode='w', level=logging.DEBUG, format='%(levelname)s - %(message)s')
 
     # open connection to CDB
-    api = CdbApiFactory(args.cdbUrl)
+    api = CdbApiFactory(cdb_url)
     try:
-        api.authenticateUser(args.cdbUser, args.cdbPassword)
+        api.authenticateUser(cdb_user, cdb_password)
         api.testAuthenticated()
     except ApiException:
-        sys.exit("CDB login failed")
+        sys.exit("CDB login failed URL: %s user: $s, exiting" % (cdb_url, cdb_user))
     helper.set_api(api)
 
     # open input spreadsheet
-    input_book = xlrd.open_workbook(args.inputFile)
+    input_book = xlrd.open_workbook(file_input)
 
     name_manager = ConnectedMenuManager(input_book)
 
-    input_sheet = input_book.sheet_by_index(int(sheetIndex))
+    input_sheet = input_book.sheet_by_index(int(sheet_index))
     logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.nrows, input_sheet.ncols))
 
     # validate input spreadsheet dimensions
-    if input_sheet.nrows < lastDataRowNum:
-        sys.exit("fewer rows in inputFile: %s than last data row: %d" % (args.inputFile, lastDataRowNum))
+    if input_sheet.nrows < last_data_row_num:
+        sys.exit("fewer rows in inputFile: %s than last data row: %d" % (option_input_file, last_data_row_num))
     if input_sheet.ncols != helper.num_input_cols():
-        sys.exit("inputFile %s doesn't contain expected number of columns: %d" % (args.inputFile, helper.num_input_cols()))
+        sys.exit("inputFile %s doesn't contain expected number of columns: %d" % (option_input_file, helper.num_input_cols()))
 
     # process rows from input spreadsheet
     input_valid = True
     output_objects = []
     validation_map = {}
     num_input_rows = 0
-    for row_ind in range(firstDataIndex, lastDataIndex + 1):
+    for row_ind in range(first_data_index, last_data_index + 1):
 
         current_row_num = row_ind + 1
         num_input_rows = num_input_rows + 1
@@ -1634,13 +1843,13 @@ def main():
             print("row: %d" % key)
             for message in validation_map[key]:
                 print("\t%s" % message)
-        write_validation_report(validation_map, args.validationFile)
+        write_validation_report(validation_map, file_validation)
     else:
         print("no validation errors found")
 
     # create output spreadsheet
     if input_valid and not helper.validate_only:
-        output_book = xlsxwriter.Workbook(args.outputFile)
+        output_book = xlsxwriter.Workbook(file_output)
         output_sheet = output_book.add_worksheet()
 
         # write output spreadsheet header row
