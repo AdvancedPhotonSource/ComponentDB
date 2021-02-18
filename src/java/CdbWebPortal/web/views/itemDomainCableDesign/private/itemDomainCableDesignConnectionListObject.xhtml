@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">   
+
+    <p:columnGroup type="header">
+        <p:row>
+            <p:column id="cableConnectorColumn" colspan="3">
+                <f:facet name="header">
+                    <h:outputText value="Cable Connector" />
+                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
+                               for="cableConnectorColumn" />
+                </f:facet> 
+            </p:column>
+            <p:column colspan="2" headerText="Device Connection"/>
+        </p:row>
+        <p:row>
+            <p:column id="cableConnectorNameColumn">
+                <f:facet name="header">
+                    <h:outputText value="Name" />
+                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
+                               for="cableConnectorNameColumn" />
+                </f:facet> 
+            </p:column>
+            <p:column id="cableConnectorTypeColumn" headerText="Type">
+                <f:facet name="header">
+                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
+                               for="cableConnectorTypeColumn" />
+                    <h:outputText styleClass="ui-icon ui-icon-connector" />
+                    Type
+                </f:facet>
+            </p:column>
+            <p:column id="cableConnectorGenderColumn" headerText="Gender">
+                <f:facet name="header">
+                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
+                               for="cableConnectorGenderColumn" />
+                    <h:outputText styleClass="ui-icon ui-icon-connector" />
+                    Gender
+                </f:facet>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText styleClass="ui-icon ui-icon-machine-design" />
+                    Device
+                </f:facet>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText/>
+                    Port
+                </f:facet>
+            </p:column>
+        </p:row>
+    </p:columnGroup>
+
+    <ui:param name="itemConnectorObject"
+              value="#{connection.itemConnector}"/> 
+    <ui:param name="connectedToItem"
+              value="#{connection.mdItem}"/>
+    <ui:param name="connectedToPort"
+              value="#{connection.mdConnector.connector}"/>
+    <ui:param name="relationshipId"
+              value="#{connection.cableRelationship.id}"/> 
+
+    <ui:include src="../../itemConnector/private/itemConnectorListObject.xhtml" />
+        
+    <p:column headerText="Device"
+              exportFunction="#{facesUtility.getToString(connectedToItem)}">
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <p:commandLink id="editEndpointLink"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
+                           action='#{entityController.prepareEditConnection(connection)}'
+                           rendered="#{isEntityWriteable and entityController.renderEditLinkForConnection(connection)}"
+                           update="@form:dialogConnection">
+                <p:tooltip for="editEndpointLink"
+                           value="Edit Connection"/>
+            </p:commandLink>
+            <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="itemObject"
+                          value="#{connectedToItem}"/>
+                <ui:param name="viewName"
+                          value="connDevice"/>
+            </ui:include>
+        </p:outputPanel>
+    </p:column>
+
+    <p:column headerText="Port"
+              exportFunction="#{facesUtility.getToString(connection.mdConnector.connector.name)}">
+        <ui:include src="../../connector/private/connectorNameObject.xhtml">
+            <ui:param name="connector"
+                      value="#{connectedToPort}" />
+        </ui:include>
+    </p:column>
+    
+</ui:composition>

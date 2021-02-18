@@ -46,12 +46,26 @@ See LICENSE file.
               value="#{itemListObject.createdFromTemplate}" /> 
 
     <ui:param name="filterable"
-              value="#{true}"/>
+              value="#{itemDomainMachineDesignController.filtersLoaded}"/>        
 
     <p:column headerText="Machine Element Name" styleClass="draggableTreeTableDataCell"
               filterBy="#{itemTreeListObject.name}"
               filterMatchMode="contains"
+              filterable="#{filterable}"
               colspan="3">
+        <f:facet name="header">
+            Machine Element Name
+            <ui:fragment>
+                <br/>
+                <p:commandButton value="Enable Filtering"
+                                 ajax="false"
+                                 rendered="#{filterable == false}"
+                                 onclick="PF('loadingDialog').show();"
+                                 oncomplete="PF('loadingDialog').hide();"
+                                 action="#{itemDomainMachineDesignController.loadMachineDesignFilters()}"
+                                 update="@form"/>
+            </ui:fragment>
+        </f:facet>
         <p:outputPanel id="draggableMachineDesign#{itemListObject.id}"
                        styleClass="inlineOutputPanel">                           
             <div class="mdId" style="display: none">#{itemListObject.id}</div>
@@ -144,6 +158,7 @@ See LICENSE file.
                           and hideSearchColumns
                           and settingObject.displayDescription}"
               filterBy="#{itemListObject.description}"
+              filterable="#{filterable}"
               filterMatchMode="contains">
         <h:outputText value="#{itemListObject.description}" /> 
     </p:column>
@@ -154,7 +169,8 @@ See LICENSE file.
     <p:column headerText="Assigned Catalog &#38; Inventory Item" 
               rendered="#{hideOptionalColumns 
                           and hideSearchColumns}"
-              filterBy="#{itemElementListObject.containedItem2}"
+              filterBy="#{assignedItem.name}"
+              filterable="#{filterable}"
               filterMatchMode="contains">            
         <p:commandLink id="#{entityTypeName}AssignedItemHistory" 
                        onstart="PF('loadingDialog').show();"

@@ -23,7 +23,8 @@ public abstract class ColumnSpec {
     private String header;
     private String propertyName;
     private String entitySetterMethod;
-    private boolean required;
+    private boolean requiredForCreate;
+    private boolean requiredForUpdate;
     private String description;
     protected String exportGetterMethod;
     
@@ -38,18 +39,22 @@ public abstract class ColumnSpec {
     }
 
     public ColumnSpec(
-            String header, String propertyName, boolean required, String description) {
+            String header, String propertyName, boolean requiredForCreate, String description) {
 
         this(description);
         this.header = header;
         this.propertyName = propertyName;
-        this.required = required;
+        this.requiredForCreate = requiredForCreate;
     }
 
     public ColumnSpec(
-            String header, String propertyName, String entitySetterMethod, boolean required, String description) {
+            String header, 
+            String propertyName, 
+            String entitySetterMethod, 
+            boolean requiredForCreate, 
+            String description) {
 
-        this(header, propertyName, required, description);
+        this(header, propertyName, requiredForCreate, description);
         this.entitySetterMethod = entitySetterMethod;
     }
 
@@ -60,14 +65,16 @@ public abstract class ColumnSpec {
             String header, 
             String importPropertyName, 
             String importSetterMethod, 
-            boolean importRequired, 
+            boolean requiredForCreate, 
             String description, 
             String exportGetterMethod,
-            boolean updateOnly) {
+            boolean updateOnly,
+            boolean requiredForUpdate) {
 
-        this(header, importPropertyName, importSetterMethod, importRequired, description);
+        this(header, importPropertyName, importSetterMethod, requiredForCreate, description);
         this.exportGetterMethod = exportGetterMethod;
         this.updateOnly = updateOnly;
+        this.requiredForUpdate = requiredForUpdate;
     }
 
     public String getHeader() {
@@ -82,8 +89,12 @@ public abstract class ColumnSpec {
         return entitySetterMethod;
     }
 
-    public boolean isRequired() {
-        return required;
+    public boolean isRequiredForCreate() {
+        return requiredForCreate;
+    }
+
+    public boolean isRequiredForUpdate() {
+        return requiredForUpdate;
     }
 
     public String getDescription() {
@@ -125,9 +136,10 @@ public abstract class ColumnSpec {
         return new InputColumnModel(
                 colIndex,
                 getHeader(),
-                isRequired(),
+                isRequiredForCreate(),
                 getDescription(),
-                isUpdateOnly());
+                isUpdateOnly(),
+                isRequiredForUpdate());
     }
     
     public OutputColumnModel getOutputColumnModel(int colIndex) {

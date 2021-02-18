@@ -51,6 +51,8 @@ import gov.anl.aps.cdb.portal.model.jsf.beans.PropertyValueImageUploadBean;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.LocationHistoryObject;
 import gov.anl.aps.cdb.rest.authentication.Secured;
+import gov.anl.aps.cdb.rest.entities.ConciseItem;
+import gov.anl.aps.cdb.rest.entities.ConciseItemOptions;
 import gov.anl.aps.cdb.rest.entities.FileUploadObject;
 import gov.anl.aps.cdb.rest.entities.ItemDomainCatalogSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemHierarchy;
@@ -978,12 +980,31 @@ public class ItemRoute extends ItemBaseRoute {
         LOGGER.debug("Fetch items for domain: " + domainName);
         return itemFacade.findByDomain(domainName);
     }
+    
+    @POST 
+    @Path("/ByDomain/{domainName}/Concise")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<ConciseItem> getConciseItemsByDomain(@PathParam("domainName") String domainName, ConciseItemOptions options) {
+        LOGGER.debug("Fetch concise items for domain: " + domainName);
+        List<Item> itemList = itemFacade.findByDomain(domainName);
+        return ConciseItem.createList(itemList, options); 
+    }
 
     @GET
     @Path("/Catalog")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainCatalog> getCatalogItems() {
         return (List<ItemDomainCatalog>) (List<?>) getItemsByDomain(ItemDomainName.catalog.getValue());
+    }
+    
+    @POST
+    @Path("/Catalog/Concise")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<ConciseItem> getConciseCatalogItems(ConciseItemOptions options) {
+        List<Item> catalogItems = getItemsByDomain(ItemDomainName.catalog.getValue());               
+        return ConciseItem.createList(catalogItems, options); 
     }
 
     @GET
@@ -1004,6 +1025,16 @@ public class ItemRoute extends ItemBaseRoute {
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainInventory> getInventoryItems() {
         return (List<ItemDomainInventory>) (List<?>) getItemsByDomain(ItemDomainName.inventory.getValue());
+    }
+    
+    @POST
+    @Path("/Inventory/Concise")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<ConciseItem> getConciseInventoryItems(ConciseItemOptions options) {
+        List<Item> inventoryItems = getItemsByDomain(ItemDomainName.inventory.getValue());        
+        
+        return ConciseItem.createList(inventoryItems, options); 
     }
 
     @GET

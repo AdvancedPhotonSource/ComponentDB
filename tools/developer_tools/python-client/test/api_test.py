@@ -3,7 +3,7 @@ from datetime import datetime
 
 from CdbApiFactory import CdbApiFactory
 from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformation, SimpleLocationInformation, \
-    LogEntryEditInformation, PropertyValue, PropertyMetadata
+    LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions
 
 
 class MyTestCase(unittest.TestCase):
@@ -476,6 +476,28 @@ class MyTestCase(unittest.TestCase):
         user_by_username = self.userApi.get_user_by_username(username)
 
         self.assertEqual(user_by_username.username, username)
+
+    def test_fetch_concise_item_list(self):
+        # Test with no options
+        inventory = self.itemApi.get_concise_inventory_items()
+        first_inventory = inventory[0]
+        derived_from_item_id = first_inventory.derived_from_item_id
+        self.assertEqual(None, derived_from_item_id, msg='derived from item should not be set be default.')
+
+        options = ConciseItemOptions(include_derived_from_item_info=True)
+        inventory = self.itemApi.get_concise_inventory_items(concise_item_options=options)
+        first_inventory = inventory[0]
+        derived_from_item_id = first_inventory.derived_from_item_id
+        self.assertNotEqual(None, derived_from_item_id,
+                            msg='derived from item should be set be after passing in options.')
+
+        catalog_items = self.itemApi.get_concise_catalog_items()
+        self.assertNotEqual(None, catalog_items, msg='failed to fetch concise catalog item list.')
+
+        domains = self.itemApi.get_domain_list1()
+        for domain in domains:
+            items = self.itemApi.get_concise_items_by_domain(domain.name, concise_item_options=options)
+            self.assertNotEqual(items, None, msg="Failed fetching items of domain %s" % domain.name)
 
 if __name__ == '__main__':
     unittest.main()

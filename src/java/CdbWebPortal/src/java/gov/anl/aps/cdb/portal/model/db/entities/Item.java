@@ -94,6 +94,10 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl LEFT JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and ipl.name = :projectName AND (etl.name != :entityTypeName or etl.name is null) ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameWithNoParents",
             query = "SELECT i FROM Item i WHERE i.itemElementMemberList IS EMPTY and i.domain.name = :domainName"),
+    @NamedQuery(name = "Item.findByDomainNameWithNoParentsAndEntityType",
+            query = "SELECT i FROM Item i WHERE i.itemElementMemberList IS EMPTY and i.domain.name = :domainName and i.entityTypeList is EMPTY"),
+    @NamedQuery(name = "Item.findByDomainNameWithNoParentsAndWithEntityType",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.itemElementMemberList IS EMPTY AND i.domain.name = :domainName and etl.name = :entityTypeName"),
     @NamedQuery(name = "Item.findByDomainNameOrderByQrId",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainNameOrderByDerivedFromItem",
@@ -781,11 +785,12 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.entityTypeList = entityTypeList;
     }
 
-    @XmlTransient
+    @XmlTransient    
     public List<ItemCategory> getItemCategoryList() {
         return itemCategoryList;
     }
 
+    @JsonIgnore
     public String getItemCategoryString() {
         if (itemCategoryString == null) {
             itemCategoryString = StringUtility.getStringifyCdbList(itemCategoryList);
@@ -809,6 +814,16 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.itemCategoryList = itemCategoryList;
     }
 
+    public void setItemCategoryListImport(List<ItemCategory> itemCategoryList) {
+        if (itemCategoryList != null) {
+            this.itemCategoryString = null;
+            this.itemCategoryList = itemCategoryList;
+        } else if (this.itemCategoryList != null) {
+            // if the new list value is null, but the old value is not null, then clear the list
+            this.itemCategoryList.clear();
+        }
+    }
+
     @XmlTransient
     public List<ItemType> getItemTypeList() {
         return itemTypeList;
@@ -826,11 +841,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         setItemTypeList(itList);
     }
 
-    @XmlTransient
+    @XmlTransient    
     public List<ItemProject> getItemProjectList() {
         return itemProjectList;
     }
-
+    
     public void setItemProjectList(List<ItemProject> itemProjectList) {
         this.itemProjectString = null;
         this.itemProjectList = itemProjectList;
@@ -988,6 +1003,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.derivedFromItemList = derivedFromItemList;
     }
     
+    public Integer getDomainId() {
+        return domain.getId(); 
+    }
+
+    @JsonIgnore
     public Domain getDomain() {
         return domain;
     }
@@ -996,7 +1016,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         itemDomainController = null;
         this.domain = domain;
     }
-    
+          
     public Item getDerivedFromItem() {
         return derivedFromItem;
     }
@@ -1285,6 +1305,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         getSelfElement().setPropertyValueByIndex(5, propertyValue5);
     }
 
+    @JsonIgnore
     public boolean isIsCloned() {
         return isCloned;
     }
@@ -1408,6 +1429,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         return false;
     }
 
+    @JsonIgnore
     public Boolean getIsItemDeleted() {
         if (isItemDeleted == null) {
             isItemDeleted = isItemDeleted(this);
@@ -1419,13 +1441,14 @@ public class Item extends CdbDomainEntity implements Serializable {
         return isItemEntityType(item, EntityTypeName.deleted.getValue());
     }
 
+    @JsonIgnore
     public Boolean getIsItemInventory() {
         if (isItemInventory == null) {
             isItemInventory = isItemInventory(this);
         }
         return isItemInventory;
     }
-
+    
     public static boolean isItemInventory(Item item) {
         return isItemEntityType(item, EntityTypeName.inventory.getValue());
     } 
@@ -1499,6 +1522,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         if (propertyValue == null) {
             propertyValue = getItemControllerUtility().prepareCoreMetadataPropertyValue(this);
+        }
+        
+        if (value == null) {
+            value = ""; // this is the default value in prepare value add
         }
         
         propertyValue.setPropertyMetadataValue(key, value);

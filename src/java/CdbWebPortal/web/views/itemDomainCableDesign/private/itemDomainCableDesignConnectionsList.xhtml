@@ -11,29 +11,22 @@ See LICENSE file.
     <ui:decorate  template="../../common/private/commonChildListActionButtons.xhtml">
         <ui:define name="variables">
             <ui:param name="childEntityTypeName"
-                      value="#{itemConnectorEntityTypeName}"/>
+                      value="cableConnections"/>
             <ui:param name="customizableListDataTable"
                       value="#{false}" />             
         </ui:define>
 
         <ui:define name="additionalButtons">
-            <p:commandButton value="Map Connections"
-                             update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel"
-                             disabled="#{disabledEditContextMenuItemForSelection}"
-                             immediate="true"
-                             rendered="#{isEntityWriteable}"
-                             action="#{entityController.prepareCableMappingDialogForCurrent()}"
-                             oncomplete="showItemDomainMachineDesignCableMappingDialog()"/>   
             <p:commandButton value="Add Connection"
-                             update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel"
                              rendered="#{isEntityWriteable}"
                              immediate="true"
-                             action='#{entityController.prepareWizardCable()}'/>
+                             action='#{entityController.prepareAddConnection()}'
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
+                             update="@form:dialogConnection"/>
         </ui:define>        
     </ui:decorate>
 
-    <ui:include src="itemDomainMachineDesignConnectionListDataTable.xhtml"/>
+    <ui:include src="itemDomainCableDesignConnectionListDataTable.xhtml"/>
 
 </ui:composition>
-
-

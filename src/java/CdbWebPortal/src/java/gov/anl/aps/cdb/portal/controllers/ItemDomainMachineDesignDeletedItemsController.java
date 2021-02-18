@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignDeletedItemSettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
@@ -81,20 +82,13 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         ListDataModel newListDataModel = new ListDataModel(itemList);
         setListDataModel(newListDataModel);
     }
-
+    
     @Override
-    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate) {
-        TreeNode rootTreeNode = new DefaultTreeNode();
-        List<ItemDomainMachineDesign> itemsWithoutParents
-                = getItemsWithoutParents();
-
-        for (Item item : itemsWithoutParents) {
-            if (item.getIsItemDeleted()) {
-                expandTreeChildren(item, rootTreeNode);
-            }
-        }
-
-        return rootTreeNode;
+    public List<ItemDomainMachineDesign> getDefaultTopLevelMachineList() {
+        List<ItemDomainMachineDesign> itemsWithoutParents;
+        itemsWithoutParents = getEntityDbFacade().findByDomainNameWithNoParentsAndWithEntityType(
+                getDefaultDomainName(), EntityTypeName.deleted.getValue());
+        return itemsWithoutParents; 
     }
     
     @Override

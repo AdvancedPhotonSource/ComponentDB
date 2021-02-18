@@ -13,7 +13,8 @@ public class InputColumnModel {
     protected int columnIndex;
     protected String name;
     protected String description = null;
-    protected boolean required = false;
+    protected boolean requiredForCreate = false;
+    protected boolean requiredForUpdate = false;
     protected boolean updateOnly = false;
 
     public InputColumnModel(
@@ -25,18 +26,20 @@ public class InputColumnModel {
         this.columnIndex = columnIndex;
         this.name = name;
         this.description = description;
-        this.required = required;
+        this.requiredForCreate = required;
     }
 
     public InputColumnModel(
             int columnIndex,
             String name,
-            boolean required,
+            boolean requiredForCreate,
             String description,
-            boolean updateOnly) {
+            boolean updateOnly,
+            boolean requiredForUpdate) {
 
-        this(columnIndex, name, required, description);
+        this(columnIndex, name, requiredForCreate, description);
         this.updateOnly = updateOnly;
+        this.requiredForUpdate = requiredForUpdate;
     }
 
     public int getColumnIndex() {
@@ -51,8 +54,12 @@ public class InputColumnModel {
         return description;
     }
 
-    public boolean isRequired() {
-        return this.required;
+    public boolean isRequiredForCreate() {
+        return this.requiredForCreate;
+    }
+    
+    public boolean isRequiredForUpdate() {
+        return this.requiredForUpdate;
     }
     
     public boolean isUpdateOnly() {
