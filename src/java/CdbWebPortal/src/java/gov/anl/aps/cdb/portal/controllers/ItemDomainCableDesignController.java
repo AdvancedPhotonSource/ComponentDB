@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -60,7 +61,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         private ItemElementRelationship cableRelationship;
         private Boolean disableButtonSave = true;
         private Item origMdItem = null;
-        private TreeNode mdTree = null;
+        private ItemDomainMachineDesignTreeNode mdTree = null;
         private TreeNode selectedMdTreeNode = null;
         protected Item selectedMdItem;
         protected ItemConnector selectedMdConnector;
@@ -104,15 +105,17 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             }
         }
 
-        public TreeNode getMdTree() {
+        public ItemDomainMachineDesignTreeNode getMdTree() {
             if (mdTree == null) {
-                ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
-                mdTree = controller.loadMachineDesignRootTreeNode(false, false, true);
+                ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();                
+                mdTree = controller.loadMachineDesignRootTreeNode();
+                ItemDomainMachineDesignTreeNode.MachineTreeConfiguration config = mdTree.getConfig();
+                config.setShowConnectorsOnly(true);
             }
             return mdTree;
         }
 
-        public void setMdTree(TreeNode mdTree) {
+        public void setMdTree(ItemDomainMachineDesignTreeNode mdTree) {
             this.mdTree = mdTree;
         }
 
