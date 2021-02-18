@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
 import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
 import gov.anl.aps.cdb.portal.controllers.PropertyValueController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -632,7 +633,8 @@ public abstract class ItemTravelerController extends ItemControllerExtensionHelp
             loadTemplatesFormMultiEditItem(item);
             List<Form> templatesForMultiEditItem = getTemplatesForMultiEditItem(item);
             if (checkSelectedTemplate(templatesForMultiEditItem, multiEditSelectedTemplate)) {
-                PropertyValue propValue = getItemController().preparePropertyTypeValueAdd(item, travelerTemplatePropertyType);
+                ItemControllerUtility itemControllerUtility = item.getItemControllerUtility();
+                PropertyValue propValue = itemControllerUtility.preparePropertyTypeValueAdd(item, travelerTemplatePropertyType);
                 propValue.setValue(multiEditSelectedTemplate.getId());
             }
         }
