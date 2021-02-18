@@ -189,11 +189,21 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         getControllerUtility().assignInventoryAttributes(createItemFromTemplate, templateItem, user);
 
         return createItemFromTemplate;
-    }
+    }    
 
     @Override
-    public TreeNode getCurrentMachineDesignListRootTreeNode() {
-        return getMachineDesignFixtureRootTreeNode();
+    public List<ItemDomainMachineDesign> getDefaultTopLevelMachineList() {        
+        ItemDomainMachineDesign md = getCurrent();
+        ItemDomainMachineDesign parentMachineDesign = md.getParentMachineDesign();
+        while(parentMachineDesign != null) {
+            md = parentMachineDesign; 
+            parentMachineDesign = parentMachineDesign.getParentMachineDesign(); 
+        }        
+        
+        md = findById(md.getId());
+        List<ItemDomainMachineDesign> parentList = new ArrayList<>(); 
+        parentList.add(md); 
+        return parentList; 
     }
 
     @Override
