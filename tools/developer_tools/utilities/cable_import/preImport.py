@@ -130,6 +130,7 @@ class PreImportHelper(ABC):
         self.output_columns = {}
         self.api = None
         self.validate_only = False
+        self.info_file = None
 
     # returns number of rows at which progress message should be displayed
     @classmethod
@@ -195,14 +196,20 @@ class PreImportHelper(ABC):
         pass
 
     def set_config(self, config):
-        if 'validateOnly' in config['SCRIPT CONTROL']:
+        config_value = get_config_resource(config, 'VALIDATION', 'validateOnly', False)
+        if config_value in ("True", "TRUE", "true", "Yes", "YES", "yes", "On", "ON", "on", "1"):
             self.validate_only = True
         else:
             self.validate_only = False
-        print("[SCRIPT CONTROL] validateOnly: %s" % self.validate_only)
 
     def set_api(self, api):
         self.api = api
+
+    def set_info_file(self, file):
+        self.info_file = file
+
+    def get_info_file(self):
+        return self.info_file
 
     # Builds dictionary whose keys are column index and value is column model object.
     def initialize_input_columns(self):
@@ -289,6 +296,10 @@ class PreImportHelper(ABC):
     # Complete helper processing after all output objects are processed.  Subclass overrides to customize.
     def close(self):
         pass
+
+    # Returns processing summary message.
+    def get_processing_summary(self):
+        return ""
 
 
 class ConnectedMenuManager:
@@ -742,11 +753,11 @@ class SourceHelper(PreImportHelper):
     def close(self):
         if len(self.new_sources) > 0 or len(self.existing_sources) > 0:
 
-            if not self.file_info:
+            if not self.info_file:
                 print("provide command line arg 'infoFile' to generate debugging output file")
                 return
 
-            output_book = xlsxwriter.Workbook(self.file_info)
+            output_book = xlsxwriter.Workbook(self.info_file)
             output_sheet = output_book.add_worksheet()
 
             output_sheet.write(0, 0, "new sources")
@@ -763,6 +774,13 @@ class SourceHelper(PreImportHelper):
                 row_index = row_index + 1
 
             output_book.close()
+
+    # Returns processing summary message.
+    def get_processing_summary(self):
+        if len(self.new_sources) > 0 or len(self.existing_sources) > 0:
+            return "DETAILS: number of new sources: %d number of existing sources (not written to output spreadsheet): %d" % (len(self.new_sources), len(self.existing_sources))
+        else:
+            return ""
 
 
 class SourceOutputObject(OutputObject):
@@ -914,11 +932,11 @@ class CableTypeHelper(PreImportHelper):
     def close(self):
         if len(self.missing_source_list) > 0:
 
-            if not self.file_info:
+            if not self.info_file:
                 print("provide command line arg 'infoFile' to generate debugging output file")
                 return
 
-            output_book = xlsxwriter.Workbook(self.file_info)
+            output_book = xlsxwriter.Workbook(self.info_file)
             output_sheet = output_book.add_worksheet()
 
             output_sheet.write(0, 0, "missing sources")
@@ -929,6 +947,13 @@ class CableTypeHelper(PreImportHelper):
                 row_index = row_index + 1
 
             output_book.close()
+
+    # Returns processing summary message.
+    def get_processing_summary(self):
+        if len(self.missing_source_list) > 0:
+            return "DETAILS: number of missing sources: %d" % (len(self.missing_source_list))
+        else:
+            return ""
 
 
 class CableTypeOutputObject(OutputObject):
@@ -1169,7 +1194,6 @@ class CableDesignHelper(PreImportHelper):
         self.missing_endpoints = set()
         self.missing_cable_types = set()
         self.nonunique_endpoints = set()
-        self.info_file = None
         self.project_id = None
         self.tech_system_id = None
         self.owner_user_id = None
@@ -1178,7 +1202,7 @@ class CableDesignHelper(PreImportHelper):
     # returns number of rows at which progress message should be displayed
     @classmethod
     def progress_increment(cls):
-        return 100
+        return 50
 
     def set_config(self, config):
         super().set_config(config)
@@ -1187,7 +1211,6 @@ class CableDesignHelper(PreImportHelper):
         self.owner_user_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerUserId', True)
         self.owner_group_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerGroupId', True)
         self.md_root = get_config_resource(config, 'VALIDATION', 'mdRoot', True)
-        self.info_file = get_config_resource(config, 'OUTPUTS', 'infoFile', False)
 
     @staticmethod
     def tag():
@@ -1311,11 +1334,11 @@ class CableDesignHelper(PreImportHelper):
 
         if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
 
-            if not self.file_info:
+            if not self.info_file:
                 print("provide command line arg 'infoFile' to generate debugging output file")
                 return
 
-            output_book = xlsxwriter.Workbook(self.file_info)
+            output_book = xlsxwriter.Workbook(self.info_file)
             output_sheet = output_book.add_worksheet()
 
             output_sheet.write(0, 0, "missing cable types")
@@ -1519,13 +1542,12 @@ def get_config_resource(config, section, key, is_required, print_value=True, pri
     return value
 
 
-def connect_api(api, cdb_user, cdb_password, helper):
+def connect_api(api, cdb_user, cdb_password):
     try:
         api.authenticateUser(cdb_user, cdb_password)
         api.testAuthenticated()
     except ApiException:
         fatal_error("CDB login failed URL: %s user: $s, exiting" % (cdb_url, cdb_user))
-    helper.set_api(api)
 
 
 def main():
@@ -1631,6 +1653,7 @@ def main():
     print("TYPE-SPECIFIC SCRIPT OPTIONS ====================")
     print()
     helper.set_config(config)
+    helper.set_info_file(file_info)
 
     #
     # determine whether to use args or config for url/user/password
@@ -1726,12 +1749,13 @@ def main():
 
     # open connection to CDB
     api = CdbApiFactory(cdb_url)
-    api_process = multiprocessing.Process(target=connect_api, args=(api, cdb_user, cdb_password, helper))
+    api_process = multiprocessing.Process(target=connect_api, args=(api, cdb_user, cdb_password))
     api_process.start()
     process_finished = False
     while not process_finished:
         api_process.join(10)
         if not api_process.is_alive():
+            api_process.join()
             process_finished = True
         else:
             timeout = timeout - 10
@@ -1742,6 +1766,7 @@ def main():
                 fatal_error("CDB connection timed out, exiting")
             else:
                 print("connecting to %s, retry in %d seconds, timeout in %d seconds (wait 2 minutes after connecting vpn)" % (cdb_url, 10, timeout))
+    helper.set_api(api)
 
     # open input spreadsheet
     input_book = xlrd.open_workbook(file_input)
@@ -1816,7 +1841,7 @@ def main():
 
         # print progress message
         if num_input_rows % helper.progress_increment() == 0:
-            print ("processed %d spreadsheet rows" % num_input_rows)
+            print("processed %d spreadsheet rows" % num_input_rows, flush=True)
 
     # print final progress message
     print("processed %d spreadsheet rows" % num_input_rows)
@@ -1908,6 +1933,7 @@ def main():
 
     print(summary_msg)
     logging.info(summary_msg)
+    print(helper.get_processing_summary())
 
 
 if __name__ == '__main__':
