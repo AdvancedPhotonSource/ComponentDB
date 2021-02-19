@@ -54,6 +54,8 @@ import re
 import xlrd
 import xlsxwriter
 
+import multiprocessing
+
 from CdbApiFactory import CdbApiFactory
 from cdbApi import ApiException
 
@@ -1517,6 +1519,15 @@ def get_config_resource(config, section, key, is_required, print_value=True, pri
     return value
 
 
+def connect_api(api, cdb_user, cdb_password, helper):
+    try:
+        api.authenticateUser(cdb_user, cdb_password)
+        api.testAuthenticated()
+    except ApiException:
+        fatal_error("CDB login failed URL: %s user: $s, exiting" % (cdb_url, cdb_user))
+    helper.set_api(api)
+
+
 def main():
 
     global name_manager
@@ -1702,14 +1713,35 @@ def main():
     # configure logging
     logging.basicConfig(filename=file_log, filemode='w', level=logging.DEBUG, format='%(levelname)s - %(message)s')
 
+    #
+    # connect to CDB
+    #
+
+    print()
+    print("CONNECTING TO CDB ====================")
+    print()
+
+    timeout = 300
+    print("connecting to %s, retry in %d seconds, timeout in %d seconds (wait 2 minutes after connecting vpn)" % (cdb_url, 10, timeout))
+
     # open connection to CDB
     api = CdbApiFactory(cdb_url)
-    try:
-        api.authenticateUser(cdb_user, cdb_password)
-        api.testAuthenticated()
-    except ApiException:
-        fatal_error("CDB login failed URL: %s user: $s, exiting" % (cdb_url, cdb_user))
-    helper.set_api(api)
+    api_process = multiprocessing.Process(target=connect_api, args=(api, cdb_user, cdb_password, helper))
+    api_process.start()
+    process_finished = False
+    while not process_finished:
+        api_process.join(10)
+        if not api_process.is_alive():
+            process_finished = True
+        else:
+            timeout = timeout - 10
+            if timeout == 0:
+                print("CDB connection timeout")
+                api_process.terminate()
+                api_process.join()
+                fatal_error("CDB connection timed out, exiting")
+            else:
+                print("connecting to %s, retry in %d seconds, timeout in %d seconds (wait 2 minutes after connecting vpn)" % (cdb_url, 10, timeout))
 
     # open input spreadsheet
     input_book = xlrd.open_workbook(file_input)
