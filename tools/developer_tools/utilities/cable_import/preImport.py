@@ -129,6 +129,11 @@ class PreImportHelper(ABC):
         self.api = None
         self.validate_only = False
 
+    # returns number of rows at which progress message should be displayed
+    @classmethod
+    def progress_increment(cls):
+        return 5
+
     # registers helper concrete classes for lookup by tag
     @classmethod
     def register(cls, tag, the_class):
@@ -1037,6 +1042,11 @@ class CableInventoryHelper(PreImportHelper):
         self.owner_user_id = None
         self.owner_group_id = None
 
+    # returns number of rows at which progress message should be displayed
+    @classmethod
+    def progress_increment(cls):
+        return 100
+
     def get_project_id(self):
         return self.project_id
 
@@ -1162,6 +1172,11 @@ class CableDesignHelper(PreImportHelper):
         self.tech_system_id = None
         self.owner_user_id = None
         self.owner_group_id = None
+
+    # returns number of rows at which progress message should be displayed
+    @classmethod
+    def progress_increment(cls):
+        return 100
 
     def set_config(self, config):
         super().set_config(config)
@@ -1710,7 +1725,14 @@ def main():
     if input_sheet.ncols != helper.num_input_cols():
         fatal_error("inputFile %s doesn't contain expected number of columns: %d, exiting" % (option_input_file, helper.num_input_cols()))
 
+    #
     # process rows from input spreadsheet
+    #
+
+    print()
+    print("PROCESSING SPREADSHEET ROWS ====================")
+    print()
+
     input_valid = True
     output_objects = []
     validation_map = {}
@@ -1760,23 +1782,38 @@ def main():
             logging.error(msg)
             validation_map[current_row_num] = row_valid_messages
 
+        # print progress message
+        if num_input_rows % helper.progress_increment() == 0:
+            print ("processed %d spreadsheet rows" % num_input_rows)
+
+    # print final progress message
+    print("processed %d spreadsheet rows" % num_input_rows)
+
+    #
+    # display validation summary
+    #
+
+    print()
+    print("VALIDATION SUMMARY ====================")
+    print()
+
     (sheet_valid, sheet_valid_string) = helper.input_is_valid(output_objects)
     if not sheet_valid:
         input_valid = False
         msg = "ERROR validating input spreadsheet: %s" % sheet_valid_string
         logging.error(msg)
-        print()
         print(msg)
+        print()
 
     # print validation report
-    print()
     if len(validation_map) > 0:
-        print("%d validation ERRORS found" % len(validation_map))
         for key in validation_map:
             print("row: %d" % key)
             for message in validation_map[key]:
                 print("\t%s" % message)
         write_validation_report(validation_map, file_validation)
+        print("%d validation ERRORS found" % len(validation_map))
+
     else:
         print("no validation errors found")
 
@@ -1812,13 +1849,13 @@ def main():
 
         output_book.close()
 
-        summary_msg = "SUMMARY: processed %d input rows and wrote %d output rows" % (num_input_rows, num_output_rows)
+        summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows and wrote %d output rows" % (num_input_rows, num_output_rows)
 
     elif not input_valid:
-        summary_msg = "ERROR: processed %d input rows but no output spreadsheet generated, see log for errors" % num_input_rows
+        summary_msg = "PROCESSING ERROR: processed %d input rows but no output spreadsheet generated, see validation summary/file and log for details" % num_input_rows
 
     else:
-        summary_msg = "VALIDATION ONLY: processed %d input rows but no output spreadsheet generated, see validation file for details" % num_input_rows
+        summary_msg = "VALIDATION ONLY: processed %d input rows but no output spreadsheet generated, see validation summary/file for details" % num_input_rows
 
     # clean up helper
     helper.close()
@@ -1829,8 +1866,14 @@ def main():
     except ApiException:
         logging.error("CDB logout failed")
 
+    #
     # print summary
+    #
+
     print()
+    print("PROCESSING SUMMARY ====================")
+    print()
+
     print(summary_msg)
     logging.info(summary_msg)
 
