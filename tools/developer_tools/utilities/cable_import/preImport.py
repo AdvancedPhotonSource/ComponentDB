@@ -395,7 +395,6 @@ class ConnectedMenuHandler(InputHandler):
         parent_value = input_dict[self.parent_key]
         cell_value = input_dict[self.column_key]
         if not name_manager.has_name(parent_value):
-            #sys.exit("name manager has no menu range for: %s column: %s parent column: %s" % (parent_value, self.column_key, self.parent_key))
             return False, "name manager has no menu range for: %s column: %s parent column: %s" % (parent_value, self.column_key, self.parent_key)
         has_child = name_manager.value_is_valid_for_name(parent_value, cell_value)
         valid_string = ""
@@ -413,7 +412,6 @@ class NamedRangeHandler(InputHandler):
     def handle_input(self, input_dict):
         global name_manager
         if not name_manager.has_name(self.range_name):
-            # sys.exit("name manager has no named range for: %s" % self.range_name)
             return False, "name manager has no named range for: %s" % self.range_name
         cell_value = input_dict[self.column_key]
         has_child = name_manager.value_is_valid_for_name(self.range_name, cell_value)
@@ -447,7 +445,6 @@ class DeviceAddressHandler(InputHandler):
             range_name = "_RACK_AREA_"
 
         if not name_manager.has_name(range_name):
-            # sys.exit("name manager has no named address range for: %s" % range_name)
             return False, "name manager has no named address range for: %s" % range_name
 
         has_child = name_manager.value_is_valid_for_name(range_name, cell_value)
@@ -808,34 +805,12 @@ class CableTypeHelper(PreImportHelper):
         return self.owner_group_id
 
     def set_config(self, config):
-
         super().set_config(config)
-
-        self.project_id = config['CDB DEFAULTS']['projectId']
-        if len(self.project_id) == 0:
-            sys.exit("[CDB DEFAULTS] projectId required option missing, exiting")
-
-        self.tech_system_id = config['CDB DEFAULTS']['techSystemId']
-        if len(self.tech_system_id) == 0:
-            sys.exit("[CDB DEFAULTS] techSystemId required option missing, exiting")
-
-        self.owner_user_id = config['CDB DEFAULTS']['ownerUserId']
-        if len(self.owner_user_id) == 0:
-            sys.exit("[CDB DEFAULTS] ownerUserId required option missing, exiting")
-
-        self.owner_group_id = config['CDB DEFAULTS']['ownerGroupId']
-        if len(self.owner_group_id) == 0:
-            sys.exit("[CDB DEFAULTS] ownerGroupId required option missing, exiting")
-
-        self.named_range = config['VALIDATION']['excelCableTypeRangeName']
-        if len(self.named_range) == 0:
-            sys.exit("[VALIDATION] excelCableTypeRangeName required option missing, exiting")
-
-        print("[CDB DEFAULTS] projectId: %s" % self.project_id)
-        print("[CDB DEFAULTS] techSystemId: %s" % self.tech_system_id)
-        print("[CDB DEFAULTS] ownerUserId: %s" % self.owner_user_id)
-        print("[CDB DEFAULTS] ownerGroupId: %s" % self.owner_group_id)
-        print("[VALIDATION] excelCableTypeRangeName: %s" % self.named_range)
+        self.project_id = get_config_resource(config, 'CDB DEFAULTS', 'projectId', True)
+        self.tech_system_id = get_config_resource(config, 'CDB DEFAULTS', 'techSystemId', True)
+        self.owner_user_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerUserId', True)
+        self.owner_group_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerGroupId', True)
+        self.named_range = get_config_resource(config, 'VALIDATION', 'excelCableTypeRangeName', True)
 
     @staticmethod
     def tag():
@@ -1072,24 +1047,10 @@ class CableInventoryHelper(PreImportHelper):
         return self.owner_group_id
 
     def set_config(self, config):
-
         super().set_config(config)
-
-        self.project_id = config['CDB DEFAULTS']['projectId']
-        if len(self.project_id) == 0:
-            sys.exit("[CDB DEFAULTS] projectId required option missing, exiting")
-
-        self.owner_user_id = config['CDB DEFAULTS']['ownerUserId']
-        if len(self.owner_user_id) == 0:
-            sys.exit("[CDB DEFAULTS] ownerUserId required option missing, exiting")
-
-        self.owner_group_id = config['CDB DEFAULTS']['ownerGroupId']
-        if len(self.owner_group_id) == 0:
-            sys.exit("[CDB DEFAULTS] ownerGroupId required option missing, exiting")
-
-        print("[CDB DEFAULTS] projectId: %s" % self.project_id)
-        print("[CDB DEFAULTS] ownerUserId: %s" % self.owner_user_id)
-        print("[CDB DEFAULTS] ownerGroupId: %s" % self.owner_group_id)
+        self.project_id = get_config_resource(config, 'CDB DEFAULTS', 'projectId', True)
+        self.owner_user_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerUserId', True)
+        self.owner_group_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerGroupId', True)
 
     @staticmethod
     def tag():
@@ -1203,37 +1164,13 @@ class CableDesignHelper(PreImportHelper):
         self.owner_group_id = None
 
     def set_config(self, config):
-
         super().set_config(config)
-
-        self.project_id = config['CDB DEFAULTS']['projectId']
-        if len(self.project_id) == 0:
-            sys.exit("[CDB DEFAULTS] projectId required option missing, exiting")
-
-        self.tech_system_id = config['CDB DEFAULTS']['techSystemId']
-        if len(self.tech_system_id) == 0:
-            sys.exit("[CDB DEFAULTS] techSystemId required option missing, exiting")
-
-        self.owner_user_id = config['CDB DEFAULTS']['ownerUserId']
-        if len(self.owner_user_id) == 0:
-            sys.exit("[CDB DEFAULTS] ownerUserId required option missing, exiting")
-
-        self.owner_group_id = config['CDB DEFAULTS']['ownerGroupId']
-        if len(self.owner_group_id) == 0:
-            sys.exit("[CDB DEFAULTS] ownerGroupId required option missing, exiting")
-
-        self.md_root = config['VALIDATION']['mdRoot']
-        if len(self.md_root) == 0:
-            sys.exit("[VALIDATION] mdRoot required option missing, exiting")
-
-        print("[CDB DEFAULTS] projectId: %s" % self.project_id)
-        print("[CDB DEFAULTS] techSystemId: %s" % self.tech_system_id)
-        print("[CDB DEFAULTS] ownerUserId: %s" % self.owner_user_id)
-        print("[CDB DEFAULTS] ownerGroupId: %s" % self.owner_group_id)
-        print("[VALIDATION] mdRoot: %s" % self.md_root)
-
-        # grab info_file while we're at it
-        self.info_file = config['OUTPUTS']['infoFile']
+        self.project_id = get_config_resource(config, 'CDB DEFAULTS', 'projectId', True)
+        self.tech_system_id = get_config_resource(config, 'CDB DEFAULTS', 'techSystemId', True)
+        self.owner_user_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerUserId', True)
+        self.owner_group_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerGroupId', True)
+        self.md_root = get_config_resource(config, 'VALIDATION', 'mdRoot', True)
+        self.info_file = get_config_resource(config, 'OUTPUTS', 'infoFile', False)
 
     @staticmethod
     def tag():
@@ -1536,6 +1473,35 @@ def write_validation_report(validation_map, validation_report_file):
     output_book.close()
 
 
+def fatal_error(error_msg):
+    print()
+    print("ERROR ====================")
+    print()
+    print(error_msg)
+    sys.exit(0)
+
+
+def get_config_resource(config, section, key, is_required, print_value=True, print_mask=None):
+    value = None
+    if section not in config:
+        fatal_error("Invalid config section: %s, exiting" % section)
+    if key not in config[section]:
+        if is_required:
+            fatal_error("Config key: %s not found in section: %s, exiting" % (key, section))
+    else:
+        value = config[section][key]
+        if is_required and len(value) == 0:
+            fatal_error("value not provided for required option '[%s] %s', exiting" % (section, key))
+    if print_value:
+        print_obj = value
+        if value is not None:
+            if print_mask is not None:
+                if len(value) > 0:
+                    print_obj = print_mask
+        print("[%s] %s: %s" % (section, key, print_obj))
+    return value
+
+
 def main():
 
     global name_manager
@@ -1556,113 +1522,80 @@ def main():
     print("deploymentName: %s" % args.deploymentName)
     print("cdbUrl: %s" % args.cdbUrl)
     print("cdbUser: %s" % args.cdbUser)
-    print("cdbPassword: %s" % args.cdbPassword)
+    if args.cdbPassword is not None and len(args.cdbPassword) > 0:
+        password_string = "********"
+    else:
+        password_string = args.cdbPassword
+    print("cdbPassword: %s" % password_string)
 
     #
     # process options and args
     #
 
+    print()
+    print("COMMON SCRIPT OPTIONS ====================")
+    print()
+
     # read options file
     options_file = args.optionsFile
     if len(options_file) == 0:
-        sys.exit("optionsFile command line parameter is required, exiting")
+        fatal_error("optionsFile command line parameter is required, exiting")
     if not os.path.isfile(options_file):
-        sys.exit("specified optionsFile: %s does not exit, exiting" % options_file)
+        fatal_error("specified optionsFile: %s does not exit, exiting" % options_file)
     config = configparser.ConfigParser()
     config.read(options_file)
 
     # process inputDir option
-    option_input_dir = config['INPUTS']['inputDir']
-    if len(option_input_dir) == 0:
-        sys.exit("required option '[INPUTS] inputDir' not specified, exiting")
+    option_input_dir = get_config_resource(config, 'INPUTS', 'inputDir', True)
     if not os.path.isdir(option_input_dir):
-        sys.exit("'[INPUTS] inputDir' directory: %s does not exist, exiting" % option_input_dir)
+        fatal_error("'[INPUTS] inputDir' directory: %s does not exist, exiting" % option_input_dir)
 
     # process inputExcelFile option
-    option_input_file = config['INPUTS']['inputExcelFile']
-    if len(option_input_file) == 0:
-        sys.exit("required option '[INPUTS] inputExcelFile' not specified, exiting")
+    option_input_file = get_config_resource(config, 'INPUTS', 'inputExcelFile', True)
     file_input = option_input_dir + "/" + option_input_file
     if not os.path.isfile(file_input):
-        sys.exit("'[INPUTS] inputExcelFile' file: %s does not exist in directory: %s, exiting" % (option_input_file, option_input_dir))
+        fatal_error("'[INPUTS] inputExcelFile' file: %s does not exist in directory: %s, exiting" % (option_input_file, option_input_dir))
 
     # process (optional) deploymentInfoFile option
-    option_deployment_info_file = config['INPUTS']['deploymentInfoFile']
+    option_deployment_info_file = get_config_resource(config, 'INPUTS', 'deploymentInfoFile', False)
 
     # process outputDir option
-    option_output_dir = config['OUTPUTS']['outputDir']
-    if len(option_output_dir) == 0:
-        sys.exit("required option '[OUTPUTS] outputDir' not specified, exiting")
+    option_output_dir = get_config_resource(config, 'OUTPUTS', 'outputDir', True)
     if not os.path.isdir(option_output_dir):
-        sys.exit("'[OUTPUTS] outputDir' directory: %s does not exist, exiting" % option_output_dir)
+        fatal_error("'[OUTPUTS] outputDir' directory: %s does not exist, exiting" % option_output_dir)
 
     # process outputExcelFile option
-    option_output_file = config['OUTPUTS']['outputExcelFile']
-    if len(option_output_file) == 0:
-        sys.exit("required option '[OUTPUTS] outputExcelFile' not specified, exiting")
+    option_output_file = get_config_resource(config, 'OUTPUTS', 'outputExcelFile', True)
     file_output = option_output_dir + "/" + option_output_file
 
     # process logFile option
-    option_log_file = config['OUTPUTS']['logFile']
-    if len(option_log_file) == 0:
-        sys.exit("required option '[OUTPUTS] logFile' not specified, exiting")
+    option_log_file = get_config_resource(config, 'OUTPUTS', 'logFile', True)
     file_log = option_output_dir + "/" + option_log_file
 
     # process validationFile option
-    option_validation_file = config['OUTPUTS']['validationFile']
-    if len(option_validation_file) == 0:
-        sys.exit("required option '[OUTPUTS] validationFile' not specified, exiting")
+    option_validation_file = get_config_resource(config, 'OUTPUTS', 'validationFile', True)
     file_validation = option_output_dir + "/" + option_validation_file
 
     # process infoFile option
-    option_info_file = config['OUTPUTS']['infoFile']
-    if len(option_info_file) == 0:
-        sys.exit("required option '[OUTPUTS] infoFile' not specified, exiting")
+    option_info_file = get_config_resource(config, 'OUTPUTS', 'infoFile', True)
     file_info = option_output_dir + "/" + option_info_file
 
     # process type option
-    option_type = config['SCRIPT CONTROL']['type']
-    if len(option_type) == 0:
-        sys.exit("required option '[SCRIPT CONTROL] type' not specified, exiting")
+    option_type = get_config_resource(config, 'SCRIPT CONTROL', 'type', True)
     if not PreImportHelper.is_valid_type(option_type):
-        sys.exit("unknown value for '[SCRIPT CONTROL] type' option: %s, exiting" % option_type)
+        fatal_error("unknown value for '[SCRIPT CONTROL] type' option: %s, exiting" % option_type)
 
     # process sheetNumber option
-    option_sheet_number = config['SCRIPT CONTROL']['sheetNumber']
-    if len(option_sheet_number) == 0:
-        sys.exit("required option '[SCRIPT CONTROL] sheetNumber' not specified, exiting")
+    option_sheet_number = get_config_resource(config, 'SCRIPT CONTROL', 'sheetNumber', True)
 
     # process headerRow option
-    option_header_row = config['SCRIPT CONTROL']['headerRow']
-    if len(option_header_row) == 0:
-        sys.exit("required option '[SCRIPT CONTROL] headerRow' not specified, exiting")
+    option_header_row = get_config_resource(config, 'SCRIPT CONTROL', 'headerRow', True)
 
     # process firstDataRow option
-    option_first_data_row = config['SCRIPT CONTROL']['firstDataRow']
-    if len(option_first_data_row) == 0:
-        sys.exit("required option '[SCRIPT CONTROL] firstDataRow' not specified, exiting")
+    option_first_data_row = get_config_resource(config, 'SCRIPT CONTROL', 'firstDataRow', True)
 
     # process lastDataRow option
-    option_last_data_row = config['SCRIPT CONTROL']['lastDataRow']
-    if len(option_last_data_row) == 0:
-        sys.exit("required option '[SCRIPT CONTROL] lastDataRow' not specified, exiting")
-
-    print()
-    print("COMMON SCRIPT OPTIONS ====================")
-    print()
-    print("[INPUTS] inputDir: %s" % option_input_dir)
-    print("[INPUTS] inputExcelFile: %s" % option_input_file)
-    print("[INPUTS] deploymentInfoFile: %s" % option_deployment_info_file)
-    print("[OUTPUTS] outputDir: %s" % option_output_dir)
-    print("[OUTPUTS] outputExcelFile: %s" % option_output_file)
-    print("[OUTPUTS] logFile: %s" % option_log_file)
-    print("[OUTPUTS] validationFile: %s" % option_validation_file)
-    print("[OUTPUTS] infoFile: %s" % option_info_file)
-    print("[SCRIPT CONTROL] type: %s" % option_type)
-    print("[SCRIPT CONTROL] sheetNumber: %s" % option_sheet_number)
-    print("[SCRIPT CONTROL] headerRow: %s" % option_header_row)
-    print("[SCRIPT CONTROL] firstDataRow: %s" % option_first_data_row)
-    print("[SCRIPT CONTROL] lastDataRow: %s" % option_last_data_row)
+    option_last_data_row = get_config_resource(config, 'SCRIPT CONTROL', 'lastDataRow', True)
 
     # create instance of appropriate helper subclass
     helper = PreImportHelper.create_helper(option_type)
@@ -1685,32 +1618,27 @@ def main():
     if len(args.deploymentName) > 0:
         if len(option_deployment_info_file) == 0:
             # must have deployment info file
-            sys.exit(
-                "[INPUTS] deploymentInfoFile not specified but required to look up deployment name: %s" % args.deploymentName)
+            fatal_error("[INPUTS] deploymentInfoFile not specified but required to look up deployment name: %s, exiting" % args.deploymentName)
         else:
             if not os.path.isfile(option_deployment_info_file):
-                sys.exit("'[INPUTS] deploymentInfoFile' file: %s does not exist, exiting" % option_deployment_info_file)
+                fatal_error("'[INPUTS] deploymentInfoFile' file: %s does not exist, exiting" % option_deployment_info_file)
             else:
-                deployment_config = configparser.ConfigParser()
-                deployment_config.read(option_deployment_info_file)
-                if not args.deploymentName in deployment_config:
-                    sys.exit("specified deploymentName: %s not found in deploymentInfoFile: %s" % (
-                    args.deploymentName, option_deployment_info_file))
-                option_cdb_url = deployment_config[args.deploymentName]['cdbUrl']
-                option_cdb_user = deployment_config[args.deploymentName]['cdbUser']
-                option_cdb_password = deployment_config[args.deploymentName]['cdbPassword']
                 print()
                 print("DEPLOYMENT INFO CONFIG ====================")
                 print()
-                print("[%s] cdbUrl: %s" % (args.deploymentName, option_cdb_url))
-                print("[%s] cdbUser: %s" % (args.deploymentName, option_cdb_user))
-                print("[%s] cdbPassword: %s" % (args.deploymentName, option_cdb_password))
+                deployment_config = configparser.ConfigParser()
+                deployment_config.read(option_deployment_info_file)
+                if args.deploymentName not in deployment_config:
+                    fatal_error("specified deploymentName: %s not found in deploymentInfoFile: %s, exiting" % (args.deploymentName, option_deployment_info_file))
+                option_cdb_url = get_config_resource(deployment_config, args.deploymentName, 'cdbUrl', False)
+                option_cdb_user = get_config_resource(deployment_config, args.deploymentName, 'cdbUser', False)
+                option_cdb_password = get_config_resource(deployment_config, args.deploymentName, 'cdbPassword', False, True, '********')
 
     if args.cdbUrl is not None:
         cdb_url = args.cdbUrl
     else:
         if option_cdb_url is None:
-            sys.exit("cdbUser must be specified on command line or via deployment info file, exiting")
+            fatal_error("cdbUser must be specified on command line or via deployment info file, exiting")
         else:
             cdb_url = option_cdb_url
 
@@ -1718,7 +1646,7 @@ def main():
         cdb_user = args.cdbUser
     else:
         if option_cdb_user is None:
-            sys.exit("cdbUser must be specified on command line or via deployment info file, exiting")
+            fatal_error("cdbUser must be specified on command line or via deployment info file, exiting")
         else:
             cdb_user = option_cdb_user
 
@@ -1726,7 +1654,7 @@ def main():
         cdb_password = args.cdbPassword
     else:
         if option_cdb_password is None:
-            sys.exit("cdbUser must be specified on command line or via deployment info file, exiting")
+            fatal_error("cdbUser must be specified on command line or via deployment info file, exiting")
         else:
             cdb_password = option_cdb_password
 
@@ -1736,6 +1664,11 @@ def main():
     print("cdbUrl: %s" % cdb_url)
     print("cdbUser: %s" % cdb_user)
     print("cdbPassword: %s" % cdb_password)
+    if cdb_password is not None and len(cdb_password) > 0:
+        password_string = "********"
+    else:
+        password_string = cdb_password
+    print("cdbPassword: %s" % password_string)
 
     sheet_num = int(option_sheet_number)
     header_row_num = int(option_header_row)
@@ -1760,7 +1693,7 @@ def main():
         api.authenticateUser(cdb_user, cdb_password)
         api.testAuthenticated()
     except ApiException:
-        sys.exit("CDB login failed URL: %s user: $s, exiting" % (cdb_url, cdb_user))
+        fatal_error("CDB login failed URL: %s user: $s, exiting" % (cdb_url, cdb_user))
     helper.set_api(api)
 
     # open input spreadsheet
@@ -1773,9 +1706,9 @@ def main():
 
     # validate input spreadsheet dimensions
     if input_sheet.nrows < last_data_row_num:
-        sys.exit("fewer rows in inputFile: %s than last data row: %d" % (option_input_file, last_data_row_num))
+        fatal_error("fewer rows in inputFile: %s than last data row: %d, exiting" % (option_input_file, last_data_row_num))
     if input_sheet.ncols != helper.num_input_cols():
-        sys.exit("inputFile %s doesn't contain expected number of columns: %d" % (option_input_file, helper.num_input_cols()))
+        fatal_error("inputFile %s doesn't contain expected number of columns: %d, exiting" % (option_input_file, helper.num_input_cols()))
 
     # process rows from input spreadsheet
     input_valid = True
@@ -1894,7 +1827,7 @@ def main():
     try:
         api.logOutUser()
     except ApiException:
-        sys.exit("CDB logout failed")
+        logging.error("CDB logout failed")
 
     # print summary
     print()
