@@ -195,8 +195,11 @@ class PreImportHelper(ABC):
     def get_output_object(self, input_dict):
         pass
 
-    def set_config(self, config):
-        config_value = get_config_resource(config, 'VALIDATION', 'validateOnly', False)
+    def set_config_preimport(self, config, section):
+        pass
+
+    def set_config_group(self, config, section):
+        config_value = get_config_resource(config, section, 'validateOnly', False)
         if config_value in ("True", "TRUE", "true", "Yes", "YES", "yes", "On", "ON", "on", "1"):
             self.validate_only = True
         else:
@@ -829,13 +832,16 @@ class CableTypeHelper(PreImportHelper):
     def get_owner_group_id(self):
         return self.owner_group_id
 
-    def set_config(self, config):
-        super().set_config(config)
-        self.project_id = get_config_resource(config, 'CDB DEFAULTS', 'projectId', True)
-        self.tech_system_id = get_config_resource(config, 'CDB DEFAULTS', 'techSystemId', True)
-        self.owner_user_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerUserId', True)
-        self.owner_group_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerGroupId', True)
-        self.named_range = get_config_resource(config, 'VALIDATION', 'excelCableTypeRangeName', True)
+    def set_config_preimport(self, config, section):
+        super().set_config_preimport(config, section)
+        self.project_id = get_config_resource(config, section, 'projectId', True)
+        self.owner_user_id = get_config_resource(config, section, 'ownerUserId', True)
+        self.owner_group_id = get_config_resource(config, section, 'ownerGroupId', True)
+
+    def set_config_group(self, config, section):
+        super().set_config_group(config, section)
+        self.tech_system_id = get_config_resource(config, section, 'techSystemId', True)
+        self.named_range = get_config_resource(config, section, 'excelCableTypeRangeName', True)
 
     @staticmethod
     def tag():
@@ -1083,11 +1089,11 @@ class CableInventoryHelper(PreImportHelper):
     def get_owner_group_id(self):
         return self.owner_group_id
 
-    def set_config(self, config):
-        super().set_config(config)
-        self.project_id = get_config_resource(config, 'CDB DEFAULTS', 'projectId', True)
-        self.owner_user_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerUserId', True)
-        self.owner_group_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerGroupId', True)
+    def set_config_preimport(self, config, section):
+        super().set_config_preimport(config, section)
+        self.project_id = get_config_resource(config, section, 'projectId', True)
+        self.owner_user_id = get_config_resource(config, section, 'ownerUserId', True)
+        self.owner_group_id = get_config_resource(config, section, 'ownerGroupId', True)
 
     @staticmethod
     def tag():
@@ -1204,13 +1210,16 @@ class CableDesignHelper(PreImportHelper):
     def progress_increment(cls):
         return 50
 
-    def set_config(self, config):
-        super().set_config(config)
-        self.project_id = get_config_resource(config, 'CDB DEFAULTS', 'projectId', True)
-        self.tech_system_id = get_config_resource(config, 'CDB DEFAULTS', 'techSystemId', True)
-        self.owner_user_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerUserId', True)
-        self.owner_group_id = get_config_resource(config, 'CDB DEFAULTS', 'ownerGroupId', True)
-        self.md_root = get_config_resource(config, 'VALIDATION', 'mdRoot', True)
+    def set_config_preimport(self, config, section):
+        super().set_config_preimport(config, section)
+        self.project_id = get_config_resource(config, section, 'projectId', True)
+        self.owner_user_id = get_config_resource(config, section, 'ownerUserId', True)
+        self.owner_group_id = get_config_resource(config, section, 'ownerGroupId', True)
+        self.md_root = get_config_resource(config, section, 'mdRoot', True)
+
+    def set_config_group(self, config, section):
+        super().set_config_group(config, section)
+        self.tech_system_id = get_config_resource(config, section, 'techSystemId', True)
 
     @staticmethod
     def tag():
@@ -1556,7 +1565,9 @@ def main():
 
     # parse command line args
     parser = argparse.ArgumentParser()
-    parser.add_argument("optionsFile", help="File containing script options and settings")
+    parser.add_argument("--configDir", help="Directory containing script config files.", required=True)
+    parser.add_argument("--type", help="Object type, must be one of 'Source', 'CableType', 'CableDesign', or 'CableInventory'.", required=True)
+    parser.add_argument("--groupId", help="Identifier for cable owner group, must have corresponding '.conf' file in configDir", required=True)
     parser.add_argument("--deploymentName", help="Name to use for looking up URL/user/password in deploymentInfoFile")
     parser.add_argument("--cdbUrl", help="CDB system URL")
     parser.add_argument("--cdbUser", help="CDB User ID for API login")
@@ -1566,7 +1577,9 @@ def main():
     print()
     print("COMMAND LINE ARGS ====================")
     print()
-    print("optionsFile: %s" % args.optionsFile)
+    print("configDir: %s" % args.configDir)
+    print("type: %s" % args.type)
+    print("groupId: %s" % args.groupId)
     print("deploymentName: %s" % args.deploymentName)
     print("cdbUrl: %s" % args.cdbUrl)
     print("cdbUser: %s" % args.cdbUser)
@@ -1577,82 +1590,96 @@ def main():
     print("cdbPassword: %s" % password_string)
 
     #
-    # process options and args
+    # determine config file names and paths and test
     #
 
-    print()
-    print("COMMON SCRIPT OPTIONS ====================")
-    print()
+    option_config_dir = args.configDir
+    if not os.path.isdir(option_config_dir):
+        fatal_error("Specified configDir: %s does not exist, exiting" % option_config_dir)
 
-    # read options file
-    options_file = args.optionsFile
-    if len(options_file) == 0:
-        fatal_error("optionsFile command line parameter is required, exiting")
-    if not os.path.isfile(options_file):
-        fatal_error("specified optionsFile: %s does not exit, exiting" % options_file)
-    config = configparser.ConfigParser()
-    config.read(options_file)
+    file_config_preimport = option_config_dir + "/preimport.conf"
+    if not os.path.isfile(file_config_preimport):
+        fatal_error("'preimport.conf' file not found in configDir: %s', exiting" % option_config_dir)
 
-    # process inputDir option
-    option_input_dir = get_config_resource(config, 'INPUTS', 'inputDir', True)
-    if not os.path.isdir(option_input_dir):
-        fatal_error("'[INPUTS] inputDir' directory: %s does not exist, exiting" % option_input_dir)
+    file_config_deployment_info = option_config_dir + "/cdb-deployment-info.conf"
 
-    # process inputExcelFile option
-    option_input_file = get_config_resource(config, 'INPUTS', 'inputExcelFile', True)
-    file_input = option_input_dir + "/" + option_input_file
-    if not os.path.isfile(file_input):
-        fatal_error("'[INPUTS] inputExcelFile' file: %s does not exist in directory: %s, exiting" % (option_input_file, option_input_dir))
+    option_group_id = args.groupId
+    file_config_group = option_config_dir + "/" + option_group_id + ".conf"
+    if not os.path.isfile(file_config_group):
+        fatal_error("'%s.conf' file not found in configDir: %s', exiting" % (option_group_id, option_config_dir))
 
-    # process (optional) deploymentInfoFile option
-    option_deployment_info_file = get_config_resource(config, 'INPUTS', 'deploymentInfoFile', False)
-
-    # process outputDir option
-    option_output_dir = get_config_resource(config, 'OUTPUTS', 'outputDir', True)
-    if not os.path.isdir(option_output_dir):
-        fatal_error("'[OUTPUTS] outputDir' directory: %s does not exist, exiting" % option_output_dir)
-
-    # process outputExcelFile option
-    option_output_file = get_config_resource(config, 'OUTPUTS', 'outputExcelFile', True)
-    file_output = option_output_dir + "/" + option_output_file
-
-    # process logFile option
-    option_log_file = get_config_resource(config, 'OUTPUTS', 'logFile', True)
-    file_log = option_output_dir + "/" + option_log_file
-
-    # process validationFile option
-    option_validation_file = get_config_resource(config, 'OUTPUTS', 'validationFile', True)
-    file_validation = option_output_dir + "/" + option_validation_file
-
-    # process infoFile option
-    option_info_file = get_config_resource(config, 'OUTPUTS', 'infoFile', True)
-    file_info = option_output_dir + "/" + option_info_file
-
-    # process type option
-    option_type = get_config_resource(config, 'SCRIPT CONTROL', 'type', True)
+    option_type = args.type
     if not PreImportHelper.is_valid_type(option_type):
-        fatal_error("unknown value for '[SCRIPT CONTROL] type' option: %s, exiting" % option_type)
-
-    # process sheetNumber option
-    option_sheet_number = get_config_resource(config, 'SCRIPT CONTROL', 'sheetNumber', True)
-
-    # process headerRow option
-    option_header_row = get_config_resource(config, 'SCRIPT CONTROL', 'headerRow', True)
-
-    # process firstDataRow option
-    option_first_data_row = get_config_resource(config, 'SCRIPT CONTROL', 'firstDataRow', True)
-
-    # process lastDataRow option
-    option_last_data_row = get_config_resource(config, 'SCRIPT CONTROL', 'lastDataRow', True)
+        fatal_error("unknown value for type parameter: %s, exiting" % option_type)
 
     # create instance of appropriate helper subclass
     helper = PreImportHelper.create_helper(option_type)
 
-    # allow helper class to read config options
+    #
+    # process options
+    #
+
+    # read config files
+    config_preimport = configparser.ConfigParser()
+    config_preimport.read(file_config_preimport)
+    config_group = configparser.ConfigParser()
+    config_group.read(file_config_group)
+
     print()
-    print("TYPE-SPECIFIC SCRIPT OPTIONS ====================")
+    print("preimport.conf OPTIONS ====================")
     print()
-    helper.set_config(config)
+
+    # process inputDir option
+    option_input_dir = get_config_resource(config_preimport, option_type, 'inputDir', True)
+    if not os.path.isdir(option_input_dir):
+        fatal_error("'[%s] inputDir' directory: %s does not exist, exiting" % (option_type, option_input_dir))
+
+    # process outputDir option
+    option_output_dir = get_config_resource(config_preimport, option_type, 'outputDir', True)
+    if not os.path.isdir(option_output_dir):
+        fatal_error("'[%s] outputDir' directory: %s does not exist, exiting" % (option_type, option_input_dir))
+
+    # process sheetNumber option
+    option_sheet_number = get_config_resource(config_preimport, option_type, 'sheetNumber', True)
+
+    helper.set_config_preimport(config_preimport, option_type)
+
+    print()
+    print("%s.conf OPTIONS ====================" % option_group_id)
+    print()
+
+    # process inputExcelFile option
+    option_input_file = get_config_resource(config_group, option_type, 'inputExcelFile', True)
+    file_input = option_input_dir + "/" + option_input_file
+    if not os.path.isfile(file_input):
+        fatal_error("'[%s] inputExcelFile' file: %s does not exist in directory: %s, exiting" % (option_type, option_input_file, option_input_dir))
+
+    # process headerRow option
+    option_header_row = get_config_resource(config_group, option_type, 'headerRow', True)
+
+    # process firstDataRow option
+    option_first_data_row = get_config_resource(config_group, option_type, 'firstDataRow', True)
+
+    # process lastDataRow option
+    option_last_data_row = get_config_resource(config_group, option_type, 'lastDataRow', True)
+
+    helper.set_config_group(config_group, option_type)
+
+    #
+    # Generate output file paths.
+    #
+
+    # output excel file
+    file_output = "%s/%s.%s.xlsx" % (option_output_dir, option_group_id, option_type)
+
+    # log file
+    file_log = "%s/%s.%s.log" % (option_output_dir, option_group_id, option_type)
+
+    # validation details file
+    file_validation = "%s/%s.%s.validation.xlsx" % (option_output_dir, option_group_id, option_type)
+
+    # debug info file
+    file_info = "%s/%s.%s.debug.xlsx" % (option_output_dir, option_group_id, option_type)
     helper.set_info_file(file_info)
 
     #
@@ -1665,20 +1692,20 @@ def main():
     option_cdb_password = None
 
     if len(args.deploymentName) > 0:
-        if len(option_deployment_info_file) == 0:
+        if len(file_config_deployment_info) == 0:
             # must have deployment info file
             fatal_error("[INPUTS] deploymentInfoFile not specified but required to look up deployment name: %s, exiting" % args.deploymentName)
         else:
-            if not os.path.isfile(option_deployment_info_file):
-                fatal_error("'[INPUTS] deploymentInfoFile' file: %s does not exist, exiting" % option_deployment_info_file)
+            if not os.path.isfile(file_config_deployment_info):
+                fatal_error("'[INPUTS] deploymentInfoFile' file: %s does not exist, exiting" % file_config_deployment_info)
             else:
                 print()
                 print("DEPLOYMENT INFO CONFIG ====================")
                 print()
                 deployment_config = configparser.ConfigParser()
-                deployment_config.read(option_deployment_info_file)
+                deployment_config.read(file_config_deployment_info)
                 if args.deploymentName not in deployment_config:
-                    fatal_error("specified deploymentName: %s not found in deploymentInfoFile: %s, exiting" % (args.deploymentName, option_deployment_info_file))
+                    fatal_error("specified deploymentName: %s not found in deploymentInfoFile: %s, exiting" % (args.deploymentName, file_config_deployment_info))
                 option_cdb_url = get_config_resource(deployment_config, args.deploymentName, 'cdbUrl', False)
                 option_cdb_user = get_config_resource(deployment_config, args.deploymentName, 'cdbUser', False)
                 option_cdb_password = get_config_resource(deployment_config, args.deploymentName, 'cdbPassword', False, True, '********')
