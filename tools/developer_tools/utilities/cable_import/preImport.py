@@ -316,11 +316,21 @@ class ConnectedMenuManager:
 
     def initialize(self, workbook):
 
+        error_messages = []
+        warning_messages = []
         for name in workbook.name_obj_list:
+            range_name = name.name
             if name.scope == -1:
-                # print(name.name)
                 name.book = workbook  # seems like an error that library doesn't do this internally
+                if '!' not in name.formula_text:
+                    error_messages.append("unexpected expression format (should include '!'), range: %s expression: %s" % (range_name, name.formula_text))
+                    continue
                 (sheet_name, ref) = name.formula_text.split('!')
+                try:
+                    sheet = workbook.sheet_by_name(sheet_name)
+                except (ValueError, xlrd.biffh.XLRDError):
+                    error_messages.append("invalid sheet name in expression, range: %s expression: %s sheet: %s" % (range_name, name.formula_text, sheet_name))
+                    continue
                 if ':' in ref:
                     (first_cell, last_cell) = ref.split(':')
                 else:
@@ -328,14 +338,51 @@ class ConnectedMenuManager:
                     last_cell = ref
                 (first_cell_row, first_cell_col) = xl_cell_to_rowcol(first_cell)
                 (last_cell_row, last_cell_col) = xl_cell_to_rowcol(last_cell)
-                sheet = workbook.sheet_by_name(sheet_name)
+                if first_cell_row < 0 or first_cell_col < 0 or last_cell_row < first_cell_row or last_cell_col < first_cell_col or last_cell_row > sheet.nrows or last_cell_col > sheet.ncols:
+                    error_messages.append("invalid indexes for range, sheet: %s name: %s ref: %s first_cell_row: %d first_cell_col: %d last_cell_row: %d last_cell_col: %d numrows: %d numcols: %d" % (sheet_name, range_name, ref, first_cell_row, first_cell_col, last_cell_row, last_cell_col, sheet.nrows, sheet.ncols))
+                    continue
                 values = []
+                has_error = False
                 for row_ind in range(first_cell_row, last_cell_row + 1):
                     for col_ind in range(first_cell_col, last_cell_col + 1):
-                        # print("ref: %s sheet: %s row_ind: %d col_ind: %d" % (ref, sheet_name, row_ind, col_ind))
-                        # print("\t%s" % sheet.cell(row_ind, col_ind).value)
-                        values.append(sheet.cell(row_ind, col_ind).value)
-                self.add_name(name.name, values)
+                        try:
+                            cell = sheet.cell(row_ind, col_ind)
+                            cell_value = cell.value
+                            if cell_value is None or cell_value == "":
+                                error_messages.append("cell value cannot be blank, sheet: %s range: %s ref: %s row: %d col: %d" % (sheet_name, range_name, ref, row_ind+1, col_ind+1))
+                                has_error = True
+                                break
+                            else:
+                                if cell_value != range_name:
+                                    values.append(cell_value)
+                        except IndexError:
+                            error_messages.append("cell index error, sheet: %s range: %s row: %d col: %d" % (sheet_name, name.name, row_ind+1, col_ind+1))
+                            has_error = True
+                            break
+                    if has_error:
+                        break
+                if has_error:
+                    continue
+                if range_name in values:
+                    error_messages.append("sheet: %s range: %s ref: %s includes range name in values" % (sheet_name, range_name, ref))
+                    continue
+                self.add_name(range_name, values)
+            else:
+                if range_name != "_Print_Area":
+                    warning_messages.append("ignoring range not at global scope (=-1): %s scope: %s expression: %s" % (range_name, name.scope, name.formula_text))
+        if len(warning_messages) > 0:
+            print()
+            print("EXCEL NAMED RANGE WARNINGS ====================")
+            print()
+            for message in warning_messages:
+                print(message)
+        if len(error_messages) > 0:
+            print()
+            print("EXCEL NAMED RANGE ERRORS ====================")
+            print()
+            for message in error_messages:
+                print(message)
+            fatal_error("Error(s) parsing excel named ranges, see console for details. Exiting.")
 
     def has_name(self, range_name):
         return range_name in self.name_dict
