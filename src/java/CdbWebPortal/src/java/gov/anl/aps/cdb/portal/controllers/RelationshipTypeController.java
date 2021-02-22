@@ -30,14 +30,6 @@ public class RelationshipTypeController extends CdbEntityController<Relationship
         return (RelationshipTypeController) SessionUtility.findBean("relationshipTypeController");
     }
     
-    public RelationshipType createRelationshipTypeWithName(String relationshipTypeName) {
-        RelationshipType relationshipType = createEntityInstance();
-        relationshipType.setName(relationshipTypeName);
-        setCurrent(relationshipType);
-        create(true); 
-        return relationshipType; 
-    }
-    
     @Override
     protected RelationshipTypeFacade getEntityDbFacade() {
         return relationshipTypeFacade;

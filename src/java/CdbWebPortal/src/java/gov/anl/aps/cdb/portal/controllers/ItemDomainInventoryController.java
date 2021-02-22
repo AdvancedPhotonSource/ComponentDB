@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -16,6 +17,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainInventorySettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainInventoryLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
@@ -34,6 +36,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
@@ -42,6 +45,7 @@ import gov.anl.aps.cdb.portal.view.objects.InventoryItemElementConstraintInforma
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.event.AjaxBehaviorEvent;
@@ -533,9 +537,16 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     private RelationshipType getCableConnectionRelationshipType() {
         RelationshipType relationshipType = relationshipTypeFacade.findByName(ItemElementRelationshipTypeNames.itemCableConnection.getValue());
         if (relationshipType == null) {
-            RelationshipTypeController controller = RelationshipTypeController.getInstance();
+            RelationshipTypeControllerUtility rtcu = new RelationshipTypeControllerUtility();             
             String name = ItemElementRelationshipTypeNames.itemCableConnection.getValue();
-            relationshipType = controller.createRelationshipTypeWithName(name);
+            UserInfo user = SessionUtility.getUser();
+            
+            try {
+                relationshipType = rtcu.createRelationshipTypeWithName(name, user);
+            } catch (CdbException ex) {
+                SessionUtility.addErrorMessage("Error", ex.getMessage());
+                logger.error(ex);
+            }
         }
         return relationshipType;
     }
