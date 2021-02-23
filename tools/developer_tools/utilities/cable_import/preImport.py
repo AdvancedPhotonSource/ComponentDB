@@ -51,7 +51,7 @@ import sys
 from abc import ABC, abstractmethod
 import re
 
-import xlrd
+import openpyxl
 import xlsxwriter
 
 import multiprocessing
@@ -318,58 +318,59 @@ class ConnectedMenuManager:
 
         error_messages = []
         warning_messages = []
-        for name in workbook.name_obj_list:
+        for name in workbook.defined_names.definedName:
             range_name = name.name
-            if name.scope == -1:
-                name.book = workbook  # seems like an error that library doesn't do this internally
-                if '!' not in name.formula_text:
-                    error_messages.append("unexpected expression format (should include '!'), range: %s expression: %s" % (range_name, name.formula_text))
-                    continue
-                (sheet_name, ref) = name.formula_text.split('!')
-                try:
-                    sheet = workbook.sheet_by_name(sheet_name)
-                except (ValueError, xlrd.biffh.XLRDError):
-                    error_messages.append("invalid sheet name in expression, range: %s expression: %s sheet: %s" % (range_name, name.formula_text, sheet_name))
-                    continue
-                if ':' in ref:
-                    (first_cell, last_cell) = ref.split(':')
-                else:
-                    first_cell = ref
-                    last_cell = ref
-                (first_cell_row, first_cell_col) = xl_cell_to_rowcol(first_cell)
-                (last_cell_row, last_cell_col) = xl_cell_to_rowcol(last_cell)
-                if first_cell_row < 0 or first_cell_col < 0 or last_cell_row < first_cell_row or last_cell_col < first_cell_col or last_cell_row > sheet.nrows or last_cell_col > sheet.ncols:
-                    error_messages.append("invalid indexes for range, sheet: %s name: %s ref: %s first_cell_row: %d first_cell_col: %d last_cell_row: %d last_cell_col: %d numrows: %d numcols: %d" % (sheet_name, range_name, ref, first_cell_row, first_cell_col, last_cell_row, last_cell_col, sheet.nrows, sheet.ncols))
-                    continue
-                values = []
-                has_error = False
-                for row_ind in range(first_cell_row, last_cell_row + 1):
-                    for col_ind in range(first_cell_col, last_cell_col + 1):
-                        try:
-                            cell = sheet.cell(row_ind, col_ind)
-                            cell_value = cell.value
-                            if cell_value is None or cell_value == "":
-                                error_messages.append("cell value cannot be blank, sheet: %s range: %s ref: %s row: %d col: %d" % (sheet_name, range_name, ref, row_ind+1, col_ind+1))
-                                has_error = True
-                                break
-                            else:
-                                if cell_value != range_name:
-                                    values.append(cell_value)
-                        except IndexError:
-                            error_messages.append("cell index error, sheet: %s range: %s row: %d col: %d" % (sheet_name, name.name, row_ind+1, col_ind+1))
-                            has_error = True
+            if range_name == "_Print_Area" or range_name == "_Rack_data_201901141042_usmani":
+                continue
+            expression = name.value
+            if '!' not in expression:
+                error_messages.append("unexpected expression format (should include '!'), range: %s expression: %s" % (range_name, expression))
+                continue
+            (sheet_name, ref) = expression.split('!')
+            try:
+                sheet = workbook[sheet_name]
+            except KeyError:
+                error_messages.append("invalid sheet name in expression, range: %s expression: %s sheet: %s" % (range_name, expression, sheet_name))
+                continue
+            if ':' in ref:
+                (first_cell, last_cell) = ref.split(':')
+            else:
+                first_cell = ref
+                last_cell = ref
+            (first_cell_row, first_cell_col) = xl_cell_to_rowcol(first_cell)
+            (last_cell_row, last_cell_col) = xl_cell_to_rowcol(last_cell)
+            if first_cell_row < 0 or first_cell_col < 0 or last_cell_row < first_cell_row or last_cell_col < first_cell_col or last_cell_row > sheet.max_row or last_cell_col > sheet.max_column:
+                error_messages.append("invalid indexes for range, sheet: %s name: %s ref: %s first_cell_row: %d first_cell_col: %d last_cell_row: %d last_cell_col: %d numrows: %d numcols: %d" % (sheet_name, range_name, ref, first_cell_row, first_cell_col, last_cell_row, last_cell_col, sheet.max_row, sheet.max_column))
+                continue
+            values = []
+            has_error = False
+            for row_ind in range(first_cell_row, last_cell_row + 1):
+                for col_ind in range(first_cell_col, last_cell_col + 1):
+                    try:
+                        cell = sheet.cell(row_ind, col_ind)
+                        cell_value = cell.value
+                        if cell_value is None or cell_value == "":
+                            # ignore blank value in named range
                             break
-                    if has_error:
+                        else:
+                            if cell_value != range_name:
+                                # don't add range name as a a value, this is treated inconsistently in the workbooks
+                                values.append(cell_value)
+                    except IndexError:
+                        error_messages.append("cell index error, sheet: %s range: %s row: %d col: %d" % (sheet_name, name.name, row_ind+1, col_ind+1))
+                        has_error = True
                         break
                 if has_error:
-                    continue
-                if range_name in values:
-                    error_messages.append("sheet: %s range: %s ref: %s includes range name in values" % (sheet_name, range_name, ref))
-                    continue
-                self.add_name(range_name, values)
-            else:
-                if range_name != "_Print_Area":
-                    warning_messages.append("ignoring range not at global scope (=-1): %s scope: %s expression: %s" % (range_name, name.scope, name.formula_text))
+                    break
+            if has_error:
+                continue
+            if range_name in values:
+                error_messages.append("sheet: %s range: %s ref: %s includes range name in values" % (sheet_name, range_name, ref))
+                continue
+            self.add_name(range_name, values)
+            # else:
+            #     if range_name != "_Print_Area":
+            #         warning_messages.append("ignoring range not at global scope (=-1): %s scope: %s expression: %s" % (range_name, name.scope, name.formula_text))
         if len(warning_messages) > 0:
             print()
             print("EXCEL NAMED RANGE WARNINGS ====================")
@@ -1543,9 +1544,7 @@ def xl_cell_to_rowcol(cell_str):
         col += (ord(char) - ord('A') + 1) * (26 ** expn)
         expn += 1
 
-    # Convert 1-index to zero-index
-    row = int(row_str) - 1
-    col -= 1
+    row = int(row_str)
 
     return row, col
 
@@ -1799,9 +1798,9 @@ def main():
     last_data_row_num = int(option_last_data_row)
 
     sheet_index = sheet_num - 1
-    header_index = header_row_num - 1
-    first_data_index = first_data_row_num - 1
-    last_data_index = last_data_row_num - 1
+    header_index = header_row_num
+    first_data_index = first_data_row_num
+    last_data_index = last_data_row_num
 
     # initialize input and output columns
     helper.initialize_input_columns()
@@ -1843,17 +1842,15 @@ def main():
     helper.set_api(api)
 
     # open input spreadsheet
-    input_book = xlrd.open_workbook(file_input)
-
+    input_book = openpyxl.load_workbook(filename=file_input, data_only=True)
     name_manager = ConnectedMenuManager(input_book)
-
-    input_sheet = input_book.sheet_by_index(int(sheet_index))
-    logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.nrows, input_sheet.ncols))
+    input_sheet = input_book.worksheets[int(sheet_index)]
+    logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.max_row, input_sheet.max_column))
 
     # validate input spreadsheet dimensions
-    if input_sheet.nrows < last_data_row_num:
+    if input_sheet.max_row < last_data_row_num:
         fatal_error("fewer rows in inputFile: %s than last data row: %d, exiting" % (option_input_file, last_data_row_num))
-    if input_sheet.ncols != helper.num_input_cols():
+    if input_sheet.max_column != helper.num_input_cols():
         fatal_error("inputFile %s doesn't contain expected number of columns: %d, exiting" % (option_input_file, helper.num_input_cols()))
 
     #
@@ -1870,7 +1867,7 @@ def main():
     num_input_rows = 0
     for row_ind in range(first_data_index, last_data_index + 1):
 
-        current_row_num = row_ind + 1
+        current_row_num = row_ind
         num_input_rows = num_input_rows + 1
 
         logging.debug("processing row %d from input spreadsheet" % current_row_num)
@@ -1880,7 +1877,9 @@ def main():
         for col_ind in range(helper.num_input_cols()):
             if col_ind in helper.input_columns:
                 # read cell value from spreadsheet
-                val = input_sheet.cell(row_ind, col_ind).value
+                val = input_sheet.cell(row_ind, col_ind+1).value
+                if val is None:
+                    val = ""
                 logging.debug("col: %d value: %s" % (col_ind, str(val)))
                 helper.handle_input_cell_value(input_dict=input_dict, index=col_ind, value=val, row_num=current_row_num)
 
