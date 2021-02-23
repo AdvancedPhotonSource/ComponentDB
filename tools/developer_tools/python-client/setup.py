@@ -27,8 +27,16 @@ setup(name='ComponentDB-API',
       maintainer='Dariusz Jarosz',
       maintainer_email='djarosz@aps.anl.gov',
       url='https://github.com/AdvancedPhotonSource/ComponentDB',
+      scripts=[
+          'cdbCli/service/cli/CDBcli.py',
+          'cdbCli/service/cli/addLogToItemByIdCli.py', 
+          'cdbCli/service/cli/getItemByIdCli.py'
+          ],
       entry_points={
         'console_scripts': [
-          'cdb-python-client-test = CdbApiFactory:run_command'
+          'cdb-python-client-test = CdbApiFactory:run_command',
+          'cdb-get-item-by-id = cdbCli.service.cli.getItemByIdCli:get_item_by_id',
+          'cdb-add-log-to-item-by-id = cdbCli.service.cli.addLogToItemByIdCli:add_log_to_item_by_id',
+          'cdb-cli-tool = cdbCli.service.cli.CDBcli:main'
         ]
       })
