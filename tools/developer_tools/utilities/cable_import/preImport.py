@@ -574,7 +574,7 @@ class EndpointHandler(InputHandler):
         return is_valid, valid_string
 
 
-class CableTypeHandler(InputHandler):
+class CableTypeIdHandler(InputHandler):
 
     def __init__(self, column_key, id_manager, api, missing_cable_type_list):
         super().__init__(column_key)
@@ -616,6 +616,33 @@ class CableTypeHandler(InputHandler):
                 error_msg = "no cable type found for name: %s" % cable_type_name
                 logging.error(error_msg)
                 return False, error_msg
+
+
+class CableTypeExistenceHandler(InputHandler):
+
+    def __init__(self, column_key, api, existing_cable_types):
+        super().__init__(column_key)
+        self.existing_cable_types = existing_cable_types
+        self.api = api
+
+    def handle_input(self, input_dict):
+
+        cable_type_name = input_dict[self.column_key]
+
+        # check to see if cable type exists in CDB
+        cable_type_object = None
+        try:
+            cable_type_object = self.api.getCableCatalogItemApi().get_cable_catalog_item_by_name(cable_type_name)
+        except ApiException as ex:
+            if "ObjectNotFound" not in ex.body:
+                error_msg = "unknown api exception retrieving cable catalog item: %s - %s" % (cable_type_name, ex.body)
+                logging.error(error_msg)
+                return False, error_msg
+        if cable_type_object:
+            # cable type already exists
+            self.existing_cable_types.append(cable_type_name)
+
+        return True, ""
 
 
 class SourceHandler(InputHandler):
@@ -862,6 +889,7 @@ class CableTypeHelper(PreImportHelper):
         super().__init__()
         self.source_id_manager = IdManager()
         self.missing_source_list = []
+        self.existing_cable_types = []
         self.project_id = None
         self.tech_system_id = None
         self.owner_user_id = None
@@ -962,11 +990,18 @@ class CableTypeHelper(PreImportHelper):
         global name_manager
         handler_list = [
             NamedRangeHandler(CABLE_TYPE_NAME_KEY, self.named_range),
+            CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, self.api, self.existing_cable_types),
             SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, self.source_id_manager, self.api, self.missing_source_list),
         ]
         return handler_list
 
     def get_output_object(self, input_dict):
+
+        name = input_dict[CABLE_TYPE_NAME_KEY]
+        if name in self.existing_cable_types:
+            # cable type already exists with this name, skip
+            logging.debug("cable type already exists in CDB for: %s, skipping" % input_dict[CABLE_TYPE_NAME_KEY])
+            return None
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
         return CableTypeOutputObject(helper=self, input_dict=input_dict)
@@ -978,13 +1013,13 @@ class CableTypeHelper(PreImportHelper):
 
         cable_type_named_range = self.named_range
 
-        if len(output_objects) < name_manager.num_values_for_name(cable_type_named_range):
-            return False, "fewer rows in output spreadsheet than named range of cable types for technical system"
+        if len(output_objects) + len(self.existing_cable_types) < name_manager.num_values_for_name(cable_type_named_range):
+            return False, "named range: %s includes cable types not included in start/end range of script"
 
         return True, ""
 
     def close(self):
-        if len(self.missing_source_list) > 0:
+        if len(self.missing_source_list) > 0 or len(self.existing_cable_types) > 0:
 
             if not self.info_file:
                 print("provide command line arg 'infoFile' to generate debugging output file")
@@ -994,18 +1029,24 @@ class CableTypeHelper(PreImportHelper):
             output_sheet = output_book.add_worksheet()
 
             output_sheet.write(0, 0, "missing sources")
+            output_sheet.write(0, 1, "existing cable types")
 
             row_index = 1
             for src in sorted(self.missing_source_list):
                 output_sheet.write(row_index, 0, src)
                 row_index = row_index + 1
 
+            row_index = 1
+            for name in sorted(self.existing_cable_types):
+                output_sheet.write(row_index, 1, name)
+                row_index = row_index + 1
+
             output_book.close()
 
     # Returns processing summary message.
     def get_processing_summary(self):
-        if len(self.missing_source_list) > 0:
-            return "DETAILS: number of missing sources: %d" % (len(self.missing_source_list))
+        if len(self.missing_source_list) > 0 or len(self.existing_cable_types) > 0:
+            return "DETAILS: number of cable types that already exist in CDB: %d number of missing sources: %d" % (len(self.existing_cable_types), len(self.missing_source_list))
         else:
             return ""
 
@@ -1179,7 +1220,7 @@ class CableInventoryHelper(PreImportHelper):
     def input_handler_list(self):
         global name_manager
         handler_list = [
-            CableTypeHandler(CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.api, self.missing_cable_types),
+            CableTypeIdHandler(CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.api, self.missing_cable_types),
         ]
         return handler_list
 
@@ -1337,7 +1378,7 @@ class CableDesignHelper(PreImportHelper):
             NamedRangeHandler(CABLE_DESIGN_VOLTAGE_KEY, "_Voltage"),
             NamedRangeHandler(CABLE_DESIGN_OWNER_KEY, "_Owner"),
             ConnectedMenuHandler(CABLE_DESIGN_TYPE_KEY, CABLE_DESIGN_OWNER_KEY),
-            CableTypeHandler(CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.api, self.missing_cable_types),
+            CableTypeIdHandler(CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.api, self.missing_cable_types),
             NamedRangeHandler(CABLE_DESIGN_SRC_LOCATION_KEY, "_Location"),
             ConnectedMenuHandler(CABLE_DESIGN_SRC_ANS_KEY, CABLE_DESIGN_SRC_LOCATION_KEY),
             ConnectedMenuHandler(CABLE_DESIGN_SRC_ETPM_KEY, CABLE_DESIGN_SRC_ANS_KEY),
