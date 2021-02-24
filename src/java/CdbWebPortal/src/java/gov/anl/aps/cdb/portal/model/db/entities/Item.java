@@ -215,7 +215,6 @@ import org.primefaces.model.TreeNode;
     "qrIdDisplay",
     "qrIdFilter",
     "itemCableConnectionsRelationshipList",
-    "itemAvaliableConnectorsList",
     "editEntityTypeString",
     "editItemProjectString",
     "logList",
@@ -340,9 +339,6 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String itemProjectString = null;
     private transient String qrIdDisplay = null;
     private transient String qrIdFilter = null;
-
-    private transient List<ItemElementRelationship> itemCableConnectionsRelationshipList;
-    private transient List<Connector> itemAvaliableConnectorsList;
 
     private transient String entityTypeString = null;
 
@@ -1382,22 +1378,6 @@ public class Item extends CdbDomainEntity implements Serializable {
                 && Objects.equals(other.getDerivedFromItem(), derivedFromItem)
                 && Objects.equals(other.getDomain(), domain)
                 && Objects.equals(other.getName(), name));
-    }
-
-    public void setItemCableConnectionsRelationshipList(List<ItemElementRelationship> itemCableConnectionsRelationshipList) {
-        this.itemCableConnectionsRelationshipList = itemCableConnectionsRelationshipList;
-    }
-
-    public List<ItemElementRelationship> getItemCableConnectionsRelationshipList() {
-        return itemCableConnectionsRelationshipList;
-    }
-
-    public List<Connector> getItemAvaliableConnectorsList() {
-        return itemAvaliableConnectorsList;
-    }
-
-    public void setItemAvaliableConnectorsList(List<Connector> itemAvaliableConnectorsList) {
-        this.itemAvaliableConnectorsList = itemAvaliableConnectorsList;
     }
 
     public Boolean getIsItemTemplate() {

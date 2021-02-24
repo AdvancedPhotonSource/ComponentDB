@@ -18,11 +18,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.NamedStoredProcedureQueries;
-import javax.persistence.NamedStoredProcedureQuery;
-import javax.persistence.ParameterMode;
-import javax.persistence.StoredProcedureParameter;
-import javax.persistence.Table;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -31,25 +26,6 @@ import org.primefaces.model.TreeNode;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.INVENTORY_ID + "")
-@NamedStoredProcedureQueries({
-    @NamedStoredProcedureQuery(
-            name = "item.inventoryItemsWithConnectorType",
-            procedureName = "inventory_items_with_avaiable_connector",
-            resultClasses = Item.class,
-            parameters = {
-                @StoredProcedureParameter(
-                        name = "connector_type_id",
-                        mode = ParameterMode.IN,
-                        type = Integer.class
-                )
-                ,
-                @StoredProcedureParameter(
-                        name = "is_male",
-                        mode = ParameterMode.IN,
-                        type = Boolean.class
-                )
-            }
-    ),})
 @Schema(name = "ItemDomainInventory",
         allOf = Item.class
 )

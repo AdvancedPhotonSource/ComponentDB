@@ -56,16 +56,7 @@ See LICENSE file.
                  collapsed="#{entityController.collapsedRelatedMAARCItemsForCurrent}">
             <ui:include src="../itemDomainMAARC/private/itemRelatedMAARCItemList.xhtml"/>
         </p:panel>
-    </ui:define>
-
-    <ui:define name="additionalLeftItemPanels">        
-        <p:panel header="Port Connections"
-                 toggleable="true"
-                 rendered="#{resources.EnabledConnectorAndConnectionsFunctionality}"
-                 collapsed="#{!itemDomainInventoryController.displayItemCableRelationshipList}">
-            <ui:include src="private/itemDomainInventoryConnectionsList.xhtml" />
-        </p:panel>                
-    </ui:define>
+    </ui:define>   
 
     <ui:define name="itemElements">
         <ui:include src="private/itemDomainInventoryItemElementList.xhtml" />

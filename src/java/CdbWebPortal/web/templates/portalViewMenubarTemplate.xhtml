@@ -164,7 +164,7 @@ See LICENSE file.
                                     action="#{userInfoController.prepareListFromViewPath('/views/userInfo')}"/>                        
                             
                             <p:menuitem value="Connector Types"
-                                    rendered="#{loginController.loggedInAsAdmin and resources.EnabledConnectorAndConnectionsFunctionality}"
+                                    rendered="#{loginController.loggedInAsAdmin}"
                                     id="connectorTypesButton"
                                     icon="ui-icon-connector"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/connectorType/') ? 'activeMenuItem' : ''} "
