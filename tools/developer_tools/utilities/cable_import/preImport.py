@@ -448,7 +448,7 @@ class ManufacturerHandler(InputHandler):
 
         else:
             # need to add new source for mfr
-            self.new_sources.append(manufacturer)
+            self.new_sources.add(manufacturer)
 
         return True, ""
 
@@ -488,6 +488,26 @@ class NamedRangeHandler(InputHandler):
         if not has_child:
             valid_string = "named range %s does not include value %s" % (self.range_name, cell_value)
         return has_child, valid_string
+
+
+class UniqueNameHandler(InputHandler):
+
+    def __init__(self, column_key, api, item_names):
+        super().__init__(column_key)
+        self.item_names = item_names
+        self.api = api
+
+    def handle_input(self, input_dict):
+
+        item_name = input_dict[self.column_key]
+
+        if item_name in self.item_names:
+            # flag duplicate item name
+            error_msg = "duplicate item name: %s" % (item_name)
+            logging.error(error_msg)
+            return False, error_msg
+
+        return True, ""
 
 
 class DeviceAddressHandler(InputHandler):
@@ -798,7 +818,7 @@ class SourceHelper(PreImportHelper):
         self.output_manufacturers = set()
         self.source_name_manager = NameVariantManager()
         self.existing_sources = []
-        self.new_sources = []
+        self.new_sources = set()
 
     @staticmethod
     def tag():
@@ -917,6 +937,7 @@ class CableTypeHelper(PreImportHelper):
         self.source_id_manager = IdManager()
         self.missing_source_list = []
         self.existing_cable_types = []
+        self.cable_type_names = []
         self.project_id = None
         self.tech_system_id = None
         self.owner_user_id = None
@@ -1017,6 +1038,7 @@ class CableTypeHelper(PreImportHelper):
         global name_manager
         handler_list = [
             NamedRangeHandler(CABLE_TYPE_NAME_KEY, self.named_range),
+            UniqueNameHandler(CABLE_TYPE_NAME_KEY, self.api, self.cable_type_names),
             CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, self.api, self.existing_cable_types),
             SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, self.source_id_manager, self.api, self.missing_source_list),
         ]
@@ -1317,6 +1339,7 @@ class CableDesignHelper(PreImportHelper):
         self.missing_cable_types = set()
         self.nonunique_endpoints = set()
         self.existing_cable_designs = []
+        self.cable_design_names = []
         self.project_id = None
         self.tech_system_id = None
         self.owner_user_id = None
@@ -1402,6 +1425,7 @@ class CableDesignHelper(PreImportHelper):
     def input_handler_list(self):
         global name_manager
         handler_list = [
+            UniqueNameHandler(CABLE_DESIGN_NAME_KEY, self.api, self.cable_design_names),
             CableDesignExistenceHandler(CABLE_DESIGN_NAME_KEY, self.api, self.existing_cable_designs),
             NamedRangeHandler(CABLE_DESIGN_LAYING_KEY, "_Laying"),
             NamedRangeHandler(CABLE_DESIGN_VOLTAGE_KEY, "_Voltage"),
