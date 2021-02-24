@@ -645,6 +645,33 @@ class CableTypeExistenceHandler(InputHandler):
         return True, ""
 
 
+class CableDesignExistenceHandler(InputHandler):
+
+    def __init__(self, column_key, api, existing_cable_designs):
+        super().__init__(column_key)
+        self.existing_cable_designs = existing_cable_designs
+        self.api = api
+
+    def handle_input(self, input_dict):
+
+        cable_design_name = input_dict[self.column_key]
+
+        # check to see if cable type exists in CDB
+        cable_design_object = None
+        try:
+            cable_design_object = self.api.getCableDesignItemApi().get_cable_design_item_by_name(cable_design_name)
+        except ApiException as ex:
+            if "ObjectNotFound" not in ex.body:
+                error_msg = "unknown api exception retrieving cable design item: %s - %s" % (cable_design_name, ex.body)
+                logging.error(error_msg)
+                return False, error_msg
+        if cable_design_object:
+            # cable type already exists
+            self.existing_cable_types.append(cable_design_name)
+
+        return True, ""
+
+
 class SourceHandler(InputHandler):
 
     def __init__(self, column_key, id_manager, api, missing_source_list):
@@ -1289,6 +1316,7 @@ class CableDesignHelper(PreImportHelper):
         self.missing_endpoints = set()
         self.missing_cable_types = set()
         self.nonunique_endpoints = set()
+        self.existing_cable_designs = []
         self.project_id = None
         self.tech_system_id = None
         self.owner_user_id = None
@@ -1374,6 +1402,7 @@ class CableDesignHelper(PreImportHelper):
     def input_handler_list(self):
         global name_manager
         handler_list = [
+            CableDesignExistenceHandler(CABLE_DESIGN_NAME_KEY, self.api, self.existing_cable_designs),
             NamedRangeHandler(CABLE_DESIGN_LAYING_KEY, "_Laying"),
             NamedRangeHandler(CABLE_DESIGN_VOLTAGE_KEY, "_Voltage"),
             NamedRangeHandler(CABLE_DESIGN_OWNER_KEY, "_Owner"),
@@ -1425,12 +1454,18 @@ class CableDesignHelper(PreImportHelper):
 
     def get_output_object(self, input_dict):
 
+        name = input_dict[CABLE_DESIGN_NAME_KEY]
+        if name in self.existing_cable_designs:
+            # cable design already exists with this name, skip
+            logging.debug("cable design already exists in CDB for: %s, skipping" % name)
+            return None
+
         logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
         return CableDesignOutputObject(helper=self, input_dict=input_dict)
 
     def close(self):
 
-        if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
+        if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0 or len(self.existing_cable_designs) > 0:
 
             if not self.info_file:
                 print("provide command line arg 'infoFile' to generate debugging output file")
@@ -1442,6 +1477,7 @@ class CableDesignHelper(PreImportHelper):
             output_sheet.write(0, 0, "missing cable types")
             output_sheet.write(0, 1, "missing endpoints")
             output_sheet.write(0, 2, "non-unique endpoints")
+            output_sheet.write(0, 3, "existing cable designs")
 
             row_index = 1
             for cable_type_name in sorted(self.missing_cable_types):
@@ -1456,6 +1492,11 @@ class CableDesignHelper(PreImportHelper):
             row_index = 1
             for endpoint_name in sorted(self.nonunique_endpoints):
                 output_sheet.write(row_index, 2, endpoint_name)
+                row_index = row_index + 1
+
+            row_index = 1
+            for cable_design_name in sorted(self.existing_cable_designs):
+                output_sheet.write(row_index, 3, cable_design_name)
                 row_index = row_index + 1
 
             output_book.close()
