@@ -18,6 +18,7 @@ import javax.persistence.Entity;
 @Schema(name = "ItemDomainCable",
         allOf = Item.class
 )
+@Deprecated
 public class ItemDomainCable extends Item {
 
     @Override

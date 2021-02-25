@@ -15,7 +15,9 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.utilities.EntityTypeControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
@@ -213,7 +215,6 @@ import org.primefaces.model.TreeNode;
     "qrIdDisplay",
     "qrIdFilter",
     "itemCableConnectionsRelationshipList",
-    "itemAvaliableConnectorsList",
     "editEntityTypeString",
     "editItemProjectString",
     "logList",
@@ -338,9 +339,6 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String itemProjectString = null;
     private transient String qrIdDisplay = null;
     private transient String qrIdFilter = null;
-
-    private transient List<ItemElementRelationship> itemCableConnectionsRelationshipList;
-    private transient List<Connector> itemAvaliableConnectorsList;
 
     private transient String entityTypeString = null;
 
@@ -732,11 +730,13 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.entityTypeList = entityTypeList;
     }
     
-    public void addEntityType(String entityTypeName) throws CdbException {
-        
-        EntityType entityType
-                = EntityTypeController.getInstance().
-                        findByName(entityTypeName);
+    private EntityType findEntityTypeByName(String name) {
+        EntityTypeControllerUtility ecu = new EntityTypeControllerUtility(); 
+        return ecu.findByName(name); 
+    }
+    
+    public void addEntityType(String entityTypeName) throws CdbException {        
+        EntityType entityType = findEntityTypeByName(entityTypeName); 
         
         // entity type already set for this entity
         if (entityTypeList.contains(entityType)) {
@@ -764,10 +764,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
     
     public void removeEntityType(String entityTypeName) {
-        
-        EntityType entityType
-                = EntityTypeController.getInstance().
-                        findByName(entityTypeName);
+        EntityType entityType = findEntityTypeByName(entityTypeName); 
         
         if (entityType == null) {
             return;
@@ -1383,22 +1380,6 @@ public class Item extends CdbDomainEntity implements Serializable {
                 && Objects.equals(other.getName(), name));
     }
 
-    public void setItemCableConnectionsRelationshipList(List<ItemElementRelationship> itemCableConnectionsRelationshipList) {
-        this.itemCableConnectionsRelationshipList = itemCableConnectionsRelationshipList;
-    }
-
-    public List<ItemElementRelationship> getItemCableConnectionsRelationshipList() {
-        return itemCableConnectionsRelationshipList;
-    }
-
-    public List<Connector> getItemAvaliableConnectorsList() {
-        return itemAvaliableConnectorsList;
-    }
-
-    public void setItemAvaliableConnectorsList(List<Connector> itemAvaliableConnectorsList) {
-        this.itemAvaliableConnectorsList = itemAvaliableConnectorsList;
-    }
-
     public Boolean getIsItemTemplate() {
         if (isItemTemplate == null) {
             isItemTemplate = isItemTemplate(this);
@@ -1547,7 +1528,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         return getItemControllerUtility().createCoreMetadataPropertyInfo(); 
     }
 
-    protected CdbEntity getEntityById(CdbEntityController controller, String id) {
+    protected CdbEntity getEntityById(String id) {
 
         if (id != null && !id.isEmpty()) {
             Integer intId = 0;
@@ -1557,7 +1538,8 @@ public class Item extends CdbDomainEntity implements Serializable {
                 LOGGER.error("getEntityById() number format exception on id: " + id);
             }
             if (intId > 0) {
-                return controller.findById(intId);
+                ItemFacade instance = ItemFacade.getInstance();
+                return instance.findById(intId);
             }
         }
 

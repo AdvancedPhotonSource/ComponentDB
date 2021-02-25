@@ -15,6 +15,7 @@ See LICENSE file.
     <p:dialog widgetVar="addInventoryItemDialogWidget"
               header="Add Inventory Item"
               modal="true"
+              styleClass="viewTransparentBackgroundDialog"
               closable="false">
         <p:outputPanel rendered="#{itemDomainInventoryController.current != null}" >
             <ui:include src="../../itemDomainInventory/private/itemDomainInventoryBillOfMaterialsEditView.xhtml">

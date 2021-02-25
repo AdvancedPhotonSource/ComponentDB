@@ -8,7 +8,9 @@ public enum ItemDomainName {
         location("Location"),
         catalog("Catalog"),
         inventory("Inventory"),
+        // Deprecated Domain
         cable("Cable"),
+        
         maarc("MAARC"),
         machineDesign("Machine Design"),
         cableCatalog("Cable Catalog"),
@@ -18,7 +20,10 @@ public enum ItemDomainName {
         public final static int LOCATION_ID = 1; 
         public final static int CATALOG_ID = 2; 
         public final static int INVENTORY_ID = 3; 
+        
+        // Deprecated Domain
         public final static int CABLE_ID = 4; 
+        
         public final static int MAARC_ID = 5; 
         public final static int MACHINE_DESIGN_ID = 6; 
         public final static int CABLE_CATALOG_ID = 7; 
