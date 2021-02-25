@@ -503,9 +503,11 @@ class UniqueNameHandler(InputHandler):
 
         if item_name in self.item_names:
             # flag duplicate item name
-            error_msg = "duplicate item name: %s" % (item_name)
+            error_msg = "duplicate value: %s for column: %s not allowed" % (item_name, self.column_key)
             logging.error(error_msg)
             return False, error_msg
+        else:
+            self.item_names.append(item_name)
 
         return True, ""
 
@@ -674,9 +676,9 @@ class CableDesignExistenceHandler(InputHandler):
 
     def handle_input(self, input_dict):
 
-        cable_design_name = input_dict[self.column_key]
+        cable_design_name = CableDesignOutputObject.get_name_cls(input_dict)
 
-        # check to see if cable type exists in CDB
+        # check to see if cable design exists in CDB
         cable_design_object = None
         try:
             cable_design_object = self.api.getCableDesignItemApi().get_cable_design_item_by_name(cable_design_name)
@@ -686,8 +688,8 @@ class CableDesignExistenceHandler(InputHandler):
                 logging.error(error_msg)
                 return False, error_msg
         if cable_design_object:
-            # cable type already exists
-            self.existing_cable_types.append(cable_design_name)
+            # cable design already exists
+            self.existing_cable_designs.append(cable_design_name)
 
         return True, ""
 
@@ -835,10 +837,11 @@ class SourceHelper(PreImportHelper):
 
     def output_column_list(self):
         column_list = [
-            OutputColumnModel(col_index=0, method="get_name", label="Name"),
-            OutputColumnModel(col_index=1, method="get_description", label="Description"),
-            OutputColumnModel(col_index=2, method="get_contact_info", label="Contact Info"),
-            OutputColumnModel(col_index=3, method="get_url", label="URL"),
+            OutputColumnModel(col_index=0, method="get_existing_item_id", label="Existing Item ID"),
+            OutputColumnModel(col_index=1, method="get_name", label="Name"),
+            OutputColumnModel(col_index=2, method="get_description", label="Description"),
+            OutputColumnModel(col_index=3, method="get_contact_info", label="Contact Info"),
+            OutputColumnModel(col_index=4, method="get_url", label="URL"),
         ]
         return column_list
 
@@ -915,6 +918,9 @@ class SourceOutputObject(OutputObject):
         self.description = ""
         self.contact_info = ""
         self.url = ""
+
+    def get_existing_item_id(self):
+        return ""
 
     def get_name(self):
         return self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
@@ -1094,8 +1100,8 @@ class CableTypeHelper(PreImportHelper):
 
     # Returns processing summary message.
     def get_processing_summary(self):
-        if len(self.missing_source_list) > 0 or len(self.existing_cable_types) > 0:
-            return "DETAILS: number of cable types that already exist in CDB: %d number of missing sources: %d" % (len(self.existing_cable_types), len(self.missing_source_list))
+        if len(self.existing_cable_types) > 0:
+            return "DETAILS: number of cable types that already exist in CDB (not written to output file): %d" % len(self.existing_cable_types)
         else:
             return ""
 
@@ -1345,6 +1351,18 @@ class CableDesignHelper(PreImportHelper):
         self.owner_user_id = None
         self.owner_group_id = None
 
+    def get_project_id(self):
+        return self.project_id
+
+    def get_tech_system_id(self):
+        return self.tech_system_id
+
+    def get_owner_user_id(self):
+        return self.owner_user_id
+
+    def get_owner_group_id(self):
+        return self.owner_group_id
+
     # returns number of rows at which progress message should be displayed
     @classmethod
     def progress_increment(cls):
@@ -1399,34 +1417,34 @@ class CableDesignHelper(PreImportHelper):
 
     def output_column_list(self):
         column_list = [
-            OutputColumnModel(col_index=0, method="get_name", label="name"),
-            OutputColumnModel(col_index=1, method="get_alt_name", label="alt name"),
-            OutputColumnModel(col_index=2, method="get_ext_name", label="ext cable name"),
-            OutputColumnModel(col_index=3, method="get_import_id", label="import cable id"),
-            OutputColumnModel(col_index=4, method="get_alt_id", label="alt cable id"),
-            OutputColumnModel(col_index=5, method="get_qr_id", label="legacy qr id"),
-            OutputColumnModel(col_index=6, method="get_description", label="description"),
-            OutputColumnModel(col_index=7, method="get_laying", label="laying"),
-            OutputColumnModel(col_index=8, method="get_voltage", label="voltage"),
-            OutputColumnModel(col_index=9, method="get_cable_type_id", label="cable type id"),
-            OutputColumnModel(col_index=10, method="get_endpoint1_id", label="endpoint1 id"),
-            OutputColumnModel(col_index=11, method="get_endpoint1_description", label="endpoint1 description"),
-            OutputColumnModel(col_index=12, method="get_endpoint1_route", label="endpoint1 route"),
-            OutputColumnModel(col_index=13, method="get_endpoint2_id", label="endpoint2 id"),
-            OutputColumnModel(col_index=14, method="get_endpoint2_description", label="endpoint2 description"),
-            OutputColumnModel(col_index=15, method="get_endpoint2_route", label="endpoint2 route"),
-            OutputColumnModel(col_index=16, method="get_project_id", label="project id"),
-            OutputColumnModel(col_index=17, method="get_tech_system_id", label="technical system"),
-            OutputColumnModel(col_index=18, method="get_owner_user_id", label="owner user"),
-            OutputColumnModel(col_index=19, method="get_owner_group_id", label="owner group"),
+            OutputColumnModel(col_index=0, method="get_existing_item_id", label="Existing Item ID"),
+            OutputColumnModel(col_index=1, method="get_name", label="name"),
+            OutputColumnModel(col_index=2, method="get_alt_name", label="alt name"),
+            OutputColumnModel(col_index=3, method="get_ext_name", label="ext cable name"),
+            OutputColumnModel(col_index=4, method="get_import_id", label="import cable id"),
+            OutputColumnModel(col_index=5, method="get_alt_id", label="alt cable id"),
+            OutputColumnModel(col_index=6, method="get_qr_id", label="legacy qr id"),
+            OutputColumnModel(col_index=7, method="get_description", label="description"),
+            OutputColumnModel(col_index=8, method="get_laying", label="laying"),
+            OutputColumnModel(col_index=9, method="get_voltage", label="voltage"),
+            OutputColumnModel(col_index=10, method="get_cable_type_id", label="cable type id"),
+            OutputColumnModel(col_index=11, method="get_endpoint1_id", label="endpoint1 id"),
+            OutputColumnModel(col_index=12, method="get_endpoint1_description", label="endpoint1 description"),
+            OutputColumnModel(col_index=13, method="get_endpoint1_route", label="endpoint1 route"),
+            OutputColumnModel(col_index=14, method="get_endpoint2_id", label="endpoint2 id"),
+            OutputColumnModel(col_index=15, method="get_endpoint2_description", label="endpoint2 description"),
+            OutputColumnModel(col_index=16, method="get_endpoint2_route", label="endpoint2 route"),
+            OutputColumnModel(col_index=17, method="get_project_id", label="project id"),
+            OutputColumnModel(col_index=18, method="get_tech_system_id", label="technical system"),
+            OutputColumnModel(col_index=19, method="get_owner_user_id", label="owner user"),
+            OutputColumnModel(col_index=20, method="get_owner_group_id", label="owner group"),
         ]
         return column_list
     
     def input_handler_list(self):
         global name_manager
         handler_list = [
-            UniqueNameHandler(CABLE_DESIGN_NAME_KEY, self.api, self.cable_design_names),
-            CableDesignExistenceHandler(CABLE_DESIGN_NAME_KEY, self.api, self.existing_cable_designs),
+            UniqueNameHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.api, self.cable_design_names),
             NamedRangeHandler(CABLE_DESIGN_LAYING_KEY, "_Laying"),
             NamedRangeHandler(CABLE_DESIGN_VOLTAGE_KEY, "_Voltage"),
             NamedRangeHandler(CABLE_DESIGN_OWNER_KEY, "_Owner"),
@@ -1443,6 +1461,7 @@ class CableDesignHelper(PreImportHelper):
         ]
 
         if not self.validate_only:
+            handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.api, self.existing_cable_designs))
             handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints))
             handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints))
 
@@ -1478,7 +1497,7 @@ class CableDesignHelper(PreImportHelper):
 
     def get_output_object(self, input_dict):
 
-        name = input_dict[CABLE_DESIGN_NAME_KEY]
+        name = CableDesignOutputObject.get_name_cls(input_dict)
         if name in self.existing_cable_designs:
             # cable design already exists with this name, skip
             logging.debug("cable design already exists in CDB for: %s, skipping" % name)
@@ -1525,6 +1544,13 @@ class CableDesignHelper(PreImportHelper):
 
             output_book.close()
 
+    # Returns processing summary message.
+    def get_processing_summary(self):
+        if len(self.existing_cable_designs) > 0:
+            return "DETAILS: number of cable designs that already exist in CDB (not written to output file): %d" % (len(self.existing_cable_designs))
+        else:
+            return ""
+
 
 class CableDesignOutputObject(OutputObject):
 
@@ -1545,6 +1571,9 @@ class CableDesignOutputObject(OutputObject):
     @classmethod
     def get_import_id_cls(cls, row_dict):
         return str(int(row_dict[CABLE_DESIGN_IMPORT_ID_KEY]))
+
+    def get_existing_item_id(self):
+        return ""
 
     def get_name(self):
         return self.get_name_cls(self.input_dict)
@@ -2048,7 +2077,8 @@ def main():
             for message in validation_map[key]:
                 print("\t%s" % message)
         write_validation_report(validation_map, file_validation)
-        print("%d validation ERRORS found" % len(validation_map))
+        print()
+        print("%d validation ERROR(S) found" % len(validation_map))
 
     else:
         print("no validation errors found")
