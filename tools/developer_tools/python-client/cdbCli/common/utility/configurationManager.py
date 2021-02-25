@@ -18,11 +18,10 @@ class ConfigurationManager:
     @classmethod
     def get_instance(cls):
         """ Get configuration manager singleton instance. """
-        try:
-            cm = ConfigurationManager()
-        except ConfigurationManager as ex:
-            cm = ex
-        return cm
+        if ConfigurationManager.__instance is not None:
+            return ConfigurationManager.__instance
+        else:
+            return ConfigurationManager()
 
     def __init__(self):
         if ConfigurationManager.__instance:
