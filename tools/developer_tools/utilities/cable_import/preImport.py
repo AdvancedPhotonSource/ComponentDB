@@ -115,6 +115,8 @@ CABLE_DESIGN_WAYPOINT_ROUTE_KEY = "waypoint"
 CABLE_DESIGN_NOTES_KEY = "notes"
 
 CABLE_DESIGN_TYPE_INDEX = 4
+CABLE_DESIGN_LEGACY_ID_INDEX = 15
+CABLE_DESIGN_IMPORT_ID_INDEX = 20
 
 name_manager = None
 
@@ -180,9 +182,9 @@ class PreImportHelper(ABC):
         return len(self.output_column_list())
 
     # Initializes the helper.  Subclass overrides initialize_custom() to customize.
-    def initialize(self):
+    def initialize(self, api, sheet, first_row, last_row):
         self.initialize_columns()
-        self.initialize_handlers()
+        self.initialize_handlers(api, sheet, first_row, last_row)
         self.initialize_custom()
 
     def initialize_columns(self):
@@ -199,10 +201,10 @@ class PreImportHelper(ABC):
         for col in self.generate_output_column_list():
             self.output_columns[col.index] = col
 
-    def initialize_handlers(self):
+    def initialize_handlers(self, api, sheet, first_row, last_row):
         for handler in self.generate_handler_list():
             self.input_handlers.append(handler)
-            handler.initialize()
+            handler.initialize(api, sheet, first_row, last_row)
 
     def initialize_custom(self):
         pass
@@ -448,7 +450,7 @@ class InputHandler(ABC):
         self.column_key = column_key
 
     # initializes handler, subclasses override to customize
-    def initialize(self):
+    def initialize(self, api, sheet, first_row, last_row):
         pass
 
     # Invokes handler.
@@ -537,10 +539,9 @@ class NamedRangeHandler(InputHandler):
 
 class UniqueNameHandler(InputHandler):
 
-    def __init__(self, column_key, api, item_names):
+    def __init__(self, column_key, item_names):
         super().__init__(column_key)
         self.item_names = item_names
-        self.api = api
 
     def handle_input(self, input_dict):
 
@@ -643,28 +644,24 @@ class EndpointHandler(InputHandler):
 
 class CableTypeIdHandler(InputHandler):
 
-    def __init__(self, sheet, column_index, first_row, last_row, column_key, id_manager, api, missing_cable_type_list):
+    def __init__(self, column_index, column_key, id_manager, missing_cable_type_list):
         super().__init__(column_key)
-        self.sheet = sheet
         self.column_index = column_index
-        self.first_row = first_row
-        self.last_row = last_row
         self.id_manager = id_manager
-        self.api = api
         self.missing_cable_type_list = missing_cable_type_list
         self.name_id_map = None
 
-    def initialize(self):
-        self.initialize_id_list()
+    def initialize(self, api, sheet, first_row, last_row):
+        self.initialize_id_list(api, sheet, first_row, last_row)
 
-    def initialize_id_list(self):
+    def initialize_id_list(self, api, sheet, first_row, last_row):
 
         print("fetching cable type id's")
 
         cable_type_names = set()  # use set to eliminate duplicates
 
-        for row_ind in range(self.first_row, self.last_row+1):
-            val = self.sheet.cell(row_ind, self.column_index).value
+        for row_ind in range(first_row, last_row+1):
+            val = sheet.cell(row_ind, self.column_index).value
             if val is not None and val != "":
                 cable_type_names.add(val)
 
@@ -674,7 +671,7 @@ class CableTypeIdHandler(InputHandler):
         # invoke api to get list of id's corresponding to list of names: 0 if doesn't exist, -1 if multiple matches, id otherwise
         try:
             name_list_obj = NameList(name_list=cable_type_names)
-            id_list = self.api.getCableCatalogItemApi().get_id_list_for_name_list(name_list=name_list_obj)
+            id_list = api.getCableCatalogItemApi().get_id_list_for_name_list(name_list=name_list_obj)
         except ApiException as ex:
             fatal_error("unknown api exception getting list of cable type ids")
 
@@ -726,28 +723,48 @@ class CableTypeExistenceHandler(InputHandler):
 
 class CableDesignExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, api, existing_cable_designs):
+    def __init__(self, column_key, existing_cable_designs, column_index_import_id, column_index_legacy_id):
         super().__init__(column_key)
         self.existing_cable_designs = existing_cable_designs
-        self.api = api
+        self.name_id_map = None
+        self.column_index_import_id = column_index_import_id
+        self.column_index_legacy_id = column_index_legacy_id
+
+    def initialize(self, api, sheet, first_row, last_row):
+
+        print("fetching cable design id's")
+
+        cable_design_names = set()  # use set to eliminate duplicates
+
+        for row_ind in range(first_row, last_row+1):
+            import_id = sheet.cell(row_ind, self.column_index_import_id).value
+            legacy_id = sheet.cell(row_ind, self.column_index_legacy_id).value
+            if (import_id is not None and import_id != "") or (legacy_id is not None and legacy_id != ""):
+                cable_design_names.add(CableDesignOutputObject.get_name_cls(None, legacy_id, import_id))
+
+        # convert set to list so we can zip to result list
+        cable_design_names = list(cable_design_names)
+
+        # invoke api to get list of id's corresponding to list of names: 0 if doesn't exist, -1 if multiple matches, id otherwise
+        try:
+            name_list_obj = NameList(name_list=cable_design_names)
+            id_list = api.getCableDesignItemApi().get_cable_design_id_list_for_name_list(name_list=name_list_obj)
+        except ApiException as ex:
+            fatal_error("unknown api exception getting list of cable design ids")
+
+        # list sizes should match
+        if len(cable_design_names) != len(id_list):
+            fatal_error("api list size mismatch getting list of cable design ids")
+
+        self.name_id_map = dict(zip(cable_design_names, id_list))
 
     def handle_input(self, input_dict):
-
         cable_design_name = CableDesignOutputObject.get_name_cls(input_dict)
-
         # check to see if cable design exists in CDB
-        cable_design_object = None
-        try:
-            cable_design_object = self.api.getCableDesignItemApi().get_cable_design_item_by_name(cable_design_name)
-        except ApiException as ex:
-            if "ObjectNotFound" not in ex.body:
-                error_msg = "unknown api exception retrieving cable design item: %s - %s" % (cable_design_name, ex.body)
-                logging.error(error_msg)
-                return False, error_msg
-        if cable_design_object:
+        cable_design_id = self.name_id_map[cable_design_name]
+        if cable_design_id != 0:
             # cable design already exists
             self.existing_cable_designs.append(cable_design_name)
-
         return True, ""
 
 
@@ -1101,7 +1118,7 @@ class CableTypeHelper(PreImportHelper):
         global name_manager
         handler_list = [
             NamedRangeHandler(CABLE_TYPE_NAME_KEY, self.named_range),
-            UniqueNameHandler(CABLE_TYPE_NAME_KEY, self.api, self.cable_type_names),
+            UniqueNameHandler(CABLE_TYPE_NAME_KEY, self.cable_type_names),
             CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, self.api, self.existing_cable_types),
             SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, self.source_id_manager, self.api, self.missing_source_list),
         ]
@@ -1332,7 +1349,7 @@ class CableInventoryHelper(PreImportHelper):
     def generate_handler_list(self):
         global name_manager
         handler_list = [
-            CableTypeIdHandler(CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.api, self.missing_cable_types),
+            CableTypeIdHandler(CABLE_DESIGN_TYPE_INDEX+1, CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.missing_cable_types),
         ]
         return handler_list
 
@@ -1460,12 +1477,12 @@ class CableDesignHelper(PreImportHelper):
             InputColumnModel(col_index=12, key=CABLE_DESIGN_DEST_ETPM_KEY, required=True),
             InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, required=True),
             InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY, required=True),
-            InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
+            InputColumnModel(col_index=CABLE_DESIGN_LEGACY_ID_INDEX, key=CABLE_DESIGN_LEGACY_ID_KEY),
             InputColumnModel(col_index=16, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
             InputColumnModel(col_index=17, key=CABLE_DESIGN_FROM_PORT_NAME_KEY, required=False),
             InputColumnModel(col_index=18, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
             InputColumnModel(col_index=19, key=CABLE_DESIGN_TO_PORT_NAME_KEY, required=False),
-            InputColumnModel(col_index=20, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_IMPORT_ID_INDEX, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
             InputColumnModel(col_index=21, key=CABLE_DESIGN_VIA_ROUTE_KEY, required=False),
             InputColumnModel(col_index=22, key=CABLE_DESIGN_WAYPOINT_ROUTE_KEY, required=False),
             InputColumnModel(col_index=23, key=CABLE_DESIGN_NOTES_KEY, required=False),
@@ -1501,12 +1518,11 @@ class CableDesignHelper(PreImportHelper):
     def generate_handler_list(self):
         global name_manager
         handler_list = [
-            UniqueNameHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.api, self.cable_design_names),
+            UniqueNameHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.cable_design_names),
             NamedRangeHandler(CABLE_DESIGN_LAYING_KEY, "_Laying"),
             NamedRangeHandler(CABLE_DESIGN_VOLTAGE_KEY, "_Voltage"),
             NamedRangeHandler(CABLE_DESIGN_OWNER_KEY, "_Owner"),
             ConnectedMenuHandler(CABLE_DESIGN_TYPE_KEY, CABLE_DESIGN_OWNER_KEY),
-            CableTypeIdHandler(self.input_sheet, CABLE_DESIGN_TYPE_INDEX+1, self.first_data_row, self.last_data_row, CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.api, self.missing_cable_types),
             NamedRangeHandler(CABLE_DESIGN_SRC_LOCATION_KEY, "_Location"),
             ConnectedMenuHandler(CABLE_DESIGN_SRC_ANS_KEY, CABLE_DESIGN_SRC_LOCATION_KEY),
             ConnectedMenuHandler(CABLE_DESIGN_SRC_ETPM_KEY, CABLE_DESIGN_SRC_ANS_KEY),
@@ -1518,7 +1534,8 @@ class CableDesignHelper(PreImportHelper):
         ]
 
         if not self.validate_only:
-            handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.api, self.existing_cable_designs))
+            handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.existing_cable_designs, CABLE_DESIGN_IMPORT_ID_INDEX+1, CABLE_DESIGN_LEGACY_ID_INDEX+1))
+            handler_list.append(CableTypeIdHandler(CABLE_DESIGN_TYPE_INDEX+1, CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.missing_cable_types))
             handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints))
             handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints))
 
@@ -1615,15 +1632,26 @@ class CableDesignOutputObject(OutputObject):
         super().__init__(helper, input_dict)
 
     @classmethod
-    def get_name_cls(cls, row_dict):
+    def get_name_cls(cls, row_dict, legacy_id=None, import_id=None):
 
         # use legacy_id if specified
-        legacy_id = row_dict[CABLE_DESIGN_LEGACY_ID_KEY]
+        if row_dict is not None:
+            legacy_id = row_dict[CABLE_DESIGN_LEGACY_ID_KEY]
+        elif legacy_id is not None:
+            legacy_id = str(legacy_id)
+        else:
+            legacy_id = ""
         if len(legacy_id) > 0:
             return legacy_id
 
         # otherwise use import_id prefixed with "CA "
-        return "CA " + cls.get_import_id_cls(row_dict)
+        if row_dict is not None:
+            import_id = cls.get_import_id_cls(row_dict)
+        elif import_id is not None:
+            import_id = str(import_id)
+        else:
+            import_id = ""
+        return "CA " + import_id
 
     @classmethod
     def get_import_id_cls(cls, row_dict):
@@ -2046,7 +2074,7 @@ def main():
     print()
     helper.set_api(api)
     helper.set_input_sheet(input_sheet)
-    helper.initialize()
+    helper.initialize(api, input_sheet, first_data_index, last_data_index)
 
     #
     # process rows from input spreadsheet
@@ -2060,6 +2088,7 @@ def main():
     output_objects = []
     validation_map = {}
     num_input_rows = 0
+    num_empty_rows = 0
     for row_ind in range(first_data_index, last_data_index + 1):
 
         current_row_num = row_ind
@@ -2080,6 +2109,7 @@ def main():
 
         # ignore row if blank
         if helper.input_row_is_empty(input_dict=input_dict, row_num=current_row_num):
+            num_empty_rows = num_empty_rows + 1
             continue
 
         row_is_valid = True
@@ -2175,13 +2205,13 @@ def main():
 
         output_book.close()
 
-        summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows and wrote %d output rows" % (num_input_rows, num_output_rows)
+        summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows including %d empty rows and wrote %d output rows" % (num_input_rows, num_empty_rows, num_output_rows)
 
     elif not input_valid:
-        summary_msg = "PROCESSING ERROR: processed %d input rows but no output spreadsheet generated, see validation summary/file and log for details" % num_input_rows
+        summary_msg = "PROCESSING ERROR: processed %d input rows including %d empty rows but no output spreadsheet generated, see validation summary/file and log for details" % (num_input_rows, num_empty_rows)
 
     else:
-        summary_msg = "VALIDATION ONLY: processed %d input rows but no output spreadsheet generated, see validation summary/file for details" % num_input_rows
+        summary_msg = "VALIDATION ONLY: processed %d input rows including %d empty rows but no output spreadsheet generated, see validation summary/file for details" % (num_input_rows, num_empty_rows)
 
     # clean up helper
     helper.close()

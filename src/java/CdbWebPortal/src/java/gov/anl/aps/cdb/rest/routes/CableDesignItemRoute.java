@@ -7,10 +7,14 @@ package gov.anl.aps.cdb.rest.routes;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.rest.entities.NameList;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -69,5 +73,27 @@ public class CableDesignItemRoute extends BaseRoute {
             throw ex; 
         }
         return itemList.get(0);
+    }
+
+    @POST
+    @Path("/IdList")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<Integer> getCableDesignIdListForNameList(NameList nameList) throws ObjectNotFound {
+        LOGGER.debug("Fetching list of cable design id's by name list size: " + nameList.getNameList().size());
+        List<Integer> idList = new ArrayList<>();
+        for (String name : nameList.getNameList()) {
+            List<ItemDomainCableDesign> itemList = facade.findByName(name);
+            if (itemList == null || itemList.isEmpty()) {
+                // use 0 to indicate that there is no item with specified name
+                idList.add(0);
+            } else if (itemList.size() > 1) {
+                // use -1 to indicate that there are multiple items with same name
+                idList.add(-1);
+            } else {
+                idList.add(itemList.get(0).getId());
+            }
+        }        
+        return idList;
     }
 }

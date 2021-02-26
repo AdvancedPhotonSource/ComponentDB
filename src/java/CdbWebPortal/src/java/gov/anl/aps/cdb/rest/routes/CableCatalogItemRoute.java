@@ -101,12 +101,4 @@ public class CableCatalogItemRoute extends BaseRoute {
         return idList;
     }
 
-    @POST
-    @Path("/IdMap/{nameMap}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Map<String, Integer> getIdMapForNameList(@PathParam("nameMap") String nameMap) throws ObjectNotFound {
-        LOGGER.debug("Fetching map of cable catalog id's: input map: " + nameMap);
-        return new HashMap<>();
-    }
 }
