@@ -4,10 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperInventory;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardDomainInventoryController;
@@ -17,11 +15,8 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainInventorySettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
-import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainInventoryLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainInventoryFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
@@ -29,9 +24,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
@@ -43,7 +35,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.DataModel;
-import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,10 +61,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
 
     private static final Logger logger = LogManager.getLogger(ItemDomainInventoryController.class.getName());
 
-    private List<PropertyValue> filteredPropertyValueList = null;
-
-    private List<SelectItem> domainFilterOptions = null;
-
     //Variables used for creation of new inventory item.     
     private TreeNode currentItemBOMListTree = null;
     private TreeNode selectedItemBOMTreeNode = null;
@@ -83,13 +70,6 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     private ItemDomainInventoryLazyDataModel itemDomainInventoryLazyDataModel = null;
 
     private List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;   
-
-    @EJB
-    private ItemElementRelationshipFacade itemElementRelationshipFacade;
-
-    @EJB
-    private RelationshipTypeFacade relationshipTypeFacade;
-
     @EJB
     private ItemDomainInventoryFacade itemDomainInventoryFacade;
 
@@ -163,6 +143,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     public void resetListDataModel() {
         super.resetListDataModel();
+        itemDomainInventoryLazyDataModel = null; 
     }
 
     @Override
