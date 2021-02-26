@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDesign;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemDomainCableDesignLazyDataModel;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
@@ -36,6 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.SelectEvent;
@@ -556,6 +558,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     private ConnectionEditDialog dialogConnection = null;
     
     private List<CableDesignConnectionListObject> connectionListForCurrent;
+    
+    private ItemDomainCableDesignLazyDataModel itemDomainCableDesignLazyDataModel; 
 
     protected ImportHelperCableDesign importHelper = new ImportHelperCableDesign();
     
@@ -736,6 +740,29 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public String prepareWizardBundle() {        
         BundleWizard.getInstance().reset();
         return "/views/itemDomainCableDesign/createBundle?faces-redirect=true";
+    }
+    
+    @Override
+    public void resetListDataModel() {
+        super.resetListDataModel(); 
+        itemDomainCableDesignLazyDataModel = null; 
+    }
+
+    public ItemDomainCableDesignLazyDataModel getItemDomainCableDesignLazyDataModel() {
+        if (itemDomainCableDesignLazyDataModel == null) {
+            itemDomainCableDesignLazyDataModel = new ItemDomainCableDesignLazyDataModel(itemDomainCableDesignFacade, getDefaultDomain());
+        }
+        return itemDomainCableDesignLazyDataModel;
+    }
+
+    @Override
+    public DataModel getListDataModel() {
+        return getItemDomainCableDesignLazyDataModel();
+    }
+    
+    @Override
+    protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
+        return true;
     }
 
     @Override
