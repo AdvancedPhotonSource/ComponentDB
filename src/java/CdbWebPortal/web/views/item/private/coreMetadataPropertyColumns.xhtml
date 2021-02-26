@@ -28,6 +28,7 @@ See LICENSE file.
                   rendered="#{rendered and entitySettingObject[propertyName]}"
                   sortBy="#{itemListObject[metadataKey]}"
                   filterBy="#{itemListObject[metadataKey]}"
+                  field="Metadata-#{metadataKey}"
                   filterMatchMode="contains"
                   filterValue="#{entitySettingObject[filterValue]}">
             <f:facet name="header">

@@ -522,6 +522,11 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
 
         return maarcListDataModel;
     } 
+    
+    @Override
+    protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
+        return true;
+    }
 
     @Override
     public void resetListDataModel() {
