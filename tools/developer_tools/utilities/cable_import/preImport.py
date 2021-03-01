@@ -649,7 +649,6 @@ class CableTypeIdHandler(InputHandler):
         self.column_index = column_index
         self.id_manager = id_manager
         self.missing_cable_type_list = missing_cable_type_list
-        self.name_id_map = None
 
     def initialize(self, api, sheet, first_row, last_row):
         self.initialize_id_list(api, sheet, first_row, last_row)
@@ -679,12 +678,12 @@ class CableTypeIdHandler(InputHandler):
         if len(cable_type_names) != len(id_list):
             fatal_error("api list size mismatch getting list of cable type ids")
 
-        self.name_id_map = dict(zip(cable_type_names, id_list))
+        self.id_manager.set_dict(dict(zip(cable_type_names, id_list)))
 
     def handle_input(self, input_dict):
 
         cable_type_name = input_dict[self.column_key]
-        cable_type_id = self.name_id_map[cable_type_name]
+        cable_type_id = self.id_manager.get_id_for_name(cable_type_name)
         if cable_type_id == 0:
             self.missing_cable_type_list.add(cable_type_name)
             return False, "no cable type found for name: %s" % cable_type_name
@@ -838,6 +837,9 @@ class IdManager():
 
     def __init__(self):
         self.name_id_dict = {}
+
+    def set_dict(self, dict):
+        self.name_id_dict = dict
 
     def set_id_for_name(self, name, id):
         self.name_id_dict[name] = id
