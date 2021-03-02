@@ -157,7 +157,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @Path("/ByHierarchy")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Integer> getMdInHierarchyIdList(ItemDomanMdHierarchySearchRequest request) throws ObjectNotFound, InvalidArgument {
+    public List<Integer> getHierarchyIdList(ItemDomanMdHierarchySearchRequest request) throws ObjectNotFound, InvalidArgument {
         
         Instant start = Instant.now();
         
