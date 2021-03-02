@@ -57,7 +57,7 @@ import xlsxwriter
 import multiprocessing
 
 from CdbApiFactory import CdbApiFactory
-from cdbApi import ApiException
+from cdbApi import ApiException, ItemDomanMdHierarchySearchRequest
 from cdbApi.models import NameList
 
 # constants
@@ -115,7 +115,11 @@ CABLE_DESIGN_WAYPOINT_ROUTE_KEY = "waypoint"
 CABLE_DESIGN_NOTES_KEY = "notes"
 
 CABLE_DESIGN_TYPE_INDEX = 4
+CABLE_DESIGN_SRC_ETPM_INDEX = 7
+CABLE_DESIGN_DEST_ETPM_INDEX = 12
 CABLE_DESIGN_LEGACY_ID_INDEX = 15
+CABLE_DESIGN_FROM_DEVICE_NAME_INDEX = 16
+CABLE_DESIGN_TO_DEVICE_NAME_INDEX = 18
 CABLE_DESIGN_IMPORT_ID_INDEX = 20
 
 name_manager = None
@@ -593,7 +597,7 @@ class DeviceAddressHandler(InputHandler):
 
 class EndpointHandler(InputHandler):
 
-    def __init__(self, column_key, rack_key, hierarchy_name, api, rack_manager, missing_endpoints, nonunique_endpoints):
+    def __init__(self, column_key, rack_key, hierarchy_name, api, rack_manager, missing_endpoints, nonunique_endpoints, column_index_item_name, column_index_rack_name, description):
         super().__init__(column_key)
         self.rack_key = rack_key
         self.hierarchy_name = hierarchy_name
@@ -601,43 +605,74 @@ class EndpointHandler(InputHandler):
         self.rack_manager = rack_manager
         self.missing_endpoints = missing_endpoints
         self.nonunique_endpoints = nonunique_endpoints
+        self.column_index_item_name = column_index_item_name
+        self.column_index_rack_name = column_index_rack_name
+        self.description = description
+
+    def initialize(self, api, sheet, first_row, last_row):
+
+        print("fetching machine item id's for %s" % self.description)
+
+        # create map of item name to list of rack names (in case the same item name is used in more than one rack)
+        rack_items_dict = {}
+        for row_ind in range(first_row, last_row+1):
+            item_name = sheet.cell(row_ind, self.column_index_item_name).value
+            rack_name = sheet.cell(row_ind, self.column_index_rack_name).value
+            if (item_name is not None and item_name != "") and (rack_name is not None and rack_name != ""):
+                if rack_name not in rack_items_dict:
+                    rack_items_dict[rack_name] = []
+                rack_items = rack_items_dict[rack_name]
+                if item_name not in rack_items:
+                    rack_items.append(item_name)
+
+        # create parallel lists of item and rack names for calling api
+        rack_names = []
+        item_names = []
+        for rack_name in rack_items_dict:
+            rack_items = rack_items_dict[rack_name]
+            for item_name in rack_items:
+                rack_names.append(rack_name)
+                item_names.append(item_name)
+
+        if len(item_names) != len(rack_names):
+            fatal_error("error preparing lists for machine item id API")
+
+        # invoke api to get list of id's for lists of item and rack names: 0 if doesn't exist, -1 if multiple matches, id otherwise
+        try:
+            request_obj = ItemDomanMdHierarchySearchRequest(item_names=item_names, rack_names=rack_names, root_name=self.hierarchy_name)
+            id_list = api.getMachineDesignItemApi().get_md_in_hierarchy_id_list(item_doman_md_hierarchy_search_request=request_obj)
+        except ApiException as ex:
+            fatal_error("unknown api exception getting list of machine item ids")
+
+        # list sizes should match
+        if len(id_list) != len(item_names):
+            fatal_error("api list size mismatch getting list of machine item ids")
+
+        # iterate 3 lists to process api result
+        for(item_name, rack_name, id) in zip(item_names, rack_names, id_list):
+            self.rack_manager.add_endpoint_id_for_rack(rack_name, item_name, id)
 
     def handle_input(self, input_dict):
 
         endpoint_name = input_dict[self.column_key]
         rack_name = input_dict[self.rack_key]
 
-        # check endpoint cache before calling API
-        if self.rack_manager.get_endpoint_id_for_rack(rack_name, endpoint_name) is not None:
-            logging.info("found endpoint: %s for rack: %s in cache")
-            return True, ""
-
-        result_list = []
-        try:
-            result_list = self.api.getMachineDesignItemApi().get_md_in_hierarchy_by_name(self.hierarchy_name, rack_name, endpoint_name)
-        except ApiException as ex:
-            return False, "exception invoking cdb endpoint retrieval api"
-
         is_valid = True
         valid_string = ""
 
-        if len(result_list) == 0:
+        id = self.rack_manager.get_endpoint_id_for_rack(rack_name, endpoint_name)
+        if id == 0:
             is_valid = False
             valid_string = "no endpoint item found with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
             logging.error(valid_string)
             self.missing_endpoints.add(rack_name + " + " + endpoint_name)
-
-        elif len(result_list) > 1:
+        elif id == -1:
             is_valid = False
             valid_string = "duplicate endpoint items found with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
             logging.error(valid_string)
             self.nonunique_endpoints.add(rack_name + " + " + endpoint_name)
-
         else:
-            endpoint_object = result_list[0]
-            endpoint_id = endpoint_object.id
-            self.rack_manager.add_endpoint_id_for_rack(rack_name, endpoint_name, endpoint_id)
-            logging.debug("found machine design item with name: %s, id: %s" % (endpoint_name, endpoint_id))
+            logging.debug("found machine design item with name: %s, id: %s" % (endpoint_name, id))
 
         return is_valid, valid_string
 
@@ -1471,18 +1506,18 @@ class CableDesignHelper(PreImportHelper):
             InputColumnModel(col_index=CABLE_DESIGN_TYPE_INDEX, key=CABLE_DESIGN_TYPE_KEY, required=True),
             InputColumnModel(col_index=5, key=CABLE_DESIGN_SRC_LOCATION_KEY, required=True),
             InputColumnModel(col_index=6, key=CABLE_DESIGN_SRC_ANS_KEY, required=True),
-            InputColumnModel(col_index=7, key=CABLE_DESIGN_SRC_ETPM_KEY, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_SRC_ETPM_INDEX, key=CABLE_DESIGN_SRC_ETPM_KEY, required=True),
             InputColumnModel(col_index=8, key=CABLE_DESIGN_SRC_ADDRESS_KEY, required=True),
             InputColumnModel(col_index=9, key=CABLE_DESIGN_SRC_DESCRIPTION_KEY, required=True),
             InputColumnModel(col_index=10, key=CABLE_DESIGN_DEST_LOCATION_KEY, required=True),
             InputColumnModel(col_index=11, key=CABLE_DESIGN_DEST_ANS_KEY, required=True),
-            InputColumnModel(col_index=12, key=CABLE_DESIGN_DEST_ETPM_KEY, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_DEST_ETPM_INDEX, key=CABLE_DESIGN_DEST_ETPM_KEY, required=True),
             InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, required=True),
             InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY, required=True),
             InputColumnModel(col_index=CABLE_DESIGN_LEGACY_ID_INDEX, key=CABLE_DESIGN_LEGACY_ID_KEY),
-            InputColumnModel(col_index=16, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_FROM_DEVICE_NAME_INDEX, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
             InputColumnModel(col_index=17, key=CABLE_DESIGN_FROM_PORT_NAME_KEY, required=False),
-            InputColumnModel(col_index=18, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_TO_DEVICE_NAME_INDEX, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
             InputColumnModel(col_index=19, key=CABLE_DESIGN_TO_PORT_NAME_KEY, required=False),
             InputColumnModel(col_index=CABLE_DESIGN_IMPORT_ID_INDEX, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
             InputColumnModel(col_index=21, key=CABLE_DESIGN_VIA_ROUTE_KEY, required=False),
@@ -1538,8 +1573,8 @@ class CableDesignHelper(PreImportHelper):
         if not self.validate_only:
             handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.existing_cable_designs, CABLE_DESIGN_IMPORT_ID_INDEX+1, CABLE_DESIGN_LEGACY_ID_INDEX+1))
             handler_list.append(CableTypeIdHandler(CABLE_DESIGN_TYPE_INDEX+1, CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.missing_cable_types))
-            handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints))
-            handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints))
+            handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_FROM_DEVICE_NAME_INDEX+1, CABLE_DESIGN_SRC_ETPM_INDEX+1, "source endpoints"))
+            handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_TO_DEVICE_NAME_INDEX+1, CABLE_DESIGN_DEST_ETPM_INDEX+1, "destination endpoints"))
 
         return handler_list
 
@@ -1824,7 +1859,7 @@ def connect_api(api, cdb_user, cdb_password):
         api.authenticateUser(cdb_user, cdb_password)
         api.testAuthenticated()
     except ApiException:
-        fatal_error("CDB login failed URL: %s user: $s, exiting" % (cdb_url, cdb_user))
+        fatal_error("CDB login failed user: $s, exiting" % (cdb_user))
 
 
 def main():
