@@ -40,7 +40,7 @@
 #   * contains a single worksheet
 #   * contains 2 or more rows, header is on row 1, data starts on row 2
 #   * there are no empty rows within the data
-
+from datetime import datetime
 import os
 print("working directory: %s" % os.getcwd())
 
@@ -613,6 +613,8 @@ class EndpointHandler(InputHandler):
 
         print("fetching machine item id's for %s" % self.description)
 
+        start_time = datetime.now()
+
         # create map of item name to list of rack names (in case the same item name is used in more than one rack)
         rack_items_dict = {}
         for row_ind in range(first_row, last_row+1):
@@ -640,7 +642,11 @@ class EndpointHandler(InputHandler):
         # invoke api to get list of id's for lists of item and rack names: 0 if doesn't exist, -1 if multiple matches, id otherwise
         try:
             request_obj = ItemDomanMdHierarchySearchRequest(item_names=item_names, rack_names=rack_names, root_name=self.hierarchy_name)
+            preapi_time = datetime.now()
+            print("pre-api duration: %d sec." % (preapi_time - start_time).total_seconds())
             id_list = api.getMachineDesignItemApi().get_md_in_hierarchy_id_list(item_doman_md_hierarchy_search_request=request_obj)
+            postapi_time = datetime.now()
+            print("api duration: %d sec." % (postapi_time - preapi_time).total_seconds())
         except ApiException as ex:
             fatal_error("unknown api exception getting list of machine item ids")
 
@@ -651,6 +657,9 @@ class EndpointHandler(InputHandler):
         # iterate 3 lists to process api result
         for(item_name, rack_name, id) in zip(item_names, rack_names, id_list):
             self.rack_manager.add_endpoint_id_for_rack(rack_name, item_name, id)
+
+        end_time = datetime.now()
+        print("post-api duration: %d sec." % (end_time - postapi_time).total_seconds())
 
     def handle_input(self, input_dict):
 

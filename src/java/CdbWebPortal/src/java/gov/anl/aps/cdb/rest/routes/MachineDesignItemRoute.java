@@ -19,6 +19,8 @@ import gov.anl.aps.cdb.rest.entities.ItemDomanMdHierarchySearchRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -127,7 +129,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
      * @throws ObjectNotFound
      */
     @GET
-    @Path("/ByRootAndName/{root}/{container}/{name}")
+    @Path("/ByHierarchy/{root}/{container}/{name}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainMachineDesign> getMdInHierarchyByName(
             @PathParam("root") String rootItemName, 
@@ -152,10 +154,12 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     }
     
     @POST
-    @Path("/ByRootAndName")
+    @Path("/ByHierarchy")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Integer> getMdInHierarchyIdList(ItemDomanMdHierarchySearchRequest request) throws ObjectNotFound, InvalidArgument {
+        
+        Instant start = Instant.now();
         
         List<String> itemNames = request.getItemNames();
         List<String> rackNames = request.getRackNames();
@@ -172,7 +176,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         LOGGER.debug("Fetching list of machine item id's by name list size: " 
                 + itemNames.size());
         
-        List<Integer> idList = new ArrayList<>();
+        List<Integer> idList = new ArrayList<>(itemNames.size());
         for (int listIndex = 0; listIndex < itemNames.size(); listIndex++) {
             String itemName = itemNames.get(listIndex);
             String containerItemName = rackNames.get(listIndex);
@@ -195,6 +199,11 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
                 idList.add(0);
             }
         }
+        
+        Instant end = Instant.now();
+        Duration elapsed = Duration.between(start, end);
+        LOGGER.debug("Duration: " + elapsed.toSeconds());
+        
         return idList;
     }
 
