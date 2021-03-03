@@ -44,6 +44,9 @@ import concurrent
 from concurrent.futures.thread import ThreadPoolExecutor
 from datetime import datetime
 import os
+
+import urllib3
+
 print("working directory: %s" % os.getcwd())
 
 import argparse
@@ -55,8 +58,6 @@ import re
 
 import openpyxl
 import xlsxwriter
-
-import multiprocessing
 
 from CdbApiFactory import CdbApiFactory
 from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, ItemDomanMachineDesignIdListRequest
@@ -1940,14 +1941,6 @@ def get_config_resource(config, section, key, is_required, print_value=True, pri
     return value
 
 
-def connect_api(api, cdb_user, cdb_password):
-    try:
-        api.authenticateUser(cdb_user, cdb_password)
-        api.testAuthenticated()
-    except ApiException:
-        fatal_error("CDB login failed user: $s, exiting" % (cdb_user))
-
-
 def main():
 
     global name_manager
@@ -2155,29 +2148,15 @@ def main():
     print()
     print("CONNECTING TO CDB ====================")
     print()
-
-    timeout = 300
-    print("connecting to %s, retry in %d seconds, timeout in %d seconds (wait 2 minutes after connecting vpn)" % (cdb_url, 10, timeout))
+    print("connecting to %s (make sure CDB is running and VPN connected if needed)")
 
     # open connection to CDB
     api = CdbApiFactory(cdb_url)
-    api_process = multiprocessing.Process(target=connect_api, args=(api, cdb_user, cdb_password))
-    api_process.start()
-    process_finished = False
-    while not process_finished:
-        api_process.join(10)
-        if not api_process.is_alive():
-            api_process.join()
-            process_finished = True
-        else:
-            timeout = timeout - 10
-            if timeout == 0:
-                print("CDB connection timeout")
-                api_process.terminate()
-                api_process.join()
-                fatal_error("CDB connection timed out, exiting")
-            else:
-                print("connecting to %s, retry in %d seconds, timeout in %d seconds (wait 2 minutes after connecting vpn)" % (cdb_url, 10, timeout))
+    try:
+        api.authenticateUser(cdb_user, cdb_password)
+        api.testAuthenticated()
+    except (ApiException, urllib3.exceptions.MaxRetryError) as exc:
+        fatal_error("CDB login failed user: %s message: %s, exiting" % (cdb_user, exc))
 
     # open input spreadsheet
     input_book = openpyxl.load_workbook(filename=file_input, data_only=True)
