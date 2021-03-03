@@ -15,7 +15,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
-import gov.anl.aps.cdb.rest.entities.ItemDomanMdHierarchySearchRequest;
+import gov.anl.aps.cdb.rest.entities.ItemDomanMachineDesignIdListRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -157,7 +157,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @Path("/ByHierarchy")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Integer> getHierarchyIdList(ItemDomanMdHierarchySearchRequest request) throws ObjectNotFound, InvalidArgument {
+    public List<Integer> getHierarchyIdList(ItemDomanMachineDesignIdListRequest request) throws InvalidArgument {
         
         Instant start = Instant.now();
         

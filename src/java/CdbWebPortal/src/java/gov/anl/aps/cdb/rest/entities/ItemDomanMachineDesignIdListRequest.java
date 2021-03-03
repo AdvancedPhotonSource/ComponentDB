@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author craig
  */
-public class ItemDomanMdHierarchySearchRequest {
+public class ItemDomanMachineDesignIdListRequest {
 
     private List<String> itemNames;
     private List<String> rackNames;

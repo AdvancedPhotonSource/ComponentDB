@@ -40,6 +40,7 @@
 #   * contains a single worksheet
 #   * contains 2 or more rows, header is on row 1, data starts on row 2
 #   * there are no empty rows within the data
+import concurrent
 from concurrent.futures.thread import ThreadPoolExecutor
 from datetime import datetime
 import os
@@ -58,8 +59,7 @@ import xlsxwriter
 import multiprocessing
 
 from CdbApiFactory import CdbApiFactory
-from cdbApi import ApiException, ItemDomanMdHierarchySearchRequest
-from cdbApi.models import NameList
+from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, ItemDomanMachineDesignIdListRequest
 
 # constants
 
@@ -611,30 +611,14 @@ class EndpointHandler(InputHandler):
         self.description = description
 
     def call_api(self, api, item_names_batch, rack_names_batch):
-
-        try:
-            request_obj = ItemDomanMdHierarchySearchRequest(item_names=item_names_batch,
-                                                            rack_names=rack_names_batch,
-                                                            root_name=self.hierarchy_name)
-            id_list = api.getMachineDesignItemApi().get_md_in_hierarchy_id_list(
-                item_doman_md_hierarchy_search_request=request_obj)
-
-        except ApiException as ex:
-            fatal_error("unknown api exception getting list of machine item ids")
-
-        # list sizes should match
-        if len(id_list) != len(item_names_batch):
-            fatal_error("api result list size mismatch getting list of machine item ids")
-
-        # iterate 3 lists to process api result
-        for (item_name, rack_name, id) in zip(item_names_batch, rack_names_batch, id_list):
-            self.rack_manager.add_endpoint_id_for_rack(rack_name, item_name, id)
+        request_obj = ItemDomanMachineDesignIdListRequest(item_names=item_names_batch,
+                                                          rack_names=rack_names_batch,
+                                                          root_name=self.hierarchy_name)
+        id_list = api.getMachineDesignItemApi().get_hierarchy_id_list(
+            item_doman_machine_design_id_list_request=request_obj)
+        return id_list
 
     def initialize(self, api, sheet, first_row, last_row):
-
-        print("fetching machine item id's for %s" % self.description)
-
-        start_time = datetime.now()
 
         # create map of item name to list of rack names (in case the same item name is used in more than one rack)
         rack_items_dict = {}
@@ -660,20 +644,23 @@ class EndpointHandler(InputHandler):
         if len(item_names) != len(rack_names):
             fatal_error("error preparing lists for machine item id API")
 
-        preapi_time = datetime.now()
-        print("pre-api duration: %d sec." % (preapi_time - start_time).total_seconds())
+        print("fetching %d machine item id's for %s" % (len(item_names), self.description))
 
-        max_workers = 20
-        batch_size = len(item_names) // max_workers
+        preapi_time = datetime.now()
+
+        max_workers = 5  # using value larger than 5 causes RemoteDisconnected exception
+        batch_size = 250
         num_iterations = len(item_names) // batch_size
         if len(item_names) % batch_size != 0:
             num_iterations = num_iterations + 1
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
 
+            futures = {}
             iteration_num = 1
             start_index = 0
             end_index = batch_size
+            result_id_count = 0
             while iteration_num <= num_iterations:
 
                 if end_index > len(item_names):
@@ -682,14 +669,36 @@ class EndpointHandler(InputHandler):
                 item_names_batch = item_names[start_index:end_index]
                 rack_names_batch = rack_names[start_index:end_index]
 
-                executor.submit(self.call_api, api, item_names_batch, rack_names_batch)
+                future = executor.submit(self.call_api, api, item_names_batch, rack_names_batch)
+                futures[future] = (iteration_num, item_names_batch, rack_names_batch, start_index, end_index)
 
                 iteration_num = iteration_num + 1
                 start_index = start_index + batch_size
                 end_index = end_index + batch_size
 
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    id_list = future.result()
+
+                except ApiException as ex:
+                    fatal_error("unknown api exception getting list of machine item ids")
+
+                except Exception as exc:
+                    fatal_error("exception calling machine item api: %s" % exc)
+
+                else:
+                    (iteration_num, item_names_batch, rack_names_batch, start_index, end_index) = futures[future]
+                    # list sizes should match
+                    if len(id_list) != len(item_names_batch):
+                        fatal_error("api result list size mismatch getting list of machine item ids")
+                    # iterate 3 lists to process api result
+                    for (item_name, rack_name, id) in zip(item_names_batch, rack_names_batch, id_list):
+                        self.rack_manager.add_endpoint_id_for_rack(rack_name, item_name, id)
+                    result_id_count = result_id_count + len(id_list)
+                    print("fetched %d machine item id's for %s" % (result_id_count, self.description))
+
         end_time = datetime.now()
-        print("api duration: %d sec." % (end_time-preapi_time).total_seconds())
+        print("machine item id api duration: %d sec." % (end_time-preapi_time).total_seconds())
 
     def handle_input(self, input_dict):
 
@@ -729,8 +738,6 @@ class CableTypeIdHandler(InputHandler):
 
     def initialize_id_list(self, api, sheet, first_row, last_row):
 
-        print("fetching cable type id's")
-
         cable_type_names = set()  # use set to eliminate duplicates
 
         for row_ind in range(first_row, last_row+1):
@@ -740,17 +747,20 @@ class CableTypeIdHandler(InputHandler):
 
         # convert set to list so we can zip to result list
         cable_type_names = list(cable_type_names)
+        print("fetching %d cable type id's" % len(cable_type_names))
 
         # invoke api to get list of id's corresponding to list of names: 0 if doesn't exist, -1 if multiple matches, id otherwise
         try:
-            name_list_obj = NameList(name_list=cable_type_names)
-            id_list = api.getCableCatalogItemApi().get_id_list_for_name_list(name_list=name_list_obj)
+            request_obj = ItemDomainCableCatalogIdListRequest(name_list=cable_type_names)
+            id_list = api.getCableCatalogItemApi().get_cable_type_id_list(item_domain_cable_catalog_id_list_request=request_obj)
         except ApiException as ex:
             fatal_error("unknown api exception getting list of cable type ids")
 
         # list sizes should match
         if len(cable_type_names) != len(id_list):
             fatal_error("api list size mismatch getting list of cable type ids")
+
+        print("fetched %d cable type id's" % len(id_list))
 
         self.id_manager.set_dict(dict(zip(cable_type_names, id_list)))
 
@@ -799,37 +809,74 @@ class CableDesignExistenceHandler(InputHandler):
     def __init__(self, column_key, existing_cable_designs, column_index_import_id, column_index_legacy_id):
         super().__init__(column_key)
         self.existing_cable_designs = existing_cable_designs
-        self.name_id_map = None
+        self.name_id_map = {}
         self.column_index_import_id = column_index_import_id
         self.column_index_legacy_id = column_index_legacy_id
 
+    def call_api(self, api, cable_design_names_batch):
+
+        request_obj = ItemDomainCableDesignIdListRequest(name_list=cable_design_names_batch)
+        id_list = api.getCableDesignItemApi().get_cable_design_id_list(item_domain_cable_design_id_list_request=request_obj)
+        return id_list
+
     def initialize(self, api, sheet, first_row, last_row):
 
-        print("fetching cable design id's")
-
-        cable_design_names = set()  # use set to eliminate duplicates
-
+        cable_design_names = []
         for row_ind in range(first_row, last_row+1):
             import_id = sheet.cell(row_ind, self.column_index_import_id).value
             legacy_id = sheet.cell(row_ind, self.column_index_legacy_id).value
             if (import_id is not None and import_id != "") or (legacy_id is not None and legacy_id != ""):
-                cable_design_names.add(CableDesignOutputObject.get_name_cls(None, legacy_id, import_id))
+                cable_design_names.append(CableDesignOutputObject.get_name_cls(None, legacy_id, import_id))
+        print("fetching %d cable design id's" % len(cable_design_names))
 
-        # convert set to list so we can zip to result list
-        cable_design_names = list(cable_design_names)
+        preapi_time = datetime.now()
+        max_workers = 5  # setting to value greater than 5 leads to RemoteDisconnected exception
+        batch_size = 250
+        num_iterations = len(cable_design_names) // batch_size
+        if len(cable_design_names) % batch_size != 0:
+            num_iterations = num_iterations + 1
 
-        # invoke api to get list of id's corresponding to list of names: 0 if doesn't exist, -1 if multiple matches, id otherwise
-        try:
-            name_list_obj = NameList(name_list=cable_design_names)
-            id_list = api.getCableDesignItemApi().get_cable_design_id_list_for_name_list(name_list=name_list_obj)
-        except ApiException as ex:
-            fatal_error("unknown api exception getting list of cable design ids")
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
 
-        # list sizes should match
-        if len(cable_design_names) != len(id_list):
-            fatal_error("api list size mismatch getting list of cable design ids")
+            futures = {}
+            iteration_num = 1
+            start_index = 0
+            end_index = batch_size
+            result_id_count = 0
 
-        self.name_id_map = dict(zip(cable_design_names, id_list))
+            while iteration_num <= num_iterations:
+
+                if end_index > len(cable_design_names):
+                    end_index = len(cable_design_names)
+
+                cable_design_names_batch = cable_design_names[start_index:end_index]
+
+                future = executor.submit(self.call_api, api, cable_design_names_batch)
+                futures[future] = (iteration_num, cable_design_names_batch, start_index, end_index)
+
+                iteration_num = iteration_num + 1
+                start_index = start_index + batch_size
+                end_index = end_index + batch_size
+
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    id_list = future.result()
+                except ApiException as ex:
+                    fatal_error("unknown api exception getting list of cable design ids")
+                except Exception as exc:
+                    fatal_error("exception calling cable design api: %s" % exc)
+                else:
+                    (iteration_num, cable_design_names_batch, start_index, end_index) = futures[future]
+                    # list sizes should match
+                    if len(cable_design_names_batch) != len(id_list):
+                        fatal_error("api result list size mismatch getting list of cable design ids")
+                    result_dict = dict(zip(cable_design_names_batch, id_list))
+                    self.name_id_map.update(result_dict)
+                    result_id_count = result_id_count + len(id_list)
+                    print("fetched %d cable design ids" % result_id_count)
+
+        end_time = datetime.now()
+        print("cable design id api duration: %d sec." % (end_time-preapi_time).total_seconds())
 
     def handle_input(self, input_dict):
         cable_design_name = CableDesignOutputObject.get_name_cls(input_dict)

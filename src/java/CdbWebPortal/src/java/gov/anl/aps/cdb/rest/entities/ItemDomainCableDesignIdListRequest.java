@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author craig
  */
-public class NameList {
+public class ItemDomainCableDesignIdListRequest {
 
     private List<String> nameList;
     
