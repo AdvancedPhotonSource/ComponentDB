@@ -61,4 +61,8 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
         return (ItemDomainMachineDesignFacade) SessionUtility.findFacade(ItemDomainMachineDesignFacade.class.getSimpleName()); 
     }
     
+    public List<ItemDomainMachineDesign> findByAlternateName(String value) {
+        return findByItemIdentifier1(value);
+    }
+    
 }
