@@ -85,8 +85,11 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     }
 
     private List<ItemDomainMachineDesign> itemsWithContainerHierarchy(String rootItemName, String containerItemName, String itemName) {
-        List<ItemDomainMachineDesign> itemList = facade.findByName(itemName);
         List<ItemDomainMachineDesign> resultList = new ArrayList<>();
+        List<ItemDomainMachineDesign> itemList = facade.findByName(itemName);
+        if (itemList.isEmpty()) {
+            itemList = facade.findByAlternateName(itemName);
+        }
         for (ItemDomainMachineDesign item : itemList) {
 
             // walk up hierarchy to top-level "root" parent
