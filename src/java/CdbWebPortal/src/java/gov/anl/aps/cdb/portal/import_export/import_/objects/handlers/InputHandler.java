@@ -4,7 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import java.util.Map;
 import org.apache.poi.ss.usermodel.Row;
@@ -15,6 +17,7 @@ import org.apache.poi.ss.usermodel.Row;
  */
 public abstract class InputHandler {
 
+    private ColumnSpec columnSpec;
     private int firstColumnIndex = -1;
     private int lastColumnIndex = -1;
     
@@ -28,6 +31,10 @@ public abstract class InputHandler {
     public InputHandler(int firstColumnIndex, int lastColumnIndex) {
         this(firstColumnIndex);
         this.lastColumnIndex = lastColumnIndex;
+    }
+    
+    public void setColumnSpec(ColumnSpec columnSpec) {
+        this.columnSpec = columnSpec;
     }
     
     public int getFirstColumnIndex() {
@@ -55,6 +62,14 @@ public abstract class InputHandler {
             Map<String, Object> rowMap,
             CdbEntity entity) {
         return new ValidInfo(true, "");
+    }
+
+    public boolean isUsedForMode(ImportMode mode) {
+        return columnSpec.isUsedForMode(mode);
+    }
+    
+    public boolean isRequiredForMode(ImportMode mode) {
+        return columnSpec.isRequiredForMode(mode);
     }
 
 }

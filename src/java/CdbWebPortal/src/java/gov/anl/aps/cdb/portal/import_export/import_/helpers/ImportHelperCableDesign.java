@@ -37,6 +37,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         List<ColumnSpec> specs = new ArrayList<>();
         
         specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
         specs.add(new StringColumnSpec("Name", "name", "setName", true, "Cable name, uniquely identifies cable.", 128, "getName"));
         specs.add(new StringColumnSpec("Alt Name", "alternateName", "setAlternateName", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 128, "getAlternateName"));
         specs.add(new StringColumnSpec("Ext Cable Name", "externalCableName", "setExternalCableName", false, "Cable name in external system (e.g., CAD, routing tool).", 256, "getExternalCableName"));
@@ -67,12 +68,13 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         return ItemDomainCableDesignController.getInstance();
     }
 
-    /**
-     * Specifies whether helper supports updating existing instances.  Defaults
-     * to false. Subclasses override to customize.
-     */
     @Override
     public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeDelete() {
         return true;
     }
 

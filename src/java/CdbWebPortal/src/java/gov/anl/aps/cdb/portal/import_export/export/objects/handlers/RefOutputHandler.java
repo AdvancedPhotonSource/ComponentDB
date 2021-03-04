@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.import_export.export.objects.handlers;
 
+import gov.anl.aps.cdb.portal.import_export.export.objects.ColumnValueResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.HandleOutputResult;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import java.util.List;
@@ -33,5 +34,10 @@ public class RefOutputHandler extends SimpleOutputHandler {
     @Override
     public HandleOutputResult handleOutput(List<CdbEntity> entities) {
         return handleOutput(entities, true);
+    }
+    
+    @Override
+    public ColumnValueResult handleOutput(CdbEntity entity) {
+        return handleOutput(entity, true);
     }
 }

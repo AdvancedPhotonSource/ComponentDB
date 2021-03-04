@@ -28,9 +28,10 @@ public class CdbEntity implements Serializable, Cloneable {
     
     // import wizard variables
     private transient boolean isValidImport = true;
-    private transient boolean isDuplicateImport = false;
     private transient String validStringImport;
     private transient Integer importExistingItemId;
+    private transient Boolean importDeleteExistingItem;
+    private transient String importUpdateDiffs;
     
     protected static final long serialVersionUID = 1L;
     @Override
@@ -76,6 +77,11 @@ public class CdbEntity implements Serializable, Cloneable {
     }
     
     @JsonIgnore
+    public String getSystemLogString() {
+        return toString(); 
+    }
+    
+    @JsonIgnore
     public boolean getIsValidImport() {
         return isValidImport;
     }
@@ -92,29 +98,14 @@ public class CdbEntity implements Serializable, Cloneable {
     public void setIsValidImport(boolean b) {
         isValidImport = b;
     }
-    
-    
-    @JsonIgnore
-    public boolean getIsDuplicateImport() {
-        return isDuplicateImport;
-    }
-    
-    @JsonIgnore
-    public String getIsDuplicateImportString() {
-        if (isDuplicateImport) {
-            return "yes";
-        } else {
-            return "no";
-        }
-    }
-    
-    public void setIsDuplicateImport(boolean b) {
-        isDuplicateImport = b;
-    }
-    
+        
     @JsonIgnore
     public String getValidStringImport() {
         return validStringImport;
+    }
+    
+    public void setValidStringImport(String s) {
+        validStringImport = s;
     }
     
     public void setImportExistingItemId(Integer id) {
@@ -126,12 +117,22 @@ public class CdbEntity implements Serializable, Cloneable {
         return importExistingItemId;
     }
     
-    public void setValidStringImport(String s) {
-        validStringImport = s;
+    public void setImportDeleteExistingItem(Boolean b) {
+        importDeleteExistingItem = b;
     }
     
     @JsonIgnore
-    public String getSystemLogString() {
-        return toString(); 
+    public Boolean getImportDeleteExistingItem() {
+        return importDeleteExistingItem;
     }
+    
+    @JsonIgnore
+    public String getImportUpdateDiffs() {
+        return importUpdateDiffs;
+    }
+    
+    public void setImportUpdateDiffs(String diffString) {
+        importUpdateDiffs = diffString;
+    }
+            
 }
