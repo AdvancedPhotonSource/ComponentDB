@@ -60,7 +60,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         // Empty model
         config = new MachineTreeConfiguration();
     }
-
+    
     public ItemElement getElement() {
         Object data = super.getData();
         return (ItemElement) data;
@@ -114,7 +114,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         return cable; 
     }
     
-    private List<ItemDomainMachineDesignTreeNode> getMachineChildren() {
+    public List<ItemDomainMachineDesignTreeNode> getMachineChildren() {
         return (List<ItemDomainMachineDesignTreeNode>)(List<?>)super.getChildren();
     }
 

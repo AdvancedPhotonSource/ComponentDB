@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
@@ -126,6 +127,7 @@ public class ItemDomainMachineDesignController
     private boolean displayAddCatalogItemListConfigurationPanel = true;
     private boolean displayAssignCatalogItemListConfigurationPanel = true;
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
+    private boolean displayAttachTemplateToMachine = true; 
     private boolean displayMachineDesignReorderOverlayPanel = true;
     private boolean displayAddCablePanel = true;
     private boolean displayAddCableCircuitPanel = true;
@@ -540,6 +542,7 @@ public class ItemDomainMachineDesignController
         displayAddCatalogItemListConfigurationPanel = false;
         displayAssignCatalogItemListConfigurationPanel = false;
         displayAssignInventoryItemListConfigurationPanel = false;
+        displayAttachTemplateToMachine = false; 
         displayMachineDesignReorderOverlayPanel = false;
         displayAddCablePanel = false;
         displayAddCableCircuitPanel = false;
@@ -578,6 +581,11 @@ public class ItemDomainMachineDesignController
         displayAddMDPlaceholderListConfigurationPanel = true;
         currentEditItemElement.setContainedItem(newItem);
     }
+    
+    public void prepareAssignTemplate() {
+        prepareAddNewMachineDesignListConfiguration();
+        displayAttachTemplateToMachine = true;         
+    }
 
     public void prepareAddMdFromPlaceholder() {
         prepareAddNewMachineDesignListConfiguration();
@@ -600,7 +608,8 @@ public class ItemDomainMachineDesignController
                 || displayAddMDFromTemplateConfigurationPanel
                 || displayAddMDPlaceholderListConfigurationPanel
                 || displayAssignCatalogItemListConfigurationPanel
-                || displayAssignInventoryItemListConfigurationPanel;
+                || displayAssignInventoryItemListConfigurationPanel
+                || displayAttachTemplateToMachine;
     }
 
     public boolean isDisplayListConfigurationView() {
@@ -633,6 +642,10 @@ public class ItemDomainMachineDesignController
 
     public boolean isDisplayAssignInventoryItemListConfigurationPanel() {
         return displayAssignInventoryItemListConfigurationPanel;
+    }
+
+    public boolean isDisplayAttachTemplateToMachine() {
+        return displayAttachTemplateToMachine;
     }
 
     public boolean isDisplayMachineDesignReorderOverlayPanel() {
@@ -2097,6 +2110,43 @@ public class ItemDomainMachineDesignController
         getControllerUtility().checkItem(containedItem);
 
     }
+    
+    public void assignTemplateToSelectedItem() {
+        if (templateToCreateNewItem == null) {
+            SessionUtility.addWarningMessage("No Template Selected", "Please select template and try again.");
+            return;
+        }
+        TreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
+        ItemDomainMachineDesignTreeNode machineNode = (ItemDomainMachineDesignTreeNode) selectedItemInListTreeTable;
+        
+        ItemElement element = machineNode.getElement();
+        ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) element.getContainedItem();
+                
+        setMachineDesginIdentifiersFromTemplateItem(templateToCreateNewItem, containedItem);
+        addCreatedFromTemplateRelationshipToItem(containedItem, templateToCreateNewItem);
+        Item assignedItem = templateToCreateNewItem.getAssignedItem();
+        containedItem.setAssignedItem(assignedItem);
+        
+        cloneCreateItemElements(containedItem, templateToCreateNewItem, true, true, true);
+        containedItem.resetItemElementVars();
+        
+        try { 
+            createMachineDesignFromTemplateHierachically(element);
+        } catch (CdbException ex) {
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+            return;
+        } catch (CloneNotSupportedException ex) {
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+            return;
+        }
+        
+        updateCurrentUsingSelectedItemInTreeTable();
+        update();
+        
+        resetListConfigurationVariables();
+        resetListDataModel();
+        expandToSelectedTreeNodeAndSelect();
+    }
 
     private void createMachineDesignFromTemplateForEditItemElement() throws CdbException, CloneNotSupportedException {
         createMachineDesignFromTemplate(currentEditItemElement, templateToCreateNewItem);
@@ -2116,8 +2166,10 @@ public class ItemDomainMachineDesignController
 
         List<ItemElement> itemElementDisplayList = subTemplate.getItemElementDisplayList();
         for (ItemElement ie : itemElementDisplayList) {
-            createMachineDesignFromTemplate(ie, ie, ownerUser, ownerGroup);
-            createMachineDesignFromTemplateHierachically(ie);
+            ItemDomainMachineDesign result = createMachineDesignFromTemplate(ie, ie, ownerUser, ownerGroup);
+            if (result != null) {
+                createMachineDesignFromTemplateHierachically(ie);
+            }
         }
     }
 
@@ -2127,7 +2179,7 @@ public class ItemDomainMachineDesignController
      *
      * @param itemElement
      * @param templateElementItem
-     * @return
+     * @return null when no template exists
      * @throws CdbException
      * @throws CloneNotSupportedException
      */
@@ -2136,13 +2188,17 @@ public class ItemDomainMachineDesignController
             ItemElement templateElementItem,
             UserInfo ownerUser,
             UserGroup ownerGroup) throws CdbException, CloneNotSupportedException {
+        
+        ItemDomainMachineDesign templateItem = (ItemDomainMachineDesign) templateElementItem.getContainedItem();
+        
+        if (ItemDomainMachineDesign.isItemTemplate(templateItem) == false) {
+            return null; 
+        }        
 
         if (templateElementItem.getId() != null) {
             // The key derivedFromItemElement is used for sorting.
             itemElement.setDerivedFromItemElement(templateElementItem);
-        }
-
-        ItemDomainMachineDesign templateItem = (ItemDomainMachineDesign) templateElementItem.getContainedItem();
+        }       
 
         return createMachineDesignFromTemplate(itemElement, templateItem, ownerUser, ownerGroup);
     }
@@ -2208,7 +2264,7 @@ public class ItemDomainMachineDesignController
     public String getMachineDesignName() {
         return machineDesignName;
     }
-
+    
     public List<KeyValueObject> getMachineDesignNameList() {
         return machineDesignNameList;
     }
