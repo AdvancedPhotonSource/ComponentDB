@@ -60,7 +60,8 @@ import openpyxl
 import xlsxwriter
 
 from CdbApiFactory import CdbApiFactory
-from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, ItemDomanMachineDesignIdListRequest
+from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, \
+    ItemDomanMachineDesignIdListRequest, SourceIdListRequest
 
 # constants
 
@@ -88,6 +89,9 @@ CABLE_TYPE_REEL_QTY_KEY = "reelQty"
 CABLE_TYPE_LEAD_TIME_KEY = "leadTime"
 CABLE_TYPE_ORDERED_KEY = "ordered"
 CABLE_TYPE_RECEIVED_KEY = "received"
+
+CABLE_TYPE_NAME_INDEX = 0
+CABLE_TYPE_MANUFACTURER_INDEX = 2
 
 CABLE_INVENTORY_NAME_KEY = "name"
 
@@ -467,11 +471,26 @@ class InputHandler(ABC):
 
 class ManufacturerHandler(InputHandler):
 
-    def __init__(self, column_key, api, existing_sources, new_sources):
+    def __init__(self, column_key, column_index, api, existing_sources, new_sources):
         super().__init__(column_key)
+        self.column_index = column_index
         self.existing_sources = existing_sources
         self.new_sources = new_sources
         self.api = api
+        self.id_mgr = IdManager()
+
+    def initialize(self, api, sheet, first_row, last_row):
+
+        source_names = set()
+
+        for row_ind in range(first_row, last_row+1):
+            val = sheet.cell(row_ind, self.column_index).value
+            if val is not None and val != "":
+                source_names.add(val.upper())
+
+        id_list = SourceHandler.get_source_id_list(api, source_names, "existence check")
+
+        self.id_mgr.set_dict(dict(zip(source_names, id_list)))
 
     def handle_input(self, input_dict):
 
@@ -486,19 +505,10 @@ class ManufacturerHandler(InputHandler):
             return True, ""
 
         # check to see if manufacturer exists as a CDB Source
-        try:
-            mfr_source = self.api.getSourceApi().get_source_by_name(manufacturer)
-        except ApiException as ex:
-            if "ObjectNotFound" not in ex.body:
-                msg = "exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body)
-                logging.error(msg)
-                print(msg)
-                return False, msg
-            mfr_source = None
-        if mfr_source:
+        source_id = self.id_mgr.get_id_for_name(manufacturer)
+        if source_id != 0:
             # source already exists for mfr
             self.existing_sources.append(manufacturer)
-
         else:
             # need to add new source for mfr
             self.new_sources.add(manufacturer)
@@ -780,28 +790,46 @@ class CableTypeIdHandler(InputHandler):
 
 class CableTypeExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, api, existing_cable_types):
+    def __init__(self, column_key, column_index, api, existing_cable_types):
         super().__init__(column_key)
+        self.column_index = column_index
         self.existing_cable_types = existing_cable_types
         self.api = api
+        self.name_id_dict = {}
+
+    def initialize(self, api, sheet, first_row, last_row):
+
+        cable_type_names = []
+
+        for row_ind in range(first_row, last_row+1):
+            val = sheet.cell(row_ind, self.column_index).value
+            if val is not None and val != "":
+                cable_type_names.append(val)
+
+        print("fetching %d cable type id's" % len(cable_type_names))
+
+        try:
+            request_obj = ItemDomainCableCatalogIdListRequest(name_list=cable_type_names)
+            id_list = api.getCableCatalogItemApi().get_cable_type_id_list(item_domain_cable_catalog_id_list_request=request_obj)
+        except ApiException as ex:
+            fatal_error("unknown api exception getting list of cable type ids for existence check")
+
+        # list sizes should match
+        if len(cable_type_names) != len(id_list):
+            fatal_error("api list size mismatch getting list of cable type ids for existence check")
+
+        print("fetched %d cable type id's for existence check" % len(id_list))
+
+        self.name_id_dict = (dict(zip(cable_type_names, id_list)))
 
     def handle_input(self, input_dict):
-
         cable_type_name = input_dict[self.column_key]
-
-        # check to see if cable type exists in CDB
-        cable_type_object = None
-        try:
-            cable_type_object = self.api.getCableCatalogItemApi().get_cable_catalog_item_by_name(cable_type_name)
-        except ApiException as ex:
-            if "ObjectNotFound" not in ex.body:
-                error_msg = "unknown api exception retrieving cable catalog item: %s - %s" % (cable_type_name, ex.body)
-                logging.error(error_msg)
-                return False, error_msg
-        if cable_type_object:
+        if cable_type_name not in self.name_id_dict:
+            fatal_error("unexpected error in id map for cable type existence check")
+        cable_type_id = self.name_id_dict[cable_type_name]
+        if cable_type_id != 0:
             # cable type already exists
             self.existing_cable_types.append(cable_type_name)
-
         return True, ""
 
 
@@ -891,11 +919,46 @@ class CableDesignExistenceHandler(InputHandler):
 
 class SourceHandler(InputHandler):
 
-    def __init__(self, column_key, id_manager, api, missing_source_list):
+    def __init__(self, column_key, column_index, id_manager, api, missing_source_list):
         super().__init__(column_key)
+        self.column_index = column_index
         self.id_manager = id_manager
         self.api = api
         self.missing_source_list = missing_source_list
+
+    @staticmethod
+    def get_source_id_list(api, source_name_list, description):
+
+        source_name_list = list(source_name_list)
+
+        print("fetching %d source id's for %s" % (len(source_name_list), description))
+
+        try:
+            request_obj = SourceIdListRequest(name_list=source_name_list)
+            id_list = api.getSourceApi().get_source_id_list(source_id_list_request=request_obj)
+        except ApiException as ex:
+            fatal_error("unknown api exception getting list of source ids for %s" % description)
+
+        # list sizes should match
+        if len(source_name_list) != len(id_list):
+            fatal_error("api list size mismatch getting list of source ids for %s" % description)
+
+        print("fetched %d source id's for %s" % (len(id_list), description))
+
+        return id_list
+
+    def initialize(self, api, sheet, first_row, last_row):
+
+        source_names = set()  # use set to eliminate duplicates
+
+        for row_ind in range(first_row, last_row+1):
+            val = sheet.cell(row_ind, self.column_index).value
+            if val is not None and val != "":
+                source_names.add(val)
+
+        id_list = SourceHandler.get_source_id_list(api, source_names, "manufacturer lookup")
+
+        self.id_manager.set_dict(dict(zip(source_names, id_list)))
 
     def handle_input(self, input_dict):
 
@@ -905,31 +968,14 @@ class SourceHandler(InputHandler):
             return True, ""
 
         cached_id = self.id_manager.get_id_for_name(source_name)
-        if cached_id is not None:
-            # nothing to do, id already cached
+        if cached_id != 0:
+            logging.debug("found source with name: %s, id: %s" % (source_name, cached_id))
             return True, ""
-
         else:
-            # check to see if source exists in CDB by name
-            source_object = None
-            try:
-                source_object = self.api.getSourceApi().get_source_by_name(source_name)
-            except ApiException as ex:
-                if "ObjectNotFound" not in ex.body:
-                    error_msg = "unknown api exception retrieving source item: %s - %s" % (source_name, ex.body)
-                    logging.error(error_msg)
-                    return False, error_msg
-
-            if source_object:
-                source_id = source_object.id
-                logging.debug("found source with name: %s, id: %s" % (source_name, source_id))
-                self.id_manager.set_id_for_name(source_name, source_id)
-                return True, ""
-            else:
-                self.missing_source_list.append(source_name)
-                error_msg = "no source found for name: %s" % source_name
-                logging.error(error_msg)
-                return False, error_msg
+            self.missing_source_list.append(source_name)
+            error_msg = "no source found for name: %s" % source_name
+            logging.error(error_msg)
+            return False, error_msg
             
 
 class InputColumnModel:
@@ -1045,9 +1091,9 @@ class SourceHelper(PreImportHelper):
 
     def generate_handler_list(self):
         global name_manager
-        handler_list = [
-            ManufacturerHandler(CABLE_TYPE_MANUFACTURER_KEY, self.api, self.existing_sources, self.new_sources),
-        ]
+        handler_list = []
+        if not self.validate_only:
+            handler_list.append(ManufacturerHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.api, self.existing_sources, self.new_sources))
         return handler_list
 
     def get_output_object(self, input_dict):
@@ -1104,7 +1150,7 @@ class SourceHelper(PreImportHelper):
     # Returns processing summary message.
     def get_processing_summary(self):
         if len(self.new_sources) > 0 or len(self.existing_sources) > 0:
-            return "DETAILS: number of new sources: %d number of existing sources (not written to output spreadsheet): %d" % (len(self.new_sources), len(self.existing_sources))
+            return "DETAILS: number of new sources: %d number of existing sources (not written to output spreadsheet): %d\nDETAILS: rows with no manufacturer included in number of empty rows" % (len(self.new_sources), len(self.existing_sources))
         else:
             return ""
 
@@ -1180,9 +1226,9 @@ class CableTypeHelper(PreImportHelper):
 
     def generate_input_column_list(self):
         column_list = [
-            InputColumnModel(col_index=0, key=CABLE_TYPE_NAME_KEY, required=True),
+            InputColumnModel(col_index=CABLE_TYPE_NAME_INDEX, key=CABLE_TYPE_NAME_KEY, required=True),
             InputColumnModel(col_index=1, key=CABLE_TYPE_DESCRIPTION_KEY),
-            InputColumnModel(col_index=2, key=CABLE_TYPE_MANUFACTURER_KEY),
+            InputColumnModel(col_index=CABLE_TYPE_MANUFACTURER_INDEX, key=CABLE_TYPE_MANUFACTURER_KEY),
             InputColumnModel(col_index=3, key=CABLE_TYPE_PART_NUMBER_KEY),
             InputColumnModel(col_index=4, key=CABLE_TYPE_ALT_PART_NUMBER_KEY),
             InputColumnModel(col_index=5, key=CABLE_TYPE_DIAMETER_KEY),
@@ -1239,13 +1285,18 @@ class CableTypeHelper(PreImportHelper):
         return column_list
 
     def generate_handler_list(self):
+
         global name_manager
+
         handler_list = [
             NamedRangeHandler(CABLE_TYPE_NAME_KEY, self.named_range),
             UniqueNameHandler(CABLE_TYPE_NAME_KEY, self.cable_type_names),
-            CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, self.api, self.existing_cable_types),
-            SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, self.source_id_manager, self.api, self.missing_source_list),
         ]
+
+        if not self.validate_only:
+            handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, CABLE_TYPE_NAME_INDEX+1, self.api, self.existing_cable_types))
+            handler_list.append(SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.source_id_manager, self.api, self.missing_source_list))
+
         return handler_list
 
     def get_output_object(self, input_dict):
@@ -2148,7 +2199,7 @@ def main():
     print()
     print("CONNECTING TO CDB ====================")
     print()
-    print("connecting to %s (make sure CDB is running and VPN connected if needed)")
+    print("connecting to %s as user %s (make sure CDB is running and VPN connected if needed)" % (cdb_url, cdb_user))
 
     # open connection to CDB
     api = CdbApiFactory(cdb_url)

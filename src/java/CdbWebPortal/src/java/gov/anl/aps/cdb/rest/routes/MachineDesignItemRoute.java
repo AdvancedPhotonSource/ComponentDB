@@ -157,7 +157,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     }
     
     @POST
-    @Path("/ByHierarchy")
+    @Path("/IdList")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Integer> getHierarchyIdList(ItemDomanMachineDesignIdListRequest request) throws InvalidArgument {
