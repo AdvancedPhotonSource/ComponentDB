@@ -43,32 +43,6 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Connector.findByName", query = "SELECT c FROM Connector c WHERE c.name = :name"),
     @NamedQuery(name = "Connector.findByDescription", query = "SELECT c FROM Connector c WHERE c.description = :description")})
 
-@NamedStoredProcedureQueries({
-    @NamedStoredProcedureQuery(
-            name = "connector.available_connectors_for_inventory_item",
-            procedureName = "available_connectors_for_inventory_item",
-            resultClasses = Connector.class,
-            parameters = {
-                @StoredProcedureParameter(
-                        name = "item_id",
-                        mode = ParameterMode.IN,
-                        type = Integer.class
-                ),
-                @StoredProcedureParameter(
-                        //Optional - enter NULL
-                        name = "connector_type_id",
-                        mode = ParameterMode.IN,
-                        type = Integer.class
-                ),
-                @StoredProcedureParameter(
-                        //Optional - enter NULL
-                        name = "is_male",
-                        mode = ParameterMode.IN,
-                        type = Boolean.class
-                )
-            }
-    )
-})
 
 public class Connector extends CdbEntity implements Serializable {
 

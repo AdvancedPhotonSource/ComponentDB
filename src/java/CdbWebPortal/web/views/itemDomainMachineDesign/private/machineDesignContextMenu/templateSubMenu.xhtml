@@ -9,11 +9,20 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">   
 
     <p:submenu icon="ui-icon-machine-design-template" label="Template"
-               disabled="#{disabledEditContextMenuItemForSelection}"
-               rendered="#{entityController.selectedItemInTreeTableCreatedFromTemplate}">
+               disabled="#{disabledEditContextMenuItemForSelection}">
+        
+        <p:menuitem value="Assign Template" icon="ui-icon-machine-design-template"
+                update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel emphasizedContentBelowTitleOutputPanel"
+                rendered="#{!entityController.selectedItemInTreeTableCreatedFromTemplate}"
+                disabled="#{disabledEditContextMenuItemForSelection or disabled}"
+                immediate="true"
+                onstart="PF('loadingDialog').show();"
+                oncomplete="PF('loadingDialog').hide();"
+                action='#{entityController.prepareAssignTemplate()}'/>
         
         <p:menuitem value="Ressign Macros" icon="fa fa-repeat"
                 update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel emphasizedContentBelowTitleOutputPanel"
+                rendered="#{entityController.selectedItemInTreeTableCreatedFromTemplate}"
                 disabled="#{disabledEditContextMenuItemForSelection or disabled}"
                 immediate="true"
                 onstart="PF('loadingDialog').show();"

@@ -15,6 +15,7 @@ See LICENSE file.
     <p:dialog widgetVar="editInventoryItemDialogWidget"
               header="Edit Inventory Item"
               modal="true"
+              styleClass="viewTransparentBackgroundDialog"
               resizable="false">
         <p:outputPanel rendered="#{itemDomainInventoryController.current != null}" >
             <ui:include src="itemDomainInventoryBillOfMaterialsEditView.xhtml">

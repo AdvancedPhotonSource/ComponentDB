@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -13,6 +14,13 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
  * @author darek
  */
 public class RelationshipTypeControllerUtility extends CdbEntityControllerUtility<RelationshipType, RelationshipTypeFacade> {
+    
+    public RelationshipType createRelationshipTypeWithName(String relationshipTypeName, UserInfo userInfo) throws CdbException {
+        RelationshipType relationshipType = createEntityInstance(userInfo);
+        relationshipType.setName(relationshipTypeName);
+        create(relationshipType, userInfo); 
+        return relationshipType; 
+    }
 
     @Override
     protected RelationshipTypeFacade getEntityDbFacade() {

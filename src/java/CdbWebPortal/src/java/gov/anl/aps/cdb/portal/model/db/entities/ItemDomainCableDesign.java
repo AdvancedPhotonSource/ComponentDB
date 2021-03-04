@@ -13,9 +13,12 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.RelationshipTypeController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -81,14 +84,19 @@ public class ItemDomainCableDesign extends Item {
         }
     }
 
-    private RelationshipType getCableConnectionRelationshipType() {
+    private RelationshipType getCableConnectionRelationshipType(UserInfo userInfo) {
         RelationshipType relationshipType
                 = RelationshipTypeFacade.getInstance().findByName(
                         ItemElementRelationshipTypeNames.itemCableConnection.getValue());
         if (relationshipType == null) {
-            RelationshipTypeController controller = RelationshipTypeController.getInstance();
+            RelationshipTypeControllerUtility rtcu = new RelationshipTypeControllerUtility();             
             String name = ItemElementRelationshipTypeNames.itemCableConnection.getValue();
-            relationshipType = controller.createRelationshipTypeWithName(name);
+            try {
+                relationshipType = rtcu.createRelationshipTypeWithName(name, userInfo);
+            } catch (CdbException ex) {
+                LOGGER.error(ex);
+                return null; 
+            }
         }
         return relationshipType;
     }
@@ -99,14 +107,13 @@ public class ItemDomainCableDesign extends Item {
      * @param item Machine design item for cable endpoint.
      * @return New instance of ItemElementRelationshipo for specified items.
      */
-    private ItemElementRelationship createRelationship(Item item, float sortOrder) {
-
+    private ItemElementRelationship createRelationship(Item item, float sortOrder, UserInfo userInfo) {
         ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
         itemElementRelationship.setFirstItemElement(item.getSelfElement());
         itemElementRelationship.setSecondItemElement(this.getSelfElement());
         itemElementRelationship.setSecondSortOrder(sortOrder);
 
-        RelationshipType cableConnectionRelationshipType = getCableConnectionRelationshipType();
+        RelationshipType cableConnectionRelationshipType = getCableConnectionRelationshipType(userInfo);
         itemElementRelationship.setRelationshipType(cableConnectionRelationshipType);
 
         return itemElementRelationship;
@@ -143,8 +150,11 @@ public class ItemDomainCableDesign extends Item {
             sortOrder = maxSortOrder + 1;
         }
         
+        EntityInfo entityInfo = this.getEntityInfo();
+        UserInfo ownerUser = entityInfo.getOwnerUser();
+        
         // create relationships from cable to endpoints
-        ItemElementRelationship relationship = createRelationship(endpoint, sortOrder);
+        ItemElementRelationship relationship = createRelationship(endpoint, sortOrder, ownerUser);
 
         // Create list for cable's relationships. 
         ItemElement selfElement = this.getSelfElement();
@@ -216,7 +226,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint1Id(String id) {
-        ItemDomainMachineDesign itemEndpoint1 = (ItemDomainMachineDesign)(getEntityById(ItemDomainMachineDesignController.getInstance(), id));
+        ItemDomainMachineDesign itemEndpoint1 = (ItemDomainMachineDesign)(getEntityById(id));
         if (itemEndpoint1 != null) {
             setEndpoint1(itemEndpoint1);
         } else {
@@ -233,7 +243,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint2Id(String id) {
-        ItemDomainMachineDesign itemEndpoint2 = (ItemDomainMachineDesign)(getEntityById(ItemDomainMachineDesignController.getInstance(), id));
+        ItemDomainMachineDesign itemEndpoint2 = (ItemDomainMachineDesign)(getEntityById(id));
         if (itemEndpoint2 != null) {
             setEndpoint2(itemEndpoint2);
         } else {
@@ -365,7 +375,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setCatalogItemId(String catalogItemId) {
-        ItemDomainCableCatalog catalogItem = (ItemDomainCableCatalog) (getEntityById(ItemDomainCableCatalogController.getInstance(), catalogItemId));
+        ItemDomainCableCatalog catalogItem = (ItemDomainCableCatalog) (getEntityById(catalogItemId));
 
         if (catalogItem != null) {
             setCatalogItem(catalogItem);

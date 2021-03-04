@@ -335,8 +335,18 @@ public class UserInfo extends SettingEntity implements Serializable {
                 return true; 
             }
         }
-        return false;
-        
+        return false;        
+    }
+    
+    @JsonIgnore
+    public boolean isUserMaintainer() {
+        List<String> maintainerGroupNameList = LoginController.getMaintainerGroupNameList();
+        for (String maintainerGroupName : maintainerGroupNameList) {
+            if (isUserMemberOfUserGroup(maintainerGroupName)) {
+                return true; 
+            }
+        }
+        return false;        
     }
     
     public boolean isUserMemberOfUserGroup(String groupName) {

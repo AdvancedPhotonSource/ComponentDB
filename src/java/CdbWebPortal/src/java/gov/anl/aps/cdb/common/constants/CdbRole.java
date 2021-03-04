@@ -10,7 +10,8 @@ package gov.anl.aps.cdb.common.constants;
 public enum CdbRole {
 
     USER("user"),
-    ADMIN("admin");
+    ADMIN("admin"),
+    MAINTAINER("maintainer");
 
     private final String type;
 

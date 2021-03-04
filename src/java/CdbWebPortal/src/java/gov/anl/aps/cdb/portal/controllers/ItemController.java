@@ -1582,13 +1582,26 @@ public abstract class ItemController<
     protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained) {
         return cloneCreateItemElements(clonedItem, cloningFrom, addContained, false);
     }
-
+    
     protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained, boolean assignDerivedFromItemElement) {
+        return cloneCreateItemElements(clonedItem, cloningFrom, true, true, false); 
+    }
+
+    protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained, boolean assignDerivedFromItemElement, boolean generateUniqueElementName) {
         List<ItemElement> cloningFromItemElementList = cloningFrom.getItemElementDisplayList();
 
         if (cloningFromItemElementList != null) {
             for (ItemElement itemElement : cloningFromItemElementList) {
-                cloneCreateItemElement(itemElement, clonedItem, addContained, assignDerivedFromItemElement);
+                String newName = null; 
+                if (generateUniqueElementName) {
+                    clonedItem.resetItemElementVars();
+                    newName = getControllerUtility().generateUniqueElementNameForItem(clonedItem); 
+                }
+                ItemElement newElement = cloneCreateItemElement(itemElement, clonedItem, addContained, assignDerivedFromItemElement);                
+                
+                if (newName != null) {
+                    newElement.setName(newName);
+                }
             }
         }
 

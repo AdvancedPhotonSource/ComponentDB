@@ -13,6 +13,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
  * @author darek
  */
 public class EntityTypeControllerUtility extends CdbEntityControllerUtility<EntityType, EntityTypeFacade>{
+    
+    public EntityType findByName(String name) {
+        return getEntityDbFacade().findByName(name);
+    }
 
     @Override
     protected EntityTypeFacade getEntityDbFacade() {

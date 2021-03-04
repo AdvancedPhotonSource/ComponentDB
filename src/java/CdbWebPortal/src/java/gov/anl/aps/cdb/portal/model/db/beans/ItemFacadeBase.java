@@ -233,6 +233,30 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
+    
+    public List<ItemDomainEntity> findByDomainNameWithNoParentsAndEntityType(String domainName) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameWithNoParentsAndEntityType")
+                    .setParameter("domainName", domainName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
+        
+    public List<ItemDomainEntity> findByDomainNameWithNoParentsAndWithEntityType(String domainName, String entityTypeName) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameWithNoParentsAndWithEntityType")
+                    .setParameter("domainName", domainName)
+                    .setParameter("entityTypeName", entityTypeName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
+
 
     private List<ItemDomainEntity> findByDomain(String domainName, String queryName) {
         try {
