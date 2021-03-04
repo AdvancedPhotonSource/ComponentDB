@@ -14,7 +14,7 @@ See LICENSE file.
     <ui:param name="entityController" value="#{itemDomainCableDesignController}" />        
     <ui:param name="itemObject" value="#{entityController.current}" />    
     <ui:param name="isEntityWriteable" value="#{loginController.isEntityWriteable(itemObject.entityInfo)}" />
-
+    
     <f:metadata>
         <f:viewAction action="#{settingController.updateGlobalSettings()}" />
         <f:viewAction action="#{itemDomainCableDesignController.processViewRequestParams}"/>
@@ -28,4 +28,16 @@ See LICENSE file.
         <ui:decorate template="private/templates/additionPanelGridContentTemplate.xhtml" />
     </ui:define>
 
+    <ui:define name="additionalRightItemPanels">        
+        <p:panel header="Device Connections" 
+                 toggleable="true" 
+                 collapsed="#{!entityController.displayConnectionsList}">
+            
+            <ui:include src="private/connectionDialog.xhtml" />
+            
+            <ui:include src="private/itemDomainCableDesignConnectionsList.xhtml"/>
+                
+        </p:panel>
+    </ui:define>
+    
 </ui:composition>

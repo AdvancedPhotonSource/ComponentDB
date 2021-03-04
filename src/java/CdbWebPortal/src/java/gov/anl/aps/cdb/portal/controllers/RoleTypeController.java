@@ -35,11 +35,6 @@ public class RoleTypeController extends CdbEntityController<RoleTypeControllerUt
     }
 
     @Override
-    protected RoleType createEntityInstance() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     protected RoleTypeSettings createNewSettingObject() {
         return new RoleTypeSettings();
     }

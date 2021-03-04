@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
@@ -28,7 +29,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
@@ -91,8 +91,7 @@ public abstract class ItemController<
             ControllerUtility extends ItemControllerUtility<ItemDomainEntity, ItemDomainEntityFacade>, ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings>
         extends CdbDomainEntityController<ControllerUtility, ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity, ItemSettingsObject> {
 
-    private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());
-    protected final String FAVORITES_LIST_NAME = "Favorites";
+    private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());    
     protected static final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";
 
     @EJB
@@ -191,24 +190,6 @@ public abstract class ItemController<
 
     public ItemController() {
     }
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-        itemElementFacade = ItemElementFacade.getInstance();
-        domainFacade = DomainFacade.getInstance();
-        itemTypeFacade = ItemTypeFacade.getInstance();
-        entityTypeFacade = EntityTypeFacade.getInstance();
-        itemCategoryFacade = ItemCategoryFacade.getInstance();
-        listFacade = ListFacade.getInstance();
-        userInfoFacade = UserInfoFacade.getInstance();
-        propertyTypeCategoryFacade = PropertyTypeCategoryFacade.getInstance();
-        propertyTypeFacade = PropertyTypeFacade.getInstance();
-        relationshipTypeFacade = RelationshipTypeFacade.getInstance();
-        itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance();
-    }
-
-    protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
 
     /**
      * Get item create wizard controller for current controller.
@@ -388,16 +369,11 @@ public abstract class ItemController<
 
     public void processPreRenderTemplateList() {
         processPreRenderList();
-    }
+    }   
 
     @Override
-    public List<ItemDomainEntity> getAllEntities() {
-        return getItemList();
-    }
-
-    @Override
-    public List<ItemDomainEntity> getItemList() {
-        return getEntityDbFacade().findByDomain(getDefaultDomainName());
+    public final List<ItemDomainEntity> getItemList() {
+        return getControllerUtility().getItemList(); 
     }
 
     public List<ItemDomainEntity> getItemListExcludeTemplates() {
@@ -900,18 +876,9 @@ public abstract class ItemController<
     }
 
     public List<ItemDomainEntity> getFavoriteItems() {
-        return getFavoriteItems(null);
-    }
-
-    public List<ItemDomainEntity> getFavoriteItems(SettingEntity settingEntity) {
-        ItemDomainEntityFacade itemFacade = getEntityDbFacade();
-        String domainName = getDefaultDomainName();
-
-        List<ItemDomainEntity> itemList = null;
-        itemList = itemFacade.getItemListContainedInListWithoutEntityType(domainName, getFavoritesList(settingEntity));
-
-        return itemList;
-    }
+        SettingEntity currentSettingEntity = getCurrentSettingEntity();
+        return getControllerUtility().getFavoriteItems(currentSettingEntity);
+    }   
 
     public List<String> getDisplayListDataScopeSelectionList() {
         if (displayListDataModelScopeSelectionList == null) {
@@ -944,13 +911,15 @@ public abstract class ItemController<
 
         ItemElement favoriteItemElement = item.getSelfElement();
         List<ItemElement> favoriteItemElementList = favoriteList.getItemElementList();
+        
+        String favoritesListName = ListName.favorite.getValue();
 
         if (favoriteItemElementList.contains(favoriteItemElement)) {
             favoriteItemElementList.remove(favoriteItemElement);
-            LOGGER.debug(String.format("Removing %s to %s List", favoriteItemElement, FAVORITES_LIST_NAME));
+            LOGGER.debug(String.format("Removing %s to %s List", favoriteItemElement, favoritesListName));
         } else {
             favoriteItemElementList.add(item.getSelfElement());
-            LOGGER.debug(String.format("Adding %s to %s List", favoriteItemElement, FAVORITES_LIST_NAME));
+            LOGGER.debug(String.format("Adding %s to %s List", favoriteItemElement, favoritesListName));
         }
 
         // Update
@@ -976,44 +945,27 @@ public abstract class ItemController<
 
         return PortalStyles.favoritesOff.getValue();
     }
-
-    private List<ListTbl> getSettingEntityItemElementLists(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            settingEntity = getSettingController().getCurrentSettingEntity();
-        }
-        if (settingEntity != null) {
-            return settingEntity.getItemElementLists();
-        }
-        return null;
-    }
+    
+    private SettingEntity getCurrentSettingEntity() {
+        return getSettingController().getCurrentSettingEntity(); 
+    }   
 
     protected ListTbl getFavoritesList() {
-        return getFavoritesList(null);
-    }
-
-    private ListTbl getFavoritesList(SettingEntity settingEntity) {
-        List<ListTbl> itemElementLists = getSettingEntityItemElementLists(settingEntity);
-        if (itemElementLists != null) {
-            for (ListTbl list : itemElementLists) {
-                if (list.getName().equals(FAVORITES_LIST_NAME)) {
-                    return list;
-                }
-            }
-        }
-
-        // List does not exist
-        return null;
-    }
+        SettingEntity currentSettingEntity = getCurrentSettingEntity();
+        return getControllerUtility().getFavoritesList(currentSettingEntity);
+    }   
 
     private ListTbl createFavoritesList() {
         ListTbl favoriteList = new ListTbl();
+        
+        String favoritesListName = ListName.favorite.getValue();
 
         // Link the setting entity and the new favorites list
         SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
         settingEntity.getItemElementLists().add(favoriteList);
-        favoriteList.init(FAVORITES_LIST_NAME, settingEntity);
+        favoriteList.init(favoritesListName, settingEntity);
 
-        LOGGER.debug(String.format("Creating %s List for %s", FAVORITES_LIST_NAME, settingEntity));
+        LOGGER.debug(String.format("Creating %s List for %s", favoritesListName, settingEntity));
         try {
             listFacade.create(favoriteList);
         } catch (Exception ex) {
@@ -1030,10 +982,6 @@ public abstract class ItemController<
 
     public String getItemTemplateListPageTitle() {
         return getDisplayEntityTypeName() + " Template List";
-    }
-
-    private String getEntityTypeStyleName(String genEntityTypeName) {
-        return genEntityTypeName.toLowerCase() + getDefaultDomainName();
     }
 
     @Override
@@ -1279,18 +1227,17 @@ public abstract class ItemController<
         ItemConnectorController.getInstance().destroy(itemConnector);
     }
 
-    public void prepareAddItemConnector(Item item) {
+    public final void prepareAddItemConnector(Item item) {
         if (item != null) {
+            UserInfo user = SessionUtility.getUser();
+            ItemConnector itemConnector = getControllerUtility().prepareAddItemConnector(item, user);
+
             ItemConnectorController itemConnectorController = ItemConnectorController.getInstance();
-            ItemConnector itemConnector = itemConnectorController.createEntityInstance();
-            itemConnector.setItem(item);
-            itemConnector = prepareItemConnectorForDomain(itemConnector);
-            item.getItemConnectorList().add(itemConnector);
             itemConnectorController.setCurrent(itemConnector);
         }
     }
 
-    protected ItemConnector prepareItemConnectorForDomain(ItemConnector itemConnector) {
+    protected final ItemConnector prepareItemConnectorForDomain(ItemConnector itemConnector) {
         return itemConnector;
     }
 
@@ -1531,9 +1478,7 @@ public abstract class ItemController<
     public void prepareAddItemDerivedFromItem(Item derivedFromItem) {
         List<Item> itemDerivedFromItemList = derivedFromItem.getDerivedFromItemList();
 
-        ItemDomainEntity newItemDerivedFromItem = instenciateNewItemDomainEntity();
-
-        newItemDerivedFromItem.init(getDefaultDomain());
+        ItemDomainEntity newItemDerivedFromItem = createEntityInstance();
 
         itemDerivedFromItemList.add(0, newItemDerivedFromItem);
 
@@ -2142,42 +2087,19 @@ public abstract class ItemController<
                 || checkDisplayLoadPropertyValueButtonByProperty(settingObject.getDisplayListDataModelScopePropertyTypeId());
     }
 
-    public ItemDomainEntity createEntityInstanceFromApi(EntityInfo ei) {
-        return createEntityInstance(ei);
-    }
-
     @Override
-    protected ItemDomainEntity createEntityInstance() {
-        return createEntityInstance(null);
-    }
-
-    protected ItemDomainEntity createEntityInstance(EntityInfo ei) {
-        ItemDomainEntity item = instenciateNewItemDomainEntity();
-
-        Domain domain = getDefaultDomain();
-        if (domain != null) {
-            if (ei == null) {
-                item.init(domain);
-            } else {
-                item.init(domain, ei);
-            }
-        } else {
-            if (ei == null) {
-                item.init();
-            } else {
-                item.init(ei);
-            }
-        }
-
+    public ItemDomainEntity createEntityInstance() {        
+        ItemDomainEntity item = super.createEntityInstance();
+        
         if (qrIdViewParam != null) {
             item.setQrId(qrIdViewParam);
             qrIdViewParam = null;
         }
-
-        initializeCoreMetadataPropertyValue(item);
-
+        
+        setCurrent(item);
+        
         return item;
-    }
+    }   
 
     @Override
     public final ItemDomainEntity createItemEntity() {
@@ -2501,9 +2423,6 @@ public abstract class ItemController<
         if (locatableItemController == null) {
             locatableItemController = LocatableItemController.getInstance();
         }
-        if (apiMode) {
-            locatableItemController.apiUser = apiUser;
-        }
         return locatableItemController;
     }
 
@@ -2578,7 +2497,7 @@ public abstract class ItemController<
 
     public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
         if (coreMetadataPropertyInfo == null) {
-            coreMetadataPropertyInfo = initializeCoreMetadataPropertyInfo();
+            coreMetadataPropertyInfo = getControllerUtility().createCoreMetadataPropertyInfo();
         }
         return coreMetadataPropertyInfo;
     }
@@ -2590,64 +2509,23 @@ public abstract class ItemController<
         return coreMetadataPropertyType;
     }
 
-    protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
-        // do nothing by default, subclasses with core metadata to override
-        return null;
-    }
-
     protected void initializeCoreMetadataPropertyType() {
         ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
         if (info != null) {
             coreMetadataPropertyType = PropertyTypeFacade.getInstance().findByName(info.getPropertyName());
         }
-    }
+    }      
 
-    protected void initializeCoreMetadataPropertyValue(ItemDomainEntity item) {
-        if (item.getCoreMetadataPropertyInfo() != null) {
-            item.setPropertyValueList(new ArrayList<>());
-            prepareCoreMetadataPropertyValue(item);
-        }
-    }
-
-    public PropertyValue prepareCoreMetadataPropertyValue(ItemDomainEntity item) {
-
-        // Add cable internal property type
-        PropertyType propertyType = propertyTypeFacade.findByName(item.getCoreMetadataPropertyInfo().getPropertyName());
-
-        if (propertyType == null) {
-            propertyType = prepareCoreMetadataPropertyType();
-        }
-
-        return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
-    }
-
-    public AllowedPropertyMetadataValue newAllowedPropertyMetadataValue(
+    public final AllowedPropertyMetadataValue newAllowedPropertyMetadataValue(
             String value,
             PropertyTypeMetadata ptm) {
-
-        AllowedPropertyMetadataValue allowedValue = new AllowedPropertyMetadataValue();
-        allowedValue.setMetadataValue(value);
-        allowedValue.setPropertyTypeMetadata(ptm);
-        return allowedValue;
+        return getControllerUtility().newAllowedPropertyMetadataValue(value, ptm); 
     }
 
-    public PropertyTypeMetadata newPropertyTypeMetadataForField(
+    public final PropertyTypeMetadata newPropertyTypeMetadataForField(
             ItemCoreMetadataFieldInfo field,
             PropertyType propertyType) {
-
-        PropertyTypeMetadata ptm = new PropertyTypeMetadata();
-        ptm.setMetadataKey(field.getKey());
-        ptm.setDescription(field.getDescription());
-        List<AllowedPropertyMetadataValue> allowedValueList = new ArrayList<>();
-        for (String allowedValueString : field.getAllowedValues()) {
-            AllowedPropertyMetadataValue allowedValue
-                    = newAllowedPropertyMetadataValue(allowedValueString, ptm);
-            allowedValueList.add(allowedValue);
-        }
-        ptm.setAllowedPropertyMetadataValueList(allowedValueList);
-        ptm.setPropertyType(propertyType);
-
-        return ptm;
+        return getControllerUtility().newPropertyTypeMetadataForField(field, propertyType);
     }
 
     public void migrateCoreMetadataPropertyType() {
@@ -2656,9 +2534,13 @@ public abstract class ItemController<
 
         // initialize property type if it is null
         if (propertyType == null) {
-            propertyType = prepareCoreMetadataPropertyType();
-
-            // otherwise migrate existing property type object
+            try {
+                propertyType = getControllerUtility().prepareCoreMetadataPropertyType();                
+                // otherwise migrate existing property type object
+            } catch (CdbException ex) {
+                LOGGER.error(ex.getMessage());
+                return;
+            }
         } else {
 
             // iterate through core metadata fields to identify missing information in property type
@@ -2729,33 +2611,7 @@ public abstract class ItemController<
                 propertyTypeController.update();
             }
         }
-    }
-
-    protected PropertyType prepareCoreMetadataPropertyType() {
-        PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
-        PropertyType propertyType = propertyTypeController.createEntityInstance();
-
-        ItemCoreMetadataPropertyInfo propInfo = getCoreMetadataPropertyInfo();
-
-        propertyType.setIsInternal(true);
-        propertyType.setName(propInfo.getPropertyName());
-        propertyType.setDescription(propInfo.getDisplayName());
-
-        List<Domain> allowedDomainList = new ArrayList<>();
-        allowedDomainList.add(getDefaultDomain());
-        propertyType.setAllowedDomainList(allowedDomainList);
-
-        List<PropertyTypeMetadata> ptmList = new ArrayList<>();
-        for (ItemCoreMetadataFieldInfo fieldInfo : propInfo.getFields()) {
-            PropertyTypeMetadata ptm = newPropertyTypeMetadataForField(fieldInfo, propertyType);
-            ptmList.add(ptm);
-        }
-        propertyType.setPropertyTypeMetadataList(ptmList);
-
-        propertyTypeController.setCurrent(propertyType);
-        propertyTypeController.create(true);
-        return propertyType;
-    }
+    }   
 
     public String getCoreMetadataPropertyTitle() {
         ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();

@@ -37,28 +37,12 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
 
     public final static String CONTROLLER_NAMED = "itemDomainCatalogController";
 
-    private static ItemDomainCatalogController apiInstance;
-
     private List<ItemDomainInventory> inventorySparesList = null;
     private List<ItemDomainInventory> inventoryNonSparesList = null;
     private Boolean displayInventorySpares = null;
 
     @EJB
-    ItemDomainCatalogFacade itemDomainCatalogFacade;
-
-    public static synchronized ItemDomainCatalogController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainCatalogController();
-            apiInstance.prepareApiInstance();
-        }
-        return apiInstance;
-    }
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-        itemDomainCatalogFacade = ItemDomainCatalogFacade.getInstance();
-    }
+    ItemDomainCatalogFacade itemDomainCatalogFacade;   
     
     @Override
     public ItemMultiEditController getItemMultiEditController() {
@@ -69,28 +53,13 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
         super();
     }
 
-    public static ItemDomainCatalogController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainCatalogController) SessionUtility.findBean(ItemDomainCatalogController.CONTROLLER_NAMED);
-        } else {
-            return getApiInstance();
-        }
+    public static ItemDomainCatalogController getInstance() {        
+        return (ItemDomainCatalogController) SessionUtility.findBean(ItemDomainCatalogController.CONTROLLER_NAMED);        
     }
 
     @Override
     protected ItemDomainCatalogFacade getEntityDbFacade() {
         return itemDomainCatalogFacade;
-    }
-    
-    @Override
-    protected ItemDomainCatalog instenciateNewItemDomainEntity() {
-        return new ItemDomainCatalog();
-    }
-    
-    @Override
-    public ItemDomainCatalog createEntityInstance() {
-        ItemDomainCatalog item = super.createEntityInstance();
-        return item;
     }
 
     @Override

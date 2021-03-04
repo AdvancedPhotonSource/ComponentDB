@@ -7,10 +7,12 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 import gov.anl.aps.cdb.portal.constants.ItemDefaultColumnReferences;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.controllers.LoginController;
 import gov.anl.aps.cdb.portal.controllers.PropertyValueController;
+import gov.anl.aps.cdb.portal.controllers.utilities.LogControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -37,7 +39,6 @@ import javax.ejb.EJB;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.ListDataModel;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.primefaces.event.ReorderEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
@@ -361,7 +362,12 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         }
 
         logger.error("Error performing a " + actionWord + " on item: " + ex);
-        addCdbEntityWarningSystemLog("Failed to " + actionWord, ex, item);
+        LogControllerUtility lcu = LogControllerUtility.getSystemLogInstance();
+        try {        
+            lcu.addSystemLog(SystemLogLevel.entityWarning, "Failed to " + actionWord);
+        } catch (CdbException ex1) {
+            logger.error(ex1);
+        }
         SessionUtility.addErrorMessage("Error", "Could not " + actionWord + ": " + item.toString() + " - " + exceptionMessage);
     }
 
@@ -400,17 +406,27 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
     }
 
     public void editAllItemsDerivedFromItem(Item item) {
-        resetMultiEditVariables();
-        setActiveIndex(MultipleEditMenu.updateItems.ordinal());
-        multiEditMode = MultiEditMode.update;
+        resetMultiEditVariables();                
 
         LoginController loginController = LoginController.getInstance();
         List<Item> derivedFromItemList = item.getDerivedFromItemList();
-        selectedItemsToEdit = new ArrayList<>();
+        List<Item> editableItems = new ArrayList<>();        
         for (Item derivedItem : derivedFromItemList) {
             if (loginController.isEntityWriteable(derivedItem.getEntityInfo())) {
-                selectedItemsToEdit.add(derivedItem);
+                editableItems.add(derivedItem);
             }
+        }
+        
+        editableListDataModel = new ListDataModel(editableItems); 
+        
+        if (editableItems.size() > 25) {            
+            selectedItemsToEdit = new ArrayList<>(); 
+            setActiveIndex(MultipleEditMenu.selection.ordinal());
+            multiEditMode = MultiEditMode.update;
+        } else {
+            selectedItemsToEdit = editableItems; 
+            setActiveIndex(MultipleEditMenu.updateItems.ordinal());
+            multiEditMode = MultiEditMode.update;
         }
 
         String desiredPath = getEntityApplicationViewPath() + "/" + EDIT_MULTIPLE_REDIRECT;
@@ -720,13 +736,6 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
     public void setSelectedItemsToEdit(List<Item> selectedItemsToEdit) {
         this.selectedItemsToEdit = selectedItemsToEdit;
-    }
-
-    public void onRowReorder(ReorderEvent event) {
-        int index = event.getFromIndex();
-        Item item = this.selectedItemsToEdit.remove(index);
-        int toIndex = event.getToIndex();
-        this.selectedItemsToEdit.add(toIndex, item);
     }
 
     public MultiEditPropertyRecord getCurrentMultiEditPropertyRecord() {

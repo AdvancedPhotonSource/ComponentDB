@@ -36,12 +36,6 @@ public class UserSettingController extends CdbEntityController<UserSettingContro
     @Override
     protected UserSettingFacade getEntityDbFacade() {
         return userSettingFacade;
-    }
-
-    @Override
-    protected UserSetting createEntityInstance() {
-        UserSetting userSetting = new UserSetting();
-        return userSetting;
     }   
 
     @Override

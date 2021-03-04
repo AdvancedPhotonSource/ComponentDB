@@ -18,6 +18,12 @@ public class ItemTypeControllerUtility extends ItemTypeCategoryControllerUtility
     protected ItemTypeFacade getEntityDbFacade() {
         return ItemTypeFacade.getInstance(); 
     }
+    
+    @Override
+    protected ItemType createItemTypeCategoryEntity() {
+        ItemType itemType = new ItemType();        
+        return itemType;
+    }
        
     @Override
     public String getEntityTypeName() {

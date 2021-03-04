@@ -14,17 +14,23 @@ See LICENSE file.
               value="#{entityController.currentViewIsTemplate 
                        ? '../../common/private/commonEmptyPage.xhtml' 
                        : '../../locatableItem/private/locatableItemListCustomizeObject.xhtml'}" />
+    
+    <ui:param name="includeDisplayInstalledQrId"
+              value="#{includeDisplayInstalledQrId != null ? includeDisplayInstalledQrId : true}" /> 
 
     <ui:define name="additionalItemSpecificColumns">        
         <ui:include src="#{locationObjectSrc}">
             <ui:param name="settingObject" value="#{entityController.settingObject}" /> 
         </ui:include>
 
-        <p:selectBooleanCheckbox id="#{entityTypeName}DisplayInstalledQrId" value="#{entityController.settingObject.displayInstalledQrId}"/>  
-        <h:outputLabel for="#{entityTypeName}DisplayInstalledQrId" value="Display Installed QrId " styleClass="dialogDataLabel"/>        
+        <p:selectBooleanCheckbox id="#{entityTypeName}DisplayInstalledQrId" 
+                                 rendered="#{includeDisplayInstalledQrId}"
+                                 value="#{entityController.settingObject.displayInstalledQrId}"/>  
+        <h:outputLabel for="#{entityTypeName}DisplayInstalledQrId" 
+                       rendered="#{includeDisplayInstalledQrId}"
+                       value="Display Installed QrId " styleClass="dialogDataLabel"/>        
     </ui:define>
 
-    <ui:define name="propertyValueCustomizeOptionsTab" />
     <ui:define name="rowExpansionCustomizeOptionsTab" /> 
     <ui:define name="otherCustomizeOptionsTab" /> 
 </ui:composition>

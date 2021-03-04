@@ -5,13 +5,14 @@
 import base64
 import os
 
-from cdbApi import ApiException, DomainApi, FileUploadObject, LocationItemsApi, LogApi
+from cdbApi import ApiException, DomainApi, FileUploadObject, LocationItemsApi, LogApi, PropertyValueApi
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
 from cdbApi.api.property_type_api import PropertyTypeApi
 from cdbApi.api.users_api import UsersApi
 from cdbApi.api.sources_api import SourcesApi
 from cdbApi.api.cable_catalog_items_api import CableCatalogItemsApi
+from cdbApi.api.cable_design_items_api import CableDesignItemsApi
 from cdbApi.api.machine_design_items_api import MachineDesignItemsApi
 from cdbApi.api_client import ApiClient
 from cdbApi.api.authentication_api import AuthenticationApi
@@ -28,11 +29,13 @@ class CdbApiFactory:
 		self.itemApi = ItemApi(api_client=self.apiClient)
 		self.downloadsApi = DownloadsApi(api_client=self.apiClient)
 		self.propertyTypeApi = PropertyTypeApi(api_client=self.apiClient)
+		self.propertyValueApi = PropertyValueApi(api_client=self.apiClient)
 		self.usersApi = UsersApi(api_client=self.apiClient)
 		self.domainApi = DomainApi(api_client=self.apiClient)
 		self.sourceApi = SourcesApi(api_client=self.apiClient)
 		self.logApi = LogApi(api_client=self.apiClient)
 		self.cableCatalogItemApi = CableCatalogItemsApi(api_client=self.apiClient)
+		self.cableDesignItemApi = CableDesignItemsApi(api_client=self.apiClient)
 		self.machineDesignItemApi = MachineDesignItemsApi(api_client=self.apiClient)
 		self.locationItemApi = LocationItemsApi(api_client=self.apiClient)
 
@@ -50,6 +53,9 @@ class CdbApiFactory:
 	def getPropertyTypeApi(self):
 		return self.propertyTypeApi
 
+	def getPropertyValueApi(self):
+		return self.propertyValueApi
+
 	def getUsersApi(self):
 		return self.usersApi
 
@@ -61,6 +67,9 @@ class CdbApiFactory:
 
 	def getCableCatalogItemApi(self):
 		return self.cableCatalogItemApi
+
+	def getCableDesignItemApi(self):
+		return self.cableDesignItemApi
 
 	def getMachineDesignItemApi(self):
 		return self.machineDesignItemApi

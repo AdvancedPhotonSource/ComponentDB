@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 
 /**
  *
@@ -16,6 +17,11 @@ public class ItemElementRelationshipControllerUtility extends CdbEntityControlle
     @Override
     protected ItemElementRelationshipFacade getEntityDbFacade() {
         return ItemElementRelationshipFacade.getInstance(); 
+    }
+
+    @Override
+    public ItemElementRelationship createEntityInstance(UserInfo sessionUser) {
+        return new ItemElementRelationship(); 
     }
     
     @Override

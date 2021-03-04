@@ -89,9 +89,7 @@ public class ItemDomainMachineDesignController
     private MachineDesignConnectorCableMapperItem mdccmi;
     private List<MachineDesignConnectorListObject> mdConnectorList;
 
-    private TreeNode searchResultsTreeNode;
-
-    private static ItemDomainMachineDesignController apiInstance;
+    private TreeNode searchResultsTreeNode;   
 
     // <editor-fold defaultstate="collapsed" desc="Favorites toggle variables">
     private boolean favoritesShown = false;
@@ -222,26 +220,8 @@ public class ItemDomainMachineDesignController
     @EJB
     ItemDomainMachineDesignFacade itemDomainMachineDesignFacade;
 
-    public static ItemDomainMachineDesignController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);
-        } else {
-            return getApiInstance();
-        }
-    }
-
-    public static synchronized ItemDomainMachineDesignController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainMachineDesignController();
-            apiInstance.prepareApiInstance();
-        }
-        return apiInstance;
-    }
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-        itemDomainMachineDesignFacade = ItemDomainMachineDesignFacade.getInstance();
+    public static ItemDomainMachineDesignController getInstance() {        
+        return (ItemDomainMachineDesignController) SessionUtility.findBean(controllerNamed);        
     }
 
     public boolean isItemInventory(Item item) {
@@ -394,14 +374,14 @@ public class ItemDomainMachineDesignController
 
     public TreeNode getMachineDesignTreeRootTreeNode() {
         if (machineDesignTreeRootTreeNode == null) {
-            machineDesignTreeRootTreeNode = loadMachineDesignRootTreeNode(false);
+            machineDesignTreeRootTreeNode = loadMachineDesignRootTreeNode(false, cablesShown, false);
         }
         return machineDesignTreeRootTreeNode;
     }
 
     public TreeNode getMachineDesignTemplateRootTreeNode() {
         if (machineDesignTemplateRootTreeNode == null) {
-            machineDesignTemplateRootTreeNode = loadMachineDesignRootTreeNode(true);
+            machineDesignTemplateRootTreeNode = loadMachineDesignRootTreeNode(true, cablesShown, false);
         }
         return machineDesignTemplateRootTreeNode;
     }
@@ -420,14 +400,14 @@ public class ItemDomainMachineDesignController
             // get latest version
             parentMachineDesign = findById(parentMachineDesign.getId());
 
-            expandTreeChildren(parentMachineDesign, subAssemblyRootTreeNode);
+            expandTreeChildren(parentMachineDesign, subAssemblyRootTreeNode, cablesShown, false);
             subAssemblyRootTreeNode.getChildren().get(0).setExpanded(true);
 
         }
         return subAssemblyRootTreeNode;
     }
 
-    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate) {
+    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate, Boolean showCables, Boolean showConnectorsOnly) {
         TreeNode rootTreeNode = new DefaultTreeNode();
         List<ItemDomainMachineDesign> itemsWithoutParents
                 = getItemsWithoutParents();
@@ -446,14 +426,14 @@ public class ItemDomainMachineDesignController
             }
 
             if (skip == false) {
-                expandTreeChildren(item, rootTreeNode);
+                expandTreeChildren(item, rootTreeNode, showCables, showConnectorsOnly);
             }
         }
 
         return rootTreeNode;
     }
 
-    protected void expandTreeChildren(Item item, TreeNode rootTreeNode) {
+    protected void expandTreeChildren(Item item, TreeNode rootTreeNode, Boolean showCables, Boolean showConnectorsOnly) {
         ItemElement element = new ItemElement();
         ItemElement selfElement = item.getSelfElement();
         Float sortOrder = selfElement.getSortOrder();
@@ -463,10 +443,10 @@ public class ItemDomainMachineDesignController
         rootTreeNode.getChildren().add(parent);
         parent.setParent(rootTreeNode);
         setTreeNodeTypeMachineDesignTreeList(parent);
-        expandTreeChildren(parent);
+        expandTreeChildren(parent, showCables, showConnectorsOnly);
     }
 
-    private void expandTreeChildren(TreeNode treeNode) {
+    private void expandTreeChildren(TreeNode treeNode, Boolean showCables, Boolean showConnectorsOnly) {
         Object data = treeNode.getData();
         ItemElement ie = (ItemElement) data;
         Item item = ie.getContainedItem();
@@ -486,7 +466,7 @@ public class ItemDomainMachineDesignController
                 TreeNode newTreeNode = new DefaultTreeNode(itemElement);
                 Item containedItem = itemElement.getContainedItem();
 
-                if (cablesShown) {
+                if (showCables || showConnectorsOnly) {
                     if (containedItem instanceof ItemDomainMachineDesign) {
                         List<MachineDesignConnectorListObject> connList = getMdConnectorListForItem((ItemDomainMachineDesign) containedItem);
 
@@ -504,14 +484,16 @@ public class ItemDomainMachineDesignController
                                 parentNode = connectorNode;
                             }
 
-                            if (connObj.getCableItem() != null) {
-                                ItemDomainCableDesign cableItem = connObj.getCableItem();
-                                ItemElement mockIE = new ItemElement();
-                                mockIE.setContainedItem(cableItem);
+                            if (showCables) {
+                                if (connObj.getCableItem() != null) {
+                                    ItemDomainCableDesign cableItem = connObj.getCableItem();
+                                    ItemElement mockIE = new ItemElement();
+                                    mockIE.setContainedItem(cableItem);
 
-                                TreeNode cableNode = new DefaultTreeNode(mockIE);
-                                cableNode.setType(ItemDomainName.cableDesign.getValue());
-                                parentNode.getChildren().add(cableNode);
+                                    TreeNode cableNode = new DefaultTreeNode(mockIE);
+                                    cableNode.setType(ItemDomainName.cableDesign.getValue());
+                                    parentNode.getChildren().add(cableNode);
+                                }
                             }
                         }
                     }
@@ -530,7 +512,7 @@ public class ItemDomainMachineDesignController
                         }
                     }
                     if (!skipExpansion) {
-                        expandTreeChildren(newTreeNode);
+                        expandTreeChildren(newTreeNode, showCables, showConnectorsOnly);
                     }
                 } else {
                     newTreeNode.setType("Blank");
@@ -731,12 +713,6 @@ public class ItemDomainMachineDesignController
         currentMachineDesignListRootTreeNode = null;
     }
 
-    @Override
-    public ItemDomainMachineDesign createEntityInstance() {
-        ItemDomainMachineDesign item = super.createEntityInstance();
-        return item;
-    }
-
     public ItemDomainMachineDesign createEntityInstanceForDualTreeView() {
         ItemDomainMachineDesign newInstance = createEntityInstance();
 
@@ -759,12 +735,11 @@ public class ItemDomainMachineDesignController
         return newInstance;
     }
 
-    public void prepareAddPlaceholder() {
+    public void prepareAddPlaceholder() {        
+        ItemDomainMachineDesign newItem = createEntityInstanceForDualTreeView();
         prepareAddNewMachineDesignListConfiguration();
 
         displayAddMDPlaceholderListConfigurationPanel = true;
-        ItemDomainMachineDesign newItem = createEntityInstanceForDualTreeView();
-
         currentEditItemElement.setContainedItem(newItem);
     }
 
@@ -1508,7 +1483,7 @@ public class ItemDomainMachineDesignController
         searchResultsTreeNode = null;
     }
 
-    public synchronized TreeNode getSearchResults(String searchString, boolean caseInsensitive) {
+    public TreeNode getSearchResults(String searchString, boolean caseInsensitive) {
         this.performEntitySearch(searchString, caseInsensitive);
         return getHierarchicalSearchResults();
     }
@@ -1918,7 +1893,7 @@ public class ItemDomainMachineDesignController
             favoriteMachineDesignTreeRootTreeNode.getChildren().add(parent);
             parent.setParent(favoriteMachineDesignTreeRootTreeNode);
             setTreeNodeTypeMachineDesignTreeList(parent);
-            expandTreeChildren(parent);
+            expandTreeChildren(parent, cablesShown, false);
         }
 
         return favoriteMachineDesignTreeRootTreeNode;
@@ -2644,11 +2619,6 @@ public class ItemDomainMachineDesignController
     }
 
     @Override
-    protected ItemDomainMachineDesign instenciateNewItemDomainEntity() {
-        return new ItemDomainMachineDesign();
-    }
-
-    @Override
     protected ItemDomainMachineDesignSettings createNewSettingObject() {
         return new ItemDomainMachineDesignSettings(this);
     }
@@ -2808,7 +2778,7 @@ public class ItemDomainMachineDesignController
         }
     }
 
-    public ValidInfo collectItemsForDeletion(
+    public void collectItemsForDeletion(
             ItemDomainMachineDesign parentItem,
             List<ItemDomainMachineDesign> collectedItems,
             List<ItemElement> collectedElements,
@@ -2822,25 +2792,11 @@ public class ItemDomainMachineDesignController
         for (ItemElement ie : displayList) {
             Item childItem = ie.getContainedItem();
             if (childItem instanceof ItemDomainMachineDesign) {
-
-                List<ItemElement> childMemberList = childItem.getItemElementMemberList();
-                if (childMemberList.size() > 1) {
-                    // this code assumes that a child machine design item has only one 'membership'
-                    isValid = false;
-                    validString = "item: " + childItem.getName() + " is member of multiple assemblies";
-                    return new ValidInfo(isValid, validString);
-
-                } else {
-                    // depth first ordering is important here, otherwise there are merge errors for deleted items
-                    ValidInfo validInfo
-                            = collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false, rootRelationshipOnly);
-                    if (!validInfo.isValid()) {
-                        return validInfo;
-                    }
-                    collectedItems.add((ItemDomainMachineDesign) childItem);
-                    if (!rootRelationshipOnly) {
-                        collectedElements.add(ie);
-                    }
+                // depth first ordering is important here, otherwise there are merge errors for deleted items
+                collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false, rootRelationshipOnly);
+                collectedItems.add((ItemDomainMachineDesign) childItem);
+                if (!rootRelationshipOnly) {
+                    collectedElements.add(ie);
                 }
             }
         }
@@ -2850,18 +2806,11 @@ public class ItemDomainMachineDesignController
 
             // mark ItemElement for relationship from parent to its container for deletion
             List<ItemElement> memberList = parentItem.getItemElementMemberList();
-            if (memberList.size() > 1) {
-                // parentItem has more than one membership
-                isValid = false;
-                validString = "item: " + parentItem.getName() + " is member of multiple assemblies";
-                return new ValidInfo(isValid, validString);
-            } else if (memberList.size() == 1) {
+            if (memberList.size() == 1) {
                 ItemElement containerRelElement = memberList.get(0);
                 collectedElements.add(containerRelElement);
             }
         }
-
-        return new ValidInfo(isValid, validString);
     }
     
     public Boolean getMoveToTrashAllowed() {
@@ -2905,11 +2854,7 @@ public class ItemDomainMachineDesignController
         // and in moveToTrash for executing the operation
         moveToTrashItemsToUpdate = new ArrayList<>();
         moveToTrashElementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(itemToDelete, moveToTrashItemsToUpdate, moveToTrashElementsToDelete, true, true);
-        if (!validInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Could not delete: " + itemToDelete + " - " + validInfo.getValidString());
-            return;
-        }
+        collectItemsForDeletion(itemToDelete, moveToTrashItemsToUpdate, moveToTrashElementsToDelete, true, true);
         
         // check each item for restriction violations
         moveToTrashAllowed = true;
@@ -2924,6 +2869,14 @@ public class ItemDomainMachineDesignController
             if ((templateInstances != null) && (templateInstances.size() > 0)) {
                 moveToTrashAllowed = false;
                 errorString = errorString + "Item is a template with instances. ";
+            }
+            
+            // don't allow move to trash for item in multiple assemblies
+            List<ItemElement> childMemberList = itemToCheck.getItemElementMemberList();
+            if (childMemberList.size() > 1) {
+                // this code assumes that a child machine design item has only one 'membership'
+                moveToTrashAllowed = false;
+                errorString = errorString + "Item is a child of multiple parent items or templates (e.g., it might be an unfulfilled template placeholder).";
             }
             
             // check for various relationships

@@ -38,12 +38,7 @@ public class ItemMemberViewController extends ItemController<ItemGenericControll
     public String getItemIdentifier2Title() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    @Override
-    protected Item createEntityInstance() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
+    
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -93,11 +88,6 @@ public class ItemMemberViewController extends ItemController<ItemGenericControll
     public Domain getDefaultDomain() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
-    @Override
-    public List<Item> getItemList() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
     public String getDefaultDomainName() {
@@ -117,11 +107,6 @@ public class ItemMemberViewController extends ItemController<ItemGenericControll
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected Item instenciateNewItemDomainEntity() {
-        return new Item();
     }
 
     @Override

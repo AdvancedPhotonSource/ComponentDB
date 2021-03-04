@@ -7,10 +7,14 @@ package gov.anl.aps.cdb.rest.routes;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
+import gov.anl.aps.cdb.rest.entities.ItemDomainCableCatalogIdListRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -70,4 +74,32 @@ public class CableCatalogItemRoute extends BaseRoute {
         }
         return itemList.get(0);
     }
+
+    @POST
+    @Path("/IdList")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<Integer> getCableTypeIdList(ItemDomainCableCatalogIdListRequest request) {
+        List<String> nameList = request.getNameList();
+        LOGGER.debug("Fetching list of cable catalog id's by name list size: " + nameList.size());
+        List<Integer> idList = new ArrayList<>();
+        for (String name : nameList) {
+            if ((name != null) && (!name.isBlank())) {
+                List<ItemDomainCableCatalog> itemList = facade.findByName(name);
+                if (itemList == null || itemList.isEmpty()) {
+                    // use 0 to indicate that there is no item with specified name
+                    idList.add(0);
+                } else if (itemList.size() > 1) {
+                    // use -1 to indicate that there are multiple items with same name
+                    idList.add(-1);
+                } else {
+                    idList.add(itemList.get(0).getId());
+                }
+            } else {
+                idList.add(0);
+            }
+        }        
+        return idList;
+    }
+
 }

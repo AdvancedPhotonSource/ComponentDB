@@ -11,6 +11,8 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.RelationshipTypeController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +61,11 @@ public class ItemDomainCableDesign extends Item {
     @Override
     public Item createInstance() {
         return new ItemDomainCableDesign();
+    } 
+
+    @Override
+    public ItemDomainCableDesignControllerUtility getItemControllerUtility() {
+        return new ItemDomainCableDesignControllerUtility();
     }
     
     public List<ItemElementRelationship> getDeletedRelationshipList() {
@@ -124,10 +131,16 @@ public class ItemDomainCableDesign extends Item {
         ierList.add(ier);
     }
 
-    private void addCableRelationship(Item endpoint, float sortOrder) {
+    public ItemElementRelationship addCableRelationship(Item endpoint, Float sortOrder) {
         
         if (endpoint == null) {
-            return;
+            return null;
+        }
+        
+        // calculate sortOrder if not provided
+        if (sortOrder == null) {
+            float maxSortOrder = this.getMaxRelationshipSortOrder();
+            sortOrder = maxSortOrder + 1;
         }
         
         // create relationships from cable to endpoints
@@ -142,6 +155,8 @@ public class ItemDomainCableDesign extends Item {
         // Add appropriate item relationships to model.
         addItemElementRelationshipToItem(endpoint, relationship, false);
         addItemElementRelationshipToItem(this, relationship, true);
+        
+        return relationship;
     }
     
     private void removeCableRelationship(
@@ -166,14 +181,19 @@ public class ItemDomainCableDesign extends Item {
             removeCableRelationship(cableRelationship, isImport);
         } else {
             // update existing relationship with new endpoint
-            setEndpointItemInRelationship(itemEndpoint, cableRelationship);
+            updateCableRelationship(cableRelationship, itemEndpoint, null, null);
         }
     }
     
-    private void setEndpointItemInRelationship(Item itemEndpoint, ItemElementRelationship cableRelationship) {
+    public void updateCableRelationship(
+            ItemElementRelationship cableRelationship, 
+            Item itemEndpoint,
+            ItemConnector endpointConnector,
+            ItemConnector cableConnector) {
+        
         cableRelationship.setFirstItemElement(itemEndpoint.getSelfElement());
-        // null out connector too, for when we add support for port-level connections
-        cableRelationship.setFirstItemConnector(null);
+        cableRelationship.setFirstItemConnector(endpointConnector);
+        cableRelationship.setSecondItemConnector(cableConnector);
     }
 
     public void setEndpoint(Item itemEndpoint, float sortOrder, boolean isImport) {
@@ -221,39 +241,6 @@ public class ItemDomainCableDesign extends Item {
         }
     }
 
-    /**
-     * Updates oldEndpoint to newEndpoint.
-     *
-     * @param oldEndpoint
-     * @param newEndpoint
-     */
-    public Boolean updateEndpoint(Item oldEndpoint, Item newEndpoint) {
-
-        ItemElement selfElement = this.getSelfElement();
-        List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
-
-        if (ierList != null) {
-
-            RelationshipType cableIerType
-                    = RelationshipTypeFacade.getInstance().findByName(
-                            ItemElementRelationshipTypeNames.itemCableConnection.getValue());
-
-            // find cable relationship for old endpoint
-            ItemElementRelationship cableRelationship = ierList.stream()
-                    .filter(ier -> (ier.getRelationshipType().getName().equals(cableIerType.getName()))
-                    && (ier.getFirstItemElement().equals(oldEndpoint.getSelfElement())))
-                    .findAny()
-                    .orElse(null);
-
-            // update cable relationship to new endpoint
-            if (cableRelationship != null) {
-                setEndpointItemInRelationship(newEndpoint, cableRelationship);
-            }
-        }
-
-        return true;
-    }
-
     public List<Item> getEndpointList() {
         ItemElement selfElement = this.getSelfElement();
         List<ItemElementRelationship> ierList
@@ -294,6 +281,28 @@ public class ItemDomainCableDesign extends Item {
             }
         }
         return null;
+    }
+
+    public float getMaxRelationshipSortOrder() {
+        float maxSortOrder = 0;
+        ItemElement selfElement = this.getSelfElement();
+        List<ItemElementRelationship> ierList
+                = selfElement.getItemElementRelationshipList1();
+        if (ierList != null) {
+            // find just the cable relationship items
+            RelationshipType cableIerType
+                    = RelationshipTypeFacade.getInstance().findByName(
+                            ItemElementRelationshipTypeNames.itemCableConnection.getValue());
+            if (cableIerType != null) {
+                for (ItemElementRelationship rel : ierList) {
+                    if ((rel.getRelationshipType().getName().equals(cableIerType.getName()))
+                            && (rel.getSecondSortOrder() > maxSortOrder)) {
+                        maxSortOrder = rel.getSecondSortOrder();
+                    }
+                }
+            }
+        }
+        return maxSortOrder;
     }
 
     /**

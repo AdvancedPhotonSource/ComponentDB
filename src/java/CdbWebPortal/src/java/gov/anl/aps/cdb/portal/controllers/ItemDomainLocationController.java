@@ -57,8 +57,6 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     private boolean renderLocationSelectionDialog = false;
     private boolean renderLocationInplaceEditTieredMenu = false;
 
-    private static ItemDomainLocationController apiInstance;
-
     private static DefaultMenuModel parentSelectionMenuModel = null;
 
     @EJB
@@ -69,36 +67,10 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
     public ItemDomainLocationController() {
         super();
-    }
+    }   
 
-    public static synchronized ItemDomainLocationController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainLocationController();
-            apiInstance.prepareApiInstance();
-        }
-        return apiInstance;
-    }
-
-    @Override
-    public ItemDomainLocation createEntityInstance() {
-        ItemDomainLocation item = super.createEntityInstance();
-        return item;
-    }
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-
-        domainFacade = DomainFacade.getInstance();
-        itemDomainLocationFacade = ItemDomainLocationFacade.getInstance();
-    }
-
-    public static ItemDomainLocationController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);
-        } else {
-            return getApiInstance();
-        }
+    public static ItemDomainLocationController getInstance() {        
+        return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);        
     }
 
     @Override
@@ -358,47 +330,15 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     }
     
     public void updateParentForItem(ItemDomainLocation item, Item newParentItem) {
-        updateParentForItem(item, newParentItem, null);
-    }
-    
-    public void updateParentForItem(ItemDomainLocation item, Item newParentItem, UserInfo userInfo) {
-        if (newParentItem instanceof ItemDomainLocation == false) {
-            return;
+        UserInfo user = SessionUtility.getUser();
+        ItemDomainLocationControllerUtility controllerUtility = getControllerUtility();
+        try {
+            controllerUtility.updateParentForItem(item, newParentItem, user);
+        } catch (CdbException ex) {
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+            logger.error(ex);
         }
-        ItemDomainLocation newParent = (ItemDomainLocation) newParentItem;
-
-        ItemDomainLocation ittrParentItem = newParent;
-        while (ittrParentItem != null) {            
-            if (item.equals(ittrParentItem)) {
-                SessionUtility.addErrorMessage("Error", "Cannot set location of item as itself or its child.");
-                return;
-            }
-            
-            ittrParentItem = ittrParentItem.getParentItem();
-        }
-
-        ItemElement member = item.getParentItemElement();
-        List<ItemElement> itemElementMemberList = item.getItemElementMemberList();                   
-
-        if (member != null) {            
-            String elementName = getControllerUtility().generateUniqueElementNameForItem(newParent);
-
-            member.setName(elementName);
-            member.setParentItem(newParent);
-        } else if (itemElementMemberList.isEmpty()) {
-            ItemElement createItemElement = null;
-            ItemDomainLocationControllerUtility controllerUtility = getControllerUtility();
-            if (userInfo == null) {
-                userInfo = SessionUtility.getUser();                
-            } 
-            
-            createItemElement = controllerUtility.createItemElement(newParent, userInfo);             
-            createItemElement.setContainedItem(item);
-            itemElementMemberList.add(createItemElement); 
-        } else {
-            SessionUtility.addErrorMessage("Error", "Cannot update parent, item does not have one membership.");
-        }
-    }
+    }        
 
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
@@ -468,12 +408,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return null;
-    }
-
-    @Override
-    protected ItemDomainLocation instenciateNewItemDomainEntity() {
-        return new ItemDomainLocation();
-    }
+    }   
 
     @Override
     protected ItemDomainLocationFacade getEntityDbFacade() {

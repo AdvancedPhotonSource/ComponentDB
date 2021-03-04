@@ -54,5 +54,10 @@ public class SourceControllerUtility extends CdbEntityControllerUtility<Source, 
     public String getEntityTypeName() {
         return "source";
     }   
+
+    @Override
+    public Source createEntityInstance(UserInfo sessionUser) {
+        return new Source();
+    }
     
 }

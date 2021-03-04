@@ -7,20 +7,24 @@ package gov.anl.aps.cdb.rest.routes;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
-import gov.anl.aps.cdb.portal.controllers.ItemController;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
+import gov.anl.aps.cdb.rest.entities.ItemDomanMachineDesignIdListRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -80,34 +84,12 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         return itemList;
     }
 
-    /**
-     * Searches the top-level machine design hierarchy "root" node for children
-     * with specified name.
-     *
-     * @throws ObjectNotFound
-     */
-    @GET
-    @Path("/ByRootAndName/{root}/{container}/{name}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<ItemDomainMachineDesign> getMdInHierarchyByName(
-            @PathParam("root") String rootItemName, 
-            @PathParam("container") String containerItemName, 
-            @PathParam("name") String itemName) throws InvalidArgument {
-        
-        LOGGER.debug("Fetching item in hiearchy: " + rootItemName + " in container: " + containerItemName + " named: " + itemName);
-        
-        if ((rootItemName == null) || (rootItemName.isBlank())) {
-            throw new InvalidArgument(("must specify root item name"));
-        }
-        
-        if ((containerItemName == null) || (containerItemName.isBlank())) {
-            throw new InvalidArgument(("must specify container item name"));
-        }
-        
+    private List<ItemDomainMachineDesign> itemsWithContainerHierarchy(String rootItemName, String containerItemName, String itemName) {
+        List<ItemDomainMachineDesign> resultList = new ArrayList<>();
         List<ItemDomainMachineDesign> itemList = facade.findByName(itemName);
-
-        // eliminate items whose top-level parent is not the specified "root" node
-        List<ItemDomainMachineDesign> result = new ArrayList<>();
+        if (itemList.isEmpty()) {
+            itemList = facade.findByAlternateName(itemName);
+        }
         for (ItemDomainMachineDesign item : itemList) {
 
             // walk up hierarchy to top-level "root" parent
@@ -133,14 +115,99 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
                 }
                 
                 parentItem = parentItem.getParentMachineDesign();
-            }
-
-            if (foundContainer && foundRoot) {
-                result.add(item);
+                
+                if (foundContainer && foundRoot) {
+                    resultList.add(item);
+                    break;
+                }
             }
         }
+        return resultList;
+    }
 
-        return result;
+    /**
+     * Searches the top-level machine design hierarchy "root" node for children
+     * with specified name.
+     *
+     * @throws ObjectNotFound
+     */
+    @GET
+    @Path("/ByHierarchy/{root}/{container}/{name}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainMachineDesign> getMdInHierarchyByName(
+            @PathParam("root") String rootItemName, 
+            @PathParam("container") String containerItemName, 
+            @PathParam("name") String itemName) throws InvalidArgument {
+        
+        LOGGER.debug("Fetching item in hiearchy: " + rootItemName + " in container: " + containerItemName + " named: " + itemName);
+        
+        if ((rootItemName == null) || (rootItemName.isBlank())) {
+            throw new InvalidArgument(("must specify root item name"));
+        }
+        
+        if ((containerItemName == null) || (containerItemName.isBlank())) {
+            throw new InvalidArgument(("must specify container item name"));
+        }
+        
+        if ((itemName == null) || (itemName.isBlank())) {
+            throw new InvalidArgument(("must specify item name"));
+        }
+        
+        return itemsWithContainerHierarchy(rootItemName, containerItemName, itemName);
+    }
+    
+    @POST
+    @Path("/IdList")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public List<Integer> getHierarchyIdList(ItemDomanMachineDesignIdListRequest request) throws InvalidArgument {
+        
+        Instant start = Instant.now();
+        
+        List<String> itemNames = request.getItemNames();
+        List<String> rackNames = request.getRackNames();
+        String rootItemName = request.getRootName();
+        
+        if ((rootItemName == null) || (rootItemName.isBlank())) {
+            throw new InvalidArgument("must specify root item name");
+        }
+        
+        if (itemNames.size() != rackNames.size()) {
+            throw new InvalidArgument("list sizes must match for item and rack names");
+        }
+        
+        LOGGER.debug("Fetching list of machine item id's by name list size: " 
+                + itemNames.size());
+        
+        List<Integer> idList = new ArrayList<>(itemNames.size());
+        for (int listIndex = 0; listIndex < itemNames.size(); listIndex++) {
+            String itemName = itemNames.get(listIndex);
+            String containerItemName = rackNames.get(listIndex);
+            if (((itemName != null) && (!itemName.isBlank()))
+                    && ((containerItemName != null) && (!containerItemName.isBlank()))) {
+                
+                List<ItemDomainMachineDesign> mdItems = itemsWithContainerHierarchy(
+                        rootItemName, containerItemName, itemName);
+                if (mdItems.size() == 1) {
+                    // one matching item
+                    idList.add(mdItems.get(0).getId());
+                } else if (mdItems.size() == 0) {
+                    // no matching items
+                    idList.add(0);
+                } else {
+                    // multiple matching items
+                    idList.add(-1);
+                }
+            } else {
+                idList.add(0);
+            }
+        }
+        
+        Instant end = Instant.now();
+        Duration elapsed = Duration.between(start, end);
+        LOGGER.debug("Duration: " + elapsed.toSeconds());
+        
+        return idList;
     }
 
     @GET
@@ -149,7 +216,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     public List<ItemDomainMdSearchResult> getDetailedMdSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
         LOGGER.debug("Performing a detailed machine design item search for search query: " + searchText);
 
-        ItemDomainMachineDesignController mdInstance = ItemDomainMachineDesignController.getApiInstance();
+        ItemDomainMachineDesignControllerUtility mdInstance = new ItemDomainMachineDesignControllerUtility(); 
 
         TreeNode rootNode = mdInstance.getSearchResults(searchText, true);
 
@@ -185,9 +252,9 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         
         mdItem.setAssignedItem(assignedItem);
         
-        ItemController itemDomainController = mdItem.getItemDomainController();
+        ItemControllerUtility itemControllerUtility = mdItem.getItemControllerUtility();
         
-        itemDomainController.updateFromApi(mdItem, currentUser);
+        itemControllerUtility.update(mdItem, currentUser);
         
         return getMachineDesignItemById(mdItemId);
     }

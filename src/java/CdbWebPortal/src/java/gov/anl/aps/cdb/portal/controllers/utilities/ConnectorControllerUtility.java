@@ -17,6 +17,11 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
  * @author darek
  */
 public class ConnectorControllerUtility extends CdbEntityControllerUtility<Connector, ConnectorFacade> {
+        
+    @Override
+    public Connector createEntityInstance(UserInfo sessionUser) {
+        return new Connector(); 
+    }
     
     @Override
     protected void prepareEntityDestroy(Connector connector, UserInfo userInfo) throws CdbException {

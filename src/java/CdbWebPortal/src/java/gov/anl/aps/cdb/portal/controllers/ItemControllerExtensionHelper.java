@@ -11,7 +11,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import java.util.List;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
@@ -499,11 +498,6 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     @Override
     public void performCreateOperations(Item item) throws CdbException, RuntimeException {
         getItemController().performCreateOperations(item);
-    }
-    
-    @Override
-    public void addCdbEntityWarningSystemLog(String warningMessage, Exception exception, CdbEntity entity) {
-        getItemController().addCdbEntityWarningSystemLog(warningMessage, exception, entity);
     }
     
     @Override

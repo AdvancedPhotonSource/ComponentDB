@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import java.util.List;
 
 /**
  *
@@ -56,6 +57,16 @@ public class ItemGenericControllerUtility extends ItemControllerUtility<Item, It
     @Override
     public String getEntityTypeName() {
         return "item"; 
+    }
+
+    @Override
+    public List<Item> getItemList() {
+        return itemFacade.findAll(); 
+    }
+    
+    @Override
+    protected Item instenciateNewItemDomainEntity() {
+        return new Item();         
     }
     
 }

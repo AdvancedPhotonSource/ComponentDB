@@ -689,4 +689,15 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
     }
 
+    public List<ItemDomainEntity> findByItemIdentifier1(String value) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByItemIdentifier1")
+                    .setParameter("itemIdentifier1", value)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
+
 }
