@@ -854,10 +854,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     public List<CableDesignConnectionListObject> getConnectionListForCurrent() {
-        if (connectionListForCurrent == null) {
-            ItemDomainCableDesign item = getCurrent();
-            connectionListForCurrent = getConnectionListForItem(item);
-        }
+        refreshConnectionListForCurrent();
         return connectionListForCurrent;
     }
     
