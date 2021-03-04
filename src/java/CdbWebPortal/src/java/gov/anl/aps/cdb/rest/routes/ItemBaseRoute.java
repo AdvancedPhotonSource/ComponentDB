@@ -54,6 +54,9 @@ public abstract class ItemBaseRoute extends BaseRoute {
             if (isUserAdmin(user)) {
                 return true;
             }
+            if (isUserMaintainer(user)) {
+                return true; 
+            }
             return AuthorizationUtility.isEntityWriteableByUser(item, user);
         }
         return false;

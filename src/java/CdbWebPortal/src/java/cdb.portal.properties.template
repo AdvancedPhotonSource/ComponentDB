@@ -2,6 +2,7 @@
 # To change this template file, choose Tools | Templates
 # and open the template in the editor.
 cdb.portal.adminGroupList=CDB_ADMIN
+cdb.portal.maintainerGroupList=CDB_MAINTAINER
 
 # '%s' string will be replaced by the actual username
 cdb.portal.ldapUrl=CDB_LDAP_AUTH_SERVER_URL

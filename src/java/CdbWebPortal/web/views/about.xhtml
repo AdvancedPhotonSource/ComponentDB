@@ -107,14 +107,19 @@ See LICENSE file.
             <ui:include src="plugins/private/aboutPagePluginDialogs.xhtml" />
         </ui:fragment>
 
-        <ui:fragment rendered="#{loginController.loggedInAsAdmin}">
+        <ui:fragment rendered="#{loginController.loggedInAsAdmin || loginController.loggedInAsMaintainer}">
             <p/>
             <div class="sectionTitle">
                 <h2>Administrative Tools</h2>
                 <h:form id="adminToolsForm">
                     <p:panelGrid columns="1">
                         <div class="commandLink">
-                            <h:commandLink action="#{loginController.dropAdminRole()}" value="Drop Administrator Role"></h:commandLink>
+                            <h:commandLink action="#{loginController.dropAdminRole()}" 
+                                           rendered="#{loginController.loggedInAsAdmin}"
+                                           value="Drop Administrator Role"/>
+                            <h:commandLink action="#{loginController.dropMaintainerRole()}" 
+                                           rendered="#{loginController.loggedInAsMaintainer}"
+                                           value="Drop Maintainer Role"/>
                         </div>
                     </p:panelGrid>
                 </h:form>
