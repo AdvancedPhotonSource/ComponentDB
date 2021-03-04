@@ -145,6 +145,7 @@ class PreImportHelper(ABC):
         self.input_handlers = []
         self.api = None
         self.validate_only = False
+        self.ignore_existing = False
         self.info_file = None
         self.first_data_row = None
         self.last_data_row = None
@@ -261,6 +262,12 @@ class PreImportHelper(ABC):
             self.validate_only = True
         else:
             self.validate_only = False
+
+        config_value = get_config_resource(config, section, 'ignoreExisting', False)
+        if config_value in ("True", "TRUE", "true", "Yes", "YES", "yes", "On", "ON", "on", "1"):
+            self.ignore_existing = True
+        else:
+            self.ignore_existing = False
 
         self.first_data_row = int(get_config_resource(config, section, 'firstDataRow', False))
         self.last_data_row = int(get_config_resource(config, section, 'lastDataRow', False))
@@ -744,6 +751,27 @@ class CableTypeIdHandler(InputHandler):
         self.id_manager = id_manager
         self.missing_cable_type_list = missing_cable_type_list
 
+    @staticmethod
+    def get_id_list(api, name_list, description):
+
+        name_list = list(name_list)
+
+        print("fetching %d cable type id's for %s" % (len(name_list), description))
+
+        try:
+            request_obj = ItemDomainCableCatalogIdListRequest(name_list=name_list)
+            id_list = api.getCableCatalogItemApi().get_cable_type_id_list(item_domain_cable_catalog_id_list_request=request_obj)
+        except ApiException as ex:
+            fatal_error("unknown api exception getting list of cable type ids for %s" % description)
+
+        # list sizes should match
+        if len(name_list) != len(id_list):
+            fatal_error("api list size mismatch getting list of cable type ids for %s" % description)
+
+        print("fetched %d cable type id's for %s" % (len(id_list), description))
+
+        return id_list
+
     def initialize(self, api, sheet, first_row, last_row):
         self.initialize_id_list(api, sheet, first_row, last_row)
 
@@ -756,22 +784,7 @@ class CableTypeIdHandler(InputHandler):
             if val is not None and val != "":
                 cable_type_names.add(val)
 
-        # convert set to list so we can zip to result list
-        cable_type_names = list(cable_type_names)
-        print("fetching %d cable type id's" % len(cable_type_names))
-
-        # invoke api to get list of id's corresponding to list of names: 0 if doesn't exist, -1 if multiple matches, id otherwise
-        try:
-            request_obj = ItemDomainCableCatalogIdListRequest(name_list=cable_type_names)
-            id_list = api.getCableCatalogItemApi().get_cable_type_id_list(item_domain_cable_catalog_id_list_request=request_obj)
-        except ApiException as ex:
-            fatal_error("unknown api exception getting list of cable type ids")
-
-        # list sizes should match
-        if len(cable_type_names) != len(id_list):
-            fatal_error("api list size mismatch getting list of cable type ids")
-
-        print("fetched %d cable type id's" % len(id_list))
+        id_list = CableTypeIdHandler.get_id_list(api, cable_type_names, "item reference lookup")
 
         self.id_manager.set_dict(dict(zip(cable_type_names, id_list)))
 
@@ -790,12 +803,13 @@ class CableTypeIdHandler(InputHandler):
 
 class CableTypeExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, column_index, api, existing_cable_types):
+    def __init__(self, column_key, column_index, ignore_existing, api, existing_cable_types):
         super().__init__(column_key)
         self.column_index = column_index
+        self.ignore_existing = ignore_existing
         self.existing_cable_types = existing_cable_types
         self.api = api
-        self.name_id_dict = {}
+        self.id_mgr = IdManager()
 
     def initialize(self, api, sheet, first_row, last_row):
 
@@ -806,41 +820,35 @@ class CableTypeExistenceHandler(InputHandler):
             if val is not None and val != "":
                 cable_type_names.append(val)
 
-        print("fetching %d cable type id's" % len(cable_type_names))
+        id_list = CableTypeIdHandler.get_id_list(api, cable_type_names, "existence check")
 
-        try:
-            request_obj = ItemDomainCableCatalogIdListRequest(name_list=cable_type_names)
-            id_list = api.getCableCatalogItemApi().get_cable_type_id_list(item_domain_cable_catalog_id_list_request=request_obj)
-        except ApiException as ex:
-            fatal_error("unknown api exception getting list of cable type ids for existence check")
-
-        # list sizes should match
-        if len(cable_type_names) != len(id_list):
-            fatal_error("api list size mismatch getting list of cable type ids for existence check")
-
-        print("fetched %d cable type id's for existence check" % len(id_list))
-
-        self.name_id_dict = (dict(zip(cable_type_names, id_list)))
+        self.id_mgr.set_dict(dict(zip(cable_type_names, id_list)))
 
     def handle_input(self, input_dict):
         cable_type_name = input_dict[self.column_key]
-        if cable_type_name not in self.name_id_dict:
+        cable_type_id = self.id_mgr.get_id_for_name(cable_type_name)
+        if cable_type_id is None:
             fatal_error("unexpected error in id map for cable type existence check")
-        cable_type_id = self.name_id_dict[cable_type_name]
         if cable_type_id != 0:
             # cable type already exists
-            self.existing_cable_types.append(cable_type_name)
-        return True, ""
+            if self.ignore_existing:
+                self.existing_cable_types.append(cable_type_name)
+                return True, ""
+            else:
+                return False, "cable type already exists in CDB"
+        else:
+            return True, ""
 
 
 class CableDesignExistenceHandler(InputHandler):
 
-    def __init__(self, column_key, existing_cable_designs, column_index_import_id, column_index_legacy_id):
+    def __init__(self, column_key, existing_cable_designs, column_index_import_id, column_index_legacy_id, ignore_existing):
         super().__init__(column_key)
         self.existing_cable_designs = existing_cable_designs
-        self.name_id_map = {}
+        self.id_mgr = IdManager()
         self.column_index_import_id = column_index_import_id
         self.column_index_legacy_id = column_index_legacy_id
+        self.ignore_existing = ignore_existing
 
     def call_api(self, api, cable_design_names_batch):
 
@@ -900,7 +908,7 @@ class CableDesignExistenceHandler(InputHandler):
                     if len(cable_design_names_batch) != len(id_list):
                         fatal_error("api result list size mismatch getting list of cable design ids")
                     result_dict = dict(zip(cable_design_names_batch, id_list))
-                    self.name_id_map.update(result_dict)
+                    self.id_mgr.update(result_dict)
                     result_id_count = result_id_count + len(id_list)
                     print("fetched %d cable design ids" % result_id_count)
 
@@ -910,11 +918,18 @@ class CableDesignExistenceHandler(InputHandler):
     def handle_input(self, input_dict):
         cable_design_name = CableDesignOutputObject.get_name_cls(input_dict)
         # check to see if cable design exists in CDB
-        cable_design_id = self.name_id_map[cable_design_name]
+        cable_design_id = self.id_mgr.get_id_for_name(cable_design_name)
+        if cable_design_id is None:
+            fatal_error("unexpected error with missing entry in cable design id map")
         if cable_design_id != 0:
             # cable design already exists
-            self.existing_cable_designs.append(cable_design_name)
-        return True, ""
+            if self.ignore_existing:
+                self.existing_cable_designs.append(cable_design_name)
+                return True, ""
+            else:
+                return False, "cable design already exists in CDB"
+        else:
+            return True, ""
 
 
 class SourceHandler(InputHandler):
@@ -1008,6 +1023,9 @@ class IdManager():
 
     def set_dict(self, dict):
         self.name_id_dict = dict
+
+    def update(self, dict):
+        self.name_id_dict.update(dict)
 
     def set_id_for_name(self, name, id):
         self.name_id_dict[name] = id
@@ -1294,7 +1312,7 @@ class CableTypeHelper(PreImportHelper):
         ]
 
         if not self.validate_only:
-            handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, CABLE_TYPE_NAME_INDEX+1, self.api, self.existing_cable_types))
+            handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, CABLE_TYPE_NAME_INDEX+1, self.ignore_existing, self.api, self.existing_cable_types))
             handler_list.append(SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.source_id_manager, self.api, self.missing_source_list))
 
         return handler_list
@@ -1709,7 +1727,7 @@ class CableDesignHelper(PreImportHelper):
         ]
 
         if not self.validate_only:
-            handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.existing_cable_designs, CABLE_DESIGN_IMPORT_ID_INDEX+1, CABLE_DESIGN_LEGACY_ID_INDEX+1))
+            handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.existing_cable_designs, CABLE_DESIGN_IMPORT_ID_INDEX+1, CABLE_DESIGN_LEGACY_ID_INDEX+1, self.ignore_existing))
             handler_list.append(CableTypeIdHandler(CABLE_DESIGN_TYPE_INDEX+1, CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.missing_cable_types))
             handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_FROM_DEVICE_NAME_INDEX+1, CABLE_DESIGN_SRC_ETPM_INDEX+1, "source endpoints"))
             handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_TO_DEVICE_NAME_INDEX+1, CABLE_DESIGN_DEST_ETPM_INDEX+1, "destination endpoints"))
