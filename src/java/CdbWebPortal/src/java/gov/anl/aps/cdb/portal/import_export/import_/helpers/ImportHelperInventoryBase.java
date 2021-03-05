@@ -101,8 +101,4 @@ public abstract class ImportHelperInventoryBase
         return new CreateInfo(item, isValid, validString);
     }  
 
-    @Override
-    protected boolean ignoreDuplicates() {
-        return false;
-    }
 }

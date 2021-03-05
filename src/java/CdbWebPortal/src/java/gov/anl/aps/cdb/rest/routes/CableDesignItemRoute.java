@@ -5,9 +5,9 @@
 package gov.anl.aps.cdb.rest.routes;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
-import gov.anl.aps.cdb.rest.entities.ItemDomainCableCatalogIdListRequest;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.rest.entities.ItemDomainCableDesignIdListRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,29 +26,29 @@ import org.apache.logging.log4j.Logger;
  *
  * @author craig
  */
-@Path("/CableCatalogItems")
-@Tag(name = "cableCatalogItems")
-public class CableCatalogItemRoute extends BaseRoute {
+@Path("/CableDesignItems")
+@Tag(name = "cableDesignItems")
+public class CableDesignItemRoute extends BaseRoute {
     
-    private static final Logger LOGGER = LogManager.getLogger(CableCatalogItemRoute.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(CableDesignItemRoute.class.getName());
     
     @EJB
-    ItemDomainCableCatalogFacade facade; 
+    ItemDomainCableDesignFacade facade; 
     
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ItemDomainCableCatalog> getCableCatalogItemList() {
-        LOGGER.debug("Fetching cable catalog list");
+    public List<ItemDomainCableDesign> getCableDesignItemList() {
+        LOGGER.debug("Fetching cable design list");
         return facade.findAll();
     }
     
     @GET
     @Path("/ById/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ItemDomainCableCatalog getCableCatalogItemById(@PathParam("id") int id) throws ObjectNotFound {
+    public ItemDomainCableDesign getCableDesignItemById(@PathParam("id") int id) throws ObjectNotFound {
         LOGGER.debug("Fetching item with id: " + id);
-        ItemDomainCableCatalog item = facade.find(id);
+        ItemDomainCableDesign item = facade.find(id);
         if (item == null) {
             ObjectNotFound ex = new ObjectNotFound("Could not find item with id: " + id);
             LOGGER.error(ex);
@@ -60,9 +60,9 @@ public class CableCatalogItemRoute extends BaseRoute {
     @GET
     @Path("/ByName/{name}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ItemDomainCableCatalog getCableCatalogItemByName(@PathParam("name") String name) throws ObjectNotFound {
+    public ItemDomainCableDesign getCableDesignItemByName(@PathParam("name") String name) throws ObjectNotFound {
         LOGGER.debug("Fetching item with name: " + name);
-        List<ItemDomainCableCatalog> itemList = facade.findByName(name);
+        List<ItemDomainCableDesign> itemList = facade.findByName(name);
         if (itemList == null || itemList.isEmpty()) {
             ObjectNotFound ex = new ObjectNotFound("Could not find item with name: " + name);
             LOGGER.error(ex);
@@ -79,13 +79,13 @@ public class CableCatalogItemRoute extends BaseRoute {
     @Path("/IdList")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Integer> getCableTypeIdList(ItemDomainCableCatalogIdListRequest request) {
+    public List<Integer> getCableDesignIdList(ItemDomainCableDesignIdListRequest request) {
         List<String> nameList = request.getNameList();
-        LOGGER.debug("Fetching list of cable catalog id's by name list size: " + nameList.size());
-        List<Integer> idList = new ArrayList<>();
+        LOGGER.debug("Fetching list of cable design id's by name list size: " + nameList.size());
+        List<Integer> idList = new ArrayList<>(nameList.size());
         for (String name : nameList) {
             if ((name != null) && (!name.isBlank())) {
-                List<ItemDomainCableCatalog> itemList = facade.findByName(name);
+                List<ItemDomainCableDesign> itemList = facade.findByName(name);
                 if (itemList == null || itemList.isEmpty()) {
                     // use 0 to indicate that there is no item with specified name
                     idList.add(0);
@@ -98,8 +98,7 @@ public class CableCatalogItemRoute extends BaseRoute {
             } else {
                 idList.add(0);
             }
-        }        
+        }
         return idList;
     }
-
 }

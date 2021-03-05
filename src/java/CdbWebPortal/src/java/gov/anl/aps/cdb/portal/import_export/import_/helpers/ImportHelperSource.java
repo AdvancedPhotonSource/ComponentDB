@@ -5,8 +5,10 @@
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.SourceController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
@@ -27,12 +29,17 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
         
+        ColumnModeOptions requiredForCreate = new ColumnModeOptions(ImportMode.CREATE, true);
+        ColumnModeOptions optionalForCreate = new ColumnModeOptions(ImportMode.CREATE, false);
+        ColumnModeOptions optionalForUpdate = new ColumnModeOptions(ImportMode.UPDATE, false);
+        
         List<ColumnSpec> specs = new ArrayList<>();
         specs.add(existingItemIdColumnSpec());
-        specs.add(new StringColumnSpec("Name", KEY_NAME, "setName", true, "Name of vendor/manufacturer", 64, "getName"));
-        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of vendor/manufacturer", 256, "getDescription"));
-        specs.add(new StringColumnSpec("Contact Info", "contactInfo", "setContactInfo", false, "Contact name and phone number etc", 64, "getContactInfo"));
-        specs.add(new StringColumnSpec("URL", "url", "setUrl", false, "URL for vendor/manufacturer", 256, "getUrl"));
+        specs.add(deleteExistingItemColumnSpec());
+        specs.add(new StringColumnSpec("Name", KEY_NAME, "setName", "Name of vendor/manufacturer", 64, "getName", List.of(requiredForCreate, optionalForUpdate)));
+        specs.add(new StringColumnSpec("Description", "description", "setDescription", "Description of vendor/manufacturer", 256, "getDescription", List.of(optionalForCreate, optionalForUpdate)));
+        specs.add(new StringColumnSpec("Contact Info", "contactInfo", "setContactInfo", "Contact name and phone number etc", 64, "getContactInfo", List.of(optionalForCreate, optionalForUpdate)));
+        specs.add(new StringColumnSpec("URL", "url", "setUrl", "URL for vendor/manufacturer", 256, "getUrl", List.of(optionalForCreate, optionalForUpdate)));
         
         return specs;
     } 
@@ -55,6 +62,11 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
      */
     @Override
     public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeDelete() {
         return true;
     }
 
@@ -113,9 +125,4 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
 //               
 //        return new CreateInfo(item, isValid, validString);
 //    }  
-
-    @Override
-    protected boolean ignoreDuplicates() {
-        return true;
-    }
 }

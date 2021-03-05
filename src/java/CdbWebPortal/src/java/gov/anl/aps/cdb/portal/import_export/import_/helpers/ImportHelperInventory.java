@@ -69,7 +69,4 @@ public class ImportHelperInventory
         return super.createEntityInstance(rowMap);
     }  
 
-    protected boolean ignoreDuplicates() {
-        return false;
-    }
 }

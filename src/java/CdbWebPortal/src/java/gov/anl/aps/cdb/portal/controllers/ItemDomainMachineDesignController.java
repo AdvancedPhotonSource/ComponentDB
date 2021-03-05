@@ -2663,7 +2663,7 @@ public class ItemDomainMachineDesignController
         }
     }
 
-    public ValidInfo collectItemsForDeletion(
+    public void collectItemsForDeletion(
             ItemDomainMachineDesign parentItem,
             List<ItemDomainMachineDesign> collectedItems,
             List<ItemElement> collectedElements,
@@ -2677,25 +2677,11 @@ public class ItemDomainMachineDesignController
         for (ItemElement ie : displayList) {
             Item childItem = ie.getContainedItem();
             if (childItem instanceof ItemDomainMachineDesign) {
-
-                List<ItemElement> childMemberList = childItem.getItemElementMemberList();
-                if (childMemberList.size() > 1) {
-                    // this code assumes that a child machine design item has only one 'membership'
-                    isValid = false;
-                    validString = "item: " + childItem.getName() + " is member of multiple assemblies";
-                    return new ValidInfo(isValid, validString);
-
-                } else {
-                    // depth first ordering is important here, otherwise there are merge errors for deleted items
-                    ValidInfo validInfo
-                            = collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false, rootRelationshipOnly);
-                    if (!validInfo.isValid()) {
-                        return validInfo;
-                    }
-                    collectedItems.add((ItemDomainMachineDesign) childItem);
-                    if (!rootRelationshipOnly) {
-                        collectedElements.add(ie);
-                    }
+                // depth first ordering is important here, otherwise there are merge errors for deleted items
+                collectItemsForDeletion((ItemDomainMachineDesign) childItem, collectedItems, collectedElements, false, rootRelationshipOnly);
+                collectedItems.add((ItemDomainMachineDesign) childItem);
+                if (!rootRelationshipOnly) {
+                    collectedElements.add(ie);
                 }
             }
         }
@@ -2705,18 +2691,11 @@ public class ItemDomainMachineDesignController
 
             // mark ItemElement for relationship from parent to its container for deletion
             List<ItemElement> memberList = parentItem.getItemElementMemberList();
-            if (memberList.size() > 1) {
-                // parentItem has more than one membership
-                isValid = false;
-                validString = "item: " + parentItem.getName() + " is member of multiple assemblies";
-                return new ValidInfo(isValid, validString);
-            } else if (memberList.size() == 1) {
+            if (memberList.size() == 1) {
                 ItemElement containerRelElement = memberList.get(0);
                 collectedElements.add(containerRelElement);
             }
         }
-
-        return new ValidInfo(isValid, validString);
     }
 
     public Boolean getMoveToTrashAllowed() {
@@ -2760,12 +2739,8 @@ public class ItemDomainMachineDesignController
         // and in moveToTrash for executing the operation
         moveToTrashItemsToUpdate = new ArrayList<>();
         moveToTrashElementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(itemToDelete, moveToTrashItemsToUpdate, moveToTrashElementsToDelete, true, true);
-        if (!validInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Could not delete: " + itemToDelete + " - " + validInfo.getValidString());
-            return;
-        }
-
+        collectItemsForDeletion(itemToDelete, moveToTrashItemsToUpdate, moveToTrashElementsToDelete, true, true);
+        
         // check each item for restriction violations
         moveToTrashAllowed = true;
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
@@ -2780,7 +2755,15 @@ public class ItemDomainMachineDesignController
                 moveToTrashAllowed = false;
                 errorString = errorString + "Item is a template with instances. ";
             }
-
+            
+            // don't allow move to trash for item in multiple assemblies
+            List<ItemElement> childMemberList = itemToCheck.getItemElementMemberList();
+            if (childMemberList.size() > 1) {
+                // this code assumes that a child machine design item has only one 'membership'
+                moveToTrashAllowed = false;
+                errorString = errorString + "Item is a child of multiple parent items or templates (e.g., it might be an unfulfilled template placeholder).";
+            }
+            
             // check for various relationships
             List<ItemElementRelationship> relationshipList = itemToCheck.getFullRelationshipList();
             boolean hasCableRelationship = false;

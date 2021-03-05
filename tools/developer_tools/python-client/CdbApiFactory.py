@@ -12,6 +12,7 @@ from cdbApi.api.property_type_api import PropertyTypeApi
 from cdbApi.api.users_api import UsersApi
 from cdbApi.api.sources_api import SourcesApi
 from cdbApi.api.cable_catalog_items_api import CableCatalogItemsApi
+from cdbApi.api.cable_design_items_api import CableDesignItemsApi
 from cdbApi.api.machine_design_items_api import MachineDesignItemsApi
 from cdbApi.api_client import ApiClient
 from cdbApi.api.authentication_api import AuthenticationApi
@@ -34,6 +35,7 @@ class CdbApiFactory:
 		self.sourceApi = SourcesApi(api_client=self.apiClient)
 		self.logApi = LogApi(api_client=self.apiClient)
 		self.cableCatalogItemApi = CableCatalogItemsApi(api_client=self.apiClient)
+		self.cableDesignItemApi = CableDesignItemsApi(api_client=self.apiClient)
 		self.machineDesignItemApi = MachineDesignItemsApi(api_client=self.apiClient)
 		self.locationItemApi = LocationItemsApi(api_client=self.apiClient)
 
@@ -65,6 +67,9 @@ class CdbApiFactory:
 
 	def getCableCatalogItemApi(self):
 		return self.cableCatalogItemApi
+
+	def getCableDesignItemApi(self):
+		return self.cableDesignItemApi
 
 	def getMachineDesignItemApi(self):
 		return self.machineDesignItemApi

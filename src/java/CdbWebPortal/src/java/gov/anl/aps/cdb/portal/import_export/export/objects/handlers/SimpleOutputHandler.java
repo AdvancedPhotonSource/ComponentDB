@@ -4,8 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.import_export.export.objects.handlers;
 
-import gov.anl.aps.cdb.common.objects.CdbObject;
+import gov.anl.aps.cdb.portal.import_export.export.objects.ColumnValueResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.ExportColumnData;
+import gov.anl.aps.cdb.portal.import_export.export.objects.FieldValueMapResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.HandleOutputResult;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -38,10 +39,77 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
         return domainGetterMethod;
     }
 
+    private ColumnValueResult getColumnValue(CdbEntity entity, boolean useIdValues) {
+        
+        boolean isValid = true;
+        String validString = "";
+
+        // use reflection to retrieve value for column
+        Object returnValue = null;
+        String errorMsg = "";
+        String methodName = getDomainGetterMethod();
+        try {
+            if ((methodName != null) && (!methodName.isBlank())) {
+                // use reflection to invoke setter method on entity instance
+                Method method;
+//                Class paramType = getParamType();
+                method = entity.getClass().getMethod(methodName);
+                returnValue = method.invoke(entity);
+            }
+        } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            // handled in null check below 
+            errorMsg = ex.getClass().getName();
+            isValid = false;
+            validString
+                    = "Unable to invoke getter method: " + methodName
+                    + " for column: " + getColumnName()
+                    + " reason: " + errorMsg;
+            ValidInfo validInfo = new ValidInfo(isValid, validString);
+            return new ColumnValueResult(validInfo, null);
+        }
+
+        String columnValue = "";
+        if (returnValue != null) {
+            if (useIdValues) {
+                if (returnValue instanceof List) {
+                    List<CdbEntity> objList = (List<CdbEntity>) returnValue;
+                    boolean isFirstItem = true;
+                    for (CdbEntity obj : objList) {
+                        if (!isFirstItem) {
+                            columnValue = columnValue + ", ";
+                        } else {
+                            isFirstItem = false;
+                        }
+                        columnValue = columnValue + obj.getId().toString();
+                    }
+
+                } else if (returnValue instanceof CdbEntity) {
+                    CdbEntity obj = (CdbEntity) returnValue;
+                    columnValue = obj.getId().toString();
+                }
+            } else {
+                columnValue = returnValue.toString();
+            }
+        }
+        
+        ValidInfo validInfo = new ValidInfo(isValid, validString);
+        return new ColumnValueResult(validInfo, columnValue);
+    }
+
+    @Override
+    public ColumnValueResult handleOutput(CdbEntity entity) {
+        return handleOutput(entity, false);
+    }
+
+    public ColumnValueResult handleOutput(CdbEntity entity, boolean useIdValues) {
+        return getColumnValue(entity, useIdValues);
+    }
+
+    @Override
     public HandleOutputResult handleOutput(List<CdbEntity> entities) {
         return handleOutput(entities, false);
     }
-        
+    
     public HandleOutputResult handleOutput(List<CdbEntity> entities, boolean useIdValues) {
 
         boolean isValid = true;
@@ -50,59 +118,17 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
 
         List<String> columnValues = new ArrayList<>();
         for (CdbEntity entity : entities) {
-            // use reflection to retrieve value for column
-            Object returnValue = null;
-            String errorMsg = "";
-            String methodName = getDomainGetterMethod();
-            try {
-                if ((methodName != null) && (!methodName.isBlank())) {
-                    // use reflection to invoke setter method on entity instance
-                    Method method;
-//                Class paramType = getParamType();
-                    method = entity.getClass().getMethod(methodName);
-                    returnValue = method.invoke(entity);
-                }
-            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                // handled in null check below 
-                errorMsg = ex.getClass().getName();
-                isValid = false;
-                validString
-                        = "Unable to invoke getter method: " + methodName
-                        + " for column: " + getColumnName()
-                        + " reason: " + errorMsg;
-                ValidInfo validInfo = new ValidInfo(isValid, validString);
-                return new HandleOutputResult(validInfo, null);
+            ColumnValueResult columnValueResult = getColumnValue(entity, useIdValues);
+            if (!columnValueResult.getValidInfo().isValid()) {
+                return new HandleOutputResult(columnValueResult.getValidInfo(), null);
+            } else {
+                columnValues.add(columnValueResult.getColumnValue());
             }
-            
-            String columnValue = "";
-            if (returnValue != null) {
-                if (useIdValues) {
-                    if (returnValue instanceof List) {
-                        List<CdbEntity> objList = (List<CdbEntity>) returnValue;
-                        boolean isFirstItem = true;
-                        for (CdbEntity obj : objList) {
-                            if (!isFirstItem) {
-                                columnValue = columnValue + ", ";
-                            } else {
-                                isFirstItem = false;
-                            }
-                            columnValue = columnValue + obj.getId().toString();
-                        }
-                        
-                    } else if (returnValue instanceof CdbEntity) {
-                        CdbEntity obj = (CdbEntity) returnValue;
-                        columnValue = obj.getId().toString();
-                    }
-                } else {
-                    columnValue = returnValue.toString();
-                }
-            }
-            
-            columnValues.add(columnValue);
         }
         
         ExportColumnData columnData = new ExportColumnData(getColumnName(), getDescription(), columnValues);
         columnDataList.add(columnData);
+        
         ValidInfo validInfo = new ValidInfo(isValid, validString);
         return new HandleOutputResult(validInfo, columnDataList);
     }

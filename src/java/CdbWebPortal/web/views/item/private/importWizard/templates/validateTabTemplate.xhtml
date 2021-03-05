@@ -96,7 +96,8 @@ See LICENSE file.
                                     <f:facet name="header">
                                         <h:outputText value="#{column.header}" />
                                     </f:facet>
-                                    <h:outputText value="#{row[column.domainProperty]}" />
+                                    <h:outputText value="#{row[column.domainProperty]}" 
+                                                  escape="false" />
                                 </p:columns>
 
                             </p:dataTable>
