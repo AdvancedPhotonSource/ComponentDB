@@ -4,12 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
-import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
+import gov.anl.aps.cdb.common.constants.ItemMetadataFieldType;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableInventoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.List;
 
 /**
@@ -49,9 +49,9 @@ public class ItemDomainCableInventoryControllerUtility extends ItemDomainInvento
     }   
 
     @Override
-    public ItemCoreMetadataPropertyInfo createCoreMetadataPropertyInfo() {
-        ItemCoreMetadataPropertyInfo info = new ItemCoreMetadataPropertyInfo("Cable Inventory Metadata", ItemDomainCableInventory.CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE);
-        info.addField(ItemDomainCableInventory.CABLE_INVENTORY_PROPERTY_LENGTH_KEY, "Length", "Installed length of cable.", ItemCoreMetadataFieldType.STRING, "", null);
+    public ItemMetadataPropertyInfo createCoreMetadataPropertyInfo() {
+        ItemMetadataPropertyInfo info = new ItemMetadataPropertyInfo("Cable Inventory Metadata", ItemDomainCableInventory.CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE);
+        info.addField(ItemDomainCableInventory.CABLE_INVENTORY_PROPERTY_LENGTH_KEY, "Length", "Installed length of cable.", ItemMetadataFieldType.STRING, "", null);
         return info;
     }
             

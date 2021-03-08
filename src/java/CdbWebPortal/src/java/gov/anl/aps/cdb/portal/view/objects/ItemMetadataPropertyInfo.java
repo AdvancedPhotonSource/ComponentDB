@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.view.objects;
 
-import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
+import gov.anl.aps.cdb.common.constants.ItemMetadataFieldType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,15 +14,15 @@ import java.util.Map;
  *
  * @author cdb
  */
-public class ItemCoreMetadataPropertyInfo {
+public class ItemMetadataPropertyInfo {
     
     protected String displayName = "";
     protected String propertyName = "";
     
-    protected List<ItemCoreMetadataFieldInfo> fieldList = new ArrayList<>();
-    protected Map<String, ItemCoreMetadataFieldInfo> fieldMap = new HashMap<>();
+    protected List<ItemMetadataFieldInfo> fieldList = new ArrayList<>();
+    protected Map<String, ItemMetadataFieldInfo> fieldMap = new HashMap<>();
     
-    public ItemCoreMetadataPropertyInfo(String dn, String pn) {
+    public ItemMetadataPropertyInfo(String dn, String pn) {
         displayName = dn;
         propertyName = pn;
     }
@@ -43,17 +43,17 @@ public class ItemCoreMetadataPropertyInfo {
         this.propertyName = propertyName;
     }
     
-    public void addField(String k, String l, String d, ItemCoreMetadataFieldType t, String u, List<String> allowedValues) {
-        ItemCoreMetadataFieldInfo info = new ItemCoreMetadataFieldInfo(k, l, d, t, u, allowedValues);
+    public void addField(String k, String l, String d, ItemMetadataFieldType t, String u, List<String> allowedValues) {
+        ItemMetadataFieldInfo info = new ItemMetadataFieldInfo(k, l, d, t, u, allowedValues);
         fieldList.add(info);
         fieldMap.put(k, info);
     }
     
-    public List<ItemCoreMetadataFieldInfo> getFields() {
+    public List<ItemMetadataFieldInfo> getFields() {
         return fieldList;
     }
     
-    public ItemCoreMetadataFieldInfo getField(String key) {
+    public ItemMetadataFieldInfo getField(String key) {
         return fieldMap.get(key);
     }
     
