@@ -41,6 +41,8 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
         this.keyName = keyName;
         this.keyIndent = keyIndent;
         this.numTemplateColumns = numTemplateColumns;
+        
+        this.addColumnModeOptions(new ColumnModeOptions(ImportMode.CREATE, false));
     }
     
     @Override
@@ -83,6 +85,7 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
             if (columnHeader.startsWith(colNamePattern)) {
                 InputColumnModel inputColumnModel = 
                         new InputColumnModel(currIndex, columnHeader, getDescription());
+                inputColumns.add(inputColumnModel);
                 foundLevel = true;
                 if (firstLevelIndex == -1) {
                     firstLevelIndex = currIndex;
