@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
@@ -49,10 +50,44 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(HEADER_PARENT, KEY_CONTAINER, "setImportMdItem", true, "CDB ID or name of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, ""));
-        specs.add(new StringColumnSpec(HEADER_TEMPLATE_INVOCATION, KEY_TEMPLATE_INVOCATION, "setImportTemplateAndParameters", true, "Template to instantiate with required parameters, e.g., 'PS-SR-S{nn}-CAB1(nn=24)'.", 0));        
-        specs.add(new StringColumnSpec(HEADER_ALT_NAME, "alternateName", "setAlternateName", false, "Alternate name.", 128));
-        specs.add(new StringColumnSpec(HEADER_DESCRIPTION, "description", "setDescription", false, "Textual description.", 256));
+        specs.add(new IdOrNameRefColumnSpec(
+                HEADER_PARENT, 
+                KEY_CONTAINER, 
+                "setImportMdItem", 
+                "CDB ID or name of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                ItemDomainMachineDesignController.getInstance(), 
+                ItemDomainMachineDesign.class, 
+                ""));
+        
+        specs.add(new StringColumnSpec(
+                HEADER_TEMPLATE_INVOCATION, 
+                KEY_TEMPLATE_INVOCATION, 
+                "setImportTemplateAndParameters", 
+                "Template to instantiate with required parameters, e.g., 'PS-SR-S{nn}-CAB1(nn=24)'.", 
+                null,
+                ColumnModeOptions.rCREATE(), 
+                0));   
+        
+        specs.add(new StringColumnSpec(
+                HEADER_ALT_NAME, 
+                "alternateName", 
+                "setAlternateName", 
+                "Alternate name.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                128));
+        
+        specs.add(new StringColumnSpec(
+                HEADER_DESCRIPTION, 
+                "description", 
+                "setDescription", 
+                "Textual description.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                256));
+        
         specs.add(projectListColumnSpec());
         specs.add(ownerUserColumnSpec());
         specs.add(ownerGroupColumnSpec());

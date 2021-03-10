@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
@@ -38,27 +39,161 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         
         specs.add(existingItemIdColumnSpec());
         specs.add(deleteExistingItemColumnSpec());
-        specs.add(new StringColumnSpec("Name", "name", "setName", true, "Cable name, uniquely identifies cable.", 128, "getName"));
-        specs.add(new StringColumnSpec("Alt Name", "alternateName", "setAlternateName", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 128, "getAlternateName"));
-        specs.add(new StringColumnSpec("Ext Cable Name", "externalCableName", "setExternalCableName", false, "Cable name in external system (e.g., CAD, routing tool).", 256, "getExternalCableName"));
-        specs.add(new StringColumnSpec("Import Cable ID", "importCableId", "setImportCableId", false, "Import cable identifier.", 256, "getImportCableId"));
-        specs.add(new StringColumnSpec("Alternate Cable ID", "alternateCableId", "setAlternateCableId", false, "Alternate (e.g., group-specific) cable identifier.", 256, "getAlternateCableId"));
-        specs.add(new StringColumnSpec("Legacy QR ID", "legacyQrId", "setLegacyQrId", false, "Legacy QR identifier, e.g., for cables that have already been assigned a QR code.", 256, "getLegacyQrId"));
-        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of cable.", 256, "getDescription"));
-        specs.add(new StringColumnSpec("Laying", "laying", "setLaying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 256, "getLaying"));
-        specs.add(new StringColumnSpec("Voltage", "voltage", "setVoltage", false, "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 256, "getVoltage"));
-        specs.add(new IdOrNameRefColumnSpec("Type", "catalogItemString", "setCatalogItem", false, "Numeric ID or name of CDB cable type catalog item. Name must be unique and prefixed with '#'.", ItemDomainCableCatalogController.getInstance(), Item.class, "", "getCatalogItem", false, false));
-        specs.add(new IdOrNameRefColumnSpec("Endpoint1", "endpoint1String", "setEndpoint1Import", false, "Numeric ID or name of CDB machine design item for first endpoint. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), Item.class, "", "getEndpoint1", false, false));
-        specs.add(new StringColumnSpec("Endpoint1 Desc", "endpoint1Description", "setEndpoint1Description", false, "Endpoint details useful for external editing.", 256, "getEndpoint1Description"));
-        specs.add(new StringColumnSpec("Endpoint1 Route", "endpoint1Route", "setEndpoint1Route", false, "Routing waypoint for first endpoint.", 256, "getEndpoint1Route"));        
-        specs.add(new IdOrNameRefColumnSpec("Endpoint2", "endpoint2String", "setEndpoint2Import", false, "Numeric ID or name of CDB machine design item for second endpoint. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), Item.class, "", "getEndpoint2", false, false));
-        specs.add(new StringColumnSpec("Endpoint2 Desc", "endpoint2Description", "setEndpoint2Description", false, "Endpoint details useful for external editing.", 256, "getEndpoint2Description"));
-        specs.add(new StringColumnSpec("Endpoint2 Route", "endpoint2Route", "setEndpoint2Route", false, "Routing waypoint for second endpoint.", 256, "getEndpoint2Route"));        
+        
+        specs.add(new StringColumnSpec(
+                "Name", 
+                "name", 
+                "setName", 
+                "Cable name, uniquely identifies cable.", 
+                "getName",
+                ColumnModeOptions.rCREATErUPDATE(), 
+                128));
+        
+        specs.add(new StringColumnSpec(
+                "Alt Name", 
+                "alternateName", 
+                "setAlternateName", 
+                "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 
+                "getAlternateName",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                128));
+        
+        specs.add(new StringColumnSpec(
+                "Ext Cable Name", 
+                "externalCableName", 
+                "setExternalCableName", 
+                "Cable name in external system (e.g., CAD, routing tool).", 
+                "getExternalCableName",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Import Cable ID", 
+                "importCableId", 
+                "setImportCableId", 
+                "Import cable identifier.", 
+                "getImportCableId",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Alternate Cable ID", 
+                "alternateCableId", 
+                "setAlternateCableId", 
+                "Alternate (e.g., group-specific) cable identifier.", 
+                "getAlternateCableId",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Legacy QR ID", 
+                "legacyQrId", 
+                "setLegacyQrId", 
+                "Legacy QR identifier, e.g., for cables that have already been assigned a QR code.", 
+                "getLegacyQrId",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Description", 
+                "description", 
+                "setDescription", 
+                "Description of cable.", 
+                "getDescription",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Laying", 
+                "laying", 
+                "setLaying", 
+                "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 
+                "getLaying",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Voltage", 
+                "voltage", 
+                "setVoltage", 
+                "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 
+                "getVoltage",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new IdOrNameRefColumnSpec(
+                "Type", 
+                "catalogItemString", 
+                "setCatalogItem", 
+                "Numeric ID or name of CDB cable type catalog item. Name must be unique and prefixed with '#'.", 
+                "getCatalogItem",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                ItemDomainCableCatalogController.getInstance(), 
+                Item.class, 
+                ""));
+        
+        specs.add(new IdOrNameRefColumnSpec(
+                "Endpoint1", 
+                "endpoint1String", 
+                "setEndpoint1Import", 
+                "Numeric ID or name of CDB machine design item for first endpoint. Name must be unique and prefixed with '#'.", 
+                "getEndpoint1",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                ItemDomainMachineDesignController.getInstance(), 
+                Item.class, 
+                ""));
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint1 Desc", 
+                "endpoint1Description", 
+                "setEndpoint1Description", 
+                "Endpoint details useful for external editing.", 
+                "getEndpoint1Description",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint1 Route", 
+                "endpoint1Route", 
+                "setEndpoint1Route", 
+                "Routing waypoint for first endpoint.", 
+                "getEndpoint1Route",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new IdOrNameRefColumnSpec(
+                "Endpoint2", 
+                "endpoint2String", 
+                "setEndpoint2Import", 
+                "Numeric ID or name of CDB machine design item for second endpoint. Name must be unique and prefixed with '#'.", 
+                "getEndpoint2",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                ItemDomainMachineDesignController.getInstance(), 
+                Item.class, 
+                ""));
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint2 Desc", 
+                "endpoint2Description", 
+                "setEndpoint2Description", 
+                "Endpoint details useful for external editing.", 
+                "getEndpoint2Description",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint2 Route", 
+                "endpoint2Route", 
+                "setEndpoint2Route", 
+                "Routing waypoint for second endpoint.", 
+                "getEndpoint2Route",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
         specs.add(projectListColumnSpec());
         specs.add(technicalSystemListColumnSpec(ItemDomainName.cableDesign.getValue()));
         specs.add(ownerUserColumnSpec());
         specs.add(ownerGroupColumnSpec());
-
 
         return specs;
     }
