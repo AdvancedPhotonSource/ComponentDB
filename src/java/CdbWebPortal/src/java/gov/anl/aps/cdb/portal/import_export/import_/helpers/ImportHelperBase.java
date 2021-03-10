@@ -1286,14 +1286,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "Owner User", 
                 KEY_USER, 
                 "setOwnerUser", 
-                false, 
                 "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", 
+                "getOwnerUser",
+                ColumnModeOptions.oCREATErUPDATE(),
                 UserInfoController.getInstance(), 
                 UserInfo.class, 
-                "", 
-                "getOwnerUser",
-                false,
-                true);
+                "");
     }
     
     public IdOrNameRefColumnSpec ownerGroupColumnSpec() {
@@ -1301,14 +1299,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "Owner Group", 
                 KEY_GROUP, 
                 "setOwnerUserGroup", 
-                false, 
                 "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", 
+                "getOwnerUserGroup",
+                ColumnModeOptions.oCREATErUPDATE(), 
                 UserGroupController.getInstance(), 
                 UserGroup.class, 
-                "", 
-                "getOwnerUserGroup", 
-                false, 
-                true);
+                "");
     }
     
     public IdOrNameRefListColumnSpec projectListColumnSpec() {
@@ -1316,14 +1312,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "Project", 
                 "itemProjectString", 
                 "setItemProjectList", 
-                true, 
                 "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'.", 
+                "getItemProjectList",
+                ColumnModeOptions.rCREATErUPDATE(), 
                 ItemProjectController.getInstance(), 
                 List.class, 
-                "", 
-                "getItemProjectList", 
-                false, 
-                true);
+                "");
     }
     
     public IdOrNameRefListColumnSpec technicalSystemListColumnSpec(String domainName) {
@@ -1331,14 +1325,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "Technical System", 
                 "itemCategoryString", 
                 "setItemCategoryListImport", 
-                false, 
                 "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", 
+                "getItemCategoryList",
+                ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemCategoryController.getInstance(), 
                 List.class, 
-                domainName, 
-                "getItemCategoryList", 
-                false, 
-                false);
+                domainName);
     }
     
     public IdOrNameRefListColumnSpec functionListColumnSpec(String domainName) {
@@ -1346,14 +1338,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "Function", 
                 "itemTypeString", 
                 "setItemTypeList", 
-                false, 
                 "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", 
+                "getItemTypeList",
+                ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemTypeController.getInstance(), 
                 List.class, 
-                domainName, 
-                "getItemTypeList", 
-                false, 
-                false);
+                domainName);
     }
     
     public IdOrNameRefColumnSpec locationColumnSpec() {
@@ -1361,14 +1351,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "Location", 
                 "importLocationItemString", 
                 "setImportLocationItem", 
-                false, 
                 "Item location.", 
+                "getLocationItem",
+                ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemDomainLocationController.getInstance(), 
                 ItemDomainLocation.class, 
-                "", 
-                "getLocationItem", 
-                false, 
-                false);
+                "");
     }
     
     public StringColumnSpec locationDetailsColumnSpec() {
@@ -1376,34 +1364,30 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "Location Details", 
                 "locationDetails", 
                 "setLocationDetails", 
-                false, 
                 "Location details for item.", 
-                256, 
-                "getLocationDetails");
+                "getLocationDetails",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256);
     }
     
     public IntegerColumnSpec existingItemIdColumnSpec() {
-        List<ColumnModeOptions> options = new ArrayList<>();
-        options.add(new ColumnModeOptions(ImportMode.UPDATE, true));
-        options.add(new ColumnModeOptions(ImportMode.DELETE, true));
         return new IntegerColumnSpec(
                 "Existing Item ID", 
                 KEY_EXISTING_ITEM_ID, 
                 "setImportExistingItemId", 
                 "CDB ID of existing item to update.", 
                 "getId",
-                options);
+                ColumnModeOptions.rUPDATErDELETE());
     }
 
     public BooleanColumnSpec deleteExistingItemColumnSpec() {
-        List<ColumnModeOptions> options = new ArrayList<>();
-        options.add(new ColumnModeOptions(ImportMode.DELETE, true));
         return new BooleanColumnSpec(
                 "Delete Existing Item", 
                 KEY_DELETE_EXISTING_ITEM, 
                 "setImportDeleteExistingItem", 
                 "Specify TRUE to delete existing item in delete mode.",
-                options);
+                null,
+                ColumnModeOptions.rDELETE());
     }
 
     protected abstract List<ColumnSpec> getColumnSpecs();

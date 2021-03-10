@@ -29,13 +29,14 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
     private int numTemplateColumns;
     
     public NameHierarchyColumnSpec(
+            String description,
+            List<ColumnModeOptions> options,
             String colNamePattern,
             String keyName,
             String keyIndent,
-            String description,
             int numTemplateColumns) {
         
-        super(description);
+        super(description, options);
         
         this.colNamePattern = colNamePattern;
         this.keyName = keyName;
@@ -83,6 +84,7 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
             if (columnHeader.startsWith(colNamePattern)) {
                 InputColumnModel inputColumnModel = 
                         new InputColumnModel(currIndex, columnHeader, getDescription());
+                inputColumns.add(inputColumnModel);
                 foundLevel = true;
                 if (firstLevelIndex == -1) {
                     firstLevelIndex = currIndex;

@@ -723,26 +723,28 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public void setImportParentItem(Item parentItem, Float sortOrder, UserInfo user, UserGroup group) {
 
-        setParentItem(parentItem);
-        parentItem.getFullItemElementList().add(this);
-        parentItem.getItemElementDisplayList().add(0, this);
+        if (parentItem != null) {
+            setParentItem(parentItem);
+            parentItem.getFullItemElementList().add(this);
+            parentItem.getItemElementDisplayList().add(0, this);
 
-        if (sortOrder == null) {
-            int elementSize = parentItem.getItemElementDisplayList().size();
-            float sOrder = elementSize;
-            this.setSortOrder(sOrder);
-        } else {
-            this.setSortOrder(sortOrder);
-        }
+            if (sortOrder == null) {
+                int elementSize = parentItem.getItemElementDisplayList().size();
+                float sOrder = elementSize;
+                this.setSortOrder(sOrder);
+            } else {
+                this.setSortOrder(sortOrder);
+            }
 
-        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-        if (user != null) {
-            entityInfo.setOwnerUser(user);
+            EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
+            if (user != null) {
+                entityInfo.setOwnerUser(user);
+            }
+            if (group != null) {
+                entityInfo.setOwnerUserGroup(group);
+            }
+            this.setEntityInfo(entityInfo);
         }
-        if (group != null) {
-            entityInfo.setOwnerUserGroup(group);
-        } 
-        this.setEntityInfo(entityInfo);
         
         importParentItem = parentItem;
     }

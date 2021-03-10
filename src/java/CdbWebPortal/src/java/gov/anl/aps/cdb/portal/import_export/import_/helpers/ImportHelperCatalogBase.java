@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogBaseController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
@@ -23,7 +24,16 @@ public abstract class ImportHelperCatalogBase <CatalogEntityType extends ItemDom
     protected final static String KEY_PART_NUM = "partNumber";
     
     public IdOrNameRefColumnSpec sourceColumnSpec(int colIndex) {
-        return new IdOrNameRefColumnSpec("Source", ImportHelperCatalogBase.KEY_MFR, "", false, "Item source.", SourceController.getInstance(), Source.class, null);
+        return new IdOrNameRefColumnSpec(
+                "Source", 
+                ImportHelperCatalogBase.KEY_MFR, 
+                "", 
+                "Item source.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(),
+                SourceController.getInstance(), 
+                Source.class, 
+                null);
     }
     
     @Override

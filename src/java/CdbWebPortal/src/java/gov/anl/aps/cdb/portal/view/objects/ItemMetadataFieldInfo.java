@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.view.objects;
 
-import gov.anl.aps.cdb.common.constants.ItemCoreMetadataFieldType;
+import gov.anl.aps.cdb.common.constants.ItemMetadataFieldType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,16 +12,16 @@ import java.util.List;
  *
  * @author cmcchesney
  */
-public class ItemCoreMetadataFieldInfo {
+public class ItemMetadataFieldInfo {
 
     protected String key;
     protected String label;
     protected String description;
-    protected ItemCoreMetadataFieldType type;
+    protected ItemMetadataFieldType type;
     protected String units;
     private List<String> allowedValues;
 
-    public ItemCoreMetadataFieldInfo(String k, String l, String d, ItemCoreMetadataFieldType t, String u, List<String> allowedValues) {
+    public ItemMetadataFieldInfo(String k, String l, String d, ItemMetadataFieldType t, String u, List<String> allowedValues) {
         key = k;
         label = l;
         description = d;
@@ -58,7 +58,7 @@ public class ItemCoreMetadataFieldInfo {
         this.description = description;
     }
 
-    public ItemCoreMetadataFieldType getType() {
+    public ItemMetadataFieldType getType() {
         return type;
     }
     
@@ -66,7 +66,7 @@ public class ItemCoreMetadataFieldInfo {
         return type.toString();
     }
 
-    public void setType(ItemCoreMetadataFieldType type) {
+    public void setType(ItemMetadataFieldType type) {
         this.type = type;
     }
 

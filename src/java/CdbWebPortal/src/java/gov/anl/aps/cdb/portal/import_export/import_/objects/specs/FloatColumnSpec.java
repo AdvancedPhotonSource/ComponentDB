@@ -4,8 +4,10 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.FloatInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
+import java.util.List;
 
 /**
  *
@@ -13,8 +15,21 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandle
  */
 public class FloatColumnSpec extends ColumnSpec {
 
-    public FloatColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description) {
-        super(header, propertyName, entitySetterMethod, required, description);
+    public FloatColumnSpec(
+            String header, 
+            String importPropertyName, 
+            String importSetterMethod, 
+            String description,
+            String exportGetterMethod,
+            List<ColumnModeOptions> options) {
+        
+        super(
+                header, 
+                importPropertyName, 
+                importSetterMethod, 
+                description, 
+                exportGetterMethod,
+                options);
     }
 
     @Override
