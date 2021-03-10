@@ -39,7 +39,7 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
         return domainGetterMethod;
     }
 
-    private ColumnValueResult getColumnValue(CdbEntity entity, boolean useIdValues) {
+    protected ColumnValueResult getColumnValue(CdbEntity entity, boolean useIdValues) {
         
         boolean isValid = true;
         String validString = "";
