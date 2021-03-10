@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -74,7 +75,7 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     @JoinTable(name = "item_element_relationship_property", joinColumns = {
         @JoinColumn(name = "item_element_relationship_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<PropertyValue> propertyValueList;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "itemElementRelationship")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
@@ -152,6 +153,13 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
         this.propertyValueList = propertyValueList;
     }
 
+    public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
+        if (propertyValueList == null) {
+            propertyValueList = new ArrayList<>();
+        }
+        propertyValueList.add(0, propertyValue);
+    }
+    
     @XmlTransient
     public List<ItemElementRelationshipHistory> getItemElementRelationshipHistoryList() {
         return itemElementRelationshipHistoryList;

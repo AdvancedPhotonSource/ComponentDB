@@ -8,7 +8,9 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandle
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
 import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.RefOutputHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
+import java.util.List;
 
 /**
  *
@@ -21,39 +23,21 @@ public class IdRefColumnSpec extends ColumnSpec {
 
     public IdRefColumnSpec(
             String header, 
-            String propertyName, 
-            String entitySetterMethod, 
-            boolean requiredForCreate, 
-            String description, 
+            String importPropertyName, 
+            String importSetterMethod, 
+            String description,
+            String exportGetterMethod, 
+            List<ColumnModeOptions> options, 
             CdbEntityController controller, 
             Class paramType) {
         
-        super(header, propertyName, entitySetterMethod, requiredForCreate, description);
-        this.controller = controller;
-        this.paramType = paramType;
-    }
-
-    public IdRefColumnSpec(
-            String header, 
-            String propertyName, 
-            String entitySetterMethod, 
-            boolean requiredForCreate, 
-            String description, 
-            CdbEntityController controller, 
-            Class paramType,
-            String exportGetterMethod,
-            boolean updateOnly,
-            boolean requiredForUpdate) {
-        
         super(
                 header, 
-                propertyName, 
-                entitySetterMethod, 
-                requiredForCreate, 
+                importPropertyName, 
+                importSetterMethod, 
                 description, 
-                exportGetterMethod, 
-                updateOnly,
-                requiredForUpdate);
+                exportGetterMethod,
+                options);
         
         this.controller = controller;
         this.paramType = paramType;

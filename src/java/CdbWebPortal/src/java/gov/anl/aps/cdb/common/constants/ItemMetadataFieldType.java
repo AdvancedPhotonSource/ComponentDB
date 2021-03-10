@@ -8,7 +8,7 @@ package gov.anl.aps.cdb.common.constants;
  *
  * @author cmcchesney
  */
-public enum ItemCoreMetadataFieldType {
+public enum ItemMetadataFieldType {
 
     STRING("string"),
     NUMERIC("numeric"),
@@ -16,7 +16,7 @@ public enum ItemCoreMetadataFieldType {
 
     private final String type;
 
-    private ItemCoreMetadataFieldType(String type) {
+    private ItemMetadataFieldType(String type) {
         this.type = type;
     }
 
@@ -25,8 +25,8 @@ public enum ItemCoreMetadataFieldType {
         return type;
     }
 
-    public static ItemCoreMetadataFieldType fromString(String type) {
-        ItemCoreMetadataFieldType fieldType = null;
+    public static ItemMetadataFieldType fromString(String type) {
+        ItemMetadataFieldType fieldType = null;
         switch (type) {
             case "string":
                 fieldType = STRING;

@@ -35,52 +35,36 @@ public abstract class ColumnSpec {
     public ColumnSpec() {
     }
     
-    public ColumnSpec(String description) {
-        this.description = description;
-    }
-
     public ColumnSpec(
-            String header, String propertyName, boolean requiredForCreate, String description) {
-
-        this(description);
-        this.header = header;
-        this.propertyName = propertyName;
+            String description, 
+            List<ColumnModeOptions> options) {
         
-        this.addColumnModeOptions(new ColumnModeOptions(ImportMode.CREATE, requiredForCreate));
+        this.description = description;
+        for (ColumnModeOptions option : options) {
+            this.addColumnModeOptions(option);
+        }
     }
 
     public ColumnSpec(
             String header, 
-            String propertyName, 
-            String entitySetterMethod, 
-            boolean requiredForCreate, 
-            String description) {
+            String importPropertyName, 
+            String description, 
+            List<ColumnModeOptions> options) {
 
-        this(header, propertyName, requiredForCreate, description);
-        this.entitySetterMethod = entitySetterMethod;
+        this(description, options);
+        this.header = header;
+        this.propertyName = importPropertyName;
     }
 
-    /**
-     * Creates a column spec appropriate for import and export.
-     */
     public ColumnSpec(
             String header, 
             String importPropertyName, 
             String importSetterMethod, 
-            boolean requiredForCreate, 
             String description, 
-            String exportGetterMethod,
-            boolean updateOnly,
-            boolean requiredForUpdate) {
+            List<ColumnModeOptions> options) {
 
-        this.description = description;
-        this.header = header;
-        this.propertyName = importPropertyName;
+        this(header, importPropertyName, description, options);
         this.entitySetterMethod = importSetterMethod;
-        this.exportGetterMethod = exportGetterMethod;
-
-        this.addColumnModeOptions(new ColumnModeOptions(ImportMode.CREATE, requiredForCreate));
-        this.addColumnModeOptions(new ColumnModeOptions(ImportMode.UPDATE, requiredForUpdate));
     }
 
     /**
@@ -93,16 +77,9 @@ public abstract class ColumnSpec {
             String description, 
             String exportGetterMethod,
             List<ColumnModeOptions> options) {
-
-        this.description = description;
-        this.header = header;
-        this.propertyName = importPropertyName;
-        this.entitySetterMethod = importSetterMethod;
+        
+        this(header, importPropertyName, importSetterMethod, description, options);
         this.exportGetterMethod = exportGetterMethod;
-
-        for (ColumnModeOptions option : options) {
-            this.addColumnModeOptions(option);
-        }
     }
 
     public String getHeader() {
@@ -192,7 +169,7 @@ public abstract class ColumnSpec {
         return new SimpleOutputHandler(getHeader(), getDescription(), getExportGetterMethod());
     }
     
-    public void addColumnModeOptions(ColumnModeOptions options) {
+    private void addColumnModeOptions(ColumnModeOptions options) {
         columnModeOptionsMap.put(options.getMode(), options);
     }
 

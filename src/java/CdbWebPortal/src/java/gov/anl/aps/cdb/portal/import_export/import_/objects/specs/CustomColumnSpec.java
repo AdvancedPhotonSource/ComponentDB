@@ -4,7 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
+import java.util.List;
 
 /**
  *
@@ -16,25 +18,13 @@ public class CustomColumnSpec extends ColumnSpec {
     
     public CustomColumnSpec(
             String header, 
-            String propertyName, 
-            boolean required, 
+            String importPropertyName, 
             String description,
+            String exportGetterMethod, 
+            List<ColumnModeOptions> options,
             InputHandler handler) {
         
-        super(header, propertyName, required, description);
-        this.inputHandler = handler;
-    }
-    
-    public CustomColumnSpec(
-            String header, 
-            String propertyName, 
-            boolean required, 
-            String description,
-            InputHandler handler,
-            String exportGetterMethod) {
-        
-        super(header, propertyName, required, description);
-        this.exportGetterMethod = exportGetterMethod;
+        super(header, importPropertyName, null, description, exportGetterMethod, options);
         this.inputHandler = handler;
     }
     

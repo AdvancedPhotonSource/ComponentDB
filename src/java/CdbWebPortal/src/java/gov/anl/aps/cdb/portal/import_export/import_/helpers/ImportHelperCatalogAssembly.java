@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemElementController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
@@ -35,13 +36,70 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec("Catalog Item", KEY_PARENT_ITEM, "", true, "ID or name of parent catalog item. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), Item.class, null));        
-        specs.add(new StringColumnSpec("Part Name", KEY_PART_NAME, "setImportPartName", true, "Part name for assembly member.", 128));
-        specs.add(new StringColumnSpec("Part Description", "importPartDescription", "setImportPartDescription", false, "Part description for assembly member.", 128));
-        specs.add(new FloatColumnSpec(HEADER_SORT_ORDER, KEY_SORT_ORDER, "setSortOrder", false, "Sort order within parent catalog item (as decimal), defaults to order in input sheet."));
-        specs.add(new BooleanColumnSpec("Part Required", "importPartRequired", "setImportPartRequired", false, "True/yes if part is required."));
-        specs.add(new StringColumnSpec("Part Catalog Item Name (optional)", "importChildItemName", "setImportChildItemName", false, "Catalog item name for part (for documentation purposes only, ignored by import).", 128));
-        specs.add(new IdOrNameRefColumnSpec("Part Catalog Item ID", "importChildItem", "setImportChildItem", true, "ID or name of catalog item for part. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), Item.class, null));        
+        specs.add(new IdOrNameRefColumnSpec(
+                "Catalog Item", 
+                KEY_PARENT_ITEM, 
+                "", 
+                "ID or name of parent catalog item. Name must be unique and prefixed with '#'.", 
+                null,
+                ColumnModeOptions.rCREATE(), 
+                ItemDomainCatalogController.getInstance(), 
+                Item.class, 
+                null));   
+        
+        specs.add(new StringColumnSpec(
+                "Part Name", 
+                KEY_PART_NAME, 
+                "setImportPartName", 
+                "Part name for assembly member.", 
+                null,
+                ColumnModeOptions.rCREATE(), 
+                128));
+        
+        specs.add(new StringColumnSpec(
+                "Part Description", 
+                "importPartDescription", 
+                "setImportPartDescription", 
+                "Part description for assembly member.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                128));
+        
+        specs.add(new FloatColumnSpec(
+                HEADER_SORT_ORDER, 
+                KEY_SORT_ORDER, 
+                "setSortOrder", 
+                "Sort order within parent catalog item (as decimal), defaults to order in input sheet.", 
+                null,
+                ColumnModeOptions.oCREATE()));
+        
+        specs.add(new BooleanColumnSpec(
+                "Part Required", 
+                "importPartRequired", 
+                "setImportPartRequired", 
+                "True/yes if part is required.", 
+                null,
+                ColumnModeOptions.oCREATE()));
+        
+        specs.add(new StringColumnSpec(
+                "Part Catalog Item Name (optional)", 
+                "importChildItemName", 
+                "setImportChildItemName", 
+                "Catalog item name for part (for documentation purposes only, ignored by import).", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                128));
+        
+        specs.add(new IdOrNameRefColumnSpec(
+                "Part Catalog Item ID", 
+                "importChildItem", 
+                "setImportChildItem", 
+                "ID or name of catalog item for part. Name must be unique and prefixed with '#'.", 
+                null,
+                ColumnModeOptions.rCREATE(), 
+                ItemDomainCatalogController.getInstance(), 
+                Item.class, 
+                null));        
 
         return specs;
     }
@@ -92,10 +150,9 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
                     validString = appendToString(validString, msg);
                 }
             }
+            itemElement.setImportParentItem(itemParentCatalogItem, itemSortOrder, null, null);
         }
-        
-        itemElement.setImportParentItem(itemParentCatalogItem, itemSortOrder, null, null);
-        
+            
         return new CreateInfo(itemElement, isValid, validString);
     }
     

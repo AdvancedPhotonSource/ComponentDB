@@ -20,7 +20,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -1471,7 +1471,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public PropertyValue getCoreMetadataPropertyValue() {
 
-        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
 
         if (info != null) {
             if (coreMetadataPropertyValue == null) {
@@ -1489,7 +1489,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     protected void validateCoreMetadataKey(String key) throws CdbException {
-        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
         if (!info.hasKey(key)) {
             throw new CdbException("Invalid metadata key used to get/set core metadata field value: " + key);
         }
@@ -1524,7 +1524,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
     }
 
-    public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
+    public ItemMetadataPropertyInfo getCoreMetadataPropertyInfo() {
         return getItemControllerUtility().createCoreMetadataPropertyInfo(); 
     }
 

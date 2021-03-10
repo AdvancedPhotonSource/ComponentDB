@@ -63,8 +63,8 @@ import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataFieldInfo;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 
 import java.util.ArrayList;
@@ -185,7 +185,7 @@ public abstract class ItemController<
 
     protected List<String> expandedRowUUIDs = null;
 
-    protected ItemCoreMetadataPropertyInfo coreMetadataPropertyInfo = null;
+    protected ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
     protected PropertyType coreMetadataPropertyType = null;
 
     public ItemController() {
@@ -2508,7 +2508,7 @@ public abstract class ItemController<
 
     }
 
-    public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
+    public ItemMetadataPropertyInfo getCoreMetadataPropertyInfo() {
         if (coreMetadataPropertyInfo == null) {
             coreMetadataPropertyInfo = getControllerUtility().createCoreMetadataPropertyInfo();
         }
@@ -2523,7 +2523,7 @@ public abstract class ItemController<
     }
 
     protected void initializeCoreMetadataPropertyType() {
-        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
         if (info != null) {
             coreMetadataPropertyType = PropertyTypeFacade.getInstance().findByName(info.getPropertyName());
         }
@@ -2536,7 +2536,7 @@ public abstract class ItemController<
     }
 
     public final PropertyTypeMetadata newPropertyTypeMetadataForField(
-            ItemCoreMetadataFieldInfo field,
+            ItemMetadataFieldInfo field,
             PropertyType propertyType) {
         return getControllerUtility().newPropertyTypeMetadataForField(field, propertyType);
     }
@@ -2557,9 +2557,9 @@ public abstract class ItemController<
         } else {
 
             // iterate through core metadata fields to identify missing information in property type
-            ItemCoreMetadataPropertyInfo propInfo = getCoreMetadataPropertyInfo();
+            ItemMetadataPropertyInfo propInfo = getCoreMetadataPropertyInfo();
             boolean updated = false;
-            for (ItemCoreMetadataFieldInfo fieldInfo : propInfo.getFields()) {
+            for (ItemMetadataFieldInfo fieldInfo : propInfo.getFields()) {
 
                 // add missing metadata fields to property type
                 PropertyTypeMetadata ptm = propertyType.getPropertyTypeMetadataForKey(fieldInfo.getKey());
@@ -2593,7 +2593,7 @@ public abstract class ItemController<
                     removePtmList.add(ptm);
                 } else {
 
-                    ItemCoreMetadataFieldInfo fieldInfo = propInfo.getField(key);
+                    ItemMetadataFieldInfo fieldInfo = propInfo.getField(key);
                     if (ptm.getIsHaveAllowedValues()) {
 
                         // remove allowed values no longer defined in core metadata
@@ -2627,7 +2627,7 @@ public abstract class ItemController<
     }   
 
     public String getCoreMetadataPropertyTitle() {
-        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
         if (info == null) {
             return "";
         } else {

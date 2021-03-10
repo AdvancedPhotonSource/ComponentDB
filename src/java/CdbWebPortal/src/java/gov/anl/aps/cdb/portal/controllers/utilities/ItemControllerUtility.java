@@ -27,8 +27,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataFieldInfo;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -393,7 +393,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         PropertyTypeControllerUtility propertyTypeControllerUtility = new PropertyTypeControllerUtility();
         PropertyType propertyType = propertyTypeControllerUtility.createEntityInstance(null);
 
-        ItemCoreMetadataPropertyInfo propInfo = createCoreMetadataPropertyInfo();
+        ItemMetadataPropertyInfo propInfo = createCoreMetadataPropertyInfo();
 
         propertyType.setIsInternal(true);
         propertyType.setName(propInfo.getPropertyName());
@@ -404,7 +404,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         propertyType.setAllowedDomainList(allowedDomainList);
 
         List<PropertyTypeMetadata> ptmList = new ArrayList<>();
-        for (ItemCoreMetadataFieldInfo fieldInfo : propInfo.getFields()) {
+        for (ItemMetadataFieldInfo fieldInfo : propInfo.getFields()) {
             PropertyTypeMetadata ptm = newPropertyTypeMetadataForField(fieldInfo, propertyType);
             ptmList.add(ptm);
         }
@@ -415,7 +415,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     }
 
     public PropertyTypeMetadata newPropertyTypeMetadataForField(
-            ItemCoreMetadataFieldInfo field,
+            ItemMetadataFieldInfo field,
             PropertyType propertyType) {
 
         PropertyTypeMetadata ptm = new PropertyTypeMetadata();
@@ -443,7 +443,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         return allowedValue;
     }
 
-    public ItemCoreMetadataPropertyInfo createCoreMetadataPropertyInfo() {
+    public ItemMetadataPropertyInfo createCoreMetadataPropertyInfo() {
         // do nothing by default, subclasses with core metadata to override
         return null;
     }

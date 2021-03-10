@@ -17,46 +17,16 @@ public class IntegerColumnSpec extends ColumnSpec {
 
     public IntegerColumnSpec(
             String header, 
-            String propertyName, 
-            String entitySetterMethod, 
-            boolean requiredForCreate, 
-            String description) {
-        
-        super(header, propertyName, entitySetterMethod, requiredForCreate, description);
-    }
-
-    public IntegerColumnSpec(
-            String header, 
-            String propertyName, 
-            String entitySetterMethod, 
-            boolean requiredForCreate, 
-            String description,
-            String exportGetterMethod,
-            boolean updateOnly) {
-        
-        super(
-                header, 
-                propertyName, 
-                entitySetterMethod, 
-                requiredForCreate, 
-                description, 
-                exportGetterMethod, 
-                updateOnly,
-                requiredForCreate);
-    }
-
-    public IntegerColumnSpec(
-            String header, 
-            String propertyName, 
-            String entitySetterMethod, 
+            String importPropertyName, 
+            String importSetterMethod, 
             String description,
             String exportGetterMethod,
             List<ColumnModeOptions> options) {
         
         super(
                 header, 
-                propertyName, 
-                entitySetterMethod, 
+                importPropertyName, 
+                importSetterMethod, 
                 description, 
                 exportGetterMethod,
                 options);
