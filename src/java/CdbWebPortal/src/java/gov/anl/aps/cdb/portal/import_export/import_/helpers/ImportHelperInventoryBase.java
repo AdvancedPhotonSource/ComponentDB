@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryBaseController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyValue;
@@ -34,7 +35,14 @@ public abstract class ImportHelperInventoryBase
     private Map<ItemDomainCatalogBase, Integer> newItemCountMap = new HashMap<>();
     
     public StringColumnSpec statusColumnSpec(int colIndex) {
-        return new StringColumnSpec("Status", KEY_STATUS, "setInventoryStatusValue", false, "Status of inventory item.", 256);
+        return new StringColumnSpec(
+                "Status", 
+                KEY_STATUS, 
+                "setInventoryStatusValue", 
+                "Status of inventory item.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256);
     }
     
     @Override

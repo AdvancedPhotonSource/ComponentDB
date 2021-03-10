@@ -19,50 +19,17 @@ public class StringColumnSpec extends ColumnSpec {
 
     public StringColumnSpec(
             String header, 
-            String propertyName, 
-            String entitySetterMethod, 
-            boolean requiredForCreate, 
+            String importPropertyName, 
+            String importSetterMethod, 
             String description, 
+            String exportGetterMethod,
+            List<ColumnModeOptions> options,
             int maxLength) {
 
-        super(header, propertyName, entitySetterMethod, requiredForCreate, description);
-        this.maxLength = maxLength;
-    }
-
-    public StringColumnSpec(
-            String header, 
-            String propertyName, 
-            String entitySetterMethod, 
-            boolean requiredForCreate, 
-            String description,
-            int maxLength, 
-            String exportGetterMethod) {
-
         super(
                 header, 
-                propertyName, 
-                entitySetterMethod, 
-                requiredForCreate, 
-                description, 
-                exportGetterMethod, 
-                false, 
-                requiredForCreate);
-        this.maxLength = maxLength;
-    }
-
-    public StringColumnSpec(
-            String header, 
-            String propertyName, 
-            String entitySetterMethod, 
-            String description,
-            int maxLength, 
-            String exportGetterMethod,
-            List<ColumnModeOptions> options) {
-
-        super(
-                header, 
-                propertyName, 
-                entitySetterMethod, 
+                importPropertyName, 
+                importSetterMethod, 
                 description, 
                 exportGetterMethod, 
                 options);

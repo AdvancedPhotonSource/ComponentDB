@@ -17,22 +17,19 @@ public class BooleanColumnSpec extends ColumnSpec {
 
     public BooleanColumnSpec(
             String header, 
-            String propertyName, 
-            String entitySetterMethod, 
-            boolean required, 
-            String description) {
-        
-        super(header, propertyName, entitySetterMethod, required, description);
-    }
-
-    public BooleanColumnSpec(
-            String header, 
-            String propertyName, 
-            String entitySetterMethod, 
+            String importPropertyName, 
+            String importSetterMethod, 
             String description,
+            String exportGetterMethod,
             List<ColumnModeOptions> options) {
         
-        super(header, propertyName, entitySetterMethod, description, null, options);
+        super(
+                header, 
+                importPropertyName, 
+                importSetterMethod, 
+                description, 
+                exportGetterMethod,
+                options);
     }
 
     @Override

@@ -29,20 +29,19 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
     private int numTemplateColumns;
     
     public NameHierarchyColumnSpec(
+            String description,
+            List<ColumnModeOptions> options,
             String colNamePattern,
             String keyName,
             String keyIndent,
-            String description,
             int numTemplateColumns) {
         
-        super(description);
+        super(description, options);
         
         this.colNamePattern = colNamePattern;
         this.keyName = keyName;
         this.keyIndent = keyIndent;
         this.numTemplateColumns = numTemplateColumns;
-        
-        this.addColumnModeOptions(new ColumnModeOptions(ImportMode.CREATE, false));
     }
     
     @Override
