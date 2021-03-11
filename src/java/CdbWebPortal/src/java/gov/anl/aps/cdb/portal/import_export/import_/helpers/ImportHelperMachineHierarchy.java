@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnS
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrPathColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
@@ -179,7 +180,7 @@ public class ImportHelperMachineHierarchy
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(
+        specs.add(new IdOrPathColumnSpec(
                 HEADER_PARENT, 
                 KEY_PARENT, 
                 "setImportMdItem", 
@@ -187,8 +188,7 @@ public class ImportHelperMachineHierarchy
                 null,
                 ColumnModeOptions.oCREATE(), 
                 ItemDomainMachineDesignController.getInstance(), 
-                ItemDomainMachineDesign.class, 
-                ""));
+                ItemDomainMachineDesign.class));
         
         specs.add(new NameHierarchyColumnSpec(
                 "Name hierarchy column", 
