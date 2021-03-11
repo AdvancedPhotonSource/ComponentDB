@@ -57,7 +57,9 @@ cd support_bin
 skiptest=0
 needs_download=1
 
-chromedriver_version=`google-chrome --version | grep -oP "[^A-Z ][0-9]+.[0-9]+.[0-9]+.[0-9]+"`
+chromedriver_version_start=`google-chrome --version | grep -oP "[^A-Z ][0-9]+.[0-9]+.[0-9]+"`
+chromedriver_version_regex="$chromedriver_version_start.[0-9]+/chromedriver_linux64.zip"
+chromedriver_version=`curl https://chromedriver.storage.googleapis.com/ | grep -oP $chromedriver_version_regex`
 
 if [ -f "chromedriver" ]; then 
     current_version_result=`./chromedriver --version | grep -oP $chromedriver_version`
@@ -69,7 +71,7 @@ if [ -f "chromedriver" ]; then
 fi
 
 if [[ $needs_download == 1 ]]; then
-    wget https://chromedriver.storage.googleapis.com/$chromedriver_version/chromedriver_linux64.zip || skiptest=1
+    wget https://chromedriver.storage.googleapis.com/$chromedriver_version || skiptest=1
     unzip chromedriver_linux64.zip
     rm chromedriver_linux64.zip
 fi
