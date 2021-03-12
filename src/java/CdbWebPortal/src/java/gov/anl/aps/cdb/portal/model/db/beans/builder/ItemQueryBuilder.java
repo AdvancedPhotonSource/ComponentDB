@@ -29,7 +29,7 @@ public abstract class ItemQueryBuilder {
     
     private static final Logger logger = LogManager.getLogger(ItemQueryBuilder.class.getName());
 
-    private static final String QUERY_STRING_START = "SELECT i FROM Item i ";
+    private static final String QUERY_STRING_START = "SELECT DISTINCT(i) FROM Item i ";
     private static final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"};
     private static final String ITEM_ELEMENTS_LIST_JOIN_NAME = "fiel";
     private static final String ITEM_PROJECT_LIST_JOIN_NAME = "ipl";
