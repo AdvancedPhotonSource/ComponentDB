@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ParseInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
@@ -24,6 +25,7 @@ public class RefInputHandler extends SimpleInputHandler {
     private String domainNameFilter = null;
     private boolean idOnly = false;
     private boolean singleValue = true;
+    private boolean allowPaths = false;
     private RefObjectManager objectManager;
     
     public RefInputHandler(
@@ -83,6 +85,22 @@ public class RefInputHandler extends SimpleInputHandler {
         this.singleValue = singleValue;
     }
     
+    public RefInputHandler(
+            int columnIndex,
+            String columnName,
+            String propertyName,
+            String setterMethod,
+            CdbEntityController controller,
+            Class paramType,
+            String domainNameFilter,
+            boolean idOnly,
+            boolean singleValue,
+            boolean allowPaths) {
+        
+        this(columnIndex, columnName, propertyName, setterMethod, controller, paramType, domainNameFilter, idOnly, singleValue);
+        this.allowPaths = allowPaths;
+    }
+    
     private RefObjectManager getObjectManager() {
         if (objectManager == null) {
             objectManager = new RefObjectManager(controller, domainNameFilter);
@@ -115,17 +133,24 @@ public class RefInputHandler extends SimpleInputHandler {
                     if (singleValue) {
                         // parse and lookup single name
                         
-                        String info_o = null;
-                        CdbEntity objValue = 
-                                getObjectManager().getObjectWithName(nameString.trim(), info_o);
-                        if (objValue == null) {
-                            String msg;
-                            if (info_o != null) {
-                                msg = info_o;
+                        CdbEntity objValue = null;
+                        String msg = "";
+                        
+                        try {
+                            if (allowPaths && (nameString.charAt(0) == '/')) {
+                                objValue = getObjectManager().getObjectWithPath(nameString.trim());
                             } else {
+                                objValue = getObjectManager().getObjectWithName(nameString.trim());
+                            }
+                        } catch (CdbException ex) {
+                            msg = "Exception searching for object: " 
+                                    + nameString + " reason: " + ex.getMessage();
+                        }
+
+                        if (objValue == null) {
+                            if (msg.isEmpty()) {
                                 msg = "Unable to find object for: "
-                                            + getColumnName()
-                                            + " with name: " + nameString;
+                                        + getColumnName() + " with name: " + nameString;
                             }
                             return new ParseInfo<>(null, false, msg);
                         }
@@ -137,17 +162,18 @@ public class RefInputHandler extends SimpleInputHandler {
                         List<CdbEntity> objValueList = new ArrayList<>();
                         String[] nameTokens = nameString.split(SEPARATOR);
                         for (String nameToken : nameTokens) {
-                            String info_o = null;
-                            CdbEntity objValue = 
-                                    getObjectManager().getObjectWithName(nameToken.trim(), info_o);
+                            CdbEntity objValue = null;
+                            String msg = "";
+                            try {
+                                objValue =  getObjectManager().getObjectWithName(nameToken.trim());
+                            } catch (CdbException ex) {
+                                msg = "exception searching for object with name: "
+                                        + nameToken + " reason: " + ex.getMessage();
+                            }
                             if (objValue == null) {
-                                String msg;
-                                if (info_o != null) {
-                                    msg = info_o;
-                                } else {
+                                if (msg.isEmpty()) {
                                     msg = "Unable to find object for: "
-                                            + getColumnName()
-                                            + " with name: " + nameToken;
+                                            + getColumnName() + " with name: " + nameToken;
                                 }
                                 return new ParseInfo<>(objValueList, false, msg);
                             } else {
@@ -165,22 +191,26 @@ public class RefInputHandler extends SimpleInputHandler {
                 
                 if (singleValue) {
                     // parse and lookup single id
+
+                    CdbEntity objValue = null;
+                    String msg = "";
                     
-                        String info_o = null;
-                        CdbEntity objValue = 
-                                getObjectManager().getObjectWithId(strValue.trim(), info_o);
-                        if (objValue == null) {
-                            String msg;
-                            if (info_o != null) {
-                                msg = info_o;
-                            } else {
-                                msg = "Unable to find object for: "
-                                            + getColumnName()
-                                            + " with id: " + strValue;
-                            }
-                            return new ParseInfo<>(null, false, msg);
+                    try {
+                        objValue = getObjectManager().getObjectWithId(strValue.trim());
+                    } catch (CdbException ex) {
+                        msg = "exception searching for object with id: "
+                                + strValue + " reason: " + ex.getMessage();
+                    }
+                    
+                    if (objValue == null) {
+                        if (msg.isEmpty()) {
+                            msg = "Unable to find object for: "
+                                    + getColumnName()
+                                    + " with id: " + strValue;
                         }
-                        return new ParseInfo<>(objValue, true, "");
+                        return new ParseInfo<>(null, false, msg);
+                    }
+                    return new ParseInfo<>(objValue, true, "");
                         
                 } else {
                     // parse and lookup list of ids
@@ -188,13 +218,19 @@ public class RefInputHandler extends SimpleInputHandler {
                     List<CdbEntity> objValueList = new ArrayList<>();
                     String[] idTokens = strValue.split(SEPARATOR);
                     for (String idToken : idTokens) {
-                        String info_o = null;
-                        CdbEntity objValue = getObjectManager().getObjectWithId(idToken.trim(), info_o);
+                        
+                        CdbEntity objValue = null;
+                        String msg = "";
+                        
+                        try {
+                            objValue = getObjectManager().getObjectWithId(idToken.trim());
+                        } catch (CdbException ex) {
+                            msg = "exception searching for object with id: "
+                                    + idToken + " reason: " + ex.getMessage();
+                        }
+                        
                         if (objValue == null) {
-                            String msg;
-                            if (info_o != null) {
-                                msg = info_o;
-                            } else {
+                            if (msg.isEmpty()) {
                                 msg = "Unable to find object for: "
                                         + getColumnName()
                                         + " with id: " + idToken;

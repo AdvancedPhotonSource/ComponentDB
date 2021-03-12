@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.BlankColumnOutputHandler;
 import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
 import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.SimpleOutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
@@ -164,7 +165,7 @@ public abstract class ColumnSpec {
     
     public OutputHandler getOutputHandler() {
         if (exportGetterMethod == null || exportGetterMethod.isBlank()) {
-            return null;
+            return new BlankColumnOutputHandler(getHeader(), getDescription());
         }
         return new SimpleOutputHandler(getHeader(), getDescription(), getExportGetterMethod());
     }

@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrPathColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
@@ -52,16 +53,15 @@ public class ImportHelperLocation
     protected List<ColumnSpec> getColumnSpecs() {
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(
+        specs.add(new IdOrPathColumnSpec(
                 HEADER_PARENT, 
                 KEY_PARENT, 
                 "setImportParentItem", 
-                "CDB ID or name of parent location item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'.", 
+                "CDB ID, name, or path of parent location item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.", 
                 null,
                 ColumnModeOptions.oCREATE(), 
                 ItemDomainLocationController.getInstance(), 
-                ItemDomainLocation.class, 
-                ""));
+                ItemDomainLocation.class));
         
         specs.add(new NameHierarchyColumnSpec(
                 "Name hierarchy column",
