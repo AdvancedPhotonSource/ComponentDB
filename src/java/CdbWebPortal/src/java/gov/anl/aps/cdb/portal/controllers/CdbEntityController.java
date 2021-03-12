@@ -261,7 +261,9 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     /**
      * Find unique entity by name. Returns null if none is found, or raises
-     * CdbException if multiple instances are found.
+     * CdbException if multiple instances are found.  This is used by the
+     * import framework across controllers of different types, that may or may
+     * not implement findByName().
      */
     public EntityType findUniqueByName(String name, String domainName) throws CdbException {
 
@@ -270,6 +272,15 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         }
 
         return getEntityDbFacade().findUniqueByName(name, domainName);
+    }
+
+    public EntityType findUniqueByPath(String path) throws CdbException {
+
+        if ((path == null) || (path.isEmpty())) {
+            return null;
+        }
+
+        return getControllerUtility().findByPath(path);
     }
 
     /**

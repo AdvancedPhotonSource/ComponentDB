@@ -227,6 +227,15 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
     public EntityType findById(Integer id) {
         return getEntityDbFacade().find(id);
     }
+    
+    /**
+     * Used by import framework.  Looks up entity by path.  Default implementation
+     * raises exception.  Subclasses should override to provide support for lookup
+     * by path.
+     */
+    public EntityType findByPath(String path) throws CdbException {
+        throw new CdbException("controller utility does not support lookup by path");
+    }
         
     public String getEntityInstanceName(EntityType entity) {
         if (entity != null) {

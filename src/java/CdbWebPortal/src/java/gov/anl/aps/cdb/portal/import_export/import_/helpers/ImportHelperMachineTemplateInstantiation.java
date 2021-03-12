@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrPathColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -50,16 +51,15 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(
+        specs.add(new IdOrPathColumnSpec(
                 HEADER_PARENT, 
                 KEY_CONTAINER, 
                 "setImportMdItem", 
-                "CDB ID or name of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'.", 
+                "CDB ID, name, or path of parent machine design item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.", 
                 null,
                 ColumnModeOptions.oCREATE(), 
                 ItemDomainMachineDesignController.getInstance(), 
-                ItemDomainMachineDesign.class, 
-                ""));
+                ItemDomainMachineDesign.class));
         
         specs.add(new StringColumnSpec(
                 HEADER_TEMPLATE_INVOCATION, 
