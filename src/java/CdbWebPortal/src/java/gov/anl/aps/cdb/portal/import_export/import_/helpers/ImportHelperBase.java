@@ -88,8 +88,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private static final String PROPERTY_IS_VALID = "isValidImportString";
     private static final String HEADER_VALID_STRING = "Valid String";
     private static final String PROPERTY_VALID_STRING = "validStringImport";
-    private static final String HEADER_UPDATE_DIFF = "Update Differences";
-    private static final String PROPERTY_UPDATE_DIFF = "importUpdateDiffs";
+    private static final String HEADER_DIFFS = "Differences";
+    private static final String PROPERTY_DIFFS = "importDiffs";
     
     protected static final String KEY_USER = "ownerUserName";
     protected static final String KEY_GROUP = "ownerUserGroupName";
@@ -188,7 +188,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             } else {
                 inputColumns.addAll(initInfo.getInputColumns());
                 handlers.addAll(initInfo.getInputHandlers());
-                outputColumns.addAll(initInfo.getOutputColumns());
+                if ((getImportMode() != ImportMode.DELETE) 
+                        || ((getImportMode() == ImportMode.DELETE) && (spec.isUsedForMode(ImportMode.DELETE)))) {
+                    outputColumns.addAll(initInfo.getOutputColumns());
+                }
             }
             
             colIndex = colIndex + initInfo.getNumColumns();   
@@ -209,7 +212,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (initValidInfo.isValid()) {
             initializeInputColumns(initInfo.inputColumns);
             initializeInputHandlers(initInfo.inputHandlers);
-            initializeViewColumns(initInfo.outputColumns);
+            initializeValidationTableColumns(initInfo.outputColumns);
         }
         
         return initValidInfo;
@@ -225,12 +228,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         inputHandlers = specs;
     }
     
-    protected void initializeViewColumns(List<OutputColumnModel> columns) {        
+    protected void initializeValidationTableColumns(List<OutputColumnModel> columns) {        
         // these are special columns for displaying validation info for each row
         columns.add(new OutputColumnModel(HEADER_IS_VALID, PROPERTY_IS_VALID));
         columns.add(new OutputColumnModel(HEADER_VALID_STRING, PROPERTY_VALID_STRING));
-        if (getImportMode() == ImportMode.UPDATE) {
-            columns.add(new OutputColumnModel(HEADER_UPDATE_DIFF, PROPERTY_UPDATE_DIFF));
+        if ((getImportMode() == ImportMode.UPDATE) || (getImportMode() == ImportMode.DELETE)) {
+            columns.add(new OutputColumnModel(HEADER_DIFFS, PROPERTY_DIFFS));
         }
         outputColumns = columns;
     }
@@ -937,12 +940,39 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             isValid = false;
         }
         
+        // capture item field values for display in validation table
+        FieldValueMapResult result = getFieldValueMap(entity);
+        if (!result.getValidInfo().isValid()) {
+            isValid = false;
+            validString = appendToString(
+                    validString, 
+                    "Field snapshot failed: " 
+                            + result.getValidInfo().getValidString()); 
+        }
+        FieldValueMap fieldValueMap = result.getValueMap();
+
         // invoke each input handler to update the entity with row dictionary values
         ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(entity, rowDict);
         if (!updateValidInfo.isValid()) {
             validString = appendToString(validString, updateValidInfo.getValidString());
             isValid = false;
         }
+        
+        String diffString = "";
+        boolean first = true;
+        for (String key : fieldValueMap.keySet()) {
+            if (!first) {
+                diffString = diffString + "<br>";
+            } else {
+                first = false;
+            }
+            String value = fieldValueMap.get(key);
+            diffString = diffString + key + ": ";
+            diffString = diffString + "<span style=\"color:red\">";
+            diffString = diffString + "'" + value + "'";
+            diffString = diffString + "</span>";
+        }
+        entity.setImportDiffs(diffString);
         
         return new CreateInfo(entity, isValid, validString);
     }
@@ -1025,7 +1055,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             diffString = diffString + "'" + diff.getNewValue() + "'";
             diffString = diffString + "</span>";
         }
-        entity.setImportUpdateDiffs(diffString);
+        entity.setImportDiffs(diffString);
 
         // skip uniqueness checks in update mode for rows already flagged as invalid,
         // otherwise error reporting is confusing
