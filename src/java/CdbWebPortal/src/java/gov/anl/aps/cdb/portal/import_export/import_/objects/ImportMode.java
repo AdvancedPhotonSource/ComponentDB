@@ -9,5 +9,5 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects;
  * @author craig
  */
 public enum ImportMode {
-    CREATE, UPDATE, DELETE;
+    CREATE, UPDATE, DELETE, COMPARE;
 }
