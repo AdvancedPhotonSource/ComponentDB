@@ -30,9 +30,13 @@ import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -552,4 +556,59 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         return defaultControllerDomain;
     }
 
+    /**
+     * Provides common support for find by path operation for hierarchical entities. 
+     */
+    protected ItemDomainEntity findByPath_(
+            String path, Function<ItemDomainEntity, ItemDomainEntity> parentGetterMethod) throws CdbException {
+        
+        if (path.charAt(0) != '/') {
+            // first character expected to be forward slash
+            throw new CdbException("invalid path format, first character expected to be forward slash");
+        }
+        
+        // tokenize the path string, escaping any embedded delimiters
+        String delim = "/";
+        String esc = "\\";
+        String regex = "(?<!" + Pattern.quote(esc) + ")" + Pattern.quote(delim);
+        List<String> pathTokens = Arrays.asList(path.split(regex));
+        
+        if (pathTokens.isEmpty()) {
+            return null;
+        }
+        
+        // get item name and list of parent item names from path
+        String itemName = pathTokens.get(pathTokens.size() - 1);
+        List<String> pathParentNames = new ArrayList<>();
+        if (pathTokens.size() > 1) {
+            // here we skip the first element since it is expected to be empty string
+            // as the first character is slash, and the last element which is the item name
+            pathParentNames = pathTokens.subList(1, pathTokens.size() - 1);
+            Collections.reverse(pathParentNames);
+        }
+        
+        // retrieve list of candidate items matching name
+        List<ItemDomainEntity> candidateItems = getItemFacadeInstance().findByName(itemName);
+        
+        // check path against parents for each candidate
+        for (ItemDomainEntity candidateItem : candidateItems) {
+            
+            // create parent path list for candidate item and compare to specified path
+            List<String> itemParentNames = new ArrayList<>();
+            ItemDomainEntity candidateParent = parentGetterMethod.apply(candidateItem);
+            while (candidateParent != null) {
+                // replace occurrences of '/' with "\\/" to match syntax in specified path
+                itemParentNames.add(candidateParent.getName().replace("/", "\\/"));
+                candidateParent = parentGetterMethod.apply(candidateParent);
+            }
+            if (itemParentNames.equals(pathParentNames)) {
+                // candidate item parent path matches specified path
+                return candidateItem;
+            }
+        }
+                    
+        // no match
+        return null;
+    }
+        
 }
