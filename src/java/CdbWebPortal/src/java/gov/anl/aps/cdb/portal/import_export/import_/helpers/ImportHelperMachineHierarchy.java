@@ -184,7 +184,7 @@ public class ImportHelperMachineHierarchy
                 HEADER_PARENT, 
                 KEY_PARENT, 
                 "setImportMdItem", 
-                "CDB ID or name of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'.", 
+                "CDB ID, name, or path of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.", 
                 null,
                 ColumnModeOptions.oCREATE(), 
                 ItemDomainMachineDesignController.getInstance(), 
