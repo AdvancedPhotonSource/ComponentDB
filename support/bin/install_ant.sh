@@ -4,7 +4,7 @@
 # See LICENSE file.
 
 
-ANT_VERSION=1.9.3
+ANT_VERSION=1.10.9
 
 currentDir=`pwd`
 cd `dirname $0`/.. && topDir=`pwd`

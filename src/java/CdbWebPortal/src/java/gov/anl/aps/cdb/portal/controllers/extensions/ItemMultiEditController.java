@@ -308,19 +308,24 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
         for (int i = 0; i < selectedItemsToEdit.size(); i++) {
             Item item = selectedItemsToEdit.get(i);
-
+            
+            boolean success = false; 
             if (isItemExistInDb(item)) {
                 if (performSaveOperationsOnItem(item)) {
+                    success = true;
                     successUpdateCounter++;
                 }
             } else if (performSaveOperationsOnItem(item)) {
+                success = true; 
                 successCreateCounter++;
             }
 
-            // Reload the updated item. 
-            Item updatedItem = getCurrent();
-            selectedItemsToEdit.remove(i);
-            selectedItemsToEdit.add(i, updatedItem);
+            if (success) {
+                // Reload the updated item. 
+                Item updatedItem = getItemDbFacade().findById(item.getId());
+                selectedItemsToEdit.remove(i);
+                selectedItemsToEdit.add(i, updatedItem);
+            }
         }
 
         // Summary message
