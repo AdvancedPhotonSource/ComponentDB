@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.List;
 import javax.ejb.Stateless;
 
 /**
@@ -29,4 +30,7 @@ public class ItemDomainInventoryFacade extends ItemFacadeBase<ItemDomainInventor
         return (ItemDomainInventoryFacade) SessionUtility.findFacade(ItemDomainInventoryFacade.class.getSimpleName()); 
     }
 
+    public List<ItemDomainInventory> findByName(String name) {
+        return findByDomainAndName(getDomainName(), name);
+    }  
 }

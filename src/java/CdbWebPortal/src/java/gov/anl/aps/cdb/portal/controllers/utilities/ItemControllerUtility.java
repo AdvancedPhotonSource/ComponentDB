@@ -588,7 +588,7 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         }
         
         // retrieve list of candidate items matching name
-        List<ItemDomainEntity> candidateItems = getItemFacadeInstance().findByName(itemName);
+        List<ItemDomainEntity> candidateItems = getItemFacadeInstance().findByDomainAndName(getDefaultDomainName(), itemName);
         
         // check path against parents for each candidate
         for (ItemDomainEntity candidateItem : candidateItems) {
