@@ -87,7 +87,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
     private static final String HEADER_IS_VALID = "Is Valid";
     private static final String PROPERTY_IS_VALID = "isValidImportString";
-    private static final String HEADER_VALID_STRING = "Valid String";
+    private static final String HEADER_VALID_STRING = "Validation Info";
     private static final String PROPERTY_VALID_STRING = "validStringImport";
     private static final String HEADER_DIFFS = "Differences";
     private static final String PROPERTY_DIFFS = "importDiffs";
@@ -195,19 +195,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 handlers.addAll(initInfo.getInputHandlers());
                 
                 // set validation table columns depending on  mode
-                boolean addToTable = true;
-                if (getImportMode() == ImportMode.COMPARE) {
-                    if (!spec.getPropertyName().equals(KEY_EXISTING_ITEM_ID)) {
-                        addToTable = false;
-                    }
-                } else if (getImportMode() == ImportMode.DELETE) {
-                    if (!spec.isUsedForMode(ImportMode.DELETE)) {
-                        addToTable = false;
-                    }
-                }
-                if (addToTable) {
+                if (spec.isUsedForMode(getImportMode())) {
                     outputColumns.addAll(initInfo.getOutputColumns());
-                }
+                }                
             }
             
             colIndex = colIndex + initInfo.getNumColumns();   
@@ -1474,7 +1464,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setImportExistingItemId", 
                 "CDB ID of existing item to update.", 
                 "getId",
-                ColumnModeOptions.rUPDATErDELETE());
+                ColumnModeOptions.rUPDATErDELETErCOMPARE());
     }
 
     public BooleanColumnSpec deleteExistingItemColumnSpec() {

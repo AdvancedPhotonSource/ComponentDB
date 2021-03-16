@@ -69,6 +69,14 @@ public class ColumnModeOptions {
         return options;
     }
     
+    public static List<ColumnModeOptions> rUPDATErDELETErCOMPARE() {
+        List<ColumnModeOptions> options = new ArrayList<>();
+        options.add(new ColumnModeOptions(ImportMode.UPDATE, true));
+        options.add(new ColumnModeOptions(ImportMode.DELETE, true));
+        options.add(new ColumnModeOptions(ImportMode.COMPARE, true));
+        return options;
+    }
+    
     public static List<ColumnModeOptions> rDELETE() {
         List<ColumnModeOptions> options = new ArrayList<>();
         options.add(new ColumnModeOptions(ImportMode.DELETE, true));
