@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.List;
 import javax.ejb.Stateless;
 
 /**
@@ -41,4 +42,7 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
         return result;
     }
 
+    public List<ItemDomainCableDesign> findByName(String name) {
+        return findByDomainAndName(getDomainName(), name);
+    }  
 }

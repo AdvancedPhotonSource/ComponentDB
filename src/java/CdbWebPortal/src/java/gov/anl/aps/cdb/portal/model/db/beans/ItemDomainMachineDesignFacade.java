@@ -65,4 +65,7 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
         return findByItemIdentifier1(value);
     }
     
+    public List<ItemDomainMachineDesign> findByName(String name) {
+        return findByDomainAndName(getDomainName(), name);
+    }  
 }
