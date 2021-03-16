@@ -83,13 +83,16 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private static final String MODE_CREATE = "create";
     private static final String MODE_UPDATE = "update";
     private static final String MODE_DELETE = "delete";
+    private static final String MODE_COMPARE = "compare";
 
     private static final String HEADER_IS_VALID = "Is Valid";
     private static final String PROPERTY_IS_VALID = "isValidImportString";
     private static final String HEADER_VALID_STRING = "Valid String";
     private static final String PROPERTY_VALID_STRING = "validStringImport";
-    private static final String HEADER_UPDATE_DIFF = "Update Differences";
-    private static final String PROPERTY_UPDATE_DIFF = "importUpdateDiffs";
+    private static final String HEADER_DIFFS = "Differences";
+    private static final String PROPERTY_DIFFS = "importDiffs";
+    private static final String HEADER_ORIG = "Unchanged";
+    private static final String PROPERTY_ORIG = "importUnchanged";
     
     protected static final String KEY_USER = "ownerUserName";
     protected static final String KEY_GROUP = "ownerUserGroupName";
@@ -146,6 +149,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             importMode = ImportMode.UPDATE;
         } else if (importModeString.equals(MODE_DELETE)) {
             importMode = ImportMode.DELETE;
+        } else if (importModeString.equals(MODE_COMPARE)) {
+            importMode = ImportMode.COMPARE;
         }
     }
 
@@ -188,7 +193,21 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             } else {
                 inputColumns.addAll(initInfo.getInputColumns());
                 handlers.addAll(initInfo.getInputHandlers());
-                outputColumns.addAll(initInfo.getOutputColumns());
+                
+                // set validation table columns depending on  mode
+                boolean addToTable = true;
+                if (getImportMode() == ImportMode.COMPARE) {
+                    if (!spec.getPropertyName().equals(KEY_EXISTING_ITEM_ID)) {
+                        addToTable = false;
+                    }
+                } else if (getImportMode() == ImportMode.DELETE) {
+                    if (!spec.isUsedForMode(ImportMode.DELETE)) {
+                        addToTable = false;
+                    }
+                }
+                if (addToTable) {
+                    outputColumns.addAll(initInfo.getOutputColumns());
+                }
             }
             
             colIndex = colIndex + initInfo.getNumColumns();   
@@ -209,7 +228,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (initValidInfo.isValid()) {
             initializeInputColumns(initInfo.inputColumns);
             initializeInputHandlers(initInfo.inputHandlers);
-            initializeViewColumns(initInfo.outputColumns);
+            initializeValidationTableColumns(initInfo.outputColumns);
         }
         
         return initValidInfo;
@@ -225,12 +244,17 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         inputHandlers = specs;
     }
     
-    protected void initializeViewColumns(List<OutputColumnModel> columns) {        
+    protected void initializeValidationTableColumns(List<OutputColumnModel> columns) {        
         // these are special columns for displaying validation info for each row
         columns.add(new OutputColumnModel(HEADER_IS_VALID, PROPERTY_IS_VALID));
         columns.add(new OutputColumnModel(HEADER_VALID_STRING, PROPERTY_VALID_STRING));
-        if (getImportMode() == ImportMode.UPDATE) {
-            columns.add(new OutputColumnModel(HEADER_UPDATE_DIFF, PROPERTY_UPDATE_DIFF));
+        if (getImportMode() == ImportMode.COMPARE) {
+            columns.add(new OutputColumnModel(HEADER_ORIG, PROPERTY_ORIG));
+        }
+        if ((getImportMode() == ImportMode.UPDATE) 
+                || (getImportMode() == ImportMode.DELETE) 
+                || (getImportMode() == ImportMode.COMPARE)) {
+            columns.add(new OutputColumnModel(HEADER_DIFFS, PROPERTY_DIFFS));
         }
         outputColumns = columns;
     }
@@ -687,6 +711,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 case DELETE:
                     modeString = "delete";
                     break;
+                case COMPARE:
+                    modeString = "compare";
+                    break;
                 default:
                     break;
             }
@@ -704,12 +731,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 summaryMessage
                         = "Press 'Next Step' to complete the "
                         + modeString
-                        + " process. "
+                        + " process. ";
+                if (getImportMode() != ImportMode.COMPARE) {
+                    summaryMessage = summaryMessage
                         + "This will " 
                         + modeString 
                         + " "
                         + summaryDetails
                         + " displayed in table above. This action cannot be undone.";
+                }
             } else {
                 summaryMessage = "Press 'Cancel' to terminate the "
                         + modeString
@@ -782,8 +812,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     private List<InputHandler> getHandlersForCurrentMode() {
         // return only the handlers used for the current mode
+        final ImportMode mode;
+        if (getImportMode() == ImportMode.COMPARE) {
+            mode = ImportMode.UPDATE;
+        } else {
+            mode = getImportMode();
+        }
         return inputHandlers.stream().filter(
-                h -> h.isUsedForMode(getImportMode())).collect(Collectors.toList());
+                h -> h.isUsedForMode(mode)).collect(Collectors.toList());
     }
     
     private ValidInfo parseRow(Row row) throws CdbException {
@@ -810,7 +846,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
             
             // check that value not provided in column not used in this mode
-            if ((!col.isUsedForMode(getImportMode()))
+            ImportMode mode = getImportMode();
+            if (getImportMode() == ImportMode.COMPARE) {
+                // for compare mode, check if the column is used for updating
+                mode = ImportMode.UPDATE;
+            }
+            if ((!col.isUsedForMode(mode))
                     && ((cellValue != null) && (!cellValue.isEmpty()))) {                
                 
                 isValid = false;
@@ -880,8 +921,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (getImportMode() == ImportMode.CREATE) {
             return handleParsedRowCreateMode(rowDict);
             
-        } else if (getImportMode() == ImportMode.UPDATE) {
-            return handleParsedRowUpdateMode(rowDict);
+        } else if ((getImportMode() == ImportMode.UPDATE) || (getImportMode() == ImportMode.COMPARE)) {
+            return handleParsedRowUpdateCompareMode(rowDict);
             
         } else if (getImportMode() == ImportMode.DELETE) {
             return handleParsedRowDeleteMode(rowDict);
@@ -937,6 +978,17 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             isValid = false;
         }
         
+        // capture item field values for display in validation table
+        FieldValueMapResult result = getFieldValueMap(entity);
+        if (!result.getValidInfo().isValid()) {
+            isValid = false;
+            validString = appendToString(
+                    validString, 
+                    "Field snapshot failed: " 
+                            + result.getValidInfo().getValidString()); 
+        }
+        FieldValueMap fieldValueMap = result.getValueMap();
+
         // invoke each input handler to update the entity with row dictionary values
         ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(entity, rowDict);
         if (!updateValidInfo.isValid()) {
@@ -944,10 +996,26 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             isValid = false;
         }
         
+        String diffString = "";
+        boolean first = true;
+        for (String key : fieldValueMap.keySet()) {
+            if (!first) {
+                diffString = diffString + "<br>";
+            } else {
+                first = false;
+            }
+            String value = fieldValueMap.get(key);
+            diffString = diffString + key + ": ";
+            diffString = diffString + "<span style=\"color:red\">";
+            diffString = diffString + "'" + value + "'";
+            diffString = diffString + "</span>";
+        }
+        entity.setImportDiffs(diffString);
+        
         return new CreateInfo(entity, isValid, validString);
     }
     
-    private CreateInfo handleParsedRowUpdateMode(Map<String, Object> rowDict) throws CdbException {
+    private CreateInfo handleParsedRowUpdateCompareMode(Map<String, Object> rowDict) throws CdbException {
         
         boolean isValid = true;
         String validString = "";
@@ -1005,8 +1073,31 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         FieldValueMap postUpdateMap = postUpdateValueMapResult.getValueMap();
         
-        // get difference for field value snapshots, set update diffs string on entity if there are diffs
+        // capture differences between original and updated values
         FieldValueDifferenceMap fieldDiffMap = FieldValueMap.difference(preUpdateMap, postUpdateMap);
+        
+        // for compare mode, set unchanged values on entity
+        if (getImportMode() == ImportMode.COMPARE) {
+            String unchangedString = "";
+            boolean first = true;
+            for (String key : preUpdateMap.keySet()) {
+                if (!fieldDiffMap.keySet().contains(key)) {
+                    if (!first) {
+                        unchangedString = unchangedString + "<br>";
+                    } else {
+                        first = false;
+                    }
+                    String value = preUpdateMap.get(key);
+                    unchangedString = unchangedString + key + ": ";
+                    unchangedString = unchangedString + "<span style=\"color:green\">";
+                    unchangedString = unchangedString + "'" + value + "'";
+                    unchangedString = unchangedString + "</span>";
+                }
+            }
+            entity.setImportUnchanged(unchangedString);
+        }        
+        
+        // set update diffs string on entity if there are diffs        
         String diffString = "";
         boolean first = true;
         for (String key : fieldDiffMap.keySet()) {
@@ -1025,7 +1116,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             diffString = diffString + "'" + diff.getNewValue() + "'";
             diffString = diffString + "</span>";
         }
-        entity.setImportUpdateDiffs(diffString);
+        entity.setImportDiffs(diffString);
 
         // skip uniqueness checks in update mode for rows already flagged as invalid,
         // otherwise error reporting is confusing
@@ -1135,13 +1226,19 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             } else if (getImportMode() == ImportMode.DELETE) {
                 deleteList();
                 modeString = "deleted";
+            } else if (getImportMode() == ImportMode.COMPARE) {
+                modeString = "compared";
             }
 
         } catch (CdbException | RuntimeException ex) {
             return new ImportInfo(false, "Import failed. " + ex.getClass().getName());
         }
         
-        message = "Operation succeeded, " + modeString + " " + rows.size() + " instances";
+        if (getImportMode() != ImportMode.COMPARE) {
+            message = "Operation succeeded, " + modeString + " " + rows.size() + " instances";
+        } else {
+            message = "Comparison complete.";
+        }
         
         return new ImportInfo(true, message);
     }

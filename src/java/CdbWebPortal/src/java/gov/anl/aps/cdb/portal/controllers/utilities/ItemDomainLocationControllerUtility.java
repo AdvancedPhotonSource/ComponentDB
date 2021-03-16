@@ -110,54 +110,7 @@ public class ItemDomainLocationControllerUtility extends ItemControllerUtility<I
      */
     @Override
     public ItemDomainLocation findByPath(String path) throws CdbException {
-        
-        if (path.charAt(0) != '/') {
-            // first character expected to be forward slash
-            throw new CdbException("invalid path format, first character expected to be forward slash");
-        }
-        
-        // tokenize the path string, escaping any embedded delimiters
-        String delim = "/";
-        String esc = "\\";
-        String regex = "(?<!" + Pattern.quote(esc) + ")" + Pattern.quote(delim);
-        List<String> pathTokens = Arrays.asList(path.split(regex));
-        
-        if (pathTokens.isEmpty()) {
-            return null;
-        }
-        
-        // get item name and list of parent item names from path
-        String itemName = pathTokens.get(pathTokens.size() - 1);
-        List<String> pathParentNames = new ArrayList<>();
-        if (pathTokens.size() > 1) {
-            // here we skip the first element since it is expected to be empty string
-            // as the first character is slash, and the last element which is the item name
-            pathParentNames = pathTokens.subList(1, pathTokens.size() - 1);
-            Collections.reverse(pathParentNames);
-        }
-        
-        // retrieve list of candidate items matching name
-        List<ItemDomainLocation> candidateItems = getItemFacadeInstance().findByName(itemName);
-        
-        // check path against parents for each candidate
-        for (ItemDomainLocation candidateItem : candidateItems) {
-            
-            // create parent path list for candidate item and compare to specified path
-            List<String> itemParentNames = new ArrayList<>();
-            ItemDomainLocation candidateParent = candidateItem.getParentItem();
-            while (candidateParent != null) {
-                // replace occurrences of '/' with "\\/" to match syntax in specified path
-                itemParentNames.add(candidateParent.getName().replace("/", "\\/"));
-                candidateParent = candidateParent.getParentItem();
-            }
-            if (itemParentNames.equals(pathParentNames)) {
-                // candidate item parent path matches specified path
-                return candidateItem;
-            }
-        }
-                    
-        // no match
-        return null;
+        return findByPath_(path, ItemDomainLocation::getParentItem);
     }
         
 }
