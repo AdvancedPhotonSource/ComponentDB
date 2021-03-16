@@ -828,7 +828,7 @@ class CableTypeExistenceHandler(InputHandler):
         cable_type_name = input_dict[self.column_key]
         cable_type_id = self.id_mgr.get_id_for_name(cable_type_name)
         if cable_type_id is None:
-            fatal_error("unexpected error in id map for cable type existence check")
+            return False, "unexpected error in id map for cable type existence check"
         if cable_type_id != 0:
             # cable type already exists
             if self.ignore_existing:
@@ -920,7 +920,7 @@ class CableDesignExistenceHandler(InputHandler):
         # check to see if cable design exists in CDB
         cable_design_id = self.id_mgr.get_id_for_name(cable_design_name)
         if cable_design_id is None:
-            fatal_error("unexpected error with missing entry in cable design id map")
+            return False, "unexpected error with missing entry in cable design id map"
         if cable_design_id != 0:
             # cable design already exists
             if self.ignore_existing:
@@ -1340,7 +1340,7 @@ class CableTypeHelper(PreImportHelper):
         cable_type_named_range = self.named_range
 
         if len(output_objects) + len(self.existing_cable_types) < name_manager.num_values_for_name(cable_type_named_range):
-            return False, "named range: %s includes cable types not included in start/end range of script"
+            return False, "named range: %s includes cable types not included in start/end range of script" % cable_type_named_range
 
         return True, ""
 
@@ -1834,7 +1834,7 @@ class CableDesignOutputObject(OutputObject):
 
         # use legacy_id if specified
         if row_dict is not None:
-            legacy_id = row_dict[CABLE_DESIGN_LEGACY_ID_KEY]
+            legacy_id = str(row_dict[CABLE_DESIGN_LEGACY_ID_KEY])
         elif legacy_id is not None:
             legacy_id = str(legacy_id)
         else:
@@ -1844,7 +1844,7 @@ class CableDesignOutputObject(OutputObject):
 
         # otherwise use import_id prefixed with "CA "
         if row_dict is not None:
-            import_id = cls.get_import_id_cls(row_dict)
+            import_id = str(cls.get_import_id_cls(row_dict))
         elif import_id is not None:
             import_id = str(import_id)
         else:
@@ -1853,7 +1853,7 @@ class CableDesignOutputObject(OutputObject):
 
     @classmethod
     def get_import_id_cls(cls, row_dict):
-        return str(int(row_dict[CABLE_DESIGN_IMPORT_ID_KEY]))
+        return str(row_dict[CABLE_DESIGN_IMPORT_ID_KEY])
 
     def get_existing_item_id(self):
         return ""
