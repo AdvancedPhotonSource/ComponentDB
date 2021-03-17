@@ -2096,7 +2096,7 @@ def main():
     # process outputDir option
     option_output_dir = get_config_resource(config_preimport, option_type, 'outputDir', True)
     if not os.path.isdir(option_output_dir):
-        fatal_error("'[%s] outputDir' directory: %s does not exist, exiting" % (option_type, option_input_dir))
+        fatal_error("'[%s] outputDir' directory: %s does not exist, exiting" % (option_type, option_output_dir))
 
     # process sheetNumber option
     option_sheet_number = get_config_resource(config_preimport, option_type, 'sheetNumber', True)
