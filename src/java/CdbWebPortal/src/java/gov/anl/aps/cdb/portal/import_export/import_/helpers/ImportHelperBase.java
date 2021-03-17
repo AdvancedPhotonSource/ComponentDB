@@ -842,12 +842,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 mode = ImportMode.UPDATE;
             }
             if ((!col.isUsedForMode(mode))
-                    && ((cellValue != null) && (!cellValue.isEmpty()))) {                
+                    && ((cellValue != null) && (!cellValue.isEmpty()))) {    
                 
-                isValid = false;
-                validString = appendToString(validString, 
-                        "Value should not be specified in current mode for " 
-                                + columnNameForIndex(col.getColumnIndex()));
+                if (mode != ImportMode.DELETE) {       
+                    // skip this requirement for delete mode
+                    isValid = false;
+                    validString = appendToString(validString,
+                            "Value should not be specified in current mode for "
+                            + columnNameForIndex(col.getColumnIndex()));
+                }
             }
         }
         
