@@ -986,21 +986,24 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             isValid = false;
         }
         
-        String diffString = "";
-        boolean first = true;
-        for (String key : fieldValueMap.keySet()) {
-            if (!first) {
-                diffString = diffString + "<br>";
-            } else {
-                first = false;
+        // display field values as diffs, but only if item is valid
+        if (isValid) {
+            String diffString = "";
+            boolean first = true;
+            for (String key : fieldValueMap.keySet()) {
+                if (!first) {
+                    diffString = diffString + "<br>";
+                } else {
+                    first = false;
+                }
+                String value = fieldValueMap.get(key);
+                diffString = diffString + key + ": ";
+                diffString = diffString + "<span style=\"color:red\">";
+                diffString = diffString + "'" + value + "'";
+                diffString = diffString + "</span>";
             }
-            String value = fieldValueMap.get(key);
-            diffString = diffString + key + ": ";
-            diffString = diffString + "<span style=\"color:red\">";
-            diffString = diffString + "'" + value + "'";
-            diffString = diffString + "</span>";
+            entity.setImportDiffs(diffString);
         }
-        entity.setImportDiffs(diffString);
         
         return new CreateInfo(entity, isValid, validString);
     }
@@ -1051,73 +1054,73 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             validString = appendToString(validString, updateValidInfo.getValidString());
             isValid = false;
         }
-
-        // capture item field values for comparison later with updated field values
-        FieldValueMapResult postUpdateValueMapResult = getFieldValueMap(entity);
-        if (!postUpdateValueMapResult.getValidInfo().isValid()) {
-            isValid = false;
-            validString = appendToString(
-                    validString, 
-                    "Post update field snapshot failed: " 
-                            + postUpdateValueMapResult.getValidInfo().getValidString()); 
-        }
-        FieldValueMap postUpdateMap = postUpdateValueMapResult.getValueMap();
         
-        // capture differences between original and updated values
-        FieldValueDifferenceMap fieldDiffMap = FieldValueMap.difference(preUpdateMap, postUpdateMap);
-        
-        // for compare mode, set unchanged values on entity
-        if (getImportMode() == ImportMode.COMPARE) {
-            String unchangedString = "";
-            boolean first = true;
-            for (String key : preUpdateMap.keySet()) {
-                if (!fieldDiffMap.keySet().contains(key)) {
-                    if (!first) {
-                        unchangedString = unchangedString + "<br>";
-                    } else {
-                        first = false;
-                    }
-                    String value = preUpdateMap.get(key);
-                    unchangedString = unchangedString + key + ": ";
-                    unchangedString = unchangedString + "<span style=\"color:green\">";
-                    unchangedString = unchangedString + "'" + value + "'";
-                    unchangedString = unchangedString + "</span>";
-                }
-            }
-            entity.setImportUnchanged(unchangedString);
-        }        
-        
-        // set update diffs string on entity if there are diffs        
-        String diffString = "";
-        boolean first = true;
-        for (String key : fieldDiffMap.keySet()) {
-            if (!first) {
-                diffString = diffString + "<br>";
-            } else {
-                first = false;
-            }
-            FieldValueDifference diff = fieldDiffMap.get(key);
-            diffString = diffString + key + ": ";
-            diffString = diffString + "<span style=\"color:red\">";
-            diffString = diffString + "'" + diff.getOldValue() + "'";
-            diffString = diffString + "</span>";
-            diffString = diffString + " -> ";
-            diffString = diffString + "<span style=\"color:green\">";
-            diffString = diffString + "'" + diff.getNewValue() + "'";
-            diffString = diffString + "</span>";
-        }
-        entity.setImportDiffs(diffString);
-
-        // skip uniqueness checks in update mode for rows already flagged as invalid,
-        // otherwise error reporting is confusing
         if (isValid) {
+
+            // capture item field values for comparison later with updated field values
+            FieldValueMapResult postUpdateValueMapResult = getFieldValueMap(entity);
+            if (!postUpdateValueMapResult.getValidInfo().isValid()) {
+                isValid = false;
+                validString = appendToString(
+                        validString,
+                        "Post update field snapshot failed: "
+                        + postUpdateValueMapResult.getValidInfo().getValidString());
+            }
+            FieldValueMap postUpdateMap = postUpdateValueMapResult.getValueMap();
+
+            // capture differences between original and updated values
+            FieldValueDifferenceMap fieldDiffMap = FieldValueMap.difference(preUpdateMap, postUpdateMap);
+
+            // for compare mode, set unchanged values on entity
+            if (getImportMode() == ImportMode.COMPARE) {
+                String unchangedString = "";
+                boolean first = true;
+                for (String key : preUpdateMap.keySet()) {
+                    if (!fieldDiffMap.keySet().contains(key)) {
+                        if (!first) {
+                            unchangedString = unchangedString + "<br>";
+                        } else {
+                            first = false;
+                        }
+                        String value = preUpdateMap.get(key);
+                        unchangedString = unchangedString + key + ": ";
+                        unchangedString = unchangedString + "<span style=\"color:green\">";
+                        unchangedString = unchangedString + "'" + value + "'";
+                        unchangedString = unchangedString + "</span>";
+                    }
+                }
+                entity.setImportUnchanged(unchangedString);
+            }
+
+            // set update diffs string on entity if there are diffs        
+            String diffString = "";
+            boolean first = true;
+            for (String key : fieldDiffMap.keySet()) {
+                if (!first) {
+                    diffString = diffString + "<br>";
+                } else {
+                    first = false;
+                }
+                FieldValueDifference diff = fieldDiffMap.get(key);
+                diffString = diffString + key + ": ";
+                diffString = diffString + "<span style=\"color:red\">";
+                diffString = diffString + "'" + diff.getOldValue() + "'";
+                diffString = diffString + "</span>";
+                diffString = diffString + " -> ";
+                diffString = diffString + "<span style=\"color:green\">";
+                diffString = diffString + "'" + diff.getNewValue() + "'";
+                diffString = diffString + "</span>";
+            }
+            entity.setImportDiffs(diffString);
+
+            // skip uniqueness checks in update mode for rows already flagged as invalid,
+            // otherwise error reporting is confusing
             ValidInfo uniqueValidInfo = checkEntityUniqueness(entity);
             if (!uniqueValidInfo.isValid()) {
                 isValid = false;
                 validString = appendToString(validString, uniqueValidInfo.getValidString());
             }
         }
-
         return new CreateInfo(entity, isValid, validString);
     }
     
