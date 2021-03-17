@@ -1,0 +1,691 @@
+INFO - input spreadsheet dimensions: 208 x 23
+DEBUG - processing row 61 from input spreadsheet
+DEBUG - col: 0 value: 1/4" Heliax (FSJ-150)
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: 1/4" Heliax (FSJ-150)
+DEBUG - processing row 62 from input spreadsheet
+DEBUG - col: 0 value: 3/8" Heliax
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: 3/8" Heliax
+DEBUG - processing row 63 from input spreadsheet
+DEBUG - col: 0 value: 1/2" Heliax
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: 1/2" Heliax
+DEBUG - processing row 64 from input spreadsheet
+DEBUG - col: 0 value: 3/4" Heliax
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: 3/4" Heliax
+DEBUG - processing row 65 from input spreadsheet
+DEBUG - col: 0 value: #22/2c (Belden 9322)
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: #22/2c (Belden 9322)
+DEBUG - processing row 66 from input spreadsheet
+DEBUG - col: 0 value: #22/3c (Belden 9770)
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: #22/3c (Belden 9770)
+DEBUG - processing row 67 from input spreadsheet
+DEBUG - col: 0 value: LMR-200
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: LMR-200
+DEBUG - processing row 68 from input spreadsheet
+DEBUG - col: 0 value: RG-58
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: RG-58
+DEBUG - processing row 69 from input spreadsheet
+DEBUG - col: 0 value: RG-217
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: RG-217
+DEBUG - processing row 70 from input spreadsheet
+DEBUG - col: 0 value: RG-223 (Belden 9273)
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: RG-223 (Belden 9273)
+DEBUG - processing row 71 from input spreadsheet
+DEBUG - col: 0 value: YR48343 (Cherenkov)
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: YR48343 (Cherenkov)
+DEBUG - processing row 72 from input spreadsheet
+DEBUG - col: 0 value: SiO2 (coaxial)
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: SiO2 (coaxial)
+DEBUG - processing row 73 from input spreadsheet
+DEBUG - col: 0 value: HLS (TBD)
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: HLS (TBD)
+DEBUG - processing row 2 in output spreadsheet
+DEBUG - index: 0 method: get_name value: 1/4" Heliax (FSJ-150)
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 3 in output spreadsheet
+DEBUG - index: 0 method: get_name value: 3/8" Heliax
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 4 in output spreadsheet
+DEBUG - index: 0 method: get_name value: 1/2" Heliax
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 5 in output spreadsheet
+DEBUG - index: 0 method: get_name value: 3/4" Heliax
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 6 in output spreadsheet
+DEBUG - index: 0 method: get_name value: #22/2c (Belden 9322)
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 7 in output spreadsheet
+DEBUG - index: 0 method: get_name value: #22/3c (Belden 9770)
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 8 in output spreadsheet
+DEBUG - index: 0 method: get_name value: LMR-200
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 9 in output spreadsheet
+DEBUG - index: 0 method: get_name value: RG-58
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 10 in output spreadsheet
+DEBUG - index: 0 method: get_name value: RG-217
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 11 in output spreadsheet
+DEBUG - index: 0 method: get_name value: RG-223 (Belden 9273)
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 12 in output spreadsheet
+DEBUG - index: 0 method: get_name value: YR48343 (Cherenkov)
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 13 in output spreadsheet
+DEBUG - index: 0 method: get_name value: SiO2 (coaxial)
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 14 in output spreadsheet
+DEBUG - index: 0 method: get_name value: HLS (TBD)
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #Diagnostics
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+INFO - PROCESSING SUCCESSFUL: processed 13 input rows including 0 empty rows and wrote 13 output rows

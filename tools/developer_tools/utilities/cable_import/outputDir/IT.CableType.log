@@ -1,0 +1,617 @@
+INFO - input spreadsheet dimensions: 208 x 23
+DEBUG - processing row 81 from input spreadsheet
+DEBUG - col: 0 value: Cat 6
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - adding output object for: Cat 6
+DEBUG - processing row 82 from input spreadsheet
+DEBUG - col: 0 value: Cat 6a
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: Cat 6a, skipping
+DEBUG - processing row 83 from input spreadsheet
+DEBUG - col: 0 value: LMR-195
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: cables r us
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - found source with name: cables r us, id: 125
+DEBUG - adding output object for: LMR-195
+DEBUG - processing row 84 from input spreadsheet
+DEBUG - col: 0 value: LMR-400
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: acme cables
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - found source with name: acme cables, id: 128
+DEBUG - adding output object for: LMR-400
+DEBUG - processing row 85 from input spreadsheet
+DEBUG - col: 0 value: MM 1
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: MM 1, skipping
+DEBUG - processing row 86 from input spreadsheet
+DEBUG - col: 0 value: MM 2
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: MM 2, skipping
+DEBUG - processing row 87 from input spreadsheet
+DEBUG - col: 0 value: MM 4
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: MM 4, skipping
+DEBUG - processing row 88 from input spreadsheet
+DEBUG - col: 0 value: MM 6
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: MM 6, skipping
+DEBUG - processing row 89 from input spreadsheet
+DEBUG - col: 0 value: MM 8
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: MM 8, skipping
+DEBUG - processing row 90 from input spreadsheet
+DEBUG - col: 0 value: MM 12
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: MM 12, skipping
+DEBUG - processing row 91 from input spreadsheet
+DEBUG - col: 0 value: MM 24
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: CommScope
+DEBUG - col: 3 value: R-024-DS-5K-FSUBR
+DEBUG - col: 4 value: 760152413
+DEBUG - col: 5 value: 0.33
+DEBUG - col: 6 value: 38
+DEBUG - col: 7 value: 24
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: brown
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 4.9
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: https://www.anixter.com/en_us/products/R-024-DS-5K-FSUBR/COMMSCOPE-ENTERPRISE-SOLUTIONS/Indoor-Fiber-Optic-Cable/p/371-COMOM4-TBD-24BR
+DEBUG - col: 16 value: https://images.eanixter.com/viewex/PR65573V2.JPG
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - found source with name: CommScope, id: 124
+DEBUG - cable type already exists in CDB for: MM 24, skipping
+DEBUG - processing row 92 from input spreadsheet
+DEBUG - col: 0 value: MM 48
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: MM 48, skipping
+DEBUG - processing row 93 from input spreadsheet
+DEBUG - col: 0 value: SM 1
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: SM 1, skipping
+DEBUG - processing row 94 from input spreadsheet
+DEBUG - col: 0 value: SM 2
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: SM 2, skipping
+DEBUG - processing row 95 from input spreadsheet
+DEBUG - col: 0 value: SM 4
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: SM 4, skipping
+DEBUG - processing row 96 from input spreadsheet
+DEBUG - col: 0 value: SM 6
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: SM 6, skipping
+DEBUG - processing row 97 from input spreadsheet
+DEBUG - col: 0 value: SM 8
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: SM 8, skipping
+DEBUG - processing row 98 from input spreadsheet
+DEBUG - col: 0 value: SM 12
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - cable type already exists in CDB for: SM 12, skipping
+DEBUG - processing row 99 from input spreadsheet
+DEBUG - col: 0 value: SM 24
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: CommScope
+DEBUG - col: 3 value: P-024-DS-8W-FSUYL
+DEBUG - col: 4 value: 760018630
+DEBUG - col: 5 value: 0.335
+DEBUG - col: 6 value: 47.0378283
+DEBUG - col: 7 value: 24
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: yellow
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 5
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: https://www.commscope.com/globalassets/digizuite/126637-p360-760018630-external.pdf
+DEBUG - col: 16 value: https://www.commscope.com/globalassets/digizuite/24767-co-p-dssu-2-1-18-jpg.jpg
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - found source with name: CommScope, id: 124
+DEBUG - cable type already exists in CDB for: SM 24, skipping
+DEBUG - processing row 100 from input spreadsheet
+DEBUG - col: 0 value: SM 48
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: CommScope
+DEBUG - col: 3 value: R-048-DS-8W-FSUYL
+DEBUG - col: 4 value: 760004473
+DEBUG - col: 5 value: 0.63
+DEBUG - col: 6 value: 142.5
+DEBUG - col: 7 value: 48
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: yellow
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 9.4
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: https://www.commscope.com/catalog/cables/product_details.aspx?id=19772
+DEBUG - col: 16 value: https://www.commscope.com/catalog/imagesCache/0000006/t006_r20699_v-1.jpg
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - found source with name: CommScope, id: 124
+DEBUG - cable type already exists in CDB for: SM 48, skipping
+DEBUG - processing row 101 from input spreadsheet
+DEBUG - col: 0 value: Cat 6a (red)
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: Commscope
+DEBUG - col: 3 value: Systimax 2071E Red
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - found source with name: Commscope, id: 124
+DEBUG - cable type already exists in CDB for: Cat 6a (red), skipping
+DEBUG - processing row 2 in output spreadsheet
+DEBUG - index: 0 method: get_name value: Cat 6
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: None
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #IT
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 3 in output spreadsheet
+DEBUG - index: 0 method: get_name value: LMR-195
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: 125
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #IT
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+DEBUG - processing row 4 in output spreadsheet
+DEBUG - index: 0 method: get_name value: LMR-400
+DEBUG - index: 1 method: get_alt_name value: None
+DEBUG - index: 2 method: get_description value: 
+DEBUG - index: 3 method: get_link_url value: 
+DEBUG - index: 4 method: get_image_url value: 
+DEBUG - index: 5 method: get_manufacturer_id value: 128
+DEBUG - index: 6 method: get_part_number value: 
+DEBUG - index: 7 method: get_alt_part_number value: 
+DEBUG - index: 8 method: get_diameter value: 
+DEBUG - index: 9 method: get_weight value: 
+DEBUG - index: 10 method: get_conductors value: 
+DEBUG - index: 11 method: get_insulation value: 
+DEBUG - index: 12 method: get_jacket_color value: 
+DEBUG - index: 13 method: get_voltage_rating value: 
+DEBUG - index: 14 method: get_fire_load value: 
+DEBUG - index: 15 method: get_heat_limit value: 
+DEBUG - index: 16 method: get_bend_radius value: 
+DEBUG - index: 17 method: get_rad_tolerance value: 
+DEBUG - index: 18 method: get_total_length value: 
+DEBUG - index: 19 method: get_reel_length value: 
+DEBUG - index: 20 method: get_reel_qty value: 
+DEBUG - index: 21 method: get_lead_time value: 
+DEBUG - index: 22 method: get_procurement_status value: Unspecified
+DEBUG - index: 23 method: get_project_id value: #APS-U Production
+DEBUG - index: 24 method: get_tech_system_id value: #IT
+DEBUG - index: 25 method: get_owner_user_id value: #cdb
+DEBUG - index: 26 method: get_owner_group_id value: #APSU_CABLE_CONFIG
+INFO - PROCESSING SUCCESSFUL: processed 21 input rows including 0 empty rows and wrote 3 output rows

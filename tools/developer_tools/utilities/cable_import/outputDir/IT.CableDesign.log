@@ -1,0 +1,1429 @@
+INFO - input spreadsheet dimensions: 70 x 24
+DEBUG - processing row 20 from input spreadsheet
+DEBUG - col: 0 value: [] | []
+DEBUG - col: 1 value: 
+DEBUG - col: 2 value: 
+DEBUG - col: 3 value: 
+DEBUG - col: 4 value: 
+DEBUG - col: 5 value: 
+DEBUG - col: 6 value: 
+DEBUG - col: 7 value: 
+DEBUG - col: 8 value: 
+DEBUG - col: 9 value: 
+DEBUG - col: 10 value: 
+DEBUG - col: 11 value: 
+DEBUG - col: 12 value: 
+DEBUG - col: 13 value: 
+DEBUG - col: 14 value: 
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: 
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: 
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - skipping empty row with no import id:  row: 20
+DEBUG - skipping empty row: 20
+DEBUG - processing row 21 from input spreadsheet
+DEBUG - col: 0 value: SR_R_401_D1109_RR8J[low] | SR_M_A02_C61_64_02-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_R
+DEBUG - col: 6 value: _401_D1109_
+DEBUG - col: 7 value: RR8J
+DEBUG - col: 8 value: low
+DEBUG - col: 9 value: 1U-HD LSA C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A02_C61_64_
+DEBUG - col: 12 value: 02-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: CR-NET:LP1:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S02-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900021
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: CR-NET:LP1:SC1, id: 90484
+DEBUG - found machine design item with name: S02-NET:LP1:SC1, id: 20598
+ERROR - validation ERRORS found for row 21
+DEBUG - processing row 22 from input spreadsheet
+DEBUG - col: 0 value: SR_R_401_D1109_RR8J[low] | SR_M_A02_C61_64_02-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_R
+DEBUG - col: 6 value: _401_D1109_
+DEBUG - col: 7 value: RR8J
+DEBUG - col: 8 value: low
+DEBUG - col: 9 value: 1U-HD LSA C2
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A02_C61_64_
+DEBUG - col: 12 value: 02-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: CR-NET:LP1:SC2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S02-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900022
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: CR-NET:LP1:SC2, id: 90485
+DEBUG - found machine design item with name: S02-NET:LP1:SC2, id: 20599
+ERROR - validation ERRORS found for row 22
+DEBUG - processing row 23 from input spreadsheet
+DEBUG - col: 0 value: SR_R_401_D1109_RR8J[low] | SR_M_A12_C91_94_11-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_R
+DEBUG - col: 6 value: _401_D1109_
+DEBUG - col: 7 value: RR8J
+DEBUG - col: 8 value: low
+DEBUG - col: 9 value: 1U-HD LSA C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A12_C91_94_
+DEBUG - col: 12 value: 11-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: CR-NET:LP1:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S11-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900023
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: CR-NET:LP1:SC3, id: 90486
+DEBUG - found machine design item with name: S11-NET:LP1:SC1, id: 20720
+ERROR - validation ERRORS found for row 23
+DEBUG - processing row 24 from input spreadsheet
+DEBUG - col: 0 value: SR_R_401_D1109_RR8J[low] | SR_M_A12_C91_94_11-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_R
+DEBUG - col: 6 value: _401_D1109_
+DEBUG - col: 7 value: RR8J
+DEBUG - col: 8 value: low
+DEBUG - col: 9 value: 1U-HD LSA C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A12_C91_94_
+DEBUG - col: 12 value: 11-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: CR-NET:LP1:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S11-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900024
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: CR-NET:LP1:SC4, id: 90487
+DEBUG - found machine design item with name: S11-NET:LP1:SC2, id: 20721
+ERROR - validation ERRORS found for row 24
+DEBUG - processing row 25 from input spreadsheet
+DEBUG - col: 0 value: SR_R_401_D1109_RR8J[low] | SR_M_A22_C121_124_21-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_R
+DEBUG - col: 6 value: _401_D1109_
+DEBUG - col: 7 value: RR8J
+DEBUG - col: 8 value: low
+DEBUG - col: 9 value: 1U-HD LSB C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A22_C121_124_
+DEBUG - col: 12 value: 21-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: CR-NET:LP2:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S21-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900025
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: CR-NET:LP2:SC1, id: 90488
+DEBUG - found machine design item with name: S21-NET:LP1:SC1, id: 20975
+ERROR - validation ERRORS found for row 25
+DEBUG - processing row 26 from input spreadsheet
+DEBUG - col: 0 value: SR_R_401_D1109_RR8J[low] | SR_M_A22_C121_124_21-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_R
+DEBUG - col: 6 value: _401_D1109_
+DEBUG - col: 7 value: RR8J
+DEBUG - col: 8 value: low
+DEBUG - col: 9 value: 1U-HD LSB C2
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A22_C121_124_
+DEBUG - col: 12 value: 21-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: CR-NET:LP2:SC2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S21-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900026
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: CR-NET:LP2:SC2, id: 90489
+DEBUG - found machine design item with name: S21-NET:LP1:SC2, id: 20973
+ERROR - validation ERRORS found for row 26
+DEBUG - processing row 27 from input spreadsheet
+DEBUG - col: 0 value: SR_R_401_D1109_RR8J[low] | SR_M_A32_C151_154_31-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_R
+DEBUG - col: 6 value: _401_D1109_
+DEBUG - col: 7 value: RR8J
+DEBUG - col: 8 value: low
+DEBUG - col: 9 value: 1U-HD LSB C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A32_C151_154_
+DEBUG - col: 12 value: 31-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: CR-NET:LP2:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S31-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900027
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: CR-NET:LP2:SC3, id: 90490
+DEBUG - found machine design item with name: S31-NET:LP1:SC1, id: 21080
+ERROR - validation ERRORS found for row 27
+DEBUG - processing row 28 from input spreadsheet
+DEBUG - col: 0 value: SR_R_401_D1109_RR8J[low] | SR_M_A32_C151_154_31-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_R
+DEBUG - col: 6 value: _401_D1109_
+DEBUG - col: 7 value: RR8J
+DEBUG - col: 8 value: low
+DEBUG - col: 9 value: 1U-HD LSB C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A32_C151_154_
+DEBUG - col: 12 value: 31-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: CR-NET:LP2:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S31-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900028
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: CR-NET:LP2:SC4, id: 90491
+DEBUG - found machine design item with name: S31-NET:LP1:SC2, id: 21077
+ERROR - validation ERRORS found for row 28
+DEBUG - processing row 29 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A02_C61_64_02-00[high] | SR_M_A37_C166_169_37-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A02_C61_64_
+DEBUG - col: 7 value: 02-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSA C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A37_C166_169_
+DEBUG - col: 12 value: 37-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S02-NET:LP1:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S37-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900029
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S02-NET:LP1:SC3, id: 20600
+DEBUG - found machine design item with name: S37-NET:LP1:SC1, id: 21237
+ERROR - validation ERRORS found for row 29
+DEBUG - processing row 30 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A02_C61_64_02-00[high] | SR_M_A40_C55_58_40-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A02_C61_64_
+DEBUG - col: 7 value: 02-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSA C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A40_C55_58_
+DEBUG - col: 12 value: 40-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S02-NET:LP1:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S40-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900030
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S02-NET:LP1:SC4, id: 20601
+DEBUG - found machine design item with name: S40-NET:LP1:SC1, id: 21147
+ERROR - validation ERRORS found for row 30
+DEBUG - processing row 31 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A02_C61_64_02-00[high] | SR_M_A02_C61_64_02-00[mid]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 2
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A02_C61_64_
+DEBUG - col: 7 value: 02-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: T2 SWITCH
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A02_C61_64_
+DEBUG - col: 12 value: 02-00
+DEBUG - col: 13 value: mid
+DEBUG - col: 14 value: T3 SWITCH
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S02-NET:NSW2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S02-NET:NSW1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900031
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S02-NET:NSW2, id: 8078
+DEBUG - found machine design item with name: S02-NET:NSW1, id: 8075
+ERROR - validation ERRORS found for row 31
+DEBUG - processing row 32 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A02_C61_64_02-00[high] | SR_M_A04_C67_70_04-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A02_C61_64_
+DEBUG - col: 7 value: 02-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A04_C67_70_
+DEBUG - col: 12 value: 04-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S02-NET:LP2:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S04-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900032
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S02-NET:LP2:SC1, id: 20603
+DEBUG - found machine design item with name: S04-NET:LP1:SC1, id: 20757
+ERROR - validation ERRORS found for row 32
+DEBUG - processing row 33 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A02_C61_64_02-00[high] | SR_M_A06_C73_76_06-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A02_C61_64_
+DEBUG - col: 7 value: 02-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C2
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A06_C73_76_
+DEBUG - col: 12 value: 06-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S02-NET:LP2:SC2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S06-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900033
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S02-NET:LP2:SC2, id: 20604
+DEBUG - found machine design item with name: S06-NET:LP1:SC1, id: 20761
+ERROR - validation ERRORS found for row 33
+DEBUG - processing row 34 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A02_C61_64_02-00[high] | SR_M_A08_C79_82_08-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A02_C61_64_
+DEBUG - col: 7 value: 02-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A08_C79_82_
+DEBUG - col: 12 value: 08-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S02-NET:LP1:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S08-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900034
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S02-NET:LP1:SC3, id: 20600
+DEBUG - found machine design item with name: S08-NET:LP1:SC1, id: 20765
+ERROR - validation ERRORS found for row 34
+DEBUG - processing row 35 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A02_C61_64_02-00[high] | SR_M_A10_C85_88_10-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A02_C61_64_
+DEBUG - col: 7 value: 02-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A10_C85_88_
+DEBUG - col: 12 value: 10-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S02-NET:LP2:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S10-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900035
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S02-NET:LP2:SC4, id: 20606
+DEBUG - found machine design item with name: S10-NET:LP1:SC1, id: 20772
+ERROR - validation ERRORS found for row 35
+DEBUG - processing row 36 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A02_C61_64_02-00[high] | SR_M_A12_C91_94_11-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A02_C61_64_
+DEBUG - col: 7 value: 02-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A12_C91_94_
+DEBUG - col: 12 value: 11-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C3
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S02-NET:LP3:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S11-NET:LP1:SC3
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900036
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S02-NET:LP3:SC1, id: 20607
+DEBUG - found machine design item with name: S11-NET:LP1:SC3, id: 20722
+ERROR - validation ERRORS found for row 36
+DEBUG - processing row 37 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A02_C61_64_02-00[high] | SR_M_A14_C97_100_14-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A02_C61_64_
+DEBUG - col: 7 value: 02-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C2
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A14_C97_100_
+DEBUG - col: 12 value: 14-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S02-NET:LP3:SC2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S14-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900037
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S02-NET:LP3:SC2, id: 20608
+DEBUG - found machine design item with name: S14-NET:LP1:SC1, id: 20742
+ERROR - validation ERRORS found for row 37
+DEBUG - processing row 38 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A02_C61_64_02-00[high] | SR_M_A16_C103_106_16-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A02_C61_64_
+DEBUG - col: 7 value: 02-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A16_C103_106_
+DEBUG - col: 12 value: 16-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S02-NET:LP3:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S16-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900038
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S02-NET:LP3:SC3, id: 20609
+DEBUG - found machine design item with name: S16-NET:LP1:SC1, id: 20909
+ERROR - validation ERRORS found for row 38
+DEBUG - processing row 39 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A12_C91_94_11-00[high] | SR_M_A37_C166_169_37-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A12_C91_94_
+DEBUG - col: 7 value: 11-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSA C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A37_C166_169_
+DEBUG - col: 12 value: 37-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S11-NET:LP1:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S37-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900039
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S11-NET:LP1:SC4, id: 20723
+DEBUG - found machine design item with name: S37-NET:LP1:SC2, id: 21236
+ERROR - validation ERRORS found for row 39
+DEBUG - processing row 40 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A12_C91_94_11-00[high] | SR_M_A40_C55_58_40-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A12_C91_94_
+DEBUG - col: 7 value: 11-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A40_C55_58_
+DEBUG - col: 12 value: 40-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S11-NET:LP2:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S40-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900040
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S11-NET:LP2:SC1, id: 20724
+DEBUG - found machine design item with name: S40-NET:LP1:SC2, id: 21148
+ERROR - validation ERRORS found for row 40
+DEBUG - processing row 41 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A12_C91_94_11-00[high] | SR_M_A02_C61_64_02-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A12_C91_94_
+DEBUG - col: 7 value: 11-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C2
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A02_C61_64_
+DEBUG - col: 12 value: 02-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSC C4
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S11-NET:LP2:SC2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S02-NET:LP3:SC4
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900041
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S11-NET:LP2:SC2, id: 20725
+DEBUG - found machine design item with name: S02-NET:LP3:SC4, id: 20610
+ERROR - validation ERRORS found for row 41
+DEBUG - processing row 42 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A12_C91_94_11-00[high] | SR_M_A04_C67_70_04-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A12_C91_94_
+DEBUG - col: 7 value: 11-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A04_C67_70_
+DEBUG - col: 12 value: 04-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S11-NET:LP2:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S04-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900042
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S11-NET:LP2:SC3, id: 20726
+DEBUG - found machine design item with name: S04-NET:LP1:SC2, id: 20755
+ERROR - validation ERRORS found for row 42
+DEBUG - processing row 43 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A12_C91_94_11-00[high] | SR_M_A06_C73_76_06-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A12_C91_94_
+DEBUG - col: 7 value: 11-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A06_C73_76_
+DEBUG - col: 12 value: 06-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S11-NET:LP2:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S06-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900043
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S11-NET:LP2:SC4, id: 20727
+DEBUG - found machine design item with name: S06-NET:LP1:SC2, id: 20760
+ERROR - validation ERRORS found for row 43
+DEBUG - processing row 44 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A12_C91_94_11-00[high] | SR_M_A08_C79_82_08-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A12_C91_94_
+DEBUG - col: 7 value: 11-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A08_C79_82_
+DEBUG - col: 12 value: 08-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S11-NET:LP3:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S08-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900044
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S11-NET:LP3:SC1, id: 20728
+DEBUG - found machine design item with name: S08-NET:LP1:SC2, id: 20767
+ERROR - validation ERRORS found for row 44
+DEBUG - processing row 45 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A12_C91_94_11-00[high] | SR_M_A10_C85_88_10-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A12_C91_94_
+DEBUG - col: 7 value: 11-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C2
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A10_C85_88_
+DEBUG - col: 12 value: 10-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S11-NET:LP3:SC2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S10-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900045
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S11-NET:LP3:SC2, id: 20729
+DEBUG - found machine design item with name: S10-NET:LP1:SC2, id: 20771
+ERROR - validation ERRORS found for row 45
+DEBUG - processing row 46 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A12_C91_94_11-00[high] | SR_M_A12_C91_94_11-00[mid]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 2
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A12_C91_94_
+DEBUG - col: 7 value: 11-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: T2 SWITCH
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A12_C91_94_
+DEBUG - col: 12 value: 11-00
+DEBUG - col: 13 value: mid
+DEBUG - col: 14 value: T3 SWITCH
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S11-NET:NSW2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S11-NET:NSW1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900046
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S11-NET:NSW2, id: 8083
+DEBUG - found machine design item with name: S11-NET:NSW1, id: 20702
+ERROR - validation ERRORS found for row 46
+DEBUG - processing row 47 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A12_C91_94_11-00[high] | SR_M_A14_C97_100_14-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A12_C91_94_
+DEBUG - col: 7 value: 11-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A14_C97_100_
+DEBUG - col: 12 value: 14-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S11-NET:LP3:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S14-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900047
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S11-NET:LP3:SC3, id: 20730
+DEBUG - found machine design item with name: S14-NET:LP1:SC2, id: 20739
+ERROR - validation ERRORS found for row 47
+DEBUG - processing row 48 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A12_C91_94_11-00[high] | SR_M_A16_C103_106_16-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A12_C91_94_
+DEBUG - col: 7 value: 11-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A16_C103_106_
+DEBUG - col: 12 value: 16-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S11-NET:LP3:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S16-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900048
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S11-NET:LP3:SC4, id: 20731
+DEBUG - found machine design item with name: S16-NET:LP1:SC2, id: 20910
+ERROR - validation ERRORS found for row 48
+DEBUG - processing row 49 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A22_C121_124_21-00[high] | SR_M_A18_C109_112_18-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A22_C121_124_
+DEBUG - col: 7 value: 21-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSA C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A18_C109_112_
+DEBUG - col: 12 value: 18-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S21-NET:LP1:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S18-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900049
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S21-NET:LP1:SC3, id: 20977
+DEBUG - found machine design item with name: S18-NET:LP1:SC1, id: 20925
+ERROR - validation ERRORS found for row 49
+DEBUG - processing row 50 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A22_C121_124_21-00[high] | SR_M_A20_C115_118_20-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A22_C121_124_
+DEBUG - col: 7 value: 21-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSA C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A20_C115_118_
+DEBUG - col: 12 value: 20-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S21-NET:LP1:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S20-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900050
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S21-NET:LP1:SC4, id: 20974
+DEBUG - found machine design item with name: S20-NET:LP1:SC1, id: 20950
+ERROR - validation ERRORS found for row 50
+DEBUG - processing row 51 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A22_C121_124_21-00[high] | SR_M_A22_C121_124_21-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 2
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A22_C121_124_
+DEBUG - col: 7 value: 21-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: T2 SWITCH
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A22_C121_124_
+DEBUG - col: 12 value: 21-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: T3 SWITCH
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S21-NET:NSW2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S21-NET:NSW1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900051
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S21-NET:NSW2, id: 8088
+DEBUG - found machine design item with name: S21-NET:NSW1, id: 20962
+ERROR - validation ERRORS found for row 51
+DEBUG - processing row 52 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A22_C121_124_21-00[high] | SR_M_A24_C127_130_24-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A22_C121_124_
+DEBUG - col: 7 value: 21-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A24_C127_130_
+DEBUG - col: 12 value: 24-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S21-NET:LP2:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S24-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900052
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S21-NET:LP2:SC1, id: 20978
+DEBUG - found machine design item with name: S24-NET:LP1:SC1, id: 20992
+ERROR - validation ERRORS found for row 52
+DEBUG - processing row 53 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A22_C121_124_21-00[high] | SR_M_A26_C133_136_26-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A22_C121_124_
+DEBUG - col: 7 value: 21-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C2
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A26_C133_136_
+DEBUG - col: 12 value: 26-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S21-NET:LP2:SC2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S26-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900053
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S21-NET:LP2:SC2, id: 20981
+DEBUG - found machine design item with name: S26-NET:LP1:SC1, id: 21010
+ERROR - validation ERRORS found for row 53
+DEBUG - processing row 54 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A22_C121_124_21-00[high] | SR_M_A28_C139_142_28-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A22_C121_124_
+DEBUG - col: 7 value: 21-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A28_C139_142_
+DEBUG - col: 12 value: 28-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S21-NET:LP2:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S28-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900054
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S21-NET:LP2:SC3, id: 20980
+DEBUG - found machine design item with name: S28-NET:LP1:SC1, id: 21026
+ERROR - validation ERRORS found for row 54
+DEBUG - processing row 55 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A22_C121_124_21-00[high] | SR_M_A30_C145_148_30-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A22_C121_124_
+DEBUG - col: 7 value: 21-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A30_C145_148_
+DEBUG - col: 12 value: 30-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S21-NET:LP2:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S30-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900055
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S21-NET:LP2:SC4, id: 20979
+DEBUG - found machine design item with name: S30-NET:LP1:SC1, id: 21058
+ERROR - validation ERRORS found for row 55
+DEBUG - processing row 56 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A22_C121_124_21-00[high] | SR_M_A32_C151_154_31-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A22_C121_124_
+DEBUG - col: 7 value: 21-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A32_C151_154_
+DEBUG - col: 12 value: 31-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C3
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S21-NET:LP3:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S31-NET:LP1:SC3
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900056
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S21-NET:LP3:SC1, id: 20985
+DEBUG - found machine design item with name: S31-NET:LP1:SC3, id: 21076
+ERROR - validation ERRORS found for row 56
+DEBUG - processing row 57 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A22_C121_124_21-00[high] | SR_M_A34_C157_160_34-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A22_C121_124_
+DEBUG - col: 7 value: 21-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C2
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A34_C157_160_
+DEBUG - col: 12 value: 34-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S21-NET:LP3:SC2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S34-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900057
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S21-NET:LP3:SC2, id: 20984
+DEBUG - found machine design item with name: S34-NET:LP1:SC1, id: 21092
+ERROR - validation ERRORS found for row 57
+DEBUG - processing row 58 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A22_C121_124_21-00[high] | SR_M_A36_C163_166_36-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A22_C121_124_
+DEBUG - col: 7 value: 21-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A36_C163_166_
+DEBUG - col: 12 value: 36-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S21-NET:LP3:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S36-NET:LP1:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900058
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S21-NET:LP3:SC3, id: 20986
+DEBUG - found machine design item with name: S36-NET:LP1:SC1, id: 21114
+ERROR - validation ERRORS found for row 58
+DEBUG - processing row 59 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A32_C151_154_31-00[high] | SR_M_A18_C109_112_18-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A32_C151_154_
+DEBUG - col: 7 value: 31-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSA C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A18_C109_112_
+DEBUG - col: 12 value: 18-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S31-NET:LP1:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S18-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900059
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S31-NET:LP1:SC4, id: 21079
+DEBUG - found machine design item with name: S18-NET:LP1:SC2, id: 20929
+ERROR - validation ERRORS found for row 59
+DEBUG - processing row 60 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A32_C151_154_31-00[high] | SR_M_A20_C115_118_20-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A32_C151_154_
+DEBUG - col: 7 value: 31-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A20_C115_118_
+DEBUG - col: 12 value: 20-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S31-NET:LP2:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S20-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900060
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S31-NET:LP2:SC1, id: 21085
+DEBUG - found machine design item with name: S20-NET:LP1:SC2, id: 20947
+ERROR - validation ERRORS found for row 60
+DEBUG - processing row 61 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A32_C151_154_31-00[high] | SR_M_A22_C121_124_21-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A32_C151_154_
+DEBUG - col: 7 value: 31-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C2
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A22_C121_124_
+DEBUG - col: 12 value: 21-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD-LSC C4
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S31-NET:LP2:SC2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S21-NET:LP3:SC4
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900061
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S31-NET:LP2:SC2, id: 21083
+DEBUG - found machine design item with name: S21-NET:LP3:SC4, id: 20983
+ERROR - validation ERRORS found for row 61
+DEBUG - processing row 62 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A32_C151_154_31-00[high] | SR_M_A24_C127_130_24-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A32_C151_154_
+DEBUG - col: 7 value: 31-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A24_C127_130_
+DEBUG - col: 12 value: 24-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S31-NET:LP2:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S24-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900062
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S31-NET:LP2:SC3, id: 21081
+DEBUG - found machine design item with name: S24-NET:LP1:SC2, id: 20991
+ERROR - validation ERRORS found for row 62
+DEBUG - processing row 63 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A32_C151_154_31-00[high] | SR_M_A26_C133_136_26-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A32_C151_154_
+DEBUG - col: 7 value: 31-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSB C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A26_C133_136_
+DEBUG - col: 12 value: 26-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S31-NET:LP2:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S26-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900063
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S31-NET:LP2:SC4, id: 21084
+DEBUG - found machine design item with name: S26-NET:LP1:SC2, id: 21006
+ERROR - validation ERRORS found for row 63
+DEBUG - processing row 64 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A32_C151_154_31-00[high] | SR_M_A28_C139_142_28-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A32_C151_154_
+DEBUG - col: 7 value: 31-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A28_C139_142_
+DEBUG - col: 12 value: 28-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S31-NET:LP3:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S28-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900064
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S31-NET:LP3:SC1, id: 21089
+DEBUG - found machine design item with name: S28-NET:LP1:SC2, id: 21024
+ERROR - validation ERRORS found for row 64
+DEBUG - processing row 65 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A32_C151_154_31-00[high] | SR_M_A30_C145_148_30-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A32_C151_154_
+DEBUG - col: 7 value: 31-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C2
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A30_C145_148_
+DEBUG - col: 12 value: 30-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S31-NET:LP3:SC2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S30-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900065
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S31-NET:LP3:SC2, id: 21090
+DEBUG - found machine design item with name: S30-NET:LP1:SC2, id: 21059
+ERROR - validation ERRORS found for row 65
+DEBUG - processing row 66 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A32_C151_154_31-00[high] | SR_M_A32_C151_154_31-00[mid]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 2
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A32_C151_154_
+DEBUG - col: 7 value: 31-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: T2 SWITCH
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A32_C151_154_
+DEBUG - col: 12 value: 31-00
+DEBUG - col: 13 value: mid
+DEBUG - col: 14 value: T3 SWITCH
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S31-NET:NSW2
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S31-NET:NSW1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900066
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S31-NET:NSW2, id: 8093
+DEBUG - found machine design item with name: S31-NET:NSW1, id: 21070
+ERROR - validation ERRORS found for row 66
+DEBUG - processing row 67 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A32_C151_154_31-00[high] | SR_M_A34_C157_160_34-03[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A32_C151_154_
+DEBUG - col: 7 value: 31-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C3
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A34_C157_160_
+DEBUG - col: 12 value: 34-03
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S31-NET:LP3:SC3
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S34-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900067
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S31-NET:LP3:SC3, id: 21087
+DEBUG - found machine design item with name: S34-NET:LP1:SC2, id: 21095
+ERROR - validation ERRORS found for row 67
+DEBUG - processing row 68 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A32_C151_154_31-00[high] | SR_M_A36_C163_166_36-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A32_C151_154_
+DEBUG - col: 7 value: 31-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSC C4
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A36_C163_166_
+DEBUG - col: 12 value: 36-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSA C2
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S31-NET:LP3:SC4
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S36-NET:LP1:SC2
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900068
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S31-NET:LP3:SC4, id: 21086
+DEBUG - found machine design item with name: S36-NET:LP1:SC2, id: 21112
+ERROR - validation ERRORS found for row 68
+DEBUG - processing row 69 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A22_C121_124_21-00[high] | SR_M_A32_C151_154_31-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A22_C121_124_
+DEBUG - col: 7 value: 21-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSD C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A32_C151_154_
+DEBUG - col: 12 value: 31-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSD C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S21-NET:LP4:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S31-NET:LP4:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900069
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S21-NET:LP4:SC1, id: 42998
+DEBUG - found machine design item with name: S31-NET:LP4:SC1, id: 42996
+ERROR - validation ERRORS found for row 69
+DEBUG - processing row 70 from input spreadsheet
+DEBUG - col: 0 value: SR_M_A02_C61_64_02-00[high] | SR_M_A12_C91_94_11-00[high]
+DEBUG - col: 1 value: M
+DEBUG - col: 2 value: COM
+DEBUG - col: 3 value: Information_Tech
+DEBUG - col: 4 value: SM 24
+DEBUG - col: 5 value: SR_M
+DEBUG - col: 6 value: _A02_C61_64_
+DEBUG - col: 7 value: 02-00
+DEBUG - col: 8 value: high
+DEBUG - col: 9 value: 1U-HD LSD C1
+DEBUG - col: 10 value: SR_M
+DEBUG - col: 11 value: _A12_C91_94_
+DEBUG - col: 12 value: 11-00
+DEBUG - col: 13 value: high
+DEBUG - col: 14 value: 1U-HD LSD C1
+DEBUG - col: 15 value: 
+DEBUG - col: 16 value: S02-NET:LP4:SC1
+DEBUG - col: 17 value: 
+DEBUG - col: 18 value: S11-NET:LP4:SC1
+DEBUG - col: 19 value: 
+DEBUG - col: 20 value: 900070
+DEBUG - col: 21 value: 
+DEBUG - col: 22 value: 
+DEBUG - col: 23 value: 
+DEBUG - found machine design item with name: S02-NET:LP4:SC1, id: 42991
+DEBUG - found machine design item with name: S11-NET:LP4:SC1, id: 42994
+ERROR - validation ERRORS found for row 70
+INFO - PROCESSING ERROR: processed 51 input rows including 1 empty rows but no output spreadsheet generated, see validation summary/file and log for details
