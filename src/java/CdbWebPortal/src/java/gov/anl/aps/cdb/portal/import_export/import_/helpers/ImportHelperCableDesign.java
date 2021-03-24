@@ -17,7 +17,9 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefCol
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
@@ -31,6 +33,18 @@ import java.util.Map;
 public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDesign, ItemDomainCableDesignController> {
    
     private static final String LABEL_NAME = "Name";
+    
+    private static final String KEY_CATALOG_ITEM = "catalogItemString";
+    private static final String KEY_ENDPOINT1_ITEM = "endpoint1String";
+    private static final String KEY_ENDPOINT1_PORT = "endpoint1Port";
+    private static final String KEY_ENDPOINT1_CONNECTOR = "endpoint1Connector";
+    private static final String KEY_ENDPOINT1_DESCRIPTION = "endpoint1Description";
+    private static final String KEY_ENDPOINT1_ROUTE = "endpoint1Route";
+    private static final String KEY_ENDPOINT1_END_LENGTH = "endpoint1EndLength";
+    private static final String KEY_ENDPOINT1_TERMINATION = "endpoint1Termination";
+    private static final String KEY_ENDPOINT1_PINLIST = "endpoint1Pinlist";
+    private static final String KEY_ENDPOINT1_NOTES = "endpoint1Notes";
+    private static final String KEY_ENDPOINT1_DRAWING = "endpoint1Drawing";
 
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
@@ -86,15 +100,6 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 256));
         
         specs.add(new StringColumnSpec(
-                "Legacy QR ID", 
-                "legacyQrId", 
-                "setLegacyQrId", 
-                "Legacy QR identifier, e.g., for cables that have already been assigned a QR code.", 
-                "getLegacyQrId",
-                ColumnModeOptions.oCREATEoUPDATE(), 
-                256));
-        
-        specs.add(new StringColumnSpec(
                 "Description", 
                 "description", 
                 "setDescription", 
@@ -121,10 +126,37 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
+        specs.add(new StringColumnSpec(
+                "Routed Length", 
+                "routedLength", 
+                "setRoutedLength", 
+                "Routed cable length.", 
+                "getRoutedLength",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Route", 
+                "route", 
+                "setRoute", 
+                "Routing information.", 
+                "getRoute",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Notes", 
+                "notes", 
+                "setNotes", 
+                "Cable notes.", 
+                "getVoltage",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
         specs.add(new IdOrNameRefColumnSpec(
                 "Type", 
-                "catalogItemString", 
-                "setCatalogItem", 
+                KEY_CATALOG_ITEM, 
+                "", 
                 "Numeric ID or name of CDB cable type catalog item. Name must be unique and prefixed with '#'.", 
                 "getCatalogItem",
                 ColumnModeOptions.oCREATEoUPDATE(), 
@@ -134,8 +166,8 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         
         specs.add(new IdOrNameRefColumnSpec(
                 "Endpoint1", 
-                "endpoint1String", 
-                "setEndpoint1Import", 
+                KEY_ENDPOINT1_ITEM, 
+                "", 
                 "Numeric ID or name of CDB machine design item for first endpoint. Name must be unique and prefixed with '#'.", 
                 "getEndpoint1",
                 ColumnModeOptions.oCREATEoUPDATE(), 
@@ -144,20 +176,83 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 ""));
         
         specs.add(new StringColumnSpec(
+                "Endpoint1 Port", 
+                KEY_ENDPOINT1_PORT, 
+                "", 
+                "Port name on device for endpoint1 connection.", 
+                "getEndpoint1Description",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint1 Connector", 
+                KEY_ENDPOINT1_CONNECTOR, 
+                "", 
+                "Cable connector name for endpoint1 connection.", 
+                "getEndpoint1Connector",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
                 "Endpoint1 Desc", 
-                "endpoint1Description", 
+                KEY_ENDPOINT1_DESCRIPTION, 
                 "setEndpoint1Description", 
-                "Endpoint details useful for external editing.", 
+                "Endpoint1 description.", 
                 "getEndpoint1Description",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Route", 
-                "endpoint1Route", 
+                KEY_ENDPOINT1_ROUTE, 
                 "setEndpoint1Route", 
-                "Routing waypoint for first endpoint.", 
+                "Routing waypoint for endpoint1.", 
                 "getEndpoint1Route",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint1 End Length", 
+                KEY_ENDPOINT1_END_LENGTH, 
+                "setEndpoint1EndLength", 
+                "End length for endpoint1.", 
+                "getEndpoint1EndLength",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint1 Termination", 
+                KEY_ENDPOINT1_TERMINATION, 
+                "setEndpoint1Termination", 
+                "Termination for endpoint1.", 
+                "getEndpoint1Termination",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint1 Pinlist", 
+                KEY_ENDPOINT1_PINLIST, 
+                "setEndpoint1Pinlist", 
+                "Pinlist for endpoint1.", 
+                "getEndpoint1Pinlist",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint1 Notes", 
+                KEY_ENDPOINT1_NOTES, 
+                "setEndpoint1Notes", 
+                "Notes for endpoint1.", 
+                "getEndpoint1Notes",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint1 Drawing", 
+                KEY_ENDPOINT1_DRAWING, 
+                "setEndpoint1Drawing", 
+                "Drawing for endpoint1.", 
+                "getEndpoint1Drawing",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
@@ -225,14 +320,66 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
 
     @Override 
     protected ValidInfo preImport() {
-        getEntityController().migrateCoreMetadataPropertyType();
+        getEntityController().createOrMigrateCoreMetadataPropertyType();
+        getEntityController().createOrMigrateConnectionPropertyType();
         return new ValidInfo(true, "");
     }
     
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
         ItemDomainCableDesign entity = getEntityController().createEntityInstance();
-        return new CreateInfo(entity, true, "");
+        
+        // set cable type so connectors inherited from cable type are synced in setEndpointImport()
+        ItemDomainCableCatalog catalogItem = (ItemDomainCableCatalog) rowMap.get(KEY_CATALOG_ITEM);
+        if (catalogItem != null) {
+            entity.setCatalogItem(catalogItem);
+        }
+        
+        // handle endpoint1 ======
+        
+        ItemDomainMachineDesign endpoint1Item = (ItemDomainMachineDesign) rowMap.get(KEY_ENDPOINT1_ITEM);
+        String endpoint1PortName = (String) rowMap.get(KEY_ENDPOINT1_PORT);
+        String endpoint1ConnectorName = (String) rowMap.get(KEY_ENDPOINT1_CONNECTOR);
+        
+        // shouldn't specify endpoint properties if endpoint is not specified
+        if (endpoint1Item == null) {
+            String endpoint1Description = (String) rowMap.get(KEY_ENDPOINT1_DESCRIPTION);
+            String endpoint1Route = (String) rowMap.get(KEY_ENDPOINT1_ROUTE);
+            String endpoint1EndLength = (String) rowMap.get(KEY_ENDPOINT1_END_LENGTH);
+            String endpoint1Termination = (String) rowMap.get(KEY_ENDPOINT1_TERMINATION);
+            String endpoint1Pinlist = (String) rowMap.get(KEY_ENDPOINT1_PINLIST);
+            String endpoint1Notes = (String) rowMap.get(KEY_ENDPOINT1_NOTES);
+            String endpoint1Drawing = (String) rowMap.get(KEY_ENDPOINT1_DRAWING);
+            if ((endpoint1PortName != null)
+                    || (endpoint1ConnectorName != null)
+                    || (endpoint1Description != null)
+                    || (endpoint1Route != null)
+                    || (endpoint1EndLength != null)
+                    || (endpoint1Termination != null)
+                    || (endpoint1Pinlist != null)
+                    || (endpoint1Notes != null)
+                    || (endpoint1Drawing != null)) {
+                
+                isValid = false;
+                validString = appendToString(
+                        validString, "Endpoint1 properties cannot be specified if endpoint1 is not specified.");
+                
+            }
+        } else {
+            ValidInfo endpoint1ValidInfo =
+                    entity.setEndpoint1Import(endpoint1Item, endpoint1PortName, endpoint1ConnectorName);
+            if (!endpoint1ValidInfo.isValid()) {
+                isValid = false;
+                validString = appendToString(
+                        validString, endpoint1ValidInfo.getValidString());
+            }
+        }
+        
+        return new CreateInfo(entity, isValid, validString);
     }
     
     /**

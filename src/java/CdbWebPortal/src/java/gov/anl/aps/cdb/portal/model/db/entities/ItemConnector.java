@@ -56,7 +56,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
     @ManyToOne(optional = false)
     private Item item;
     @JoinColumn(name = "connector_id", referencedColumnName = "id")
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @ManyToOne(optional = false)
     private Connector connector;
     @OneToMany(mappedBy = "firstItemConnector")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
@@ -222,6 +222,18 @@ public class ItemConnector extends CdbEntity implements Serializable {
         }
         
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemConnector[ id=" + id + " ]";
+    }
+    
+    public boolean isConnected() {
+        List<ItemElementRelationship> relationshipList = getItemElementRelationshipList();
+        if ((relationshipList != null) && (!relationshipList.isEmpty())) {
+            return true;
+        }
+        relationshipList = getItemElementRelationshipList1();
+        if ((relationshipList != null) && (!relationshipList.isEmpty())) {
+            return true;
+        }
+        return false;
     }
     
 }

@@ -36,8 +36,6 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     private static final String DisplayVoltageSettingTypeKey = "ItemDomainCableDesign.List.Display.Voltage";
     private static final String DisplayLayingSettingTypeKey = "ItemDomainCableDesign.List.Display.Laying";
     private static final String DisplayTechnicalSystemSettingTypeKey = "ItemDomainCableDesign.List.Display.ItemCategory";
-    private static final String DisplayEndpoint1DescriptionSettingTypeKey = "ItemDomainCableDesign.List.Display.Endpoint1Description";
-    private static final String DisplayEndpoint2DescriptionSettingTypeKey = "ItemDomainCableDesign.List.Display.Endpoint2Description";
 
     private static final String FilterEndpointsSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Endpoints";
     private static final String FilterCatalogItemSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.CatalogItem";
@@ -47,15 +45,17 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     private static final String FilterAlternateCableIdSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.AlternateCableId";
     private static final String FilterVoltageSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Voltage";
     private static final String FilterLayingSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Laying";
-    private static final String FilterEndpoint1DescriptionSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Endpoint1Description";
-    private static final String FilterEndpoint2DescriptionSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Endpoint2Description";
-
-    private static final String DisplayEndpoint1RouteSettingTypeKey = "ItemDomainCableDesign.List.Display.Endpoint1Route";
-    private static final String DisplayEndpoint2RouteSettingTypeKey = "ItemDomainCableDesign.List.Display.Endpoint2Route";
-    private static final String FilterEndpoint1RouteSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Endpoint1Route";
-    private static final String FilterEndpoint2RouteSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Endpoint2Route";
 
     private static final String AutoLoadListFilterValuesSettingTypeKey = "ItemDomainCableDesign.List.Load.FilterDataTable"; 
+
+    private static final String DisplayRoutedLengthSettingTypeKey = "ItemDomainCableDesign.List.Display.RoutedLength";
+    private static final String FilterRoutedLengthSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.RoutedLength";
+
+    private static final String DisplayRouteSettingTypeKey = "ItemDomainCableDesign.List.Display.Route";
+    private static final String FilterRouteSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Route";
+
+    private static final String DisplayNotesSettingTypeKey = "ItemDomainCableDesign.List.Display.Notes";
+    private static final String FilterNotesSettingTypeKey = "ItemDomainCableDesign.List.FilterBy.Notes";
 
     protected Boolean displayEndpoints = null;
     protected Boolean displayCatalogItem = null;
@@ -82,13 +82,12 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     protected String importCableIdFilter = null;
     protected String alternateCableIdFilter = null;
     protected String legacyQrIdFilter = null;
-    protected String endpoint1DescriptionFilter = null;
-    protected String endpoint2DescriptionFilter = null;
-
-    protected Boolean endpoint1RouteDisplay = null;
-    protected Boolean endpoint2RouteDisplay = null;
-    protected String endpoint1RouteFilter = null;
-    protected String endpoint2RouteFilter = null;
+    protected Boolean routedLengthDisplay = null;
+    protected String routedLengthFilter = null;
+    protected Boolean routeDisplay = null;
+    protected String routeFilter = null;
+    protected Boolean notesDisplay = null;
+    protected String notesFilter = null;
 
     public ItemDomainCableDesignSettings(ItemDomainCableDesignController parentController) {
         super(parentController);
@@ -255,56 +254,56 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         this.legacyQrIdFilter = legacyQrIdFilter;
     }
 
-    public String getEndpoint1DescriptionFilter() {
-        return endpoint1DescriptionFilter;
-    }
-
-    public void setEndpoint1DescriptionFilter(String endpoint1DescriptionFilter) {
-        this.endpoint1DescriptionFilter = endpoint1DescriptionFilter;
-    }
-
-    public String getEndpoint2DescriptionFilter() {
-        return endpoint2DescriptionFilter;
-    }
-
-    public void setEndpoint2DescriptionFilter(String endpoint2DescriptionFilter) {
-        this.endpoint2DescriptionFilter = endpoint2DescriptionFilter;
-    }
-
     public Boolean getDisplayInstalledQrId() {
         return false;
     }
 
-    public boolean isEndpoint1RouteDisplay() {
-        return endpoint1RouteDisplay;
+    public boolean isRoutedLengthDisplay() {
+        return routedLengthDisplay;
     }
 
-    public void setEndpoint1RouteDisplay(boolean endpoint1RouteDisplay) {
-        this.endpoint1RouteDisplay = endpoint1RouteDisplay;
+    public void setRoutedLengthDisplay(boolean routedLengthDisplay) {
+        this.routedLengthDisplay = routedLengthDisplay;
     }
 
-    public boolean isEndpoint2RouteDisplay() {
-        return endpoint2RouteDisplay;
+    public String getRoutedLengthFilter() {
+        return routedLengthFilter;
     }
 
-    public void setEndpoint2RouteDisplay(boolean endpoint2RouteDisplay) {
-        this.endpoint2RouteDisplay = endpoint2RouteDisplay;
+    public void setRoutedLengthFilter(String routedLengthFilter) {
+        this.routedLengthFilter = routedLengthFilter;
     }
 
-    public String getEndpoint1RouteFilter() {
-        return endpoint1RouteFilter;
+    public boolean isRouteDisplay() {
+        return routeDisplay;
     }
 
-    public void setEndpoint1RouteFilter(String endpoint1RouteFilter) {
-        this.endpoint1RouteFilter = endpoint1RouteFilter;
+    public void setRouteDisplay(boolean routeDisplay) {
+        this.routeDisplay = routeDisplay;
     }
 
-    public String getEndpoint2RouteFilter() {
-        return endpoint2RouteFilter;
+    public String getRouteFilter() {
+        return routeFilter;
     }
 
-    public void setEndpoint2RouteFilter(String endpoint2RouteFilter) {
-        this.endpoint2RouteFilter = endpoint2RouteFilter;
+    public void setRouteFilter(String routeFilter) {
+        this.routeFilter = routeFilter;
+    }
+
+    public boolean isNotesDisplay() {
+        return notesDisplay;
+    }
+
+    public void setNotesDisplay(boolean notesDisplay) {
+        this.notesDisplay = notesDisplay;
+    }
+
+    public String getNotesFilter() {
+        return notesFilter;
+    }
+
+    public void setNotesFilter(String notesFilter) {
+        this.notesFilter = notesFilter;
     }
 
     @Override
@@ -332,8 +331,6 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         importCableIdDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayImportCableIdSettingTypeKey).getDefaultValue());
         alternateCableIdDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayAlternateCableIdSettingTypeKey).getDefaultValue());
         legacyQrIdDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayLegacyQrIdSettingTypeKey).getDefaultValue());
-        endpoint1DescriptionDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayEndpoint1DescriptionSettingTypeKey).getDefaultValue());
-        endpoint2DescriptionDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayEndpoint2DescriptionSettingTypeKey).getDefaultValue());
 
         filterEndpoints = settingTypeMap.get(FilterEndpointsSettingTypeKey).getDefaultValue();
         filterCatalogItem = settingTypeMap.get(FilterCatalogItemSettingTypeKey).getDefaultValue();
@@ -343,13 +340,13 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         importCableIdFilter = settingTypeMap.get(FilterImportCableIdSettingTypeKey).getDefaultValue();
         alternateCableIdFilter = settingTypeMap.get(FilterAlternateCableIdSettingTypeKey).getDefaultValue();
         legacyQrIdFilter = settingTypeMap.get(FilterLegacyQrIdSettingTypeKey).getDefaultValue();
-        endpoint1DescriptionFilter = settingTypeMap.get(FilterEndpoint1DescriptionSettingTypeKey).getDefaultValue();
-        endpoint2DescriptionFilter = settingTypeMap.get(FilterEndpoint2DescriptionSettingTypeKey).getDefaultValue();
 
-        endpoint1RouteDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayEndpoint1RouteSettingTypeKey).getDefaultValue());
-        endpoint2RouteDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayEndpoint2RouteSettingTypeKey).getDefaultValue());
-        endpoint1RouteFilter = settingTypeMap.get(FilterEndpoint1RouteSettingTypeKey).getDefaultValue();
-        endpoint2RouteFilter = settingTypeMap.get(FilterEndpoint2RouteSettingTypeKey).getDefaultValue();
+        routedLengthDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayRoutedLengthSettingTypeKey).getDefaultValue());
+        routedLengthFilter = settingTypeMap.get(FilterRoutedLengthSettingTypeKey).getDefaultValue();
+        routeDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayRouteSettingTypeKey).getDefaultValue());
+        routeFilter = settingTypeMap.get(FilterRouteSettingTypeKey).getDefaultValue();
+        notesDisplay = Boolean.parseBoolean(settingTypeMap.get(DisplayNotesSettingTypeKey).getDefaultValue());
+        notesFilter = settingTypeMap.get(FilterNotesSettingTypeKey).getDefaultValue();
 
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
     }
@@ -379,8 +376,6 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         importCableIdDisplay = settingEntity.getSettingValueAsBoolean(DisplayImportCableIdSettingTypeKey, importCableIdDisplay);
         alternateCableIdDisplay = settingEntity.getSettingValueAsBoolean(DisplayAlternateCableIdSettingTypeKey, alternateCableIdDisplay);
         legacyQrIdDisplay = settingEntity.getSettingValueAsBoolean(DisplayLegacyQrIdSettingTypeKey, legacyQrIdDisplay);
-        endpoint1DescriptionDisplay = settingEntity.getSettingValueAsBoolean(DisplayEndpoint1DescriptionSettingTypeKey, endpoint1DescriptionDisplay);
-        endpoint2DescriptionDisplay = settingEntity.getSettingValueAsBoolean(DisplayEndpoint2DescriptionSettingTypeKey, endpoint2DescriptionDisplay);
 
         filterEndpoints = settingEntity.getSettingValueAsString(FilterEndpointsSettingTypeKey, filterEndpoints);
         filterCatalogItem = settingEntity.getSettingValueAsString(FilterCatalogItemSettingTypeKey, filterCatalogItem);
@@ -390,13 +385,13 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         importCableIdFilter = settingEntity.getSettingValueAsString(FilterImportCableIdSettingTypeKey, importCableIdFilter);
         alternateCableIdFilter = settingEntity.getSettingValueAsString(FilterAlternateCableIdSettingTypeKey, alternateCableIdFilter);
         legacyQrIdFilter = settingEntity.getSettingValueAsString(FilterLegacyQrIdSettingTypeKey, legacyQrIdFilter);
-        endpoint1DescriptionFilter = settingEntity.getSettingValueAsString(FilterEndpoint1DescriptionSettingTypeKey, endpoint1DescriptionFilter);
-        endpoint2DescriptionFilter = settingEntity.getSettingValueAsString(FilterEndpoint2DescriptionSettingTypeKey, endpoint2DescriptionFilter);
 
-        endpoint1RouteDisplay = settingEntity.getSettingValueAsBoolean(DisplayEndpoint1RouteSettingTypeKey, endpoint1RouteDisplay);
-        endpoint2RouteDisplay = settingEntity.getSettingValueAsBoolean(DisplayEndpoint2RouteSettingTypeKey, endpoint2RouteDisplay);
-        endpoint1RouteFilter = settingEntity.getSettingValueAsString(FilterEndpoint1RouteSettingTypeKey, endpoint1RouteFilter);
-        endpoint2RouteFilter = settingEntity.getSettingValueAsString(FilterEndpoint2RouteSettingTypeKey, endpoint2RouteFilter);
+        routedLengthDisplay = settingEntity.getSettingValueAsBoolean(DisplayRoutedLengthSettingTypeKey, routedLengthDisplay);
+        routedLengthFilter = settingEntity.getSettingValueAsString(FilterRoutedLengthSettingTypeKey, routedLengthFilter);
+        routeDisplay = settingEntity.getSettingValueAsBoolean(DisplayRouteSettingTypeKey, routeDisplay);
+        routeFilter = settingEntity.getSettingValueAsString(FilterRouteSettingTypeKey, routeFilter);
+        notesDisplay = settingEntity.getSettingValueAsBoolean(DisplayNotesSettingTypeKey, notesDisplay);
+        notesFilter = settingEntity.getSettingValueAsString(FilterNotesSettingTypeKey, notesFilter);
 
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues); 
     }
@@ -426,8 +421,6 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         settingEntity.setSettingValue(DisplayImportCableIdSettingTypeKey, importCableIdDisplay);
         settingEntity.setSettingValue(DisplayAlternateCableIdSettingTypeKey, alternateCableIdDisplay);
         settingEntity.setSettingValue(DisplayLegacyQrIdSettingTypeKey, legacyQrIdDisplay);
-        settingEntity.setSettingValue(DisplayEndpoint1DescriptionSettingTypeKey, endpoint1DescriptionDisplay);
-        settingEntity.setSettingValue(DisplayEndpoint2DescriptionSettingTypeKey, endpoint2DescriptionDisplay);
 
         settingEntity.setSettingValue(FilterEndpointsSettingTypeKey, filterEndpoints);
         settingEntity.setSettingValue(FilterCatalogItemSettingTypeKey, filterCatalogItem);
@@ -437,13 +430,13 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         settingEntity.setSettingValue(FilterImportCableIdSettingTypeKey, importCableIdFilter);
         settingEntity.setSettingValue(FilterAlternateCableIdSettingTypeKey, alternateCableIdFilter);
         settingEntity.setSettingValue(FilterLegacyQrIdSettingTypeKey, legacyQrIdFilter);
-        settingEntity.setSettingValue(FilterEndpoint1DescriptionSettingTypeKey, endpoint1DescriptionFilter);
-        settingEntity.setSettingValue(FilterEndpoint2DescriptionSettingTypeKey, endpoint2DescriptionFilter);
 
-        settingEntity.setSettingValue(DisplayEndpoint1RouteSettingTypeKey, endpoint1RouteDisplay);
-        settingEntity.setSettingValue(DisplayEndpoint2RouteSettingTypeKey, endpoint2RouteDisplay);
-        settingEntity.setSettingValue(FilterEndpoint1RouteSettingTypeKey, endpoint1RouteFilter);
-        settingEntity.setSettingValue(FilterEndpoint2RouteSettingTypeKey, endpoint2RouteFilter);
+        settingEntity.setSettingValue(DisplayRoutedLengthSettingTypeKey, routedLengthDisplay);
+        settingEntity.setSettingValue(FilterRoutedLengthSettingTypeKey, routedLengthFilter);
+        settingEntity.setSettingValue(DisplayRouteSettingTypeKey, routeDisplay);
+        settingEntity.setSettingValue(FilterRouteSettingTypeKey, routeFilter);
+        settingEntity.setSettingValue(DisplayNotesSettingTypeKey, notesDisplay);
+        settingEntity.setSettingValue(FilterNotesSettingTypeKey, notesFilter);
 
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
     }

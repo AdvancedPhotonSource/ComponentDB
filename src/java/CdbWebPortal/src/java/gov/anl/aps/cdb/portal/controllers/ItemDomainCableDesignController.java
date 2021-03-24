@@ -431,7 +431,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         
         @Override
         public String save(String remoteCommandSuccess) {            
-            ItemElementRelationship ier = getCurrent().addCableRelationship(selectedMdItem, null);
+            ItemElementRelationship ier = getCurrent().addCableRelationship(selectedMdItem, null, null, null);
             setCableRelationship(ier);
             return super.save(remoteCommandSuccess);
         }
@@ -912,4 +912,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return getConnectionListForCurrent().size() > 0;
     }
     
+    public void createOrMigrateConnectionPropertyType() {        
+        getControllerUtility().createOrMigrateConnectionPropertyType();
+    }   
+
 }

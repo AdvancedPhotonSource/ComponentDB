@@ -32,4 +32,10 @@ public class ItemConnectorFacade extends CdbEntityFacade<ItemConnector> {
     public static ItemConnectorFacade getInstance() {
         return (ItemConnectorFacade) SessionUtility.findFacade(ItemConnectorFacade.class.getSimpleName()); 
     }
+
+    public void create(ItemConnector entity) {        
+        ConnectorFacade.getInstance().create(entity.getConnector());
+        super.create(entity);
+    }
+
 }

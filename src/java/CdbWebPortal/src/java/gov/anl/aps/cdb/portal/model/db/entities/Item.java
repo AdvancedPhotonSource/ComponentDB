@@ -1069,6 +1069,23 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setItemConnectorList(List<ItemConnector> itemConnectorList) {
         this.itemConnectorList = itemConnectorList;
     }
+    
+    public ItemConnector getConnectorNamed(String connectorName) {
+        List<ItemConnector> connectorList = getItemConnectorList();
+        if (connectorList == null) {
+            return null;
+        }
+        for (ItemConnector itemConnector : connectorList) {
+            Connector connector = itemConnector.getConnector();
+            if (connector != null) {
+                String name = connector.getName();
+                if (name.equals(connectorName)) {
+                    return itemConnector;
+                }
+            }
+        }
+        return null;
+    }
 
     @XmlTransient    
     public List<ItemSource> getItemSourceList() {

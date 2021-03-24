@@ -8,9 +8,12 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.constants.ListName;
+import gov.anl.aps.cdb.portal.controllers.PropertyTypeController;
+import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -52,11 +55,15 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     DomainFacade domainFacade;
     ItemDomainEntityFacade itemFacade;
     PropertyTypeFacade propertyTypeFacade;
+    PropertyTypeMetadataFacade propertyTypeMetadataFacade;
+    AllowedPropertyMetadataValueFacade allowedPropertyMetadataValueFacade;
 
     public ItemControllerUtility() {
         domainFacade = DomainFacade.getInstance();
         itemFacade = getItemFacadeInstance();
         propertyTypeFacade = PropertyTypeFacade.getInstance(); 
+        propertyTypeMetadataFacade = PropertyTypeMetadataFacade.getInstance(); 
+        allowedPropertyMetadataValueFacade = AllowedPropertyMetadataValueFacade.getInstance(); 
     }
 
     protected abstract ItemDomainEntityFacade getItemFacadeInstance();
@@ -374,6 +381,93 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
         return item;
     }
+    
+    public void migrateMetadataPropertyType(PropertyType propertyType, ItemMetadataPropertyInfo propInfo) {
+        // iterate through metadata fields to identify missing information in property type
+        boolean updated = false;
+        for (ItemMetadataFieldInfo fieldInfo : propInfo.getFields()) {
+
+            // add missing metadata fields to property type
+            PropertyTypeMetadata ptm = propertyType.getPropertyTypeMetadataForKey(fieldInfo.getKey());
+            if (ptm == null) {
+                ptm = newPropertyTypeMetadataForField(fieldInfo, propertyType);
+                propertyType.getPropertyTypeMetadataList().add(ptm);
+                updated = true;
+
+                // add missing allowed values    
+            } else {
+                if (fieldInfo.hasAllowedValues()) {
+                    for (String allowedValueString : fieldInfo.getAllowedValues()) {
+                        if (!ptm.hasAllowedPropertyMetadataValue(allowedValueString)) {
+                            AllowedPropertyMetadataValue allowedValue
+                                    = newAllowedPropertyMetadataValue(allowedValueString, ptm);
+                            ptm.getAllowedPropertyMetadataValueList().add(allowedValue);
+                            updated = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // iterate through property type metadata to identify obsolete information
+        List<PropertyTypeMetadata> removePtmList = new ArrayList<>();
+        for (PropertyTypeMetadata ptm : propertyType.getPropertyTypeMetadataList()) {
+            String key = ptm.getMetadataKey();
+
+            // remove metadata keys no longer defined in core metadata
+            if (!propInfo.hasKey(key)) {
+                removePtmList.add(ptm);
+            } else {
+
+                ItemMetadataFieldInfo fieldInfo = propInfo.getField(key);
+                if (ptm.getIsHaveAllowedValues()) {
+
+                    // remove allowed values no longer defined in core metadata
+                    List<AllowedPropertyMetadataValue> removeApmvList = new ArrayList<>();
+                    for (AllowedPropertyMetadataValue allowedValue : ptm.getAllowedPropertyMetadataValueList()) {
+                        if (!fieldInfo.hasAllowedValue(allowedValue.getMetadataValue())) {
+                            removeApmvList.add(allowedValue);
+                        }
+                    }
+                    for (AllowedPropertyMetadataValue removeApmv : removeApmvList) {
+                        ptm.getAllowedPropertyMetadataValueList().remove(removeApmv);
+                        allowedPropertyMetadataValueFacade.remove(removeApmv);
+                        updated = true;
+                    }
+
+                }
+            }
+        }
+        for (PropertyTypeMetadata removePtm : removePtmList) {
+            propertyType.getPropertyTypeMetadataList().remove(removePtm);
+            propertyTypeMetadataFacade.remove(removePtm);
+            updated = true;
+        }
+
+        if (updated) {
+            PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
+            propertyTypeController.setCurrent(propertyType);
+            propertyTypeController.update();
+        }
+    }
+
+    public void createOrMigrateCoreMetadataPropertyType() {
+
+        PropertyType propertyType = propertyTypeFacade.findByName(createCoreMetadataPropertyInfo().getPropertyName());
+
+        // initialize property type if it is null
+        if (propertyType == null) {
+            try {
+                propertyType = prepareCoreMetadataPropertyType();                
+                // otherwise migrate existing property type object
+            } catch (CdbException ex) {
+                logger.error(ex.getMessage());
+                return;
+            }
+        } else {
+            migrateMetadataPropertyType(propertyType, createCoreMetadataPropertyInfo());
+        }
+    }   
 
     protected void initializeCoreMetadataPropertyValue(ItemDomainEntity item) throws CdbException {
         if (item.getCoreMetadataPropertyInfo() != null) {

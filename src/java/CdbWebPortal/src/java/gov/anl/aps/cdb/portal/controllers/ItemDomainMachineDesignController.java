@@ -1408,48 +1408,7 @@ public class ItemDomainMachineDesignController
     }
 
     private void syncMachineDesignConnectors(ItemDomainMachineDesign item) {
-        List<ItemConnector> itemConnectorList = item.getItemConnectorList();
-        List<ItemConnector> connectorsFromAssignedCatalogItem = getConnectorsFromAssignedCatalogItem(item);
-
-        if (connectorsFromAssignedCatalogItem == null) {
-            return;
-        }
-
-        if (itemConnectorList.size() == 0) {
-            // Sync all connectors into machine design
-            for (ItemConnector cconnector : connectorsFromAssignedCatalogItem) {
-                ItemConnector mdConnector = cloneConnectorForMachineDesign(cconnector, item);
-
-                itemConnectorList.add(mdConnector);
-            }
-        } else {
-            // Verify if any new connections were created on the catalog             
-            if (connectorsFromAssignedCatalogItem != null) {
-
-                catConnFor:
-                for (ItemConnector catalogItemConn : connectorsFromAssignedCatalogItem) {
-                    for (ItemConnector mdItemConn : itemConnectorList) {
-                        Connector mdConnector = mdItemConn.getConnector();
-                        Connector catConnector = catalogItemConn.getConnector();
-
-                        if (mdConnector.equals(catConnector)) {
-                            continue catConnFor;
-                        }
-                    }
-                    ItemConnector mdConnector = cloneConnectorForMachineDesign(catalogItemConn, item);
-                    itemConnectorList.add(mdConnector);
-                }
-            }
-        }
-    }
-
-    private ItemConnector cloneConnectorForMachineDesign(ItemConnector catalogConnector, ItemDomainMachineDesign mdItem) {
-        ItemConnector mdConnector = new ItemConnector();
-
-        mdConnector.setConnector(catalogConnector.getConnector());
-        mdConnector.setItem(mdItem);
-
-        return mdConnector;
+        this.getControllerUtility().syncMachineDesignConnectors(item);
     }
 
     public void prepareCableMappingDialog() {
@@ -1519,22 +1478,6 @@ public class ItemDomainMachineDesignController
         resetListConfigurationVariables();
         resetListDataModel();
         expandToSelectedTreeNodeAndSelect();
-    }
-
-    private static List<ItemConnector> getConnectorsFromAssignedCatalogItem(ItemDomainMachineDesign item) {
-        Item assignedItem = item.getAssignedItem();
-
-        Item catalogItem = null;
-        if (assignedItem instanceof ItemDomainInventory) {
-            catalogItem = ((ItemDomainInventory) assignedItem).getCatalogItem();
-        } else if (assignedItem instanceof ItemDomainCatalog) {
-            catalogItem = assignedItem;
-        }
-
-        if (catalogItem != null) {
-            return catalogItem.getItemConnectorList();
-        }
-        return null;
     }
 
     public List<MachineDesignConnectorListObject> getMdConnectorListForCurrent() {
