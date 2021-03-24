@@ -31,6 +31,12 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
         return (ItemDomainCableDesignFacade) SessionUtility.findFacade(ItemDomainCableDesignFacade.class.getSimpleName()); 
     }
     
+    /**
+     * Updates cable design item.  Overridden here because, if we edit a cable
+     * to remove cable relationship objects they are not removed from the database
+     * by updating the database for that cable.  Thus they are removed explicitly
+     * here.
+     */
     public ItemDomainCableDesign edit(ItemDomainCableDesign entity) {
         
         ItemDomainCableDesign result = super.edit(entity);

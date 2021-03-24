@@ -57,7 +57,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
     private Item item;
     @JoinColumn(name = "connector_id", referencedColumnName = "id")
     @ManyToOne(optional = false)
-    private Connector connector;
+    private Connector connector; // removed CascadeType.PERSIST that was preventing of sharing existing Connector by new ItemConnector (since create operation cascaded to Connector)
     @OneToMany(mappedBy = "firstItemConnector")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
     @OneToMany(mappedBy = "secondItemConnector")
