@@ -35,6 +35,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     private static final String LABEL_NAME = "Name";
     
     private static final String KEY_CATALOG_ITEM = "catalogItemString";
+
     private static final String KEY_ENDPOINT1_ITEM = "endpoint1String";
     private static final String KEY_ENDPOINT1_PORT = "endpoint1Port";
     private static final String KEY_ENDPOINT1_CONNECTOR = "endpoint1Connector";
@@ -45,6 +46,17 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     private static final String KEY_ENDPOINT1_PINLIST = "endpoint1Pinlist";
     private static final String KEY_ENDPOINT1_NOTES = "endpoint1Notes";
     private static final String KEY_ENDPOINT1_DRAWING = "endpoint1Drawing";
+
+    private static final String KEY_ENDPOINT2_ITEM = "endpoint2String";
+    private static final String KEY_ENDPOINT2_PORT = "endpoint2Port";
+    private static final String KEY_ENDPOINT2_CONNECTOR = "endpoint2Connector";
+    private static final String KEY_ENDPOINT2_DESCRIPTION = "endpoint2Description";
+    private static final String KEY_ENDPOINT2_ROUTE = "endpoint2Route";
+    private static final String KEY_ENDPOINT2_END_LENGTH = "endpoint2EndLength";
+    private static final String KEY_ENDPOINT2_TERMINATION = "endpoint2Termination";
+    private static final String KEY_ENDPOINT2_PINLIST = "endpoint2Pinlist";
+    private static final String KEY_ENDPOINT2_NOTES = "endpoint2Notes";
+    private static final String KEY_ENDPOINT2_DRAWING = "endpoint2Drawing";
 
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
@@ -168,7 +180,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 "Endpoint1", 
                 KEY_ENDPOINT1_ITEM, 
                 "", 
-                "Numeric ID or name of CDB machine design item for first endpoint. Name must be unique and prefixed with '#'.", 
+                "Numeric ID or name of CDB machine design item for endpoint1. Name must be unique and prefixed with '#'.", 
                 "getEndpoint1",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemDomainMachineDesignController.getInstance(), 
@@ -258,9 +270,9 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         
         specs.add(new IdOrNameRefColumnSpec(
                 "Endpoint2", 
-                "endpoint2String", 
-                "setEndpoint2Import", 
-                "Numeric ID or name of CDB machine design item for second endpoint. Name must be unique and prefixed with '#'.", 
+                KEY_ENDPOINT2_ITEM, 
+                "", 
+                "Numeric ID or name of CDB machine design item for endpoint2. Name must be unique and prefixed with '#'.", 
                 "getEndpoint2",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemDomainMachineDesignController.getInstance(), 
@@ -268,20 +280,83 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 ""));
         
         specs.add(new StringColumnSpec(
+                "Endpoint2 Port", 
+                KEY_ENDPOINT2_PORT, 
+                "", 
+                "Port name on device for endpoint2 connection.", 
+                "getEndpoint2Description",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint2 Connector", 
+                KEY_ENDPOINT2_CONNECTOR, 
+                "", 
+                "Cable connector name for endpoint2 connection.", 
+                "getEndpoint2Connector",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
                 "Endpoint2 Desc", 
-                "endpoint2Description", 
+                KEY_ENDPOINT2_DESCRIPTION, 
                 "setEndpoint2Description", 
-                "Endpoint details useful for external editing.", 
+                "Endpoint2 description.", 
                 "getEndpoint2Description",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Route", 
-                "endpoint2Route", 
+                KEY_ENDPOINT2_ROUTE, 
                 "setEndpoint2Route", 
-                "Routing waypoint for second endpoint.", 
+                "Routing waypoint for endpoint2.", 
                 "getEndpoint2Route",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint2 End Length", 
+                KEY_ENDPOINT2_END_LENGTH, 
+                "setEndpoint2EndLength", 
+                "End length for endpoint2.", 
+                "getEndpoint2EndLength",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint2 Termination", 
+                KEY_ENDPOINT2_TERMINATION, 
+                "setEndpoint2Termination", 
+                "Termination for endpoint2.", 
+                "getEndpoint2Termination",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint2 Pinlist", 
+                KEY_ENDPOINT2_PINLIST, 
+                "setEndpoint2Pinlist", 
+                "Pinlist for endpoint2.", 
+                "getEndpoint2Pinlist",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint2 Notes", 
+                KEY_ENDPOINT2_NOTES, 
+                "setEndpoint2Notes", 
+                "Notes for endpoint2.", 
+                "getEndpoint2Notes",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint2 Drawing", 
+                KEY_ENDPOINT2_DRAWING, 
+                "setEndpoint2Drawing", 
+                "Drawing for endpoint2.", 
+                "getEndpoint2Drawing",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
@@ -376,6 +451,46 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 isValid = false;
                 validString = appendToString(
                         validString, endpoint1ValidInfo.getValidString());
+            }
+        }
+        
+        // handle endpoint2 ======
+        
+        ItemDomainMachineDesign endpoint2Item = (ItemDomainMachineDesign) rowMap.get(KEY_ENDPOINT2_ITEM);
+        String endpoint2PortName = (String) rowMap.get(KEY_ENDPOINT2_PORT);
+        String endpoint2ConnectorName = (String) rowMap.get(KEY_ENDPOINT2_CONNECTOR);
+        
+        // shouldn't specify endpoint properties if endpoint is not specified
+        if (endpoint2Item == null) {
+            String endpoint2Description = (String) rowMap.get(KEY_ENDPOINT2_DESCRIPTION);
+            String endpoint2Route = (String) rowMap.get(KEY_ENDPOINT2_ROUTE);
+            String endpoint2EndLength = (String) rowMap.get(KEY_ENDPOINT2_END_LENGTH);
+            String endpoint2Termination = (String) rowMap.get(KEY_ENDPOINT2_TERMINATION);
+            String endpoint2Pinlist = (String) rowMap.get(KEY_ENDPOINT2_PINLIST);
+            String endpoint2Notes = (String) rowMap.get(KEY_ENDPOINT2_NOTES);
+            String endpoint2Drawing = (String) rowMap.get(KEY_ENDPOINT2_DRAWING);
+            if ((endpoint2PortName != null)
+                    || (endpoint2ConnectorName != null)
+                    || (endpoint2Description != null)
+                    || (endpoint2Route != null)
+                    || (endpoint2EndLength != null)
+                    || (endpoint2Termination != null)
+                    || (endpoint2Pinlist != null)
+                    || (endpoint2Notes != null)
+                    || (endpoint2Drawing != null)) {
+                
+                isValid = false;
+                validString = appendToString(
+                        validString, "Endpoint2 properties cannot be specified if endpoint2 is not specified.");
+                
+            }
+        } else {
+            ValidInfo endpoint2ValidInfo =
+                    entity.setEndpoint2Import(endpoint2Item, endpoint2PortName, endpoint2ConnectorName);
+            if (!endpoint2ValidInfo.isValid()) {
+                isValid = false;
+                validString = appendToString(
+                        validString, endpoint2ValidInfo.getValidString());
             }
         }
         
