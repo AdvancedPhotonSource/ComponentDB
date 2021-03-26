@@ -71,4 +71,13 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
     
     protected abstract QueryBuilder getQueryBuilder(Map filterMap, String sortField, SortOrder sortOrder);
 
+    /**
+     * This defeats the purpose of a "lazy" data model, but we need to access the
+     * filtered list of items for the export feature.  We might want to replace with
+     * some sort of iterator/cursor at some point, but for now this is the most
+     * straightforward approach...
+     */
+    public List<Item> getFilteredEntities() {
+        return itemList;
+    }
 }

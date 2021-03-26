@@ -27,6 +27,7 @@ import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.export.wizard.ItemDomainExportWizard;
+import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
@@ -1656,10 +1657,18 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     /**
      * Prepares export wizard.
      */
-    public String prepareExport() throws CdbException {  
+    public String prepareExport() throws CdbException {          
         ItemDomainExportWizard wizard = ItemDomainExportWizard.getInstance();
         wizard.setDomainInfo(getDomainExportInfo());
-        wizard.setExportEntityList(getFilteredEntities());
+        DataModel dataModel = getListDataModel();
+        List<CdbEntity> entityList;
+        if (dataModel instanceof ItemLazyDataModel) {
+            ItemLazyDataModel lazyDataModel = (ItemLazyDataModel) dataModel;
+            entityList = lazyDataModel.getFilteredEntities();
+        } else {
+            entityList = getFilteredEntities();
+        }
+        wizard.setExportEntityList(entityList);
         return "export?faces-redirect=true";
     }
     

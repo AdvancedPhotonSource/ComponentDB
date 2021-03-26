@@ -37,8 +37,8 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     private static final String KEY_CATALOG_ITEM = "catalogItemString";
 
     private static final String KEY_ENDPOINT1_ITEM = "endpoint1String";
-    private static final String KEY_ENDPOINT1_PORT = "endpoint1Port";
-    private static final String KEY_ENDPOINT1_CONNECTOR = "endpoint1Connector";
+    private static final String KEY_ENDPOINT1_PORT = "endpoint1PortImport";
+    private static final String KEY_ENDPOINT1_CONNECTOR = "endpoint1ConnectorImport";
     private static final String KEY_ENDPOINT1_DESCRIPTION = "endpoint1Description";
     private static final String KEY_ENDPOINT1_ROUTE = "endpoint1Route";
     private static final String KEY_ENDPOINT1_END_LENGTH = "endpoint1EndLength";
@@ -48,8 +48,8 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     private static final String KEY_ENDPOINT1_DRAWING = "endpoint1Drawing";
 
     private static final String KEY_ENDPOINT2_ITEM = "endpoint2String";
-    private static final String KEY_ENDPOINT2_PORT = "endpoint2Port";
-    private static final String KEY_ENDPOINT2_CONNECTOR = "endpoint2Connector";
+    private static final String KEY_ENDPOINT2_PORT = "endpoint2PortImport";
+    private static final String KEY_ENDPOINT2_CONNECTOR = "endpoint2ConnectorImport";
     private static final String KEY_ENDPOINT2_DESCRIPTION = "endpoint2Description";
     private static final String KEY_ENDPOINT2_ROUTE = "endpoint2Route";
     private static final String KEY_ENDPOINT2_END_LENGTH = "endpoint2EndLength";
@@ -161,7 +161,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 "notes", 
                 "setNotes", 
                 "Cable notes.", 
-                "getVoltage",
+                "getNotes",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -192,7 +192,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 KEY_ENDPOINT1_PORT, 
                 "", 
                 "Port name on device for endpoint1 connection.", 
-                "getEndpoint1Description",
+                "getEndpoint1Port",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -284,7 +284,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 KEY_ENDPOINT2_PORT, 
                 "", 
                 "Port name on device for endpoint2 connection.", 
-                "getEndpoint2Description",
+                "getEndpoint2Port",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         

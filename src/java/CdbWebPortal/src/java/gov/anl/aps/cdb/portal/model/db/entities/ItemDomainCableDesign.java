@@ -529,6 +529,34 @@ public class ItemDomainCableDesign extends Item {
         return result;
     }
 
+    public String getPortForEndpoint(float sortOrder) {
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(sortOrder);
+        if (cableRelationship != null) {
+            ItemConnector connector = cableRelationship.getFirstItemConnector();
+            if (connector != null) {
+                return connector.getConnector().getName();
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    
+    public String getConnectorForEndpoint(float sortOrder) {
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(sortOrder);
+        if (cableRelationship != null) {
+            ItemConnector connector = cableRelationship.getSecondItemConnector();
+            if (connector != null) {
+                return connector.getConnector().getName();
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+    
     public String getAlternateName() {
         return getItemIdentifier1();
     }
@@ -720,13 +748,23 @@ public class ItemDomainCableDesign extends Item {
     }
 
     @JsonIgnore
-    public String getEndpoint1Port() {
+    public String getEndpoint1PortImport() {
         return endpoint1Port;
     }
 
     @JsonIgnore
-    public String getEndpoint1Connector() {
+    public String getEndpoint1Port() {
+        return getPortForEndpoint(1.0f);
+    }
+
+    @JsonIgnore
+    public String getEndpoint1ConnectorImport() {
         return endpoint1Connector;
+    }
+
+    @JsonIgnore
+    public String getEndpoint1Connector() {
+        return getConnectorForEndpoint(1.0f);
     }
 
     @JsonIgnore
@@ -899,13 +937,23 @@ public class ItemDomainCableDesign extends Item {
     }
 
     @JsonIgnore
-    public String getEndpoint2Port() {
+    public String getEndpoint2PortImport() {
         return endpoint2Port;
     }
 
     @JsonIgnore
-    public String getEndpoint2Connector() {
+    public String getEndpoint2Port() {
+        return getPortForEndpoint(2.0f);
+    }
+
+    @JsonIgnore
+    public String getEndpoint2ConnectorImport() {
         return endpoint2Connector;
+    }
+
+    @JsonIgnore
+    public String getEndpoint2Connector() {
+        return getConnectorForEndpoint(2.0f);
     }
 
     @JsonIgnore
