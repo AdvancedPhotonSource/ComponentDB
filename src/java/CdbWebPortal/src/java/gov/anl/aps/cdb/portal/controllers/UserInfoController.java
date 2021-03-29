@@ -147,6 +147,7 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
         saveSettingListForSessionUser();
         
         // Load default settings 
+        UserInfo current = getCurrent();
         SettingController.getInstance().loadSessionUser(current);
     }
 
@@ -164,6 +165,7 @@ public class UserInfoController extends CdbEntityController<UserInfoControllerUt
     @Override
     public String update() {
         String result = super.update();
+        UserInfo current = getCurrent();
         SessionUtility.setUser(current);
         return result;
     }

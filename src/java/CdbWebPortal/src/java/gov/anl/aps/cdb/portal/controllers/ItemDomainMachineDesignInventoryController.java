@@ -43,9 +43,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
     
-    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";   
-
-    private ItemDomainMachineDesign newMdInventoryItem = null;
+    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";      
 
     @Override
     public void createListDataModel() {
@@ -108,13 +106,17 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }   
 
     @Override
-    public DataModel getTopLevelMachineDesignSelectionList() {
+    public DataModel getTopLevelMachineDesignSelectionList() {    
+        ItemDomainMachineDesign current = getCurrent();
+        DataModel topLevelMachineDesignSelectionList = current.getTopLevelMachineDesignSelectionList();
+        
         if (topLevelMachineDesignSelectionList == null) {
             List<ItemDomainMachineDesign> topLevelMachineDesignInventory = itemDomainMachineDesignFacade.getTopLevelMachineDesignInventory();
-            
+                        
             removeTopLevelParentOfItemFromList(current, topLevelMachineDesignInventory);            
             
-            topLevelMachineDesignSelectionList = new ListDataModel(topLevelMachineDesignInventory); 
+            topLevelMachineDesignSelectionList = new ListDataModel(topLevelMachineDesignInventory);             
+            current.setTopLevelMachineDesignSelectionList(topLevelMachineDesignSelectionList);
         }
         
         return topLevelMachineDesignSelectionList;         
@@ -125,7 +127,8 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     public void prepareCreateInventoryFromTemplate(ItemDomainMachineDesign template) {
-        newMdInventoryItem = performPrepareCreateInventoryFromTemplate(template);
+        ItemDomainMachineDesign currentForCurrentData = getCurrentForCurrentData(); 
+        currentForCurrentData.setNewMdInventoryItem(performPrepareCreateInventoryFromTemplate(template)); 
     }
 
     public ItemDomainMachineDesign performPrepareCreateInventoryFromTemplate(ItemDomainMachineDesign template) {
@@ -216,6 +219,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     @Override
     public String currentDualViewList() {
+        setCurrentFlash();
         resetListConfigurationVariables();
         return view();
     }
@@ -248,19 +252,13 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     @Override
-    protected void resetVariablesForCurrent() {
-        super.resetVariablesForCurrent();
-
-        newMdInventoryItem = null;
-    }
-
-    @Override
     public ItemMultiEditController getItemMultiEditController() {
         return ItemMultiEditDomainMachineDesignInventoryController.getInstance();
     }
 
     public ItemDomainMachineDesign getNewMdInventoryItem() {
-        return newMdInventoryItem;
+        ItemDomainMachineDesign currentForCurrentData = getCurrentForCurrentData();
+        return currentForCurrentData.getNewMdInventoryItem(); 
     }
     
     @Override

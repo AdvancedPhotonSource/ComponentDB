@@ -68,8 +68,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     private Boolean currentItemBOMTreeHasOptionalItems = null;   
 
     private ItemDomainInventoryLazyDataModel itemDomainInventoryLazyDataModel = null;
-
-    private List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;   
+    
     @EJB
     private ItemDomainInventoryFacade itemDomainInventoryFacade;
 
@@ -116,19 +115,15 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     }
 
     public List<ItemElementRelationship> getRelatedMAARCRelationshipsForCurrent() {
+        ItemDomainInventory current = getCurrent();
+        List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = current.getRelatedMAARCRelationshipsForCurrent();
         if (relatedMAARCRelationshipsForCurrent == null) {
             relatedMAARCRelationshipsForCurrent = ItemDomainMAARCController.getRelatedMAARCRelationshipsForItem(getCurrent());
         }
 
         return relatedMAARCRelationshipsForCurrent;
     }
-
-    @Override
-    protected void resetVariablesForCurrent() {
-        super.resetVariablesForCurrent();
-        relatedMAARCRelationshipsForCurrent = null;
-    }
-
+    
     @Override
     public List<ItemDomainInventory> getItemListWithProject(ItemProject itemProject) {
         String projectName = itemProject.getName();
@@ -208,6 +203,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     }
 
     public Boolean displayBOMEditButton() {
+        ItemDomainInventory current = getCurrent();
         if (current != null) {
             List<ItemElement> catalogItemElementDisplayList;
             if (current.getDerivedFromItem() != null) {
@@ -381,6 +377,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
             bomItem.setState(InventoryBillOfMaterialItemStates.unspecifiedOptional.getValue());
             if (bomItem.getInventoryItemElement() != null) {
                 ItemElement inventoryItemElement = bomItem.getInventoryItemElement();
+                ItemDomainInventory current = getCurrent();
                 current.getFullItemElementList().remove(inventoryItemElement);
                 ItemElementController.getInstance().destroy(inventoryItemElement);
             }
@@ -396,6 +393,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
 
     public Boolean getCurrentItemBOMTreeHasOptionalItems() {
         // TODO add support for optional elements in sub assamblies 
+        ItemDomainInventory current = getCurrent();
         if (current != null && currentItemBOMTreeHasOptionalItems == null) {
             currentItemBOMTreeHasOptionalItems = itemHasOptionalsInBOM(current);
             if (!currentItemBOMTreeHasOptionalItems) {                                

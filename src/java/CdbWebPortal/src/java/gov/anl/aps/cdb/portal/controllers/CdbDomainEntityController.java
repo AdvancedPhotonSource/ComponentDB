@@ -188,6 +188,7 @@ public abstract class CdbDomainEntityController<ControllerUtility extends CdbDom
 
     public void updateEditProperty() {        
         this.update();
+        reloadCurrent();
     }
 
     public void deleteCurrentEditPropertyValue() {
@@ -204,6 +205,7 @@ public abstract class CdbDomainEntityController<ControllerUtility extends CdbDom
 
     public void savePropertyList() {
         update();
+        reloadCurrent();
     }   
 
     @Override
@@ -529,7 +531,7 @@ public abstract class CdbDomainEntityController<ControllerUtility extends CdbDom
 
     public void removeNewLog() {
         if (newLogEdit != null) {
-            EntityType cdbDomainEntity = this.current;
+            EntityType cdbDomainEntity = getCurrent();
             cdbDomainEntity.getLogList().remove(newLogEdit);
             newLogEdit = null;
         }
@@ -538,6 +540,7 @@ public abstract class CdbDomainEntityController<ControllerUtility extends CdbDom
     public void saveLogList() {
         newLogEdit = null;
         update();
+        reloadCurrent();
     }
     
     public Log prepareAddLog(EntityType cdbDomainEntity) {
