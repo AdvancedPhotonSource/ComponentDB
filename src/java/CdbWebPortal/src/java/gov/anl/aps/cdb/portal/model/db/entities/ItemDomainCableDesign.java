@@ -64,6 +64,7 @@ public class ItemDomainCableDesign extends Item {
     private transient String endpoint2Drawing = null;
 
     private transient List<ItemElementRelationship> deletedRelationshipList = null;
+    private transient List<ItemConnector> deletedConnectorList = null;
     
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type";
     public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName";
@@ -112,6 +113,19 @@ public class ItemDomainCableDesign extends Item {
     public void clearDeletedRelationshipList() {
         if (deletedRelationshipList != null) {
             deletedRelationshipList.clear();
+        }
+    }
+
+    public List<ItemConnector> getDeletedConnectorList() {
+        if (deletedConnectorList == null) {
+            deletedConnectorList = new ArrayList<>();
+        }
+        return deletedConnectorList;
+    }
+    
+    public void clearDeletedConnectorList() {
+        if (deletedConnectorList != null) {
+            deletedConnectorList.clear();
         }
     }
 
@@ -557,6 +571,38 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
+    private void clearCableConnectors() {
+        
+        // null out connectors used in cable relationships
+        ItemElement selfElement = this.getSelfElement();
+        List<ItemElementRelationship> ierList
+                = selfElement.getItemElementRelationshipList1();
+        if (ierList != null) {
+            // find just the cable relationship items
+            RelationshipType cableIerType
+                    = RelationshipTypeFacade.getInstance().findByName(
+                            ItemElementRelationshipTypeNames.itemCableConnection.getValue());
+            if (cableIerType != null) {
+                for (ItemElementRelationship rel : ierList) {
+                    if (rel.getRelationshipType().getName().equals(cableIerType.getName())) {
+                        ItemConnector cableConnector = rel.getSecondItemConnector();
+                        if (cableConnector != null) {
+                            rel.setSecondItemConnector(null);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // add all connectors to list of connectors to remove
+        if (getItemConnectorList() != null) {
+            for (ItemConnector connector : getItemConnectorList()) {
+                getDeletedConnectorList().add(connector);
+            }
+            getItemConnectorList().clear();
+        }
+    }
+    
     public String getAlternateName() {
         return getItemIdentifier1();
     }
@@ -568,6 +614,7 @@ public class ItemDomainCableDesign extends Item {
     public void setTechnicalSystemList(List<ItemCategory> technicalSystemList) {
         setItemCategoryList(technicalSystemList);
     }
+    
     @JsonIgnore
     public String getExternalCableName() throws CdbException {
         if (externalCableName == null) {
@@ -688,6 +735,10 @@ public class ItemDomainCableDesign extends Item {
     public void setCatalogItem(Item itemCableCatalog) {
         // "assign" catalog item to cable design
         ItemElement selfElement = this.getSelfElement();
+        if (!itemCableCatalog.equals(selfElement.getContainedItem2())) {
+            // if changing catalog item, we need to remove cable connectors since they are inherited from catalog item
+            clearCableConnectors();
+        }
         selfElement.setContainedItem2(itemCableCatalog);
     }
 

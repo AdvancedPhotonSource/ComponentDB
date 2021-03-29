@@ -497,6 +497,19 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         return new CreateInfo(entity, isValid, validString);
     }
     
+    @Override
+    protected ValidInfo updateEntityInstance(ItemDomainCableDesign entity, Map<String, Object> rowMap) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        // if we are updating cable type, we need to reset the cable connectors in setCatalogItem()
+        ItemDomainCableCatalog catalogItem = (ItemDomainCableCatalog) rowMap.get(KEY_CATALOG_ITEM);
+        entity.setCatalogItem(catalogItem);
+            
+        return new ValidInfo(isValid, validString);
+    }
+    
     /**
      * Updates list of items in update mode.  Overridden here to customize by
      * deleting list of cable relationships for endpoints updated to null

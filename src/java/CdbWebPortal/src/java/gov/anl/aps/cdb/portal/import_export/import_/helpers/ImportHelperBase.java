@@ -1050,6 +1050,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                             + preUpdateValueMapResult.getValidInfo().getValidString()); 
         }
         FieldValueMap preUpdateMap = preUpdateValueMapResult.getValueMap();
+        
+        // allow subclass to manipulate the retrieved entity
+        ValidInfo updateEntityValidInfo = null;
+        updateEntityValidInfo = updateEntityInstance(entity, rowDict);
+        if (!updateEntityValidInfo.isValid()) {
+            validString = appendToString(validString, updateEntityValidInfo.getValidString());
+            isValid = false;
+        }
 
         // invoke each input handler to update the entity with row dictionary values
         ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(entity, rowDict);
@@ -1350,6 +1358,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         
         return new CreateInfo(existingItem, isValid, validString);
+    }
+    
+    /**
+     * Allows subclass to manipulate entity during update process. Default implementation
+     * does nothing.
+     */
+    protected ValidInfo updateEntityInstance(EntityType entity, Map<String, Object> rowMap) {
+        return new ValidInfo(true, "");
     }
     
     /**
