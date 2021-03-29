@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import org.primefaces.model.menu.DefaultMenuModel;
 
 /**
  *
@@ -31,6 +32,10 @@ public class ItemDomainLocation extends Item {
     private transient Float importSortOrder = null;
     
     private transient ItemElement parentItemElement = null; 
+    
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
+    private transient DefaultMenuModel parentSelectionMenuModel = null;
+    // </editor-fold>
     
 
     @Override
@@ -126,5 +131,16 @@ public class ItemDomainLocation extends Item {
             itemElement.setImportChildItem(this);
         }
     }
+
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
+    @JsonIgnore
+    public DefaultMenuModel getParentSelectionMenuModel() {
+        return parentSelectionMenuModel;
+    }
+
+    public void setParentSelectionMenuModel(DefaultMenuModel parentSelectionMenuModel) {
+        this.parentSelectionMenuModel = parentSelectionMenuModel;
+    }
+    // </editor-fold>
     
 }

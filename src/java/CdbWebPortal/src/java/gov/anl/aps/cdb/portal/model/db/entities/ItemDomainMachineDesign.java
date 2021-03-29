@@ -19,10 +19,14 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignContr
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
+import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
+import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import javax.faces.model.DataModel;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import org.apache.logging.log4j.LogManager;
@@ -58,6 +62,24 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient String moveToTrashWarningMsg = null;
     
     private transient ItemElement currentHierarchyItemElement;
+    
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
+    private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
+    private transient MachineDesignConnectorCableMapperItem mdccmi;
+    private transient List<MachineDesignConnectorListObject> mdConnectorList;
+    private transient ItemDomainMachineDesign newMdInventoryItem = null;
+    // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
+    private transient Item inventoryForElement = null;
+    private transient Item catalogForElement = null;
+    private transient Item originalForElement = null;
+    protected transient DataModel installedInventorySelectionForCurrentElement;
+    protected transient DataModel machineDesignTemplatesSelectionList;
+    protected transient DataModel topLevelMachineDesignSelectionList;
+    private transient List<KeyValueObject> machineDesignNameList = null;
+    private transient String machineDesignName = null;
+    private transient boolean displayCreateMachineDesignFromTemplateContent = false;
+    // </editor-fold>   
+    // </editor-fold>   
 
 
     @Override
@@ -506,4 +528,119 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 // </editor-fold>
 
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
+    @JsonIgnore
+    public List<ItemElementRelationship> getRelatedMAARCRelationshipsForCurrent() {
+        return relatedMAARCRelationshipsForCurrent;
+    }
+
+    public void setRelatedMAARCRelationshipsForCurrent(List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent) {
+        this.relatedMAARCRelationshipsForCurrent = relatedMAARCRelationshipsForCurrent;
+    }
+
+    @JsonIgnore
+    public MachineDesignConnectorCableMapperItem getMdccmi() {
+        return mdccmi;
+    }
+
+    public void setMdccmi(MachineDesignConnectorCableMapperItem mdccmi) {
+        this.mdccmi = mdccmi;
+    }
+
+    @JsonIgnore
+    public List<MachineDesignConnectorListObject> getMdConnectorList() {
+        return mdConnectorList;
+    }
+
+    public void setMdConnectorList(List<MachineDesignConnectorListObject> mdConnectorList) {
+        this.mdConnectorList = mdConnectorList;
+    } 
+
+    @JsonIgnore
+    public ItemDomainMachineDesign getNewMdInventoryItem() {
+        return newMdInventoryItem;
+    }
+
+    public void setNewMdInventoryItem(ItemDomainMachineDesign newMdInventoryItem) {
+        this.newMdInventoryItem = newMdInventoryItem;
+    }
+    
+    @JsonIgnore
+    public String getMachineDesignName() {
+        return machineDesignName;
+    }
+
+    public void setMachineDesignName(String machineDesignName) {
+        this.machineDesignName = machineDesignName;
+    }
+    
+    @JsonIgnore
+    public List<KeyValueObject> getMachineDesignNameList() {
+        return machineDesignNameList;
+    }
+
+    public void setMachineDesignNameList(List<KeyValueObject> list) {
+        this.machineDesignNameList = list;
+    }
+
+    @JsonIgnore
+    public Item getInventoryForElement() {
+        return inventoryForElement;
+    }
+
+    public void setInventoryForElement(Item inventoryForElement) {
+        this.inventoryForElement = inventoryForElement;
+    }
+
+    @JsonIgnore
+    public Item getCatalogForElement() {
+        return catalogForElement;
+    }
+
+    public void setCatalogForElement(Item catalogForElement) {
+        this.catalogForElement = catalogForElement;
+    }
+
+    @JsonIgnore
+    public Item getOriginalForElement() {
+        return originalForElement;
+    }
+
+    public void setOriginalForElement(Item originalForElement) {
+        this.originalForElement = originalForElement;
+    }
+
+    @JsonIgnore
+    public boolean isDisplayCreateMachineDesignFromTemplateContent() {
+        return displayCreateMachineDesignFromTemplateContent;
+    }
+    
+    @JsonIgnore
+    public DataModel getInstalledInventorySelectionForCurrentElement() {
+        return installedInventorySelectionForCurrentElement; 
+    }
+    
+    public void setInstalledInventorySelectionForCurrentElement(DataModel installedInventorySelectionForCurrentElement) {
+        this.installedInventorySelectionForCurrentElement = installedInventorySelectionForCurrentElement;
+    }
+    
+    @JsonIgnore
+    public DataModel getMachineDesignTemplatesSelectionList() {        
+        return machineDesignTemplatesSelectionList; 
+    }
+
+    public void setMachineDesignTemplatesSelectionList(DataModel machineDesignTemplatesSelectionList) {
+        this.machineDesignTemplatesSelectionList = machineDesignTemplatesSelectionList;
+    }
+    
+    @JsonIgnore
+    public DataModel getTopLevelMachineDesignSelectionList() {
+        return topLevelMachineDesignSelectionList; 
+    }
+    
+    public void setTopLevelMachineDesignSelectionList(DataModel topLevelMachineDesignSelectionList) {
+        this.topLevelMachineDesignSelectionList = topLevelMachineDesignSelectionList;
+    }
+    
+    // </editor-fold>
 }

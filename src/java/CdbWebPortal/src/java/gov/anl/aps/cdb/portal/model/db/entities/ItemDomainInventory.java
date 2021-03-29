@@ -42,6 +42,10 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
 
     private transient SparePartsBean sparePartsBean = null;
     
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
+    private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;   
+    // </editor-fold>
+    
     @Override
     public Item createInstance() {
         return new ItemDomainInventory();
@@ -144,5 +148,16 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
     public void setSerialNumber(String serialNumber) {
         this.setItemIdentifier1(serialNumber);
     }
+    
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
+    @JsonIgnore
+    public List<ItemElementRelationship> getRelatedMAARCRelationshipsForCurrent() {
+        return relatedMAARCRelationshipsForCurrent;
+    }
+
+    public void setRelatedMAARCRelationshipsForCurrent(List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent) {
+        this.relatedMAARCRelationshipsForCurrent = relatedMAARCRelationshipsForCurrent;
+    }
+    // </editor-fold>
     
 }

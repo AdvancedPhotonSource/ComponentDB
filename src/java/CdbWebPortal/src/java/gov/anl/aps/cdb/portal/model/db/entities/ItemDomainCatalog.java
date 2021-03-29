@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +30,13 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCatalog.class.getName());
 
-    private transient String machineDesignPlaceholderName = null;         
+    private transient String machineDesignPlaceholderName = null;   
+    
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
+    private transient List<ItemDomainInventory> inventorySparesList = null;
+    private transient List<ItemDomainInventory> inventoryNonSparesList = null;
+    private transient Boolean displayInventorySpares = null;
+    // </editor-fold>
 
     @Override
     public Item createInstance() {
@@ -62,5 +69,34 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     public void setAlternateName(String n) {
         setItemIdentifier2(n);
     }
+
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
+    @JsonIgnore
+    public List<ItemDomainInventory> getInventorySparesList() {
+        return inventorySparesList;
+    }
+
+    public void setInventorySparesList(List<ItemDomainInventory> inventorySparesList) {
+        this.inventorySparesList = inventorySparesList;
+    }
+
+    @JsonIgnore
+    public List<ItemDomainInventory> getInventoryNonSparesList() {
+        return inventoryNonSparesList;
+    }
+
+    public void setInventoryNonSparesList(List<ItemDomainInventory> inventoryNonSparesList) {
+        this.inventoryNonSparesList = inventoryNonSparesList;
+    }
+
+    @JsonIgnore
+    public Boolean getDisplayInventorySpares() {
+        return displayInventorySpares;
+    }
+
+    public void setDisplayInventorySpares(Boolean displayInventorySpares) {
+        this.displayInventorySpares = displayInventorySpares;
+    }
+    // </editor-fold>
     
 }
