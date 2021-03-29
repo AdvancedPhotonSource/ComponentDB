@@ -10,8 +10,11 @@ import java.util.Map;
 import java.util.Stack;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.NavigationHandler;
+import javax.faces.application.ViewHandler;
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.context.Flash;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpSession;
@@ -59,6 +62,23 @@ public class SessionUtility {
         context.getExternalContext().getFlash().setKeepMessages(true);
         context.addMessage(clientId, message);
         PrimeFaces.current().ajax().update(clientId);
+    }
+    
+    private static Flash getFlash() {
+        FacesContext currentInstance = FacesContext.getCurrentInstance();
+        ExternalContext externalContext = currentInstance.getExternalContext();
+        Flash flash = externalContext.getFlash();
+        return flash;
+    }
+    
+    public static void setFlashValue(String key, Object value) {
+        Flash flash = getFlash();
+        flash.put(key, value); 
+    }
+    
+    public static Object getFlashValue(String key) {
+        Flash flash = getFlash();
+        return flash.get(key); 
     }
 
     public static String getRequestParameterValue(String parameterName) {
@@ -108,6 +128,17 @@ public class SessionUtility {
         currentView += "faces-redirect=true";
 
         return currentView;
+    }
+    
+    public static String getCurrentViewIdWithCurrentHandlerTransfer() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        String viewId = context.getViewRoot().getViewId();
+        ViewHandler handler = context.getApplication().getViewHandler();
+        UIViewRoot root = handler.createView(context, viewId);
+        root.setViewId(viewId);
+        context.setViewRoot(root);     
+        
+        return viewId; 
     }
 
     public static String getCurrentViewId() {
