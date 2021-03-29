@@ -19,6 +19,9 @@ import java.io.Serializable;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.application.ViewHandler;
+import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
@@ -167,7 +170,7 @@ public class LoginController implements Serializable {
 
         if (validateCredentials(user, password)) {
             loadAuthenticatedUser();
-            return getLandingPage();
+            return reloadPage();
         } else {
             SessionUtility.addErrorMessage("Invalid Credentials", "Username/password combination could not be verified.");
             LogUtility.addSystemLog(SystemLogLevel.loginWarning, "Authentication Failed: " + username);
@@ -216,8 +219,8 @@ public class LoginController implements Serializable {
         LogUtility.addSystemLog(SystemLogLevel.loginInfo, "Authentication Succeeded: " + username);
     }
 
-    public String getLandingPage() {
-        String landingPage = SessionUtility.getCurrentViewId();
+    public String reloadPage() {
+        String landingPage = SessionUtility.getCurrentViewIdWithCurrentHandlerTransfer();
         if (landingPage.contains("login")) {
             landingPage = SessionUtility.popViewFromStack();
             if (landingPage == null) {
@@ -241,7 +244,7 @@ public class LoginController implements Serializable {
         loggedInAsUser = true;
         SessionUtility.setRole(CdbRole.USER);
         settingController.resetSessionVariables();
-        return getLandingPage();
+        return reloadPage();
     }
 
     public String dropAdminRole() {
@@ -250,7 +253,7 @@ public class LoginController implements Serializable {
         loggedInAsUser = true;
         SessionUtility.setRole(CdbRole.USER);
         settingController.resetSessionVariables();
-        return getLandingPage();
+        return reloadPage();
     }
 
     public String displayUsername() {
