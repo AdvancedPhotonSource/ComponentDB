@@ -64,9 +64,9 @@ public class ItemConnector extends CdbEntity implements Serializable {
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList1;
     @OneToMany(mappedBy = "itemConnector")
     private List<ItemResource> itemResourceList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstItemConnector")
+    @OneToMany(mappedBy = "firstItemConnector") // removed cascade = CascadeType.ALL because I'm afraid it will cause problems as for second item connector below
     private List<ItemElementRelationship> itemElementRelationshipList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondItemConnector")
+    @OneToMany(mappedBy = "secondItemConnector") // removed cascade = CascadeType.ALL because it causes deleting item connector from cable design update to delete metadata property values for the ItemElementRelationship
     private List<ItemElementRelationship> itemElementRelationshipList1;
     
     private transient ItemConnector itemConnectorOfItemConnectedTo; 

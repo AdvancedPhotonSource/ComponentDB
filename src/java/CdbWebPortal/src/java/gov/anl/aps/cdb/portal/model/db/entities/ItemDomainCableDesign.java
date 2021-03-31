@@ -33,35 +33,11 @@ public class ItemDomainCableDesign extends Item {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCableDesign.class.getName());
 
-    private transient String externalCableName = null;
-    private transient String importCableId = null;
-    private transient String alternateCableId = null;
-    private transient String legacyQrId = null;
-    private transient String laying = null;
-    private transient String voltage = null;
-    private transient String routedLength = null;
-    private transient String route = null;
-    private transient String notes = null;
-    
     private transient String endpoint1Port = null;
     private transient String endpoint1Connector = null;
-    private transient String endpoint1Description = null;
-    private transient String endpoint1Route = null;
-    private transient String endpoint1Pinlist = null;
-    private transient String endpoint1EndLength = null;
-    private transient String endpoint1Termination = null;
-    private transient String endpoint1Notes = null;
-    private transient String endpoint1Drawing = null;
     
     private transient String endpoint2Port = null;
     private transient String endpoint2Connector = null;
-    private transient String endpoint2Description = null;
-    private transient String endpoint2Route = null;
-    private transient String endpoint2Pinlist = null;
-    private transient String endpoint2EndLength = null;
-    private transient String endpoint2Termination = null;
-    private transient String endpoint2Notes = null;
-    private transient String endpoint2Drawing = null;
 
     private transient List<ItemElementRelationship> deletedRelationshipList = null;
     private transient List<ItemConnector> deletedConnectorList = null;
@@ -360,6 +336,10 @@ public class ItemDomainCableDesign extends Item {
 
     private void setConnectionPropertyFieldValue(
             ItemElementRelationship ier, String key, String value) throws CdbException {
+        
+        if (ier == null) {
+            return;
+        }
 
         validateConnectionPropertyFieldKey(key);
 
@@ -386,6 +366,10 @@ public class ItemDomainCableDesign extends Item {
     
     protected String getConnectionPropertyFieldValue(ItemElementRelationship ier, String key) throws CdbException {
 
+        if (ier == null) {
+            return null;
+        }
+        
         validateConnectionPropertyFieldKey(key);
 
         PropertyValue propertyValue = getConnectionPropertyValue(ier);
@@ -423,18 +407,49 @@ public class ItemDomainCableDesign extends Item {
         boolean isValid = true;
         String validString = "";
         
+        // validate
+        if ((itemEndpoint == null)
+                && (((endpointConnectorName != null) && (!endpointConnectorName.isBlank()))
+                || ((cableConnectorName != null) && (!cableConnectorName.isBlank())))) {
+            
+            isValid = false;
+            validString = "Must specify endpoint item to specify port or connector.";
+            return new ValidInfo(isValid, validString);
+        }
+        
+        // retrieve existing cable relationship, endpoint, and connectors
+        ItemDomainMachineDesign origItemEndpoint = null;
+        ItemConnector origEndpointConnector = null;
+        ItemConnector origCableConnector = null;
+        ItemElementRelationship existingRelationship = this.getCableConnectionBySortOrder(sortOrder);
+        if (existingRelationship != null) {
+            origItemEndpoint = 
+                    (ItemDomainMachineDesign)existingRelationship.getFirstItemElement().getParentItem();
+            origEndpointConnector = existingRelationship.getFirstItemConnector();
+            origCableConnector = existingRelationship.getSecondItemConnector();
+        }
+        
         // get endpoint connector
         ItemConnector endpointConnector = null;
-        if (endpointConnectorName != null && !endpointConnectorName.isBlank()) {
-            ItemDomainMachineDesignControllerUtility mdUtility = new ItemDomainMachineDesignControllerUtility();
-            mdUtility.syncMachineDesignConnectors(itemEndpoint);
-            endpointConnector = itemEndpoint.getConnectorNamed(endpointConnectorName);
-            if (endpointConnector == null) {
-                isValid = false;
-                validString = validString + "Endpoint: " + itemEndpoint.getName() + " port: " + endpointConnectorName + " does not exist.";
-            } else if (endpointConnector.isConnected()) {
-                isValid = false;
-                validString = validString + "Endpoint: " + itemEndpoint.getName() + " port: " + endpointConnectorName + " is already connected.";
+        if (itemEndpoint != null) {
+            if (endpointConnectorName != null && !endpointConnectorName.isBlank()) {
+                if ((origItemEndpoint != null) 
+                        && (itemEndpoint.getId().equals(origItemEndpoint.getId()))
+                        && (origEndpointConnector != null)
+                        && (endpointConnectorName.equals(origEndpointConnector.getConnector().getName()))) {
+                    endpointConnector = origEndpointConnector;
+                } else {
+                    ItemDomainMachineDesignControllerUtility mdUtility = new ItemDomainMachineDesignControllerUtility();
+                    mdUtility.syncMachineDesignConnectors(itemEndpoint);
+                    endpointConnector = itemEndpoint.getConnectorNamed(endpointConnectorName);
+                    if (endpointConnector == null) {
+                        isValid = false;
+                        validString = validString + "Endpoint: " + itemEndpoint.getName() + " port: " + endpointConnectorName + " does not exist.";
+                    } else if (endpointConnector.isConnected()) {
+                        isValid = false;
+                        validString = validString + "Endpoint: " + itemEndpoint.getName() + " port: " + endpointConnectorName + " is already connected.";
+                    }
+                }
             }
         }
         
@@ -445,14 +460,19 @@ public class ItemDomainCableDesign extends Item {
                 isValid = false;
                 validString = validString + "Must specify cable type to use cable connectors.";
             } else {
-                getItemControllerUtility().syncConnectors(this);
-                cableConnector = this.getConnectorNamed(cableConnectorName);
-                if (cableConnector == null) {
-                    isValid = false;
-                    validString = validString + "Cable connector: " + cableConnectorName + " does not exist.";
-                } else if (cableConnector.isConnected()) {
-                    isValid = false;
-                    validString = validString + "Cable connector: " + cableConnectorName + " is already connected.";
+                if ((origCableConnector != null)
+                        && (cableConnectorName.equals(origCableConnector.getConnector().getName()))) {
+                    cableConnector = origCableConnector;
+                } else {
+                    getItemControllerUtility().syncConnectors(this);
+                    cableConnector = this.getConnectorNamed(cableConnectorName);
+                    if (cableConnector == null) {
+                        isValid = false;
+                        validString = validString + "Cable connector: " + cableConnectorName + " does not exist.";
+                    } else if (cableConnector.isConnected()) {
+                        isValid = false;
+                        validString = validString + "Cable connector: " + cableConnectorName + " is already connected.";
+                    }
                 }
             }
         }
@@ -617,118 +637,82 @@ public class ItemDomainCableDesign extends Item {
     
     @JsonIgnore
     public String getExternalCableName() throws CdbException {
-        if (externalCableName == null) {
-            externalCableName = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY);
-        }
-        return externalCableName;
+        return getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY);
     }
 
-    public void setExternalCableName(String n) throws CdbException {
-        externalCableName = n;
-        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY, n);
+    public void setExternalCableName(String name) throws CdbException {
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY, name);
     }
 
     @JsonIgnore
     public String getImportCableId() throws CdbException {
-        if (importCableId == null) {
-            importCableId = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY);
-        }
-        return importCableId;
+        return getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY);
     }
 
     public void setImportCableId(String id) throws CdbException {
-        importCableId = id;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY, id);
     }
 
     @JsonIgnore
     public String getAlternateCableId() throws CdbException {
-        if (alternateCableId == null) {
-            alternateCableId = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY);
-        }
-        return alternateCableId;
+        return getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY);
     }
 
     public void setAlternateCableId(String id) throws CdbException {
-        alternateCableId = id;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY, id);
     }
 
     @JsonIgnore
     public String getLegacyQrId() throws CdbException {
-        if (legacyQrId == null) {
-            legacyQrId = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LEGACY_QR_ID_KEY);
-        }
-        return legacyQrId;
+        return getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LEGACY_QR_ID_KEY);
     }
 
     public void setLegacyQrId(String id) throws CdbException {
-        legacyQrId = id;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LEGACY_QR_ID_KEY, id);
     }
 
     @JsonIgnore
     public String getLaying() throws CdbException {
-        if (laying == null) {
-            laying = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY);
-        }
-        return laying;
+        return getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY);
     }
 
     public void setLaying(String l) throws CdbException {
-        laying = l;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_LAYING_KEY, l);
     }
 
     @JsonIgnore
     public String getVoltage() throws CdbException {
-        if (voltage == null) {
-            voltage = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY);
-        }
-        return voltage;
+        return getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY);
     }
 
     public void setVoltage(String v) throws CdbException {
-        voltage = v;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, v);
     }
 
     @JsonIgnore
     public String getRoutedLength() throws CdbException {
-        if (routedLength == null) {
-            routedLength = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ROUTED_LENGTH_KEY);
-        }
-        return routedLength;
+        return getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ROUTED_LENGTH_KEY);
     }
 
     public void setRoutedLength(String length) throws CdbException {
-        routedLength = length;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ROUTED_LENGTH_KEY, length);
     }
 
     @JsonIgnore
     public String getRoute() throws CdbException {
-        if (route == null) {
-            route = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ROUTE_KEY);
-        }
-        return route;
+        return getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ROUTE_KEY);
     }
 
     public void setRoute(String route) throws CdbException {
-        this.route = route;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_ROUTE_KEY, route);
     }
 
     @JsonIgnore
     public String getNotes() throws CdbException {
-        if (notes == null) {
-            notes = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_NOTES_KEY);
-        }
-        return notes;
+        return getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_NOTES_KEY);
     }
 
     public void setNotes(String notes) throws CdbException {
-        this.notes = notes;
         setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_NOTES_KEY, notes);
     }
 
@@ -820,141 +804,81 @@ public class ItemDomainCableDesign extends Item {
 
     @JsonIgnore
     public String getEndpoint1Description() throws CdbException {
-        if (endpoint1Description == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-            if (cableRelationship != null) {
-                endpoint1Description = getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DESCRIPTION_KEY);
-            }
-        }
-        return endpoint1Description;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DESCRIPTION_KEY);
     }
 
     public void setEndpoint1Description(String description) throws CdbException {
-        endpoint1Description = description;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DESCRIPTION_KEY, description);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DESCRIPTION_KEY, description);
     }
     
     @JsonIgnore
     public String getEndpoint1Route() throws CdbException {
-        if (endpoint1Route == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-            if (cableRelationship != null) {
-                endpoint1Route = getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_ROUTE_KEY);
-            }
-        }
-        return endpoint1Route;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_ROUTE_KEY);
     }
 
     public void setEndpoint1Route(String route) throws CdbException {
-        endpoint1Route = route;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_ROUTE_KEY, route);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_ROUTE_KEY, route);
     }
-    
+
     @JsonIgnore
     public String getEndpoint1Pinlist() throws CdbException {
-        if (endpoint1Pinlist == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-            if (cableRelationship != null) {
-                endpoint1Pinlist = getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_PINLIST_KEY);
-            }
-        }
-        return endpoint1Pinlist;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_PINLIST_KEY);
     }
 
     public void setEndpoint1Pinlist(String pinlist) throws CdbException {
-        endpoint1Pinlist = pinlist;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_PINLIST_KEY, pinlist);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_PINLIST_KEY, pinlist);
     }
-    
+
     @JsonIgnore
     public String getEndpoint1EndLength() throws CdbException {
-        if (endpoint1EndLength == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-            if (cableRelationship != null) {
-                endpoint1EndLength = 
-                        getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_END_LENGTH_KEY);
-            }
-        }
-        return endpoint1EndLength;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_END_LENGTH_KEY);
     }
 
     public void setEndpoint1EndLength(String endLength) throws CdbException {
-        endpoint1EndLength = endLength;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_END_LENGTH_KEY, endLength);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_END_LENGTH_KEY, endLength);
     }
-    
+
     @JsonIgnore
     public String getEndpoint1Termination() throws CdbException {
-        if (endpoint1Termination == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-            if (cableRelationship != null) {
-                endpoint1Termination = 
-                        getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_TERMINATION_KEY);
-            }
-        }
-        return endpoint1Termination;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_TERMINATION_KEY);
     }
 
     public void setEndpoint1Termination(String termination) throws CdbException {
-        endpoint1Termination = termination;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_TERMINATION_KEY, termination);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_TERMINATION_KEY, termination);
     }
-    
+
     @JsonIgnore
     public String getEndpoint1Notes() throws CdbException {
-        if (endpoint1Notes == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-            if (cableRelationship != null) {
-                endpoint1Notes = 
-                        getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_NOTES_KEY);
-            }
-        }
-        return endpoint1Notes;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_NOTES_KEY);
     }
 
     public void setEndpoint1Notes(String notes) throws CdbException {
-        endpoint1Notes = notes;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_NOTES_KEY, notes);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_NOTES_KEY, notes);
     }
-    
+
     @JsonIgnore
     public String getEndpoint1Drawing() throws CdbException {
-        if (endpoint1Drawing == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-            if (cableRelationship != null) {
-                endpoint1Drawing = 
-                        getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DRAWING_KEY);
-            }
-        }
-        return endpoint1Drawing;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DRAWING_KEY);
     }
 
     public void setEndpoint1Drawing(String drawing) throws CdbException {
-        endpoint1Drawing = drawing;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DRAWING_KEY, drawing);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DRAWING_KEY, drawing);
     }
-    
+
     public Item getEndpoint2() {
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
         if (cableRelationship != null) {
@@ -1009,140 +933,80 @@ public class ItemDomainCableDesign extends Item {
 
     @JsonIgnore
     public String getEndpoint2Description() throws CdbException {
-        if (endpoint2Description == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-            if (cableRelationship != null) {
-                endpoint2Description = getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DESCRIPTION_KEY);
-            }
-        }
-        return endpoint2Description;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DESCRIPTION_KEY);
     }
 
     public void setEndpoint2Description(String description) throws CdbException {
-        endpoint2Description = description;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DESCRIPTION_KEY, description);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DESCRIPTION_KEY, description);
     }
-    
+
     @JsonIgnore
     public String getEndpoint2Route() throws CdbException {
-        if (endpoint2Route == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-            if (cableRelationship != null) {
-                endpoint2Route = getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_ROUTE_KEY);
-            }
-        }
-        return endpoint2Route;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_ROUTE_KEY);
     }
 
     public void setEndpoint2Route(String route) throws CdbException {
-        endpoint2Route = route;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_ROUTE_KEY, route);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_ROUTE_KEY, route);
     }
     
     
     @JsonIgnore
     public String getEndpoint2Pinlist() throws CdbException {
-        if (endpoint2Pinlist == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-            if (cableRelationship != null) {
-                endpoint2Pinlist = getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_PINLIST_KEY);
-            }
-        }
-        return endpoint2Pinlist;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_PINLIST_KEY);
     }
 
     public void setEndpoint2Pinlist(String pinlist) throws CdbException {
-        endpoint2Pinlist = pinlist;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-        if (cableRelationship != null) {
             setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_PINLIST_KEY, pinlist);
-        }
     }
 
     @JsonIgnore
     public String getEndpoint2EndLength() throws CdbException {
-        if (endpoint2EndLength == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-            if (cableRelationship != null) {
-                endpoint2EndLength = 
-                        getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_END_LENGTH_KEY);
-            }
-        }
-        return endpoint2EndLength;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_END_LENGTH_KEY);
     }
 
     public void setEndpoint2EndLength(String endLength) throws CdbException {
-        endpoint2EndLength = endLength;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_END_LENGTH_KEY, endLength);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_END_LENGTH_KEY, endLength);
     }
     
     @JsonIgnore
     public String getEndpoint2Termination() throws CdbException {
-        if (endpoint2Termination == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-            if (cableRelationship != null) {
-                endpoint2Termination = 
-                        getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_TERMINATION_KEY);
-            }
-        }
-        return endpoint2Termination;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_TERMINATION_KEY);
     }
 
     public void setEndpoint2Termination(String termination) throws CdbException {
-        endpoint2Termination = termination;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_TERMINATION_KEY, termination);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_TERMINATION_KEY, termination);
     }
     
     @JsonIgnore
     public String getEndpoint2Notes() throws CdbException {
-        if (endpoint2Notes == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-            if (cableRelationship != null) {
-                endpoint2Notes = 
-                        getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_NOTES_KEY);
-            }
-        }
-        return endpoint2Notes;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_NOTES_KEY);
     }
 
     public void setEndpoint2Notes(String notes) throws CdbException {
-        endpoint2Notes = notes;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_NOTES_KEY, notes);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_NOTES_KEY, notes);
     }
     
     @JsonIgnore
     public String getEndpoint2Drawing() throws CdbException {
-        if (endpoint2Drawing == null) {
-            ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-            if (cableRelationship != null) {
-                endpoint2Drawing = 
-                        getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DRAWING_KEY);
-            }
-        }
-        return endpoint2Drawing;
+        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
+        return getConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DRAWING_KEY);
     }
 
     public void setEndpoint2Drawing(String drawing) throws CdbException {
-        endpoint2Drawing = drawing;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-        if (cableRelationship != null) {
-            setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DRAWING_KEY, drawing);
-        }
+        setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_DRAWING_KEY, drawing);
     }
     
 }

@@ -400,26 +400,46 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         return new ValidInfo(true, "");
     }
     
-    @Override
-    protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
-        
+    private ValidInfo createUpdateEntityCommon(
+            ItemDomainCableDesign entity,
+            Map<String, Object> rowMap) {
+
         boolean isValid = true;
         String validString = "";
         
-        ItemDomainCableDesign entity = getEntityController().createEntityInstance();
-        
         // set cable type so connectors inherited from cable type are synced in setEndpointImport()
         ItemDomainCableCatalog catalogItem = (ItemDomainCableCatalog) rowMap.get(KEY_CATALOG_ITEM);
-        if (catalogItem != null) {
-            entity.setCatalogItem(catalogItem);
+        entity.setCatalogItem(catalogItem);
+        
+        // get endpoint items
+        ItemDomainMachineDesign endpoint1Item = (ItemDomainMachineDesign) rowMap.get(KEY_ENDPOINT1_ITEM);
+        ItemDomainMachineDesign endpoint2Item = (ItemDomainMachineDesign) rowMap.get(KEY_ENDPOINT2_ITEM);        
+        
+        // check that port names are different if for same device
+        String endpoint1PortName = (String) rowMap.get(KEY_ENDPOINT1_PORT);
+        String endpoint2PortName = (String) rowMap.get(KEY_ENDPOINT2_PORT);
+        if ((endpoint1Item != null)
+                && (endpoint1Item == endpoint2Item)
+                && (endpoint1PortName != null)
+                && (endpoint2PortName != null)
+                && (endpoint1PortName.equals(endpoint2PortName))) {
+            isValid = false;
+            validString = "Port names for same device cannot specify same value: " + endpoint1PortName;
+            return new ValidInfo(isValid, validString);                   
         }
         
-        // handle endpoint1 ======
-        
-        ItemDomainMachineDesign endpoint1Item = (ItemDomainMachineDesign) rowMap.get(KEY_ENDPOINT1_ITEM);
-        String endpoint1PortName = (String) rowMap.get(KEY_ENDPOINT1_PORT);
+        // check that cable connector names are different
         String endpoint1ConnectorName = (String) rowMap.get(KEY_ENDPOINT1_CONNECTOR);
+        String endpoint2ConnectorName = (String) rowMap.get(KEY_ENDPOINT2_CONNECTOR);
+        if ((endpoint1ConnectorName != null) 
+                && (endpoint2ConnectorName != null) 
+                && (endpoint1ConnectorName.equals(endpoint2ConnectorName))) {
+            isValid = false;
+            validString = "Cable connector names cannot specify same value: " + endpoint1ConnectorName;
+            return new ValidInfo(isValid, validString);                   
+        }
         
+        // handle endpoint1 ======        
         // shouldn't specify endpoint properties if endpoint is not specified
         if (endpoint1Item == null) {
             String endpoint1Description = (String) rowMap.get(KEY_ENDPOINT1_DESCRIPTION);
@@ -454,12 +474,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
             }
         }
         
-        // handle endpoint2 ======
-        
-        ItemDomainMachineDesign endpoint2Item = (ItemDomainMachineDesign) rowMap.get(KEY_ENDPOINT2_ITEM);
-        String endpoint2PortName = (String) rowMap.get(KEY_ENDPOINT2_PORT);
-        String endpoint2ConnectorName = (String) rowMap.get(KEY_ENDPOINT2_CONNECTOR);
-        
+        // handle endpoint2 ======        
         // shouldn't specify endpoint properties if endpoint is not specified
         if (endpoint2Item == null) {
             String endpoint2Description = (String) rowMap.get(KEY_ENDPOINT2_DESCRIPTION);
@@ -494,20 +509,23 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
             }
         }
         
-        return new CreateInfo(entity, isValid, validString);
+        return new ValidInfo(isValid, validString);
     }
     
     @Override
-    protected ValidInfo updateEntityInstance(ItemDomainCableDesign entity, Map<String, Object> rowMap) {
+    protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         
-        boolean isValid = true;
-        String validString = "";
         
-        // if we are updating cable type, we need to reset the cable connectors in setCatalogItem()
-        ItemDomainCableCatalog catalogItem = (ItemDomainCableCatalog) rowMap.get(KEY_CATALOG_ITEM);
-        entity.setCatalogItem(catalogItem);
-            
-        return new ValidInfo(isValid, validString);
+        ItemDomainCableDesign entity = getEntityController().createEntityInstance();
+        
+        ValidInfo validInfo = createUpdateEntityCommon(entity, rowMap);
+        
+        return new CreateInfo(entity, validInfo);
+    }
+    
+    @Override
+    protected ValidInfo updateEntityInstance(ItemDomainCableDesign entity, Map<String, Object> rowMap) {        
+        return createUpdateEntityCommon(entity, rowMap);
     }
     
     /**

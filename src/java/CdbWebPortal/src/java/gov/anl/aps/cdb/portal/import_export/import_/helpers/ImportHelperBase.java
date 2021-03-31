@@ -967,8 +967,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         ValidInfo createValidInfo = createInfo.getValidInfo();
         if (!createValidInfo.isValid()) {
-            validString = appendToString(validString, createValidInfo.getValidString());
-            isValid = false;
+            return createInfo;
         }
         
         // capture item field values for display in validation table
@@ -1036,8 +1035,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         ValidInfo createValidInfo = createInfo.getValidInfo();
         if (!createValidInfo.isValid()) {
-            validString = appendToString(validString, createValidInfo.getValidString());
-            isValid = false;
+            return createInfo;
         }
         
         // capture item field values for comparison later with updated field values
