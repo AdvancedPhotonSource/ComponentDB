@@ -10,7 +10,9 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ParseInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -26,7 +28,8 @@ public class RefInputHandler extends SimpleInputHandler {
     private boolean idOnly = false;
     private boolean singleValue = true;
     private boolean allowPaths = false;
-    private RefObjectManager objectManager;
+    
+    private static Map<String, RefObjectManager> objectManagerMap = new HashMap<>();
     
     public RefInputHandler(
             int columnIndex,
@@ -102,10 +105,12 @@ public class RefInputHandler extends SimpleInputHandler {
     }
     
     private RefObjectManager getObjectManager() {
-        if (objectManager == null) {
-            objectManager = new RefObjectManager(controller, domainNameFilter);
+        String entityTypeName = this.controller.getEntityTypeName();
+        if (!objectManagerMap.containsKey(entityTypeName)) {
+            // add a new RefObjectManager instance for entity type if not present in map
+            objectManagerMap.put(entityTypeName, new RefObjectManager(controller, domainNameFilter));
         }
-        return objectManager;
+        return objectManagerMap.get(this.controller.getEntityTypeName());
     }
 
     @Override
