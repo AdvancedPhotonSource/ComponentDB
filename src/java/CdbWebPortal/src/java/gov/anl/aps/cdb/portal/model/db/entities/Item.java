@@ -375,7 +375,8 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String descriptionFromAPI;
 
     protected transient PropertyValue coreMetadataPropertyValue = null;
-
+    protected transient ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
+    
     public Item() {
     }
 
@@ -1557,7 +1558,10 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public ItemMetadataPropertyInfo getCoreMetadataPropertyInfo() {
-        return getItemControllerUtility().createCoreMetadataPropertyInfo(); 
+        if (coreMetadataPropertyInfo == null) {
+            coreMetadataPropertyInfo = getItemControllerUtility().createCoreMetadataPropertyInfo();
+        }
+        return coreMetadataPropertyInfo;
     }
     
     /**

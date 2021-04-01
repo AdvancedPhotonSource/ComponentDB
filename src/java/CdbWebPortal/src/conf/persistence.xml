@@ -4,6 +4,9 @@
     <jta-data-source>CdbDataSource</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <shared-cache-mode>NONE</shared-cache-mode>
-    <properties/>
+    <properties>
+      <property name="eclipselink.logging.level" value="FINE"/>
+      <property name="eclipselink.logging.logger" value="DefaultLogger"/>
+    </properties>
   </persistence-unit>
 </persistence>
