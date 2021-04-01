@@ -138,9 +138,7 @@ public abstract class ItemController<
     protected DataModel scopedListDataModel = null;
     protected List<String> displayListDataModelScopeSelectionList = null;
 
-    protected Integer qrIdViewParam = null;
-
-    private TreeNode itemElementListTreeTableRootNode = null;
+    protected Integer qrIdViewParam = null;    
 
     private List<ItemDomainEntity> selectItemCandidateList;
     private List<Item> selectedItems;
@@ -1023,14 +1021,6 @@ public abstract class ItemController<
         return getEntityDbFacade().find(id);
     }
 
-    void prepareItemElementListTreeTable(Item item) {
-        try {
-            itemElementListTreeTableRootNode = ItemElementUtility.createItemElementRoot(item);
-        } catch (CdbException ex) {
-            LOGGER.warn("Could not create item element list for tree view: " + ex.toString());
-        }
-    }
-
     public ItemSource getCurrentEditItemSource() {
         ItemDomainEntity current = getCurrent();
         return current.getCurrentEditItemSource();         
@@ -1747,14 +1737,6 @@ public abstract class ItemController<
         return current.getCurrentEditItemElementSaveButtonEnabled();
     }
 
-    public TreeNode getItemElementListTreeTableRootNode() {
-        return itemElementListTreeTableRootNode;
-    }
-
-    public void setItemElementListTreeTableRootNode(TreeNode itemElementListTreeTableRootNode) {
-        this.itemElementListTreeTableRootNode = itemElementListTreeTableRootNode;
-    }
-
     public Boolean getHasElementReorderChangesForCurrent() {
         ItemDomainEntity current = getCurrent();
         Boolean hasElementReorderChangesForCurrent = current.getHasElementReorderChangesForCurrent();
@@ -2209,7 +2191,6 @@ public abstract class ItemController<
 
     @Override
     public String prepareView(Item item) {
-        prepareItemElementListTreeTable(item);
         return "/views/item/view.xhtml?faces-redirect=true&id=" + item.getId();
     }
 

@@ -10,34 +10,15 @@ See LICENSE file.
     <ui:param name="childEntityController" value="#{itemElementController}"/>   
     <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
     <ui:param name="childEntitySettingObject" value="#{childEntityController.settingObject}" />
-    <ui:param name="currentItemSettingObject" value="#{currentItemController.settingObject}" />
-    
-    <ui:param name="simpleView" value="#{currentItemSettingObject.displayItemElementSimpleView}" /> 
-    <ui:param name="displayFlatTableView" value="#{simpleView == true 
-                                                   ? true 
-                                                   : childEntitySettingObject.displayFlatTableView}" />
+    <ui:param name="currentItemSettingObject" value="#{currentItemController.settingObject}" />       
 
-    <ui:fragment rendered="#{displayFlatTableView}">
-        <ui:insert name="listActionButtons">
-            <ui:include src="../itemElementListActionButtons.xhtml"/>
-        </ui:insert>
+    <ui:insert name="listActionButtons">
+        <ui:include src="../itemElementListActionButtons.xhtml"/>
+    </ui:insert>
 
-        <ui:insert name="listDataTable">
-            <ui:include src="../itemElementListDataTable.xhtml"/>
-        </ui:insert>      
-    </ui:fragment>
-
-    <ui:fragment rendered="#{!displayFlatTableView}">
-
-        <ui:insert name="treeListActionButtons">
-            <ui:include src="../itemElementTreeListActionButtons.xhtml" />
-        </ui:insert>
-
-        <ui:insert name="ItemElementListTreeTable">
-            <ui:include src="../itemElementListTreeTable.xhtml"/>
-        </ui:insert>                
-
-    </ui:fragment>
+    <ui:insert name="listDataTable">
+        <ui:include src="../itemElementListDataTable.xhtml"/>
+    </ui:insert>   
 
     <ui:insert name="itemElementListCustomizeDialog">        
         <ui:include src="../itemElementListCustomizeDisplayDialog.xhtml"/>

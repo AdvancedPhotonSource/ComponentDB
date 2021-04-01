@@ -18,13 +18,7 @@ See LICENSE file.
             <ui:param name="displayEditButton" value="#{renderEditButton}" />  
             <ui:param name="showAddButton" value="#{false}" />
         </ui:include>
-    </ui:define>
-    <ui:define name="treeListActionButtons" >
-        <ui:include src="../../itemElement/private/itemElementTreeListActionButtons.xhtml">
-            <ui:param name="displayEditButton" value="#{renderEditButton}" />  
-            <ui:param name="onCompleteEditButtonCommand" value="prepareEditInventoryItem()" />
-        </ui:include>
-    </ui:define>
+    </ui:define>    
     
     <ui:param name="redneredIsRequired" value="#{false}" />
     <ui:param name="itemElementAssemblyStartCount" value="0" /> 

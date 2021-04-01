@@ -197,7 +197,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     public boolean isDisplayRowExpansionForItemElement(ItemElement itemElement) {
-        if (settingObject.getDisplayFlatTableView() && settingObject.getDisplayRowExpansion()) {
+        if (settingObject.getDisplayRowExpansion()) {
             return isDisplayRowExpansionElementsList(itemElement)
                     || isDisplayRowExpansionLogs(itemElement)
                     || isDisplayRowExpansionProperties(itemElement);
