@@ -2368,6 +2368,7 @@ public class ItemDomainMachineDesignController
             } else {
                 SessionUtility.addErrorMessage("Error", "Machine design with id " + idParam + " couldn't be found.");
             }
+            return;
         }
 
         ItemDomainMachineDesign currentFlash = getCurrentFlash();
