@@ -373,11 +373,8 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             item.init(ei);
         }
 
-        try {
-            initializeCoreMetadataPropertyValue(item);
-        } catch (CdbException ex) {
-            logger.error(ex);
-        }
+        // initialize core metadata if subclass uses that facility
+        item.initializeCoreMetadataPropertyValue();
 
         return item;
     }
@@ -451,43 +448,17 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         }
     }
 
-    public void createOrMigrateCoreMetadataPropertyType() {
-
-        PropertyType propertyType = propertyTypeFacade.findByName(createCoreMetadataPropertyInfo().getPropertyName());
+    public void createOrMigrateCoreMetadataPropertyType(PropertyType propertyType) {
 
         // initialize property type if it is null
         if (propertyType == null) {
-            try {
-                propertyType = prepareCoreMetadataPropertyType();                
-                // otherwise migrate existing property type object
-            } catch (CdbException ex) {
-                logger.error(ex.getMessage());
-                return;
-            }
+            propertyType = prepareCoreMetadataPropertyType();                
         } else {
             migrateMetadataPropertyType(propertyType, createCoreMetadataPropertyInfo());
         }
     }   
 
-    protected void initializeCoreMetadataPropertyValue(ItemDomainEntity item) throws CdbException {
-        if (item.getCoreMetadataPropertyInfo() != null) {
-            item.setPropertyValueList(new ArrayList<>());
-            prepareCoreMetadataPropertyValue(item);
-        }
-    }
-
-    public PropertyValue prepareCoreMetadataPropertyValue(ItemDomainEntity item) throws CdbException {
-        // Add cable internal property type
-        PropertyType propertyType = propertyTypeFacade.findByName(item.getCoreMetadataPropertyInfo().getPropertyName());
-
-        if (propertyType == null) {
-            propertyType = prepareCoreMetadataPropertyType();
-        }
-
-        return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
-    }
-
-    public PropertyType prepareCoreMetadataPropertyType() throws CdbException {
+    public PropertyType prepareCoreMetadataPropertyType() {
         PropertyTypeControllerUtility propertyTypeControllerUtility = new PropertyTypeControllerUtility();
         PropertyType propertyType = propertyTypeControllerUtility.createEntityInstance(null);
 
@@ -508,7 +479,12 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         }
         propertyType.setPropertyTypeMetadataList(ptmList);
 
-        propertyTypeControllerUtility.create(propertyType, null);
+        try {
+            propertyTypeControllerUtility.create(propertyType, null);
+        } catch (CdbException ex) {
+            logger.error(ex.getMessage());
+            return null;
+        }
         return propertyType;
     }
 

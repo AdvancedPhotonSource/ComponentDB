@@ -2542,7 +2542,7 @@ public abstract class ItemController<
     }
 
     public void createOrMigrateCoreMetadataPropertyType() {        
-        getControllerUtility().createOrMigrateCoreMetadataPropertyType();
+        getControllerUtility().createOrMigrateCoreMetadataPropertyType(getCoreMetadataPropertyType());
     }   
 
     public String getCoreMetadataPropertyTitle() {

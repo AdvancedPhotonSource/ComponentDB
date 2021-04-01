@@ -16,15 +16,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -254,40 +249,11 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
         return propertyType;
     }
 
-    public PropertyValue prepareConnectionPropertyValue(
-            ItemElementRelationship ier, ItemMetadataPropertyInfo info) throws CdbException {
-        
-        PropertyType propertyType = propertyTypeFacade.findByName(info.getPropertyName());
-
-        if (propertyType == null) {
-            propertyType = prepareConnectionPropertyType(info);
-        }
-
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        
-        PropertyValue propertyValue = new PropertyValue();
-        propertyValue.setPropertyType(propertyType);
-        propertyValue.setValue(propertyType.getDefaultValue());
-        propertyValue.setUnits(propertyType.getDefaultUnits());
-        
-        ier.addPropertyValueToPropertyValueList(propertyValue);
-        propertyValue.setEnteredByUser(lastModifiedByUser);
-        propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
-
-        // Get method called by GUI populates metadata
-        // Needed for multi-edit or API to also populate metadata
-        propertyValue.getPropertyValueMetadataList();
-
-        return propertyValue;
-    }
-
     public void createOrMigrateConnectionPropertyType() {
         
+        PropertyType propertyType = ItemDomainCableDesign.getConnectionPropertyType();
         ItemMetadataPropertyInfo info = ItemDomainCableDesign.getConnectionPropertyInfo();
-        PropertyType propertyType = propertyTypeFacade.findByName(info.getPropertyName());
 
-        // initialize property type if it is null
         if (propertyType == null) {
             try {
                 propertyType = prepareConnectionPropertyType(info);                

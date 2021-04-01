@@ -1486,6 +1486,21 @@ public class Item extends CdbDomainEntity implements Serializable {
         return assemblyRootTreeNode;
     }
 
+    public void initializeCoreMetadataPropertyValue() {
+        if (getCoreMetadataPropertyInfo() != null) {
+            if (getPropertyValueList() == null) {
+                setPropertyValueList(new ArrayList<>());
+            }
+            prepareCoreMetadataPropertyValue();
+        }
+    }
+
+    public PropertyValue prepareCoreMetadataPropertyValue() {
+        PropertyType propertyType = getCoreMetadataPropertyType();
+        return getItemControllerUtility().preparePropertyTypeValueAdd(
+                this, propertyType, propertyType.getDefaultValue(), null);
+    }
+
     public PropertyValue getCoreMetadataPropertyValue() {
 
         ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
@@ -1519,7 +1534,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         PropertyValue propertyValue = getCoreMetadataPropertyValue();
 
         if (propertyValue == null) {
-            propertyValue = getItemControllerUtility().prepareCoreMetadataPropertyValue(this);
+            propertyValue = prepareCoreMetadataPropertyValue();
         }
         
         if (value == null) {
@@ -1543,6 +1558,13 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public ItemMetadataPropertyInfo getCoreMetadataPropertyInfo() {
         return getItemControllerUtility().createCoreMetadataPropertyInfo(); 
+    }
+    
+    /**
+     * Overridden by subclasses that utilize core metadata to customize. 
+     */
+    public PropertyType getCoreMetadataPropertyType() {
+        throw new UnsupportedOperationException("Item subclass must override getCoreMetadataPropertyType()");
     }
 
     protected CdbEntity getEntityById(String id) {
