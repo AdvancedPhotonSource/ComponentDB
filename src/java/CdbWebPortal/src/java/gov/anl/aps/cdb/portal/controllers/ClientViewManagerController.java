@@ -8,7 +8,9 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -18,9 +20,8 @@ import javax.inject.Named;
 public class ClientViewManagerController implements Serializable {
 
     public static final String controllerNamed = "clientViewManagerController";
-
-    String viewUUID = null;
-    String lastGeneratedViewUUID = null;
+    
+    Map<String, String> viewUUID;
     CdbEntityController entityController = null;
     String currentUrl = null;
     List<String> lastUrlList = null;
@@ -28,8 +29,12 @@ public class ClientViewManagerController implements Serializable {
 
     String defaultReturnToUrl = "list?faces-redirect=true";
 
-    public void generateNewViewUUID() {
-        viewUUID = UUID.randomUUID().toString();
+    public ClientViewManagerController() {
+        viewUUID = new HashMap<>(); 
+    }
+
+    public void generateNewViewUUID(String singleTabViewKey) {
+        String viewUUID = UUID.randomUUID().toString();
         String sessionUrl = SessionUtility.getRedirectToCurrentView();
 
         if (!skipAddLastUrl) {
@@ -38,7 +43,8 @@ public class ClientViewManagerController implements Serializable {
         skipAddLastUrl = false;
 
         currentUrl = sessionUrl;
-        lastGeneratedViewUUID = viewUUID;
+        
+        this.viewUUID.put(singleTabViewKey, viewUUID); 
     }
 
     public String returnToPreviousPage() {
@@ -69,14 +75,8 @@ public class ClientViewManagerController implements Serializable {
         this.lastUrlList.add(lastUrl);
     }
 
-    public String getViewUUID() {
-        return viewUUID;
-    }
-
-    public String getLastGeneratedViewUUID() {
-        String tmp = lastGeneratedViewUUID;
-        lastGeneratedViewUUID = null;
-        return tmp;
+    public String getViewUUID(String singleTabViewKey) {
+        return viewUUID.get(singleTabViewKey); 
     }
 
     public String redrectToLastShownUrl() {

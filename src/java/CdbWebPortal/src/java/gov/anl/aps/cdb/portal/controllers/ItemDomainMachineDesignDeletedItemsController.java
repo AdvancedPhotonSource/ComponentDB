@@ -98,6 +98,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     
     @Override
     public String viewForCurrentEntity() {
+        ItemDomainMachineDesign current = getCurrent();
         return "viewDeletedItem?id=" + current.getId() + "&faces-redirect=true";
     }
     

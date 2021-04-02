@@ -27,8 +27,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
     private static final String DisplayComponentTypeSettingTypeKey = "ItemElement.List.Display.ComponentType";
     private static final String DisplayCreatedByUserSettingTypeKey = "ItemElement.List.Display.CreatedByUser";
     private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ItemElement.List.Display.CreatedOnDateTime";
-    private static final String DisplayDescriptionSettingTypeKey = "ItemElement.List.Display.Description";
-    private static final String DisplayFlatTableViewSettingTypeKey = "ItemElement.List.Display.FlatTableView";
+    private static final String DisplayDescriptionSettingTypeKey = "ItemElement.List.Display.Description";    
     private static final String DisplayIdSettingTypeKey = "ItemElement.List.Display.Id";
     private static final String DisplayLastModifiedByUserSettingTypeKey = "ItemElement.List.Display.LastModifiedByUser";
     private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ItemElement.List.Display.LastModifiedOnDateTime";
@@ -65,8 +64,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
     private Boolean displayPartDescription = false;
     private Boolean displayChildItem = null;
     private Boolean displayComponent = null;
-    private Boolean displayComponentType = null;
-    private Boolean displayFlatTableView = null;
+    private Boolean displayComponentType = null;    
     private Boolean displayLocation = null;
     private Boolean displaySortOrder = null;
     private Boolean displayItemElementRowColor = null;
@@ -92,8 +90,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
 
         displayNumberOfItemsPerPage = Integer.parseInt(settingTypeMap.get(DisplayNumberOfItemsPerPageSettingTypeKey).getDefaultValue());
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
-        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());
-        displayFlatTableView = Boolean.parseBoolean(settingTypeMap.get(DisplayFlatTableViewSettingTypeKey).getDefaultValue());
+        displayDescription = Boolean.parseBoolean(settingTypeMap.get(DisplayDescriptionSettingTypeKey).getDefaultValue());        
         displayOwnerUser = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerUserSettingTypeKey).getDefaultValue());
         displayOwnerGroup = Boolean.parseBoolean(settingTypeMap.get(DisplayOwnerGroupSettingTypeKey).getDefaultValue());
         displayCreatedByUser = Boolean.parseBoolean(settingTypeMap.get(DisplayCreatedByUserSettingTypeKey).getDefaultValue());
@@ -146,8 +143,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
 
         displayNumberOfItemsPerPage = settingEntity.getSettingValueAsInteger(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
-        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);
-        displayFlatTableView = settingEntity.getSettingValueAsBoolean(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
+        displayDescription = settingEntity.getSettingValueAsBoolean(DisplayDescriptionSettingTypeKey, displayDescription);        
         displayOwnerUser = settingEntity.getSettingValueAsBoolean(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         displayOwnerGroup = settingEntity.getSettingValueAsBoolean(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
         displayCreatedByUser = settingEntity.getSettingValueAsBoolean(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
@@ -200,8 +196,7 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
 
         settingEntity.setSettingValue(DisplayNumberOfItemsPerPageSettingTypeKey, displayNumberOfItemsPerPage);
         settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
-        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);
-        settingEntity.setSettingValue(DisplayFlatTableViewSettingTypeKey, displayFlatTableView);
+        settingEntity.setSettingValue(DisplayDescriptionSettingTypeKey, displayDescription);        
         settingEntity.setSettingValue(DisplayOwnerUserSettingTypeKey, displayOwnerUser);
         settingEntity.setSettingValue(DisplayOwnerGroupSettingTypeKey, displayOwnerGroup);
         settingEntity.setSettingValue(DisplayCreatedByUserSettingTypeKey, displayCreatedByUser);
@@ -338,14 +333,6 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
 
     public void setDisplayComponentType(Boolean displayComponentType) {
         this.displayComponentType = displayComponentType;
-    }
-
-    public Boolean getDisplayFlatTableView() {
-        return displayFlatTableView;
-    }
-
-    public void setDisplayFlatTableView(Boolean displayFlatTableView) {
-        this.displayFlatTableView = displayFlatTableView;
     }
 
     public Boolean getDisplayLocation() {

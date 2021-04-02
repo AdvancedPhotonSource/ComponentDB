@@ -11,7 +11,7 @@ See LICENSE file.
     <ui:param name="entityTypeName" value="#{entityController.entityTypeName}"/>
 
     <div class="actionButton">
-        <p:commandButton id="#{entityTypeName}EditViewButton" action="#{entityController.view()}" 
+        <p:commandButton id="#{entityTypeName}EditViewButton" action="#{entityController.prepareView()}" 
                          value="View" alt="View" icon="fa fa-info-circle" update="@form">
             <p:tooltip for="#{entityTypeName}EditViewButton" value="View #{entityController.displayEntityTypeName}."/>
         </p:commandButton>
