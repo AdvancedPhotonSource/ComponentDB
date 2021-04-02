@@ -102,14 +102,6 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "", 
                 null);
         
-        info.addField(
-                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_LEGACY_QR_ID_KEY, 
-                "Legacy QR ID", 
-                "Legacy QR identifier, e.g., for cables that have already been assigned a QR code.", 
-                ItemMetadataFieldType.STRING, 
-                "", 
-                null);
-        
         info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_LAYING_KEY, 
                 "Laying", 
                 "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 

@@ -1066,7 +1066,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         if (isValid) {
 
-            // capture item field values for comparison later with updated field values
+            // capture item field values for comparison later with original field values
             FieldValueMapResult postUpdateValueMapResult = getFieldValueMap(entity);
             if (!postUpdateValueMapResult.getValidInfo().isValid()) {
                 isValid = false;
@@ -1079,6 +1079,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
             // capture differences between original and updated values
             FieldValueDifferenceMap fieldDiffMap = FieldValueMap.difference(preUpdateMap, postUpdateMap);
+            
+            // flag entities with changes so we can ignore the ones that don't
+            if (fieldDiffMap.keySet().isEmpty()) {
+                entity.hasImportUpdates(false);
+            } else {
+                entity.hasImportUpdates(true);
+            }
 
             // for compare mode, set unchanged values on entity
             if (getImportMode() == ImportMode.COMPARE) {
@@ -1120,7 +1127,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 diffString = diffString + "'" + diff.getNewValue() + "'";
                 diffString = diffString + "</span>";
             }
-            entity.setImportDiffs(diffString);
+            if (entity.hasImportUpdates()) {
+                entity.setImportDiffs(diffString);
+            } else {
+                entity.setImportDiffs("No updates detected for item.");
+            }
 
             // skip uniqueness checks in update mode for rows already flagged as invalid,
             // otherwise error reporting is confusing
@@ -1371,8 +1382,16 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      * custom behavior.
      */
     protected void updateList() throws CdbException, RuntimeException {
+        List<EntityType> updateEntities = new ArrayList<>();
+        for (EntityType entity : rows) {
+            if (entity.hasImportUpdates()) {
+                updateEntities.add(entity);
+            }
+        }
         EntityControllerType controller = this.getEntityController();
-        controller.updateList(rows);
+        if (!updateEntities.isEmpty()) {
+            controller.updateList(updateEntities);
+        }
     }
     
     /**

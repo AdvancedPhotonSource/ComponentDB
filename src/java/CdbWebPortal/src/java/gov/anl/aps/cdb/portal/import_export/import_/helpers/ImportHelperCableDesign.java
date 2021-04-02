@@ -4,12 +4,10 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
@@ -20,8 +18,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -37,8 +33,8 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     private static final String KEY_CATALOG_ITEM = "catalogItemString";
 
     private static final String KEY_ENDPOINT1_ITEM = "endpoint1String";
-    private static final String KEY_ENDPOINT1_PORT = "endpoint1PortImport";
-    private static final String KEY_ENDPOINT1_CONNECTOR = "endpoint1ConnectorImport";
+    private static final String KEY_ENDPOINT1_PORT = "endpoint1Port";
+    private static final String KEY_ENDPOINT1_CONNECTOR = "endpoint1Connector";
     private static final String KEY_ENDPOINT1_DESCRIPTION = "endpoint1Description";
     private static final String KEY_ENDPOINT1_ROUTE = "endpoint1Route";
     private static final String KEY_ENDPOINT1_END_LENGTH = "endpoint1EndLength";
@@ -48,8 +44,8 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     private static final String KEY_ENDPOINT1_DRAWING = "endpoint1Drawing";
 
     private static final String KEY_ENDPOINT2_ITEM = "endpoint2String";
-    private static final String KEY_ENDPOINT2_PORT = "endpoint2PortImport";
-    private static final String KEY_ENDPOINT2_CONNECTOR = "endpoint2ConnectorImport";
+    private static final String KEY_ENDPOINT2_PORT = "endpoint2Port";
+    private static final String KEY_ENDPOINT2_CONNECTOR = "endpoint2Connector";
     private static final String KEY_ENDPOINT2_DESCRIPTION = "endpoint2Description";
     private static final String KEY_ENDPOINT2_ROUTE = "endpoint2Route";
     private static final String KEY_ENDPOINT2_END_LENGTH = "endpoint2EndLength";
@@ -528,22 +524,4 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         return createUpdateEntityCommon(entity, rowMap);
     }
     
-    /**
-     * Updates list of items in update mode.  Overridden here to customize by
-     * deleting list of cable relationships for endpoints updated to null
-     * in import/update process.
-     */
-    @Override
-    protected void updateList() throws CdbException, RuntimeException {
-        
-        // domain object keeps track of relationships that need to be destroyed,
-        // e.g., when an endpoint is set to null in the import spreadsheet.
-        // updateList in facade is overridden to also destroy those relationships
-        
-        UserInfo user = SessionUtility.getUser();
-        ItemDomainCableDesignControllerUtility utility = new ItemDomainCableDesignControllerUtility();
-        utility.updateList(rows, user);
-        
-        getEntityController().resetListForView();
-    }
 }
