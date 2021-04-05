@@ -514,10 +514,10 @@ public class ItemDomainCableDesign extends Item {
                     endpointConnector = itemEndpoint.getConnectorNamed(endpointConnectorName);
                     if (endpointConnector == null) {
                         isValid = false;
-                        validString = validString + "Endpoint: " + itemEndpoint.getName() + " port: " + endpointConnectorName + " does not exist.";
+                        validString = validString + "Endpoint: " + itemEndpoint.getName() + " connector for port: " + endpointConnectorName + " does not exist for specified endpoint.";
                     } else if (endpointConnector.isConnected()) {
                         isValid = false;
-                        validString = validString + "Endpoint: " + itemEndpoint.getName() + " port: " + endpointConnectorName + " is already connected.";
+                        validString = validString + "Endpoint: " + itemEndpoint.getName() + " connector for port: " + endpointConnectorName + " is already connected.";
                     }
                 }
             }
@@ -544,7 +544,7 @@ public class ItemDomainCableDesign extends Item {
                     cableConnector = this.getConnectorNamed(cableConnectorName);
                     if (cableConnector == null) {
                         isValid = false;
-                        validString = validString + "Cable connector: " + cableConnectorName + " does not exist.";
+                        validString = validString + "Cable connector: " + cableConnectorName + " does not exist for specified cable type.";
                     } else if (cableConnector.isConnected()) {
                         isValid = false;
                         validString = validString + "Cable connector: " + cableConnectorName + " is already connected.";
