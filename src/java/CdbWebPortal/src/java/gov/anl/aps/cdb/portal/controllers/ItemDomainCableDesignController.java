@@ -30,6 +30,7 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -716,6 +717,10 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     
     public Boolean renderEditLinkForConnection(CableDesignConnectionListObject connection) {
         return (connection.getMdItem() != null);
+    }
+    
+    public ItemMetadataPropertyInfo getConnectionPropertyInfo() {
+        return ItemDomainCableDesign.getConnectionPropertyInfo();
     }
     
     /**

@@ -391,7 +391,7 @@ public class ItemDomainCableDesign extends Item {
         return propertyValue;
     }
 
-    private void setConnectionPropertyFieldValue(
+    public void setConnectionPropertyFieldValue(
             ItemElementRelationship ier, String key, String value) throws CdbException {
         
         if (ier == null) {
@@ -420,7 +420,7 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
-    protected String getConnectionPropertyFieldValue(ItemElementRelationship ier, String key) throws CdbException {
+    public String getConnectionPropertyFieldValue(ItemElementRelationship ier, String key) throws CdbException {
 
         if (ier == null) {
             return null;
