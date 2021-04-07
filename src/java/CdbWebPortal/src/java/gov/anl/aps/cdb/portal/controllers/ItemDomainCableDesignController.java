@@ -893,7 +893,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return connectionListForCurrent;
     }
     
-    private List<ItemConnector> getUnmappedConnectorsForCurrent() {
+    public List<ItemConnector> getUnmappedConnectorsForCurrent() {
         List<ItemConnector> unmappedConnectors = new ArrayList<>();
         for (ItemConnector connector : getCurrent().getItemConnectorList()) {
             if (!connector.isConnected()) {
@@ -915,6 +915,10 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     public boolean getDisplayConnectionsList() {
         return getConnectionListForCurrent().size() > 0;
+    }
+    
+    public boolean getDisplayConnectorsList() {
+        return getUnmappedConnectorsForCurrent().size() > 0;
     }
     
     public void createOrMigrateConnectionPropertyType() {        
