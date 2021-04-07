@@ -11,45 +11,20 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">   
 
+    <ui:param name="itemConnectorObject"
+              value="#{connection.itemConnector}"/> 
+    <ui:param name="connectedToItem"
+              value="#{connection.mdItem}"/>
+    <ui:param name="connectedToPort"
+              value="#{connection.mdConnector.connector}"/>
+    <ui:param name="relationshipId"
+              value="#{connection.cableRelationship.id}"/> 
+    
     <p:columnGroup type="header">
-        <p:row>
-            <p:column colspan="1"/>
-            <p:column id="cableConnectorColumn" colspan="3">
-                <f:facet name="header">
-                    <h:outputText value="Cable Connector" />
-                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
-                               for="cableConnectorColumn" />
-                </f:facet> 
-            </p:column>
-            <p:column colspan="2" headerText="Device Connection"/>
-        </p:row>
         <p:row>
             <p:column id="moreInfoColumn" 
                       headerText="More Info"
                       styleClass="narrowColumn">
-            </p:column>
-            <p:column id="cableConnectorNameColumn">
-                <f:facet name="header">
-                    <h:outputText value="Name" />
-                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
-                               for="cableConnectorNameColumn" />
-                </f:facet> 
-            </p:column>
-            <p:column id="cableConnectorTypeColumn" headerText="Type">
-                <f:facet name="header">
-                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
-                               for="cableConnectorTypeColumn" />
-                    <h:outputText styleClass="ui-icon ui-icon-connector" />
-                    Type
-                </f:facet>
-            </p:column>
-            <p:column id="cableConnectorGenderColumn" headerText="Gender">
-                <f:facet name="header">
-                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
-                               for="cableConnectorGenderColumn" />
-                    <h:outputText styleClass="ui-icon ui-icon-connector" />
-                    Gender
-                </f:facet>
             </p:column>
             <p:column>
                 <f:facet name="header">
@@ -60,28 +35,36 @@ See LICENSE file.
             <p:column>
                 <f:facet name="header">
                     <h:outputText/>
-                    Port
+                    Device Port
                 </f:facet>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText styleClass="ui-icon ui-icon-connector" />
+                    Port Type
+                </f:facet>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText styleClass="ui-icon ui-icon-connector" />
+                    Port Gender
+                </f:facet>
+            </p:column>
+            <p:column id="cableConnectorNameColumn">
+                <f:facet name="header">
+                    <h:outputText value="Cable Connector" />
+                    <p:tooltip value="Additional cable connectors can be added to this cable's catalog item." 
+                               for="cableConnectorNameColumn" />
+                </f:facet> 
             </p:column>
         </p:row>
     </p:columnGroup>
 
-    <ui:param name="itemConnectorObject"
-              value="#{connection.itemConnector}"/> 
-    <ui:param name="connectedToItem"
-              value="#{connection.mdItem}"/>
-    <ui:param name="connectedToPort"
-              value="#{connection.mdConnector.connector}"/>
-    <ui:param name="relationshipId"
-              value="#{connection.cableRelationship.id}"/> 
-    
     <p:column headerText="More Info"
               styleClass="narrowColumn">
         <p:rowToggler/>
     </p:column>
 
-    <ui:include src="../../itemConnector/private/itemConnectorListObject.xhtml" />
-        
     <p:column headerText="Device"
               exportFunction="#{facesUtility.getToString(connectedToItem)}">
         <p:outputPanel styleClass="inlineFlexOutputPanel">
@@ -112,6 +95,26 @@ See LICENSE file.
         </ui:include>
     </p:column>
     
+    <p:column headerText="Port Type"
+              exportFunction="#{facesUtility.getToString(connection.mdConnector.connector.connectorType)}">
+        #{connection.mdConnector.connector.connectorType}
+    </p:column>
+    
+    <ui:param name="portGender"
+              value="#{itemConnectorController.getConnectorGender(connection.mdConnector)}" /> 
+    <p:column headerText="Port Gender"
+              exportFunction="#{facesUtility.getToString(portGender)}">
+        #{portGender}
+    </p:column>
+    
+    <p:column headerText="Cable Connector"
+              exportFunction="#{facesUtility.getToString(itemConnectorObject.connector.name)}">
+        <ui:include src="../../connector/private/connectorNameObject.xhtml">
+            <ui:param name="connector"
+                      value="#{itemConnectorObject.connector}" />
+        </ui:include>
+    </p:column>
+
     <p:rowExpansion styleClass="domainEntityRowExpansion">
         <p:outputPanel>
             <p:accordionPanel activeIndex="" multiple="true">

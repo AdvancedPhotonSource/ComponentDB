@@ -170,24 +170,24 @@ public class CableDesignConnectionListObject {
             connList.add(connection);
         }
 
-        // add unmapped connectors
-        List<ItemConnector> connectors = item.getItemConnectorList();
-        if (connectors != null) {
-            connectorLoop:
-            for (ItemConnector itemConnector : connectors) {
-                for (CableDesignConnectionListObject connection : connList) {
-                    ItemConnector connConnector = connection.itemConnector;
-                    if (ObjectUtility.equals(connConnector, itemConnector)) {
-                        // Item already connected
-                        continue connectorLoop;
-                    }
-                }
-
-                CableDesignConnectionListObject connection = new CableDesignConnectionListObject(item);
-                connection.setItemConnector(itemConnector);
-                connList.add(connection);
-            }
-        }
+//        // add unmapped connectors
+//        List<ItemConnector> connectors = item.getItemConnectorList();
+//        if (connectors != null) {
+//            connectorLoop:
+//            for (ItemConnector itemConnector : connectors) {
+//                for (CableDesignConnectionListObject connection : connList) {
+//                    ItemConnector connConnector = connection.itemConnector;
+//                    if (ObjectUtility.equals(connConnector, itemConnector)) {
+//                        // Item already connected
+//                        continue connectorLoop;
+//                    }
+//                }
+//
+//                CableDesignConnectionListObject connection = new CableDesignConnectionListObject(item);
+//                connection.setItemConnector(itemConnector);
+//                connList.add(connection);
+//            }
+//        }
 
         return connList;
     }

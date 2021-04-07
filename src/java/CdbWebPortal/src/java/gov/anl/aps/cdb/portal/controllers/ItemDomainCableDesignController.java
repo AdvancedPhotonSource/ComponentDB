@@ -895,9 +895,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     
     private List<ItemConnector> getUnmappedConnectorsForCurrent() {
         List<ItemConnector> unmappedConnectors = new ArrayList<>();
-        for (CableDesignConnectionListObject connection : getConnectionListForCurrent()) {
-            if ((connection.getItemConnector() != null) && (connection.getMdItem() == null)) {
-                unmappedConnectors.add(connection.getItemConnector());
+        for (ItemConnector connector : getCurrent().getItemConnectorList()) {
+            if (!connector.isConnected()) {
+                unmappedConnectors.add(connector);
             }
         }
         return unmappedConnectors;
