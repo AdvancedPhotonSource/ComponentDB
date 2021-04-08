@@ -57,13 +57,19 @@ See LICENSE file.
             Machine Element Name
             <ui:fragment>
                 <br/>
-                <p:commandButton value="Enable Filtering"
-                                 ajax="false"
-                                 rendered="#{filterable == false}"
-                                 onclick="PF('loadingDialog').show();"
-                                 oncomplete="PF('loadingDialog').hide();"
-                                 action="#{itemDomainMachineDesignController.loadMachineDesignFilters()}"
-                                 update="@form"/>
+                <p:inputText id="nameMdFilter"
+                             valueChangeListener="#{valueModel.filterChangeEvent}" 
+                             value="#{valueModel.nameFilter}" 
+                             onchange="onChangeNameMdFilter()"/>
+                <p:remoteCommand name="onChangeNameMdFilter"
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide(); onCompleteMdFilter();"
+                                 update="nameMdFilter" /> 
+                <p:remoteCommand name="onCompleteMdFilter"
+                                 onstart="PF('loadingDialog').show()"
+                                 oncomplete="PF('loadingDialog').hide()"
+                                 action="#{valueModel.finishFiltering()}"
+                                 update="itemMachineDesignListDataTable#{viewId}" />                 
             </ui:fragment>
         </f:facet>
         <p:outputPanel id="draggableMachineDesign#{itemListObject.id}"
@@ -117,6 +123,25 @@ See LICENSE file.
                          hoverStyleClass="machineDesignDropableDestinationHover"/>
         </p:outputPanel>
 
+    </p:column>
+    
+    <p:column styleClass="narrowColumn"
+              id="searchAllMachineNodesBooleanColumn">
+        <f:facet name="header">
+            <span class="ui-icon fa fa-search" />
+            <br/>
+            <p:selectBooleanCheckbox id="searchAllMachineNodesBooleanCheckbox"
+                                     style="margin-right: 0px;"                                      
+                                     value="#{valueModel.filterAllNodes}"                                     
+                                     onchange="updateSearchAllMachineNodesBooleanCheckbox()"/>
+            <p:remoteCommand name="updateSearchAllMachineNodesBooleanCheckbox"
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             update="searchAllMachineNodesBooleanCheckbox itemMachineDesignListDataTable#{viewId}" /> 
+        </f:facet>
+        
+        <p:selectBooleanCheckbox value="#{itemTreeListObject.filterMachineNode}"                                                                       
+                                 rendered="#{topLevelItem}"/> 
     </p:column>
 
     <ui:include src="../../../item/private/templateDefaults/itemListObjectColumns/itemItemIdentifier1.xhtml" >

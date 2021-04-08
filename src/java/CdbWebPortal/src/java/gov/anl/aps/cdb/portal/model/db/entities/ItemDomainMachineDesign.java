@@ -41,14 +41,14 @@ import org.apache.logging.log4j.Logger;
 @Schema(name = "ItemDomainMachineDesign",
         allOf = Item.class
 )
-public class ItemDomainMachineDesign extends LocatableStatusItem {   
-    
+public class ItemDomainMachineDesign extends LocatableStatusItem {
+
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesign.class.getName());
     public final static String MD_INTERNAL_STATUS_PROPERTY_TYPE = "Machine Design Status";
 
-    private transient List<ItemElement> combinedItemElementList; 
-    private transient ItemElement combinedItemElementListParentElement; 
-    
+    private transient List<ItemElement> combinedItemElementList;
+    private transient ItemElement combinedItemElementListParentElement;
+
     private transient ItemDomainMachineDesign importMdItem = null;
     private transient String importPath = null;
     private transient ItemDomainCatalog importAssignedCatalogItem = null;
@@ -60,9 +60,14 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient Float importSortOrder = null;
     private transient String moveToTrashErrorMsg = null;
     private transient String moveToTrashWarningMsg = null;
-    
+
     private transient ItemElement currentHierarchyItemElement;
+
+    private transient ItemElement parentMachineElement;
     
+    private transient boolean filterMachineNode = true; 
+    private transient boolean skipSetfilterMachineNode = false; 
+
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
     private transient MachineDesignConnectorCableMapperItem mdccmi;
@@ -81,33 +86,32 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     // </editor-fold>   
     // </editor-fold>   
 
-
     @Override
     public Item createInstance() {
         return new ItemDomainMachineDesign();
-    }   
+    }
 
     @JsonIgnore
     public List<ItemElement> getCombinedItemElementList(ItemElement element) {
         if (combinedItemElementListParentElement != null) {
             if (!element.equals(combinedItemElementListParentElement)) {
-                combinedItemElementList = null; 
+                combinedItemElementList = null;
             }
         } else {
-            combinedItemElementList = null; 
+            combinedItemElementList = null;
         }
-        
+
         if (combinedItemElementList == null) {
             combinedItemElementList = new ArrayList<>();
-            combinedItemElementListParentElement = element; 
-            
+            combinedItemElementListParentElement = element;
+
             Item containedItem2 = getAssignedItem();
             if (containedItem2 != null) {
                 combinedItemElementList.addAll(containedItem2.getItemElementDisplayList());
             }
-            combinedItemElementList.addAll(getItemElementDisplayList()); 
-        } 
-        
+            combinedItemElementList.addAll(getItemElementDisplayList());
+        }
+
         return combinedItemElementList;
     }
 
@@ -120,68 +124,101 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
     
     @JsonIgnore
+    public boolean isFilterMachineNode() {
+        return filterMachineNode;
+    }
+
+    public void setFilterMachineNode(boolean filterMachineNode) {        
+        if (skipSetfilterMachineNode) {
+            skipSetfilterMachineNode = false; 
+            return;
+        }
+        this.filterMachineNode = filterMachineNode;
+    }
+    
+    public void updateFilterMachineNode(boolean filterMachineNode) {        
+        this.filterMachineNode = filterMachineNode;
+        // GUI will try and override the boolean one time during update. 
+        skipSetfilterMachineNode = true; 
+    }
+
+    @JsonIgnore
     public ItemDomainMachineDesign getParentMachineDesign() {
-        List<ItemElement> itemElementMemberList = this.getItemElementMemberList();        
-        
-        if (itemElementMemberList != null) {
-            for (ItemElement memberElement : itemElementMemberList) {
-                Item parentItem = memberElement.getParentItem();
-                if (parentItem instanceof ItemDomainMachineDesign) {
-                    // Should only be one. 
-                    return (ItemDomainMachineDesign) parentItem;                
+        ItemElement parentMachineElement = getParentMachineElement();
+
+        if (parentMachineElement != null) {
+            return (ItemDomainMachineDesign) parentMachineElement.getParentItem();
+        }
+
+        return null;
+    }   
+
+    @JsonIgnore
+    public ItemElement getParentMachineElement() {
+        if (parentMachineElement == null) {
+            List<ItemElement> itemElementMemberList = this.getItemElementMemberList();
+
+            if (itemElementMemberList != null) {
+                for (ItemElement memberElement : itemElementMemberList) {
+                    Item parentItem = memberElement.getParentItem();
+                    if (parentItem instanceof ItemDomainMachineDesign) {
+                        // Should only be one. 
+                        parentMachineElement = memberElement; 
+                        return parentMachineElement; 
+                    }
                 }
             }
         }
-       
-       return null;
+
+        return parentMachineElement;
     }
 
     @Override
     public ItemController getItemDomainController() {
         if (isItemDeleted(this)) {
-            return ItemDomainMachineDesignDeletedItemsController.getInstance(); 
+            return ItemDomainMachineDesignDeletedItemsController.getInstance();
         }
         if (isItemInventory(this)) {
-            return ItemDomainMachineDesignInventoryController.getInstance(); 
+            return ItemDomainMachineDesignInventoryController.getInstance();
         }
         return ItemDomainMachineDesignController.getInstance();
-    } 
+    }
 
     @Override
     public ItemControllerUtility getItemControllerUtility() {
         if (isItemDeleted(this)) {
-            return new ItemDomainMachineDesignDeletedControllerUtility(); 
+            return new ItemDomainMachineDesignDeletedControllerUtility();
         }
         if (isItemInventory(this)) {
-            return new ItemDomainMachineDesignInventoryControllerUtility(); 
+            return new ItemDomainMachineDesignInventoryControllerUtility();
         }
-        return new ItemDomainMachineDesignControllerUtility(); 
+        return new ItemDomainMachineDesignControllerUtility();
     }
 
     @Override
-    public Item getActiveLocation() {        
+    public Item getActiveLocation() {
         if (location != null) {
-            return location;            
+            return location;
         }
-        return membershipLocation; 
+        return membershipLocation;
     }
 
     @Override
     public String getLocationDetails() {
         if (location != null) {
-            return locationDetails; 
+            return locationDetails;
         }
-        return super.getLocationDetails(); 
+        return super.getLocationDetails();
     }
-    
+
     public static boolean isItemDeleted(Item item) {
         return isItemEntityType(item, EntityTypeName.deleted.getValue());
     }
-        
+
     public static boolean isItemInventory(Item item) {
         return isItemEntityType(item, EntityTypeName.inventory.getValue());
     }
-    
+
     @Override
     public String toString() {
         // Only top level machine design will get the special derived from formatting... DerivedItem - [name]
@@ -190,7 +227,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
                 return this.getName();
             }
         }
-        
+
         return super.toString();
     }
 
@@ -201,7 +238,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             setIsTemplate();
         }
     }
-    
+
     @JsonIgnore
     public String getImportIsTemplateString() {
         if (isItemTemplate(this)) {
@@ -210,25 +247,25 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return "no";
         }
     }
-    
+
     /**
      * Marks this machine design item as a template EntityType.
      */
     public void setIsTemplate() {
         try {
             List<EntityType> entityTypeList = new ArrayList<>();
-            EntityType templateEntity = 
-                    EntityTypeController.getInstance().
+            EntityType templateEntity
+                    = EntityTypeController.getInstance().
                             findByName(EntityTypeName.template.getValue());
             entityTypeList.add(templateEntity);
             setEntityTypeList(entityTypeList);
         } catch (CdbException ex) {
-            String msg = "Exception setting template entity type for: " + getName() + 
-                    " reason: " + ex.getMessage();
+            String msg = "Exception setting template entity type for: " + getName()
+                    + " reason: " + ex.getMessage();
             LOGGER.error("setIsTemplate() " + msg);
         }
     }
-    
+
     /**
      * Marks this machine design item as a 'deleted' EntityType.
      */
@@ -236,19 +273,19 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         try {
             addEntityType(EntityTypeName.deleted.getValue());
         } catch (CdbException ex) {
-            String msg = "Exception setting deleted entity type for: " + getName() + 
-                    " reason: " + ex.getMessage();
+            String msg = "Exception setting deleted entity type for: " + getName()
+                    + " reason: " + ex.getMessage();
             LOGGER.error("setIsDeleted() " + msg);
         }
     }
-    
+
     /**
      * Removes 'deleted entity type for item.
      */
     public void unsetIsDeleted() {
         removeEntityType(EntityTypeName.deleted.getValue());
     }
-    
+
     @JsonIgnore
     public ItemDomainMachineDesign getImportMdItem() {
         return importMdItem;
@@ -267,7 +304,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return "";
         }
     }
-    
+
     @JsonIgnore
     public String getImportPath() {
         return importPath;
@@ -284,12 +321,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setAlternateName(String n) {
         setItemIdentifier1(n);
     }
-    
+
     public Item getAssignedItem() {
         ItemElement selfElement = getSelfElement();
-        return selfElement.getContainedItem2(); 
+        return selfElement.getContainedItem2();
     }
-    
+
     public void setAssignedItem(Item item) {
         ItemElement selfElement = getSelfElement();
         selfElement.setContainedItem2(item);
@@ -298,19 +335,19 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult result = super.search(searchPattern);
-        
+
         Item assignedItem = getAssignedItem();
         if (assignedItem != null) {
             String assignedItemName = assignedItem.getName();
             result.doesValueContainPattern("Assigned Item Name", assignedItemName, searchPattern);
         }
-        
-        return result; 
+
+        return result;
     }
 
     @Override
     public String getStatusPropertyTypeName() {
-        return MD_INTERNAL_STATUS_PROPERTY_TYPE; 
+        return MD_INTERNAL_STATUS_PROPERTY_TYPE;
     }
 
     public String getMoveToTrashErrorMsg() {
@@ -328,7 +365,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setMoveToTrashWarningMsg(String moveToTrashWarningMsg) {
         this.moveToTrashWarningMsg = moveToTrashWarningMsg;
     }
-    
+
     public String getMoveToTrashRowStyle() {
         if (moveToTrashErrorMsg != null && !moveToTrashErrorMsg.isBlank()) {
             return "invalidTableData";
@@ -338,9 +375,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return null;
         }
     }
-    
+
     // <editor-fold defaultstate="collapsed" desc="Import functionality">
-    
     @JsonIgnore
     public Float getImportSortOrder() {
         return importSortOrder;
@@ -349,7 +385,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setImportSortOrder(Float importSortOrder) {
         this.importSortOrder = importSortOrder;
     }
-    
+
     @JsonIgnore
     public ItemDomainCatalog getImportAssignedCatalogItem() {
         return importAssignedCatalogItem;
@@ -358,7 +394,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setImportAssignedCatalogItem(ItemDomainCatalog item) {
         importAssignedCatalogItem = item;
     }
-    
+
     @JsonIgnore
     public String getImportAssignedCatalogItemString() {
         if (importAssignedCatalogItem != null) {
@@ -371,7 +407,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setImportAssignedInventoryItem(ItemDomainInventory item) {
         importAssignedInventoryItem = item;
     }
-    
+
     @JsonIgnore
     public ItemDomainInventory getImportAssignedInventoryItem() {
         return importAssignedInventoryItem;
@@ -415,17 +451,17 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             importLocationItem = locationItem;
         }
     }
-    
+
     @JsonIgnore
     public ItemDomainLocation getImportLocationItem() {
         return importLocationItem;
     }
-    
+
     @JsonIgnore
     public String getImportLocationItemString() {
         return importLocationItemString;
     }
-    
+
     public void setImportLocationItemString(String str) {
         importLocationItemString = str;
     }
@@ -438,7 +474,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setImportTemplateAndParameters(String importTemplateAndParameters) {
         this.importTemplateAndParameters = importTemplateAndParameters;
     }
-    
+
     public void applyImportAssignedItem() {
         if (importAssignedInventoryItem != null) {
             setAssignedItem(importAssignedInventoryItem);
@@ -446,81 +482,82 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             setAssignedItem(importAssignedCatalogItem);
         }
     }
-    
+
     /**
-     * Establishes parent/child relationship, with this item as child of specified parentItem.
-     * 
-     * @param childItem 
+     * Establishes parent/child relationship, with this item as child of
+     * specified parentItem.
+     *
+     * @param childItem
      */
     public void setImportChildParentRelationship(
             ItemDomainMachineDesign parentItem,
-            Float sortOrder) {        
-        
+            Float sortOrder) {
+
         if (parentItem != null) {
             // create ItemElement for new relationship
-            ItemElement itemElement = importCreateItemElementForParent(parentItem, null, null, sortOrder);            
+            ItemElement itemElement = importCreateItemElementForParent(parentItem, null, null, sortOrder);
             setImportChildParentRelationship(this, parentItem, itemElement);
         }
     }
-    
+
     private static void setImportChildParentRelationship(
             ItemDomainMachineDesign childItem,
             ItemDomainMachineDesign parentItem,
             ItemElement itemElement) {
-        
-        itemElement.setImportChildItem(childItem);        
+
+        itemElement.setImportChildItem(childItem);
     }
-    
+
     private static ItemElement importCreateItemElementForParent(
             ItemDomainMachineDesign parentItem,
             UserInfo user,
             UserGroup group,
             Float sortOrder) {
-        
+
         ItemElement itemElement = new ItemElement();
-        
-        ItemDomainMachineDesignControllerUtility controllerUtility; 
-        controllerUtility = new ItemDomainMachineDesignControllerUtility(); 
-        
+
+        ItemDomainMachineDesignControllerUtility controllerUtility;
+        controllerUtility = new ItemDomainMachineDesignControllerUtility();
+
         String elementName
                 = controllerUtility.generateUniqueElementNameForItem(parentItem);
         itemElement.setName(elementName);
 
         itemElement.setImportParentItem(parentItem, sortOrder, user, group);
-        
+
         return itemElement;
-    }  
-    
+    }
+
     public static ItemDomainMachineDesign importInstantiateTemplateUnderParent(
             ItemDomainMachineDesign templateItem,
             ItemDomainMachineDesign parentItem,
             UserInfo user,
             UserGroup group) {
-        
+
         String logMethodName = "instantiateTemplateUnderParent() ";
-        
+
         if (templateItem == null || parentItem == null) {
             LOGGER.error(logMethodName + "must specify both template and parent items");
             return null;
         }
-        
+
         ItemElement itemElement = importCreateItemElementForParent(parentItem, user, group, null);
-        
-        ItemDomainMachineDesignController controller = 
-                ItemDomainMachineDesignController.getInstance();
-        
+
+        ItemDomainMachineDesignController controller
+                = ItemDomainMachineDesignController.getInstance();
+
         ItemDomainMachineDesign newItem;
         try {
-            
+
             newItem = controller.createMachineDesignFromTemplate(itemElement, templateItem, user, group);
 
             controller.createMachineDesignFromTemplateHierachically(itemElement);
-            
+
             setImportChildParentRelationship(newItem, parentItem, itemElement);
 
         } catch (CdbException | CloneNotSupportedException ex) {
-            LOGGER.error(logMethodName + "failed to instantiate template " + 
-                    templateItem.getName() + ": " + ex.toString());
+            LOGGER.error(logMethodName + "failed to instantiate template "
+                    + templateItem.getName() + ": " + ex.toString());
             return null;
         }
 
@@ -554,7 +591,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setMdConnectorList(List<MachineDesignConnectorListObject> mdConnectorList) {
         this.mdConnectorList = mdConnectorList;
-    } 
+    }
 
     @JsonIgnore
     public ItemDomainMachineDesign getNewMdInventoryItem() {
@@ -564,7 +601,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setNewMdInventoryItem(ItemDomainMachineDesign newMdInventoryItem) {
         this.newMdInventoryItem = newMdInventoryItem;
     }
-    
+
     @JsonIgnore
     public String getMachineDesignName() {
         return machineDesignName;
@@ -573,7 +610,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setMachineDesignName(String machineDesignName) {
         this.machineDesignName = machineDesignName;
     }
-    
+
     @JsonIgnore
     public List<KeyValueObject> getMachineDesignNameList() {
         return machineDesignNameList;
@@ -614,33 +651,33 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public boolean isDisplayCreateMachineDesignFromTemplateContent() {
         return displayCreateMachineDesignFromTemplateContent;
     }
-    
+
     @JsonIgnore
     public DataModel getInstalledInventorySelectionForCurrentElement() {
-        return installedInventorySelectionForCurrentElement; 
+        return installedInventorySelectionForCurrentElement;
     }
-    
+
     public void setInstalledInventorySelectionForCurrentElement(DataModel installedInventorySelectionForCurrentElement) {
         this.installedInventorySelectionForCurrentElement = installedInventorySelectionForCurrentElement;
     }
-    
+
     @JsonIgnore
-    public DataModel getMachineDesignTemplatesSelectionList() {        
-        return machineDesignTemplatesSelectionList; 
+    public DataModel getMachineDesignTemplatesSelectionList() {
+        return machineDesignTemplatesSelectionList;
     }
 
     public void setMachineDesignTemplatesSelectionList(DataModel machineDesignTemplatesSelectionList) {
         this.machineDesignTemplatesSelectionList = machineDesignTemplatesSelectionList;
     }
-    
+
     @JsonIgnore
     public DataModel getTopLevelMachineDesignSelectionList() {
-        return topLevelMachineDesignSelectionList; 
+        return topLevelMachineDesignSelectionList;
     }
-    
+
     public void setTopLevelMachineDesignSelectionList(DataModel topLevelMachineDesignSelectionList) {
         this.topLevelMachineDesignSelectionList = topLevelMachineDesignSelectionList;
     }
-    
+
     // </editor-fold>
 }

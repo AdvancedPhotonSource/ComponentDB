@@ -5,13 +5,21 @@
 package gov.anl.aps.cdb.portal.model;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemDomainMachineDesignQueryBuilder;
+import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
+import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.faces.event.ValueChangeEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -21,11 +29,20 @@ import org.primefaces.model.TreeNode;
  */
 public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
+    private String nameFilter = "";
+    private Domain domain;
+    private ItemDomainMachineDesignFacade designFacade;
+
+    private List<ItemDomainMachineDesign> topLevelItems;
+
+    private List<ItemDomainMachineDesign> filterResults;
+    private Boolean filterAllNodes; 
+
     boolean childrenLoaded = false;
     boolean cablesLoaded = false;
     MachineTreeConfiguration config;
-    
-    boolean cableRelatedNode = false; 
+
+    boolean cableRelatedNode = false;
 
     private ItemDomainMachineDesignTreeNode(ItemElement element, MachineTreeConfiguration config, ItemDomainMachineDesignTreeNode parent) {
         super(element);
@@ -34,18 +51,14 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         setTreeNodeTypeMachineDesignTreeList();
     }
 
-    public ItemDomainMachineDesignTreeNode(List<ItemDomainMachineDesign> items) {
+    public ItemDomainMachineDesignTreeNode(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade) {
         config = new MachineTreeConfiguration();
+        this.domain = domain;
+        this.designFacade = facade;
+        this.topLevelItems = items;
 
-        for (ItemDomainMachineDesign item : items) {            
-            ItemElement selfElement = item.getSelfElement();
-            ItemElement element = new ItemElement();
-            Float sortOrder = selfElement.getSortOrder();
-            element.setContainedItem(item);
-            element.setSortOrder(sortOrder);
-            createChildNode(element);
-        }
-        
+        addTopLevelChildren(items);
+
         // Expand first node if tree is only one node.
         if (items.size() == 1) {
             List<ItemDomainMachineDesignTreeNode> machineChildren = this.getMachineChildren();
@@ -55,12 +68,28 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         this.setExpanded(true);
         childrenLoaded = true;
     }
-    
+
+    private void addTopLevelChildren(List<ItemDomainMachineDesign> topNodes) {
+        for (ItemDomainMachineDesign item : topNodes) {
+            ItemElement element = createTopLevelMockItemElement(item);
+            createChildNode(element);
+        }
+    }
+
+    private ItemElement createTopLevelMockItemElement(ItemDomainMachineDesign item) {
+        ItemElement selfElement = item.getSelfElement();
+        ItemElement element = new ItemElement();
+        Float sortOrder = selfElement.getSortOrder();
+        element.setContainedItem(item);
+        element.setSortOrder(sortOrder);
+        return element;
+    }
+
     public ItemDomainMachineDesignTreeNode() {
         // Empty model
         config = new MachineTreeConfiguration();
     }
-    
+
     public ItemElement getElement() {
         Object data = super.getData();
         return (ItemElement) data;
@@ -89,9 +118,16 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     }
 
     private ItemDomainMachineDesignTreeNode createChildNode(ItemElement itemElement) {
+        return createChildNode(itemElement, false);
+    }
+
+    private ItemDomainMachineDesignTreeNode createChildNode(ItemElement itemElement, boolean childrenLoaded) {
         ItemDomainMachineDesignTreeNode machine = new ItemDomainMachineDesignTreeNode(itemElement, config, this);
+        if (childrenLoaded) {
+            machine.childrenLoaded = childrenLoaded;
+        }
         super.getChildren().add(machine);
-        
+
         return machine;
     }
 
@@ -99,43 +135,43 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         ItemElement mockIE = new ItemElement();
         mockIE.setMdConnector(itemConnector);
         ItemDomainMachineDesignTreeNode connectorNode = this.createChildNode(mockIE);
-        connectorNode.setType("Connector");        
-        connectorNode.cableRelatedNode = true; 
+        connectorNode.setType("Connector");
+        connectorNode.cableRelatedNode = true;
 
         return connectorNode;
     }
 
-    private ItemDomainMachineDesignTreeNode createChildNode(ItemDomainCableDesign cableDesign) {        
+    private ItemDomainMachineDesignTreeNode createChildNode(ItemDomainCableDesign cableDesign) {
         ItemElement mockIE = new ItemElement();
         mockIE.setContainedItem(cableDesign);
-        ItemDomainMachineDesignTreeNode cable = createChildNode(mockIE);         
-        cable.cableRelatedNode = true; 
-        
-        return cable; 
+        ItemDomainMachineDesignTreeNode cable = createChildNode(mockIE);
+        cable.cableRelatedNode = true;
+
+        return cable;
     }
-    
+
     public List<ItemDomainMachineDesignTreeNode> getMachineChildren() {
-        return (List<ItemDomainMachineDesignTreeNode>)(List<?>)super.getChildren();
+        return (List<ItemDomainMachineDesignTreeNode>) (List<?>) super.getChildren();
     }
 
     private void fetchChildren() {
         boolean loadCables = !cablesLoaded && (config.cablesNeedLoading());
-        boolean unloadCables = cablesLoaded && (!config.cablesNeedLoading()); 
-        
-        if (unloadCables) { 
+        boolean unloadCables = cablesLoaded && (!config.cablesNeedLoading());
+
+        if (unloadCables) {
             TreeNode parent = getParent();
             if (parent == null || parent.isExpanded()) {
-                cablesLoaded = false; 
+                cablesLoaded = false;
                 List<ItemDomainMachineDesignTreeNode> machineChildren = getMachineChildren();
-                for (int i = machineChildren.size() -1; i >= 0; i--) {
-                    ItemDomainMachineDesignTreeNode node = machineChildren.get(i); 
+                for (int i = machineChildren.size() - 1; i >= 0; i--) {
+                    ItemDomainMachineDesignTreeNode node = machineChildren.get(i);
                     if (node.cableRelatedNode) {
-                        machineChildren.remove(i); 
+                        machineChildren.remove(i);
                     }
                 }
             }
         }
-        
+
         if (!childrenLoaded || loadCables) {
             TreeNode parent = getParent();
             if (config.loadAllChildren || parent == null || parent.isExpanded()) {
@@ -185,11 +221,11 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
                             }
                         }
                     }
-                }                
+                }
             }
         }
     }
-    
+
     @Override
     public ItemDomainMachineDesignTreeNode getParent() {
         return (ItemDomainMachineDesignTreeNode) super.getParent();
@@ -264,6 +300,140 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         }
 
         return false;
+    }
+
+    public void filterChangeEvent(ValueChangeEvent object) {
+        Map filterMap = new HashMap();
+        String nameFilter = (String) object.getNewValue();
+
+        if (nameFilter.isEmpty()) {
+            filterResults = null;
+            getChildren().clear();
+            // Prevent gui from changing the currently set filters. 
+            for (ItemDomainMachineDesign item : topLevelItems) {
+                boolean filterMachineNode = item.isFilterMachineNode();
+                item.updateFilterMachineNode(filterMachineNode);
+            }
+            addTopLevelChildren(topLevelItems);
+        } else {
+            filterMap.put(ItemQueryBuilder.QueryTranslator.name.getValue(), nameFilter);
+
+            ItemDomainMachineDesignQueryBuilder queryBuilder = new ItemDomainMachineDesignQueryBuilder(domain, filterMap);            
+
+            filterResults = designFacade.findByDataTableFilterQueryBuilder(queryBuilder);
+
+            SessionUtility.addInfoMessage("Hang tight, Loading hierarchy results", "Found " + filterResults.size() + " Results.");
+        }
+    }
+
+    public void finishFiltering() {
+        if (filterResults != null) {
+            getChildren().clear();
+
+            int relevantResults = 0;
+            // Passed as array to force pass by reference. 
+            Integer[] displayedNodes = new Integer[1]; 
+            displayedNodes[0] = 0; 
+            for (ItemDomainMachineDesign item : filterResults) {
+                ItemDomainMachineDesignTreeNode createTreeFromFilter = createTreeFromFilter(item, true, displayedNodes);
+                if (createTreeFromFilter != null) {
+                    relevantResults++;
+                }
+            }                        
+
+            if (displayedNodes[0] > 400) {
+                getChildren().clear();
+                addTopLevelChildren(topLevelItems);
+                SessionUtility.addErrorMessage("Too many results", "Too many results to display. Please provide a more specific search criteria.");
+            } else {
+                SessionUtility.addInfoMessage("Done", "Showing " + relevantResults + " relevant results.");
+            }           
+        }
+    }
+
+    private ItemDomainMachineDesignTreeNode createTreeFromFilter(ItemDomainMachineDesign item, boolean searchResultNode, Integer[] displayedNodes) {
+        if (item == null) {
+            return null;
+        }
+        ItemDomainMachineDesign parentMachineDesign = item.getParentMachineDesign();
+        ItemDomainMachineDesignTreeNode parentNode = createTreeFromFilter(parentMachineDesign, false, displayedNodes);
+
+        if (parentMachineDesign != null && parentNode == null) {
+            // The top level item is not included in results
+            return null;
+        }
+
+        ItemElement childElement = null;
+        ItemDomainMachineDesignTreeNode childNode = null;
+        if (parentNode == null) {
+            if (itemIncludedInSearch(item)) {
+                parentNode = this;
+                childElement = createTopLevelMockItemElement(item);               
+            } else {
+                return null;
+            }
+        } else {
+            childElement = item.getParentMachineElement();
+        }
+
+        List<ItemDomainMachineDesignTreeNode> children = parentNode.getMachineChildren();
+        for (ItemDomainMachineDesignTreeNode node : children) {
+            ItemElement element = node.getElement();
+
+            if (element.equals(childElement)) {
+                childNode = node;
+                break;
+            }
+        }
+
+        if (childNode == null) {
+            displayedNodes[0]++; 
+            childNode = parentNode.createChildNode(childElement, !searchResultNode);
+            if (searchResultNode == false) {
+                childNode.setExpanded(true);
+            }
+        }
+
+        return childNode;
+    }
+
+    private boolean itemIncludedInSearch(ItemDomainMachineDesign item) {
+        for (ItemDomainMachineDesign topItem : topLevelItems) {
+            if (topItem.equals(item)) {
+                return topItem.isFilterMachineNode();
+            }
+        }
+        return false;
+    }
+
+    public String getNameFilter() {
+        return nameFilter;
+    }
+
+    public void setNameFilter(String nameFilter) {
+        this.nameFilter = nameFilter;
+    }
+
+    public Boolean getFilterAllNodes() {
+        if (filterAllNodes == null) {
+            filterAllNodes = true; 
+            for (ItemDomainMachineDesign item : topLevelItems) {
+                if (item.isFilterMachineNode() == false) {
+                    filterAllNodes = false; 
+                    break;
+                }
+            }
+        }
+        return filterAllNodes;
+    }
+
+    public void setFilterAllNodes(Boolean filterAllNodes) {        
+        if (this.filterAllNodes != filterAllNodes) {
+            for (ItemDomainMachineDesign item : topLevelItems) {
+                item.updateFilterMachineNode(filterAllNodes); 
+            }
+        }
+        this.filterAllNodes = filterAllNodes;
     }
 
     public class MachineTreeConfiguration {
