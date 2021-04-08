@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">   
+
+    <!-- Must provide param "endpointNum"-->
+    <p:panelGrid columns="2">
+    
+        <c:forEach items="#{entitySettingObject.connectionPropertyInfo.fields}"
+                   var="metadataField">
+
+            <ui:param name="metadataKey" value="#{metadataField.key}Endpoint#{endpointNum}"/>
+            <ui:param name="metadataLabel" value="Endpoint#{endpointNum} #{metadataField.label}"/>                    
+            <ui:param name="metadataDescription" value="#{metadataField.description}"/>
+            <ui:param name="propertyName" value="#{metadataKey}Display"/>
+
+            <p:selectBooleanCheckbox id="#{metadataKey}Checkbox"
+                                     value="#{entitySettingObject[propertyName]}"/>
+
+            <h:outputLabel for="#{metadataKey}Checkbox" 
+                           value="#{metadataLabel}" 
+                           styleClass="dialogDataLabel"
+                           title="#{metadataDescription}"/>
+
+        </c:forEach>
+
+    </p:panelGrid>
+
+</ui:composition>
