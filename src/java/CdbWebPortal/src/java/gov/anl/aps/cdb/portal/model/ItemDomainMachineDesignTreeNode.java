@@ -309,6 +309,11 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         if (nameFilter.isEmpty()) {
             filterResults = null;
             getChildren().clear();
+            // Prevent gui from changing the currently set filters. 
+            for (ItemDomainMachineDesign item : topLevelItems) {
+                boolean filterMachineNode = item.isFilterMachineNode();
+                item.updateFilterMachineNode(filterMachineNode);
+            }
             addTopLevelChildren(topLevelItems);
         } else {
             filterMap.put(ItemQueryBuilder.QueryTranslator.name.getValue(), nameFilter);
