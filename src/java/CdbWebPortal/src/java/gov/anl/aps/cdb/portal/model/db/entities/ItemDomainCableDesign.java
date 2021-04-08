@@ -919,7 +919,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     @JsonIgnore
-    public String getEndpoint1Description() throws CdbException {
+    public String getDescriptionEndpoint1() throws CdbException {
         if (endpoint1Description == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
             if (cableRelationship != null) {
@@ -929,7 +929,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint1Description;
     }
 
-    public void setEndpoint1Description(String description) throws CdbException {
+    public void setDescriptionEndpoint1(String description) throws CdbException {
         endpoint1Description = description;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
         if (cableRelationship != null) {
@@ -938,7 +938,7 @@ public class ItemDomainCableDesign extends Item {
     }
     
     @JsonIgnore
-    public String getEndpoint1Route() throws CdbException {
+    public String getRouteEndpoint1() throws CdbException {
         if (endpoint1Route == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
             if (cableRelationship != null) {
@@ -948,7 +948,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint1Route;
     }
 
-    public void setEndpoint1Route(String route) throws CdbException {
+    public void setRouteEndpoint1(String route) throws CdbException {
         endpoint1Route = route;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
         if (cableRelationship != null) {
@@ -957,7 +957,7 @@ public class ItemDomainCableDesign extends Item {
     }
     
     @JsonIgnore
-    public String getEndpoint1Pinlist() throws CdbException {
+    public String getPinlistEndpoint1() throws CdbException {
         if (endpoint1Pinlist == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
             if (cableRelationship != null) {
@@ -967,7 +967,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint1Pinlist;
     }
 
-    public void setEndpoint1Pinlist(String pinlist) throws CdbException {
+    public void setPinlistEndpoint1(String pinlist) throws CdbException {
         endpoint1Pinlist = pinlist;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
         if (cableRelationship != null) {
@@ -976,7 +976,7 @@ public class ItemDomainCableDesign extends Item {
     }
     
     @JsonIgnore
-    public String getEndpoint1EndLength() throws CdbException {
+    public String getEndLengthEndpoint1() throws CdbException {
         if (endpoint1EndLength == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
             if (cableRelationship != null) {
@@ -987,7 +987,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint1EndLength;
     }
 
-    public void setEndpoint1EndLength(String endLength) throws CdbException {
+    public void setEndLengthEndpoint1(String endLength) throws CdbException {
         endpoint1EndLength = endLength;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
         if (cableRelationship != null) {
@@ -996,7 +996,7 @@ public class ItemDomainCableDesign extends Item {
     }
     
     @JsonIgnore
-    public String getEndpoint1Termination() throws CdbException {
+    public String getTerminationEndpoint1() throws CdbException {
         if (endpoint1Termination == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
             if (cableRelationship != null) {
@@ -1007,7 +1007,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint1Termination;
     }
 
-    public void setEndpoint1Termination(String termination) throws CdbException {
+    public void setTerminationEndpoint1(String termination) throws CdbException {
         endpoint1Termination = termination;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
         if (cableRelationship != null) {
@@ -1016,7 +1016,7 @@ public class ItemDomainCableDesign extends Item {
     }
     
     @JsonIgnore
-    public String getEndpoint1Notes() throws CdbException {
+    public String getNotesEndpoint1() throws CdbException {
         if (endpoint1Notes == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
             if (cableRelationship != null) {
@@ -1027,7 +1027,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint1Notes;
     }
 
-    public void setEndpoint1Notes(String notes) throws CdbException {
+    public void setNotesEndpoint1(String notes) throws CdbException {
         endpoint1Notes = notes;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
         if (cableRelationship != null) {
@@ -1036,7 +1036,7 @@ public class ItemDomainCableDesign extends Item {
     }
     
     @JsonIgnore
-    public String getEndpoint1Drawing() throws CdbException {
+    public String getDrawingEndpoint1() throws CdbException {
         if (endpoint1Drawing == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
             if (cableRelationship != null) {
@@ -1047,7 +1047,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint1Drawing;
     }
 
-    public void setEndpoint1Drawing(String drawing) throws CdbException {
+    public void setDrawingEndpoint1(String drawing) throws CdbException {
         endpoint1Drawing = drawing;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
         if (cableRelationship != null) {
@@ -1098,7 +1098,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     @JsonIgnore
-    public String getEndpoint2Description() throws CdbException {
+    public String getDescriptionEndpoint2() throws CdbException {
         if (endpoint2Description == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
             if (cableRelationship != null) {
@@ -1108,7 +1108,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint2Description;
     }
 
-    public void setEndpoint2Description(String description) throws CdbException {
+    public void setDescriptionEndpoint2(String description) throws CdbException {
         endpoint2Description = description;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
         if (cableRelationship != null) {
@@ -1117,7 +1117,7 @@ public class ItemDomainCableDesign extends Item {
     }
     
     @JsonIgnore
-    public String getEndpoint2Route() throws CdbException {
+    public String getRouteEndpoint2() throws CdbException {
         if (endpoint2Route == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
             if (cableRelationship != null) {
@@ -1127,7 +1127,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint2Route;
     }
 
-    public void setEndpoint2Route(String route) throws CdbException {
+    public void setRouteEndpoint2(String route) throws CdbException {
         endpoint2Route = route;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
         if (cableRelationship != null) {
@@ -1135,9 +1135,8 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
-    
     @JsonIgnore
-    public String getEndpoint2Pinlist() throws CdbException {
+    public String getPinlistEndpoint2() throws CdbException {
         if (endpoint2Pinlist == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
             if (cableRelationship != null) {
@@ -1147,16 +1146,16 @@ public class ItemDomainCableDesign extends Item {
         return endpoint2Pinlist;
     }
 
-    public void setEndpoint2Pinlist(String pinlist) throws CdbException {
+    public void setPinlistEndpoint2(String pinlist) throws CdbException {
         endpoint2Pinlist = pinlist;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
         if (cableRelationship != null) {
             setConnectionPropertyFieldValue(cableRelationship, CONNECTION_PROPERTY_PINLIST_KEY, pinlist);
         }
     }
-
+    
     @JsonIgnore
-    public String getEndpoint2EndLength() throws CdbException {
+    public String getEndLengthEndpoint2() throws CdbException {
         if (endpoint2EndLength == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
             if (cableRelationship != null) {
@@ -1167,7 +1166,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint2EndLength;
     }
 
-    public void setEndpoint2EndLength(String endLength) throws CdbException {
+    public void setEndLengthEndpoint2(String endLength) throws CdbException {
         endpoint2EndLength = endLength;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
         if (cableRelationship != null) {
@@ -1176,7 +1175,7 @@ public class ItemDomainCableDesign extends Item {
     }
     
     @JsonIgnore
-    public String getEndpoint2Termination() throws CdbException {
+    public String getTerminationEndpoint2() throws CdbException {
         if (endpoint2Termination == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
             if (cableRelationship != null) {
@@ -1187,7 +1186,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint2Termination;
     }
 
-    public void setEndpoint2Termination(String termination) throws CdbException {
+    public void setTerminationEndpoint2(String termination) throws CdbException {
         endpoint2Termination = termination;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
         if (cableRelationship != null) {
@@ -1196,7 +1195,7 @@ public class ItemDomainCableDesign extends Item {
     }
     
     @JsonIgnore
-    public String getEndpoint2Notes() throws CdbException {
+    public String getNotesEndpoint2() throws CdbException {
         if (endpoint2Notes == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
             if (cableRelationship != null) {
@@ -1207,7 +1206,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint2Notes;
     }
 
-    public void setEndpoint2Notes(String notes) throws CdbException {
+    public void setNotesEndpoint2(String notes) throws CdbException {
         endpoint2Notes = notes;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
         if (cableRelationship != null) {
@@ -1216,7 +1215,7 @@ public class ItemDomainCableDesign extends Item {
     }
     
     @JsonIgnore
-    public String getEndpoint2Drawing() throws CdbException {
+    public String getDrawingEndpoint2() throws CdbException {
         if (endpoint2Drawing == null) {
             ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
             if (cableRelationship != null) {
@@ -1227,7 +1226,7 @@ public class ItemDomainCableDesign extends Item {
         return endpoint2Drawing;
     }
 
-    public void setEndpoint2Drawing(String drawing) throws CdbException {
+    public void setDrawingEndpoint2(String drawing) throws CdbException {
         endpoint2Drawing = drawing;
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
         if (cableRelationship != null) {

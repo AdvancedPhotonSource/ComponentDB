@@ -9,6 +9,7 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../item/private/templates/itemListTemplate.xhtml">
     
     <ui:param name="entityController" value="#{itemDomainCableDesignController}" />        
@@ -23,18 +24,69 @@ See LICENSE file.
     </ui:define>
     
     <ui:define name="domainEntityListExtraColumns">
+        
         <p:column headerText="Endpoints"
                   filterable="#{true}"
                   filterBy="#{itemListObject.endpointsString}" 
                   filterMatchMode="contains">
             <h:outputText value="#{itemListObject.endpointsString}" /> 
-        </p:column>        
+        </p:column>   
+        
         <p:column headerText="Catalog Item"
                   filterable="#{true}"
                   filterBy="#{itemListObject.catalogItemString}" 
                   filterMatchMode="contains">
             <h:outputText value="#{itemListObject.catalogItemString}" /> 
-        </p:column>        
+        </p:column>
+
+        <!-- endpoint1 metadata columns-->
+        <c:forEach items="#{entitySettingObject.connectionPropertyInfo.fields}"
+                   var="metadataField">  
+            <ui:param name="metadataKey" value="#{metadataField.key}Endpoint1"/>
+            <ui:param name="metadataLabel" value="Endpoint1 #{metadataField.label}"/>            
+            <ui:param name="metadataDescription" value="#{metadataField.description}"/>
+            <ui:param name="propertyName" value="#{metadataKey}Display"/>
+            <ui:param name="filterValue" value="#{metadataKey}Filter"/>
+            <p:column id="#{metadataKey}Column"
+                      rendered="#{entitySettingObject[propertyName]}"
+                      sortBy="#{itemListObject[metadataKey]}"
+                      filterBy="#{itemListObject[metadataKey]}"
+                      field="Metadata-#{metadataKey}"
+                      filterMatchMode="contains"
+                      filterValue="#{entitySettingObject[filterValue]}">
+                <f:facet name="header">
+                    <h:outputText value="#{metadataLabel}" />
+                    <p:tooltip value="#{metadataDescription}"
+                               for="#{metadataKey}Column"/>
+                </f:facet> 
+                <h:outputText value="#{itemListObject[metadataKey]}"/>
+            </p:column>
+        </c:forEach>
+
+        <!-- endpoint2 metadata columns-->
+        <c:forEach items="#{entitySettingObject.connectionPropertyInfo.fields}"
+                   var="metadataField">  
+            <ui:param name="metadataKey" value="#{metadataField.key}Endpoint2"/>
+            <ui:param name="metadataLabel" value="Endpoint2 #{metadataField.label}"/>            
+            <ui:param name="metadataDescription" value="#{metadataField.description}"/>
+            <ui:param name="propertyName" value="#{metadataKey}Display"/>
+            <ui:param name="filterValue" value="#{metadataKey}Filter"/>
+            <p:column id="#{metadataKey}Column"
+                      rendered="#{entitySettingObject[propertyName]}"
+                      sortBy="#{itemListObject[metadataKey]}"
+                      filterBy="#{itemListObject[metadataKey]}"
+                      field="Metadata-#{metadataKey}"
+                      filterMatchMode="contains"
+                      filterValue="#{entitySettingObject[filterValue]}">
+                <f:facet name="header">
+                    <h:outputText value="#{metadataLabel}" />
+                    <p:tooltip value="#{metadataDescription}"
+                               for="#{metadataKey}Column"/>
+                </f:facet> 
+                <h:outputText value="#{itemListObject[metadataKey]}"/>
+            </p:column>
+        </c:forEach>
+
     </ui:define>
     
     <ui:define name="domainEntityListDataTableParameters">
@@ -45,6 +97,46 @@ See LICENSE file.
                   value="#{true}"/>                
     </ui:define>
     
+    <!-- define tab for connection metadata on list view customization dialog-->
+    <ui:define name="domainEntityExtraTabs">
+        <p:tab title="Connection Metadata">
+            <p:panelGrid columns="2">
+                
+                <c:forEach items="#{entitySettingObject.connectionPropertyInfo.fields}"
+                           var="metadataField">  
+                    <ui:param name="metadataKey" value="#{metadataField.key}Endpoint1"/>
+                    <ui:param name="metadataLabel" value="Endpoint1 #{metadataField.label}"/>                    
+                    <ui:param name="metadataDescription" value="#{metadataField.description}"/>
+                    <ui:param name="propertyName" value="#{metadataKey}Display"/>
+                    <p:selectBooleanCheckbox id="#{metadataKey}Checkbox"
+                                             value="#{entitySettingObject[propertyName]}"/>  
+                    <h:outputLabel for="#{metadataKey}Checkbox" 
+                                   value="#{metadataLabel}" 
+                                   styleClass="dialogDataLabel"
+                                   title="#{metadataDescription}"/>
+                </c:forEach>
+                
+                <c:forEach items="#{entitySettingObject.connectionPropertyInfo.fields}"
+                           var="metadataField">  
+                    <ui:param name="metadataKey" value="#{metadataField.key}Endpoint2"/>
+                    <ui:param name="metadataLabel" value="Endpoint2 #{metadataField.label}"/>                    
+                    <ui:param name="metadataDescription" value="#{metadataField.description}"/>
+                    <ui:param name="propertyName" value="#{metadataKey}Display"/>
+                    <p:selectBooleanCheckbox id="#{metadataKey}Checkbox"
+                                             value="#{entitySettingObject[propertyName]}"/>  
+                    <h:outputLabel for="#{metadataKey}Checkbox" 
+                                   value="#{metadataLabel}" 
+                                   styleClass="dialogDataLabel"
+                                   title="#{metadataDescription}"/>
+                </c:forEach>
+                
+            </p:panelGrid>
+        </p:tab>
+    </ui:define>
+    
+    <!--    define blank section so the row expansion options are not added to list view customization dialog-->
+    <ui:define name="rowExpansionCustomizeOptionsTab"/>
+
 </ui:composition>
 
 
