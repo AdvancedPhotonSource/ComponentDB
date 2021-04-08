@@ -36,8 +36,8 @@ public class InventoryBillOfMaterialItem {
 
     // The catalog item that will be used to create the intventory item. 
     protected ItemElement catalogItemElement = null;
-    
-    protected ItemElement inventoryItemElement = null; 
+
+    protected ItemElement inventoryItemElement = null;
 
     // an event needs to be processon state change. SelectOneButton does not support this.
     protected ItemDomainInventoryController itemDomainInventoryController = null;
@@ -47,17 +47,17 @@ public class InventoryBillOfMaterialItem {
     private ItemDomainCatalog catalogItem = null;
 
     protected DataModel existingInventoryItemSelectDataModel = null;
-    
-    protected Boolean simpleView = null; 
+
+    protected Boolean simpleView = null;
 
     public Boolean getSimpleView() {
         if (simpleView == null) {
-            simpleView = ItemElementController.getInstance().getSettingObject().getGlobalDisplayItemElementSimpleView(); 
+            simpleView = ItemElementController.getInstance().getSettingObject().getGlobalDisplayItemElementSimpleView();
         }
         return simpleView;
     }
-    
-    public InventoryBillOfMaterialItem(ItemElement catalogItemElement, ItemDomainInventory parentItemInstance) {        
+
+    public InventoryBillOfMaterialItem(ItemElement catalogItemElement, ItemDomainInventory parentItemInstance) {
         loadItemDomainInventoryController();
         ItemElement inventoryItemElement = null;
         if (itemDomainInventoryController.isItemExistInDb(parentItemInstance)) {
@@ -88,7 +88,7 @@ public class InventoryBillOfMaterialItem {
             if (catalogItemElement.getIsRequired()) {
                 this.state = InventoryBillOfMaterialItemStates.placeholder.getValue();
             } else {
-                this.state = InventoryBillOfMaterialItemStates.unspecifiedOptional.getValue(); 
+                this.state = InventoryBillOfMaterialItemStates.unspecifiedOptional.getValue();
             }
         }
 
@@ -116,27 +116,31 @@ public class InventoryBillOfMaterialItem {
 
     private void setDefaultProject() {
         if (inventoryItem != null) {
-            ItemDomainCatalog catalogItem = getCatalogItem();
-            if (catalogItem != null) {
-                if (catalogItem.getItemProjectList() != null
-                        & !catalogItem.getItemProjectList().isEmpty()) {
-                    List<ItemProject> catalogItemProjectList = catalogItem.getItemProjectList();
-                    inventoryItem.setItemProjectList(new ArrayList<>(catalogItemProjectList));
+            if (inventoryItem.getItemProjectList() == null
+                    || inventoryItem.getItemProjectList().isEmpty()) {
+                ItemDomainCatalog catalogItem = getCatalogItem();
+                if (catalogItem != null) {
+                    if (catalogItem.getItemProjectList() != null
+                            && !catalogItem.getItemProjectList().isEmpty()) {
+                        List<ItemProject> catalogItemProjectList = catalogItem.getItemProjectList();
+                        inventoryItem.setItemProjectList(new ArrayList<>(catalogItemProjectList));
+                    }
                 }
             }
         }
     }
-    
+
     /**
-     * TODO: I want to change this method to use 
-     * ItemDomainInventoryControllergenerateItemName(), but I don't
-     * really understand everything that is going on here and don't want to break
-     * it.  There are side-effects with changes to instance variables in the call stack. 
-     * Also not sure why we call getExistingInventoryItemSelectDataModel(), which
-     * gets the inventory list, makes a copy of it, potentially removes an item,
-     * then creates a ListDataModel from the resulting list.  Are we gaining
-     * something by using the data model?  Can't we just count the number of items
-     * and not copy the list or create the data model?
+     * TODO: I want to change this method to use
+     * ItemDomainInventoryControllergenerateItemName(), but I don't really
+     * understand everything that is going on here and don't want to break it.
+     * There are side-effects with changes to instance variables in the call
+     * stack. Also not sure why we call
+     * getExistingInventoryItemSelectDataModel(), which gets the inventory list,
+     * makes a copy of it, potentially removes an item, then creates a
+     * ListDataModel from the resulting list. Are we gaining something by using
+     * the data model? Can't we just count the number of items and not copy the
+     * list or create the data model?
      */
     private void setDefaultTag() {
         if (inventoryItem != null) {
@@ -147,7 +151,7 @@ public class InventoryBillOfMaterialItem {
                     // Remove this item from the count. 
                     newItemCount -= 1;
                 }
-                
+
                 // Add one for user readability. No use of 0 for first item.
                 int itemNumber = getExistingInventoryItemSelectDataModel().getRowCount() + newItemCount + 1;
                 inventoryItem.setName(ItemDomainInventory.generatePaddedUnitName(itemNumber));
@@ -176,8 +180,8 @@ public class InventoryBillOfMaterialItem {
         // Restore prev inventory item.
         if (prevState.equals(state) == false) {
             if (state.equals(InventoryBillOfMaterialItemStates.unspecifiedOptional.getValue())) {
-                inventoryItem = null; 
-                prevInventoryItem = null; 
+                inventoryItem = null;
+                prevInventoryItem = null;
             } else if (prevState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
                 inventoryItem = prevInventoryItem;
             }
@@ -233,9 +237,9 @@ public class InventoryBillOfMaterialItem {
         if (inventoryItemElement == null) {
             if (parentItemInstance != null && parentItemInstance.getFullItemElementList() != null) {
                 for (ItemElement inventoryItemElementItr : parentItemInstance.getFullItemElementList()) {
-                    ItemElement catalogItemElementItr = inventoryItemElementItr.getDerivedFromItemElement(); 
+                    ItemElement catalogItemElementItr = inventoryItemElementItr.getDerivedFromItemElement();
                     if (ObjectUtility.equals(catalogItemElementItr, this.catalogItemElement)) {
-                        this.inventoryItemElement = inventoryItemElementItr; 
+                        this.inventoryItemElement = inventoryItemElementItr;
                     }
                 }
             }
@@ -254,9 +258,9 @@ public class InventoryBillOfMaterialItem {
 
             List<InventoryBillOfMaterialItem> iBillOfMaterialsList = new ArrayList<>();
 
-            for (ItemElement catalogItemElement : catalogItemElementList) {              
+            for (ItemElement catalogItemElement : catalogItemElementList) {
                 InventoryBillOfMaterialItem iBillOfMaterials = new InventoryBillOfMaterialItem(catalogItemElement, parentItemInstance);
-                
+
                 iBillOfMaterialsList.add(iBillOfMaterials);
             }
 
@@ -268,7 +272,7 @@ public class InventoryBillOfMaterialItem {
         if (catalogItemElement != null) {
             return catalogItemElement.getIsRequired() == false;
         }
-        return false; 
+        return false;
     }
 
     public boolean isApplyPermissionToAllNewParts() {
@@ -286,7 +290,7 @@ public class InventoryBillOfMaterialItem {
     public ItemDomainInventory getInventoryItem() {
         return inventoryItem;
     }
-    
+
     public void setInventoryItem(ItemDomainInventory inventoryItem) {
         this.inventoryItem = inventoryItem;
         //Set default tag
@@ -370,9 +374,9 @@ public class InventoryBillOfMaterialItem {
         } else {
             // Part of root item.
             if (getSimpleView()) {
-                ItemDomainCatalog catalogItem = (ItemDomainCatalog) catalogItemElement.getContainedItem();  
+                ItemDomainCatalog catalogItem = (ItemDomainCatalog) catalogItemElement.getContainedItem();
                 if (catalogItem != null) {
-                    response += catalogItem.getName(); 
+                    response += catalogItem.getName();
                 } else {
                     response += catalogItemElement.getName();
                 }
