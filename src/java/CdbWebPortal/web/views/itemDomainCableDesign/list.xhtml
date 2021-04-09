@@ -39,8 +39,32 @@ See LICENSE file.
             <h:outputText value="#{itemListObject.catalogItemString}" /> 
         </p:column>
 
+        <ui:decorate template="private/templates/listViewEndpointDeviceColumn.xhtml">
+            <ui:param name="endpointNum" value="1" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointPortColumn.xhtml">
+            <ui:param name="endpointNum" value="1" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointConnectorColumn.xhtml">
+            <ui:param name="endpointNum" value="1" />                
+        </ui:decorate>
+
         <ui:decorate template="private/templates/listViewEndpointMetadataColumns.xhtml">
             <ui:param name="endpointNum" value="1" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointDeviceColumn.xhtml">
+            <ui:param name="endpointNum" value="2" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointPortColumn.xhtml">
+            <ui:param name="endpointNum" value="2" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointConnectorColumn.xhtml">
+            <ui:param name="endpointNum" value="2" />                
         </ui:decorate>
 
         <ui:decorate template="private/templates/listViewEndpointMetadataColumns.xhtml">
@@ -57,8 +81,31 @@ See LICENSE file.
                   value="#{true}"/>                
     </ui:define>
     
-    <!-- define tab for connection metadata on list view customization dialog-->
     <ui:define name="domainEntityExtraTabs">
+        
+        <p:tab title="Endpoint Connection Details">
+            <p:panelGrid columns="2">
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointDevice.xhtml">
+                    <ui:param name="endpointNum" value="1" />                
+                </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointPort.xhtml">
+                    <ui:param name="endpointNum" value="1" />                
+                </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointConnector.xhtml">
+                    <ui:param name="endpointNum" value="1" />                
+                </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointDevice.xhtml">
+                    <ui:param name="endpointNum" value="2" />                
+                </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointPort.xhtml">
+                    <ui:param name="endpointNum" value="2" />                
+                </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointConnector.xhtml">
+                    <ui:param name="endpointNum" value="2" />                
+                </ui:decorate>
+            </p:panelGrid>
+        </p:tab>
+        
         <p:tab title="Endpoint Metadata">
                 
             <ui:decorate template="private/templates/listCustomizeEndpointMetadataOptions.xhtml">
@@ -70,9 +117,9 @@ See LICENSE file.
             </ui:decorate>
 
         </p:tab>
+        
     </ui:define>
     
-    <!--    define blank section so the row expansion options are not added to list view customization dialog-->
     <ui:define name="rowExpansionCustomizeOptionsTab"/>
 
 </ui:composition>
