@@ -35,24 +35,24 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     private static final String KEY_ENDPOINT1_ITEM = "endpoint1String";
     private static final String KEY_ENDPOINT1_PORT = "endpoint1Port";
     private static final String KEY_ENDPOINT1_CONNECTOR = "endpoint1Connector";
-    private static final String KEY_ENDPOINT1_DESCRIPTION = "endpoint1Description";
-    private static final String KEY_ENDPOINT1_ROUTE = "endpoint1Route";
-    private static final String KEY_ENDPOINT1_END_LENGTH = "endpoint1EndLength";
-    private static final String KEY_ENDPOINT1_TERMINATION = "endpoint1Termination";
-    private static final String KEY_ENDPOINT1_PINLIST = "endpoint1Pinlist";
-    private static final String KEY_ENDPOINT1_NOTES = "endpoint1Notes";
-    private static final String KEY_ENDPOINT1_DRAWING = "endpoint1Drawing";
+    private static final String KEY_ENDPOINT1_DESCRIPTION = "descriptionEndpoint1";
+    private static final String KEY_ENDPOINT1_ROUTE = "routeEndpoint1";
+    private static final String KEY_ENDPOINT1_END_LENGTH = "endLengthEndpoint1";
+    private static final String KEY_ENDPOINT1_TERMINATION = "terminationEndpoint1";
+    private static final String KEY_ENDPOINT1_PINLIST = "pinlistEndpoint1";
+    private static final String KEY_ENDPOINT1_NOTES = "notesEndpoint1";
+    private static final String KEY_ENDPOINT1_DRAWING = "drawingEndpoint1";
 
     private static final String KEY_ENDPOINT2_ITEM = "endpoint2String";
     private static final String KEY_ENDPOINT2_PORT = "endpoint2Port";
     private static final String KEY_ENDPOINT2_CONNECTOR = "endpoint2Connector";
-    private static final String KEY_ENDPOINT2_DESCRIPTION = "endpoint2Description";
-    private static final String KEY_ENDPOINT2_ROUTE = "endpoint2Route";
-    private static final String KEY_ENDPOINT2_END_LENGTH = "endpoint2EndLength";
-    private static final String KEY_ENDPOINT2_TERMINATION = "endpoint2Termination";
-    private static final String KEY_ENDPOINT2_PINLIST = "endpoint2Pinlist";
-    private static final String KEY_ENDPOINT2_NOTES = "endpoint2Notes";
-    private static final String KEY_ENDPOINT2_DRAWING = "endpoint2Drawing";
+    private static final String KEY_ENDPOINT2_DESCRIPTION = "descriptionEndpoint2";
+    private static final String KEY_ENDPOINT2_ROUTE = "routeEndpoint2";
+    private static final String KEY_ENDPOINT2_END_LENGTH = "endLengthEndpoint2";
+    private static final String KEY_ENDPOINT2_TERMINATION = "terminationEndpoint2";
+    private static final String KEY_ENDPOINT2_PINLIST = "pinlistEndpoint2";
+    private static final String KEY_ENDPOINT2_NOTES = "notesEndpoint2";
+    private static final String KEY_ENDPOINT2_DRAWING = "drawingEndpoint2";
 
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
@@ -204,63 +204,63 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         specs.add(new StringColumnSpec(
                 "Endpoint1 Desc", 
                 KEY_ENDPOINT1_DESCRIPTION, 
-                "setEndpoint1Description", 
+                "setDescriptionEndpoint1", 
                 "Endpoint1 description.", 
-                "getEndpoint1Description",
+                "getDescriptionEndpoint1",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Route", 
                 KEY_ENDPOINT1_ROUTE, 
-                "setEndpoint1Route", 
+                "setRouteEndpoint1", 
                 "Routing waypoint for endpoint1.", 
-                "getEndpoint1Route",
+                "getRouteEndpoint1",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 End Length", 
                 KEY_ENDPOINT1_END_LENGTH, 
-                "setEndpoint1EndLength", 
+                "setEndLengthEndpoint1", 
                 "End length for endpoint1.", 
-                "getEndpoint1EndLength",
+                "getEndLengthEndpoint1",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Termination", 
                 KEY_ENDPOINT1_TERMINATION, 
-                "setEndpoint1Termination", 
+                "setTerminationEndpoint1", 
                 "Termination for endpoint1.", 
-                "getEndpoint1Termination",
+                "getTerminationEndpoint1",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Pinlist", 
                 KEY_ENDPOINT1_PINLIST, 
-                "setEndpoint1Pinlist", 
+                "setPinlistEndpoint1", 
                 "Pinlist for endpoint1.", 
-                "getEndpoint1Pinlist",
+                "getPinlistEndpoint1",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Notes", 
                 KEY_ENDPOINT1_NOTES, 
-                "setEndpoint1Notes", 
+                "setNotesEndpoint1", 
                 "Notes for endpoint1.", 
-                "getEndpoint1Notes",
+                "getNotesEndpoint1",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Drawing", 
                 KEY_ENDPOINT1_DRAWING, 
-                "setEndpoint1Drawing", 
+                "setDrawingEndpoint1", 
                 "Drawing for endpoint1.", 
-                "getEndpoint1Drawing",
+                "getDrawingEndpoint1",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
@@ -296,63 +296,63 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         specs.add(new StringColumnSpec(
                 "Endpoint2 Desc", 
                 KEY_ENDPOINT2_DESCRIPTION, 
-                "setEndpoint2Description", 
+                "setDescriptionEndpoint2", 
                 "Endpoint2 description.", 
-                "getEndpoint2Description",
+                "getDescriptionEndpoint2",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Route", 
                 KEY_ENDPOINT2_ROUTE, 
-                "setEndpoint2Route", 
+                "setRouteEndpoint2", 
                 "Routing waypoint for endpoint2.", 
-                "getEndpoint2Route",
+                "getRouteEndpoint2",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 End Length", 
                 KEY_ENDPOINT2_END_LENGTH, 
-                "setEndpoint2EndLength", 
+                "setEndLengthEndpoint2", 
                 "End length for endpoint2.", 
-                "getEndpoint2EndLength",
+                "getEndLengthEndpoint2",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Termination", 
                 KEY_ENDPOINT2_TERMINATION, 
-                "setEndpoint2Termination", 
+                "setTerminationEndpoint2", 
                 "Termination for endpoint2.", 
-                "getEndpoint2Termination",
+                "getTerminationEndpoint2",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Pinlist", 
                 KEY_ENDPOINT2_PINLIST, 
-                "setEndpoint2Pinlist", 
+                "setPinlistEndpoint2", 
                 "Pinlist for endpoint2.", 
-                "getEndpoint2Pinlist",
+                "getPinlistEndpoint2",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Notes", 
                 KEY_ENDPOINT2_NOTES, 
-                "setEndpoint2Notes", 
+                "setNotesEndpoint2", 
                 "Notes for endpoint2.", 
-                "getEndpoint2Notes",
+                "getNotesEndpoint2",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Drawing", 
                 KEY_ENDPOINT2_DRAWING, 
-                "setEndpoint2Drawing", 
+                "setDrawingEndpoint2", 
                 "Drawing for endpoint2.", 
-                "getEndpoint2Drawing",
+                "getDrawingEndpoint2",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
