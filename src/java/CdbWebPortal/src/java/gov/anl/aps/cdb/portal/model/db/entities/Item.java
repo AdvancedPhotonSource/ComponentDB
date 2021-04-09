@@ -1009,7 +1009,8 @@ public class Item extends CdbDomainEntity implements Serializable {
         return domain.getId(); 
     }
 
-    @JsonIgnore
+//    TODO v3.13.0 update app to utilize the domainID 
+//    @JsonIgnore
     public Domain getDomain() {
         return domain;
     }
