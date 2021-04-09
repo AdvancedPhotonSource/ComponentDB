@@ -62,8 +62,7 @@ function startPageVerify(includeTabCheck = true) {
     }
 
     verifyView();
-    if (includeTabCheck) {
-        debugger; 
+    if (includeTabCheck) {        
         verifyViewOpenPageIdHiddenText();
     }
 }
