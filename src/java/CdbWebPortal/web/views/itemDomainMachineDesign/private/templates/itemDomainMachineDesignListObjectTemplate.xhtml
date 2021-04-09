@@ -57,13 +57,15 @@ See LICENSE file.
             Machine Element Name
             <ui:fragment>
                 <br/>
-                <p:inputText id="nameMdFilter"
-                             valueChangeListener="#{valueModel.filterChangeEvent}" 
+                <p:inputText id="nameMdFilter"                             
                              value="#{valueModel.nameFilter}" 
-                             onchange="onChangeNameMdFilter()"/>
+                             onchange="onChangeNameMdFilter()"
+                             onkeyup="if (event.keyCode === 13) { this.blur(); PF('loadingDialog').show(); onChangeNameMdFilter() }"/>                
+                
                 <p:remoteCommand name="onChangeNameMdFilter"
                                  onstart="PF('loadingDialog').show()"
-                                 oncomplete="PF('loadingDialog').hide(); onCompleteMdFilter();"
+                                 oncomplete="PF('loadingDialog').hide();"
+                                 action="#{valueModel.filterChangeEvent('onCompleteMdFilter()')}"
                                  update="nameMdFilter" /> 
                 <p:remoteCommand name="onCompleteMdFilter"
                                  onstart="PF('loadingDialog').show()"

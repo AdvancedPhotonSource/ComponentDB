@@ -19,7 +19,6 @@ import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.faces.event.ValueChangeEvent;
 import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 
@@ -36,7 +35,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     private List<ItemDomainMachineDesign> topLevelItems;
 
     private List<ItemDomainMachineDesign> filterResults;
-    private Boolean filterAllNodes; 
+    private Boolean filterAllNodes;
 
     boolean childrenLoaded = false;
     boolean cablesLoaded = false;
@@ -301,29 +300,37 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
         return false;
     }
+    
+    public void clearFilterResults() {
+        filterResults = null;
+        getChildren().clear();
+        // Prevent gui from changing the currently set filters. 
+        for (ItemDomainMachineDesign item : topLevelItems) {
+            boolean filterMachineNode = item.isFilterMachineNode();
+            item.updateFilterMachineNode(filterMachineNode);
+        }
+        addTopLevelChildren(topLevelItems);
+    }
 
-    public void filterChangeEvent(ValueChangeEvent object) {
+    public void filterChangeEvent(String onComplete) {
+        if (filterResults != null) {
+            return;
+        }
+        
         Map filterMap = new HashMap();
-        String nameFilter = (String) object.getNewValue();
 
         if (nameFilter.isEmpty()) {
-            filterResults = null;
-            getChildren().clear();
-            // Prevent gui from changing the currently set filters. 
-            for (ItemDomainMachineDesign item : topLevelItems) {
-                boolean filterMachineNode = item.isFilterMachineNode();
-                item.updateFilterMachineNode(filterMachineNode);
-            }
-            addTopLevelChildren(topLevelItems);
+            clearFilterResults();
         } else {
             filterMap.put(ItemQueryBuilder.QueryTranslator.name.getValue(), nameFilter);
 
-            ItemDomainMachineDesignQueryBuilder queryBuilder = new ItemDomainMachineDesignQueryBuilder(domain, filterMap);            
+            ItemDomainMachineDesignQueryBuilder queryBuilder = new ItemDomainMachineDesignQueryBuilder(domain, filterMap);
 
             filterResults = designFacade.findByDataTableFilterQueryBuilder(queryBuilder);
 
             SessionUtility.addInfoMessage("Hang tight, Loading hierarchy results", "Found " + filterResults.size() + " Results.");
         }
+        SessionUtility.executeRemoteCommand(onComplete);
     }
 
     public void finishFiltering() {
@@ -332,22 +339,21 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
             int relevantResults = 0;
             // Passed as array to force pass by reference. 
-            Integer[] displayedNodes = new Integer[1]; 
-            displayedNodes[0] = 0; 
+            Integer[] displayedNodes = new Integer[1];
+            displayedNodes[0] = 0;
             for (ItemDomainMachineDesign item : filterResults) {
                 ItemDomainMachineDesignTreeNode createTreeFromFilter = createTreeFromFilter(item, true, displayedNodes);
                 if (createTreeFromFilter != null) {
                     relevantResults++;
                 }
-            }                        
+            }
 
             if (displayedNodes[0] > 400) {
-                getChildren().clear();
-                addTopLevelChildren(topLevelItems);
+                clearFilterResults();
                 SessionUtility.addErrorMessage("Too many results", "Too many results to display. Please provide a more specific search criteria.");
             } else {
                 SessionUtility.addInfoMessage("Done", "Showing " + relevantResults + " relevant results.");
-            }           
+            }
         }
     }
 
@@ -368,7 +374,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         if (parentNode == null) {
             if (itemIncludedInSearch(item)) {
                 parentNode = this;
-                childElement = createTopLevelMockItemElement(item);               
+                childElement = createTopLevelMockItemElement(item);
             } else {
                 return null;
             }
@@ -387,7 +393,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         }
 
         if (childNode == null) {
-            displayedNodes[0]++; 
+            displayedNodes[0]++;
             childNode = parentNode.createChildNode(childElement, !searchResultNode);
             if (searchResultNode == false) {
                 childNode.setExpanded(true);
@@ -411,15 +417,19 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     }
 
     public void setNameFilter(String nameFilter) {
+        if (this.nameFilter.equals(nameFilter) == false) {
+            // Null filter results will trigger the search. 
+            filterResults = null; 
+        }
         this.nameFilter = nameFilter;
     }
 
     public Boolean getFilterAllNodes() {
         if (filterAllNodes == null) {
-            filterAllNodes = true; 
+            filterAllNodes = true;
             for (ItemDomainMachineDesign item : topLevelItems) {
                 if (item.isFilterMachineNode() == false) {
-                    filterAllNodes = false; 
+                    filterAllNodes = false;
                     break;
                 }
             }
@@ -427,10 +437,10 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         return filterAllNodes;
     }
 
-    public void setFilterAllNodes(Boolean filterAllNodes) {        
+    public void setFilterAllNodes(Boolean filterAllNodes) {
         if (this.filterAllNodes != filterAllNodes) {
             for (ItemDomainMachineDesign item : topLevelItems) {
-                item.updateFilterMachineNode(filterAllNodes); 
+                item.updateFilterMachineNode(filterAllNodes);
             }
         }
         this.filterAllNodes = filterAllNodes;

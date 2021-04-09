@@ -2357,6 +2357,9 @@ public class ItemDomainMachineDesignController
         resetListViewVariables();
 
         resetListConfigurationVariables();
+        
+        ItemDomainMachineDesignTreeNode rootTreeNode = getCurrentMachineDesignListRootTreeNode(); 
+        rootTreeNode.clearFilterResults();
 
         String paramValue = SessionUtility.getRequestParameterValue("id");
         if (paramValue != null) {
@@ -2486,6 +2489,8 @@ public class ItemDomainMachineDesignController
     }
 
     public String currentDualViewList() {
+        setCurrentFlash();
+        
         if (currentViewIsTemplate) {
             return templateList();
         }

@@ -542,6 +542,7 @@ public abstract class ItemQueryBuilder {
 
         if (object != null && object instanceof String) {
             if (comparator.equalsIgnoreCase(QUERY_LIKE)) {
+                value = ((String)value).replace('*', '%'); 
                 value = "%" + value + "%";
             }
 
