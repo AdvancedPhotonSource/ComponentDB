@@ -1024,7 +1024,8 @@ public class ItemDomainMachineDesignController
         mockTopLevelMachineDesign.setFullItemElementList(new ArrayList<>());
         mockTopLevelMachineDesign.setDomain(getDefaultDomain());
 
-        TreeNode currentMachineDesignListRootTreeNode = getCurrentMachineDesignListRootTreeNode();
+        ItemDomainMachineDesignTreeNode currentMachineDesignListRootTreeNode = getCurrentMachineDesignListRootTreeNode();
+        currentMachineDesignListRootTreeNode.clearFilterResults();
 
         List<TreeNode> currentTopLevels = currentMachineDesignListRootTreeNode.getChildren();
 
@@ -1034,6 +1035,7 @@ public class ItemDomainMachineDesignController
             mockItemElement.setName("MOCK element");
             mockItemElement.setContainedItem(data.getContainedItem());
             mockItemElement.setParentItem(mockTopLevelMachineDesign);
+            mockItemElement.setSortOrder(data.getSortOrder());
 
             mockTopLevelMachineDesign.getFullItemElementList().add(mockItemElement);
         }
@@ -2357,6 +2359,9 @@ public class ItemDomainMachineDesignController
         resetListViewVariables();
 
         resetListConfigurationVariables();
+        
+        ItemDomainMachineDesignTreeNode rootTreeNode = getCurrentMachineDesignListRootTreeNode(); 
+        rootTreeNode.clearFilterResults();
 
         String paramValue = SessionUtility.getRequestParameterValue("id");
         if (paramValue != null) {
@@ -2486,6 +2491,8 @@ public class ItemDomainMachineDesignController
     }
 
     public String currentDualViewList() {
+        setCurrentFlash();
+        
         if (currentViewIsTemplate) {
             return templateList();
         }
