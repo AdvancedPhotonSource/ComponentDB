@@ -5,8 +5,10 @@
 package gov.anl.aps.cdb.portal.import_export.import_.wizard;
 
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
@@ -37,6 +39,7 @@ public class ItemDomainImportWizard implements Serializable {
     protected static final String TAB_SELECT_FORMAT = "SelectFormatTab";
     protected static final String TAB_SELECT_MODE = "SelectModeTab";
     protected static final String TAB_SELECT_FILE = "SelectFileTab";
+    protected static final String TAB_FORMAT_OPTIONS = "FormatOptionsTab";
     protected static final String TAB_VALIDATE = "ValidateTab";
     protected static final String TAB_RESULTS = "ResultsTab";
 
@@ -83,6 +86,10 @@ public class ItemDomainImportWizard implements Serializable {
     public void setDomainInfo(DomainImportExportInfo info) {
         reset();
         domainInfo = info;
+    }
+    
+    public ImportHelperBase getImportHelper() {
+        return importHelper;
     }
     
     public List<ImportExportFormatInfo> getFormatInfoList() {
@@ -241,6 +248,18 @@ public class ItemDomainImportWizard implements Serializable {
         this.rowNumberLastData = rowNumberLastData;
     }
     
+    public List<HelperWizardOption> getWizardOptions() {
+        if (importHelper == null) {
+            return new ArrayList<>();
+        } else {
+            return importHelper.getWizardOptions();
+        }
+    }   
+    
+    public boolean isRenderOptions() {
+        return (!getWizardOptions().isEmpty());
+    }
+    
     public void fileUploadListenerData(FileUploadEvent event) {
 
         uploadfileData = event.getFile();
@@ -367,11 +386,31 @@ public class ItemDomainImportWizard implements Serializable {
 
         // handle select mode tab
         if ((currStep.endsWith(TAB_SELECT_MODE))
-                && (nextStep.endsWith(TAB_SELECT_FILE))) {
+                && (nextStep.endsWith(TAB_FORMAT_OPTIONS))) {
             
             importHelper.setImportMode(getSelectedMode());
+            
+            // skip options tab if no options specified
+            if (importHelper.getWizardOptions().isEmpty()) {
+                nextStep = "importWizard" + TAB_SELECT_FILE;
+            }
         }
         
+        // handle format options tab
+        if ((currStep.endsWith(TAB_FORMAT_OPTIONS))
+                && (nextStep.endsWith(TAB_SELECT_FILE))) {
+            ValidInfo validOptionsInfo = importHelper.validateWizardOptions();
+            if (!validOptionsInfo.isValid()) {
+                // don't allow transition if options validation fails
+                SessionUtility.addErrorMessage(
+                    "Invalid format options",
+                    validOptionsInfo.getValidString());
+                setEnablement(currStep);
+                currentTab = currStep;
+                return currStep;
+            }
+        }
+
         // parse file if moving from select file tab to validate tab
         if ((currStep.endsWith(TAB_SELECT_FILE))
                 && (nextStep.endsWith(TAB_VALIDATE))) {
@@ -570,6 +609,12 @@ public class ItemDomainImportWizard implements Serializable {
             } else {
                 disableButtonNext = true;
             }
+
+        } else if (tab.endsWith(TAB_FORMAT_OPTIONS)) {
+            disableButtonPrev = false;
+            disableButtonCancel = false;
+            disableButtonFinish = true;
+            disableButtonNext = false;
 
         } else if (tab.endsWith(TAB_SELECT_FILE)) {
             disableButtonPrev = false;

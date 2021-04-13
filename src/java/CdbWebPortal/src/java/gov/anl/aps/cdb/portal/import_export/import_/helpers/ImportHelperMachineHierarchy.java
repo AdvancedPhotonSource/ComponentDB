@@ -7,6 +7,9 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperOptionType;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.SingleColumnInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
@@ -174,6 +177,31 @@ public class ImportHelperMachineHierarchy
     private int nonTemplateItemCount = 0;
     private int templateItemCount = 0;
     
+    private String optionRootItem = null;
+
+    public String getOptionRootItem() {
+        return optionRootItem;
+    }
+
+    public void setOptionRootItem(String optionRootItem) {
+        this.optionRootItem = optionRootItem;
+    }
+    
+    @Override
+    protected List<HelperWizardOption> initializeWizardOptions() {
+        
+        List<HelperWizardOption> options = new ArrayList<>();
+        
+        options.add(new HelperWizardOption(
+                "Root Machine Item", 
+                "Root of machine hierarchy to locate items within.", 
+                "optionRootItem", 
+                HelperOptionType.STRING, 
+                ImportMode.CREATE));
+        
+        return options;
+    }
+
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
         

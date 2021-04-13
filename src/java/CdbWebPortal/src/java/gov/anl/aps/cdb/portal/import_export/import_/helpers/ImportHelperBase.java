@@ -25,6 +25,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InitializeInfo;
@@ -119,6 +120,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private String summaryMessage = "";
     protected TreeNode rootTreeNode = new DefaultTreeNode("Root", null);
     private int numExpectedColumns = 0;
+    private List<HelperWizardOption> wizardOptions = null;
 
     public ImportHelperBase() {
     }
@@ -153,7 +155,34 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             importMode = ImportMode.COMPARE;
         }
     }
+    
+    public List<HelperWizardOption> getWizardOptions() {
+        if (wizardOptions == null) {
+            wizardOptions = new ArrayList<>();
+            List<HelperWizardOption> helperOptions = initializeWizardOptions();
+            for (HelperWizardOption option : helperOptions) {
+                if (option.getMode() == getImportMode()) {
+                    wizardOptions.add(option);
+                }
+            }
+        }
+        return wizardOptions;
+    }
+    
+    /**
+     * Initializes list of wizard options, overridden by subclasses to customize. 
+     */
+    protected List<HelperWizardOption> initializeWizardOptions() {
+        return new ArrayList<>();
+    }
 
+    /**
+     * Validates wizard options.  Overridden by subclasses to customize.
+     */
+    public ValidInfo validateWizardOptions() {
+        return new ValidInfo(true, "");
+    }
+    
     public List<OutputColumnModel> getTableViewColumns() {
         return outputColumns;
     }
