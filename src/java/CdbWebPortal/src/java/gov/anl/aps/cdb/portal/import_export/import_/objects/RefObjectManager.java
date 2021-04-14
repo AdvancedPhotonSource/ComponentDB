@@ -85,5 +85,17 @@ public class RefObjectManager {
         
         return objValue;
     }
+    
+    public boolean containsKey(int id) {
+        return objectIdMap.containsKey(id);
+    }
+    
+    public CdbEntity get(int id) {
+        return objectIdMap.get(id);
+    }
+    
+    public CdbEntity put(int id, CdbEntity value) {
+        return objectIdMap.put(id, value);
+    } 
 
 }

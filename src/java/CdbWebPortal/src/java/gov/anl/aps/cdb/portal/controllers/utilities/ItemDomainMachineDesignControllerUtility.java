@@ -304,5 +304,5 @@ public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtil
 
         return mdConnector;
     }
-
+    
 }

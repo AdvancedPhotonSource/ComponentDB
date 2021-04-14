@@ -17,8 +17,10 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnS
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrPathColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.MachineItemRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
@@ -177,14 +179,16 @@ public class ImportHelperMachineHierarchy
     private int nonTemplateItemCount = 0;
     private int templateItemCount = 0;
     
-    private String optionRootItem = null;
+    private String optionRootItemName = null;
+    
+    private ItemDomainMachineDesign rootItem = null;
 
-    public String getOptionRootItem() {
-        return optionRootItem;
+    public String getOptionRootItemName() {
+        return optionRootItemName;
     }
 
-    public void setOptionRootItem(String optionRootItem) {
-        this.optionRootItem = optionRootItem;
+    public void setOptionRootItemName(String optionRootItemName) {
+        this.optionRootItemName = optionRootItemName;
     }
     
     @Override
@@ -193,9 +197,9 @@ public class ImportHelperMachineHierarchy
         List<HelperWizardOption> options = new ArrayList<>();
         
         options.add(new HelperWizardOption(
-                "Root Machine Item", 
-                "Root of machine hierarchy to locate items within.", 
-                "optionRootItem", 
+                "Default Root Machine Item", 
+                "Root of machine hierarchy to locate items within, used to locate items by name without specifying full path.", 
+                "optionRootItemName", 
                 HelperOptionType.STRING, 
                 ImportMode.CREATE));
         
@@ -203,19 +207,55 @@ public class ImportHelperMachineHierarchy
     }
 
     @Override
+    public ValidInfo validateWizardOptions() {
+        
+        boolean isValid = true;
+        String validString = "";
+
+        if (optionRootItemName != null) {
+            if ((!optionRootItemName.isEmpty())) {
+                List<ItemDomainMachineDesign> topLevelMatches = new ArrayList<>();
+                List<ItemDomainMachineDesign> matchingItems
+                        = ItemDomainMachineDesignFacade.getInstance().findByName(optionRootItemName);
+                for (ItemDomainMachineDesign item : matchingItems) {
+                    if (item.getParentMachineDesign() == null) {
+                        // top-level item matches name
+                        topLevelMatches.add(item);
+                    }
+                }
+
+                if (topLevelMatches.size() == 1) {
+                    rootItem = topLevelMatches.get(0);
+                } else if (topLevelMatches.size() == 0) {
+                    isValid = false;
+                    validString = "no matching top-level machine item with name: " + optionRootItemName;
+                } else {
+                    // more than one match
+                    isValid = false;
+                    validString = "multiple matching top-level machine items with name: " + optionRootItemName;
+                }
+            } else {
+                // null out option if empty string
+                optionRootItemName = null;
+            }
+        }
+
+        return new ValidInfo(isValid, validString);
+    }
+    
+    @Override
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrPathColumnSpec(
+        specs.add(new MachineItemRefColumnSpec(
                 HEADER_PARENT, 
                 KEY_PARENT, 
                 "setImportMdItem", 
                 "CDB ID, name, or path of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.", 
                 null,
-                ColumnModeOptions.oCREATE(), 
-                ItemDomainMachineDesignController.getInstance(), 
-                ItemDomainMachineDesign.class));
+                ColumnModeOptions.oCREATE(),
+                rootItem));
         
         specs.add(new NameHierarchyColumnSpec(
                 "Name hierarchy column", 
@@ -312,6 +352,8 @@ public class ImportHelperMachineHierarchy
         super.reset();
         nonTemplateItemCount = 0;
         templateItemCount = 0;
+        rootItem = null;
+        optionRootItemName = null;
     }
     
     @Override
