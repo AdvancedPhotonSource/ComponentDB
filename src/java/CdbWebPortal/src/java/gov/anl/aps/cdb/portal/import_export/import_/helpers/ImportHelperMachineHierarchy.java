@@ -10,13 +10,13 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperOptionType;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.RootMachineItemWizardOptionHelper;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.SingleColumnInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrPathColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.MachineItemRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
@@ -179,68 +179,33 @@ public class ImportHelperMachineHierarchy
     private int nonTemplateItemCount = 0;
     private int templateItemCount = 0;
     
-    private String optionRootItemName = null;
+    private RootMachineItemWizardOptionHelper rootMachineItemWizardOptionHelper = null;
     
-    private ItemDomainMachineDesign rootItem = null;
-
+    private RootMachineItemWizardOptionHelper getRootMachineItemWizardOptionHelper() {
+        if (rootMachineItemWizardOptionHelper == null) {
+            rootMachineItemWizardOptionHelper = new RootMachineItemWizardOptionHelper();
+        }
+        return rootMachineItemWizardOptionHelper;
+    }
+    
     public String getOptionRootItemName() {
-        return optionRootItemName;
+        return getRootMachineItemWizardOptionHelper().getOptionRootItemName();
     }
 
     public void setOptionRootItemName(String optionRootItemName) {
-        this.optionRootItemName = optionRootItemName;
+        getRootMachineItemWizardOptionHelper().setOptionRootItemName(optionRootItemName);
     }
     
     @Override
-    protected List<HelperWizardOption> initializeWizardOptions() {
-        
-        List<HelperWizardOption> options = new ArrayList<>();
-        
-        options.add(new HelperWizardOption(
-                "Default Root Machine Item", 
-                "Root of machine hierarchy to locate items within, used to locate items by name without specifying full path.", 
-                "optionRootItemName", 
-                HelperOptionType.STRING, 
-                ImportMode.CREATE));
-        
+    protected List<HelperWizardOption> initializeWizardOptions() {        
+        List<HelperWizardOption> options = new ArrayList<>();        
+        options.add(RootMachineItemWizardOptionHelper.rootMachineItemWizardOption());
         return options;
     }
 
     @Override
     public ValidInfo validateWizardOptions() {
-        
-        boolean isValid = true;
-        String validString = "";
-
-        if (optionRootItemName != null) {
-            if ((!optionRootItemName.isEmpty())) {
-                List<ItemDomainMachineDesign> topLevelMatches = new ArrayList<>();
-                List<ItemDomainMachineDesign> matchingItems
-                        = ItemDomainMachineDesignFacade.getInstance().findByName(optionRootItemName);
-                for (ItemDomainMachineDesign item : matchingItems) {
-                    if (item.getParentMachineDesign() == null) {
-                        // top-level item matches name
-                        topLevelMatches.add(item);
-                    }
-                }
-
-                if (topLevelMatches.size() == 1) {
-                    rootItem = topLevelMatches.get(0);
-                } else if (topLevelMatches.size() == 0) {
-                    isValid = false;
-                    validString = "no matching top-level machine item with name: " + optionRootItemName;
-                } else {
-                    // more than one match
-                    isValid = false;
-                    validString = "multiple matching top-level machine items with name: " + optionRootItemName;
-                }
-            } else {
-                // null out option if empty string
-                optionRootItemName = null;
-            }
-        }
-
-        return new ValidInfo(isValid, validString);
+        return getRootMachineItemWizardOptionHelper().validate();
     }
     
     @Override
@@ -255,7 +220,7 @@ public class ImportHelperMachineHierarchy
                 "CDB ID, name, or path of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.", 
                 null,
                 ColumnModeOptions.oCREATE(),
-                rootItem));
+                getRootMachineItemWizardOptionHelper().getRootItem()));
         
         specs.add(new NameHierarchyColumnSpec(
                 "Name hierarchy column", 
@@ -352,8 +317,7 @@ public class ImportHelperMachineHierarchy
         super.reset();
         nonTemplateItemCount = 0;
         templateItemCount = 0;
-        rootItem = null;
-        optionRootItemName = null;
+        getRootMachineItemWizardOptionHelper().reset();
     }
     
     @Override
