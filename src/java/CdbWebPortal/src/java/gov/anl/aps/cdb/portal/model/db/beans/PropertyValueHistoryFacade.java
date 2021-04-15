@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,10 @@ public class PropertyValueHistoryFacade extends CdbEntityFacade<PropertyValueHis
 
     public PropertyValueHistoryFacade() {
         super(PropertyValueHistory.class);
+    }
+    
+    public static PropertyValueHistoryFacade getInstance() {
+        return (PropertyValueHistoryFacade) SessionUtility.findFacade(PropertyValueHistoryFacade.class.getSimpleName()); 
     }
     
 }

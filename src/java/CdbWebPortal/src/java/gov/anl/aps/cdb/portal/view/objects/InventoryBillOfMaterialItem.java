@@ -6,8 +6,8 @@ package gov.anl.aps.cdb.portal.view.objects;
 
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.InventoryBillOfMaterialItemStates;
-import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemElementController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -40,7 +40,7 @@ public class InventoryBillOfMaterialItem {
     protected ItemElement inventoryItemElement = null;
 
     // an event needs to be processon state change. SelectOneButton does not support this.
-    protected ItemDomainInventoryController itemDomainInventoryController = null;
+    protected ItemDomainInventoryControllerUtility itemDomainInventoryController = null;
 
     protected boolean applyPermissionToAllNewParts = false;
 
@@ -146,7 +146,7 @@ public class InventoryBillOfMaterialItem {
         if (inventoryItem != null) {
             if (inventoryItem.getName() == null || inventoryItem.getName().isEmpty()) {
                 this.loadItemDomainInventoryController();
-                int newItemCount = itemDomainInventoryController.getNewItemCount(getCatalogItem());
+                int newItemCount = getNewItemCount(getCatalogItem());
                 if (newItemCount > 0) {
                     // Remove this item from the count. 
                     newItemCount -= 1;
@@ -157,6 +157,59 @@ public class InventoryBillOfMaterialItem {
                 inventoryItem.setName(ItemDomainInventory.generatePaddedUnitName(itemNumber));
             }
         }
+    }
+
+    public List<ItemDomainInventory> getNewItemsToAdd() {
+        List<ItemDomainInventory> newItemsToAdd = new ArrayList<>();
+
+        InventoryBillOfMaterialItem parentMostItem = this;
+        while (parentMostItem.getParentItemInstance() != null) {
+            ItemDomainInventory parentItemInstance = parentMostItem.getParentItemInstance();
+            InventoryBillOfMaterialItem containedInBOM = parentItemInstance.getContainedInBOM();
+            if (containedInBOM != null) {
+                parentMostItem = containedInBOM;
+            }
+        }
+
+        populateNewItems(newItemsToAdd, parentMostItem);
+
+        return newItemsToAdd;
+    }
+
+    private void populateNewItems(List<ItemDomainInventory> newItems, InventoryBillOfMaterialItem bom) {
+        ItemDomainInventory inventoryItem = bom.getInventoryItem();
+
+        if (inventoryItem != null) {
+            if (bom.state.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {                
+                newItems.add(inventoryItem);                
+            }
+
+            List<InventoryBillOfMaterialItem> inventoryDomainBillOfMaterialList = inventoryItem.getInventoryDomainBillOfMaterialList();
+            if (inventoryDomainBillOfMaterialList != null) {
+                for (InventoryBillOfMaterialItem nextBom : inventoryDomainBillOfMaterialList) {
+                    populateNewItems(newItems, nextBom);
+                }
+            }
+        }
+    }
+
+    /**
+     * Counts new items that will be added for a certain catalog item.
+     *
+     * @param catalogItem
+     * @return count
+     */
+    public int getNewItemCount(ItemDomainCatalog catalogItem) {
+        int count = 0;
+        List<ItemDomainInventory> newItemsToAdd = getNewItemsToAdd();
+
+        for (ItemDomainInventory item : newItemsToAdd) {
+            if (item.getDerivedFromItem() == catalogItem) {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     public String getState() {
@@ -208,7 +261,7 @@ public class InventoryBillOfMaterialItem {
 
     public void loadItemDomainInventoryController() {
         if (itemDomainInventoryController == null) {
-            itemDomainInventoryController = ItemDomainInventoryController.getInstance();
+            itemDomainInventoryController = new ItemDomainInventoryControllerUtility(); 
         }
     }
 

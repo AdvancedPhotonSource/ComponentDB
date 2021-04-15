@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
@@ -33,11 +34,52 @@ public class ImportHelperInventory
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec("Catalog Item", KEY_CATALOG_ITEM, "setCatalogItem", true, "ID or name of catalog item for inventory unit. Name must be unique and prefixed with '#'.", ItemDomainCatalogController.getInstance(), ItemDomainCatalog.class, null));
-        specs.add(new StringColumnSpec("Tag", KEY_NAME, "", true, "Name of inventory unit.", 64));
-        specs.add(new IntegerColumnSpec("QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
-        specs.add(new StringColumnSpec("Serial Number", "serialNumber", "setSerialNumber", false, "Inventory unit serial number.", 128));
-        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of inventory unit.", 256));
+        specs.add(new IdOrNameRefColumnSpec(
+                "Catalog Item", 
+                KEY_CATALOG_ITEM, 
+                "setCatalogItem", 
+                "ID or name of catalog item for inventory unit. Name must be unique and prefixed with '#'.", 
+                null,
+                ColumnModeOptions.rCREATErUPDATE(), 
+                ItemDomainCatalogController.getInstance(), 
+                ItemDomainCatalog.class, 
+                null));
+        
+        specs.add(new StringColumnSpec(
+                "Tag", 
+                KEY_NAME, 
+                "", 
+                "Name of inventory unit.", 
+                null,
+                ColumnModeOptions.rCREATErUPDATE(), 
+                64));
+        
+        specs.add(new IntegerColumnSpec(
+                "QR ID", 
+                "qrId", 
+                "setQrId", 
+                "Integer QR id of inventory unit.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE()));
+        
+        specs.add(new StringColumnSpec(
+                "Serial Number", 
+                "serialNumber", 
+                "setSerialNumber", 
+                "Inventory unit serial number.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                128));
+        
+        specs.add(new StringColumnSpec(
+                "Description", 
+                "description", 
+                "setDescription", 
+                "Description of inventory unit.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
         specs.add(statusColumnSpec(5));
         specs.add(locationColumnSpec());
         specs.add(locationDetailsColumnSpec());
@@ -54,8 +96,8 @@ public class ImportHelperInventory
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Component Inventory Template";
+    public String getFilenameBase() {
+        return "Component Inventory";
     }
     
     @Override
@@ -69,7 +111,4 @@ public class ImportHelperInventory
         return super.createEntityInstance(rowMap);
     }  
 
-    protected boolean ignoreDuplicates() {
-        return false;
-    }
 }

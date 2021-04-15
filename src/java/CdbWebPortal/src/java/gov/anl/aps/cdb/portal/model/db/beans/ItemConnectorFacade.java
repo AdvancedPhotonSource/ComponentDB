@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,4 +29,7 @@ public class ItemConnectorFacade extends CdbEntityFacade<ItemConnector> {
         super(ItemConnector.class);
     }
     
+    public static ItemConnectorFacade getInstance() {
+        return (ItemConnectorFacade) SessionUtility.findFacade(ItemConnectorFacade.class.getSimpleName()); 
+    }
 }

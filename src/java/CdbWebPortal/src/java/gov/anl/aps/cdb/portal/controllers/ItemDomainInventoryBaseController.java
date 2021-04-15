@@ -5,8 +5,8 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryBaseControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventoryBase;
@@ -15,27 +15,28 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
-import javax.ejb.EJB;
 
 /**
  *
  * @author craig
+ * @param <InventoryControllerUtility>
+ * @param <ItemInventoryBaseDomainEntity>
+ * @param <ItemDomainInventoryEntityBaseFacade>
+ * @param <ItemInventoryEntityBaseSettingsObject>
  */
-public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainEntity extends ItemDomainInventoryBase, ItemDomainInventoryEntityBaseFacade extends ItemFacadeBase<ItemInventoryBaseDomainEntity>, ItemInventoryEntityBaseSettingsObject extends ItemSettings> extends ItemController<ItemInventoryBaseDomainEntity, ItemDomainInventoryEntityBaseFacade, ItemInventoryEntityBaseSettingsObject> implements IItemStatusController {
+public abstract class ItemDomainInventoryBaseController
+        <
+            InventoryControllerUtility extends ItemDomainInventoryBaseControllerUtility<ItemInventoryBaseDomainEntity, ItemDomainInventoryEntityBaseFacade>, 
+            ItemInventoryBaseDomainEntity extends ItemDomainInventoryBase, 
+            ItemDomainInventoryEntityBaseFacade extends ItemFacadeBase<ItemInventoryBaseDomainEntity>, 
+            ItemInventoryEntityBaseSettingsObject extends ItemSettings
+        > 
+        extends ItemController<InventoryControllerUtility, ItemInventoryBaseDomainEntity, ItemDomainInventoryEntityBaseFacade, ItemInventoryEntityBaseSettingsObject> implements IItemStatusController {
 
     // Inventory status variables
-    protected InventoryStatusPropertyTypeInfo inventoryStatusPropertyTypeInfo = null;
-    private PropertyType inventoryStatusPropertyType;
-
-    @EJB
-    private PropertyTypeFacade propertyTypeFacade;
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-        propertyTypeFacade = PropertyTypeFacade.getInstance();
-    }
+    protected InventoryStatusPropertyTypeInfo inventoryStatusPropertyTypeInfo = null;    
     
     protected abstract String generatePaddedUnitName(int itemNumber);
     
@@ -57,16 +58,6 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
         
         int itemNumber = numExistingItems + newInstanceCount;
         return generatePaddedUnitName(itemNumber);
-    }
-   
-    @Override
-    public ItemInventoryBaseDomainEntity createEntityInstance() {
-        ItemInventoryBaseDomainEntity item = super.createEntityInstance();
-        setCurrent(item);
-
-        ItemStatusUtility.updateDefaultStatusProperty(item, this);       
-        
-        return item;
     }
     
     @Override
@@ -106,39 +97,35 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
         }
         return null;
 
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="Inventory status implementation">
-
-    public InventoryStatusPropertyTypeInfo getInventoryStatusPropertyTypeInfo() {
-        inventoryStatusPropertyTypeInfo = ItemStatusUtility.getInventoryStatusPropertyTypeInfo(this, inventoryStatusPropertyTypeInfo);
-        return inventoryStatusPropertyTypeInfo;
-    }
-
-    public PropertyType getInventoryStatusPropertyType() {
-        inventoryStatusPropertyType = ItemStatusUtility.getInventoryStatusPropertyType(this, propertyTypeFacade, inventoryStatusPropertyType);
-        return inventoryStatusPropertyType;
-    }
-
-    public PropertyValue getCurrentStatusPropertyValue() {
-        return ItemStatusUtility.getCurrentStatusPropertyValue(this);
-    }
-    
-    public PropertyValue getItemStatusPropertyValue(LocatableStatusItem item) {
-        return ItemStatusUtility.getItemStatusPropertyValue(item); 
-    }
-
-    public void prepareEditInventoryStatus() {
-        ItemStatusUtility.prepareEditInventoryStatus(this);
-    }
-
-    public void prepareEditInventoryStatus(LocatableStatusItem item) {
-        ItemStatusUtility.prepareEditInventoryStatus(this, item);
     } 
 
     @Override
-    public void prepareEditInventoryStatus(LocatableStatusItem item, UserInfo apiUser) {        
-        ItemStatusUtility.prepareEditInventoryStatus(this, item, apiUser);
+    public ItemInventoryBaseDomainEntity createEntityInstance() {
+        return super.createEntityInstance(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="Inventory status implementation">
+ 
+    @Override
+    public final PropertyValue getCurrentStatusPropertyValue() {
+        ItemInventoryBaseDomainEntity current = getCurrent();
+        return getControllerUtility().getItemStatusPropertyValue(current); 
+    }    
+
+    @Override
+    public final void prepareEditInventoryStatus() {
+        ItemInventoryBaseDomainEntity current = getCurrent();
+        prepareEditInventoryStatus(current);
+    } 
+
+    public final void prepareEditInventoryStatus(LocatableStatusItem item) {
+        UserInfo user = SessionUtility.getUser();
+        getControllerUtility().prepareEditInventoryStatus(item, user);
+    }
+    
+    @Override
+    public final PropertyType getInventoryStatusPropertyType() {
+        return getControllerUtility().getInventoryStatusPropertyType(); 
     }
     
     // </editor-fold>      
@@ -159,18 +146,8 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
     }
 
     @Override
-    public boolean getEntityDisplayItemName() {
-        return true;
-    }
-
-    @Override
     public boolean getEntityDisplayDerivedFromItem() {
         return true; 
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
-        return true;
     }
 
     @Override
@@ -201,11 +178,6 @@ public abstract class ItemDomainInventoryBaseController<ItemInventoryBaseDomainE
     @Override
     public boolean getEntityDisplayItemsDerivedFromItem() {
         return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayItemProject() {
-        return true; 
     }
 
     @Override

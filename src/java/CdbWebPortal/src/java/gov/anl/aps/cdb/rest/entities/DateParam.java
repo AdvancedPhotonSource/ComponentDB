@@ -10,7 +10,6 @@ import java.util.Date;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import static org.omnifaces.util.Utils.isEmpty;
 
 /**
  *
@@ -21,7 +20,7 @@ public class DateParam {
   private final Date date;
 
   public DateParam(String dateStr) throws WebApplicationException {
-    if (isEmpty(dateStr)) {
+    if (dateStr.isEmpty()) {
       this.date = null;
       return;
     }

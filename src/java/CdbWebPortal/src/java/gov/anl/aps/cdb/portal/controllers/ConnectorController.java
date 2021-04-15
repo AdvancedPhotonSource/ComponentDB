@@ -4,13 +4,10 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.settings.ConnectorSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
@@ -24,38 +21,14 @@ import javax.faces.convert.FacesConverter;
 
 @Named("connectorController")
 @SessionScoped
-public class ConnectorController extends CdbEntityController<Connector, ConnectorFacade, ConnectorSettings> implements Serializable {
+public class ConnectorController extends CdbEntityController<ConnectorControllerUtility, Connector, ConnectorFacade, ConnectorSettings> implements Serializable {
     
     @EJB
     private ConnectorFacade connectorFacade;
     
     public static ConnectorController getInstance() {
         return (ConnectorController) SessionUtility.findBean("connectorController"); 
-    }
-    
-    public boolean verifySafeRemovalOfConnector(Connector connector) {
-        // Get latest version from DB. 
-        connector = findById(connector.getId());        
-        if (connector.getItemConnectorList().size() != 1) {
-            return false;
-        } else {
-            // connector itemconnector list has size of 1 
-            ItemConnector itemConnector = connector.getItemConnectorList().get(0); 
-            Item item = itemConnector.getItem(); 
-            if (!item.getDomain().getName().equals(ItemDomainName.catalog.getValue())) {
-                return false; 
-            }
-        } 
-        return true; 
-    }
-
-    @Override
-    protected void prepareEntityDestroy(Connector connector) throws CdbException {
-        if (verifySafeRemovalOfConnector(connector) == false) {
-            throw new CdbException("Cannot remove connector, it has invalid usages."); 
-        }
-        super.prepareEntityDestroy(connector); 
-    }
+    }         
 
     @Override
     protected ConnectorFacade getEntityDbFacade() {
@@ -63,23 +36,13 @@ public class ConnectorController extends CdbEntityController<Connector, Connecto
     }
 
     @Override
-    protected Connector createEntityInstance() {
-        return new Connector(); 
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "connector"; 
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        return getCurrent().toString(); 
-    }     
-
-    @Override
     protected ConnectorSettings createNewSettingObject() {
         return new ConnectorSettings();
+    }
+
+    @Override
+    protected ConnectorControllerUtility createControllerUtilityInstance() {
+        return new ConnectorControllerUtility();
     }
 
     @FacesConverter(value = "connectorConverter", forClass = Connector.class)

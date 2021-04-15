@@ -12,12 +12,13 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
-import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.utilities.EntityTypeControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -93,6 +94,10 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.itemProjectList ipl LEFT JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and ipl.name = :projectName AND (etl.name != :entityTypeName or etl.name is null) ORDER BY i.name ASC"),
     @NamedQuery(name = "Item.findByDomainNameWithNoParents",
             query = "SELECT i FROM Item i WHERE i.itemElementMemberList IS EMPTY and i.domain.name = :domainName"),
+    @NamedQuery(name = "Item.findByDomainNameWithNoParentsAndEntityType",
+            query = "SELECT i FROM Item i WHERE i.itemElementMemberList IS EMPTY and i.domain.name = :domainName and i.entityTypeList is EMPTY"),
+    @NamedQuery(name = "Item.findByDomainNameWithNoParentsAndWithEntityType",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.itemElementMemberList IS EMPTY AND i.domain.name = :domainName and etl.name = :entityTypeName"),
     @NamedQuery(name = "Item.findByDomainNameOrderByQrId",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName ORDER BY i.qrId DESC"),
     @NamedQuery(name = "Item.findByDomainNameOrderByDerivedFromItem",
@@ -208,7 +213,6 @@ import org.primefaces.model.TreeNode;
     "qrIdDisplay",
     "qrIdFilter",
     "itemCableConnectionsRelationshipList",
-    "itemAvaliableConnectorsList",
     "editEntityTypeString",
     "editItemProjectString",
     "logList",
@@ -334,9 +338,6 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String qrIdDisplay = null;
     private transient String qrIdFilter = null;
 
-    private transient List<ItemElementRelationship> itemCableConnectionsRelationshipList;
-    private transient List<Connector> itemAvaliableConnectorsList;
-
     private transient String entityTypeString = null;
 
     private transient String primaryImageValue = null;
@@ -372,6 +373,13 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String descriptionFromAPI;
 
     protected transient PropertyValue coreMetadataPropertyValue = null;
+    
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
+    protected transient ItemElement currentEditItemElement = null;
+    protected transient Boolean currentEditItemElementSaveButtonEnabled = false;
+    protected transient ItemSource currentEditItemSource = null;
+    protected transient Boolean hasElementReorderChangesForCurrent = false;
+    // </editor-fold>
 
     public Item() {
     }
@@ -456,6 +464,12 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         return clonedItem;
     }
+    
+    @JsonIgnore      
+    public ItemControllerUtility getItemControllerUtility() {
+        return null; 
+    }
+    
 
     @JsonIgnore
     public ItemController getItemDomainController() {
@@ -721,11 +735,13 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.entityTypeList = entityTypeList;
     }
     
-    public void addEntityType(String entityTypeName) throws CdbException {
-        
-        EntityType entityType
-                = EntityTypeController.getInstance().
-                        findByName(entityTypeName);
+    private EntityType findEntityTypeByName(String name) {
+        EntityTypeControllerUtility ecu = new EntityTypeControllerUtility(); 
+        return ecu.findByName(name); 
+    }
+    
+    public void addEntityType(String entityTypeName) throws CdbException {        
+        EntityType entityType = findEntityTypeByName(entityTypeName); 
         
         // entity type already set for this entity
         if (entityTypeList.contains(entityType)) {
@@ -753,10 +769,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
     
     public void removeEntityType(String entityTypeName) {
-        
-        EntityType entityType
-                = EntityTypeController.getInstance().
-                        findByName(entityTypeName);
+        EntityType entityType = findEntityTypeByName(entityTypeName); 
         
         if (entityType == null) {
             return;
@@ -774,11 +787,12 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.entityTypeList = entityTypeList;
     }
 
-    @XmlTransient
+    @XmlTransient    
     public List<ItemCategory> getItemCategoryList() {
         return itemCategoryList;
     }
 
+    @JsonIgnore
     public String getItemCategoryString() {
         if (itemCategoryString == null) {
             itemCategoryString = StringUtility.getStringifyCdbList(itemCategoryList);
@@ -802,6 +816,16 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.itemCategoryList = itemCategoryList;
     }
 
+    public void setItemCategoryListImport(List<ItemCategory> itemCategoryList) {
+        if (itemCategoryList != null) {
+            this.itemCategoryString = null;
+            this.itemCategoryList = itemCategoryList;
+        } else if (this.itemCategoryList != null) {
+            // if the new list value is null, but the old value is not null, then clear the list
+            this.itemCategoryList.clear();
+        }
+    }
+
     @XmlTransient
     public List<ItemType> getItemTypeList() {
         return itemTypeList;
@@ -819,11 +843,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         setItemTypeList(itList);
     }
 
-    @XmlTransient
+    @XmlTransient    
     public List<ItemProject> getItemProjectList() {
         return itemProjectList;
     }
-
+    
     public void setItemProjectList(List<ItemProject> itemProjectList) {
         this.itemProjectString = null;
         this.itemProjectList = itemProjectList;
@@ -981,6 +1005,12 @@ public class Item extends CdbDomainEntity implements Serializable {
         this.derivedFromItemList = derivedFromItemList;
     }
     
+    public Integer getDomainId() {
+        return domain.getId(); 
+    }
+
+//    TODO v3.13.0 update app to utilize the domainID 
+//    @JsonIgnore
     public Domain getDomain() {
         return domain;
     }
@@ -989,7 +1019,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         itemDomainController = null;
         this.domain = domain;
     }
-    
+          
     public Item getDerivedFromItem() {
         return derivedFromItem;
     }
@@ -1278,6 +1308,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         getSelfElement().setPropertyValueByIndex(5, propertyValue5);
     }
 
+    @JsonIgnore
     public boolean isIsCloned() {
         return isCloned;
     }
@@ -1355,22 +1386,6 @@ public class Item extends CdbDomainEntity implements Serializable {
                 && Objects.equals(other.getName(), name));
     }
 
-    public void setItemCableConnectionsRelationshipList(List<ItemElementRelationship> itemCableConnectionsRelationshipList) {
-        this.itemCableConnectionsRelationshipList = itemCableConnectionsRelationshipList;
-    }
-
-    public List<ItemElementRelationship> getItemCableConnectionsRelationshipList() {
-        return itemCableConnectionsRelationshipList;
-    }
-
-    public List<Connector> getItemAvaliableConnectorsList() {
-        return itemAvaliableConnectorsList;
-    }
-
-    public void setItemAvaliableConnectorsList(List<Connector> itemAvaliableConnectorsList) {
-        this.itemAvaliableConnectorsList = itemAvaliableConnectorsList;
-    }
-
     public Boolean getIsItemTemplate() {
         if (isItemTemplate == null) {
             isItemTemplate = isItemTemplate(this);
@@ -1401,6 +1416,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         return false;
     }
 
+    @JsonIgnore
     public Boolean getIsItemDeleted() {
         if (isItemDeleted == null) {
             isItemDeleted = isItemDeleted(this);
@@ -1412,13 +1428,14 @@ public class Item extends CdbDomainEntity implements Serializable {
         return isItemEntityType(item, EntityTypeName.deleted.getValue());
     }
 
+    @JsonIgnore
     public Boolean getIsItemInventory() {
         if (isItemInventory == null) {
             isItemInventory = isItemInventory(this);
         }
         return isItemInventory;
     }
-
+    
     public static boolean isItemInventory(Item item) {
         return isItemEntityType(item, EntityTypeName.inventory.getValue());
     } 
@@ -1460,7 +1477,7 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public PropertyValue getCoreMetadataPropertyValue() {
 
-        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
 
         if (info != null) {
             if (coreMetadataPropertyValue == null) {
@@ -1478,7 +1495,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     protected void validateCoreMetadataKey(String key) throws CdbException {
-        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
         if (!info.hasKey(key)) {
             throw new CdbException("Invalid metadata key used to get/set core metadata field value: " + key);
         }
@@ -1491,7 +1508,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         PropertyValue propertyValue = getCoreMetadataPropertyValue();
 
         if (propertyValue == null) {
-            propertyValue = getItemDomainController().prepareCoreMetadataPropertyValue(this);
+            propertyValue = getItemControllerUtility().prepareCoreMetadataPropertyValue(this);
+        }
+        
+        if (value == null) {
+            value = ""; // this is the default value in prepare value add
         }
         
         propertyValue.setPropertyMetadataValue(key, value);
@@ -1509,11 +1530,11 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
     }
 
-    public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
-        return getItemDomainController().getCoreMetadataPropertyInfo();
+    public ItemMetadataPropertyInfo getCoreMetadataPropertyInfo() {
+        return getItemControllerUtility().createCoreMetadataPropertyInfo(); 
     }
 
-    protected CdbEntity getEntityById(CdbEntityController controller, String id) {
+    protected CdbEntity getEntityById(String id) {
 
         if (id != null && !id.isEmpty()) {
             Integer intId = 0;
@@ -1523,7 +1544,8 @@ public class Item extends CdbDomainEntity implements Serializable {
                 LOGGER.error("getEntityById() number format exception on id: " + id);
             }
             if (intId > 0) {
-                return controller.findById(intId);
+                ItemFacade instance = ItemFacade.getInstance();
+                return instance.findById(intId);
             }
         }
 
@@ -1544,4 +1566,42 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return maxSortOrder;
     }
+
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
+    @JsonIgnore
+    public ItemElement getCurrentEditItemElement() {
+        return currentEditItemElement;
+    }
+
+    public void setCurrentEditItemElement(ItemElement currentEditItemElement) {
+        this.currentEditItemElement = currentEditItemElement;
+    }
+
+    @JsonIgnore
+    public Boolean getCurrentEditItemElementSaveButtonEnabled() {
+        return currentEditItemElementSaveButtonEnabled;
+    }
+
+    public void setCurrentEditItemElementSaveButtonEnabled(Boolean currentEditItemElementSaveButtonEnabled) {
+        this.currentEditItemElementSaveButtonEnabled = currentEditItemElementSaveButtonEnabled;
+    }
+
+    @JsonIgnore
+    public ItemSource getCurrentEditItemSource() {
+        return currentEditItemSource;
+    }
+
+    public void setCurrentEditItemSource(ItemSource currentEditItemSource) {
+        this.currentEditItemSource = currentEditItemSource;
+    }
+
+    @JsonIgnore
+    public Boolean getHasElementReorderChangesForCurrent() {
+        return hasElementReorderChangesForCurrent;
+    }
+
+    public void setHasElementReorderChangesForCurrent(Boolean hasElementReorderChangesForCurrent) {
+        this.hasElementReorderChangesForCurrent = hasElementReorderChangesForCurrent;
+    }
+    // </editor-fold>
 }

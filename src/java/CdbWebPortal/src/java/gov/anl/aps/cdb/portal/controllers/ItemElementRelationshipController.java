@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemElementRelationshipSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementRelationshipControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -20,7 +21,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named(ItemElementRelationshipController.controllerNamed)
 @SessionScoped
-public class ItemElementRelationshipController extends CdbEntityController<ItemElementRelationship, ItemElementRelationshipFacade, ItemElementRelationshipSettings> implements Serializable {
+public class ItemElementRelationshipController extends CdbEntityController<ItemElementRelationshipControllerUtility, ItemElementRelationship, ItemElementRelationshipFacade, ItemElementRelationshipSettings> implements Serializable {
     
     public final static String controllerNamed = "itemElementRelationshipController";
     
@@ -46,24 +47,9 @@ public class ItemElementRelationshipController extends CdbEntityController<ItemE
     }
 
     @Override
-    protected ItemElementRelationship createEntityInstance() {
-        return new ItemElementRelationship(); 
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "itemElementRelationship";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().toString(); 
-        }
-        return ""; 
-    }
-
-    
+    protected ItemElementRelationshipControllerUtility createControllerUtilityInstance() {
+        return new ItemElementRelationshipControllerUtility(); 
+    }   
 
     @FacesConverter(forClass = ItemElementRelationship.class)
     public static class ItemElementRelationshipControllerConverter implements Converter {

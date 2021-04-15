@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.UserRole;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -28,6 +29,10 @@ public class UserRoleFacade extends CdbEntityFacade<UserRole> {
 
     public UserRoleFacade() {
         super(UserRole.class);
+    }
+    
+    public static UserRoleFacade getInstance() {
+        return (UserRoleFacade) SessionUtility.findFacade(UserRoleFacade.class.getSimpleName()); 
     }
     
 }

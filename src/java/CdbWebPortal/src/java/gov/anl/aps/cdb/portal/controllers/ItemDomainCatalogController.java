@@ -4,19 +4,19 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCatalog;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCatalogAssembly;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCatalogSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
@@ -31,72 +31,37 @@ import org.apache.logging.log4j.Logger;
  */
 @Named(ItemDomainCatalogController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainCatalogController extends ItemDomainCatalogBaseController<ItemDomainCatalog, ItemDomainCatalogFacade, ItemDomainCatalogSettings> {
+public class ItemDomainCatalogController extends ItemDomainCatalogBaseController<ItemDomainCatalogControllerUtility, ItemDomainCatalog, ItemDomainCatalogFacade, ItemDomainCatalogSettings> {
 
     private static final Logger logger = LogManager.getLogger(ItemDomainCatalogController.class.getName());
 
     public final static String CONTROLLER_NAMED = "itemDomainCatalogController";
 
-    private static ItemDomainCatalogController apiInstance;
-
-    private List<ItemDomainInventory> inventorySparesList = null;
-    private List<ItemDomainInventory> inventoryNonSparesList = null;
-    private Boolean displayInventorySpares = null;
-
     @EJB
     ItemDomainCatalogFacade itemDomainCatalogFacade;
 
-    public static synchronized ItemDomainCatalogController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainCatalogController();
-            apiInstance.prepareApiInstance();
-        }
-        return apiInstance;
-    }
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-        itemDomainCatalogFacade = ItemDomainCatalogFacade.getInstance();
-    }
-    
     @Override
     public ItemMultiEditController getItemMultiEditController() {
         return ItemMultiEditDomainCatalogController.getInstance();
-    } 
+    }
 
     public ItemDomainCatalogController() {
         super();
     }
 
     public static ItemDomainCatalogController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainCatalogController) SessionUtility.findBean(ItemDomainCatalogController.CONTROLLER_NAMED);
-        } else {
-            return getApiInstance();
-        }
+        return (ItemDomainCatalogController) SessionUtility.findBean(ItemDomainCatalogController.CONTROLLER_NAMED);
     }
 
     @Override
     protected ItemDomainCatalogFacade getEntityDbFacade() {
         return itemDomainCatalogFacade;
     }
-    
-    @Override
-    protected ItemDomainCatalog instenciateNewItemDomainEntity() {
-        return new ItemDomainCatalog();
-    }
-    
-    @Override
-    public ItemDomainCatalog createEntityInstance() {
-        ItemDomainCatalog item = super.createEntityInstance();
-        return item;
-    }
 
     @Override
     protected ItemDomainCatalogSettings createNewSettingObject() {
         return new ItemDomainCatalogSettings(this);
-    }   
+    }
 
     @Override
     public boolean getEntityDisplayImportButton() {
@@ -104,41 +69,35 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     }
 
     @Override
-    protected DomainImportInfo initializeDomainImportInfo() {
-        
-        List<ImportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportFormatInfo("Basic Catalog Format", ImportHelperCatalog.class));
-        formatInfo.add(new ImportFormatInfo("Catalog Assembly Format", ImportHelperCatalogAssembly.class));
-        
+    protected DomainImportExportInfo initializeDomainImportInfo() {
+
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportExportFormatInfo("Basic Catalog Format", ImportHelperCatalog.class));
+        formatInfo.add(new ImportExportFormatInfo("Catalog Assembly Format", ImportHelperCatalogAssembly.class));
+
         String completionUrl = "/views/itemDomainCatalog/list?faces-redirect=true";
-        
-        return new DomainImportInfo(formatInfo, completionUrl);
-    }
-    
-    @Override
-    protected void resetVariablesForCurrent() {
-        super.resetVariablesForCurrent();
-        inventoryNonSparesList = null;
-        inventorySparesList = null;
-        displayInventorySpares = null;
+
+        return new DomainImportExportInfo(formatInfo, completionUrl);
     }
 
     public List<ItemDomainInventory> getInventorySparesList() {
+        ItemDomainCatalog current = getCurrent();
+        List<ItemDomainInventory> inventorySparesList = current.getInventorySparesList();
         if (inventorySparesList == null) {
-            ItemDomainCatalog currentItem = getCurrent();
-            if (current != null) {
-                inventorySparesList = new ArrayList<>();
-                for (ItemDomainInventory inventoryItem : currentItem.getInventoryItemList()) {
-                    if (inventoryItem.getSparePartIndicator()) {
-                        inventorySparesList.add(inventoryItem);
-                    }
+            inventorySparesList = new ArrayList<>();
+            for (ItemDomainInventory inventoryItem : current.getInventoryItemList()) {
+                if (inventoryItem.getSparePartIndicator()) {
+                    inventorySparesList.add(inventoryItem);
                 }
             }
+            current.setInventorySparesList(inventorySparesList);
         }
         return inventorySparesList;
     }
 
     public List<ItemDomainInventory> getInventoryNonSparesList() {
+        ItemDomainCatalog current = getCurrent();
+        List<ItemDomainInventory> inventoryNonSparesList = current.getInventoryNonSparesList();
         if (inventoryNonSparesList == null) {
             ItemDomainCatalog currentItem = getCurrent();
             if (currentItem != null) {
@@ -147,6 +106,7 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
                 inventoryNonSparesList = new ArrayList<>(allInventoryItems);
                 inventoryNonSparesList.removeAll(spareItems);
             }
+            current.setInventoryNonSparesList(inventoryNonSparesList);
         }
         return inventoryNonSparesList;
     }
@@ -192,10 +152,18 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     }
 
     public Boolean getDisplayInventorySpares() {
+        ItemDomainCatalog current = getCurrent();
+        Boolean displayInventorySpares = current.getDisplayInventorySpares();
         if (displayInventorySpares == null) {
             displayInventorySpares = SparePartsBean.isItemContainSparePartConfiguration(getCurrent());
+            current.setDisplayInventorySpares(displayInventorySpares);
         }
         return displayInventorySpares;
+    }
+
+    @Override
+    protected ItemDomainCatalogControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainCatalogControllerUtility();
     }
 
 }

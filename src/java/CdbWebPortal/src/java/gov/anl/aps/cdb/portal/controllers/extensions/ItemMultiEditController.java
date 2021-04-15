@@ -7,10 +7,12 @@ package gov.anl.aps.cdb.portal.controllers.extensions;
 import gov.anl.aps.cdb.portal.constants.ItemDefaultColumnReferences;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.controllers.ItemControllerExtensionHelper;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.controllers.LoginController;
 import gov.anl.aps.cdb.portal.controllers.PropertyValueController;
+import gov.anl.aps.cdb.portal.controllers.utilities.LogControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
@@ -306,19 +308,24 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
 
         for (int i = 0; i < selectedItemsToEdit.size(); i++) {
             Item item = selectedItemsToEdit.get(i);
-
+            
+            boolean success = false; 
             if (isItemExistInDb(item)) {
                 if (performSaveOperationsOnItem(item)) {
+                    success = true;
                     successUpdateCounter++;
                 }
             } else if (performSaveOperationsOnItem(item)) {
+                success = true; 
                 successCreateCounter++;
             }
 
-            // Reload the updated item. 
-            Item updatedItem = getCurrent();
-            selectedItemsToEdit.remove(i);
-            selectedItemsToEdit.add(i, updatedItem);
+            if (success) {
+                // Reload the updated item. 
+                Item updatedItem = getItemDbFacade().findById(item.getId());
+                selectedItemsToEdit.remove(i);
+                selectedItemsToEdit.add(i, updatedItem);
+            }
         }
 
         // Summary message
@@ -360,7 +367,12 @@ public abstract class ItemMultiEditController extends ItemControllerExtensionHel
         }
 
         logger.error("Error performing a " + actionWord + " on item: " + ex);
-        addCdbEntityWarningSystemLog("Failed to " + actionWord, ex, item);
+        LogControllerUtility lcu = LogControllerUtility.getSystemLogInstance();
+        try {        
+            lcu.addSystemLog(SystemLogLevel.entityWarning, "Failed to " + actionWord);
+        } catch (CdbException ex1) {
+            logger.error(ex1);
+        }
         SessionUtility.addErrorMessage("Error", "Could not " + actionWord + ": " + item.toString() + " - " + exceptionMessage);
     }
 

@@ -59,6 +59,26 @@ See LICENSE file.
                     <p:outputLabel for="numberOfInventoryItems" value="Inventory Items" styleClass="sectionText"/>
                     <h:outputText id="numberOfInventoryItems" styleClass="sectionText" 
                                   value="#{itemDomainInventoryController.itemList.size()}"/>
+                    
+                    <p:outputLabel for="numberOfMachineElements" value="Machine Elements" styleClass="sectionText"/>
+                    <h:outputText id="numberOfMachineElements" styleClass="sectionText" 
+                                  value="#{itemDomainMachineDesignController.itemList.size()}"/>
+                    
+                    <p:outputLabel for="numberofMAARCItems" value="MAARC Items" styleClass="sectionText"/>
+                    <h:outputText id="numberofMAARCItems" styleClass="sectionText" 
+                                  value="#{itemDomainMAARCController.itemList.size()}"/>
+                    
+                    <p:outputLabel for="numberofCableCatalogItems" value="Cable Catalog Items" styleClass="sectionText"/>
+                    <h:outputText id="numberofCableCatalogItems" styleClass="sectionText" 
+                                  value="#{itemDomainCableCatalogController.itemList.size()}"/>
+                    
+                    <p:outputLabel for="numberofCableInventoryItems" value="Cable Inventory Items" styleClass="sectionText"/>
+                    <h:outputText id="numberofCableInventoryItems" styleClass="sectionText" 
+                                  value="#{itemDomainCableInventoryController.itemList.size()}"/>
+                    
+                    <p:outputLabel for="numberofCableDesignItems" value="Cable Design Items" styleClass="sectionText"/>
+                    <h:outputText id="numberofCableDesignItems" styleClass="sectionText" 
+                                  value="#{itemDomainCableDesignController.itemList.size()}"/>
 
                     <h:outputText value="Software Version" styleClass="sectionText"/>
                     <h:outputLink value="#{resources.CdbSoftwareVersionUrl}" target="#{resources.CdbSoftwareVersion}">
@@ -87,14 +107,19 @@ See LICENSE file.
             <ui:include src="plugins/private/aboutPagePluginDialogs.xhtml" />
         </ui:fragment>
 
-        <ui:fragment rendered="#{loginController.loggedInAsAdmin}">
+        <ui:fragment rendered="#{loginController.loggedInAsAdmin || loginController.loggedInAsMaintainer}">
             <p/>
             <div class="sectionTitle">
                 <h2>Administrative Tools</h2>
                 <h:form id="adminToolsForm">
                     <p:panelGrid columns="1">
                         <div class="commandLink">
-                            <h:commandLink action="#{loginController.dropAdminRole()}" value="Drop Administrator Role"></h:commandLink>
+                            <h:commandLink action="#{loginController.dropAdminRole()}" 
+                                           rendered="#{loginController.loggedInAsAdmin}"
+                                           value="Drop Administrator Role"/>
+                            <h:commandLink action="#{loginController.dropMaintainerRole()}" 
+                                           rendered="#{loginController.loggedInAsMaintainer}"
+                                           value="Drop Maintainer Role"/>
                         </div>
                     </p:panelGrid>
                 </h:form>

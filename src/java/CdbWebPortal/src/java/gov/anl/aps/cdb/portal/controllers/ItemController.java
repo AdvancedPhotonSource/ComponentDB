@@ -6,17 +6,19 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidRequest;
-import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDisplayListDataModelScope;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.constants.ListName;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemCreateWizardController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
@@ -27,7 +29,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
@@ -47,7 +48,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.ListTbl;
 import gov.anl.aps.cdb.portal.model.db.entities.LocatableItem;
-import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
@@ -57,23 +57,20 @@ import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
-import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.ImagePropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
 import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataFieldInfo;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -90,10 +87,11 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.Visibility;
 
-public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings> extends CdbDomainEntityController<ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity, ItemSettingsObject> {
+public abstract class ItemController<
+            ControllerUtility extends ItemControllerUtility<ItemDomainEntity, ItemDomainEntityFacade>, ItemDomainEntity extends Item, ItemDomainEntityFacade extends ItemFacadeBase<ItemDomainEntity>, ItemSettingsObject extends ItemSettings>
+        extends CdbDomainEntityController<ControllerUtility, ItemDomainEntity, ItemDomainEntityFacade, ItemSettingsObject> implements IItemController<ItemDomainEntity, ItemSettingsObject> {
 
-    private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());
-    protected final String FAVORITES_LIST_NAME = "Favorites";
+    private static final Logger LOGGER = LogManager.getLogger(ItemController.class.getName());    
     protected static final String PRIMARY_IMAGE_PROPERTY_METADATA_KEY = "Primary";
 
     @EJB
@@ -140,9 +138,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected DataModel scopedListDataModel = null;
     protected List<String> displayListDataModelScopeSelectionList = null;
 
-    protected Integer qrIdViewParam = null;
-
-    private TreeNode itemElementListTreeTableRootNode = null;
+    protected Integer qrIdViewParam = null;    
 
     private List<ItemDomainEntity> selectItemCandidateList;
     private List<Item> selectedItems;
@@ -159,12 +155,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     protected DataModel allowedChildItemSelectDataModel = null;
 
-    protected List<ItemCategory> domainItemCategoryList = null;
-
-    protected ItemElement currentEditItemElement = null;
-    protected Boolean currentEditItemElementSaveButtonEnabled = false;
-
-    protected ItemSource currentEditItemSource = null;
+    protected List<ItemCategory> domainItemCategoryList = null;      
 
     protected Boolean cloneProperties = false;
     protected Boolean cloneCreateItemElementPlaceholders = false;
@@ -181,35 +172,15 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     protected Integer domainId = null;
 
-    protected Domain defaultControllerDomain = null;
-
-    protected Boolean hasElementReorderChangesForCurrent = false;
+    protected Domain defaultControllerDomain = null;   
 
     protected List<String> expandedRowUUIDs = null;
 
-    protected ItemCoreMetadataPropertyInfo coreMetadataPropertyInfo = null;
+    protected ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
     protected PropertyType coreMetadataPropertyType = null;
 
     public ItemController() {
     }
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-        itemElementFacade = ItemElementFacade.getInstance();
-        domainFacade = DomainFacade.getInstance();
-        itemTypeFacade = ItemTypeFacade.getInstance();
-        entityTypeFacade = EntityTypeFacade.getInstance();
-        itemCategoryFacade = ItemCategoryFacade.getInstance();
-        listFacade = ListFacade.getInstance();
-        userInfoFacade = UserInfoFacade.getInstance();
-        propertyTypeCategoryFacade = PropertyTypeCategoryFacade.getInstance();
-        propertyTypeFacade = PropertyTypeFacade.getInstance(); 
-        relationshipTypeFacade = RelationshipTypeFacade.getInstance();
-        itemElementRelationshipFacade = ItemElementRelationshipFacade.getInstance();
-    }
-
-    protected abstract ItemDomainEntity instenciateNewItemDomainEntity();
 
     /**
      * Get item create wizard controller for current controller.
@@ -235,20 +206,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public Domain getDefaultDomain() {
-        if (defaultControllerDomain == null) {
-            defaultControllerDomain = domainFacade.findByName(getDefaultDomainName());
-            if (defaultControllerDomain == null) {
-                defaultControllerDomain = new Domain();
-                defaultControllerDomain.setName(getDefaultDomainName());
-            }
-        }
-        return defaultControllerDomain;
-
+        return getControllerUtility().getDefaultDomain();
     }
 
     @Override
     public String getNameTitle() {
-        return "Name";
+        return getControllerUtility().getNameTitle();
     }
 
     public String getItemElementsListTitle() {
@@ -280,18 +243,17 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     @Override
     public String getItemIdentifier1Title() {
-        if (getDefaultDomain() != null) {
-            return getDefaultDomain().getItemIdentifier1Label();
-        }
-        return null;
+        return getControllerUtility().getItemIdentifier1Title();
     }
 
     @Override
     public String getItemIdentifier2Title() {
-        if (getDefaultDomain() != null) {
-            return getDefaultDomain().getItemIdentifier2Label();
-        }
-        return null;
+        return getControllerUtility().getItemIdentifier2Title();
+    }
+
+    @Override
+    public final String getDerivedFromItemTitle() {
+        return getControllerUtility().getDerivedFromItemTitle();
     }
 
     /**
@@ -309,13 +271,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
-    public boolean getEntityDisplayItemIdentifier1() {
-        return getItemIdentifier1Title() != null;
+    public final boolean getEntityDisplayItemIdentifier1() {
+        return getControllerUtility().isEntityHasItemIdentifier1();
     }
 
     @Override
-    public boolean getEntityDisplayItemIdentifier2() {
-        return getItemIdentifier2Title() != null;
+    public final boolean getEntityDisplayItemIdentifier2() {
+        return getControllerUtility().isEntityHasItemIdentifier2();
     }
 
     @Override
@@ -398,16 +360,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public void processPreRenderTemplateList() {
         processPreRenderList();
-    }
+    }   
 
     @Override
-    public List<ItemDomainEntity> getAllEntities() {
-        return getItemList(); 
-    }
-
-    @Override
-    public List<ItemDomainEntity> getItemList() {
-        return getEntityDbFacade().findByDomain(getDefaultDomainName());
+    public final List<ItemDomainEntity> getItemList() {
+        return getControllerUtility().getItemList(); 
     }
 
     public List<ItemDomainEntity> getItemListExcludeTemplates() {
@@ -431,16 +388,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     @Override
     public SelectItem[] getDomainItemCategoryListForSelectOne() {
         return CollectionUtility.getSelectItems(getDomainItemCategoryList(), true);
-    }
-
-    @Override
-    protected void resetVariablesForCurrent() {
-        super.resetVariablesForCurrent();
-        currentEditItemElement = null;
-        currentEditItemSource = null;
-        currentEditItemElementSaveButtonEnabled = false;
-        hasElementReorderChangesForCurrent = false;
-        getItemElementController().resetCurrentItemVariables();
     }
 
     @Override
@@ -600,6 +547,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     @Override
     public String getCurrentEntityRelativePermalink() {
+        ItemDomainEntity current = getCurrent();
         return "/views/item/view?id=" + current.getId();
     }
 
@@ -775,9 +723,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         displayListDataModelScopeSelectionList = null;
         locationRelationshipCache = null;
     }
-    
-    public boolean isDataTableNotScoped() {        
-        return settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showAll.getValue()); 
+
+    public boolean isDataTableNotScoped() {
+        return settingObject.getDisplayListDataModelScope().equals(ItemDisplayListDataModelScope.showAll.getValue());
     }
 
     public final DataModel getScopedListDataModel() {
@@ -910,18 +858,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public List<ItemDomainEntity> getFavoriteItems() {
-        return getFavoriteItems(null);
-    }
-
-    public List<ItemDomainEntity> getFavoriteItems(SettingEntity settingEntity) {
-        ItemDomainEntityFacade itemFacade = getEntityDbFacade();
-        String domainName = getDefaultDomainName();
-
-        List<ItemDomainEntity> itemList = null;
-        itemList = itemFacade.getItemListContainedInListWithoutEntityType(domainName, getFavoritesList(settingEntity));
-
-        return itemList;
-    }
+        SettingEntity currentSettingEntity = getCurrentSettingEntity();
+        return getControllerUtility().getFavoriteItems(currentSettingEntity);
+    }   
 
     public List<String> getDisplayListDataScopeSelectionList() {
         if (displayListDataModelScopeSelectionList == null) {
@@ -954,13 +893,15 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
         ItemElement favoriteItemElement = item.getSelfElement();
         List<ItemElement> favoriteItemElementList = favoriteList.getItemElementList();
+        
+        String favoritesListName = ListName.favorite.getValue();
 
         if (favoriteItemElementList.contains(favoriteItemElement)) {
             favoriteItemElementList.remove(favoriteItemElement);
-            LOGGER.debug(String.format("Removing %s to %s List", favoriteItemElement, FAVORITES_LIST_NAME));
+            LOGGER.debug(String.format("Removing %s to %s List", favoriteItemElement, favoritesListName));
         } else {
             favoriteItemElementList.add(item.getSelfElement());
-            LOGGER.debug(String.format("Adding %s to %s List", favoriteItemElement, FAVORITES_LIST_NAME));
+            LOGGER.debug(String.format("Adding %s to %s List", favoriteItemElement, favoritesListName));
         }
 
         // Update
@@ -986,44 +927,27 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
         return PortalStyles.favoritesOff.getValue();
     }
-
-    private List<ListTbl> getSettingEntityItemElementLists(SettingEntity settingEntity) {
-        if (settingEntity == null) {
-            settingEntity = getSettingController().getCurrentSettingEntity();
-        }
-        if (settingEntity != null) {
-            return settingEntity.getItemElementLists();
-        }
-        return null;
-    }
+    
+    private SettingEntity getCurrentSettingEntity() {
+        return getSettingController().getCurrentSettingEntity(); 
+    }   
 
     protected ListTbl getFavoritesList() {
-        return getFavoritesList(null);
-    }
-
-    private ListTbl getFavoritesList(SettingEntity settingEntity) {
-        List<ListTbl> itemElementLists = getSettingEntityItemElementLists(settingEntity);
-        if (itemElementLists != null) {
-            for (ListTbl list : itemElementLists) {
-                if (list.getName().equals(FAVORITES_LIST_NAME)) {
-                    return list;
-                }
-            }
-        }
-
-        // List does not exist
-        return null;
-    }
+        SettingEntity currentSettingEntity = getCurrentSettingEntity();
+        return getControllerUtility().getFavoritesList(currentSettingEntity);
+    }   
 
     private ListTbl createFavoritesList() {
         ListTbl favoriteList = new ListTbl();
+        
+        String favoritesListName = ListName.favorite.getValue();
 
         // Link the setting entity and the new favorites list
         SettingEntity settingEntity = getSettingController().getCurrentSettingEntity();
         settingEntity.getItemElementLists().add(favoriteList);
-        favoriteList.init(FAVORITES_LIST_NAME, settingEntity);
+        favoriteList.init(favoritesListName, settingEntity);
 
-        LOGGER.debug(String.format("Creating %s List for %s", FAVORITES_LIST_NAME, settingEntity));
+        LOGGER.debug(String.format("Creating %s List for %s", favoritesListName, settingEntity));
         try {
             listFacade.create(favoriteList);
         } catch (Exception ex) {
@@ -1040,10 +964,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public String getItemTemplateListPageTitle() {
         return getDisplayEntityTypeName() + " Template List";
-    }
-
-    private String getEntityTypeStyleName(String genEntityTypeName) {
-        return genEntityTypeName.toLowerCase() + getDefaultDomainName();
     }
 
     @Override
@@ -1101,20 +1021,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return getEntityDbFacade().find(id);
     }
 
-    void prepareItemElementListTreeTable(Item item) {
-        try {
-            itemElementListTreeTableRootNode = ItemElementUtility.createItemElementRoot(item);
-        } catch (CdbException ex) {
-            LOGGER.warn("Could not create item element list for tree view: " + ex.toString());
-        }
-    }
-
     public ItemSource getCurrentEditItemSource() {
-        return currentEditItemSource;
+        ItemDomainEntity current = getCurrent();
+        return current.getCurrentEditItemSource();         
     }
 
     public void setCurrentEditItemSource(ItemSource currentEditItemSource) {
-        this.currentEditItemSource = currentEditItemSource;
+        ItemDomainEntity current = getCurrent();
+        current.setCurrentEditItemSource(currentEditItemSource);
     }
 
     public void itemSourceObjectEditRowEvent(RowEditEvent event) {
@@ -1122,6 +1036,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public void verifySaveCurrentEditItemSource(String onSuccessCommand) {
+        ItemSource currentEditItemSource = getCurrentEditItemSource();
         if (currentEditItemSource != null) {
             if (currentEditItemSource.getSource() == null) {
                 SessionUtility.addErrorMessage("Error", "Source must be specified before proceeding.");
@@ -1154,18 +1069,19 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public void removeCurrentEditItemSource() {
+        ItemSource currentEditItemSource = getCurrentEditItemSource();
         if (currentEditItemSource != null) {
             ItemDomainEntity current = getCurrent();
             List<ItemSource> itemSourceList = current.getItemSourceList();
 
             itemSourceList.remove(currentEditItemSource);
-            currentEditItemSource = null;
+            setCurrentEditItemSource(null); 
         }
     }
 
-    public void saveSourceList() {
-        currentEditItemSource = null;
+    public void saveSourceList() {        
         update();
+        reloadCurrent();
     }
 
     public void deleteSource(ItemSource itemSource) {
@@ -1176,19 +1092,22 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public void prepareCreateSingleItemElementSimpleDialog() {
-        Item item = getCurrent();
+        Item item = getCurrent();        
         if (item != null) {
-            currentEditItemElement = createItemElement(getCurrent());
+            UserInfo user = SessionUtility.getUser();
+            item.setCurrentEditItemElement(getControllerUtility().createItemElement(getCurrent(), user));
         }
     }
 
     public void cancelCreateSingleItemElementSimpleDialog() {
-        currentEditItemElement = null;
-        currentEditItemElementSaveButtonEnabled = false;
+        ItemDomainEntity current = getCurrent();
+        current.setCurrentEditItemElement(null);
+        current.setCurrentEditItemElementSaveButtonEnabled(false);
     }
 
     public void saveCreateSingleItemElementSimpleDialog() {
         Item currentItem = getCurrent();
+        ItemElement currentEditItemElement = currentItem.getCurrentEditItemElement();
         if (currentItem != null) {
             prepareAddItemElement(getCurrent(), currentEditItemElement);
         }
@@ -1197,7 +1116,8 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         if (containedItem != null && containedItem.getId() == null) {
             try {
                 // New item, skip history, it will be done under update of current. 
-                prepareEntityInsert(containedItem, true);
+                UserInfo user = SessionUtility.getUser();
+                getControllerUtility().prepareEntityInsert(containedItem, user, true);
             } catch (CdbException ex) {
                 LOGGER.error(ex);
                 SessionUtility.addErrorMessage("Error", ex.getMessage());
@@ -1205,23 +1125,27 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
 
         update();
+        reloadCurrent(); 
 
-        currentEditItemElement = null;
+        setCurrentEditItemElement(null);
     }
 
     public void changeItemCreateSingleItemElementSimpleDialog() {
+        ItemDomainEntity current = getCurrent();
+        ItemElement currentEditItemElement = current.getCurrentEditItemElement();
         currentEditItemElement.setContainedItem(null);
-        currentEditItemElementSaveButtonEnabled = false;
+        current.setCurrentEditItemElementSaveButtonEnabled(false);
     }
 
     public void validateCreateSingleItemElementSimpleDialog(String onSuccessCommand, String errorSummary) {
         ItemDomainEntity item = getCurrent();
+        ItemElement currentEditItemElement = item.getCurrentEditItemElement();
         try {
             beforeValidateItemElement();
             prepareAddItemElement(item, currentEditItemElement);
-            checkItemElementsForItem(item);
+            getControllerUtility().checkItemElementsForItem(item);
 
-            currentEditItemElementSaveButtonEnabled = true;
+            item.setCurrentEditItemElementSaveButtonEnabled(true);
             SessionUtility.executeRemoteCommand(onSuccessCommand);
         } catch (CdbException ex) {
             failedValidateItemElement();
@@ -1246,9 +1170,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public void deleteItemConnector(ItemConnector itemConnector) {
         Item item = getCurrent();
 
-        ConnectorController connectorController = ConnectorController.getInstance();
+        ConnectorControllerUtility connectorControllerUtility = new ConnectorControllerUtility();
         Connector connector = itemConnector.getConnector();
-        if (connectorController.verifySafeRemovalOfConnector(connector)) {
+        if (connectorControllerUtility.verifySafeRemovalOfConnector(connector)) {
             completeDeleteItemConnector(itemConnector);
         } else {
             // Generate a userfull message
@@ -1287,18 +1211,17 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         ItemConnectorController.getInstance().destroy(itemConnector);
     }
 
-    public void prepareAddItemConnector(Item item) {
+    public final void prepareAddItemConnector(Item item) {
         if (item != null) {
+            UserInfo user = SessionUtility.getUser();
+            ItemConnector itemConnector = getControllerUtility().prepareAddItemConnector(item, user);
+
             ItemConnectorController itemConnectorController = ItemConnectorController.getInstance();
-            ItemConnector itemConnector = itemConnectorController.createEntityInstance();
-            itemConnector.setItem(item);
-            itemConnector = prepareItemConnectorForDomain(itemConnector);
-            item.getItemConnectorList().add(itemConnector);
             itemConnectorController.setCurrent(itemConnector);
         }
     }
 
-    protected ItemConnector prepareItemConnectorForDomain(ItemConnector itemConnector) {
+    protected final ItemConnector prepareItemConnectorForDomain(ItemConnector itemConnector) {
         return itemConnector;
     }
 
@@ -1310,57 +1233,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
     }
 
-    public ItemElement createItemElementFromApi(ItemDomainEntity item, EntityInfo entityInfo) {
-        return createItemElement(item, entityInfo);
-    }
-
-    protected ItemElement createItemElement(ItemDomainEntity item) {
-        EntityInfo entityInfo = EntityInfoUtility.createEntityInfo();
-        return createItemElement(item, entityInfo);
-    }
-
-    protected ItemElement createItemElement(ItemDomainEntity item, EntityInfo entityInfo) {
-        ItemElement itemElement = new ItemElement();
-        itemElement.setEntityInfo(entityInfo);
-        itemElement.setParentItem(item);
-
-        String elementName = generateUniqueElementNameForItem(item);
-
-        itemElement.setName(elementName);
-
-        return itemElement;
-    }
-
-    public String generateUniqueElementNameForItem(ItemDomainEntity item) {
-        List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
-        int elementNumber = itemElementsDisplayList.size() + 1;
-        String elementNameSuffix = "E";
-        String elementName = null;
-
-        boolean unique = false;
-        while (elementName == null) {
-            String test = elementNameSuffix + elementNumber;
-            if (itemElementsDisplayList.size() > 0) {
-                for (ItemElement ittrItemElement : itemElementsDisplayList) {
-                    if (ittrItemElement.getName().equalsIgnoreCase(test)) {
-                        elementNumber++;
-                        unique = false;
-                        break;
-                    } else {
-                        unique = true;
-                    }
-                }
-            } else {
-                unique = true;
-            }
-            if (unique) {
-                elementName = test;
-            }
-        }
-
-        return elementName;
-    }
-
     protected void prepareAddItemElement(ItemDomainEntity item, ItemElement itemElement) {
         List<ItemElement> itemElementList = item.getFullItemElementList();
         List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
@@ -1369,12 +1241,19 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         itemElementsDisplayList.add(0, itemElement);
     }
 
+    @Override
+    public final void checkItemUniqueness(ItemDomainEntity item) throws CdbException {
+        getControllerUtility().checkItemUniqueness(item);
+    }
+
     public void prepareAddItemElement(ItemDomainEntity item) {
-        ItemElement itemElement = createItemElement(item);
+        UserInfo user = SessionUtility.getUser();
+        ItemElement itemElement = getControllerUtility().createItemElement(item, user);
         prepareAddItemElement(item, itemElement);
     }
 
     public void completeSuccessfulItemElementRemoval(ItemElement itemElement) {
+        ItemDomainEntity current = getCurrent();
         if (current != null) {
             Item parentItem = itemElement.getParentItem();
             if (current.equals(parentItem)) {
@@ -1389,11 +1268,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public void completeSuccessfulItemElementUpdate(ItemElement itemElement) {
+        ItemDomainEntity current = getCurrent();
         if (current != null) {
             Item parentItem = itemElement.getParentItem();
             if (current.equals(parentItem)) {
                 // Resaving the item could cause revivial of the element prior update due to various connections. 
-                current = findById(current.getId());
+                setCurrent(findById(current.getId()));
             }
         }
     }
@@ -1403,15 +1283,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public void completeSucessfulDerivedFromItemCreation() {
+        ItemDomainEntity current = getCurrent();
         if (current != null) {
             // Item elements have outdated reference back to parent with new inventory item. 
             // Will allow user to see the latest constraints on item elements.          
-            current = findById(current.getId());
+            setCurrent(findById(current.getId()));
         }
-    }
-
-    public ItemElement finalizeItemElementRequiredStatusChanged(ItemElement itemElement) throws CdbException {
-        return itemElement;
     }
 
     private void removeItemElementFromItem(ItemElement itemElement, Item item) {
@@ -1423,6 +1300,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public void saveItemElementList() {
         update();
+        reloadCurrent();
     }
 
     public List<ItemDomainEntity> getSelectItemCandidateList() {
@@ -1462,23 +1340,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
-    public Boolean isItemExistInDb(Item item) {
-        Item dbItem = null;
-        if (item.getId() != null) {
-            dbItem = getEntityDbFacade().find(item.getId());
-        }
-
-        return dbItem != null;
+    public final Boolean isItemExistInDb(Item item) {
+        return getControllerUtility().isItemExistInDb(item);
     }
 
     public void setCurrentDerivedFromItem(Item derivedFromItem) {
         getCurrent().setDerivedFromItem(derivedFromItem);
-    }
-
-    public void checkItemProject(Item item) throws CdbException {
-        if (item.getItemProjectList() == null || item.getItemProjectList().isEmpty()) {
-            throw new CdbException("Project for item " + itemDomainToString(item) + " must be specified.");
-        }
     }
 
     @Override
@@ -1599,13 +1466,11 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public void prepareAddItemDerivedFromItem(Item derivedFromItem) {
         List<Item> itemDerivedFromItemList = derivedFromItem.getDerivedFromItemList();
 
-        ItemDomainEntity newItemDerivedFromItem = instenciateNewItemDomainEntity();
-
-        newItemDerivedFromItem.init(getDefaultDomain());
+        ItemDomainEntity newItemDerivedFromItem = createEntityInstance();
 
         itemDerivedFromItemList.add(0, newItemDerivedFromItem);
 
-        current = newItemDerivedFromItem;
+        setCurrent(newItemDerivedFromItem);
 
         setCurrentDerivedFromItem(derivedFromItem);
     }
@@ -1623,6 +1488,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public void saveItemDerivedFromItemList() {
         update();
+        reloadCurrent();
     }
 
     public void deleteItemDerivedFromItem(ItemDomainEntity itemDerivedFromItem) {
@@ -1705,13 +1571,26 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained) {
         return cloneCreateItemElements(clonedItem, cloningFrom, addContained, false);
     }
-
+    
     protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained, boolean assignDerivedFromItemElement) {
+        return cloneCreateItemElements(clonedItem, cloningFrom, true, true, false); 
+    }
+
+    protected ItemDomainEntity cloneCreateItemElements(ItemDomainEntity clonedItem, ItemDomainEntity cloningFrom, boolean addContained, boolean assignDerivedFromItemElement, boolean generateUniqueElementName) {
         List<ItemElement> cloningFromItemElementList = cloningFrom.getItemElementDisplayList();
 
         if (cloningFromItemElementList != null) {
             for (ItemElement itemElement : cloningFromItemElementList) {
-                cloneCreateItemElement(itemElement, clonedItem, addContained, assignDerivedFromItemElement);
+                String newName = null; 
+                if (generateUniqueElementName) {
+                    clonedItem.resetItemElementVars();
+                    newName = getControllerUtility().generateUniqueElementNameForItem(clonedItem); 
+                }
+                ItemElement newElement = cloneCreateItemElement(itemElement, clonedItem, addContained, assignDerivedFromItemElement);                
+                
+                if (newName != null) {
+                    newElement.setName(newName);
+                }
             }
         }
 
@@ -1844,39 +1723,29 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public ItemElement getCurrentEditItemElement() {
-        return currentEditItemElement;
+        ItemDomainEntity current = getCurrent();
+        return current.getCurrentEditItemElement(); 
     }
 
     public void setCurrentEditItemElement(ItemElement newItemElementForCurrent) {
-        this.currentEditItemElement = newItemElementForCurrent;
+        ItemDomainEntity current = getCurrent();
+        current.setCurrentEditItemElement(newItemElementForCurrent);
     }
 
     public Boolean getCurrentEditItemElementSaveButtonEnabled() {
-        return currentEditItemElementSaveButtonEnabled;
-    }
-
-    public TreeNode getItemElementListTreeTableRootNode() {
-        return itemElementListTreeTableRootNode;
-    }
-
-    public void setItemElementListTreeTableRootNode(TreeNode itemElementListTreeTableRootNode) {
-        this.itemElementListTreeTableRootNode = itemElementListTreeTableRootNode;
+        ItemDomainEntity current = getCurrent();
+        return current.getCurrentEditItemElementSaveButtonEnabled();
     }
 
     public Boolean getHasElementReorderChangesForCurrent() {
+        ItemDomainEntity current = getCurrent();
+        Boolean hasElementReorderChangesForCurrent = current.getHasElementReorderChangesForCurrent();
         return hasElementReorderChangesForCurrent;
     }
 
     public void setHasElementReorderChangesForCurrent(Boolean hasElementReorderChangesForCurrent) {
-        this.hasElementReorderChangesForCurrent = hasElementReorderChangesForCurrent;
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().toString();
-        }
-        return "";
+        ItemDomainEntity current = getCurrent();
+        current.setHasElementReorderChangesForCurrent(hasElementReorderChangesForCurrent);
     }
 
     public boolean getDisplayItemSourceList() {
@@ -1987,8 +1856,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     @Override
-    public Boolean isItemProjectRequired() {
-        return getEntityDisplayItemProject();
+    public final Boolean isItemProjectRequired() {
+        return getControllerUtility().isItemProjectRequired();
+    }
+
+    @Override
+    public final boolean getEntityDisplayItemProject() {
+        return getControllerUtility().isEntityHasProject();
     }
 
     public String getDisplayListDataModelScopeDisplayString() {
@@ -2213,42 +2087,19 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 || checkDisplayLoadPropertyValueButtonByProperty(settingObject.getDisplayListDataModelScopePropertyTypeId());
     }
 
-    public ItemDomainEntity createEntityInstanceFromApi(EntityInfo ei) {
-        return createEntityInstance(ei);
-    }
-
     @Override
-    protected ItemDomainEntity createEntityInstance() {
-        return createEntityInstance(null);
-    }
-
-    protected ItemDomainEntity createEntityInstance(EntityInfo ei) {
-        ItemDomainEntity item = instenciateNewItemDomainEntity();
-
-        Domain domain = getDefaultDomain();
-        if (domain != null) {
-            if (ei == null) {
-                item.init(domain);
-            } else {
-                item.init(domain, ei);
-            }
-        } else {
-            if (ei == null) {
-                item.init();
-            } else {
-                item.init(ei);
-            }
-        }
-
+    public ItemDomainEntity createEntityInstance() {        
+        ItemDomainEntity item = super.createEntityInstance();
+        
         if (qrIdViewParam != null) {
             item.setQrId(qrIdViewParam);
             qrIdViewParam = null;
         }
-
-        initializeCoreMetadataPropertyValue(item);
-
+        
+        setCurrent(item);
+        
         return item;
-    }
+    }   
 
     @Override
     public final ItemDomainEntity createItemEntity() {
@@ -2322,16 +2173,24 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 } catch (NumberFormatException ex) {
                     throw new InvalidRequest("Invalid value supplied for QR id: " + paramValue);
                 }
-            } else if (current == null) {
+            } 
+            
+            if (getCurrent() == null) {
+                loadCurrentFromFlash();
+            }
+            
+            
+            if (getCurrent() == null) {
                 throw new InvalidRequest(getDisplayEntityTypeName() + " has not been selected.");
             }
+            
+            ItemDomainEntity current = getCurrent();
             return current;
         }
     }
 
     @Override
     public String prepareView(Item item) {
-        prepareItemElementListTreeTable(item);
         return "/views/item/view.xhtml?faces-redirect=true&id=" + item.getId();
     }
 
@@ -2389,6 +2248,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public boolean isCurrentItemTemplate() {
+        ItemDomainEntity current = getCurrent();
         if (current != null) {
             return current.getIsItemTemplate();
         }
@@ -2404,9 +2264,13 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public void completeSelectionOfTemplate() {
+        ItemDomainEntity current = getCurrent();
         if (this.templateToCreateNewItem != null) {
             current.setItemCategoryList(templateToCreateNewItem.getItemCategoryList());
             current.setItemTypeList(templateToCreateNewItem.getItemTypeList());
+            current = cloneProperties(current, templateToCreateNewItem);
+            current = cloneSources(current, templateToCreateNewItem);
+            addCreatedFromTemplateRelationshipToItem(current);
         }
     }
 
@@ -2433,10 +2297,12 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public Item getCreatedFromTemplateForCurrentItem() {
+        ItemDomainEntity current = getCurrent();
         return current.getCreatedFromTemplate();
     }
 
     public List<Item> getItemsCreatedFromCurrentTemplateItem() {
+        ItemDomainEntity current = getCurrent();
         return getItemsCreatedFromTemplateItem(current);
     }
 
@@ -2449,6 +2315,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public boolean getDisplayCreatedFromTemplateForCurrent() {
+        ItemDomainEntity current = getCurrent();
         if (getEntityDisplayTemplates() && current != null) {
             return !current.getIsItemTemplate();
         }
@@ -2457,24 +2324,24 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public boolean getDisplayCreatedFromCurrentItemList() {
         if (getEntityDisplayTemplates()) {
-            return current.getIsItemTemplate();
+            return getCurrent().getIsItemTemplate();
         }
         return false;
-    } 
-    
+    }
+
     protected String getViewPath() {
         Domain defaultDomain = getDefaultDomain();
-        return getDomainPath(defaultDomain) + "/view.xhtml"; 
+        return getDomainPath(defaultDomain) + "/view.xhtml";
     }
 
     protected ItemDomainEntity performItemRedirection(ItemDomainEntity item, String paramString, boolean forceRedirection) {
         String currentViewId = SessionUtility.getCurrentViewId();
 
-        Domain itemDomain = item.getDomain();               
+        Domain itemDomain = item.getDomain();
         String desiredViewId;
         if (itemDomain != null) {
             ItemController itemDomainController = item.getItemDomainController();
-            desiredViewId = itemDomainController.getViewPath(); 
+            desiredViewId = itemDomainController.getViewPath();
         } else {
             desiredViewId = "/views/item/view.xhtml";
         }
@@ -2495,6 +2362,7 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     }
 
     public String getCurrentItemDisplayTitle() {
+        ItemDomainEntity current = getCurrent();
         if (current != null) {
             if (current.getQrId() != null) {
                 return "Qr: " + current.getQrIdDisplay();
@@ -2533,117 +2401,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         }
     }
 
-    @Override
-    public void prepareEntityInsert(ItemDomainEntity item) throws CdbException {
-        prepareEntityInsert(item, false);
-    }
-
-    public void prepareEntityInsert(ItemDomainEntity item, boolean skipHistory) throws CdbException {
-        super.prepareEntityInsert(item);
-
-        if (templateToCreateNewItem != null) {
-            current = cloneProperties(current, templateToCreateNewItem);
-            current = cloneSources(current, templateToCreateNewItem);
-
-            addCreatedFromTemplateRelationshipToItem(current);
-        }
-
-        checkItem(item);
-        performPrepareEntityInsertUpdate(item);
-
-        if (!skipHistory) {
-            List<ItemElement> newElementList = item.getFullItemElementList();
-            LOGGER.debug("Adding innitial element history for " + item);
-            EntityInfo entityInfo = item.getEntityInfo();
-            ItemElementUtility.prepareItemElementHistory(null, newElementList, entityInfo);
-
-            List<ItemElement> itemElementMemberList = item.getItemElementMemberList();
-            if (itemElementMemberList != null) {
-                // Reverse hierarchy inserted, parent specified during insert. 
-                LOGGER.debug("Adding innitial element member history for " + item);
-                ItemElementUtility.prepareItemElementHistory(null, itemElementMemberList, entityInfo);
-            }
-        }
-    }
-
-    @Override
-    public void prepareEntityUpdate(ItemDomainEntity item) throws CdbException {
-        checkItem(item);
-        performPrepareEntityInsertUpdate(item);
-        item.resetAttributesToNullIfEmpty();
-        EntityInfo entityInfo = item.getEntityInfo();
-        if (apiMode) {
-            EntityInfoUtility.updateEntityInfo(entityInfo, apiUser);
-        } else {
-            EntityInfoUtility.updateEntityInfo(entityInfo);
-        }
-        Log logEntry = prepareLogEntry();
-        if (logEntry != null) {
-            List<Log> logList = item.getLogList();
-            logList.add(logEntry);
-            item.setLogList(logList);
-        }
-
-        // Prepare history 
-        Item originalItem = getEntityDbFacade().findById(item.getId());
-        // Full item element list contains self element as well as all the elements 
-        List<ItemElement> originalElementList = originalItem.getFullItemElementList();
-        List<ItemElement> newElementList = item.getFullItemElementList();
-        LOGGER.debug("Verifying elements for item " + item);
-        ItemElementUtility.prepareItemElementHistory(originalElementList, newElementList, entityInfo);
-        //Verify reverse hierarchy updates
-        List<ItemElement> originalItemElementMemberList = originalItem.getItemElementMemberList();
-        List<ItemElement> newitemElementMemberList = item.getItemElementMemberList();
-        ItemElementUtility.prepareItemElementHistory(originalItemElementMemberList, newitemElementMemberList, entityInfo);        
-
-        // Compare properties with what is in the db
-        List<PropertyValue> originalPropertyValueList = originalItem.getPropertyValueList();
-        List<PropertyValue> newPropertyValueList = item.getPropertyValueList();
-        LOGGER.debug("Verifying properties for item " + item);
-        PropertyValueUtility.preparePropertyValueHistory(originalPropertyValueList, newPropertyValueList, entityInfo);
-        item.clearPropertyValueCache();
-        if (!apiMode) {
-            prepareImageList(item);
-        }
-
-        List<Item> derivedFromItemList = item.getDerivedFromItemList();
-        if (derivedFromItemList != null) {
-            for (Item derivedItem : derivedFromItemList) {
-                derivedItem.resetAttributesToNullIfEmpty();
-                ItemController derivedItemController = derivedItem.getItemDomainController();
-                derivedItemController.checkItem(derivedItem);
-            }
-        }
-
-        LOGGER.debug("Updating item " + item.getId()
-                + " (user: " + entityInfo.getLastModifiedByUser().getUsername() + ")");
-
-    }
-
-    protected void performPrepareEntityInsertUpdate(Item item) throws InvalidRequest {
-        if (item instanceof LocatableItem) {
-            LocatableItem locatableItem = (LocatableItem) item;
-            getLocatableItemController().updateItemLocation(locatableItem);
-        }
-        addDynamicPropertiesToItem(item);
-    }
-
-    @Override
-    protected void prepareEntityDestroy(ItemDomainEntity item) throws CdbException {
-        super.prepareEntityDestroy(item);
-        List<ItemElement> memberList = item.getItemElementMemberList();
-        if (memberList != null && memberList.isEmpty() == false) {
-            for (ItemElement member : memberList) {
-//                System.out.println("parent: " + member.getParentItem().getName());
-//                System.out.println("child: " + member.getContainedItem().getName());
-//                System.out.println("element: " + member.getName());
-                if (!member.isMarkedForDeletion()) {
-                    throw new CdbException("Item " + item.getName() + " is part of an assembly.");
-                }
-            }
-        }
-    }
-
     protected ItemController getItemItemController(Item item) {
         return findDomainController(getItemDomainName(item));
     }
@@ -2659,131 +2416,14 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     public void checkCurrentItem(boolean skipProjects) throws CdbException {
         if (getCurrent() != null) {
-            checkItem(getCurrent(), skipProjects);
+            getControllerUtility().checkItem(getCurrent(), skipProjects);
         } else {
             throw new CdbException("Current item does not exist.");
         }
     }
 
-    protected void checkItem(ItemDomainEntity item) throws CdbException {
-        checkItem(item, false);
-    }
-
-    protected void checkItem(ItemDomainEntity item, boolean skipProjects) throws CdbException {
-        Domain itemDomain = item.getDomain();
-
-        // Verify no qr id is specified when it is not allowed for the domain.
-        if (getEntityDisplayQrId(item) == false) {
-            if (item.getQrId() != null) {
-                throw new CdbException("QR Id cannot be specified for " + itemDomainToString(item));
-            }
-        }
-
-        if (itemDomain == null) {
-            throw new CdbException("No domain has been specified for " + itemDomainToString(item));
-        }
-
-        if (skipProjects == false) {
-            if (isItemProjectRequired()) {
-                checkItemProject(item);
-            }
-        }
-
-        checkItemUniqueness(item);
-        checkItemElementsForItem(item);
-    }
-
-    protected void checkItemElementsForItem(ItemDomainEntity item) throws CdbException {
-        item.resetItemElementDisplayList();
-        List<String> elementNames = new ArrayList<>();
-        for (ItemElement itemElement : item.getItemElementDisplayList()) {
-            if (itemElement.getName() == null || itemElement.getName().isEmpty()) {
-                throw new CdbException("Item element name cannot be empty.");
-            }
-            String itemElementName = itemElement.getName();
-            if (elementNames.contains(itemElementName)) {
-                throw new CdbException("Element names must be unique within their assembly. '" + itemElementName + "' is repeated.");
-            }
-
-            elementNames.add(itemElement.getName());
-        }
-        // Throws exception if a tree cannot be generated due to circular reference. 
-        ItemElementUtility.createItemElementRoot(item);
-    }
-
-    public void checkItemElement(ItemElement itemElement) throws CdbException {
-        ItemDomainEntity parentItem = (ItemDomainEntity) itemElement.getParentItem();
-        checkItemElementsForItem(parentItem);
-    }
-
-    protected String itemDomainToString(Item item) {
-        return item.toString();
-    }
-
     public boolean isAllowedSetDerivedFromItemForCurrentItem() {
         return getEntityDisplayDerivedFromItem();
-    }
-
-    @Override
-    public void checkItemUniqueness(ItemDomainEntity item) throws CdbException {
-
-        String name = item.getName();
-        Integer qrId = item.getQrId();
-
-        if (getEntityDisplayItemName()) {
-            if (name != null && name.isEmpty()) {
-                throw new CdbException("No " + getNameTitle() + " has been specified for " + itemDomainToString(item));
-            }
-        }
-
-        if (getEntityDisplayQrId()) {
-            if (qrId != null) {
-                Item existingItem = getEntityDbFacade().findByQrId(qrId);
-                if (existingItem != null) {
-                    if (!Objects.equals(existingItem.getId(), item.getId())) {
-                        throw new ObjectAlreadyExists("Item " + existingItem.toString() + " already exists with qrId " + existingItem.getQrIdDisplay() + ".");
-                    }
-                }
-            }
-        }
-
-        if (verifyItemNameCombinationUniqueness(item) == false) {
-            String additionalInfo = "Please update some of the following:  ";
-
-            if (getEntityDisplayItemName()) {
-                additionalInfo += "Name, ";
-            }
-            if (getEntityDisplayItemIdentifier1()) {
-                additionalInfo += getItemIdentifier1Title() + ", ";
-            }
-            if (getEntityDisplayItemIdentifier2()) {
-                additionalInfo += getItemIdentifier2Title() + ", ";
-            }
-
-            //Remove last comma. 
-            additionalInfo = additionalInfo.substring(0, additionalInfo.length() - 2);
-
-            throw new ObjectAlreadyExists("Item " + itemDomainToString(item) + " has nonunique attributes. " + additionalInfo);
-        }
-
-    }
-
-    protected boolean verifyItemNameCombinationUniqueness(Item item) {
-        String name = item.getName();
-        String itemIdentifier1 = item.getItemIdentifier1();
-        String itemIdentifier2 = item.getItemIdentifier2();
-        Item derivedFromItem = item.getDerivedFromItem();
-        Domain itemDomain = item.getDomain();
-
-        Item existingItem = getEntityDbFacade().findByUniqueAttributes(derivedFromItem, itemDomain, name, itemIdentifier1, itemIdentifier2);
-
-        // The same item will have all the same attributes if it wasn't changed.  
-        if (existingItem != null) {
-            if (Objects.equals(item.getId(), existingItem.getId()) == false) {
-                return false;
-            }
-        }
-        return true;
     }
 
     protected SettingController getSettingController() {
@@ -2796,9 +2436,6 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public LocatableItemController getLocatableItemController() {
         if (locatableItemController == null) {
             locatableItemController = LocatableItemController.getInstance();
-        }
-        if (apiMode) {
-            locatableItemController.apiUser = apiUser;
         }
         return locatableItemController;
     }
@@ -2872,9 +2509,9 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
 
     }
 
-    public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
+    public ItemMetadataPropertyInfo getCoreMetadataPropertyInfo() {
         if (coreMetadataPropertyInfo == null) {
-            coreMetadataPropertyInfo = initializeCoreMetadataPropertyInfo();
+            coreMetadataPropertyInfo = getControllerUtility().createCoreMetadataPropertyInfo();
         }
         return coreMetadataPropertyInfo;
     }
@@ -2886,96 +2523,59 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
         return coreMetadataPropertyType;
     }
 
-    protected ItemCoreMetadataPropertyInfo initializeCoreMetadataPropertyInfo() {
-        // do nothing by default, subclasses with core metadata to override
-        return null;
-    }
-
     protected void initializeCoreMetadataPropertyType() {
-        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
         if (info != null) {
             coreMetadataPropertyType = PropertyTypeFacade.getInstance().findByName(info.getPropertyName());
         }
-    }
+    }      
 
-    protected void initializeCoreMetadataPropertyValue(ItemDomainEntity item) {
-        if (item.getCoreMetadataPropertyInfo() != null) {
-            item.setPropertyValueList(new ArrayList<>());
-            prepareCoreMetadataPropertyValue(item);
-        }
-    }
-
-    public PropertyValue prepareCoreMetadataPropertyValue(ItemDomainEntity item) {
-
-        // Add cable internal property type
-        PropertyType propertyType = propertyTypeFacade.findByName(item.getCoreMetadataPropertyInfo().getPropertyName());
-
-        if (propertyType == null) {
-            propertyType = prepareCoreMetadataPropertyType();
-        }
-
-        return preparePropertyTypeValueAdd(item, propertyType, propertyType.getDefaultValue(), null);
-    }
-    
-    public AllowedPropertyMetadataValue newAllowedPropertyMetadataValue(
-            String value, 
+    public final AllowedPropertyMetadataValue newAllowedPropertyMetadataValue(
+            String value,
             PropertyTypeMetadata ptm) {
-        
-        AllowedPropertyMetadataValue allowedValue = new AllowedPropertyMetadataValue();
-        allowedValue.setMetadataValue(value);
-        allowedValue.setPropertyTypeMetadata(ptm);
-        return allowedValue;
+        return getControllerUtility().newAllowedPropertyMetadataValue(value, ptm); 
     }
-    
-    public PropertyTypeMetadata newPropertyTypeMetadataForField(
-            ItemCoreMetadataFieldInfo field,
+
+    public final PropertyTypeMetadata newPropertyTypeMetadataForField(
+            ItemMetadataFieldInfo field,
             PropertyType propertyType) {
-        
-        PropertyTypeMetadata ptm = new PropertyTypeMetadata();
-        ptm.setMetadataKey(field.getKey());
-        ptm.setDescription(field.getDescription());
-        List<AllowedPropertyMetadataValue> allowedValueList = new ArrayList<>();
-        for (String allowedValueString : field.getAllowedValues()) {
-            AllowedPropertyMetadataValue allowedValue = 
-                    newAllowedPropertyMetadataValue(allowedValueString, ptm);
-            allowedValueList.add(allowedValue);
-        }
-        ptm.setAllowedPropertyMetadataValueList(allowedValueList);
-        ptm.setPropertyType(propertyType);
-        
-        return ptm;
+        return getControllerUtility().newPropertyTypeMetadataForField(field, propertyType);
     }
-    
+
     public void migrateCoreMetadataPropertyType() {
-        
+
         PropertyType propertyType = propertyTypeFacade.findByName(getCoreMetadataPropertyInfo().getPropertyName());
 
         // initialize property type if it is null
         if (propertyType == null) {
-            propertyType = prepareCoreMetadataPropertyType();
-         
-        // otherwise migrate existing property type object
+            try {
+                propertyType = getControllerUtility().prepareCoreMetadataPropertyType();                
+                // otherwise migrate existing property type object
+            } catch (CdbException ex) {
+                LOGGER.error(ex.getMessage());
+                return;
+            }
         } else {
-            
+
             // iterate through core metadata fields to identify missing information in property type
-            ItemCoreMetadataPropertyInfo propInfo = getCoreMetadataPropertyInfo();
+            ItemMetadataPropertyInfo propInfo = getCoreMetadataPropertyInfo();
             boolean updated = false;
-            for (ItemCoreMetadataFieldInfo fieldInfo : propInfo.getFields()) {
-                
+            for (ItemMetadataFieldInfo fieldInfo : propInfo.getFields()) {
+
                 // add missing metadata fields to property type
                 PropertyTypeMetadata ptm = propertyType.getPropertyTypeMetadataForKey(fieldInfo.getKey());
                 if (ptm == null) {
                     ptm = newPropertyTypeMetadataForField(fieldInfo, propertyType);
                     propertyType.getPropertyTypeMetadataList().add(ptm);
                     updated = true;
-                    
-                // add missing allowed values    
+
+                    // add missing allowed values    
                 } else {
                     if (fieldInfo.hasAllowedValues()) {
                         for (String allowedValueString : fieldInfo.getAllowedValues()) {
                             if (!ptm.hasAllowedPropertyMetadataValue(allowedValueString)) {
-                                AllowedPropertyMetadataValue allowedValue = 
-                                        newAllowedPropertyMetadataValue(allowedValueString, ptm);
+                                AllowedPropertyMetadataValue allowedValue
+                                        = newAllowedPropertyMetadataValue(allowedValueString, ptm);
                                 ptm.getAllowedPropertyMetadataValueList().add(allowedValue);
                                 updated = true;
                             }
@@ -2983,18 +2583,18 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                     }
                 }
             }
-            
+
             // iterate through property type metadata to identify obsolete information
             List<PropertyTypeMetadata> removePtmList = new ArrayList<>();
             for (PropertyTypeMetadata ptm : propertyType.getPropertyTypeMetadataList()) {
                 String key = ptm.getMetadataKey();
-                
+
                 // remove metadata keys no longer defined in core metadata
                 if (!propInfo.hasKey(key)) {
                     removePtmList.add(ptm);
                 } else {
-                
-                    ItemCoreMetadataFieldInfo fieldInfo = propInfo.getField(key);
+
+                    ItemMetadataFieldInfo fieldInfo = propInfo.getField(key);
                     if (ptm.getIsHaveAllowedValues()) {
 
                         // remove allowed values no longer defined in core metadata
@@ -3019,43 +2619,16 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
                 updated = true;
             }
 
-            
             if (updated) {
                 PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
                 propertyTypeController.setCurrent(propertyType);
                 propertyTypeController.update();
             }
         }
-    }
-
-    protected PropertyType prepareCoreMetadataPropertyType() {
-        PropertyTypeController propertyTypeController = PropertyTypeController.getInstance();
-        PropertyType propertyType = propertyTypeController.createEntityInstance();
-
-        ItemCoreMetadataPropertyInfo propInfo = getCoreMetadataPropertyInfo();
-
-        propertyType.setIsInternal(true);
-        propertyType.setName(propInfo.getPropertyName());
-        propertyType.setDescription(propInfo.getDisplayName());
-
-        List<Domain> allowedDomainList = new ArrayList<>();
-        allowedDomainList.add(getDefaultDomain());
-        propertyType.setAllowedDomainList(allowedDomainList);
-
-        List<PropertyTypeMetadata> ptmList = new ArrayList<>();
-        for (ItemCoreMetadataFieldInfo fieldInfo : propInfo.getFields()) {
-            PropertyTypeMetadata ptm = newPropertyTypeMetadataForField(fieldInfo, propertyType);
-            ptmList.add(ptm);
-        }
-        propertyType.setPropertyTypeMetadataList(ptmList);
-
-        propertyTypeController.setCurrent(propertyType);
-        propertyTypeController.create(true, false);
-        return propertyType;
-    }
+    }   
 
     public String getCoreMetadataPropertyTitle() {
-        ItemCoreMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
+        ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
         if (info == null) {
             return "";
         } else {
@@ -3070,9 +2643,24 @@ public abstract class ItemController<ItemDomainEntity extends Item, ItemDomainEn
     public boolean getDisplayCoreMetadataProperty() {
         return (getCoreMetadataPropertyInfo() != null);
     }
-    
+
+    @Override
+    public final boolean getEntityDisplayItemName() {
+        return getControllerUtility().isEntityHasName();
+    }
+
+    @Override
+    public final boolean getEntityDisplayQrId() {
+        return getControllerUtility().isEntityHasQrId();
+    }
+
     public boolean getEntityDisplayQrId(ItemDomainEntity item) {
-        return getEntityDisplayQrId(); 
+        return getEntityDisplayQrId();
+    }
+
+    @Override
+    public final void checkItemProject(Item item) throws CdbException {
+        getControllerUtility().checkItemProject(item);
     }
 
 }

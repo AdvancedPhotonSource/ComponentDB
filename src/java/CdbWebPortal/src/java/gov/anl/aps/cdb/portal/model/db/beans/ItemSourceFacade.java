@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.ItemSource;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,10 @@ public class ItemSourceFacade extends CdbEntityFacade<ItemSource> {
 
     public ItemSourceFacade() {
         super(ItemSource.class);
+    }
+    
+    public static ItemSourceFacade getInstance() {
+        return (ItemSourceFacade) SessionUtility.findFacade(ItemSourceFacade.class.getSimpleName()); 
     }
     
 }

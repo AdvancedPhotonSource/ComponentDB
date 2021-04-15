@@ -9,6 +9,8 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.jsf.beans.SparePartsBean;
 import gov.anl.aps.cdb.portal.view.objects.InventoryBillOfMaterialItem;
@@ -16,11 +18,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.NamedStoredProcedureQueries;
-import javax.persistence.NamedStoredProcedureQuery;
-import javax.persistence.ParameterMode;
-import javax.persistence.StoredProcedureParameter;
-import javax.persistence.Table;
 import org.primefaces.model.TreeNode;
 
 /**
@@ -29,25 +26,6 @@ import org.primefaces.model.TreeNode;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.INVENTORY_ID + "")
-@NamedStoredProcedureQueries({
-    @NamedStoredProcedureQuery(
-            name = "item.inventoryItemsWithConnectorType",
-            procedureName = "inventory_items_with_avaiable_connector",
-            resultClasses = Item.class,
-            parameters = {
-                @StoredProcedureParameter(
-                        name = "connector_type_id",
-                        mode = ParameterMode.IN,
-                        type = Integer.class
-                )
-                ,
-                @StoredProcedureParameter(
-                        name = "is_male",
-                        mode = ParameterMode.IN,
-                        type = Boolean.class
-                )
-            }
-    ),})
 @Schema(name = "ItemDomainInventory",
         allOf = Item.class
 )
@@ -64,9 +42,18 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
 
     private transient SparePartsBean sparePartsBean = null;
     
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
+    private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;   
+    // </editor-fold>
+    
     @Override
     public Item createInstance() {
         return new ItemDomainInventory();
+    } 
+
+    @Override
+    public ItemControllerUtility getItemControllerUtility() {
+        return new ItemDomainInventoryControllerUtility(); 
     }
     
     @JsonIgnore
@@ -161,5 +148,16 @@ public class ItemDomainInventory extends ItemDomainInventoryBase<ItemDomainCatal
     public void setSerialNumber(String serialNumber) {
         this.setItemIdentifier1(serialNumber);
     }
+    
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
+    @JsonIgnore
+    public List<ItemElementRelationship> getRelatedMAARCRelationshipsForCurrent() {
+        return relatedMAARCRelationshipsForCurrent;
+    }
+
+    public void setRelatedMAARCRelationshipsForCurrent(List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent) {
+        this.relatedMAARCRelationshipsForCurrent = relatedMAARCRelationshipsForCurrent;
+    }
+    // </editor-fold>
     
 }

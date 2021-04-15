@@ -71,7 +71,7 @@ See LICENSE file.
                 <p:panel header="Connectors"
                          id="#{entityTypeName}ViewConnectorsPanel"
                          toggleable="true"
-                         rendered="#{entityController.entityDisplayItemConnectors and resources.EnabledConnectorAndConnectionsFunctionality}"
+                         rendered="#{entityController.entityDisplayItemConnectors}"
                          collapsed="#{!entityController.displayItemConnectorList}">
                     <ui:insert name="itemConnectors" />
                 </p:panel>

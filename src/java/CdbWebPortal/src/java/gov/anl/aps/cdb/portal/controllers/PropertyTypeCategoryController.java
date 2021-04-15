@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.controllers.settings.PropertyTypeCategorySettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.PropertyTypeCategoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -23,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named(PropertyTypeCategoryController.CONTROLLER_NAMED)
 @SessionScoped
-public class PropertyTypeCategoryController extends CdbEntityController<PropertyTypeCategory, PropertyTypeCategoryFacade, PropertyTypeCategorySettings> implements Serializable {        
+public class PropertyTypeCategoryController extends CdbEntityController<PropertyTypeCategoryControllerUtility, PropertyTypeCategory, PropertyTypeCategoryFacade, PropertyTypeCategorySettings> implements Serializable {        
 
     private static final Logger logger = LogManager.getLogger(PropertyTypeCategoryController.class.getName());
     public static final String CONTROLLER_NAMED = "propertyTypeCategoryController";
@@ -45,30 +46,6 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
     }
 
     @Override
-    protected PropertyTypeCategory createEntityInstance() {
-        PropertyTypeCategory propertyCategory = new PropertyTypeCategory();
-        return propertyCategory;
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "propertyTypeCategory";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Property Type Category";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getName();
-        }
-        return "";
-    }
-
-    @Override
     public PropertyTypeCategory findById(Integer id) {
         return propertyTypeCategoryFacade.findById(id);
     }
@@ -83,26 +60,13 @@ public class PropertyTypeCategoryController extends CdbEntityController<Property
     }
 
     @Override
-    public void prepareEntityInsert(PropertyTypeCategory propertyTypeCategory) throws ObjectAlreadyExists {
-        PropertyTypeCategory existingPropertyTypeCategory = propertyTypeCategoryFacade.findByName(propertyTypeCategory.getName());
-        if (existingPropertyTypeCategory != null) {
-            throw new ObjectAlreadyExists("Property type category " + propertyTypeCategory.getName() + " already exists.");
-        }
-        logger.debug("Inserting new property type category " + propertyTypeCategory.getName());
-    }
-
-    @Override
-    public void prepareEntityUpdate(PropertyTypeCategory propertyTypeCategory) throws ObjectAlreadyExists {
-        PropertyTypeCategory existingPropertyTypeCategory = propertyTypeCategoryFacade.findByName(propertyTypeCategory.getName());
-        if (existingPropertyTypeCategory != null && !existingPropertyTypeCategory.getId().equals(propertyTypeCategory.getId())) {
-            throw new ObjectAlreadyExists("Property type category " + propertyTypeCategory.getName() + " already exists.");
-        }
-        logger.debug("Updating property type category " + propertyTypeCategory.getName());
-    }
-
-    @Override
     protected PropertyTypeCategorySettings createNewSettingObject() {
         return new PropertyTypeCategorySettings(this);
+    }
+
+    @Override
+    protected PropertyTypeCategoryControllerUtility createControllerUtilityInstance() {
+        return new PropertyTypeCategoryControllerUtility(); 
     }
 
     /**

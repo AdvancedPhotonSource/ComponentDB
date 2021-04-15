@@ -6,8 +6,11 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbRole;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignDeletedItemSettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -81,23 +84,11 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     }
     
     @Override
-    public List<ItemDomainMachineDesign> getItemList() {
-        return itemDomainMachineDesignFacade.getDeletedItems();
-    }
-
-    @Override
-    public TreeNode loadMachineDesignRootTreeNode(Boolean isTemplate) {
-        TreeNode rootTreeNode = new DefaultTreeNode();
-        List<ItemDomainMachineDesign> itemsWithoutParents
-                = getItemsWithoutParents();
-
-        for (Item item : itemsWithoutParents) {
-            if (item.getIsItemDeleted()) {
-                expandTreeChildren(item, rootTreeNode);
-            }
-        }
-
-        return rootTreeNode;
+    public List<ItemDomainMachineDesign> getDefaultTopLevelMachineList() {
+        List<ItemDomainMachineDesign> itemsWithoutParents;
+        itemsWithoutParents = getEntityDbFacade().findByDomainNameWithNoParentsAndWithEntityType(
+                getDefaultDomainName(), EntityTypeName.deleted.getValue());
+        return itemsWithoutParents; 
     }
     
     @Override
@@ -107,6 +98,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
     
     @Override
     public String viewForCurrentEntity() {
+        ItemDomainMachineDesign current = getCurrent();
         return "viewDeletedItem?id=" + current.getId() + "&faces-redirect=true";
     }
     
@@ -183,11 +175,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         // collect list of items to restore
         List<ItemDomainMachineDesign> itemsToRestore = new ArrayList<>();
         List<ItemElement> elementsToRestore = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(itemToRestore, itemsToRestore, elementsToRestore, true, true);
-        if (!validInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Could not restore: " + itemToRestore + " - " + validInfo.getValidString());
-            return;
-        }
+        collectItemsForDeletion(itemToRestore, itemsToRestore, elementsToRestore, true, true);
         
         // check permissions for all items
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
@@ -283,11 +271,7 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         // collect list of items to delete
         List<ItemDomainMachineDesign> itemsToDelete = new ArrayList<>();
         List<ItemElement> elementsToDelete = new ArrayList<>();
-        ValidInfo validInfo = collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true, false);
-        if (!validInfo.isValid()) {
-            SessionUtility.addErrorMessage("Error", "Could not delete: " + rootItemToDelete + " - " + validInfo.getValidString());
-            return;
-        }
+        collectItemsForDeletion(rootItemToDelete, itemsToDelete, elementsToDelete, true, false);
         
         // admin permission required
         CdbRole sessionRole = (CdbRole) SessionUtility.getRole();
@@ -314,5 +298,10 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         
         setPermanentlyRemoveConfirmationName(null);
         permanentlyRemoveNode = null;
+    }
+
+    @Override
+    protected ItemDomainMachineDesignDeletedControllerUtility getControllerUtility() {
+        return new ItemDomainMachineDesignDeletedControllerUtility();
     }
 }

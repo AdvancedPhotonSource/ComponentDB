@@ -166,6 +166,7 @@ See LICENSE file.
                   filterBy="#{itemListObject.itemCategoryString}"
                   filterOptions="#{entityController.domainItemCategoryListForSelectOne}"
                   filterable="#{filterable}"
+                  filterMatchMode="contains"
                   sortable="#{sortable}"
                   rendered="#{rendered and itemListRenderItemCategory}"
                   exportFunction="#{itemListObject.getItemCategoryString()}" >

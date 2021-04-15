@@ -3,7 +3,7 @@
 -- See LICENSE file.
 --
 
--- Execute by running `mysql CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo3.10.1.sql`
+-- Execute by running `mysql CDB_DB_NAME --host=127.0.0.1 --user=cdb -p < updateTo3.11.4.sql`
 
 INSERT INTO setting_type VALUES
 (21014,'ItemDomainMachineDesign.List.Display.PropertyTypeId1','Display property value for property type id #1.',''),

@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -44,6 +45,10 @@ public class PropertyTypeHandlerFacade extends CdbEntityFacade<PropertyTypeHandl
         } catch (NoResultException ex) {
         }
         return null;
+    }
+     
+    public static PropertyTypeHandlerFacade getInstance() {
+        return (PropertyTypeHandlerFacade) SessionUtility.findFacade(PropertyTypeHandlerFacade.class.getSimpleName()); 
     }
     
 }

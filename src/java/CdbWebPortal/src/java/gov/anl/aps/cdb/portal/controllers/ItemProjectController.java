@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemProjectSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemProjectControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -25,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named("itemProjectController")
 @SessionScoped
-public class ItemProjectController extends CdbEntityController<ItemProject, ItemProjectFacade, ItemProjectSettings> implements Serializable {
+public class ItemProjectController extends CdbEntityController<ItemProjectControllerUtility, ItemProject, ItemProjectFacade, ItemProjectSettings> implements Serializable {
 
     @EJB
     ItemProjectFacade itemProjectFacade; 
@@ -44,33 +45,10 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
     public ItemProjectController() {
         super();        
     }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Item Project"; 
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "itemProject";
-    }
     
     @Override
     protected ItemProjectFacade getEntityDbFacade() {
         return itemProjectFacade;
-    }
-
-    @Override
-    protected ItemProject createEntityInstance() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getName();
-        }
-        return "";
     }
     
     public void addItemControllerProjectChangeListener(IItemController itemDomainView) {
@@ -131,6 +109,11 @@ public class ItemProjectController extends CdbEntityController<ItemProject, Item
     @Override
     protected ItemProjectSettings createNewSettingObject() {
         return new ItemProjectSettings(this);
+    }
+
+    @Override
+    protected ItemProjectControllerUtility createControllerUtilityInstance() {
+        return new ItemProjectControllerUtility(); 
     }
     
     /**

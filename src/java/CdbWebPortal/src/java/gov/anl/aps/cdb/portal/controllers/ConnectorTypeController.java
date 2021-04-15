@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ConnectorTypeSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorTypeControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorTypeFacade;
 
@@ -19,7 +20,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named("connectorTypeController")
 @SessionScoped
-public class ConnectorTypeController extends CdbEntityController<ConnectorType, ConnectorTypeFacade, ConnectorTypeSettings> implements Serializable {
+public class ConnectorTypeController extends CdbEntityController<ConnectorTypeControllerUtility, ConnectorType, ConnectorTypeFacade, ConnectorTypeSettings> implements Serializable {
     
     @EJB
     ConnectorTypeFacade connectorTypeFacade;
@@ -27,34 +28,16 @@ public class ConnectorTypeController extends CdbEntityController<ConnectorType, 
     @Override
     protected ConnectorTypeFacade getEntityDbFacade() {
         return connectorTypeFacade;
-    }
-
-    @Override
-    protected ConnectorType createEntityInstance() {
-        return new ConnectorType(); 
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "connectorType"; 
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().toString();
-        }
-        return "";
-    } 
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Connector Type"; 
-    }
-
+    }   
+    
     @Override
     protected ConnectorTypeSettings createNewSettingObject() {
         return new ConnectorTypeSettings(this);
+    }
+
+    @Override
+    protected ConnectorTypeControllerUtility createControllerUtilityInstance() {
+        return new ConnectorTypeControllerUtility(); 
     }
 
     @FacesConverter(forClass = ConnectorType.class)

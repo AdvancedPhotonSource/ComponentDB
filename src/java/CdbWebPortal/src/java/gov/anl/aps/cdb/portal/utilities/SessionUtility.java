@@ -4,13 +4,17 @@
  */
 package gov.anl.aps.cdb.portal.utilities;
 
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Stack;
 import javax.faces.application.FacesMessage;
 import javax.faces.application.NavigationHandler;
+import javax.faces.application.ViewHandler;
+import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.context.Flash;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpSession;
@@ -31,12 +35,12 @@ public class SessionUtility {
     public static final String LAST_USERNAME_KEY = "lastUsername";
     public static final String VIEW_STACK_KEY = "viewStack";
     public static final String LAST_SESSION_ERROR_KEY = "lastSessionError";
-    public static final String ROLE_KEY = "role";    
+    public static final String ROLE_KEY = "role";
     private static final String MODULE_NAME_LOOKUP = "java:module/ModuleName";
     private static final String JAVA_LOOKUP_START = "java:global/";
-    private static String FACADE_LOOKUP_STRING_START = null; 
-    
-    private static final Logger logger = LogManager.getLogger(SessionUtility.class.getName());          
+    private static String FACADE_LOOKUP_STRING_START = null;
+
+    private static final Logger logger = LogManager.getLogger(SessionUtility.class.getName());
 
     public SessionUtility() {
     }
@@ -59,21 +63,40 @@ public class SessionUtility {
         context.addMessage(clientId, message);
         PrimeFaces.current().ajax().update(clientId);
     }
+    
+    private static Flash getFlash() {
+        FacesContext currentInstance = FacesContext.getCurrentInstance();
+        ExternalContext externalContext = currentInstance.getExternalContext();
+        Flash flash = externalContext.getFlash();
+        return flash;
+    }
+    
+    public static void setFlashValue(String key, Object value) {
+        Flash flash = getFlash();
+        flash.put(key, value); 
+    }
+    
+    public static Object getFlashValue(String key) {
+        Flash flash = getFlash();
+        return flash.get(key); 
+    }
 
     public static String getRequestParameterValue(String parameterName) {
         Map parameterMap = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
         return (String) parameterMap.get(parameterName);
     }
 
-    public static void setUser(Object user) {
+    public static void setUser(UserInfo user) {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         sessionMap.remove(USER_KEY);
         sessionMap.put(USER_KEY, user);
     }
 
-    public static Object getUser() {
+    public static UserInfo getUser() {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
-        return sessionMap.get(USER_KEY);
+        Object user = sessionMap.get(USER_KEY);
+        
+        return (UserInfo) user;
     }
 
     public static void pushViewOnStack(String viewId) {
@@ -106,6 +129,17 @@ public class SessionUtility {
 
         return currentView;
     }
+    
+    public static String getCurrentViewIdWithCurrentHandlerTransfer() {
+        FacesContext context = FacesContext.getCurrentInstance();
+        String viewId = context.getViewRoot().getViewId();
+        ViewHandler handler = context.getApplication().getViewHandler();
+        UIViewRoot root = handler.createView(context, viewId);
+        root.setViewId(viewId);
+        context.setViewRoot(root);     
+        
+        return viewId; 
+    }
 
     public static String getCurrentViewId() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -127,7 +161,7 @@ public class SessionUtility {
         Map sessionMap = FacesContext.getCurrentInstance().getExternalContext().getSessionMap();
         sessionMap.clear();
     }
-    
+
     public static void invalidateSession() {
         ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
         context.invalidateSession();
@@ -148,20 +182,20 @@ public class SessionUtility {
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         externalContext.redirect(externalContext.getRequestContextPath() + url);
     }
-    
-    public static HttpSession getCurrentSession() { 
+
+    public static HttpSession getCurrentSession() {
         HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
         return session;
     }
 
     public static int getSessionTimeoutInSeconds() {
-        HttpSession session = getCurrentSession(); 
+        HttpSession session = getCurrentSession();
         return session.getMaxInactiveInterval();
     }
-    
-    public static long getLastAccessedTime() { 
-        HttpSession session = getCurrentSession(); 
-        return session.getLastAccessedTime(); 
+
+    public static long getLastAccessedTime() {
+        HttpSession session = getCurrentSession();
+        return session.getLastAccessedTime();
     }
 
     public static void setLastSessionError(String error) {
@@ -220,25 +254,25 @@ public class SessionUtility {
         FacesContext context = FacesContext.getCurrentInstance();
         return (Object) context.getApplication().evaluateExpressionGet(context, "#{" + beanName + "}", Object.class);
     }
-    
+
     public static Object findFacade(String facadeName) {
         try {
             InitialContext context = new InitialContext();
-            
+
             if (FACADE_LOOKUP_STRING_START == null) {
                 String modName = (String) context.lookup(MODULE_NAME_LOOKUP);
-                FACADE_LOOKUP_STRING_START = JAVA_LOOKUP_START + modName + "/";                        
+                FACADE_LOOKUP_STRING_START = JAVA_LOOKUP_START + modName + "/";
             }
-            
-            return context.lookup(FACADE_LOOKUP_STRING_START + facadeName); 
+
+            return context.lookup(FACADE_LOOKUP_STRING_START + facadeName);
         } catch (NamingException ex) {
             logger.error(ex);
         }
-        return null; 
+        return null;
     }
-    
+
     public static boolean runningFaces() {
-        return FacesContext.getCurrentInstance() != null; 
+        return FacesContext.getCurrentInstance() != null;
     }
 
 }

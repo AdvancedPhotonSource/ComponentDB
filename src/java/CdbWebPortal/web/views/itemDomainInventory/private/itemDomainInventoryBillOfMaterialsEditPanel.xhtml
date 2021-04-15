@@ -17,7 +17,8 @@ See LICENSE file.
         </p:outputPanel>
 
         <p:outputPanel rendered="#{!itemDomainInventoryController.isRenderBomOptionalUnspecified(billOfMaterialItem)}" >
-            <p:panelGrid columns="2" rendered="#{billOfMaterialItem.partItem and loginController.loggedInAsAdmin}">   
+            <!-- Temp disabled... prior rendered.. billOfMaterialItem.partItem and loginController.loggedInAsAdmin -->
+            <p:panelGrid columns="2" rendered="#{false}">   
                 <p:selectOneButton id="newInstanceAddOptions#{viewName}"
                                    value="#{billOfMaterialItem.stateSelection}"
                                    styleClass="entityDataEmphasizedText">
@@ -46,6 +47,11 @@ See LICENSE file.
                         <ui:param name="updateTarget" value="#{fullUpateTarget}" />
                     </ui:include>
                 </p:panel>
+                <p:commandButton value="Clear Selection" update="#{fullUpateTarget}"
+                                 rendered="#{billOfMaterialItem.inventoryItem != null}"> 
+                    <f:setPropertyActionListener value="#{null}"
+                                                 target="#{billOfMaterialItem.inventoryItem}"/>
+                </p:commandButton>
             </p:outputPanel>
 
             <p:outputPanel rendered="#{itemDomainInventoryController.isRenderBomEdit(billOfMaterialItem) or !billOfMaterialItem.partItem}">

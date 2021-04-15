@@ -6,15 +6,12 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.beans.LogFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.LogLevelFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.LogLevel;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.controllers.settings.LogSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.LogControllerUtility;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.inject.Named;
@@ -28,78 +25,30 @@ import org.apache.logging.log4j.Logger;
 
 @Named("logController")
 @SessionScoped
-public class LogController extends CdbEntityController<Log, LogFacade, LogSettings> implements Serializable {       
+public class LogController extends CdbEntityController<LogControllerUtility, Log, LogFacade, LogSettings> implements Serializable {       
 
     private final String SPARES_WARNING_LOG_LEVEL_NAME = "Spares Warning";
 
     private static final Logger logger = LogManager.getLogger(LogController.class.getName());
 
-    private final String DEFAULT_SYSTEM_ADMIN_USERNAME = "cdb";
-
     @EJB
     private LogFacade logFacade;
-
-    @EJB
-    private LogLevelFacade logLevelFacade;
-
-    @EJB
-    private UserInfoFacade userInfoFacade;
 
     private List<LogLevel> filterViewSelectedLogLevels = null;
     private List<Log> filterViewListDataModelSystemLogs = null;
     
-    private static LogController apiInstance; 
-
     public LogController() {
         super();
-    }
+    } 
 
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually(); 
-        logFacade = LogFacade.getInstance();
-        logLevelFacade = LogLevelFacade.getInstance(); 
-        userInfoFacade = UserInfoFacade.getInstance();
-    }
-    
-    public static synchronized LogController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new LogController();            
-            apiInstance.prepareApiInstance(); 
-        }
-        return apiInstance;
-    }
-
-    public static LogController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (LogController) SessionUtility.findBean("logController");
-        } else {
-            return getApiInstance();
-        }
+    public static LogController getInstance() {        
+        return (LogController) SessionUtility.findBean("logController");
     }
 
     @Override
     protected LogFacade getEntityDbFacade() {
         return logFacade;
-    }
-
-    @Override
-    protected Log createEntityInstance() {
-        return new Log();
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "log";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getId().toString();
-        }
-        return "";
-    }
+    }   
 
     @Override
     public List<Log> getAvailableItems() {
@@ -118,32 +67,6 @@ public class LogController extends CdbEntityController<Log, LogFacade, LogSettin
         }
 
         return "";
-    }
-
-    public void addSystemLog(String logLevelName, String logMessage) {
-        UserInfo enteredByUser = userInfoFacade.findByUsername(DEFAULT_SYSTEM_ADMIN_USERNAME);
-        if (enteredByUser == null) {
-            SessionUtility.addErrorMessage("System Admin Missing",
-                    "User '" + DEFAULT_SYSTEM_ADMIN_USERNAME + "' needs to be in the system. Please notify system administrator.");
-        }
-
-        Date enteredOnDateTime = new Date();
-
-        LogLevel logLevel = logLevelFacade.findLogLevelByName(logLevelName);
-        if (logLevel == null) {
-            logLevel = new LogLevel();
-            logLevel.setName(logLevelName);
-            logLevelFacade.create(logLevel);
-        }
-
-        Log newSystemLog = createEntityInstance();
-        newSystemLog.addLogLevel(logLevel);
-        newSystemLog.setText(logMessage);
-        newSystemLog.setEnteredOnDateTime(enteredOnDateTime);
-        newSystemLog.setEnteredByUser(enteredByUser);
-
-        setCurrent(newSystemLog);
-        create(true, true);
     }
     
     public List<LogLevel> getFilterViewSelectedLogLevels() {
@@ -168,6 +91,11 @@ public class LogController extends CdbEntityController<Log, LogFacade, LogSettin
     @Override
     protected LogSettings createNewSettingObject() {
         return new LogSettings(this);
+    }
+
+    @Override
+    protected LogControllerUtility createControllerUtilityInstance() {
+        return new LogControllerUtility(); 
     }
 
     /**

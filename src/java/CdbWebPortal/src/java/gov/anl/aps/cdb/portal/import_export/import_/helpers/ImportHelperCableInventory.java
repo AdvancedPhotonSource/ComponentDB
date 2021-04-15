@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableInventoryController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
@@ -34,14 +35,56 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec("Cable Catalog Item", KEY_CATALOG_ITEM, "setCatalogItem", true, "ID or name of cable catalog item for inventory unit. Name must be unique and prefixed with '#'.", ItemDomainCableCatalogController.getInstance(), ItemDomainCableCatalog.class, null));
-        specs.add(new StringColumnSpec("Tag", KEY_NAME, "", true, "Name of inventory unit.", 64));
-        specs.add(new IntegerColumnSpec("QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
-        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of inventory unit.", 256));
+        specs.add(new IdOrNameRefColumnSpec(
+                "Cable Catalog Item", 
+                KEY_CATALOG_ITEM, 
+                "setCatalogItem", 
+                "ID or name of cable catalog item for inventory unit. Name must be unique and prefixed with '#'.", 
+                null,
+                ColumnModeOptions.rCREATErUPDATE(), 
+                ItemDomainCableCatalogController.getInstance(), 
+                ItemDomainCableCatalog.class, 
+                null));
+        
+        specs.add(new StringColumnSpec(
+                "Tag", 
+                KEY_NAME, 
+                "", 
+                "Name of inventory unit.", 
+                null,
+                ColumnModeOptions.rCREATErUPDATE(), 
+                64));
+        
+        specs.add(new IntegerColumnSpec(
+                "QR ID", 
+                "qrId", 
+                "setQrId", 
+                "Integer QR id of inventory unit.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE()));
+        
+        specs.add(new StringColumnSpec(
+                "Description", 
+                "description", 
+                "setDescription", 
+                "Description of inventory unit.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
         specs.add(statusColumnSpec(4));
         specs.add(locationColumnSpec());
         specs.add(locationDetailsColumnSpec());
-        specs.add(new StringColumnSpec("Length", "length", "setLength", false, "Installed length of cable inventory unit.", 256));
+        
+        specs.add(new StringColumnSpec(
+                "Length", 
+                "length", 
+                "setLength", 
+                "Installed length of cable inventory unit.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
         specs.add(projectListColumnSpec());
         specs.add(ownerUserColumnSpec());
         specs.add(ownerGroupColumnSpec());
@@ -55,8 +98,8 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Cable Inventory Template";
+    public String getFilenameBase() {
+        return "Cable Inventory";
     }
     
     @Override

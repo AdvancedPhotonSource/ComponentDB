@@ -9,100 +9,27 @@ import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.SingleColumnInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.poi.ss.usermodel.Row;
 
 /**
  *
  * @author craig
  */
 public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDesign, ItemDomainCableDesignController> {
-
-    public class NameHandler extends SingleColumnInputHandler {
-        
-        private static final String PROPERTY = "name";
-        
-        protected int maxLength = 0;
-        protected String importName = null;
-        protected int entityNum = 0;
-        
-        public NameHandler(int maxLength) {
-            super(LABEL_NAME);
-            this.maxLength = maxLength;
-        }
-        
-        public int getMaxLength() {
-            return maxLength;
-        }
-
-        protected String getImportName() {
-            if (importName == null) {
-                importName = "import-" + java.time.Instant.now().getEpochSecond();
-            }
-            return importName;
-        }
-        
-        protected String getUniqueId() {
-            return getImportName() + "-" + entityNum;
-        }
-        
-        @Override
-        public ValidInfo handleInput(
-                Row row,
-                Map<Integer, String> cellValueMap,
-                Map<String, Object> rowMap) {
-            
-            boolean isValid = true;
-            String validString = "";
-            
-            String parsedValue = cellValueMap.get(getColumnIndex());
-
-            // check column length is valid
-            if ((getMaxLength() > 0) && (parsedValue.length() > getMaxLength())) {
-                isValid = false;
-                validString = 
-                        "Value length exceeds " + 
-                        String.valueOf(getMaxLength()) + 
-                        " characters for column: " + LABEL_NAME;
-            }
-                
-            // replace "#cdbid#" with a unique identifier
-            entityNum = entityNum + 1;
-            String idPattern = "#cdbid#";
-            String replacePattern = "#cdbid-" + getUniqueId() + "#";
-            String result = parsedValue.replaceAll(idPattern, replacePattern);
-            rowMap.put(PROPERTY, result);
-            
-            return new ValidInfo(isValid, validString);
-        }
-
-        @Override
-        public ValidInfo updateEntity(
-                Map<String, Object> rowMap, 
-                CdbEntity entity) {
-            
-            ((ItemDomainCableDesign)entity).setName((String)rowMap.get(PROPERTY));
-            
-            return new ValidInfo(true, "");
-        }
-    }
-    
+   
     private static final String LABEL_NAME = "Name";
 
     @Override
@@ -110,29 +37,163 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        InputHandler nameHandler = new NameHandler(128);
-        specs.add(new CustomColumnSpec(LABEL_NAME, "name", true, "Cable name, uniquely identifies cable in CDB. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", nameHandler));
+        specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
         
-        specs.add(new StringColumnSpec("Alt Name", "alternateName", "setAlternateName", false, "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 128));
-        specs.add(new StringColumnSpec("Ext Cable Name", "externalCableName", "setExternalCableName", false, "Cable name in external system (e.g., CAD, routing tool).", 256));
-        specs.add(new StringColumnSpec("Import Cable ID", "importCableId", "setImportCableId", false, "Import cable identifier.", 256));
-        specs.add(new StringColumnSpec("Alternate Cable ID", "alternateCableId", "setAlternateCableId", false, "Alternate (e.g., group-specific) cable identifier.", 256));
-        specs.add(new StringColumnSpec("Legacy QR ID", "legacyQrId", "setLegacyQrId", false, "Legacy QR identifier, e.g., for cables that have already been assigned a QR code.", 256));
-        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of cable.", 256));
-        specs.add(new StringColumnSpec("Laying", "laying", "setLaying", false, "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 256));
-        specs.add(new StringColumnSpec("Voltage", "voltage", "setVoltage", false, "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 256));
-        specs.add(new IdOrNameRefColumnSpec("Type", "catalogItemString", "setCatalogItem", false, "Numeric ID or name of CDB cable type catalog item. Name must be unique and prefixed with '#'.", ItemDomainCableCatalogController.getInstance(), Item.class, ""));
-        specs.add(new IdOrNameRefColumnSpec("Endpoint1", "endpoint1String", "setEndpoint1", false, "Numeric ID or name of CDB machine design item for first endpoint. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), Item.class, ""));
-        specs.add(new StringColumnSpec("Endpoint1 Desc", "endpoint1Description", "setEndpoint1Description", false, "Endpoint details useful for external editing.", 256));
-        specs.add(new StringColumnSpec("Endpoint1 Route", "endpoint1Route", "setEndpoint1Route", false, "Routing waypoint for first endpoint.", 256));        
-        specs.add(new IdOrNameRefColumnSpec("Endpoint2", "endpoint2String", "setEndpoint2", false, "Numeric ID or name of CDB machine design item for second endpoint. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), Item.class, ""));
-        specs.add(new StringColumnSpec("Endpoint2 Desc", "endpoint2Description", "setEndpoint2Description", false, "Endpoint details useful for external editing.", 256));
-        specs.add(new StringColumnSpec("Endpoint2 Route", "endpoint2Route", "setEndpoint2Route", false, "Routing waypoint for second endpoint.", 256));        
+        specs.add(new StringColumnSpec(
+                "Name", 
+                "name", 
+                "setName", 
+                "Cable name, uniquely identifies cable.", 
+                "getName",
+                ColumnModeOptions.rCREATErUPDATE(), 
+                128));
+        
+        specs.add(new StringColumnSpec(
+                "Alt Name", 
+                "alternateName", 
+                "setAlternateName", 
+                "Alternate cable name. Embedded '#cdbid# tag will be replaced with the internal CDB identifier (integer).", 
+                "getAlternateName",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                128));
+        
+        specs.add(new StringColumnSpec(
+                "Ext Cable Name", 
+                "externalCableName", 
+                "setExternalCableName", 
+                "Cable name in external system (e.g., CAD, routing tool).", 
+                "getExternalCableName",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Import Cable ID", 
+                "importCableId", 
+                "setImportCableId", 
+                "Import cable identifier.", 
+                "getImportCableId",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Alternate Cable ID", 
+                "alternateCableId", 
+                "setAlternateCableId", 
+                "Alternate (e.g., group-specific) cable identifier.", 
+                "getAlternateCableId",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Legacy QR ID", 
+                "legacyQrId", 
+                "setLegacyQrId", 
+                "Legacy QR identifier, e.g., for cables that have already been assigned a QR code.", 
+                "getLegacyQrId",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Description", 
+                "description", 
+                "setDescription", 
+                "Description of cable.", 
+                "getDescription",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Laying", 
+                "laying", 
+                "setLaying", 
+                "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 
+                "getLaying",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Voltage", 
+                "voltage", 
+                "setVoltage", 
+                "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 
+                "getVoltage",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new IdOrNameRefColumnSpec(
+                "Type", 
+                "catalogItemString", 
+                "setCatalogItem", 
+                "Numeric ID or name of CDB cable type catalog item. Name must be unique and prefixed with '#'.", 
+                "getCatalogItem",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                ItemDomainCableCatalogController.getInstance(), 
+                Item.class, 
+                ""));
+        
+        specs.add(new IdOrNameRefColumnSpec(
+                "Endpoint1", 
+                "endpoint1String", 
+                "setEndpoint1Import", 
+                "Numeric ID or name of CDB machine design item for first endpoint. Name must be unique and prefixed with '#'.", 
+                "getEndpoint1",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                ItemDomainMachineDesignController.getInstance(), 
+                Item.class, 
+                ""));
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint1 Desc", 
+                "endpoint1Description", 
+                "setEndpoint1Description", 
+                "Endpoint details useful for external editing.", 
+                "getEndpoint1Description",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint1 Route", 
+                "endpoint1Route", 
+                "setEndpoint1Route", 
+                "Routing waypoint for first endpoint.", 
+                "getEndpoint1Route",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
+        specs.add(new IdOrNameRefColumnSpec(
+                "Endpoint2", 
+                "endpoint2String", 
+                "setEndpoint2Import", 
+                "Numeric ID or name of CDB machine design item for second endpoint. Name must be unique and prefixed with '#'.", 
+                "getEndpoint2",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                ItemDomainMachineDesignController.getInstance(), 
+                Item.class, 
+                ""));
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint2 Desc", 
+                "endpoint2Description", 
+                "setEndpoint2Description", 
+                "Endpoint details useful for external editing.", 
+                "getEndpoint2Description",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Endpoint2 Route", 
+                "endpoint2Route", 
+                "setEndpoint2Route", 
+                "Routing waypoint for second endpoint.", 
+                "getEndpoint2Route",
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));  
+        
         specs.add(projectListColumnSpec());
         specs.add(technicalSystemListColumnSpec(ItemDomainName.cableDesign.getValue()));
         specs.add(ownerUserColumnSpec());
         specs.add(ownerGroupColumnSpec());
-
 
         return specs;
     }
@@ -143,10 +204,25 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Cable Design Template";
+    public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeDelete() {
+        return true;
+    }
+
+    @Override
+    public String getFilenameBase() {
+        return "Cable Design";
     }
     
+    @Override
+    protected ItemDomainCableDesign newInvalidUpdateInstance() {
+        return getEntityController().createEntityInstance();
+    }
+
     @Override 
     protected ValidInfo preImport() {
         getEntityController().migrateCoreMetadataPropertyType();
@@ -159,52 +235,22 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         return new CreateInfo(entity, true, "");
     }
     
-    /*
-    * Finds strings matching the pattern "#cdbid*#" in the name and alt name fields
-    * and replace them with the internal cdb identifier.
-    */
+    /**
+     * Updates list of items in update mode.  Overridden here to customize by
+     * deleting list of cable relationships for endpoints updated to null
+     * in import/update process.
+     */
     @Override
-    protected ValidInfo postImport() {
+    protected void updateList() throws CdbException, RuntimeException {
         
-        String idRegexPattern = "#cdbid[^#]*#";
-        idRegexPattern = Matcher.quoteReplacement(idRegexPattern);
-        Pattern pattern = Pattern.compile(idRegexPattern);
+        // domain object keeps track of relationships that need to be destroyed,
+        // e.g., when an endpoint is set to null in the import spreadsheet.
+        // updateList in facade is overridden to also destroy those relationships
         
-        List<ItemDomainCableDesign> updatedRows = new ArrayList<>();
-        for (ItemDomainCableDesign cable : rows) {
-            
-            boolean updated = false;
-            
-            Matcher nameMatcher = pattern.matcher(cable.getName());
-            if (nameMatcher.find()) {
-                updated = true;
-                String nameValue = cable.getName().replaceAll(idRegexPattern, String.valueOf(cable.getId()));
-                cable.setName(nameValue);
-            }
-            
-            Matcher altNameMatcher = pattern.matcher(cable.getAlternateName());
-            if (altNameMatcher.find()) {
-                updated = true;
-                String altNameValue = cable.getAlternateName().replaceAll(idRegexPattern, String.valueOf(cable.getId()));
-                cable.setAlternateName(altNameValue);
-            }
-            
-            if (updated) {
-                updatedRows.add(cable);
-            }
-        }
+        UserInfo user = SessionUtility.getUser();
+        ItemDomainCableDesignControllerUtility utility = new ItemDomainCableDesignControllerUtility();
+        utility.updateList(rows, user);
         
-        String message = "";
-        if (updatedRows.size() > 0) {
-            try {
-                getEntityController().updateList(updatedRows);
-                message = "Updated attributes for " + updatedRows.size() + " instance(s).";
-            } catch (CdbException | RuntimeException ex) {
-                Throwable t = ExceptionUtils.getRootCause(ex);
-                message = "Post commit attribute update failed. Additional action required to update name and alternate name fields. " + ex.getMessage() + ": " + t.getMessage() + ".";
-            }
-        }
-        
-        return new ValidInfo(true, message);
+        getEntityController().resetListForView();
     }
 }

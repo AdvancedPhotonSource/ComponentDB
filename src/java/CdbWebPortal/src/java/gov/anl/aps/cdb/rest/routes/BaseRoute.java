@@ -31,6 +31,11 @@ public abstract class BaseRoute {
         return LoginController.isAdmin(username, userFacade);
     }
     
+    protected boolean isUserMaintainer(UserInfo userInfo) {
+        String username = userInfo.getUsername();
+        return LoginController.isMaintainer(username, userFacade);
+    }
+    
     protected boolean isCurrentRequestUserAdmin() {
         UserInfo currentRequestUserInfo = getCurrentRequestUserInfo();
         return isUserAdmin(currentRequestUserInfo); 

@@ -4,11 +4,18 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.BlankColumnOutputHandler;
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.SimpleOutputHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,30 +28,59 @@ public abstract class ColumnSpec {
     private String header;
     private String propertyName;
     private String entitySetterMethod;
-    private boolean required;
     private String description;
+    protected String exportGetterMethod;
     
+    private Map<ImportMode, ColumnModeOptions> columnModeOptionsMap = new HashMap<>();
+        
     public ColumnSpec() {
     }
     
-    public ColumnSpec(String description) {
+    public ColumnSpec(
+            String description, 
+            List<ColumnModeOptions> options) {
+        
         this.description = description;
+        for (ColumnModeOptions option : options) {
+            this.addColumnModeOptions(option);
+        }
     }
 
     public ColumnSpec(
-            String header, String propertyName, boolean required, String description) {
+            String header, 
+            String importPropertyName, 
+            String description, 
+            List<ColumnModeOptions> options) {
 
-        this(description);
+        this(description, options);
         this.header = header;
-        this.propertyName = propertyName;
-        this.required = required;
+        this.propertyName = importPropertyName;
     }
 
     public ColumnSpec(
-            String header, String propertyName, String entitySetterMethod, boolean required, String description) {
+            String header, 
+            String importPropertyName, 
+            String importSetterMethod, 
+            String description, 
+            List<ColumnModeOptions> options) {
 
-        this(header, propertyName, required, description);
-        this.entitySetterMethod = entitySetterMethod;
+        this(header, importPropertyName, description, options);
+        this.entitySetterMethod = importSetterMethod;
+    }
+
+    /**
+     * Creates a column spec appropriate for import and export.
+     */
+    public ColumnSpec(
+            String header, 
+            String importPropertyName, 
+            String importSetterMethod, 
+            String description, 
+            String exportGetterMethod,
+            List<ColumnModeOptions> options) {
+        
+        this(header, importPropertyName, importSetterMethod, description, options);
+        this.exportGetterMethod = exportGetterMethod;
     }
 
     public String getHeader() {
@@ -59,12 +95,12 @@ public abstract class ColumnSpec {
         return entitySetterMethod;
     }
 
-    public boolean isRequired() {
-        return required;
-    }
-
     public String getDescription() {
         return description;
+    }
+    
+    public String getExportGetterMethod() {
+        return exportGetterMethod;
     }
     
     public int getInputTemplateColumns(
@@ -77,33 +113,77 @@ public abstract class ColumnSpec {
     
     public ColumnSpecInitInfo initialize(
             int colIndex,
-            Map<Integer, String> headerValueMap,
-            List<InputColumnModel> inputColumns_io,
-            List<InputHandler> inputHandlers_io,
-            List<OutputColumnModel> outputColumns_io) {
+            Map<Integer, String> headerValueMap) {
+        
+        ColumnSpecInitInfo initInfo = initialize_(colIndex, headerValueMap);
+        
+        for (InputHandler handler : initInfo.getInputHandlers()) {
+            handler.setColumnSpec(this);
+        }
+        
+        for (InputColumnModel inputColumn : initInfo.getInputColumns()) {
+            inputColumn.setColumnSpec(this);
+        }
 
-        inputColumns_io.add(getInputColumnModel(colIndex));
-        inputHandlers_io.add(getInputHandler(colIndex));
-        outputColumns_io.add(getOutputColumnModel(colIndex));
+        return initInfo;
+    }
+    
+    /**
+     * Initializes lists of input columns, input handlers, and output columns.
+     * Subclass can override default implementation to customize.
+     */
+    protected ColumnSpecInitInfo initialize_(
+            int colIndex,
+            Map<Integer, String> headerValueMap) {
+        
+        List<InputColumnModel> inputColumns = new ArrayList<>();
+        List<InputHandler> inputHandlers = new ArrayList<>();
+        List<OutputColumnModel> outputColumns = new ArrayList<>();
+
+        inputColumns.add(getInputColumnModel(colIndex));
+        inputHandlers.add(getInputHandler(colIndex));
+        outputColumns.add(getOutputColumnModel(colIndex));
 
         ValidInfo validInfo = new ValidInfo(true, "");
-        return new ColumnSpecInitInfo(validInfo, 1);
-}
+        return new ColumnSpecInitInfo(validInfo, 1, inputColumns, inputHandlers, outputColumns);
+    }
     
-    public InputColumnModel getInputColumnModel(int colIndex) {
+    private InputColumnModel getInputColumnModel(int colIndex) {
         return new InputColumnModel(
                 colIndex,
                 getHeader(),
-                isRequired(),
                 getDescription());
     }
     
-    public OutputColumnModel getOutputColumnModel(int colIndex) {
+    private OutputColumnModel getOutputColumnModel(int colIndex) {
         return new OutputColumnModel(
-                                getHeader(),
+                getHeader(),
                 getPropertyName());
     }
 
-    public abstract InputHandler getInputHandler(int colIndex);
+    protected abstract InputHandler getInputHandler(int colIndex);
+    
+    public OutputHandler getOutputHandler() {
+        if (exportGetterMethod == null || exportGetterMethod.isBlank()) {
+            return new BlankColumnOutputHandler(getHeader(), getDescription());
+        }
+        return new SimpleOutputHandler(getHeader(), getDescription(), getExportGetterMethod());
+    }
+    
+    private void addColumnModeOptions(ColumnModeOptions options) {
+        columnModeOptionsMap.put(options.getMode(), options);
+    }
+
+    public boolean isUsedForMode(ImportMode mode) {
+        return columnModeOptionsMap.containsKey(mode);
+    }
+    
+    public boolean isRequiredForMode(ImportMode mode) {
+        if (!columnModeOptionsMap.containsKey(mode)) {
+            return false;
+        } else {
+            return columnModeOptionsMap.get(mode).isRequired();
+        }
+    }
 
 }

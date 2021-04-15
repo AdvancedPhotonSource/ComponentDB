@@ -40,20 +40,28 @@
 #   * contains a single worksheet
 #   * contains 2 or more rows, header is on row 1, data starts on row 2
 #   * there are no empty rows within the data
+import concurrent
+from concurrent.futures.thread import ThreadPoolExecutor
+from datetime import datetime
+import os
 
+import urllib3
+
+print("working directory: %s" % os.getcwd())
 
 import argparse
 import logging
+import configparser
 import sys
 from abc import ABC, abstractmethod
 import re
 
-import xlrd
+import openpyxl
 import xlsxwriter
 
 from CdbApiFactory import CdbApiFactory
-from cdbApi import ApiException
-
+from cdbApi import ApiException, ItemDomainCableCatalogIdListRequest, ItemDomainCableDesignIdListRequest, \
+    ItemDomanMachineDesignIdListRequest, SourceIdListRequest
 
 # constants
 
@@ -82,6 +90,9 @@ CABLE_TYPE_LEAD_TIME_KEY = "leadTime"
 CABLE_TYPE_ORDERED_KEY = "ordered"
 CABLE_TYPE_RECEIVED_KEY = "received"
 
+CABLE_TYPE_NAME_INDEX = 0
+CABLE_TYPE_MANUFACTURER_INDEX = 2
+
 CABLE_INVENTORY_NAME_KEY = "name"
 
 CABLE_DESIGN_NAME_KEY = "name"
@@ -101,13 +112,21 @@ CABLE_DESIGN_DEST_ADDRESS_KEY = "destAddress"
 CABLE_DESIGN_DEST_DESCRIPTION_KEY = "destDescription"
 CABLE_DESIGN_LEGACY_ID_KEY = "legacyId"
 CABLE_DESIGN_FROM_DEVICE_NAME_KEY = "fromDeviceName"
+CABLE_DESIGN_FROM_PORT_NAME_KEY = "fromPortName"
 CABLE_DESIGN_TO_DEVICE_NAME_KEY = "toDeviceName"
-CABLE_DESIGN_MBA_ID_KEY = "mbaId"
+CABLE_DESIGN_TO_PORT_NAME_KEY = "toPortName"
 CABLE_DESIGN_IMPORT_ID_KEY = "importId"
-CABLE_DESIGN_QR_ID_KEY = "qrId"
 CABLE_DESIGN_VIA_ROUTE_KEY = "via"
 CABLE_DESIGN_WAYPOINT_ROUTE_KEY = "waypoint"
 CABLE_DESIGN_NOTES_KEY = "notes"
+
+CABLE_DESIGN_TYPE_INDEX = 4
+CABLE_DESIGN_SRC_ETPM_INDEX = 7
+CABLE_DESIGN_DEST_ETPM_INDEX = 12
+CABLE_DESIGN_LEGACY_ID_INDEX = 15
+CABLE_DESIGN_FROM_DEVICE_NAME_INDEX = 16
+CABLE_DESIGN_TO_DEVICE_NAME_INDEX = 18
+CABLE_DESIGN_IMPORT_ID_INDEX = 20
 
 name_manager = None
 
@@ -123,9 +142,19 @@ class PreImportHelper(ABC):
     def __init__(self):
         self.input_columns = {}
         self.output_columns = {}
-        self.args = None
+        self.input_handlers = []
         self.api = None
         self.validate_only = False
+        self.ignore_existing = False
+        self.info_file = None
+        self.first_data_row = None
+        self.last_data_row = None
+        self.input_sheet = None
+
+    # returns number of rows at which progress message should be displayed
+    @classmethod
+    def progress_increment(cls):
+        return 5
 
     # registers helper concrete classes for lookup by tag
     @classmethod
@@ -163,53 +192,97 @@ class PreImportHelper(ABC):
     def num_output_cols(self):
         return len(self.output_column_list())
 
-    # Returns list of column models for input spreadsheet.  Not all columns need be mapped, only the ones we wish to
-    # read values from.
-    @abstractmethod
-    def input_column_list(self):
+    # Initializes the helper.  Subclass overrides initialize_custom() to customize.
+    def initialize(self, api, sheet, first_row, last_row):
+        self.initialize_columns()
+        self.initialize_handlers(api, sheet, first_row, last_row)
+        self.initialize_custom()
+
+    def initialize_columns(self):
+        self.initialize_input_columns()
+        self.initialize_output_columns()
+
+    # Builds dictionary whose keys are column index and value is column model object.
+    def initialize_input_columns(self):
+        for col in self.generate_input_column_list():
+            self.input_columns[col.index] = col
+
+    # Builds dictionary whose keys are column index and value is column model object.
+    def initialize_output_columns(self):
+        for col in self.generate_output_column_list():
+            self.output_columns[col.index] = col
+
+    def initialize_handlers(self, api, sheet, first_row, last_row):
+        for handler in self.generate_handler_list():
+            self.input_handlers.append(handler)
+            handler.initialize(api, sheet, first_row, last_row)
+
+    def initialize_custom(self):
         pass
 
-    # Returns list of column models for output spreadsheet.  Not all columns need be mapped, only the ones we wish to
-    # write values to.
+    # subclass overrides to create list of input columns
     @abstractmethod
-    def output_column_list(self):
+    def generate_input_column_list(self):
         pass
+
+    # subclass overrides to create list of output columns
+    @abstractmethod
+    def generate_output_column_list(self):
+        pass
+
+    # subclass overrides to create list of input handlers
+    def generate_handler_list(self):
+        pass
+
+    # Returns list of input column models.
+    def input_column_list(self):
+        return list(self.input_columns.values())
+
+    # Returns list of output column models.  Not all columns need be mapped, only the ones we wish to
+    # write values to.
+    def output_column_list(self):
+        return list(self.output_columns.values())
 
     # Returns list of input handlers.
-    @abstractmethod
     def input_handler_list(self):
-        pass
+        return self.input_handlers
 
     # Returns an output object for the specified input object, or None if the input object is duplicate.
     @abstractmethod
     def get_output_object(self, input_dict):
         pass
 
-    # Allows subclasses to add command line parser args.  Default behavior is to do nothing.
-    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    def add_parser_args(self, parser):
-        parser.add_argument("--validateOnly", action="store_true", help="perform basic validation only", required=False)
+    def set_config_preimport(self, config, section):
+        pass
 
-    def set_args(self, args):
-        self.args = args
-        print("validateOnly: %s" % args.validateOnly)
-        self.validate_only = args.validateOnly
+    def set_config_group(self, config, section):
 
-    def get_args(self):
-        return self.args
+        config_value = get_config_resource(config, section, 'validateOnly', False)
+        if config_value in ("True", "TRUE", "true", "Yes", "YES", "yes", "On", "ON", "on", "1"):
+            self.validate_only = True
+        else:
+            self.validate_only = False
+
+        config_value = get_config_resource(config, section, 'ignoreExisting', False)
+        if config_value in ("True", "TRUE", "true", "Yes", "YES", "yes", "On", "ON", "on", "1"):
+            self.ignore_existing = True
+        else:
+            self.ignore_existing = False
+
+        self.first_data_row = int(get_config_resource(config, section, 'firstDataRow', False))
+        self.last_data_row = int(get_config_resource(config, section, 'lastDataRow', False))
 
     def set_api(self, api):
         self.api = api
 
-    # Builds dictionary whose keys are column index and value is column model object.
-    def initialize_input_columns(self):
-        for col in self.input_column_list():
-            self.input_columns[col.index] = col
+    def set_info_file(self, file):
+        self.info_file = file
 
-    # Builds dictionary whose keys are column index and value is column model object.
-    def initialize_output_columns(self):
-        for col in self.output_column_list():
-            self.output_columns[col.index] = col
+    def get_info_file(self):
+        return self.info_file
+
+    def set_input_sheet(self, sheet):
+        self.input_sheet = sheet
 
     # Handles cell value from input spreadsheet at specified column index for supplied input object.
     def handle_input_cell_value(self, input_dict, index, value, row_num):
@@ -287,6 +360,10 @@ class PreImportHelper(ABC):
     def close(self):
         pass
 
+    # Returns processing summary message.
+    def get_processing_summary(self):
+        return ""
+
 
 class ConnectedMenuManager:
 
@@ -299,25 +376,74 @@ class ConnectedMenuManager:
 
     def initialize(self, workbook):
 
-        for name in workbook.name_obj_list:
-            if name.scope == -1:
-                # print(name.name)
-                name.book = workbook  # seems like an error that library doesn't do this internally
-                (sheet_name, ref) = name.formula_text.split('!')
-                if ':' in ref:
-                    (first_cell, last_cell) = ref.split(':')
-                else:
-                    first_cell = ref
-                    last_cell = ref
-                (first_cell_row, first_cell_col) = xl_cell_to_rowcol(first_cell)
-                (last_cell_row, last_cell_col) = xl_cell_to_rowcol(last_cell)
-                sheet = workbook.sheet_by_name(sheet_name)
-                values = []
-                for row_ind in range(first_cell_row, last_cell_row + 1):
-                    for col_ind in range(first_cell_col, last_cell_col + 1):
-                        values.append(sheet.cell(row_ind, col_ind).value)
-                        # print("\t%s" % sheet.cell(row_ind, col_ind).value)
-                self.add_name(name.name, values)
+        error_messages = []
+        warning_messages = []
+        for name in workbook.defined_names.definedName:
+            range_name = name.name
+            if range_name == "_Print_Area" or range_name == "_Rack_data_201901141042_usmani":
+                continue
+            expression = name.value
+            if '!' not in expression:
+                error_messages.append("unexpected expression format (should include '!'), range: %s expression: %s" % (range_name, expression))
+                continue
+            (sheet_name, ref) = expression.split('!')
+            try:
+                sheet = workbook[sheet_name]
+            except KeyError:
+                error_messages.append("invalid sheet name in expression, range: %s expression: %s sheet: %s" % (range_name, expression, sheet_name))
+                continue
+            if ':' in ref:
+                (first_cell, last_cell) = ref.split(':')
+            else:
+                first_cell = ref
+                last_cell = ref
+            (first_cell_row, first_cell_col) = xl_cell_to_rowcol(first_cell)
+            (last_cell_row, last_cell_col) = xl_cell_to_rowcol(last_cell)
+            if first_cell_row < 0 or first_cell_col < 0 or last_cell_row < first_cell_row or last_cell_col < first_cell_col or last_cell_row > sheet.max_row or last_cell_col > sheet.max_column:
+                error_messages.append("invalid indexes for range, sheet: %s name: %s ref: %s first_cell_row: %d first_cell_col: %d last_cell_row: %d last_cell_col: %d numrows: %d numcols: %d" % (sheet_name, range_name, ref, first_cell_row, first_cell_col, last_cell_row, last_cell_col, sheet.max_row, sheet.max_column))
+                continue
+            values = []
+            has_error = False
+            for row_ind in range(first_cell_row, last_cell_row + 1):
+                for col_ind in range(first_cell_col, last_cell_col + 1):
+                    try:
+                        cell = sheet.cell(row_ind, col_ind)
+                        cell_value = cell.value
+                        if cell_value is None or cell_value == "":
+                            # ignore blank value in named range
+                            break
+                        else:
+                            if cell_value != range_name:
+                                # don't add range name as a a value, this is treated inconsistently in the workbooks
+                                values.append(cell_value)
+                    except IndexError:
+                        error_messages.append("cell index error, sheet: %s range: %s row: %d col: %d" % (sheet_name, name.name, row_ind+1, col_ind+1))
+                        has_error = True
+                        break
+                if has_error:
+                    break
+            if has_error:
+                continue
+            if range_name in values:
+                error_messages.append("sheet: %s range: %s ref: %s includes range name in values" % (sheet_name, range_name, ref))
+                continue
+            self.add_name(range_name, values)
+            # else:
+            #     if range_name != "_Print_Area":
+            #         warning_messages.append("ignoring range not at global scope (=-1): %s scope: %s expression: %s" % (range_name, name.scope, name.formula_text))
+        if len(warning_messages) > 0:
+            print()
+            print("EXCEL NAMED RANGE WARNINGS ====================")
+            print()
+            for message in warning_messages:
+                print(message)
+        if len(error_messages) > 0:
+            print()
+            print("EXCEL NAMED RANGE ERRORS ====================")
+            print()
+            for message in error_messages:
+                print(message)
+            fatal_error("Error(s) parsing excel named ranges, see console for details. Exiting.")
 
     def has_name(self, range_name):
         return range_name in self.name_dict
@@ -340,6 +466,10 @@ class InputHandler(ABC):
     def __init__(self, column_key):
         self.column_key = column_key
 
+    # initializes handler, subclasses override to customize
+    def initialize(self, api, sheet, first_row, last_row):
+        pass
+
     # Invokes handler.
     @abstractmethod
     def handle_input(self, input_dict):
@@ -348,11 +478,26 @@ class InputHandler(ABC):
 
 class ManufacturerHandler(InputHandler):
 
-    def __init__(self, column_key, api, existing_sources, new_sources):
+    def __init__(self, column_key, column_index, api, existing_sources, new_sources):
         super().__init__(column_key)
+        self.column_index = column_index
         self.existing_sources = existing_sources
         self.new_sources = new_sources
         self.api = api
+        self.id_mgr = IdManager()
+
+    def initialize(self, api, sheet, first_row, last_row):
+
+        source_names = set()
+
+        for row_ind in range(first_row, last_row+1):
+            val = sheet.cell(row_ind, self.column_index).value
+            if val is not None and val != "":
+                source_names.add(val.upper())
+
+        id_list = SourceHandler.get_source_id_list(api, source_names, "existence check")
+
+        self.id_mgr.set_dict(dict(zip(source_names, id_list)))
 
     def handle_input(self, input_dict):
 
@@ -367,22 +512,13 @@ class ManufacturerHandler(InputHandler):
             return True, ""
 
         # check to see if manufacturer exists as a CDB Source
-        try:
-            mfr_source = self.api.getSourceApi().get_source_by_name(manufacturer)
-        except ApiException as ex:
-            if "ObjectNotFound" not in ex.body:
-                msg = "exception retrieving source for manufacturer: %s - %s" % (manufacturer, ex.body)
-                logging.error(msg)
-                print(msg)
-                return False, msg
-            mfr_source = None
-        if mfr_source:
+        source_id = self.id_mgr.get_id_for_name(manufacturer)
+        if source_id != 0:
             # source already exists for mfr
             self.existing_sources.append(manufacturer)
-
         else:
             # need to add new source for mfr
-            self.new_sources.append(manufacturer)
+            self.new_sources.add(manufacturer)
 
         return True, ""
 
@@ -398,7 +534,7 @@ class ConnectedMenuHandler(InputHandler):
         parent_value = input_dict[self.parent_key]
         cell_value = input_dict[self.column_key]
         if not name_manager.has_name(parent_value):
-            sys.exit("name manager has no menu range for: %s column: %s parent column: %s" % (parent_value, self.column_key, self.parent_key))
+            return False, "name manager has no menu range for: %s column: %s parent column: %s" % (parent_value, self.column_key, self.parent_key)
         has_child = name_manager.value_is_valid_for_name(parent_value, cell_value)
         valid_string = ""
         if not has_child:
@@ -415,13 +551,34 @@ class NamedRangeHandler(InputHandler):
     def handle_input(self, input_dict):
         global name_manager
         if not name_manager.has_name(self.range_name):
-            sys.exit("name manager has no named range for: %s" % self.range_name)
+            return False, "name manager has no named range for: %s" % self.range_name
         cell_value = input_dict[self.column_key]
         has_child = name_manager.value_is_valid_for_name(self.range_name, cell_value)
         valid_string = ""
         if not has_child:
             valid_string = "named range %s does not include value %s" % (self.range_name, cell_value)
         return has_child, valid_string
+
+
+class UniqueNameHandler(InputHandler):
+
+    def __init__(self, column_key, item_names):
+        super().__init__(column_key)
+        self.item_names = item_names
+
+    def handle_input(self, input_dict):
+
+        item_name = input_dict[self.column_key]
+
+        if item_name in self.item_names:
+            # flag duplicate item name
+            error_msg = "duplicate value: %s for column: %s not allowed" % (item_name, self.column_key)
+            logging.error(error_msg)
+            return False, error_msg
+        else:
+            self.item_names.append(item_name)
+
+        return True, ""
 
 
 class DeviceAddressHandler(InputHandler):
@@ -448,7 +605,7 @@ class DeviceAddressHandler(InputHandler):
             range_name = "_RACK_AREA_"
 
         if not name_manager.has_name(range_name):
-            sys.exit("name manager has no named address range for: %s" % range_name)
+            return False, "name manager has no named address range for: %s" % range_name
 
         has_child = name_manager.value_is_valid_for_name(range_name, cell_value)
         valid_string = ""
@@ -459,7 +616,7 @@ class DeviceAddressHandler(InputHandler):
 
 class EndpointHandler(InputHandler):
 
-    def __init__(self, column_key, rack_key, hierarchy_name, api, rack_manager, missing_endpoints, nonunique_endpoints):
+    def __init__(self, column_key, rack_key, hierarchy_name, api, rack_manager, missing_endpoints, nonunique_endpoints, column_index_item_name, column_index_rack_name, description):
         super().__init__(column_key)
         self.rack_key = rack_key
         self.hierarchy_name = hierarchy_name
@@ -467,94 +624,356 @@ class EndpointHandler(InputHandler):
         self.rack_manager = rack_manager
         self.missing_endpoints = missing_endpoints
         self.nonunique_endpoints = nonunique_endpoints
+        self.column_index_item_name = column_index_item_name
+        self.column_index_rack_name = column_index_rack_name
+        self.description = description
+
+    def call_api(self, api, item_names_batch, rack_names_batch):
+        request_obj = ItemDomanMachineDesignIdListRequest(item_names=item_names_batch,
+                                                          rack_names=rack_names_batch,
+                                                          root_name=self.hierarchy_name)
+        id_list = api.getMachineDesignItemApi().get_hierarchy_id_list(
+            item_doman_machine_design_id_list_request=request_obj)
+        return id_list
+
+    def initialize(self, api, sheet, first_row, last_row):
+
+        # create map of item name to list of rack names (in case the same item name is used in more than one rack)
+        rack_items_dict = {}
+        for row_ind in range(first_row, last_row+1):
+            item_name = sheet.cell(row_ind, self.column_index_item_name).value
+            rack_name = sheet.cell(row_ind, self.column_index_rack_name).value
+            if (item_name is not None and item_name != "") and (rack_name is not None and rack_name != ""):
+                if rack_name not in rack_items_dict:
+                    rack_items_dict[rack_name] = []
+                rack_items = rack_items_dict[rack_name]
+                if item_name not in rack_items:
+                    rack_items.append(item_name)
+
+        # create parallel lists of item and rack names for calling api
+        rack_names = []
+        item_names = []
+        for rack_name in rack_items_dict:
+            rack_items = rack_items_dict[rack_name]
+            for item_name in rack_items:
+                rack_names.append(rack_name)
+                item_names.append(item_name)
+
+        if len(item_names) != len(rack_names):
+            fatal_error("error preparing lists for machine item id API")
+
+        print("fetching %d machine item id's for %s" % (len(item_names), self.description))
+
+        preapi_time = datetime.now()
+
+        max_workers = 5  # using value larger than 5 causes RemoteDisconnected exception
+        batch_size = 250
+        num_iterations = len(item_names) // batch_size
+        if len(item_names) % batch_size != 0:
+            num_iterations = num_iterations + 1
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+
+            futures = {}
+            iteration_num = 1
+            start_index = 0
+            end_index = batch_size
+            result_id_count = 0
+            while iteration_num <= num_iterations:
+
+                if end_index > len(item_names):
+                    end_index = len(item_names)
+
+                item_names_batch = item_names[start_index:end_index]
+                rack_names_batch = rack_names[start_index:end_index]
+
+                future = executor.submit(self.call_api, api, item_names_batch, rack_names_batch)
+                futures[future] = (iteration_num, item_names_batch, rack_names_batch, start_index, end_index)
+
+                iteration_num = iteration_num + 1
+                start_index = start_index + batch_size
+                end_index = end_index + batch_size
+
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    id_list = future.result()
+
+                except ApiException as ex:
+                    fatal_error("unknown api exception getting list of machine item ids")
+
+                except Exception as exc:
+                    fatal_error("exception calling machine item api: %s" % exc)
+
+                else:
+                    (iteration_num, item_names_batch, rack_names_batch, start_index, end_index) = futures[future]
+                    # list sizes should match
+                    if len(id_list) != len(item_names_batch):
+                        fatal_error("api result list size mismatch getting list of machine item ids")
+                    # iterate 3 lists to process api result
+                    for (item_name, rack_name, id) in zip(item_names_batch, rack_names_batch, id_list):
+                        self.rack_manager.add_endpoint_id_for_rack(rack_name, item_name, id)
+                    result_id_count = result_id_count + len(id_list)
+                    print("fetched %d machine item id's for %s" % (result_id_count, self.description))
+
+        end_time = datetime.now()
+        print("machine item id api duration: %d sec." % (end_time-preapi_time).total_seconds())
 
     def handle_input(self, input_dict):
 
         endpoint_name = input_dict[self.column_key]
         rack_name = input_dict[self.rack_key]
 
-        # check endpoint cache before calling API
-        if self.rack_manager.get_endpoint_id_for_rack(rack_name, endpoint_name) is not None:
-            logging.info("found endpoint: %s for rack: %s in cache")
-            return True, ""
-
-        result_list = []
-        try:
-            result_list = self.api.getMachineDesignItemApi().get_md_in_hierarchy_by_name(self.hierarchy_name, rack_name, endpoint_name)
-        except ApiException as ex:
-            return False, "exception invoking cdb endpoint retrieval api"
-
         is_valid = True
         valid_string = ""
 
-        if len(result_list) == 0:
+        id = self.rack_manager.get_endpoint_id_for_rack(rack_name, endpoint_name)
+        if id == 0:
             is_valid = False
             valid_string = "no endpoint item found with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
             logging.error(valid_string)
             self.missing_endpoints.add(rack_name + " + " + endpoint_name)
-
-        elif len(result_list) > 1:
+        elif id == -1:
             is_valid = False
             valid_string = "duplicate endpoint items found with name: %s rack: %s in hierarchy: %s" % (endpoint_name, rack_name, self.hierarchy_name)
             logging.error(valid_string)
             self.nonunique_endpoints.add(rack_name + " + " + endpoint_name)
-
         else:
-            endpoint_object = result_list[0]
-            endpoint_id = endpoint_object.id
-            self.rack_manager.add_endpoint_id_for_rack(rack_name, endpoint_name, endpoint_id)
-            logging.debug("found machine design item with name: %s, id: %s" % (endpoint_name, endpoint_id))
+            logging.debug("found machine design item with name: %s, id: %s" % (endpoint_name, id))
 
         return is_valid, valid_string
 
 
-class CableTypeHandler(InputHandler):
+class CableTypeIdHandler(InputHandler):
 
-    def __init__(self, column_key, id_manager, api, missing_cable_type_list):
+    def __init__(self, column_index, column_key, id_manager, missing_cable_type_list):
         super().__init__(column_key)
+        self.column_index = column_index
         self.id_manager = id_manager
-        self.api = api
         self.missing_cable_type_list = missing_cable_type_list
+
+    @staticmethod
+    def get_id_list(api, name_list, description):
+
+        name_list = list(name_list)
+
+        print("fetching %d cable type id's for %s" % (len(name_list), description))
+
+        try:
+            request_obj = ItemDomainCableCatalogIdListRequest(name_list=name_list)
+            id_list = api.getCableCatalogItemApi().get_cable_type_id_list(item_domain_cable_catalog_id_list_request=request_obj)
+        except ApiException as ex:
+            fatal_error("unknown api exception getting list of cable type ids for %s" % description)
+
+        # list sizes should match
+        if len(name_list) != len(id_list):
+            fatal_error("api list size mismatch getting list of cable type ids for %s" % description)
+
+        print("fetched %d cable type id's for %s" % (len(id_list), description))
+
+        return id_list
+
+    def initialize(self, api, sheet, first_row, last_row):
+        self.initialize_id_list(api, sheet, first_row, last_row)
+
+    def initialize_id_list(self, api, sheet, first_row, last_row):
+
+        cable_type_names = set()  # use set to eliminate duplicates
+
+        for row_ind in range(first_row, last_row+1):
+            val = sheet.cell(row_ind, self.column_index).value
+            if val is not None and val != "":
+                cable_type_names.add(val)
+
+        id_list = CableTypeIdHandler.get_id_list(api, cable_type_names, "item reference lookup")
+
+        self.id_manager.set_dict(dict(zip(cable_type_names, id_list)))
 
     def handle_input(self, input_dict):
 
         cable_type_name = input_dict[self.column_key]
-
-        cached_id = self.id_manager.get_id_for_name(cable_type_name)
-        if cached_id is not None:
-            # nothing to do, id already cached
+        cable_type_id = self.id_manager.get_id_for_name(cable_type_name)
+        if cable_type_id == 0:
+            self.missing_cable_type_list.add(cable_type_name)
+            return False, "no cable type found for name: %s" % cable_type_name
+        elif cable_type_id == -1:
+            return False, "found multiple cable types for name: %s" % cable_type_name
+        else:
             return True, ""
 
-        else:
-            # check to see if cable type exists in CDB by name
-            cable_type_object = None
-            try:
-                cable_type_object = self.api.getCableCatalogItemApi().get_cable_catalog_item_by_name(cable_type_name)
-            except ApiException as ex:
-                if "ObjectNotFound" not in ex.body:
-                    error_msg = "unknown api exception retrieving cable catalog item: %s - %s" % (cable_type_name, ex.body)
-                    logging.error(error_msg)
-                    return False, error_msg
 
-            if cable_type_object:
-                cable_type_id = cable_type_object.id
-                logging.debug("found cable type with name: %s, id: %s" % (cable_type_name, cable_type_id))
-                self.id_manager.set_id_for_name(cable_type_name, cable_type_id)
+class CableTypeExistenceHandler(InputHandler):
+
+    def __init__(self, column_key, column_index, ignore_existing, api, existing_cable_types):
+        super().__init__(column_key)
+        self.column_index = column_index
+        self.ignore_existing = ignore_existing
+        self.existing_cable_types = existing_cable_types
+        self.api = api
+        self.id_mgr = IdManager()
+
+    def initialize(self, api, sheet, first_row, last_row):
+
+        cable_type_names = []
+
+        for row_ind in range(first_row, last_row+1):
+            val = sheet.cell(row_ind, self.column_index).value
+            if val is not None and val != "":
+                cable_type_names.append(val)
+
+        id_list = CableTypeIdHandler.get_id_list(api, cable_type_names, "existence check")
+
+        self.id_mgr.set_dict(dict(zip(cable_type_names, id_list)))
+
+    def handle_input(self, input_dict):
+        cable_type_name = input_dict[self.column_key]
+        cable_type_id = self.id_mgr.get_id_for_name(cable_type_name)
+        if cable_type_id is None:
+            fatal_error("unexpected error in id map for cable type existence check")
+        if cable_type_id != 0:
+            # cable type already exists
+            if self.ignore_existing:
+                self.existing_cable_types.append(cable_type_name)
                 return True, ""
             else:
-                self.missing_cable_type_list.add(cable_type_name)
-                error_msg = "no cable type found for name: %s" % cable_type_name
-                logging.error(error_msg)
-                return False, error_msg
+                return False, "cable type already exists in CDB"
+        else:
+            return True, ""
+
+
+class CableDesignExistenceHandler(InputHandler):
+
+    def __init__(self, column_key, existing_cable_designs, column_index_import_id, column_index_legacy_id, ignore_existing):
+        super().__init__(column_key)
+        self.existing_cable_designs = existing_cable_designs
+        self.id_mgr = IdManager()
+        self.column_index_import_id = column_index_import_id
+        self.column_index_legacy_id = column_index_legacy_id
+        self.ignore_existing = ignore_existing
+
+    def call_api(self, api, cable_design_names_batch):
+
+        request_obj = ItemDomainCableDesignIdListRequest(name_list=cable_design_names_batch)
+        id_list = api.getCableDesignItemApi().get_cable_design_id_list(item_domain_cable_design_id_list_request=request_obj)
+        return id_list
+
+    def initialize(self, api, sheet, first_row, last_row):
+
+        cable_design_names = []
+        for row_ind in range(first_row, last_row+1):
+            import_id = sheet.cell(row_ind, self.column_index_import_id).value
+            legacy_id = sheet.cell(row_ind, self.column_index_legacy_id).value
+            if (import_id is not None and import_id != "") or (legacy_id is not None and legacy_id != ""):
+                cable_design_names.append(CableDesignOutputObject.get_name_cls(None, legacy_id, import_id))
+        print("fetching %d cable design id's" % len(cable_design_names))
+
+        preapi_time = datetime.now()
+        max_workers = 5  # setting to value greater than 5 leads to RemoteDisconnected exception
+        batch_size = 250
+        num_iterations = len(cable_design_names) // batch_size
+        if len(cable_design_names) % batch_size != 0:
+            num_iterations = num_iterations + 1
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+
+            futures = {}
+            iteration_num = 1
+            start_index = 0
+            end_index = batch_size
+            result_id_count = 0
+
+            while iteration_num <= num_iterations:
+
+                if end_index > len(cable_design_names):
+                    end_index = len(cable_design_names)
+
+                cable_design_names_batch = cable_design_names[start_index:end_index]
+
+                future = executor.submit(self.call_api, api, cable_design_names_batch)
+                futures[future] = (iteration_num, cable_design_names_batch, start_index, end_index)
+
+                iteration_num = iteration_num + 1
+                start_index = start_index + batch_size
+                end_index = end_index + batch_size
+
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    id_list = future.result()
+                except ApiException as ex:
+                    fatal_error("unknown api exception getting list of cable design ids")
+                except Exception as exc:
+                    fatal_error("exception calling cable design api: %s" % exc)
+                else:
+                    (iteration_num, cable_design_names_batch, start_index, end_index) = futures[future]
+                    # list sizes should match
+                    if len(cable_design_names_batch) != len(id_list):
+                        fatal_error("api result list size mismatch getting list of cable design ids")
+                    result_dict = dict(zip(cable_design_names_batch, id_list))
+                    self.id_mgr.update(result_dict)
+                    result_id_count = result_id_count + len(id_list)
+                    print("fetched %d cable design ids" % result_id_count)
+
+        end_time = datetime.now()
+        print("cable design id api duration: %d sec." % (end_time-preapi_time).total_seconds())
+
+    def handle_input(self, input_dict):
+        cable_design_name = CableDesignOutputObject.get_name_cls(input_dict)
+        # check to see if cable design exists in CDB
+        cable_design_id = self.id_mgr.get_id_for_name(cable_design_name)
+        if cable_design_id is None:
+            fatal_error("unexpected error with missing entry in cable design id map")
+        if cable_design_id != 0:
+            # cable design already exists
+            if self.ignore_existing:
+                self.existing_cable_designs.append(cable_design_name)
+                return True, ""
+            else:
+                return False, "cable design already exists in CDB"
+        else:
+            return True, ""
 
 
 class SourceHandler(InputHandler):
 
-    def __init__(self, column_key, id_manager, api, missing_source_list):
+    def __init__(self, column_key, column_index, id_manager, api, missing_source_list):
         super().__init__(column_key)
+        self.column_index = column_index
         self.id_manager = id_manager
         self.api = api
         self.missing_source_list = missing_source_list
+
+    @staticmethod
+    def get_source_id_list(api, source_name_list, description):
+
+        source_name_list = list(source_name_list)
+
+        print("fetching %d source id's for %s" % (len(source_name_list), description))
+
+        try:
+            request_obj = SourceIdListRequest(name_list=source_name_list)
+            id_list = api.getSourceApi().get_source_id_list(source_id_list_request=request_obj)
+        except ApiException as ex:
+            fatal_error("unknown api exception getting list of source ids for %s" % description)
+
+        # list sizes should match
+        if len(source_name_list) != len(id_list):
+            fatal_error("api list size mismatch getting list of source ids for %s" % description)
+
+        print("fetched %d source id's for %s" % (len(id_list), description))
+
+        return id_list
+
+    def initialize(self, api, sheet, first_row, last_row):
+
+        source_names = set()  # use set to eliminate duplicates
+
+        for row_ind in range(first_row, last_row+1):
+            val = sheet.cell(row_ind, self.column_index).value
+            if val is not None and val != "":
+                source_names.add(val)
+
+        id_list = SourceHandler.get_source_id_list(api, source_names, "manufacturer lookup")
+
+        self.id_manager.set_dict(dict(zip(source_names, id_list)))
 
     def handle_input(self, input_dict):
 
@@ -564,31 +983,14 @@ class SourceHandler(InputHandler):
             return True, ""
 
         cached_id = self.id_manager.get_id_for_name(source_name)
-        if cached_id is not None:
-            # nothing to do, id already cached
+        if cached_id != 0:
+            logging.debug("found source with name: %s, id: %s" % (source_name, cached_id))
             return True, ""
-
         else:
-            # check to see if source exists in CDB by name
-            source_object = None
-            try:
-                source_object = self.api.getSourceApi().get_source_by_name(source_name)
-            except ApiException as ex:
-                if "ObjectNotFound" not in ex.body:
-                    error_msg = "unknown api exception retrieving source item: %s - %s" % (source_name, ex.body)
-                    logging.error(error_msg)
-                    return False, error_msg
-
-            if source_object:
-                source_id = source_object.id
-                logging.debug("found source with name: %s, id: %s" % (source_name, source_id))
-                self.id_manager.set_id_for_name(source_name, source_id)
-                return True, ""
-            else:
-                self.missing_source_list.append(source_name)
-                error_msg = "no source found for name: %s" % source_name
-                logging.error(error_msg)
-                return False, error_msg
+            self.missing_source_list.append(source_name)
+            error_msg = "no source found for name: %s" % source_name
+            logging.error(error_msg)
+            return False, error_msg
             
 
 class InputColumnModel:
@@ -618,6 +1020,12 @@ class IdManager():
 
     def __init__(self):
         self.name_id_dict = {}
+
+    def set_dict(self, dict):
+        self.name_id_dict = dict
+
+    def update(self, dict):
+        self.name_id_dict.update(dict)
 
     def set_id_for_name(self, name, id):
         self.name_id_dict[name] = id
@@ -674,7 +1082,7 @@ class SourceHelper(PreImportHelper):
         self.output_manufacturers = set()
         self.source_name_manager = NameVariantManager()
         self.existing_sources = []
-        self.new_sources = []
+        self.new_sources = set()
 
     @staticmethod
     def tag():
@@ -683,26 +1091,28 @@ class SourceHelper(PreImportHelper):
     def num_input_cols(self):
         return 23
 
-    def input_column_list(self):
+    def generate_input_column_list(self):
         column_list = [
             InputColumnModel(col_index=2, key=CABLE_TYPE_MANUFACTURER_KEY),
         ]
         return column_list
 
-    def output_column_list(self):
+    def generate_output_column_list(self):
         column_list = [
-            OutputColumnModel(col_index=0, method="get_name", label="Name"),
-            OutputColumnModel(col_index=1, method="get_description", label="Description"),
-            OutputColumnModel(col_index=2, method="get_contact_info", label="Contact Info"),
-            OutputColumnModel(col_index=3, method="get_url", label="URL"),
+            OutputColumnModel(col_index=0, method="get_existing_item_id", label="Existing Item ID"),
+            OutputColumnModel(col_index=1, method="get_delete_existing_item", label="Delete Existing Item"),
+            OutputColumnModel(col_index=2, method="get_name", label="Name"),
+            OutputColumnModel(col_index=3, method="get_description", label="Description"),
+            OutputColumnModel(col_index=4, method="get_contact_info", label="Contact Info"),
+            OutputColumnModel(col_index=5, method="get_url", label="URL"),
         ]
         return column_list
 
-    def input_handler_list(self):
+    def generate_handler_list(self):
         global name_manager
-        handler_list = [
-            ManufacturerHandler(CABLE_TYPE_MANUFACTURER_KEY, self.api, self.existing_sources, self.new_sources),
-        ]
+        handler_list = []
+        if not self.validate_only:
+            handler_list.append(ManufacturerHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.api, self.existing_sources, self.new_sources))
         return handler_list
 
     def get_output_object(self, input_dict):
@@ -734,11 +1144,11 @@ class SourceHelper(PreImportHelper):
     def close(self):
         if len(self.new_sources) > 0 or len(self.existing_sources) > 0:
 
-            if not self.args.infoFile:
+            if not self.info_file:
                 print("provide command line arg 'infoFile' to generate debugging output file")
                 return
 
-            output_book = xlsxwriter.Workbook(self.args.infoFile)
+            output_book = xlsxwriter.Workbook(self.info_file)
             output_sheet = output_book.add_worksheet()
 
             output_sheet.write(0, 0, "new sources")
@@ -750,11 +1160,18 @@ class SourceHelper(PreImportHelper):
                 row_index = row_index + 1
 
             row_index = 1
-            for src in (self.existing_sources):
+            for src in self.existing_sources:
                 output_sheet.write(row_index, 1, src)
                 row_index = row_index + 1
 
             output_book.close()
+
+    # Returns processing summary message.
+    def get_processing_summary(self):
+        if len(self.new_sources) > 0 or len(self.existing_sources) > 0:
+            return "DETAILS: number of new sources: %d number of existing sources (not written to output spreadsheet): %d\nDETAILS: rows with no manufacturer included in number of empty rows" % (len(self.new_sources), len(self.existing_sources))
+        else:
+            return ""
 
 
 class SourceOutputObject(OutputObject):
@@ -764,6 +1181,12 @@ class SourceOutputObject(OutputObject):
         self.description = ""
         self.contact_info = ""
         self.url = ""
+
+    def get_existing_item_id(self):
+        return ""
+
+    def get_delete_existing_item(self):
+        return ""
 
     def get_name(self):
         return self.input_dict[CABLE_TYPE_MANUFACTURER_KEY]
@@ -785,24 +1208,36 @@ class CableTypeHelper(PreImportHelper):
         super().__init__()
         self.source_id_manager = IdManager()
         self.missing_source_list = []
+        self.existing_cable_types = []
+        self.cable_type_names = []
+        self.project_id = None
+        self.tech_system_id = None
+        self.owner_user_id = None
+        self.owner_group_id = None
+        self.named_range = None
 
-    # Adds helper specific command line args.
-    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    def add_parser_args(self, parser):
-        super().add_parser_args(parser)
-        parser.add_argument("--projectId", help="CDB item category ID for project (item_project table)", required=True)
-        parser.add_argument("--techSystemId", help="CDB technical system ID for owner", required=True)
-        parser.add_argument("--ownerUserId", help="CDB user ID for owner", required=True)
-        parser.add_argument("--ownerGroupId", help="CDB group ID for owner", required=True)
-        parser.add_argument("--namedRange", help="Excel named range for technical system's cable types", required=True)
+    def get_project_id(self):
+        return self.project_id
 
-    def set_args(self, args):
-        super().set_args(args)
-        print("CDB project id: %s" % args.projectId)
-        print("CDB technical system id: %s" % args.techSystemId)
-        print("CDB owner user id: %s" % args.ownerUserId)
-        print("CDB owner group id: %s" % args.ownerGroupId)
-        print("Excel named range for technical system cable types: %s" % args.namedRange)
+    def get_tech_system_id(self):
+        return self.tech_system_id
+
+    def get_owner_user_id(self):
+        return self.owner_user_id
+
+    def get_owner_group_id(self):
+        return self.owner_group_id
+
+    def set_config_preimport(self, config, section):
+        super().set_config_preimport(config, section)
+        self.project_id = get_config_resource(config, section, 'projectId', True)
+        self.owner_user_id = get_config_resource(config, section, 'ownerUserId', True)
+        self.owner_group_id = get_config_resource(config, section, 'ownerGroupId', True)
+
+    def set_config_group(self, config, section):
+        super().set_config_group(config, section)
+        self.tech_system_id = get_config_resource(config, section, 'techSystemId', True)
+        self.named_range = get_config_resource(config, section, 'excelCableTypeRangeName', True)
 
     @staticmethod
     def tag():
@@ -811,11 +1246,11 @@ class CableTypeHelper(PreImportHelper):
     def num_input_cols(self):
         return 23
 
-    def input_column_list(self):
+    def generate_input_column_list(self):
         column_list = [
-            InputColumnModel(col_index=0, key=CABLE_TYPE_NAME_KEY, required=True),
+            InputColumnModel(col_index=CABLE_TYPE_NAME_INDEX, key=CABLE_TYPE_NAME_KEY, required=True),
             InputColumnModel(col_index=1, key=CABLE_TYPE_DESCRIPTION_KEY),
-            InputColumnModel(col_index=2, key=CABLE_TYPE_MANUFACTURER_KEY),
+            InputColumnModel(col_index=CABLE_TYPE_MANUFACTURER_INDEX, key=CABLE_TYPE_MANUFACTURER_KEY),
             InputColumnModel(col_index=3, key=CABLE_TYPE_PART_NUMBER_KEY),
             InputColumnModel(col_index=4, key=CABLE_TYPE_ALT_PART_NUMBER_KEY),
             InputColumnModel(col_index=5, key=CABLE_TYPE_DIAMETER_KEY),
@@ -839,7 +1274,7 @@ class CableTypeHelper(PreImportHelper):
         ]
         return column_list
 
-    def output_column_list(self):
+    def generate_output_column_list(self):
         column_list = [
             OutputColumnModel(col_index=0, method="get_name", label=CABLE_TYPE_NAME_KEY),
             OutputColumnModel(col_index=1, method="get_alt_name", label=CABLE_TYPE_ALT_NAME_KEY),
@@ -871,15 +1306,28 @@ class CableTypeHelper(PreImportHelper):
         ]
         return column_list
 
-    def input_handler_list(self):
+    def generate_handler_list(self):
+
         global name_manager
+
         handler_list = [
-            NamedRangeHandler(CABLE_TYPE_NAME_KEY, self.args.namedRange),
-            SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, self.source_id_manager, self.api, self.missing_source_list),
+            NamedRangeHandler(CABLE_TYPE_NAME_KEY, self.named_range),
+            UniqueNameHandler(CABLE_TYPE_NAME_KEY, self.cable_type_names),
         ]
+
+        if not self.validate_only:
+            handler_list.append(CableTypeExistenceHandler(CABLE_TYPE_NAME_KEY, CABLE_TYPE_NAME_INDEX+1, self.ignore_existing, self.api, self.existing_cable_types))
+            handler_list.append(SourceHandler(CABLE_TYPE_MANUFACTURER_KEY, CABLE_TYPE_MANUFACTURER_INDEX+1, self.source_id_manager, self.api, self.missing_source_list))
+
         return handler_list
 
     def get_output_object(self, input_dict):
+
+        name = input_dict[CABLE_TYPE_NAME_KEY]
+        if name in self.existing_cable_types:
+            # cable type already exists with this name, skip
+            logging.debug("cable type already exists in CDB for: %s, skipping" % input_dict[CABLE_TYPE_NAME_KEY])
+            return None
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_TYPE_NAME_KEY])
         return CableTypeOutputObject(helper=self, input_dict=input_dict)
@@ -889,31 +1337,44 @@ class CableTypeHelper(PreImportHelper):
 
         global name_manager
 
-        cable_type_named_range = self.args.namedRange
+        cable_type_named_range = self.named_range
 
-        if len(output_objects) < name_manager.num_values_for_name(cable_type_named_range):
-            return False, "fewer rows in output spreadsheet than named range of cable types for technical system"
+        if len(output_objects) + len(self.existing_cable_types) < name_manager.num_values_for_name(cable_type_named_range):
+            return False, "named range: %s includes cable types not included in start/end range of script"
 
         return True, ""
 
     def close(self):
-        if len(self.missing_source_list) > 0:
+        if len(self.missing_source_list) > 0 or len(self.existing_cable_types) > 0:
 
-            if not self.args.infoFile:
+            if not self.info_file:
                 print("provide command line arg 'infoFile' to generate debugging output file")
                 return
 
-            output_book = xlsxwriter.Workbook(self.args.infoFile)
+            output_book = xlsxwriter.Workbook(self.info_file)
             output_sheet = output_book.add_worksheet()
 
             output_sheet.write(0, 0, "missing sources")
+            output_sheet.write(0, 1, "existing cable types")
 
             row_index = 1
             for src in sorted(self.missing_source_list):
                 output_sheet.write(row_index, 0, src)
                 row_index = row_index + 1
 
+            row_index = 1
+            for name in sorted(self.existing_cable_types):
+                output_sheet.write(row_index, 1, name)
+                row_index = row_index + 1
+
             output_book.close()
+
+    # Returns processing summary message.
+    def get_processing_summary(self):
+        if len(self.existing_cable_types) > 0:
+            return "DETAILS: number of cable types that already exist in CDB (not written to output file): %d" % len(self.existing_cable_types)
+        else:
+            return ""
 
 
 class CableTypeOutputObject(OutputObject):
@@ -1006,16 +1467,16 @@ class CableTypeOutputObject(OutputObject):
         return proc_info
 
     def get_project_id(self):
-        return self.helper.get_args().projectId
+        return self.helper.get_project_id()
 
     def get_tech_system_id(self):
-        return self.helper.get_args().techSystemId
+        return self.helper.get_tech_system_id()
 
     def get_owner_user_id(self):
-        return self.helper.get_args().ownerUserId
+        return self.helper.get_owner_user_id()
 
     def get_owner_group_id(self):
-        return self.helper.get_args().ownerGroupId
+        return self.helper.get_owner_group_id()
 
 
 @register
@@ -1025,20 +1486,29 @@ class CableInventoryHelper(PreImportHelper):
         super().__init__()
         self.cable_type_id_manager = IdManager()
         self.missing_cable_types = set()
+        self.project_id = None
+        self.owner_user_id = None
+        self.owner_group_id = None
 
-    # Adds helper specific command line args.
-    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    def add_parser_args(self, parser):
-        super().add_parser_args(parser)
-        parser.add_argument("--projectId", help="CDB project ID", required=True)
-        parser.add_argument("--ownerUserId", help="CDB owner user ID", required=True)
-        parser.add_argument("--ownerGroupId", help="CDB owner group ID", required=True)
+    # returns number of rows at which progress message should be displayed
+    @classmethod
+    def progress_increment(cls):
+        return 100
 
-    def set_args(self, args):
-        super().set_args(args)
-        print("CDB project id: %s" % args.projectId)
-        print("CDB owner user id: %s" % args.ownerUserId)
-        print("CDB owner group id: %s" % args.ownerGroupId)
+    def get_project_id(self):
+        return self.project_id
+
+    def get_owner_user_id(self):
+        return self.owner_user_id
+
+    def get_owner_group_id(self):
+        return self.owner_group_id
+
+    def set_config_preimport(self, config, section):
+        super().set_config_preimport(config, section)
+        self.project_id = get_config_resource(config, section, 'projectId', True)
+        self.owner_user_id = get_config_resource(config, section, 'ownerUserId', True)
+        self.owner_group_id = get_config_resource(config, section, 'ownerGroupId', True)
 
     @staticmethod
     def tag():
@@ -1047,19 +1517,17 @@ class CableInventoryHelper(PreImportHelper):
     def num_input_cols(self):
         return 23
 
-    def input_column_list(self):
+    def generate_input_column_list(self):
         column_list = [
             InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
             InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
             InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, required=True),
             InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
-            InputColumnModel(col_index=18, key=CABLE_DESIGN_MBA_ID_KEY),
-            InputColumnModel(col_index=19, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
-            InputColumnModel(col_index=20, key=CABLE_DESIGN_QR_ID_KEY, required=False),
+            InputColumnModel(col_index=20, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
         ]
         return column_list
 
-    def output_column_list(self):
+    def generate_output_column_list(self):
         column_list = [
             OutputColumnModel(col_index=0, method="get_cable_type_id", label="Catalog Item"),
             OutputColumnModel(col_index=1, method="get_tag", label="Tag"),
@@ -1075,10 +1543,10 @@ class CableInventoryHelper(PreImportHelper):
         ]
         return column_list
 
-    def input_handler_list(self):
+    def generate_handler_list(self):
         global name_manager
         handler_list = [
-            CableTypeHandler(CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.api, self.missing_cable_types),
+            CableTypeIdHandler(CABLE_DESIGN_TYPE_INDEX+1, CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.missing_cable_types),
         ]
         return handler_list
 
@@ -1109,7 +1577,7 @@ class CableInventoryOutputObject(OutputObject):
         return "auto"
 
     def get_qr_id(self):
-        return self.input_dict[CABLE_DESIGN_QR_ID_KEY]
+        return ""
 
     def get_description(self):
         return None
@@ -1127,13 +1595,13 @@ class CableInventoryOutputObject(OutputObject):
         return None
 
     def get_project_id(self):
-        return self.helper.get_args().projectId
+        return self.helper.get_project_id()
 
     def get_owner_user_id(self):
-        return self.helper.get_args().ownerUserId
+        return self.helper.get_owner_user_id()
 
     def get_owner_group_id(self):
-        return self.helper.get_args().ownerGroupId
+        return self.helper.get_owner_group_id()
 
 
 @register
@@ -1147,27 +1615,40 @@ class CableDesignHelper(PreImportHelper):
         self.missing_endpoints = set()
         self.missing_cable_types = set()
         self.nonunique_endpoints = set()
-        self.info_file = None
+        self.existing_cable_designs = []
+        self.cable_design_names = []
+        self.project_id = None
+        self.tech_system_id = None
+        self.owner_user_id = None
+        self.owner_group_id = None
 
-    # Adds helper specific command line args.
-    # e.g., "parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)"
-    def add_parser_args(self, parser):
-        super().add_parser_args(parser)
-        parser.add_argument("--techSystemId", help="CDB technical system ID for owner", required=True)
-        parser.add_argument("--projectId", help="CDB project ID", required=True)
-        parser.add_argument("--mdRoot", help="CDB top-level parent machine design node name", required=True)
-        parser.add_argument("--ownerUserId", help="CDB owner user ID", required=True)
-        parser.add_argument("--ownerGroupId", help="CDB owner group ID", required=True)
+    def get_project_id(self):
+        return self.project_id
 
-    def set_args(self, args):
-        super().set_args(args)
-        print("CDB technical system id: %s" % args.techSystemId)
-        print("CDB project id: %s" % args.projectId)
-        print("CDB owner user id: %s" % args.ownerUserId)
-        print("CDB owner group id: %s" % args.ownerGroupId)
-        print("top-level parent machine design node name: %s" % args.mdRoot)
-        self.md_root = args.mdRoot
-        self.info_file = args.infoFile
+    def get_tech_system_id(self):
+        return self.tech_system_id
+
+    def get_owner_user_id(self):
+        return self.owner_user_id
+
+    def get_owner_group_id(self):
+        return self.owner_group_id
+
+    # returns number of rows at which progress message should be displayed
+    @classmethod
+    def progress_increment(cls):
+        return 50
+
+    def set_config_preimport(self, config, section):
+        super().set_config_preimport(config, section)
+        self.project_id = get_config_resource(config, section, 'projectId', True)
+        self.owner_user_id = get_config_resource(config, section, 'ownerUserId', True)
+        self.owner_group_id = get_config_resource(config, section, 'ownerGroupId', True)
+        self.md_root = get_config_resource(config, section, 'mdRoot', True)
+
+    def set_config_group(self, config, section):
+        super().set_config_group(config, section)
+        self.tech_system_id = get_config_resource(config, section, 'techSystemId', True)
 
     @staticmethod
     def tag():
@@ -1176,68 +1657,70 @@ class CableDesignHelper(PreImportHelper):
     def num_input_cols(self):
         return 24
 
-    def input_column_list(self):
+    def generate_input_column_list(self):
         column_list = [
             InputColumnModel(col_index=0, key=CABLE_DESIGN_NAME_KEY, required=True),
             InputColumnModel(col_index=1, key=CABLE_DESIGN_LAYING_KEY, required=True),
             InputColumnModel(col_index=2, key=CABLE_DESIGN_VOLTAGE_KEY, required=True),
             InputColumnModel(col_index=3, key=CABLE_DESIGN_OWNER_KEY, required=True),
-            InputColumnModel(col_index=4, key=CABLE_DESIGN_TYPE_KEY, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_TYPE_INDEX, key=CABLE_DESIGN_TYPE_KEY, required=True),
             InputColumnModel(col_index=5, key=CABLE_DESIGN_SRC_LOCATION_KEY, required=True),
             InputColumnModel(col_index=6, key=CABLE_DESIGN_SRC_ANS_KEY, required=True),
-            InputColumnModel(col_index=7, key=CABLE_DESIGN_SRC_ETPM_KEY, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_SRC_ETPM_INDEX, key=CABLE_DESIGN_SRC_ETPM_KEY, required=True),
             InputColumnModel(col_index=8, key=CABLE_DESIGN_SRC_ADDRESS_KEY, required=True),
             InputColumnModel(col_index=9, key=CABLE_DESIGN_SRC_DESCRIPTION_KEY, required=True),
             InputColumnModel(col_index=10, key=CABLE_DESIGN_DEST_LOCATION_KEY, required=True),
             InputColumnModel(col_index=11, key=CABLE_DESIGN_DEST_ANS_KEY, required=True),
-            InputColumnModel(col_index=12, key=CABLE_DESIGN_DEST_ETPM_KEY, required=True),
+            InputColumnModel(col_index=CABLE_DESIGN_DEST_ETPM_INDEX, key=CABLE_DESIGN_DEST_ETPM_KEY, required=True),
             InputColumnModel(col_index=13, key=CABLE_DESIGN_DEST_ADDRESS_KEY, required=True),
             InputColumnModel(col_index=14, key=CABLE_DESIGN_DEST_DESCRIPTION_KEY, required=True),
-            InputColumnModel(col_index=15, key=CABLE_DESIGN_LEGACY_ID_KEY),
-            InputColumnModel(col_index=16, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
-            InputColumnModel(col_index=17, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
-            InputColumnModel(col_index=18, key=CABLE_DESIGN_MBA_ID_KEY),
-            InputColumnModel(col_index=19, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
-            InputColumnModel(col_index=20, key=CABLE_DESIGN_QR_ID_KEY, required=False),
+            InputColumnModel(col_index=CABLE_DESIGN_LEGACY_ID_INDEX, key=CABLE_DESIGN_LEGACY_ID_KEY),
+            InputColumnModel(col_index=CABLE_DESIGN_FROM_DEVICE_NAME_INDEX, key=CABLE_DESIGN_FROM_DEVICE_NAME_KEY, required=True),
+            InputColumnModel(col_index=17, key=CABLE_DESIGN_FROM_PORT_NAME_KEY, required=False),
+            InputColumnModel(col_index=CABLE_DESIGN_TO_DEVICE_NAME_INDEX, key=CABLE_DESIGN_TO_DEVICE_NAME_KEY, required=True),
+            InputColumnModel(col_index=19, key=CABLE_DESIGN_TO_PORT_NAME_KEY, required=False),
+            InputColumnModel(col_index=CABLE_DESIGN_IMPORT_ID_INDEX, key=CABLE_DESIGN_IMPORT_ID_KEY, required=True),
             InputColumnModel(col_index=21, key=CABLE_DESIGN_VIA_ROUTE_KEY, required=False),
             InputColumnModel(col_index=22, key=CABLE_DESIGN_WAYPOINT_ROUTE_KEY, required=False),
             InputColumnModel(col_index=23, key=CABLE_DESIGN_NOTES_KEY, required=False),
         ]
         return column_list
 
-    def output_column_list(self):
+    def generate_output_column_list(self):
         column_list = [
-            OutputColumnModel(col_index=0, method="get_name", label="name"),
-            OutputColumnModel(col_index=1, method="get_alt_name", label="alt name"),
-            OutputColumnModel(col_index=2, method="get_ext_name", label="ext cable name"),
-            OutputColumnModel(col_index=3, method="get_import_id", label="import cable id"),
-            OutputColumnModel(col_index=4, method="get_alt_id", label="alt cable id"),
-            OutputColumnModel(col_index=5, method="get_qr_id", label="legacy qr id"),
-            OutputColumnModel(col_index=6, method="get_description", label="description"),
-            OutputColumnModel(col_index=7, method="get_laying", label="laying"),
-            OutputColumnModel(col_index=8, method="get_voltage", label="voltage"),
-            OutputColumnModel(col_index=9, method="get_cable_type_id", label="cable type id"),
-            OutputColumnModel(col_index=10, method="get_endpoint1_id", label="endpoint1 id"),
-            OutputColumnModel(col_index=11, method="get_endpoint1_description", label="endpoint1 description"),
-            OutputColumnModel(col_index=12, method="get_endpoint1_route", label="endpoint1 route"),
-            OutputColumnModel(col_index=13, method="get_endpoint2_id", label="endpoint2 id"),
-            OutputColumnModel(col_index=14, method="get_endpoint2_description", label="endpoint2 description"),
-            OutputColumnModel(col_index=15, method="get_endpoint2_route", label="endpoint2 route"),
-            OutputColumnModel(col_index=16, method="get_project_id", label="project id"),
-            OutputColumnModel(col_index=17, method="get_tech_system_id", label="technical system"),
-            OutputColumnModel(col_index=18, method="get_owner_user_id", label="owner user"),
-            OutputColumnModel(col_index=19, method="get_owner_group_id", label="owner group"),
+            OutputColumnModel(col_index=0, method="get_existing_item_id", label="Existing Item ID"),
+            OutputColumnModel(col_index=1, method="get_delete_existing_item", label="Delete Existing Item"),
+            OutputColumnModel(col_index=2, method="get_name", label="name"),
+            OutputColumnModel(col_index=3, method="get_alt_name", label="alt name"),
+            OutputColumnModel(col_index=4, method="get_ext_name", label="ext cable name"),
+            OutputColumnModel(col_index=5, method="get_import_id", label="import cable id"),
+            OutputColumnModel(col_index=6, method="get_alt_id", label="alt cable id"),
+            OutputColumnModel(col_index=7, method="get_qr_id", label="legacy qr id"),
+            OutputColumnModel(col_index=8, method="get_description", label="description"),
+            OutputColumnModel(col_index=9, method="get_laying", label="laying"),
+            OutputColumnModel(col_index=10, method="get_voltage", label="voltage"),
+            OutputColumnModel(col_index=11, method="get_cable_type_id", label="cable type id"),
+            OutputColumnModel(col_index=12, method="get_endpoint1_id", label="endpoint1 id"),
+            OutputColumnModel(col_index=13, method="get_endpoint1_description", label="endpoint1 description"),
+            OutputColumnModel(col_index=14, method="get_endpoint1_route", label="endpoint1 route"),
+            OutputColumnModel(col_index=15, method="get_endpoint2_id", label="endpoint2 id"),
+            OutputColumnModel(col_index=16, method="get_endpoint2_description", label="endpoint2 description"),
+            OutputColumnModel(col_index=17, method="get_endpoint2_route", label="endpoint2 route"),
+            OutputColumnModel(col_index=18, method="get_project_id", label="project id"),
+            OutputColumnModel(col_index=19, method="get_tech_system_id", label="technical system"),
+            OutputColumnModel(col_index=20, method="get_owner_user_id", label="owner user"),
+            OutputColumnModel(col_index=21, method="get_owner_group_id", label="owner group"),
         ]
         return column_list
     
-    def input_handler_list(self):
+    def generate_handler_list(self):
         global name_manager
         handler_list = [
+            UniqueNameHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.cable_design_names),
             NamedRangeHandler(CABLE_DESIGN_LAYING_KEY, "_Laying"),
             NamedRangeHandler(CABLE_DESIGN_VOLTAGE_KEY, "_Voltage"),
             NamedRangeHandler(CABLE_DESIGN_OWNER_KEY, "_Owner"),
             ConnectedMenuHandler(CABLE_DESIGN_TYPE_KEY, CABLE_DESIGN_OWNER_KEY),
-            CableTypeHandler(CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.api, self.missing_cable_types),
             NamedRangeHandler(CABLE_DESIGN_SRC_LOCATION_KEY, "_Location"),
             ConnectedMenuHandler(CABLE_DESIGN_SRC_ANS_KEY, CABLE_DESIGN_SRC_LOCATION_KEY),
             ConnectedMenuHandler(CABLE_DESIGN_SRC_ETPM_KEY, CABLE_DESIGN_SRC_ANS_KEY),
@@ -1249,8 +1732,10 @@ class CableDesignHelper(PreImportHelper):
         ]
 
         if not self.validate_only:
-            handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints))
-            handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints))
+            handler_list.append(CableDesignExistenceHandler(CABLE_DESIGN_IMPORT_ID_KEY, self.existing_cable_designs, CABLE_DESIGN_IMPORT_ID_INDEX+1, CABLE_DESIGN_LEGACY_ID_INDEX+1, self.ignore_existing))
+            handler_list.append(CableTypeIdHandler(CABLE_DESIGN_TYPE_INDEX+1, CABLE_DESIGN_TYPE_KEY, self.cable_type_id_manager, self.missing_cable_types))
+            handler_list.append(EndpointHandler(CABLE_DESIGN_FROM_DEVICE_NAME_KEY, CABLE_DESIGN_SRC_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_FROM_DEVICE_NAME_INDEX+1, CABLE_DESIGN_SRC_ETPM_INDEX+1, "source endpoints"))
+            handler_list.append(EndpointHandler(CABLE_DESIGN_TO_DEVICE_NAME_KEY, CABLE_DESIGN_DEST_ETPM_KEY, self.get_md_root(), self.api, self.rack_manager, self.missing_endpoints, self.nonunique_endpoints, CABLE_DESIGN_TO_DEVICE_NAME_INDEX+1, CABLE_DESIGN_DEST_ETPM_INDEX+1, "destination endpoints"))
 
         return handler_list
 
@@ -1260,31 +1745,54 @@ class CableDesignHelper(PreImportHelper):
 
     # Treat a row that contains a single non-empty value in the "import id" column as an empty row.
     def input_row_is_empty_custom(self, input_dict, row_num):
+
         non_empty_count = sum([1 for val in input_dict.values() if len(str(val)) > 0])
+
         if non_empty_count == 2 and ((len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0) and (input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []")):
             logging.debug("skipping empty row with non-empty import id: %s row: %d" %
                           (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
             return True
 
+        if non_empty_count == 1 and (input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []"):
+            logging.debug("skipping empty row with no import id: %s row: %d" %
+                          (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
+            return True
+
+        if non_empty_count == 1 and (len(str(input_dict[CABLE_DESIGN_IMPORT_ID_KEY])) > 0):
+            logging.debug("skipping empty row with id: %s row: %d" %
+                          (input_dict[CABLE_DESIGN_IMPORT_ID_KEY], row_num))
+            return True
+
+        # the following block allows any row whose name is "[] | []", which I'd like to avoid to detect copy/paste errors
+        # if input_dict[CABLE_DESIGN_NAME_KEY] == "[] | []":
+        #     return True
+
     def get_output_object(self, input_dict):
+
+        name = CableDesignOutputObject.get_name_cls(input_dict)
+        if name in self.existing_cable_designs:
+            # cable design already exists with this name, skip
+            logging.debug("cable design already exists in CDB for: %s, skipping" % name)
+            return None
 
         logging.debug("adding output object for: %s" % input_dict[CABLE_DESIGN_NAME_KEY])
         return CableDesignOutputObject(helper=self, input_dict=input_dict)
 
     def close(self):
 
-        if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0:
+        if len(self.missing_cable_types) > 0 or len(self.missing_endpoints) > 0 or len(self.nonunique_endpoints) > 0 or len(self.existing_cable_designs) > 0:
 
-            if not self.args.infoFile:
+            if not self.info_file:
                 print("provide command line arg 'infoFile' to generate debugging output file")
                 return
 
-            output_book = xlsxwriter.Workbook(self.args.infoFile)
+            output_book = xlsxwriter.Workbook(self.info_file)
             output_sheet = output_book.add_worksheet()
 
             output_sheet.write(0, 0, "missing cable types")
             output_sheet.write(0, 1, "missing endpoints")
             output_sheet.write(0, 2, "non-unique endpoints")
+            output_sheet.write(0, 3, "existing cable designs")
 
             row_index = 1
             for cable_type_name in sorted(self.missing_cable_types):
@@ -1301,7 +1809,19 @@ class CableDesignHelper(PreImportHelper):
                 output_sheet.write(row_index, 2, endpoint_name)
                 row_index = row_index + 1
 
+            row_index = 1
+            for cable_design_name in sorted(self.existing_cable_designs):
+                output_sheet.write(row_index, 3, cable_design_name)
+                row_index = row_index + 1
+
             output_book.close()
+
+    # Returns processing summary message.
+    def get_processing_summary(self):
+        if len(self.existing_cable_designs) > 0:
+            return "DETAILS: number of cable designs that already exist in CDB (not written to output file): %d" % (len(self.existing_cable_designs))
+        else:
+            return ""
 
 
 class CableDesignOutputObject(OutputObject):
@@ -1310,24 +1830,36 @@ class CableDesignOutputObject(OutputObject):
         super().__init__(helper, input_dict)
 
     @classmethod
-    def get_name_cls(cls, row_dict):
+    def get_name_cls(cls, row_dict, legacy_id=None, import_id=None):
 
         # use legacy_id if specified
-        legacy_id = row_dict[CABLE_DESIGN_LEGACY_ID_KEY]
+        if row_dict is not None:
+            legacy_id = row_dict[CABLE_DESIGN_LEGACY_ID_KEY]
+        elif legacy_id is not None:
+            legacy_id = str(legacy_id)
+        else:
+            legacy_id = ""
         if len(legacy_id) > 0:
             return legacy_id
 
-        # next try MBA cable id
-        mba_id = row_dict[CABLE_DESIGN_MBA_ID_KEY]
-        if len(mba_id) > 0:
-            return mba_id
-
         # otherwise use import_id prefixed with "CA "
-        return "CA " + cls.get_import_id_cls(row_dict)
+        if row_dict is not None:
+            import_id = cls.get_import_id_cls(row_dict)
+        elif import_id is not None:
+            import_id = str(import_id)
+        else:
+            import_id = ""
+        return "CA " + import_id
 
     @classmethod
     def get_import_id_cls(cls, row_dict):
         return str(int(row_dict[CABLE_DESIGN_IMPORT_ID_KEY]))
+
+    def get_existing_item_id(self):
+        return ""
+
+    def get_delete_existing_item(self):
+        return ""
 
     def get_name(self):
         return self.get_name_cls(self.input_dict)
@@ -1347,7 +1879,7 @@ class CableDesignOutputObject(OutputObject):
         return self.input_dict[CABLE_DESIGN_LEGACY_ID_KEY]
 
     def get_qr_id(self):
-        return self.input_dict[CABLE_DESIGN_QR_ID_KEY]
+        return ""
 
     def get_description(self):
         return ""
@@ -1394,16 +1926,16 @@ class CableDesignOutputObject(OutputObject):
         return str(self.input_dict[CABLE_DESIGN_WAYPOINT_ROUTE_KEY])
 
     def get_project_id(self):
-        return self.helper.get_args().projectId
+        return self.helper.get_project_id()
 
     def get_tech_system_id(self):
-        return self.helper.get_args().techSystemId
+        return self.helper.get_tech_system_id()
 
     def get_owner_user_id(self):
-        return self.helper.get_args().ownerUserId
+        return self.helper.get_owner_user_id()
 
     def get_owner_group_id(self):
-        return self.helper.get_args().ownerGroupId
+        return self.helper.get_owner_group_id()
 
 
 range_parts = re.compile(r'(\$?)([A-Z]{1,3})(\$?)(\d+)')
@@ -1433,9 +1965,7 @@ def xl_cell_to_rowcol(cell_str):
         col += (ord(char) - ord('A') + 1) * (26 ** expn)
         expn += 1
 
-    # Convert 1-index to zero-index
-    row = int(row_str) - 1
-    col -= 1
+    row = int(row_str)
 
     return row, col
 
@@ -1459,106 +1989,288 @@ def write_validation_report(validation_map, validation_report_file):
     output_book.close()
 
 
+def fatal_error(error_msg):
+    print()
+    print("ERROR ====================")
+    print()
+    print(error_msg)
+    sys.exit(0)
+
+
+def get_config_resource(config, section, key, is_required, print_value=True, print_mask=None):
+    value = None
+    if section not in config:
+        fatal_error("Invalid config section: %s, exiting" % section)
+    if key not in config[section]:
+        if is_required:
+            fatal_error("Config key: %s not found in section: %s, exiting" % (key, section))
+    else:
+        value = config[section][key]
+        if is_required and len(value) == 0:
+            fatal_error("value not provided for required option '[%s] %s', exiting" % (section, key))
+    if print_value:
+        print_obj = value
+        if value is not None:
+            if print_mask is not None:
+                if len(value) > 0:
+                    print_obj = print_mask
+        print("[%s] %s: %s" % (section, key, print_obj))
+    return value
+
+
 def main():
 
     global name_manager
 
-    # find --type command line parameter so we can create the appropriate helper subclass before proceeding
-    type_arg = "--type"
-    if type_arg not in sys.argv:
-        sys.exit("--type command line parameter not specified, exiting")
+    # parse command line args
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--configDir", help="Directory containing script config files.", required=True)
+    parser.add_argument("--type", help="Object type, must be one of 'Source', 'CableType', 'CableDesign', or 'CableInventory'.", required=True)
+    parser.add_argument("--groupId", help="Identifier for cable owner group, must have corresponding '.conf' file in configDir", required=True)
+    parser.add_argument("--deploymentName", help="Name to use for looking up URL/user/password in deploymentInfoFile")
+    parser.add_argument("--cdbUrl", help="CDB system URL")
+    parser.add_argument("--cdbUser", help="CDB User ID for API login")
+    parser.add_argument("--cdbPassword", help="CDB User password for API login")
+    args = parser.parse_args()
+
+    print()
+    print("COMMAND LINE ARGS ====================")
+    print()
+    print("configDir: %s" % args.configDir)
+    print("type: %s" % args.type)
+    print("groupId: %s" % args.groupId)
+    print("deploymentName: %s" % args.deploymentName)
+    print("cdbUrl: %s" % args.cdbUrl)
+    print("cdbUser: %s" % args.cdbUser)
+    if args.cdbPassword is not None and len(args.cdbPassword) > 0:
+        password_string = "********"
     else:
-        type_index = sys.argv.index(type_arg)
-        if type_index < (len(sys.argv) - 1):
-            type_arg_value = sys.argv[type_index+1]
-        else:
-            sys.exit("no value specified for --type command line parameter, exiting")
+        password_string = args.cdbPassword
+    print("cdbPassword: %s" % password_string)
+
+    #
+    # determine config file names and paths and test
+    #
+
+    option_config_dir = args.configDir
+    if not os.path.isdir(option_config_dir):
+        fatal_error("Specified configDir: %s does not exist, exiting" % option_config_dir)
+
+    file_config_preimport = option_config_dir + "/preimport.conf"
+    if not os.path.isfile(file_config_preimport):
+        fatal_error("'preimport.conf' file not found in configDir: %s', exiting" % option_config_dir)
+
+    file_config_deployment_info = option_config_dir + "/cdb-deployment-info.conf"
+
+    option_group_id = args.groupId
+    file_config_group = option_config_dir + "/" + option_group_id + ".conf"
+    if not os.path.isfile(file_config_group):
+        fatal_error("'%s.conf' file not found in configDir: %s', exiting" % (option_group_id, option_config_dir))
+
+    option_type = args.type
+    if not PreImportHelper.is_valid_type(option_type):
+        fatal_error("unknown value for type parameter: %s, exiting" % option_type)
 
     # create instance of appropriate helper subclass
-    if not PreImportHelper.is_valid_type(type_arg_value):
-        sys.exit("unknown value for type parameter, expected Source, CableType, or CableDesign, got: %s" % type_arg_value)
-    helper = PreImportHelper.create_helper(type_arg_value)
+    helper = PreImportHelper.create_helper(option_type)
 
-    # process other command line arguments
-    parser = argparse.ArgumentParser()
-    parser.add_argument("inputFile", help="Data collection workbook xlsx file with 'cable specs' tab")
-    parser.add_argument("outputFile", help="Official CDB Sources import format xlsx file")
-    parser.add_argument(type_arg, help="Type of pre-import processing (Source, CableType, or CableDesign)", required=True)
-    parser.add_argument("--logFile", help="File for log output", required=True)
-    parser.add_argument("--validationFile", help="File for validation output", required=True)
-    parser.add_argument("--infoFile", help="domain specific xlsx file for reviewing helper actions", required=False)
-    parser.add_argument("--cdbUrl", help="CDB system URL", required=True)
-    parser.add_argument("--cdbUser", help="CDB User ID for API login", required=True)
-    parser.add_argument("--cdbPassword", help="CDB User password for API login", required=True)
-    parser.add_argument("--sheetNumber", help="Worksheet number within workbook (1-based)", required=True)
-    parser.add_argument("--headerRow", help="Input spreadsheet row number of header row (1-based)", required=True)
-    parser.add_argument("--firstDataRow", help="Input spreadsheet row number of first data row (1-based)", required=True)
-    parser.add_argument("--lastDataRow", help="Input spreadsheet row number of last data row (1-based)", required=True)
-    helper.add_parser_args(parser)
-    args = parser.parse_args()
-    print("using inputFile: %s" % args.inputFile)
-    print("using outputFile: %s" % args.outputFile)
-    print("using logFile: %s" % args.logFile)
-    print("using validation file: %s" % args.validationFile)
-    print("debugging info xlsx file: %s" % args.infoFile)
-    print("pre-import type: %s" % args.type)
-    print("cdb url: %s" % args.cdbUrl)
-    print("cdb user id: %s" % args.cdbUser)
-    print("cdb user password: %s" % args.cdbPassword)
-    print("worksheet number: %s" % args.sheetNumber)
-    print("header row number: %s" % args.headerRow)
-    print("first data row number: %s" % args.firstDataRow)
-    print("last data row number: %s" % args.lastDataRow)
-    helper.set_args(args)
+    #
+    # process options
+    #
 
-    sheetNum = int(args.sheetNumber)
-    headerRowNum = int(args.headerRow)
-    firstDataRowNum = int(args.firstDataRow)
-    lastDataRowNum = int(args.lastDataRow)
+    # read config files
+    config_preimport = configparser.ConfigParser()
+    config_preimport.read(file_config_preimport)
+    config_group = configparser.ConfigParser()
+    config_group.read(file_config_group)
 
-    sheetIndex = sheetNum - 1
-    headerIndex = headerRowNum - 1
-    firstDataIndex = firstDataRowNum - 1
-    lastDataIndex = lastDataRowNum - 1
+    print()
+    print("preimport.conf OPTIONS ====================")
+    print()
 
-    # initialize input and output columns
-    helper.initialize_input_columns()
-    helper.initialize_output_columns()
+    # process inputDir option
+    option_input_dir = get_config_resource(config_preimport, option_type, 'inputDir', True)
+    if not os.path.isdir(option_input_dir):
+        fatal_error("'[%s] inputDir' directory: %s does not exist, exiting" % (option_type, option_input_dir))
+
+    # process outputDir option
+    option_output_dir = get_config_resource(config_preimport, option_type, 'outputDir', True)
+    if not os.path.isdir(option_output_dir):
+        fatal_error("'[%s] outputDir' directory: %s does not exist, exiting" % (option_type, option_input_dir))
+
+    # process sheetNumber option
+    option_sheet_number = get_config_resource(config_preimport, option_type, 'sheetNumber', True)
+
+    helper.set_config_preimport(config_preimport, option_type)
+
+    print()
+    print("%s.conf OPTIONS ====================" % option_group_id)
+    print()
+
+    # process inputExcelFile option
+    option_input_file = get_config_resource(config_group, option_type, 'inputExcelFile', True)
+    file_input = option_input_dir + "/" + option_input_file
+    if not os.path.isfile(file_input):
+        fatal_error("'[%s] inputExcelFile' file: %s does not exist in directory: %s, exiting" % (option_type, option_input_file, option_input_dir))
+
+    # process headerRow option
+    option_header_row = get_config_resource(config_group, option_type, 'headerRow', True)
+
+    # process firstDataRow option
+    option_first_data_row = get_config_resource(config_group, option_type, 'firstDataRow', True)
+
+    # process lastDataRow option
+    option_last_data_row = get_config_resource(config_group, option_type, 'lastDataRow', True)
+
+    helper.set_config_group(config_group, option_type)
+
+    #
+    # Generate output file paths.
+    #
+
+    # output excel file
+    file_output = "%s/%s.%s.xlsx" % (option_output_dir, option_group_id, option_type)
+
+    # log file
+    file_log = "%s/%s.%s.log" % (option_output_dir, option_group_id, option_type)
+
+    # validation details file
+    file_validation = "%s/%s.%s.validation.xlsx" % (option_output_dir, option_group_id, option_type)
+
+    # debug info file
+    file_info = "%s/%s.%s.debug.xlsx" % (option_output_dir, option_group_id, option_type)
+    helper.set_info_file(file_info)
+
+    #
+    # determine whether to use args or config for url/user/password
+    #
+
+    # get cdb url, user, password from config, if specified
+    option_cdb_url = None
+    option_cdb_user = None
+    option_cdb_password = None
+
+    if len(args.deploymentName) > 0:
+        if len(file_config_deployment_info) == 0:
+            # must have deployment info file
+            fatal_error("[INPUTS] deploymentInfoFile not specified but required to look up deployment name: %s, exiting" % args.deploymentName)
+        else:
+            if not os.path.isfile(file_config_deployment_info):
+                fatal_error("'[INPUTS] deploymentInfoFile' file: %s does not exist, exiting" % file_config_deployment_info)
+            else:
+                print()
+                print("DEPLOYMENT INFO CONFIG ====================")
+                print()
+                deployment_config = configparser.ConfigParser()
+                deployment_config.read(file_config_deployment_info)
+                if args.deploymentName not in deployment_config:
+                    fatal_error("specified deploymentName: %s not found in deploymentInfoFile: %s, exiting" % (args.deploymentName, file_config_deployment_info))
+                option_cdb_url = get_config_resource(deployment_config, args.deploymentName, 'cdbUrl', False)
+                option_cdb_user = get_config_resource(deployment_config, args.deploymentName, 'cdbUser', False)
+                option_cdb_password = get_config_resource(deployment_config, args.deploymentName, 'cdbPassword', False, True, '********')
+
+    if args.cdbUrl is not None:
+        cdb_url = args.cdbUrl
+    else:
+        if option_cdb_url is None:
+            fatal_error("cdbUser must be specified on command line or via deployment info file, exiting")
+        else:
+            cdb_url = option_cdb_url
+
+    if args.cdbUser is not None:
+        cdb_user = args.cdbUser
+    else:
+        if option_cdb_user is None:
+            fatal_error("cdbUser must be specified on command line or via deployment info file, exiting")
+        else:
+            cdb_user = option_cdb_user
+
+    if args.cdbPassword is not None:
+        cdb_password = args.cdbPassword
+    else:
+        if option_cdb_password is None:
+            fatal_error("cdbUser must be specified on command line or via deployment info file, exiting")
+        else:
+            cdb_password = option_cdb_password
+
+    print()
+    print("CDB URL/USER/PASSWORD SETTINGS (COMMAND LINE TAKES PRECEDENCE OVER CONFIG)====================")
+    print()
+    print("cdbUrl: %s" % cdb_url)
+    print("cdbUser: %s" % cdb_user)
+    print("cdbPassword: %s" % cdb_password)
+    if cdb_password is not None and len(cdb_password) > 0:
+        password_string = "********"
+    else:
+        password_string = cdb_password
+    print("cdbPassword: %s" % password_string)
+
+    sheet_num = int(option_sheet_number)
+    header_row_num = int(option_header_row)
+    first_data_row_num = int(option_first_data_row)
+    last_data_row_num = int(option_last_data_row)
+
+    sheet_index = sheet_num - 1
+    header_index = header_row_num
+    first_data_index = first_data_row_num
+    last_data_index = last_data_row_num
 
     # configure logging
-    logging.basicConfig(filename=args.logFile, filemode='w', level=logging.DEBUG, format='%(levelname)s - %(message)s')
+    logging.basicConfig(filename=file_log, filemode='w', level=logging.DEBUG, format='%(levelname)s - %(message)s')
+
+    #
+    # connect to CDB
+    #
+
+    print()
+    print("CONNECTING TO CDB ====================")
+    print()
+    print("connecting to %s as user %s (make sure CDB is running and VPN connected if needed)" % (cdb_url, cdb_user))
 
     # open connection to CDB
-    api = CdbApiFactory(args.cdbUrl)
+    api = CdbApiFactory(cdb_url)
     try:
-        api.authenticateUser(args.cdbUser, args.cdbPassword)
+        api.authenticateUser(cdb_user, cdb_password)
         api.testAuthenticated()
-    except ApiException:
-        sys.exit("CDB login failed")
-    helper.set_api(api)
+    except (ApiException, urllib3.exceptions.MaxRetryError) as exc:
+        fatal_error("CDB login failed user: %s message: %s, exiting" % (cdb_user, exc))
 
     # open input spreadsheet
-    input_book = xlrd.open_workbook(args.inputFile)
-
+    input_book = openpyxl.load_workbook(filename=file_input, data_only=True)
     name_manager = ConnectedMenuManager(input_book)
-
-    input_sheet = input_book.sheet_by_index(int(sheetIndex))
-    logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.nrows, input_sheet.ncols))
+    input_sheet = input_book.worksheets[int(sheet_index)]
+    logging.info("input spreadsheet dimensions: %d x %d" % (input_sheet.max_row, input_sheet.max_column))
 
     # validate input spreadsheet dimensions
-    if input_sheet.nrows < lastDataRowNum:
-        sys.exit("fewer rows in inputFile: %s than last data row: %d" % (args.inputFile, lastDataRowNum))
-    if input_sheet.ncols != helper.num_input_cols():
-        sys.exit("inputFile %s doesn't contain expected number of columns: %d" % (args.inputFile, helper.num_input_cols()))
+    if input_sheet.max_row < last_data_row_num:
+        fatal_error("fewer rows in inputFile: %s than last data row: %d, exiting" % (option_input_file, last_data_row_num))
+    if input_sheet.max_column != helper.num_input_cols():
+        fatal_error("inputFile %s doesn't contain expected number of columns: %d, exiting" % (option_input_file, helper.num_input_cols()))
 
+    # initialize helper
+    print()
+    print("INITIALIZING AND FETCHING CDB DATA ====================")
+    print()
+    helper.set_api(api)
+    helper.set_input_sheet(input_sheet)
+    helper.initialize(api, input_sheet, first_data_index, last_data_index)
+
+    #
     # process rows from input spreadsheet
+    #
+
+    print()
+    print("PROCESSING SPREADSHEET ROWS ====================")
+    print()
+
     input_valid = True
     output_objects = []
     validation_map = {}
     num_input_rows = 0
-    for row_ind in range(firstDataIndex, lastDataIndex + 1):
+    num_empty_rows = 0
+    for row_ind in range(first_data_index, last_data_index + 1):
 
-        current_row_num = row_ind + 1
+        current_row_num = row_ind
         num_input_rows = num_input_rows + 1
 
         logging.debug("processing row %d from input spreadsheet" % current_row_num)
@@ -1568,12 +2280,15 @@ def main():
         for col_ind in range(helper.num_input_cols()):
             if col_ind in helper.input_columns:
                 # read cell value from spreadsheet
-                val = input_sheet.cell(row_ind, col_ind).value
+                val = input_sheet.cell(row_ind, col_ind+1).value
+                if val is None:
+                    val = ""
                 logging.debug("col: %d value: %s" % (col_ind, str(val)))
                 helper.handle_input_cell_value(input_dict=input_dict, index=col_ind, value=val, row_num=current_row_num)
 
         # ignore row if blank
         if helper.input_row_is_empty(input_dict=input_dict, row_num=current_row_num):
+            num_empty_rows = num_empty_rows + 1
             continue
 
         row_is_valid = True
@@ -1601,29 +2316,45 @@ def main():
             logging.error(msg)
             validation_map[current_row_num] = row_valid_messages
 
+        # print progress message
+        if num_input_rows % helper.progress_increment() == 0:
+            print("processed %d spreadsheet rows" % num_input_rows, flush=True)
+
+    # print final progress message
+    print("processed %d spreadsheet rows" % num_input_rows)
+
+    #
+    # display validation summary
+    #
+
+    print()
+    print("VALIDATION SUMMARY ====================")
+    print()
+
     (sheet_valid, sheet_valid_string) = helper.input_is_valid(output_objects)
     if not sheet_valid:
         input_valid = False
         msg = "ERROR validating input spreadsheet: %s" % sheet_valid_string
         logging.error(msg)
-        print()
         print(msg)
+        print()
 
     # print validation report
-    print()
     if len(validation_map) > 0:
-        print("validation ERRORS found")
         for key in validation_map:
             print("row: %d" % key)
             for message in validation_map[key]:
                 print("\t%s" % message)
-        write_validation_report(validation_map, args.validationFile)
+        write_validation_report(validation_map, file_validation)
+        print()
+        print("%d validation ERROR(S) found" % len(validation_map))
+
     else:
         print("no validation errors found")
 
     # create output spreadsheet
     if input_valid and not helper.validate_only:
-        output_book = xlsxwriter.Workbook(args.outputFile)
+        output_book = xlsxwriter.Workbook(file_output)
         output_sheet = output_book.add_worksheet()
 
         # write output spreadsheet header row
@@ -1653,13 +2384,13 @@ def main():
 
         output_book.close()
 
-        summary_msg = "SUMMARY: processed %d input rows and wrote %d output rows" % (num_input_rows, num_output_rows)
+        summary_msg = "PROCESSING SUCCESSFUL: processed %d input rows including %d empty rows and wrote %d output rows" % (num_input_rows, num_empty_rows, num_output_rows)
 
     elif not input_valid:
-        summary_msg = "ERROR: processed %d input rows but no output spreadsheet generated, see log for errors" % num_input_rows
+        summary_msg = "PROCESSING ERROR: processed %d input rows including %d empty rows but no output spreadsheet generated, see validation summary/file and log for details" % (num_input_rows, num_empty_rows)
 
     else:
-        summary_msg = "VALIDATION ONLY: processed %d input rows but no output spreadsheet generated, see validation file for details" % num_input_rows
+        summary_msg = "VALIDATION ONLY: processed %d input rows including %d empty rows but no output spreadsheet generated, see validation summary/file for details" % (num_input_rows, num_empty_rows)
 
     # clean up helper
     helper.close()
@@ -1668,12 +2399,19 @@ def main():
     try:
         api.logOutUser()
     except ApiException:
-        sys.exit("CDB logout failed")
+        logging.error("CDB logout failed")
 
+    #
     # print summary
+    #
+
     print()
+    print("PROCESSING SUMMARY ====================")
+    print()
+
     print(summary_msg)
     logging.info(summary_msg)
+    print(helper.get_processing_summary())
 
 
 if __name__ == '__main__':

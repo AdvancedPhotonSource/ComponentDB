@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.utilities.StringUtility;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
@@ -15,7 +16,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 import org.primefaces.event.FlowEvent;
 import org.primefaces.event.NodeSelectEvent;
 import org.primefaces.event.NodeUnselectEvent;
@@ -105,8 +105,8 @@ public abstract class ItemDomainCableDesignWizardBase {
     protected static final String tabMembers = "MembersTab";
 
     protected ItemDomainCableDesignWizardClient client;
-    protected TreeNode machineDesignTreeEndpoint1 = null;
-    protected TreeNode machineDesignTreeEndpoint2 = null;
+    protected ItemDomainMachineDesignTreeNode machineDesignTreeEndpoint1 = null;
+    protected ItemDomainMachineDesignTreeNode machineDesignTreeEndpoint2 = null;
     protected String inputValueName = "";
     protected List<ItemProject> selectionProjectList = new ArrayList<>();
     protected List<ItemCategory> selectionTechnicalSystemList = new ArrayList<>();
@@ -135,10 +135,11 @@ public abstract class ItemDomainCableDesignWizardBase {
      * Returns the root node of the machine design tree that is used to populate
      * the wizard's endpoint selection tab.
      */
-    public TreeNode getMachineDesignTreeEndpoint1() {
+    public ItemDomainMachineDesignTreeNode getMachineDesignTreeEndpoint1() {
         if (machineDesignTreeEndpoint1 == null) {
             ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
-            machineDesignTreeEndpoint1 = controller.loadMachineDesignRootTreeNode(false);
+            machineDesignTreeEndpoint1 = controller.loadMachineDesignRootTreeNode();
+            machineDesignTreeEndpoint1.getConfig().setShowConnectorsOnly(true);
         }
         return machineDesignTreeEndpoint1;
     }
@@ -146,7 +147,7 @@ public abstract class ItemDomainCableDesignWizardBase {
     /**
      * @link ItemDomainCableDesignWizard#getMachineDesignTreeEndpoint1
      */
-    public void setMachineDesignTreeEndpoint1(TreeNode machineDesignTree) {
+    public void setMachineDesignTreeEndpoint1(ItemDomainMachineDesignTreeNode machineDesignTree) {
         this.machineDesignTreeEndpoint1 = machineDesignTree;
     }
 
@@ -154,10 +155,11 @@ public abstract class ItemDomainCableDesignWizardBase {
      * Returns the root node of the machine design tree that is used to populate
      * the wizard's endpoint selection tab.
      */
-    public TreeNode getMachineDesignTreeEndpoint2() {
+    public ItemDomainMachineDesignTreeNode getMachineDesignTreeEndpoint2() {
         if (machineDesignTreeEndpoint2 == null) {
             ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
-            machineDesignTreeEndpoint2 = controller.loadMachineDesignRootTreeNode(false);
+            machineDesignTreeEndpoint2 = controller.loadMachineDesignRootTreeNode();
+            machineDesignTreeEndpoint2.getConfig().setShowConnectorsOnly(true);
         }
         return machineDesignTreeEndpoint2;
     }
@@ -165,7 +167,7 @@ public abstract class ItemDomainCableDesignWizardBase {
     /**
      * @link ItemDomainCableDesignWizard#getMachineDesignTreeEndpoint2
      */
-    public void setMachineDesignTreeEndpoint2(TreeNode machineDesignTree) {
+    public void setMachineDesignTreeEndpoint2(ItemDomainMachineDesignTreeNode machineDesignTree) {
         this.machineDesignTreeEndpoint2 = machineDesignTree;
     }
 

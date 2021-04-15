@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,10 @@ public class PropertyValueFacade extends CdbEntityFacade<PropertyValue> {
 
     public PropertyValueFacade() {
         super(PropertyValue.class);
+    }
+    
+    public static PropertyValueFacade getInstance() {
+        return (PropertyValueFacade) SessionUtility.findFacade(PropertyValueFacade.class.getSimpleName()); 
     }
     
 }

@@ -5,16 +5,14 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
-import gov.anl.aps.cdb.common.utilities.CryptUtility;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.controllers.settings.UserInfoSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.UserInfoControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.SettingTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserRole;
-import gov.anl.aps.cdb.portal.model.db.entities.UserRolePK;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
@@ -35,7 +33,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named(UserInfoController.CONTROLLER_NAMED)
 @SessionScoped
-public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFacade, UserInfoSettings> implements Serializable {   
+public class UserInfoController extends CdbEntityController<UserInfoControllerUtility, UserInfo, UserInfoFacade, UserInfoSettings> implements Serializable {   
 
     private static final Logger logger = LogManager.getLogger(UserInfoController.class.getName());
     public static final String CONTROLLER_NAMED = "userInfoController";
@@ -44,13 +42,18 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
     private UserInfoFacade userInfoFacade;
     
     @EJB
-    private SettingTypeFacade settingTypeFacade; 
-    
-    private String passwordEntry = null;   
+    private SettingTypeFacade settingTypeFacade;         
 
     private Integer loadedDataModelHashCode = null;
+    
+    private UserInfoControllerUtility controllerUtility; 
 
-    public UserInfoController() {
+    @Override
+    protected UserInfoControllerUtility getControllerUtility() {
+        if (controllerUtility == null) {
+            controllerUtility = new UserInfoControllerUtility();
+        }
+        return controllerUtility; 
     }
 
     public static UserInfoController getInstance() {
@@ -63,32 +66,9 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
     }
 
     @Override
-    protected UserInfo createEntityInstance() {
-        return new UserInfo();
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "userInfo";
-    }
-
-    @Override
     public String getEntityTypeGroupName() {
         return "userGroup";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "user";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getUsername();
-        }
-        return "";
-    }
+    }  
 
     @Override
     public UserInfo findById(Integer id) {
@@ -118,6 +98,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
             userSettingList.add(setting);
         }
         userInfo.setUserSettingList(userSettingList);
+        String passwordEntry = userInfo.getPasswordEntry();
         passwordEntry = null;
         return super.prepareEdit(userInfo);
     } 
@@ -130,57 +111,6 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
         }
         return super.verifyUserIsAuthorizedToEdit(entity, userInfo); 
     }
-
-    @Override
-    public void prepareEntityInsert(UserInfo userInfo) throws ObjectAlreadyExists, CdbException {
-        UserInfo existingUser = userInfoFacade.findByUsername(userInfo.getUsername());       
-        if (existingUser != null) {
-            throw new ObjectAlreadyExists("User " + userInfo.getUsername() + " already exists.");
-        }
-        
-        validateUserInformation(userInfo);
-        
-        logger.debug("Inserting new user " + userInfo.getUsername());
-        if (passwordEntry != null && !passwordEntry.isEmpty()) {
-            String cryptedPassword = CryptUtility.cryptPasswordWithPbkdf2(passwordEntry);
-            userInfo.setPassword(cryptedPassword);
-            logger.debug("New user crypted password: " + cryptedPassword);
-        }
-    }
-
-    @Override
-    public void prepareEntityUpdate(UserInfo userInfo) throws CdbException {
-        prepareSaveUserRoleList();
-        validateUserInformation(userInfo);
-        
-        UserInfo existingUser = userInfoFacade.findByUsername(userInfo.getUsername());
-        if (existingUser != null && !existingUser.getId().equals(userInfo.getId())) {
-            throw new ObjectAlreadyExists("User " + userInfo.getUsername() + " already exists.");
-        }
-
-        logger.debug("Updating user " + userInfo.getUsername());
-        List<UserSetting> userSettingList = userInfo.getUserSettingList();
-        for (UserSetting userSetting : userSettingList) {
-            if (userSetting.getValue() == null) {
-                userSetting.setValue(userSetting.getSettingType().getDefaultValue());
-            }
-        }
-        if (passwordEntry != null && !passwordEntry.isEmpty()) {
-            String cryptedPassword = CryptUtility.cryptPasswordWithPbkdf2(passwordEntry);
-            userInfo.setPassword(cryptedPassword);
-            logger.debug("Updated crypted password: " + cryptedPassword);
-        }
-    }
-    
-    private void validateUserInformation(UserInfo userInfo) throws CdbException {
-        String email = userInfo.getEmail(); 
-        if (email != null && !email.isEmpty()) {
-            // validate email
-            if (!StringUtility.isEmailAddressValid(email)) {
-                throw new CdbException("Invalid email address was entered");
-            }
-        }
-    }
     
     public void deleteUserRole(UserRole userRole) {
         UserInfo userInfo = getCurrent();
@@ -192,24 +122,6 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
             SessionUtility.addInfoMessage("Success", "Removed new user role.");
         }
         
-    }
-    
-    public void prepareSaveUserRoleList() throws CdbException {
-        for (UserRole currentUserRole : getCurrent().getUserRoleList()) {
-            UserRolePK currentPK = UserRole.createPrimaryKeyObject(currentUserRole);
-            for (UserRole userRole : getCurrent().getUserRoleList()) {
-                UserRolePK pk = UserRole.createPrimaryKeyObject(userRole);
-                // Ensure that same object is not being compared 
-                if (userRole != currentUserRole) {
-                    if (pk.equals(currentPK)) {
-                        throw new CdbException("Duplicate role entry exists: " 
-                                + currentUserRole.getRoleType().getName() + " | " 
-                                + currentUserRole.getUserGroup().getName());
-                    }
-                }
-            }            
-            currentUserRole.setUserRolePK(currentPK);
-        }
     }
     
     public void saveUserRoleList() {
@@ -235,6 +147,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
         saveSettingListForSessionUser();
         
         // Load default settings 
+        UserInfo current = getCurrent();
         SettingController.getInstance().loadSessionUser(current);
     }
 
@@ -252,6 +165,7 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
     @Override
     public String update() {
         String result = super.update();
+        UserInfo current = getCurrent();
         SessionUtility.setUser(current);
         return result;
     }
@@ -287,17 +201,14 @@ public class UserInfoController extends CdbEntityController<UserInfo, UserInfoFa
         return true;
     }
 
-    public String getPasswordEntry() {
-        return passwordEntry;
-    }
-
-    public void setPasswordEntry(String passwordEntry) {
-        this.passwordEntry = passwordEntry;
-    }
-
     @Override
     protected UserInfoSettings createNewSettingObject() {
         return new UserInfoSettings(this);
+    }
+
+    @Override
+    protected UserInfoControllerUtility createControllerUtilityInstance() {
+        return new UserInfoControllerUtility();
     }
 
     /**

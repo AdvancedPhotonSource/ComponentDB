@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
@@ -26,10 +27,42 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new StringColumnSpec("Name", "name", "setName", true, "Catalog item name.", 128));
-        specs.add(new StringColumnSpec("Model Number", ImportHelperCatalogBase.KEY_PART_NUM, "setPartNumber", false, "Model number.", 128));
-        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Textual description.", 256));
-        specs.add(new StringColumnSpec("Alt Name", "alternateName", "setAlternateName", false, "Alternate item name.", 128));
+        specs.add(new StringColumnSpec(
+                "Name", 
+                "name", 
+                "setName", 
+                "Catalog item name.", 
+                null,
+                ColumnModeOptions.rCREATErUPDATE(), 
+                128));
+        
+        specs.add(new StringColumnSpec(
+                "Model Number", 
+                ImportHelperCatalogBase.KEY_PART_NUM, 
+                "setPartNumber", 
+                "Model number.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                128));
+        
+        specs.add(new StringColumnSpec(
+                "Description", 
+                "description", 
+                "setDescription", 
+                "Textual description.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Alt Name", 
+                "alternateName", 
+                "setAlternateName", 
+                "Alternate item name.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                128));
+        
         specs.add(sourceColumnSpec(4));
         specs.add(projectListColumnSpec());
         specs.add(technicalSystemListColumnSpec(ItemDomainName.catalog.getValue()));
@@ -46,8 +79,8 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Component Catalog Template";
+    public String getFilenameBase() {
+        return "Component Catalog";
     }
     
     @Override

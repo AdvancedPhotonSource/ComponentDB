@@ -4,12 +4,14 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.HierarchyHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,13 +28,14 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
     private int numTemplateColumns;
     
     public NameHierarchyColumnSpec(
+            String description,
+            List<ColumnModeOptions> options,
             String colNamePattern,
             String keyName,
             String keyIndent,
-            String description,
             int numTemplateColumns) {
         
-        super(description);
+        super(description, options);
         
         this.colNamePattern = colNamePattern;
         this.keyName = keyName;
@@ -48,20 +51,18 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
         int colNum = 1;
         for (int i = colIndex ; i < colIndex + numTemplateColumns ; i++) {
             String columnHeader = colNamePattern + " " + String.valueOf(colNum);
-            inputColumns_io.add(
-                    new InputColumnModel(i, columnHeader, false, getDescription()));
+            InputColumnModel inputColumnModel = 
+                    new InputColumnModel(i, columnHeader, getDescription());
+            inputColumns_io.add(inputColumnModel);
             colNum = colNum + 1;
         }
         return numTemplateColumns;
     }
     
     @Override
-    public ColumnSpecInitInfo initialize(
+    public ColumnSpecInitInfo initialize_(
             int colIndex,
-            Map<Integer, String> headerValueMap,
-            List<InputColumnModel> inputColumns_io,
-            List<InputHandler> inputHandlers_io,
-            List<OutputColumnModel> outputColumns_io) {
+            Map<Integer, String> headerValueMap) {
 
         boolean isValid = true;
         String validString = "";
@@ -72,13 +73,17 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
         int lastLevelIndex = -1;
         int currIndex = colIndex;
         
+        List<InputColumnModel> inputColumns = new ArrayList<>();
+        List<InputHandler> inputHandlers = new ArrayList<>();
+        List<OutputColumnModel> outputColumns = new ArrayList<>();
+        
         while (!done) {
             String columnHeader = headerValueMap.get(currIndex);
             // check to see if this is a "level" column
             if (columnHeader.startsWith(colNamePattern)) {
-                inputColumns_io.add(
-                        new InputColumnModel(
-                                currIndex, columnHeader, false, getDescription()));
+                InputColumnModel inputColumnModel = 
+                        new InputColumnModel(currIndex, columnHeader, getDescription());
+                inputColumns.add(inputColumnModel);
                 foundLevel = true;
                 if (firstLevelIndex == -1) {
                     firstLevelIndex = currIndex;
@@ -100,14 +105,14 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
             // add single handler for multiple "level" columns
             inputHandler = new HierarchyHandler(
                     firstLevelIndex, lastLevelIndex, 128, keyName, keyIndent);
-            inputHandlers_io.add(inputHandler);
-            outputColumns_io.add(new OutputColumnModel("Parent Path", "importPath"));
-            outputColumns_io.add(new OutputColumnModel("Name", "name"));
+            inputHandlers.add(inputHandler);
+            outputColumns.add(new OutputColumnModel("Parent Path", "importPath"));
+            outputColumns.add(new OutputColumnModel("Name", "name"));
         }
 
         ValidInfo validInfo = new ValidInfo(isValid, validString);
         int numColumns = lastLevelIndex - firstLevelIndex + 1;
-        return new ColumnSpecInitInfo(validInfo, numColumns);
+        return new ColumnSpecInitInfo(validInfo, numColumns, inputColumns, inputHandlers, outputColumns);
 }
     
     @Override

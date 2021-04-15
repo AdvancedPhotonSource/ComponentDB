@@ -8,23 +8,22 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainLocationSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperLocation;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.utilities.EntityInfoUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.FilterViewItemHierarchySelection;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import gov.anl.aps.cdb.portal.view.objects.ItemHierarchyCache;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,7 @@ import org.primefaces.model.menu.DefaultSubMenu;
 
 @Named(ItemDomainLocationController.controllerNamed)
 @SessionScoped
-public class ItemDomainLocationController extends ItemController<ItemDomainLocation, ItemDomainLocationFacade, ItemDomainLocationSettings> {
+public class ItemDomainLocationController extends ItemController<ItemDomainLocationControllerUtility, ItemDomainLocation, ItemDomainLocationFacade, ItemDomainLocationSettings> {
 
     private final String DOMAIN_TYPE_NAME = ItemDomainName.location.getValue();
     private static final String DOMAIN_NAME = "Location";
@@ -56,11 +55,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     private FilterViewItemHierarchySelection filterViewLocationSelection = null;
 
     private boolean renderLocationSelectionDialog = false;
-    private boolean renderLocationInplaceEditTieredMenu = false;
-
-    private static ItemDomainLocationController apiInstance;
-
-    private static DefaultMenuModel parentSelectionMenuModel = null;
+    private boolean renderLocationInplaceEditTieredMenu = false;   
 
     @EJB
     DomainFacade domainFacade;
@@ -70,36 +65,10 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
     public ItemDomainLocationController() {
         super();
-    }
+    }   
 
-    public static synchronized ItemDomainLocationController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainLocationController();
-            apiInstance.prepareApiInstance();
-        }
-        return apiInstance;
-    }
-
-    @Override
-    public ItemDomainLocation createEntityInstance() {
-        ItemDomainLocation item = super.createEntityInstance();
-        return item;
-    }
-
-    @Override
-    protected void loadEJBResourcesManually() {
-        super.loadEJBResourcesManually();
-
-        domainFacade = DomainFacade.getInstance();
-        itemDomainLocationFacade = ItemDomainLocationFacade.getInstance();
-    }
-
-    public static ItemDomainLocationController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);
-        } else {
-            return getApiInstance();
-        }
+    public static ItemDomainLocationController getInstance() {        
+        return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);        
     }
 
     @Override
@@ -109,11 +78,6 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
         locationsWithInventoryItemsRootNode = null;
         locationsWithInventoryItemAssemblyRootNode = null;
-    }
-
-    @Override
-    protected void resetVariablesForCurrent() {
-        parentSelectionMenuModel = null;
     }
 
     public FilterViewItemHierarchySelection getFilterViewLocationSelection() {
@@ -322,6 +286,8 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     }
 
     public DefaultMenuModel getParentSelectionMenuModel(String updateTarget) {
+        ItemDomainLocation current = getCurrent();
+        DefaultMenuModel parentSelectionMenuModel = current.getParentSelectionMenuModel();
         if (parentSelectionMenuModel == null) {
             LocatableItemController instance = LocatableItemController.getInstance();
             List<ItemHierarchyCache> locationItemHierarchyCaches = instance.getLocationItemHierarchyCaches();
@@ -347,6 +313,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
                     null,
                     updateTarget,
                     updateTarget);
+            current.setParentSelectionMenuModel(parentSelectionMenuModel);
         }
         return parentSelectionMenuModel;
     }
@@ -354,66 +321,27 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     public void updateParentForCurrent(Item newParent) {
         updateParentForItem(getCurrent(), newParent);
         
+        ItemDomainLocation current = getCurrent();
+        DefaultMenuModel parentSelectionMenuModel = current.getParentSelectionMenuModel();
+        
         DefaultSubMenu topNode = (DefaultSubMenu) parentSelectionMenuModel.getElements().get(0);
         topNode.setLabel(newParent.getName());
     }
     
     public void updateParentForItem(ItemDomainLocation item, Item newParentItem) {
-        updateParentForItem(item, newParentItem, null);
-    }
-    
-    public void updateParentForItem(ItemDomainLocation item, Item newParentItem, UserInfo userInfo) {
-        if (newParentItem instanceof ItemDomainLocation == false) {
-            return;
+        UserInfo user = SessionUtility.getUser();
+        ItemDomainLocationControllerUtility controllerUtility = getControllerUtility();
+        try {
+            controllerUtility.updateParentForItem(item, newParentItem, user);
+        } catch (CdbException ex) {
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+            logger.error(ex);
         }
-        ItemDomainLocation newParent = (ItemDomainLocation) newParentItem;
-
-        ItemDomainLocation ittrParentItem = newParent;
-        while (ittrParentItem != null) {            
-            if (item.equals(ittrParentItem)) {
-                SessionUtility.addErrorMessage("Error", "Cannot set location of item as itself or its child.");
-                return;
-            }
-            
-            ittrParentItem = ittrParentItem.getParentItem();
-        }
-
-        ItemElement member = item.getParentItemElement();
-        List<ItemElement> itemElementMemberList = item.getItemElementMemberList();                   
-
-        if (member != null) {            
-            String elementName = generateUniqueElementNameForItem(newParent);
-
-            member.setName(elementName);
-            member.setParentItem(newParent);
-        } else if (itemElementMemberList.isEmpty()) {
-            ItemElement createItemElement = null;
-            if (userInfo == null) {
-                createItemElement = createItemElement(newParent);
-            } else {
-                EntityInfo entityInfo = EntityInfoUtility.createEntityInfo(userInfo); 
-                createItemElement = createItemElement(newParent, entityInfo); 
-            }
-            createItemElement.setContainedItem(item);
-            itemElementMemberList.add(createItemElement); 
-        } else {
-            SessionUtility.addErrorMessage("Error", "Cannot update parent, item does not have one membership.");
-        }
-    }
-
-    @Override
-    public boolean getEntityDisplayItemName() {
-        return true;
-    }
+    }        
 
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
         return false;
-    }
-
-    @Override
-    public boolean getEntityDisplayQrId() {
-        return true;
     }
 
     @Override
@@ -457,23 +385,8 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     }
 
     @Override
-    public String getDerivedFromItemTitle() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public String getStyleName() {
         return "content";
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "location";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Location";
     }
 
     @Override
@@ -487,11 +400,6 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     }
 
     @Override
-    public boolean getEntityDisplayItemProject() {
-        return false;
-    }
-
-    @Override
     public boolean getEntityDisplayItemEntityTypes() {
         return false;
     }
@@ -499,12 +407,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return null;
-    }
-
-    @Override
-    protected ItemDomainLocation instenciateNewItemDomainEntity() {
-        return new ItemDomainLocation();
-    }
+    }   
 
     @Override
     protected ItemDomainLocationFacade getEntityDbFacade() {
@@ -543,13 +446,18 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     }
 
     @Override
-    protected DomainImportInfo initializeDomainImportInfo() {
+    protected DomainImportExportInfo initializeDomainImportInfo() {
 
-        List<ImportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportFormatInfo("Hierarchical Location Format", ImportHelperLocation.class));
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportExportFormatInfo("Hierarchical Location Format", ImportHelperLocation.class));
 
         String completionUrl = "/views/itemDomainLocation/list?faces-redirect=true";
 
-        return new DomainImportInfo(formatInfo, completionUrl);
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+
+    @Override
+    protected ItemDomainLocationControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainLocationControllerUtility(); 
     }
 }

@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.controllers.settings.PropertyValueHistorySettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.PropertyValueHistoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueHistory;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueHistoryFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
@@ -30,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named("propertyValueHistoryController")
 @SessionScoped
-public class PropertyValueHistoryController extends CdbEntityController<PropertyValueHistory, PropertyValueHistoryFacade, PropertyValueHistorySettings> implements Serializable {       
+public class PropertyValueHistoryController extends CdbEntityController<PropertyValueHistoryControllerUtility, PropertyValueHistory, PropertyValueHistoryFacade, PropertyValueHistorySettings> implements Serializable {       
 
     private List<PropertyValueHistory> selectedPropertyValueHistoryList;
     private String selectedPropertyValueTypeName = null;
@@ -52,29 +53,6 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     }
 
     @Override
-    protected PropertyValueHistory createEntityInstance() {
-        return new PropertyValueHistory();
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "propertyValueHistory";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Property Value History";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getId().toString();
-        }
-        return "";
-    }
-
-    @Override
     public List<PropertyValueHistory> getAvailableItems() {
         return super.getAvailableItems();
     }
@@ -82,6 +60,11 @@ public class PropertyValueHistoryController extends CdbEntityController<Property
     @Override
     protected PropertyValueHistorySettings createNewSettingObject() {
         return new PropertyValueHistorySettings(this);
+    }
+
+    @Override
+    protected PropertyValueHistoryControllerUtility createControllerUtilityInstance() {
+        return new PropertyValueHistoryControllerUtility(); 
     }
   
     /**

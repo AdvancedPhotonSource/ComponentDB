@@ -4,8 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.controllers.settings.PropertyTypeSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.PropertyTypeControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
@@ -16,13 +16,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.CdbDomainEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeHandler;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
-import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerFactory;
-import gov.anl.aps.cdb.portal.model.jsf.handlers.PropertyTypeHandlerInterface;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import javax.ejb.EJB;
@@ -39,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named("propertyTypeController")
 @SessionScoped
-public class PropertyTypeController extends CdbEntityController<PropertyType, PropertyTypeFacade, PropertyTypeSettings> implements Serializable {
+public class PropertyTypeController extends CdbEntityController<PropertyTypeControllerUtility, PropertyType, PropertyTypeFacade, PropertyTypeSettings> implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(PropertyTypeController.class.getName());
 
@@ -79,45 +76,18 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
     protected PropertyTypeFacade getEntityDbFacade() {
         return propertyTypeFacade;
     }
-
-    @Override
-    protected PropertyType createEntityInstance() {
-        PropertyType propertyType = new PropertyType();
-        propertyType.setIsInternal(false);
-        propertyType.setIsActive(true);
-        propertyType.setIsUserWriteable(false);
-        propertyType.setIsDynamic(false);
-        return propertyType;
-    } 
-
+    
     @Override
     public void resetListDataModel() {
         super.resetListDataModel(); 
         
         cachedPropertyTypes = null; 
     }
-
-    @Override
-    public String getEntityTypeName() {
-        return "propertyType";
-    }
+    
 
     @Override
     public String getEntityTypeCategoryName() {
         return "propertyTypeCategory";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "property type";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getName();
-        }
-        return "";
     }
 
     @Override
@@ -139,70 +109,7 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
 
     public List<PropertyType> getAvailableExternalItems() {
         return propertyTypeFacade.findByPropertyInternalStatus(false);
-    }
-
-    @Override
-    public void prepareEntityInsert(PropertyType propertyType) throws ObjectAlreadyExists {
-        PropertyType existingPropertyType = propertyTypeFacade.findByName(propertyType.getName());
-        if (existingPropertyType != null) {
-            throw new ObjectAlreadyExists("Property type " + propertyType.getName() + " already exists.");
-        }
-        logger.debug("Inserting new property type " + propertyType.getName());
-        verifyAndApplyPropertyTypeHandlerRequirements(propertyType);                
-    }
-
-    @Override
-    public void prepareEntityUpdate(PropertyType propertyType) throws ObjectAlreadyExists {
-        propertyType.resetCachedVales();
-        PropertyType existingPropertyType = propertyTypeFacade.findByName(propertyType.getName());
-        if (existingPropertyType != null && !existingPropertyType.getId().equals(propertyType.getId())) {
-            throw new ObjectAlreadyExists("Property type " + propertyType.getName() + " already exists.");
-        }
-        logger.debug("Updating property type " + propertyType.getName());
-        verifyAndApplyPropertyTypeHandlerRequirements(propertyType);
-    }
-    
-    private void verifyAndApplyPropertyTypeHandlerRequirements(PropertyType propertyType) {
-        PropertyTypeHandler propertyTypeHandler = propertyType.getPropertyTypeHandler();
-        if (propertyTypeHandler != null) {
-            // Remove invalid id used to identify the new handler. 
-            if (propertyTypeHandler.getId() < 0) {
-                propertyTypeHandler.setId(null);
-            }
-            
-            PropertyTypeHandlerInterface handlerClass = PropertyTypeHandlerFactory.getHandler(propertyTypeHandler.getName());
-            List<String> requiredMetadataKeys = handlerClass.getRequiredMetadataKeys();
-            if (requiredMetadataKeys != null && requiredMetadataKeys.size() > 0) {
-                if (propertyType.getPropertyTypeMetadataList() == null) {
-                    propertyType.setPropertyTypeMetadataList(new ArrayList<>());
-                }
-                
-                List<PropertyTypeMetadata> propertyTypeMetadataList = propertyType.getPropertyTypeMetadataList();
-                
-                
-                List<String> keysToCreate = new LinkedList<>();
-                for (String requiredKey : requiredMetadataKeys) {
-                    boolean found = false; 
-                    for (PropertyTypeMetadata ptm : propertyTypeMetadataList) {
-                        if(ptm.getMetadataKey().equals(requiredKey)) {
-                            found = true; 
-                            break; 
-                        }
-                    }
-                    if (!found) {
-                        keysToCreate.add(requiredKey); 
-                    }
-                }
-                
-                for (String key : keysToCreate) {
-                    PropertyTypeMetadata ptm = new PropertyTypeMetadata();
-                    ptm.setPropertyType(propertyType);
-                    ptm.setMetadataKey(key);
-                    propertyTypeMetadataList.add(ptm);                     
-                }
-            } 
-        }
-    }
+    }           
 
     @Override
     public boolean entityHasCategories() {
@@ -401,6 +308,11 @@ public class PropertyTypeController extends CdbEntityController<PropertyType, Pr
             }
         }
         return selectFilterViewDisplayHandler;
+    }
+
+    @Override
+    protected PropertyTypeControllerUtility createControllerUtilityInstance() {
+        return new PropertyTypeControllerUtility(); 
     }
 
     /**

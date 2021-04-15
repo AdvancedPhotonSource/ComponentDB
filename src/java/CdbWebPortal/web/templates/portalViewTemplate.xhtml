@@ -116,18 +116,23 @@ See LICENSE file.
         <ui:fragment>
             <div id="bottom" class="bottomContent">
                 <ui:insert name="bottom">
-                    <h:form prependId="false">
+                    <h:form prependId="false">                        
+                        <ui:param name="singleTabViewKey" value="#{singleTabViewKey != null ? singleTabViewKey : null}"/> 
+                        
+                        <h:outputText style="display: none" id="singleTabViewKeyHiddenText"
+                                      value="#{singleTabViewKey}"/>
+                        
                         <h:outputText style="display: none" id="viewOpenPageIdHiddenText"
-                                      value="#{clientViewManagerController.viewUUID}"/>
+                                      value="#{clientViewManagerController.getViewUUID(singleTabViewKey)}"/>
 
                         <h:outputText style="display: none" id="currentTimeHashHiddenText"
                                       value="#{clientViewManagerController.currentTimeHash}" /> 
 
                         <input style="display: none"
-                               id="viewCurrentPageIdHiddenText"/>     
+                               id="viewCurrentPageIdHiddenText"/>                                                     
                         
                         <p:remoteCommand name="prepareNewViewID"
-                                         action="#{clientViewManagerController.generateNewViewUUID()}"
+                                         action="#{clientViewManagerController.generateNewViewUUID(singleTabViewKey)}"
                                          update="viewOpenPageIdHiddenText"
                                          process="@this"
                                          oncomplete="setCurrentPageViewId()" /> 
@@ -161,7 +166,7 @@ See LICENSE file.
                                   styleClass="viewTransparentBackgroundDialog"
                                   draggable="false"
                                   resizable="false"
-                                  header="Use of back button is not allowed">
+                                  header="Use of back button for this page is not allowed">
                             To avoid invalid session data, usage of back button is not allowed.                             
                             <f:facet name="footer">
                                 <p:commandButton value="Go back to home" 
@@ -179,8 +184,8 @@ See LICENSE file.
                                   styleClass="viewTransparentBackgroundDialog"
                                   draggable="false"
                                   resizable="false"
-                                  header="Use of tabs or windows is not allowed">
-                            To avoid invalid session data, usage of multiple browser windows/tabs is not allowed. 
+                                  header="Use of tabs or windows is not allowed for this page">
+                            To avoid invalid session data, usage of multiple browser windows/tabs of this page is not allowed. 
                             <f:facet name="footer">
                                 <p:commandButton value="Go back to home"
                                                  icon="fa fa-home"

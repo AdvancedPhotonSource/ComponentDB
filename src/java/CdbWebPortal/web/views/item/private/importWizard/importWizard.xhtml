@@ -26,6 +26,11 @@ See LICENSE file.
                 <ui:param name="wizardController" value="#{wizardController}" />
             </ui:decorate>
 
+            <ui:decorate template="templates/selectModeTabTemplate.xhtml">
+                <ui:param name="viewId" value="#{rootViewId}" />                
+                <ui:param name="wizardController" value="#{wizardController}" />
+            </ui:decorate>
+
             <ui:decorate template="templates/selectFileTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />                
                 <ui:param name="wizardController" value="#{wizardController}" />
@@ -43,7 +48,7 @@ See LICENSE file.
 
         </p:wizard>
 
-        <ui:decorate template="templates/buttonPanelTemplate.xhtml">
+        <ui:decorate template="../templates/importExportWizardButtonPanelTemplate.xhtml">
             <ui:param name="viewId" value="#{rootViewId}" />                
             <ui:param name="wizardController" value="#{wizardController}" />
             <ui:param name="cancelAction" value="cancel" />     
@@ -51,7 +56,7 @@ See LICENSE file.
         </ui:decorate>
 
         <p:remoteCommand name="update#{rootViewId}WizardButtons" 
-                         update="#{rootViewId}ImportWizardButtonPanel"/>
+                         update="#{rootViewId}ButtonPanel"/>
 
     </p:panel>
 

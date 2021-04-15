@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.SingleColumnInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
@@ -13,6 +14,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnS
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrPathColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
@@ -178,21 +180,89 @@ public class ImportHelperMachineHierarchy
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(HEADER_PARENT, KEY_PARENT, "setImportMdItem", false, "CDB ID or name of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, ""));
-        specs.add(new NameHierarchyColumnSpec(HEADER_BASE_LEVEL, KEY_NAME, KEY_INDENT, "Name hierarchy column", 3));
-        specs.add(new StringColumnSpec(HEADER_ALT_NAME, "alternateName", "setAlternateName", false, "Alternate machine design item name.", 128));
-        specs.add(new StringColumnSpec(HEADER_DESCRIPTION, "description", "setDescription", false, "Textual description of machine design item.", 256));
-        specs.add(new FloatColumnSpec(HEADER_SORT_ORDER, KEY_SORT_ORDER, "setImportSortOrder", false, "Sort order within parent item (as decimal), defaults to order in input sheet."));
-        specs.add(new StringColumnSpec(HEADER_ASSIGNED_ITEM, "importAssignedItemDescription", "setImportAssignedItemDescription", false, "Textual description of machine design item.", 256));
+        specs.add(new IdOrPathColumnSpec(
+                HEADER_PARENT, 
+                KEY_PARENT, 
+                "setImportMdItem", 
+                "CDB ID, name, or path of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                ItemDomainMachineDesignController.getInstance(), 
+                ItemDomainMachineDesign.class));
+        
+        specs.add(new NameHierarchyColumnSpec(
+                "Name hierarchy column", 
+                ColumnModeOptions.oCREATE(),
+                HEADER_BASE_LEVEL, 
+                KEY_NAME, 
+                KEY_INDENT, 
+                3));
+        
+        specs.add(new StringColumnSpec(
+                HEADER_ALT_NAME, 
+                "alternateName", 
+                "setAlternateName", 
+                "Alternate machine design item name.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                128));
+        
+        specs.add(new StringColumnSpec(
+                HEADER_DESCRIPTION, 
+                "description", 
+                "setDescription", 
+                "Textual description of machine design item.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                256));
+        
+        specs.add(new FloatColumnSpec(
+                HEADER_SORT_ORDER, 
+                KEY_SORT_ORDER, 
+                "setImportSortOrder", 
+                "Sort order within parent item (as decimal), defaults to order in input sheet.", 
+                null,
+                ColumnModeOptions.oCREATE()));
+        
+        specs.add(new StringColumnSpec(
+                HEADER_ASSIGNED_ITEM, 
+                "importAssignedItemDescription", 
+                "setImportAssignedItemDescription", 
+                "Textual description of machine design item.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                256));
 
         AssignedItemHandler assignedItemHandler = new AssignedItemHandler();
-        specs.add(new CustomColumnSpec(HEADER_ASSIGNED_ITEM_ID, "importAssignedItemString", false, "CDB ID or name of assigned catalog or inventory item. Name must be unique and prefixed with '#'.", assignedItemHandler));
+        
+        specs.add(new CustomColumnSpec(
+                HEADER_ASSIGNED_ITEM_ID, 
+                "importAssignedItemString", 
+                "CDB ID or name of assigned catalog or inventory item. Name must be unique and prefixed with '#'.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                assignedItemHandler));
         
         LocationHandler locationHandler = new LocationHandler();
-        specs.add(new CustomColumnSpec(HEADER_LOCATION, "importLocationItemString", false, "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored). Name must be unique and prefixed with '#'.", locationHandler));
+        
+        specs.add(new CustomColumnSpec(
+                HEADER_LOCATION, 
+                "importLocationItemString", 
+                "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored). Name must be unique and prefixed with '#'.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                locationHandler));
 
         specs.add(locationDetailsColumnSpec());
-        specs.add(new BooleanColumnSpec(HEADER_TEMPLATE, KEY_IS_TEMPLATE, "setImportIsTemplate", true, "True/yes if item is template, false/no otherwise."));
+        
+        specs.add(new BooleanColumnSpec(
+                HEADER_TEMPLATE, 
+                KEY_IS_TEMPLATE, 
+                "setImportIsTemplate", 
+                "True/yes if item is template, false/no otherwise.", 
+                null,
+                ColumnModeOptions.rCREATE()));
+        
         specs.add(projectListColumnSpec());
         specs.add(ownerUserColumnSpec());
         specs.add(ownerGroupColumnSpec());
@@ -206,8 +276,8 @@ public class ImportHelperMachineHierarchy
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Machine Hierarchy Template";
+    public String getFilenameBase() {
+        return "Machine Hierarchy";
     }
     
     @Override

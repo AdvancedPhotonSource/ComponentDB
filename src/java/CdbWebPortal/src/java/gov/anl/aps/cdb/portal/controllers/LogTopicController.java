@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.LogTopicSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.LogTopicControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.beans.LogTopicFacade;
 
@@ -22,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named("logTopicController")
 @SessionScoped
-public class LogTopicController extends CdbEntityController<LogTopic, LogTopicFacade, LogTopicSettings> implements Serializable {
+public class LogTopicController extends CdbEntityController<LogTopicControllerUtility, LogTopic, LogTopicFacade, LogTopicSettings> implements Serializable {
 
     private static final Logger logger = LogManager.getLogger(LogTopicController.class.getName());
 
@@ -39,24 +40,6 @@ public class LogTopicController extends CdbEntityController<LogTopic, LogTopicFa
     }
 
     @Override
-    protected LogTopic createEntityInstance() {
-        return new LogTopic();
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "logTopic";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getName();
-        }
-        return "";
-    }
-
-    @Override
     public List<LogTopic> getAvailableItems() {
         return super.getAvailableItems();
     }
@@ -64,6 +47,11 @@ public class LogTopicController extends CdbEntityController<LogTopic, LogTopicFa
     @Override
     protected LogTopicSettings createNewSettingObject() {
         return new LogTopicSettings(); 
+    }
+
+    @Override
+    protected LogTopicControllerUtility createControllerUtilityInstance() {
+        return new LogTopicControllerUtility(); 
     }
 
     @FacesConverter(forClass = LogTopic.class)

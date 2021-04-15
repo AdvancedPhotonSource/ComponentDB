@@ -5,8 +5,12 @@
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.RefOutputHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
+import java.util.List;
 
 /**
  *
@@ -14,8 +18,25 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHan
  */
 public class IdRefListColumnSpec extends IdRefColumnSpec {
 
-    public IdRefListColumnSpec(String header, String propertyName, String entitySetterMethod, boolean required, String description, CdbEntityController controller, Class paramType) {
-        super(header, propertyName, entitySetterMethod, required, description, controller, paramType);
+    public IdRefListColumnSpec(
+            String header, 
+            String importPropertyName, 
+            String importSetterMethod, 
+            String description,
+            String exportGetterMethod,
+            List<ColumnModeOptions> options, 
+            CdbEntityController controller, 
+            Class paramType) {
+        
+        super(
+                header, 
+                importPropertyName, 
+                importSetterMethod, 
+                description, 
+                exportGetterMethod, 
+                options,
+                controller, 
+                paramType);
     }
 
     @Override
@@ -28,6 +49,15 @@ public class IdRefListColumnSpec extends IdRefColumnSpec {
                 controller,
                 paramType,
                 true,
+                false);
+    }
+
+    @Override
+    public OutputHandler getOutputHandler() {
+        return new RefOutputHandler(
+                getHeader(),
+                getDescription(),
+                getExportGetterMethod(),
                 false);
     }
 }

@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.common.exceptions.ExternalServiceError;
 import gov.anl.aps.cdb.portal.constants.DisplayType;
 import gov.anl.aps.cdb.portal.controllers.settings.PropertyValueSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.PropertyValueControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue.PropertyValueMetadata;
@@ -39,7 +40,7 @@ import org.primefaces.model.StreamedContent;
 
 @Named("propertyValueController")
 @SessionScoped
-public class PropertyValueController extends CdbEntityController<PropertyValue, PropertyValueFacade, PropertyValueSettings> implements Serializable {
+public class PropertyValueController extends CdbEntityController<PropertyValueControllerUtility, PropertyValue, PropertyValueFacade, PropertyValueSettings> implements Serializable {
 
     @EJB
     private PropertyValueFacade propertyValueFacade;
@@ -69,29 +70,6 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
     @Override
     protected PropertyValueFacade getEntityDbFacade() {
         return propertyValueFacade;
-    }
-
-    @Override
-    protected PropertyValue createEntityInstance() {
-        return new PropertyValue();
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "propertyValue";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Property Value";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getId().toString();
-        }
-        return "";
     }
 
     @Override
@@ -324,6 +302,11 @@ public class PropertyValueController extends CdbEntityController<PropertyValue, 
 
         PropertyValue propertyValue = propertyMetadata.getPropertyValue();
         propertyValue.removePropertyMetadataKey(propertyMetadata.getMetadataKey());
+    }
+
+    @Override
+    protected PropertyValueControllerUtility createControllerUtilityInstance() {
+        return new PropertyValueControllerUtility(); 
     }
 
     /**

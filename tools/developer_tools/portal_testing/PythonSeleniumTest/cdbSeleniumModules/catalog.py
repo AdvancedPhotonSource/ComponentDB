@@ -21,97 +21,114 @@ SAMPLE_CATALOG_ITEM_ALTERNATE_NAME= 'Alternate'
 
 class Catalog(ItemBase):
 
-	def startCreateSampleCatalogItem(self):
-		self._findById('catalogButton').click()
-		self._waitForIdAndClick('componentListForm:componentAddButton')
+	def navigate_to_catalog_list(self):
+		self._navigate_to_dropdown('catalogDropdownButton', 'componentCatalogButton', 'itemDomainCatalog/list')
 
-		nameInput = self._waitForId('addComponentForm:nameInputTextCreateWizard')
+	def start_create_sample_catalog_item(self):
+		self.navigate_to_catalog_list()
+		self._wait_for_id_and_click('componentListForm:componentAddButton')
+
+		nameInput = self._wait_for_id('addComponentForm:nameInputTextCreateWizard')
 		nameInput.send_keys(SAMPLE_CATALOG_ITEM_NAME)
 
-		self._typeInId('addComponentForm:itemIdentifier1ITCreateWizard', SAMPLE_CATALOG_ITEM_MODEL)
-		self._typeInId('addComponentForm:itemIdentifier2ITCreateWizard', SAMPLE_CATALOG_ITEM_ALTERNATE_NAME)
-		self._typeInId('addComponentForm:descriptionITACreateWizard', 'Description')
+		self._type_in_id('addComponentForm:itemIdentifier1ITCreateWizard', SAMPLE_CATALOG_ITEM_MODEL)
+		self._type_in_id('addComponentForm:itemIdentifier2ITCreateWizard', SAMPLE_CATALOG_ITEM_ALTERNATE_NAME)
+		self._type_in_id('addComponentForm:descriptionITACreateWizard', 'Description')
 
-	def finishCreateSampleCatalogItem(self):
-		self._clickOnId('addComponentForm:componentcreateWizardNextStep')
+	def finish_create_sample_catalog_item(self):
+		self._click_on_id('addComponentForm:componentcreateWizardNextStep')
 
-		self._waitForIdAndClick('addComponentForm:itemProjectSelectCBCreateWizard')
+		self._wait_for_id_and_click('addComponentForm:itemProjectSelectCBCreateWizard')
 
 
-		firstProject = self._waitForXpath('//*[@id="addComponentForm:itemProjectSelectCBCreateWizard_panel"]/div[2]/ul/li/div/div[2]')
+		firstProject = self._wait_for_xpath('//*[@id="addComponentForm:itemProjectSelectCBCreateWizard_panel"]/div[2]/ul/li/div/div[2]')
 		firstProject.click()
 
 		nextStepId = 'addComponentForm:componentcreateWizardNextStep'
-		self._clickOnId(nextStepId)
+		self._click_on_id(nextStepId)
 
-		groupWriteableToggle = self._waitForXpath('//*[@id="addComponentForm:groupWriteableSBBCreateWizard"]/span')
+		groupWriteableToggle = self._wait_for_xpath('//*[@id="addComponentForm:groupWriteableSBBCreateWizard"]/span')
 		groupWriteableToggle.click()
 
-		self._clickOnId(nextStepId)
+		self._click_on_id(nextStepId)
 
-		self._waitForIdAndClick('addComponentForm:componentCreateSaveButton')
+		self._wait_for_id_and_click('addComponentForm:componentCreateSaveButton')
 
-		self._waitForIdAndClick('componentViewForm:componentViewInfoButton')
+		self._wait_for_id_and_click('componentViewForm:componentViewInfoButton')
 
-	def displayMoreColumns(self):
-		self._clickOnId('catalogButton')
+	def display_more_columns(self):
+		self.navigate_to_catalog_list()
 		time.sleep(0.5)
-		self._waitForIdAndClick('componentListForm:componentCustomizeDisplayButton')
+		self._wait_for_id_and_click('componentListForm:componentCustomizeDisplayButton')
 
-		self._waitForVisibleId('componentListForm:componentListCustomizeDisplayDialog')
-		display_ii2_input = self._findById('componentListForm:domainEntityCustomizeDisplayDialogAccordionPanel:displayItemIdentifier2_input')
-		display_project_input = self._findById('componentListForm:domainEntityCustomizeDisplayDialogAccordionPanel:displayItemProject_input')
+		self._wait_for_visible_id('componentListForm:componentListCustomizeDisplayDialog')
+		display_ii2_input = self._find_by_id('componentListForm:domainEntityCustomizeDisplayDialogAccordionPanel:displayItemIdentifier2_input')
+		display_project_input = self._find_by_id('componentListForm:domainEntityCustomizeDisplayDialogAccordionPanel:displayItemProject_input')
 
 		# Sould figure out a way to find the new location of the inputs
-		self._clickUsingJavascript(display_ii2_input)
-		self._clickUsingJavascript(display_project_input)
+		self._click_using_javascript(display_ii2_input)
+		self._click_using_javascript(display_project_input)
 
-		doneButton = self._findById('componentListForm:componentListCustomizeDisplayDialogDone2Button')
-		self._clickUsingJavascript(doneButton)
+		doneButton = self._find_by_id('componentListForm:componentListCustomizeDisplayDialogDone2Button')
+		self._click_using_javascript(doneButton)
 
 		# Verify columns are shown
-		self._waitForId('componentListForm:componentListDataTable:componentListObjectItemIdentifier2Column')
+		self._wait_for_id('componentListForm:componentListDataTable:componentListObjectItemIdentifier2Column')
 		# TODO add id for project column
 		# TODO add id for sources column
 
-	def searchForSampleCatalogItem(self):
-		self._findById('catalogButton').click()
+	def search_for_sample_catalog_item(self):
+		self.navigate_to_catalog_list()
 
-		nameFilter = self._waitForId('componentListForm:componentListDataTable:componentListObjectNameColumn:filter')
+		nameFilter = self._wait_for_id('componentListForm:componentListDataTable:componentListObjectNameColumn:filter')
 		nameFilter.send_keys(SAMPLE_CATALOG_ITEM_NAME)
-		self._typeInId('componentListForm:componentListDataTable:componentListObjectItemIdentifier1Column:filter', SAMPLE_CATALOG_ITEM_MODEL)
-		self._typeInId('componentListForm:componentListDataTable:componentListObjectItemIdentifier2Column:filter', SAMPLE_CATALOG_ITEM_ALTERNATE_NAME)
+		self._type_in_id('componentListForm:componentListDataTable:componentListObjectItemIdentifier1Column:filter', SAMPLE_CATALOG_ITEM_MODEL)
+		self._type_in_id('componentListForm:componentListDataTable:componentListObjectItemIdentifier2Column:filter', SAMPLE_CATALOG_ITEM_ALTERNATE_NAME)
 
-		sampleItemLink = self._waitFor(By.LINK_TEXT, SAMPLE_CATALOG_ITEM_NAME)
+		time.sleep(1)
+
+		sampleItemLink = self._wait_for(By.LINK_TEXT, SAMPLE_CATALOG_ITEM_NAME)
 		sampleItemLink.click()
-		self._waitForIdAndClick('componentViewForm:componentViewInfoButton')
+		self._wait_for_id_and_click('componentViewForm:componentViewInfoButton')
 
-
-	def addLogToCatalogItem(self):
+	def add_log_to_catalog_item(self):
 		logEntryText = 'My Awesome New Log Entry!!!'
 
-		self._clickOnId('componentViewForm:componentViewLogEntriesPanel_toggler')
-		self._waitForIdAndClick('componentViewForm:componentLogAddButton')
-		logEntry = self._waitForId('componentViewForm:logEntryValue')
+		self._click_on_id('componentViewForm:componentViewLogEntriesPanel_toggler')
+		self._wait_for_id_and_click('componentViewForm:componentLogAddButton')
+		logEntry = self._wait_for_id('componentViewForm:logEntryValue')
 
 		logEntry.send_keys(logEntryText)
-		self._clickOnId('componentViewForm:componentSaveLogButton')
+		self._click_on_id('componentViewForm:componentSaveLogButton')
 
 		newLogEntrySelector = "#componentViewForm\\3a componentLogListDataTable\\3a 0\\3a logEntryColumnCellEditor > div.ui-cell-editor-output"
 		WebDriverWait(self.driver, CdbSeleniumModuleBase.WAIT_FOR_ELEMENT_TIMEOUT).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, newLogEntrySelector), logEntryText))
 
 
-	def addPropertyToCatalogItem(self):
-		self._clickOnId('componentViewForm:componentViewPropertiesPanel_toggler')
+	def add_property_to_catalog_item(self):
+		self._click_on_id('componentViewForm:componentViewPropertiesPanel_toggler')
 
-		self._waitForIdAndClick('componentViewForm:componentPropertyAddButton')
+		self._wait_for_id_and_click('componentViewForm:componentPropertyAddButton')
 
 		categorySelectionXpath = "//div[@id='componentViewForm:filterViewItemCategorySelection']/div[2]/ul/li[2]"
-		categorySel = self._waitForVisibleXpath(categorySelectionXpath)
+		categorySel = self._wait_for_visible_xpath(categorySelectionXpath)
 		categorySel.click()
 
-		self._waitForXpath("//tbody[@id='componentViewForm:componentPropertySelectDataTable_data']/tr[1]/td[4]").click()
+		self._wait_for_xpath("//tbody[@id='componentViewForm:componentPropertySelectDataTable_data']/tr[1]/td[4]").click()
 
 		import time
 		time.sleep(5)
 		pass
+
+	def test_catalog_pages(self):
+		self._click_on_xpath('//*[@id="componentListForm:componentListDataTable_data"]/tr[1]/td[2]/a')
+		self._wait_for_url_contains('itemDomainCatalog/view')
+
+		self._click_on_id('componentViewForm:componentViewEditButton')
+		self._wait_for_url_contains('itemDomainCatalog/edit')
+
+		self._click_on_id('componentEditForm:componentEditViewButton')
+		self._wait_for_url_contains('itemDomainCatalog/view')
+
+
+

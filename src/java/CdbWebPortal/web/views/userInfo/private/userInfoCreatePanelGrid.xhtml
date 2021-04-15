@@ -40,7 +40,7 @@ See LICENSE file.
         <p:tooltip for="email" value="User email is optional."/>
 
         <h:outputLabel for="password" value="Password" styleClass="entityDataLabel"/>
-        <p:password id="password" value="#{userInfoController.passwordEntry}" title="Password" feedback="true" styleClass="entityDataText"/>
+        <p:password id="password" value="#{userInfoObject.passwordEntry}" title="Password" feedback="true" styleClass="entityDataText"/>
         <p:message for="password"/>
         <p:tooltip for="password" value="User local password specification is optional. When it is set, the system database becomes primary authentication mechanism. (Optional)"/>
 

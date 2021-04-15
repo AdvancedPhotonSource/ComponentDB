@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.RelationshipTypeSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -20,7 +21,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named("relationshipTypeController")
 @SessionScoped
-public class RelationshipTypeController extends CdbEntityController<RelationshipType, RelationshipTypeFacade, RelationshipTypeSettings> implements Serializable {
+public class RelationshipTypeController extends CdbEntityController<RelationshipTypeControllerUtility, RelationshipType, RelationshipTypeFacade, RelationshipTypeSettings> implements Serializable {
 
     @EJB
     RelationshipTypeFacade relationshipTypeFacade; 
@@ -29,37 +30,19 @@ public class RelationshipTypeController extends CdbEntityController<Relationship
         return (RelationshipTypeController) SessionUtility.findBean("relationshipTypeController");
     }
     
-    public RelationshipType createRelationshipTypeWithName(String relationshipTypeName) {
-        RelationshipType relationshipType = createEntityInstance();
-        relationshipType.setName(relationshipTypeName);
-        setCurrent(relationshipType);
-        create(true, false); 
-        return relationshipType; 
-    }
-    
     @Override
     protected RelationshipTypeFacade getEntityDbFacade() {
         return relationshipTypeFacade;
     }
 
     @Override
-    protected RelationshipType createEntityInstance() {
-        return new RelationshipType(); 
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "relationshipType";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        return getCurrent().toString(); 
-    }
-
-    @Override
     protected RelationshipTypeSettings createNewSettingObject() {
         return new RelationshipTypeSettings();
+    }
+
+    @Override
+    protected RelationshipTypeControllerUtility createControllerUtilityInstance() {
+        return new RelationshipTypeControllerUtility(); 
     }
 
     @FacesConverter(forClass = RelationshipType.class)

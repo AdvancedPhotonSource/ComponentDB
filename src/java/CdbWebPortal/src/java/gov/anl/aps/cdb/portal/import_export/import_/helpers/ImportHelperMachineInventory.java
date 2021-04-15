@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import static gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase.KEY_USER;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
@@ -38,12 +39,61 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec("MD Template", KEY_TEMPLATE, "setImportMdItem", true, "ID or name of CDB machine design template. Name must be unique and prefixed with '#'.", ItemDomainMachineDesignController.getInstance(), ItemDomainMachineDesign.class, null));
-        specs.add(new StringColumnSpec("Name", KEY_NAME, "", true, "Name for inventory unit (use 'auto' to generate automatically).", 128));
-        specs.add(new StringColumnSpec("Alt Name", "alternateName", "setAlternateName", false, "Alternate name for inventory unit.", 128));
-        specs.add(new IntegerColumnSpec("QR ID", "qrId", "setQrId", false, "Integer QR id of inventory unit."));
-        specs.add(new StringColumnSpec("Description", "description", "setDescription", false, "Description of inventory unit.", 256));
-        specs.add(new StringColumnSpec("Status", KEY_STATUS, "setInventoryStatusValue", false, "Status of inventory item.", 256));
+        specs.add(new IdOrNameRefColumnSpec(
+                "MD Template", 
+                KEY_TEMPLATE, 
+                "setImportMdItem", 
+                "ID or name of CDB machine design template. Name must be unique and prefixed with '#'.", 
+                null,
+                ColumnModeOptions.rCREATErUPDATE(), 
+                ItemDomainMachineDesignController.getInstance(), 
+                ItemDomainMachineDesign.class, 
+                null));
+        
+        specs.add(new StringColumnSpec(
+                "Name", 
+                KEY_NAME, 
+                "", 
+                "Name for inventory unit (use 'auto' to generate automatically).", 
+                null,
+                ColumnModeOptions.rCREATErUPDATE(), 
+                128));
+        
+        specs.add(new StringColumnSpec(
+                "Alt Name", 
+                "alternateName", 
+                "setAlternateName", 
+                "Alternate name for inventory unit.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                128));
+        
+        specs.add(new IntegerColumnSpec(
+                "QR ID", 
+                "qrId", 
+                "setQrId", 
+                "Integer QR id of inventory unit.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE()));
+        
+        specs.add(new StringColumnSpec(
+                "Description", 
+                "description", 
+                "setDescription", 
+                "Description of inventory unit.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
+        specs.add(new StringColumnSpec(
+                "Status", 
+                KEY_STATUS, 
+                "setInventoryStatusValue", 
+                "Status of inventory item.", 
+                null,
+                ColumnModeOptions.oCREATEoUPDATE(), 
+                256));
+        
         specs.add(locationColumnSpec());
         specs.add(locationDetailsColumnSpec());
         specs.add(projectListColumnSpec());
@@ -59,8 +109,8 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Machine Inventory Template";
+    public String getFilenameBase() {
+        return "Machine Inventory";
     }
     
     @Override

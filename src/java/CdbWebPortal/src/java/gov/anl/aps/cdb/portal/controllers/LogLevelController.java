@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.portal.controllers.settings.LogLevelSettings;
 import gov.anl.aps.cdb.portal.model.db.entities.LogLevel;
 import gov.anl.aps.cdb.portal.controllers.util.PaginationHelper;
+import gov.anl.aps.cdb.portal.controllers.utilities.LogLevelControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.LogLevelFacade;
 
 import java.io.Serializable;
@@ -21,7 +22,7 @@ import javax.faces.model.DataModel;
 
 @Named("logLevelController")
 @SessionScoped
-public class LogLevelController extends CdbEntityController<LogLevel, LogLevelFacade, LogLevelSettings> implements Serializable {
+public class LogLevelController extends CdbEntityController<LogLevelControllerUtility, LogLevel, LogLevelFacade, LogLevelSettings> implements Serializable {
 
     private LogLevel current;
     private DataModel items = null;
@@ -39,23 +40,13 @@ public class LogLevelController extends CdbEntityController<LogLevel, LogLevelFa
     }
 
     @Override
-    protected LogLevel createEntityInstance() {
-        return new LogLevel(); 
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "Log Level";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        return current.toString(); 
-    }
-
-    @Override
     protected LogLevelSettings createNewSettingObject() {
         return new LogLevelSettings();
+    }
+
+    @Override
+    protected LogLevelControllerUtility createControllerUtilityInstance() {
+        return new LogLevelControllerUtility(); 
     }
 
 

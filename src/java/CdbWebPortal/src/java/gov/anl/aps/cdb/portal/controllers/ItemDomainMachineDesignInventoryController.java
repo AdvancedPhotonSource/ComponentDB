@@ -5,14 +5,13 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignInventorySettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineInventory;
-import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -24,9 +23,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemStatusUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
-import gov.anl.aps.cdb.portal.view.objects.InventoryStatusPropertyTypeInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
@@ -45,14 +43,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
     
-    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";
-    
-    private InventoryStatusPropertyTypeInfo inventoryStatusPropertyTypeInfo = null;
-    private PropertyType inventoryStatusPropertyType;
-
-    private static ItemDomainMachineDesignInventoryController apiInstance;
-
-    private ItemDomainMachineDesign newMdInventoryItem = null;
+    private final static String pluginItemMachineDesignSectionsName = "itemMachineDesignInventoryDetailsViewSections";      
 
     @Override
     public void createListDataModel() {
@@ -105,11 +96,6 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     @Override
-    public String getDerivedFromItemTitle() {
-        return "Machine Template";
-    }
-
-    @Override
     public boolean isDisplayRowExpansionForItem(Item item) {
         return super.isDisplayRowExpansionForItem(item); //To change body of generated methods, choose Tools | Templates.
     }
@@ -117,44 +103,32 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     @Override
     public String getDefaultDomainDerivedFromDomainName() {
         return ItemDomainName.machineDesign.getValue();
-    }
+    }   
 
     @Override
-    public List<ItemDomainMachineDesign> getItemList() {
-        return itemDomainMachineDesignFacade.getTopLevelMachineDesignInventory();
-    } 
-
-    @Override
-    public DataModel getTopLevelMachineDesignSelectionList() {
+    public DataModel getTopLevelMachineDesignSelectionList() {    
+        ItemDomainMachineDesign current = getCurrent();
+        DataModel topLevelMachineDesignSelectionList = current.getTopLevelMachineDesignSelectionList();
+        
         if (topLevelMachineDesignSelectionList == null) {
             List<ItemDomainMachineDesign> topLevelMachineDesignInventory = itemDomainMachineDesignFacade.getTopLevelMachineDesignInventory();
-            
+                        
             removeTopLevelParentOfItemFromList(current, topLevelMachineDesignInventory);            
             
-            topLevelMachineDesignSelectionList = new ListDataModel(topLevelMachineDesignInventory); 
+            topLevelMachineDesignSelectionList = new ListDataModel(topLevelMachineDesignInventory);             
+            current.setTopLevelMachineDesignSelectionList(topLevelMachineDesignSelectionList);
         }
         
         return topLevelMachineDesignSelectionList;         
     }
 
-    public static ItemDomainMachineDesignInventoryController getInstance() {
-        if (SessionUtility.runningFaces()) {
-            return (ItemDomainMachineDesignInventoryController) SessionUtility.findBean(controllerNamed);
-        } else {
-            return getApiInstance();
-        }
-    }
-
-    public static synchronized ItemDomainMachineDesignInventoryController getApiInstance() {
-        if (apiInstance == null) {
-            apiInstance = new ItemDomainMachineDesignInventoryController();
-            apiInstance.prepareApiInstance();
-        }
-        return apiInstance;
+    public static ItemDomainMachineDesignInventoryController getInstance() {        
+        return (ItemDomainMachineDesignInventoryController) SessionUtility.findBean(controllerNamed);        
     }
 
     public void prepareCreateInventoryFromTemplate(ItemDomainMachineDesign template) {
-        newMdInventoryItem = performPrepareCreateInventoryFromTemplate(template);
+        ItemDomainMachineDesign currentForCurrentData = getCurrentForCurrentData(); 
+        currentForCurrentData.setNewMdInventoryItem(performPrepareCreateInventoryFromTemplate(template)); 
     }
 
     public ItemDomainMachineDesign performPrepareCreateInventoryFromTemplate(ItemDomainMachineDesign template) {
@@ -183,31 +157,12 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
         template.getDerivedFromItemList().add(mdInventory);
 
-        assignInventoryAttributes(mdInventory, template);
+        UserInfo user = SessionUtility.getUser();
+        getControllerUtility().assignInventoryAttributes(mdInventory, template, user);
 
         return mdInventory;
     }
-
-    protected void assignInventoryAttributes(ItemDomainMachineDesign newInventory, ItemDomainMachineDesign templateItem) {
-        newInventory.setDerivedFromItem(templateItem);
-        assignInventoryAttributes(newInventory);
-    }
-
-    protected void assignInventoryAttributes(ItemDomainMachineDesign newInventory) {
-        String inventoryetn = EntityTypeName.inventory.getValue();
-        EntityType inventoryet = entityTypeFacade.findByName(inventoryetn);
-        if (newInventory.getEntityTypeList() == null) {
-            try {
-                newInventory.setEntityTypeList(new ArrayList());
-            } catch (CdbException ex) {
-                LOGGER.error(ex);
-            }
-        }
-        newInventory.getEntityTypeList().add(inventoryet);
-        
-        ItemStatusUtility.updateDefaultStatusProperty(newInventory, this);
-    } 
-
+    
     public void createInventoryFromTemplateSelected(NodeSelectEvent nodeSelection) {
         templateToCreateNewItemSelected(nodeSelection);
         prepareCreateInventoryFromTemplate(templateToCreateNewItem);
@@ -230,26 +185,28 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     @Override
-    public ItemDomainMachineDesign createEntityInstanceForDualTreeView() {
-        ItemDomainMachineDesign item = super.createEntityInstanceForDualTreeView();
-
-        assignInventoryAttributes(item);        
-
-        return item;
-    } 
-
-    @Override
     public ItemDomainMachineDesign createMachineDesignFromTemplate(ItemElement itemElement, ItemDomainMachineDesign templateItem, UserInfo ownerUser, UserGroup ownerGroup) throws CdbException, CloneNotSupportedException {
         ItemDomainMachineDesign createItemFromTemplate = super.createMachineDesignFromTemplate(itemElement, templateItem, ownerUser, ownerGroup);
         
-        assignInventoryAttributes(createItemFromTemplate, templateItem);
+        UserInfo user = SessionUtility.getUser();
+        getControllerUtility().assignInventoryAttributes(createItemFromTemplate, templateItem, user);
 
         return createItemFromTemplate;
-    }
+    }    
 
     @Override
-    public TreeNode getCurrentMachineDesignListRootTreeNode() {
-        return getMachineDesignFixtureRootTreeNode();
+    public List<ItemDomainMachineDesign> getDefaultTopLevelMachineList() {        
+        ItemDomainMachineDesign md = getCurrent();
+        ItemDomainMachineDesign parentMachineDesign = md.getParentMachineDesign();
+        while(parentMachineDesign != null) {
+            md = parentMachineDesign; 
+            parentMachineDesign = parentMachineDesign.getParentMachineDesign(); 
+        }        
+        
+        md = findById(md.getId());
+        List<ItemDomainMachineDesign> parentList = new ArrayList<>(); 
+        parentList.add(md); 
+        return parentList; 
     }
 
     @Override
@@ -262,6 +219,7 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
 
     @Override
     public String currentDualViewList() {
+        setCurrentFlash();
         resetListConfigurationVariables();
         return view();
     }
@@ -294,19 +252,13 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     @Override
-    protected void resetVariablesForCurrent() {
-        super.resetVariablesForCurrent();
-
-        newMdInventoryItem = null;
-    }
-
-    @Override
     public ItemMultiEditController getItemMultiEditController() {
         return ItemMultiEditDomainMachineDesignInventoryController.getInstance();
     }
 
     public ItemDomainMachineDesign getNewMdInventoryItem() {
-        return newMdInventoryItem;
+        ItemDomainMachineDesign currentForCurrentData = getCurrentForCurrentData();
+        return currentForCurrentData.getNewMdInventoryItem(); 
     }
     
     @Override
@@ -315,45 +267,20 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     @Override
-    public void prepareEditInventoryStatus(LocatableStatusItem item) {
-        ItemStatusUtility.prepareEditInventoryStatus(this, item);       
-    }
-        
-    @Override
-    public void prepareEditInventoryStatus(LocatableStatusItem item, UserInfo apiUser) {        
-        ItemStatusUtility.prepareEditInventoryStatus(this, item, apiUser);
+    public void prepareEditInventoryStatus() {      
+        ItemDomainMachineDesign current = getCurrent();
+        UserInfo user = SessionUtility.getUser();
+        getControllerUtility().prepareEditInventoryStatus(current, user);
     }
 
     @Override
-    public void prepareEditInventoryStatus() {
-        ItemStatusUtility.prepareEditInventoryStatus(this);
-    }
-
+    public PropertyValue getCurrentStatusPropertyValue() {        
+        return getControllerUtility().getItemStatusPropertyValue(getCurrent()); 
+    }   
+    
     @Override
-    public String getStatusPropertyTypeName() {
-        return ItemDomainMachineDesign.MD_INTERNAL_STATUS_PROPERTY_TYPE; 
-    }
-
-    @Override
-    public PropertyValue getCurrentStatusPropertyValue() {
-        return ItemStatusUtility.getCurrentStatusPropertyValue(this);
-    }
-
-    @Override
-    public PropertyType getInventoryStatusPropertyType() {
-        inventoryStatusPropertyType = ItemStatusUtility.getInventoryStatusPropertyType(this, propertyTypeFacade, inventoryStatusPropertyType);
-        return inventoryStatusPropertyType;
-    }
-
-    @Override
-    public InventoryStatusPropertyTypeInfo getInventoryStatusPropertyTypeInfo() {
-        inventoryStatusPropertyTypeInfo = ItemStatusUtility.getInventoryStatusPropertyTypeInfo(this, inventoryStatusPropertyTypeInfo);
-        return inventoryStatusPropertyTypeInfo;
-    }
-
-    @Override
-    public InventoryStatusPropertyTypeInfo initializeInventoryStatusPropertyTypeInfo() {
-        return ItemStatusUtility.initializeInventoryStatusPropertyTypeInfo(); 
+    public final PropertyType getInventoryStatusPropertyType() {
+        return getControllerUtility().getInventoryStatusPropertyType(); 
     }
 
     @Override
@@ -371,18 +298,23 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     @Override
-    protected DomainImportInfo initializeDomainImportInfo() {
+    protected DomainImportExportInfo initializeDomainImportInfo() {
         
-        List<ImportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportFormatInfo("Basic Machine Inventory Format", ImportHelperMachineInventory.class));
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportExportFormatInfo("Basic Machine Inventory Format", ImportHelperMachineInventory.class));
         
         String completionUrl = "/views/itemDomainMachineDesignInventory/list?faces-redirect=true";
         
-        return new DomainImportInfo(formatInfo, completionUrl);
+        return new DomainImportExportInfo(formatInfo, completionUrl);
     }
 
     public String deletedItemsList() {
         return "/views/itemDomainMachineDesign/deletedItemsList?faces-redirect=true";
+    } 
+
+    @Override
+    protected ItemDomainMachineDesignInventoryControllerUtility getControllerUtility() {
+        return new ItemDomainMachineDesignInventoryControllerUtility(); 
     }
     
     /**

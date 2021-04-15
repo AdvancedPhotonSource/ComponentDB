@@ -10,7 +10,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemElementController;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.view.objects.ItemCoreMetadataPropertyInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.Map;
 import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
@@ -566,7 +566,7 @@ public abstract class ItemSettings<ItemControllerBase extends ItemController> ex
         return autoLoadListFilterValues;
     }
     
-    public ItemCoreMetadataPropertyInfo getCoreMetadataPropertyInfo() {
+    public ItemMetadataPropertyInfo getCoreMetadataPropertyInfo() {
         return parentController.getCoreMetadataPropertyInfo();
     }
     

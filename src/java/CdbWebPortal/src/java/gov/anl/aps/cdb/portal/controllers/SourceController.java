@@ -9,13 +9,12 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.ObjectAlreadyExists;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperSource;
 import gov.anl.aps.cdb.portal.controllers.settings.SourceSettings;
-import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperSourceApsKabel;
+import gov.anl.aps.cdb.portal.controllers.utilities.SourceControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named(SourceController.CONTROLLER_NAMED)
 @SessionScoped
-public class SourceController extends CdbEntityController<Source, SourceFacade, SourceSettings> implements Serializable {    
+public class SourceController extends CdbEntityController<SourceControllerUtility, Source, SourceFacade, SourceSettings> implements Serializable {    
 
     private static final Logger logger = LogManager.getLogger(SourceController.class.getName());   
     public static final String CONTROLLER_NAMED = "sourceController";
@@ -50,25 +49,11 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
     @Override
     protected SourceFacade getEntityDbFacade() {
         return sourceFacade;
-    }
+    } 
 
     @Override
     public Source createEntityInstance() {
-        Source source = new Source();
-        return source;
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "source";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getName();
-        }
-        return "";
+        return super.createEntityInstance(); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -88,28 +73,15 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
     public List<Source> getAvailableSourcesSortedByName() {
         return sourceFacade.findAllSortedByName();
     }
-
-    @Override
-    public void prepareEntityInsert(Source source) throws ObjectAlreadyExists {
-        Source existingSource = sourceFacade.findByName(source.getName());
-        if (existingSource != null) {
-            throw new ObjectAlreadyExists("Source " + source.getName() + " already exists.");
-        }
-        logger.debug("Inserting new source " + source.getName());
-    }
-
-    @Override
-    public void prepareEntityUpdate(Source source) throws ObjectAlreadyExists {
-        Source existingSource = sourceFacade.findByName(source.getName());
-        if (existingSource != null && !existingSource.getId().equals(source.getId())) {
-            throw new ObjectAlreadyExists("Source " + source.getName() + " already exists.");
-        }
-        logger.debug("Updating source " + source.getName());
-    }
     
     @Override
     protected SourceSettings createNewSettingObject() {
         return new SourceSettings(this);
+    }
+
+    @Override
+    protected SourceControllerUtility createControllerUtilityInstance() {
+        return new SourceControllerUtility(); 
     }
 
     /**
@@ -196,19 +168,33 @@ public class SourceController extends CdbEntityController<Source, SourceFacade, 
         return true;
     }
 
-    protected ImportHelperBase createImportHelperInstance() throws CdbException {
-        return new ImportHelperSource();
-    }
-    
     @Override
-    protected DomainImportInfo initializeDomainImportInfo() {
+    protected DomainImportExportInfo initializeDomainImportInfo() {
         
-        List<ImportFormatInfo> formatInfo = new ArrayList<>();
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
-        formatInfo.add(new ImportFormatInfo("Basic Source Format", ImportHelperSource.class));
+        formatInfo.add(new ImportExportFormatInfo("Basic Source Create/Update Format", ImportHelperSource.class));
         
         String completionUrl = "/views/source/list?faces-redirect=true";
         
-        return new DomainImportInfo(formatInfo, completionUrl);
+        return new DomainImportExportInfo(formatInfo, completionUrl);
     }
+    
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+    
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo("Basic Source Create/Update Format", ImportHelperSource.class));
+        
+        String completionUrl = "/views/source/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
 }

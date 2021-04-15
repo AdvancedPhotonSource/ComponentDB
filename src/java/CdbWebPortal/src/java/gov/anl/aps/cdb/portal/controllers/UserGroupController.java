@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.UserGroupSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.UserGroupControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.beans.UserGroupFacade;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -23,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named(UserGroupController.CONTROLLER_NAMED)
 @SessionScoped
-public class UserGroupController extends CdbEntityController<UserGroup, UserGroupFacade, UserGroupSettings> implements Serializable {   
+public class UserGroupController extends CdbEntityController<UserGroupControllerUtility, UserGroup, UserGroupFacade, UserGroupSettings> implements Serializable {   
 
     private static final Logger logger = LogManager.getLogger(UserGroupController.class.getName());
     public static final String CONTROLLER_NAMED = "userGroupController";
@@ -44,29 +45,6 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
     }
 
     @Override
-    protected UserGroup createEntityInstance() {
-        return new UserGroup();
-    }
-    
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Registered User Group";
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "userGroup";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getName();
-        }
-        return "";
-    }
-
-    @Override
     public List<UserGroup> getAvailableItems() {
         return super.getAvailableItems();
     }
@@ -79,6 +57,11 @@ public class UserGroupController extends CdbEntityController<UserGroup, UserGrou
     @Override
     protected UserGroupSettings createNewSettingObject() {
         return new UserGroupSettings(this);
+    }
+
+    @Override
+    protected UserGroupControllerUtility createControllerUtilityInstance() {
+        return new UserGroupControllerUtility();
     }
 
     /**

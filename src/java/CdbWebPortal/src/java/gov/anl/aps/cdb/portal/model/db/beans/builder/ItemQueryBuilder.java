@@ -4,7 +4,6 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans.builder;
 
-import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
@@ -17,6 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.primefaces.model.FilterMeta;
 import org.primefaces.model.SortOrder;
 
@@ -25,21 +26,33 @@ import org.primefaces.model.SortOrder;
  * @author Dariusz
  */
 public abstract class ItemQueryBuilder {
+    
+    private static final Logger logger = LogManager.getLogger(ItemQueryBuilder.class.getName());
 
-    private static final String QUERY_STRING_START = "SELECT i FROM Item i ";
+    private static final String QUERY_STRING_START = "SELECT DISTINCT(i) FROM Item i ";
     private static final CharSequence[] ESCAPE_QUERY_CHARACTERS = {"'"};
     private static final String ITEM_ELEMENTS_LIST_JOIN_NAME = "fiel";
     private static final String ITEM_PROJECT_LIST_JOIN_NAME = "ipl";
     private static final String ENTITY_TYPE_LIST_JOIN_NAME = "etl";
+    private static final String ITEM_CATEGORY_LIST_JOIN_NAME = "icl"; 
+    private static final String ITEM_TYPE_LIST_JOIN_NAME = "itl"; 
+    private static final String CORE_METADATA_PROPERTY_JOIN_NAME = "cmp";
 
     private static final String QUERY_LIKE = "LIKE";
+    
+    private final String METADATA_FIELD_START = "Metadata-"; 
+    private final String PROPERTY_FIELD_START = "propertyColumn"; 
 
     boolean include_fiel = false;
     boolean include_ipl = false;
     boolean include_etl = false;
+    boolean include_icl = false;
+    boolean include_itl = false;     
     private Set<String> pvlNames = null;
+    private Set<String> coreMetadataNames = null; 
 
     private Set<String> firstIERNames = null;
+    private Set<String> secondIERNames = null; 
 
     private boolean fiel_included_in_where;
 
@@ -51,7 +64,7 @@ public abstract class ItemQueryBuilder {
     private String wherePart;
     private String sortPart;
     private String joinPart;
-
+    
     public ItemQueryBuilder(Domain domain, Map filterMap, String sortField, SortOrder sortOrder) {
         this.domain = domain;
         this.filterMap = filterMap;
@@ -59,7 +72,9 @@ public abstract class ItemQueryBuilder {
         this.sortOrder = sortOrder;
 
         this.pvlNames = new HashSet<>();
+        this.coreMetadataNames = new HashSet<>(); 
         this.firstIERNames = new HashSet<>(); 
+        this.secondIERNames = new HashSet<>(); 
         
         this.fiel_included_in_where = false;
     }
@@ -93,6 +108,14 @@ public abstract class ItemQueryBuilder {
         if (include_ipl) {
             joinPart += " JOIN i.itemProjectList " + ITEM_PROJECT_LIST_JOIN_NAME;
         }
+        
+        if (include_icl) {
+            joinPart += " JOIN i.itemCategoryList " + ITEM_CATEGORY_LIST_JOIN_NAME; 
+        }
+        
+        if (include_itl) {
+            joinPart += " JOIN i.itemTypeList " + ITEM_TYPE_LIST_JOIN_NAME; 
+        }
 
         for (String pvlName : pvlNames) {
             joinPart += " JOIN fiel.propertyValueList " + pvlName;
@@ -100,6 +123,14 @@ public abstract class ItemQueryBuilder {
 
         for (String ierName : firstIERNames) {
             joinPart += " JOIN fiel.itemElementRelationshipList " + ierName;
+        }
+        
+        for (String ierName : secondIERNames) {
+            joinPart += " JOIN fiel.itemElementRelationshipList1 " + ierName;
+        }
+        
+        for (String cmName : coreMetadataNames) {
+            joinPart += " JOIN " + CORE_METADATA_PROPERTY_JOIN_NAME + ".propertyMetadataList " + cmName;
         }
 
         return joinPart;
@@ -111,16 +142,21 @@ public abstract class ItemQueryBuilder {
         appendWhere("=", "i.domain.id", domain.getId());
 
         for (Object key : filterMap.keySet()) {
-            FilterMeta filter = (FilterMeta) filterMap.get(key);
-            Object filterValue = filter.getFilterValue();
+            Object filterValue = filterMap.get(key);
+            if (filterValue instanceof FilterMeta) {                
+                filterValue = ((FilterMeta)filterValue).getFilterValue();
+            }
 
             if (filterValue != null) {
                 String keyString = key.toString();
 
                 String valueString = filterValue.toString();
 
-                if (keyString.startsWith("propertyColumn")) {
+                if (keyString.startsWith(PROPERTY_FIELD_START)) {
                     addPropertyWhereByTypeId(keyString, valueString);
+                    return;
+                } else if (keyString.startsWith(METADATA_FIELD_START)) {
+                    addCoreMetadataWhere(keyString, valueString);
                     return;
                 }
 
@@ -135,6 +171,41 @@ public abstract class ItemQueryBuilder {
                 }
             }
         }
+    }
+    
+    private String prepareCoreMetadataQuery(String key) {
+        String coreMetadataPropertyName = getCoreMetadataPropertyName();
+        if (coreMetadataPropertyName == null) {
+            logger.warn("Cannot filter core property not specified in controller");
+            return null; 
+        }    
+        
+        preparePropertyQuery(CORE_METADATA_PROPERTY_JOIN_NAME, "name", coreMetadataPropertyName);
+                
+        String metadataKey = key.split("-")[1];
+        
+        String filter_key = "cmp"+metadataKey; 
+        coreMetadataNames.add(filter_key);
+        String keyMatchQuery = filter_key + ".metadataKey"; 
+        appendWhere("=", keyMatchQuery, metadataKey);
+
+        return filter_key; 
+    }
+    
+    private void addCoreMetadataWhere(String key, String value) {
+        String filter_key = prepareCoreMetadataQuery(key);                
+        
+        String filterMatchQuery = filter_key + ".metadataValue";
+        appendWhere(QUERY_LIKE, filterMatchQuery, value);
+    }
+    
+    /**
+     * Override this method in sub-controller to allow filtering of core property. 
+     * 
+     * @return 
+     */
+    protected String getCoreMetadataPropertyName() {
+        return null; 
     }
 
     /**
@@ -156,6 +227,14 @@ public abstract class ItemQueryBuilder {
 
             fiel_included_in_where = true;
         }
+    }
+    
+    protected void addSelfElementWhereByAttribute(String attribute, String value) {        
+        String nameField = ITEM_ELEMENTS_LIST_JOIN_NAME + "." + attribute; 
+        
+        appendWhere(QUERY_LIKE, nameField, value);
+        
+        includeFiel();        
     }
 
     protected void addPropertyWhereByTypeId(String fullFieldName, String value) {
@@ -189,19 +268,22 @@ public abstract class ItemQueryBuilder {
      */
     private String preparePropertyQuery(String fullFieldName, String byAttribute) {
         String[] split = fullFieldName.split("-");
-        String key = split[0];
+        String key = split[0]; 
+        String propertyTypeByValue = split[1];
+        
+        preparePropertyQuery(key, byAttribute, propertyTypeByValue);
 
+        return key;
+    }
+    
+    private void preparePropertyQuery(String key, String byAttribute, String propertyTypeByValue) {
         if (pvlNames.contains(key) == false) {
-            String propertyTypeByValue = split[1];
-
             String queryName = key + ".propertyType." + byAttribute;
             appendWhere("=", queryName, propertyTypeByValue);
 
             pvlNames.add(key);
             includeFiel();
         }
-
-        return key;
     }
     
     protected void addFirstRelationshipDetailsWhere(String key, String relationshipTypeName, String relationshipDetails) {
@@ -227,6 +309,33 @@ public abstract class ItemQueryBuilder {
      */
     protected void prepareFirstRelationshipQueryByRelationshipName(String key, String relationshipTypeName) {
         prepareRelationshipQuery(key, "name", relationshipTypeName);
+        firstIERNames.add(key);
+    }
+    
+    protected void addSecondRelationshipDetailsWhere(String key, String relationshipTypeName, String relationshipDetails) {
+        addSecondRelationshipWhere(key, relationshipTypeName, "relationshipDetails", relationshipDetails);
+    }
+    
+    protected void addSecondRelationshipParentItemWhere(String key, String relationshipTypeName, String relationshipItemName) {
+        addSecondRelationshipWhere(key, relationshipTypeName, "firstItemElement.parentItem.name", relationshipItemName);
+    }
+    
+    private void addSecondRelationshipWhere(String key, String relationshipTypeName, String dbFieldName, String value) {
+        prepareSecondRelationshipQueryByRelationshipName(key, relationshipTypeName);
+        
+        String queryName = key + "." + dbFieldName; 
+        appendWhere(QUERY_LIKE, queryName, value);
+    }
+    
+    /**
+     * Prepares a relationship entity for filter or sort 
+     * 
+     * @param key entity reference in query 
+     * @param relationshipTypeName name of the relationship type
+     */
+    protected void prepareSecondRelationshipQueryByRelationshipName(String key, String relationshipTypeName) {
+        prepareRelationshipQuery(key, "name", relationshipTypeName);
+        secondIERNames.add(key);
     }
     
     /**
@@ -239,8 +348,7 @@ public abstract class ItemQueryBuilder {
     private void prepareRelationshipQuery(String key, String byAttribute, String relationshipTypeAttribute) {
         String queryName = key + ".relationshipType." + byAttribute;
         appendWhere("=", queryName, relationshipTypeAttribute);
-
-        firstIERNames.add(key);
+        
         includeFiel();
     }
 
@@ -255,6 +363,12 @@ public abstract class ItemQueryBuilder {
             case ITEM_PROJECT_LIST_JOIN_NAME:
                 include_ipl = true;
                 break;
+            case ITEM_CATEGORY_LIST_JOIN_NAME: 
+                include_icl = true;
+                break;
+            case ITEM_TYPE_LIST_JOIN_NAME: 
+                include_itl = true; 
+                break; 
         }
     }
 
@@ -263,10 +377,13 @@ public abstract class ItemQueryBuilder {
         if (sortOrder != null && sortField != null) {
             String fullSortField = null;
 
-            if (sortField.startsWith("propertyColumn")) {
+            if (sortField.startsWith(PROPERTY_FIELD_START)) {
                 sortField = preparePropertyQuery(sortField, "id");
                 fullSortField = sortField + ".value";
-            } else {
+            } else if (sortField.startsWith(METADATA_FIELD_START)) {
+                sortField = prepareCoreMetadataQuery(sortField); 
+                fullSortField = sortField + ".metadataValue"; 
+            }else {
                 QueryTranslator qt = QueryTranslator.getQueryTranslatorByValue(sortField);
                 if (qt != null) {
                     fullSortField = qt.getQueryNameField();
@@ -425,6 +542,7 @@ public abstract class ItemQueryBuilder {
 
         if (object != null && object instanceof String) {
             if (comparator.equalsIgnoreCase(QUERY_LIKE)) {
+                value = ((String)value).replace('*', '%'); 
                 value = "%" + value + "%";
             }
 
@@ -459,7 +577,9 @@ public abstract class ItemQueryBuilder {
         createdDate("createdOnDateTime", ITEM_ELEMENTS_LIST_JOIN_NAME, "entityInfo.createdOnDateTime"),
         modifiedUser("lastModifiedByUser.username", ITEM_ELEMENTS_LIST_JOIN_NAME, "entityInfo.lastModifiedByUser.username"),
         modifiedDate("lastModifiedOnDateTime", ITEM_ELEMENTS_LIST_JOIN_NAME, "entityInfo.lastModifiedOnDateTime"),
-        entityTypeName("entityTypeString", ENTITY_TYPE_LIST_JOIN_NAME, "name");
+        entityTypeName("entityTypeString", ENTITY_TYPE_LIST_JOIN_NAME, "name"),
+        itemCategoryName("itemCategoryString", ITEM_CATEGORY_LIST_JOIN_NAME, "name"),
+        itemTypeName("itemTypeString", ITEM_TYPE_LIST_JOIN_NAME, "name");
 
         private String value;
         private String customDesignation;

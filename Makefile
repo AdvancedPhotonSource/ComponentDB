@@ -34,6 +34,12 @@ support-netbeans:
 clean-db:
 	$(TOP)/sbin/cdb_create_db.sh cdb $(TOP)/db/sql/clean
 
+test-db:
+	$(TOP)/sbin/cdb_create_db.sh cdb $(TOP)/db/sql/test
+
+test:
+	$(TOP)/sbin/cdb_test.sh
+
 db:
 	$(TOP)/sbin/cdb_create_db.sh
 

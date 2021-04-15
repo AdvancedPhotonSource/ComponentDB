@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.RoleTypeSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.RoleTypeControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.RoleType;
 import gov.anl.aps.cdb.portal.model.db.beans.RoleTypeFacade;
 
@@ -19,7 +20,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named("roleTypeController")
 @SessionScoped
-public class RoleTypeController extends CdbEntityController<RoleType, RoleTypeFacade, RoleTypeSettings> implements Serializable {
+public class RoleTypeController extends CdbEntityController<RoleTypeControllerUtility, RoleType, RoleTypeFacade, RoleTypeSettings> implements Serializable {
 
     @EJB
     private RoleTypeFacade roleTypeFacade;
@@ -34,23 +35,13 @@ public class RoleTypeController extends CdbEntityController<RoleType, RoleTypeFa
     }
 
     @Override
-    protected RoleType createEntityInstance() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     protected RoleTypeSettings createNewSettingObject() {
         return new RoleTypeSettings();
+    }
+
+    @Override
+    protected RoleTypeControllerUtility createControllerUtilityInstance() {
+        return new RoleTypeControllerUtility(); 
     }
 
     @FacesConverter(value = "roleTypeConverter" ,forClass = RoleType.class)

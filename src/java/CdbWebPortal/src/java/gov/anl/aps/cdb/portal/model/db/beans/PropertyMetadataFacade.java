@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyMetadata;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,10 @@ public class PropertyMetadataFacade extends CdbEntityFacade<PropertyMetadata> {
 
     public PropertyMetadataFacade() {
         super(PropertyMetadata.class);
+    }
+    
+    public static PropertyMetadataFacade getInstance() {
+        return (PropertyMetadataFacade) SessionUtility.findFacade(PropertyMetadataFacade.class.getSimpleName()); 
     }
     
 }

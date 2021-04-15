@@ -4,7 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.model.db.utilities;
 
-import gov.anl.aps.cdb.portal.controllers.LogController;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
+import gov.anl.aps.cdb.portal.controllers.utilities.LogControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.Log;
 import gov.anl.aps.cdb.portal.model.db.entities.LogTopic;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -12,6 +14,8 @@ import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 /**
@@ -57,8 +61,15 @@ public class LogUtility {
         }
     }
     
-    public static void addSystemLog(String logLevelName, String logMessage) {
-        LogController logController = LogController.getInstance();
-        logController.addSystemLog(logLevelName, logMessage);
+    
+    public static void addSystemLog(SystemLogLevel logLevelName, String logMessage) {
+        LogControllerUtility logControllerUtility = LogControllerUtility.getSystemLogInstance();    
+                   
+        try {
+            logControllerUtility.addSystemLog(logLevelName, logMessage);
+        } catch (CdbException ex) {
+            Logger.getLogger(LogUtility.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
 }

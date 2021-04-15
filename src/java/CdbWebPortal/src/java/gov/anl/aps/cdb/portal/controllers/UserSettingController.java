@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.UserSettingSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.UserSettingControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.UserSetting;
 import gov.anl.aps.cdb.portal.model.db.beans.UserSettingFacade;
 
@@ -22,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named("userSettingController")
 @SessionScoped
-public class UserSettingController extends CdbEntityController<UserSetting, UserSettingFacade,  UserSettingSettings> implements Serializable {    
+public class UserSettingController extends CdbEntityController<UserSettingControllerUtility, UserSetting, UserSettingFacade,  UserSettingSettings> implements Serializable {    
 
     @EJB
     private UserSettingFacade userSettingFacade;
@@ -35,31 +36,7 @@ public class UserSettingController extends CdbEntityController<UserSetting, User
     @Override
     protected UserSettingFacade getEntityDbFacade() {
         return userSettingFacade;
-    }
-
-    @Override
-    protected UserSetting createEntityInstance() {
-        UserSetting userSetting = new UserSetting();
-        return userSetting;
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "userSetting";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "user setting";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getId().toString();
-        }
-        return "";
-    }
+    }   
 
     @Override
     public List<UserSetting> getAvailableItems() {
@@ -76,6 +53,11 @@ public class UserSettingController extends CdbEntityController<UserSetting, User
     @Override
     protected UserSettingSettings createNewSettingObject() {
         return new UserSettingSettings(this);
+    }
+
+    @Override
+    protected UserSettingControllerUtility createControllerUtilityInstance() {
+        return new UserSettingControllerUtility(); 
     }
 
     /**

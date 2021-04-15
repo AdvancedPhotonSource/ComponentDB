@@ -26,12 +26,9 @@ public class IgnoreColumnSpec extends ColumnSpec {
     }
     
     @Override
-    public ColumnSpecInitInfo initialize(
+    public ColumnSpecInitInfo initialize_(
             int colIndex,
-            Map<Integer, String> headerValueMap,
-            List<InputColumnModel> inputColumns_io,
-            List<InputHandler> inputHandlers_io,
-            List<OutputColumnModel> outputColumns_io) {
+            Map<Integer, String> headerValueMap) {
         
         ValidInfo validInfo = new ValidInfo(true, "");
         return new ColumnSpecInitInfo(validInfo, numIgnoreColumns);

@@ -10,8 +10,6 @@ import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.AuthorizationUtility;
-import gov.anl.aps.cdb.rest.authentication.User;
-import java.security.Principal;
 import javax.ejb.EJB;
 import javax.ws.rs.PathParam;
 import org.apache.logging.log4j.LogManager;
@@ -55,6 +53,9 @@ public abstract class ItemBaseRoute extends BaseRoute {
         if (user != null) {
             if (isUserAdmin(user)) {
                 return true;
+            }
+            if (isUserMaintainer(user)) {
+                return true; 
             }
             return AuthorizationUtility.isEntityWriteableByUser(item, user);
         }

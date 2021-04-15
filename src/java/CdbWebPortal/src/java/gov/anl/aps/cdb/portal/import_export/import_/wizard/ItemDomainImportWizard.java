@@ -7,11 +7,10 @@ package gov.anl.aps.cdb.portal.import_export.import_.wizard;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.DomainImportInfo;
-import gov.anl.aps.cdb.portal.view.objects.ImportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
+import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +35,7 @@ public class ItemDomainImportWizard implements Serializable {
     public static final String CONTROLLER_NAMED = "importWizard";
 
     protected static final String TAB_SELECT_FORMAT = "SelectFormatTab";
+    protected static final String TAB_SELECT_MODE = "SelectModeTab";
     protected static final String TAB_SELECT_FILE = "SelectFileTab";
     protected static final String TAB_VALIDATE = "ValidateTab";
     protected static final String TAB_RESULTS = "ResultsTab";
@@ -49,10 +49,13 @@ public class ItemDomainImportWizard implements Serializable {
     private Boolean disableButtonFinish = true;
     private Boolean disableButtonCancel = false;
     
-    private DomainImportInfo domainInfo = null;
+    private DomainImportExportInfo domainInfo = null;
     
     // models for select format tab
     private String selectedFormatName = null;
+    
+    // models for select mode tab
+    private String selectedMode = null;
 
     // models for select file tab
     private Boolean disableButtonUpload = true;
@@ -77,12 +80,12 @@ public class ItemDomainImportWizard implements Serializable {
                 ItemDomainImportWizard.CONTROLLER_NAMED);
     }
 
-    public void setDomainInfo(DomainImportInfo info) {
+    public void setDomainInfo(DomainImportExportInfo info) {
         reset();
         domainInfo = info;
     }
     
-    public List<ImportFormatInfo> getFormatInfoList() {
+    public List<ImportExportFormatInfo> getFormatInfoList() {
         if (domainInfo != null) {
             return domainInfo.getFormatInfoList();
         } else {
@@ -114,6 +117,21 @@ public class ItemDomainImportWizard implements Serializable {
         setEnablementForCurrentTab();
     }
 
+    public String getSelectedMode() {
+        return selectedMode;
+    }
+
+    public void setSelectedMode(String selectedMode) {
+        this.selectedMode = selectedMode;
+    }
+
+    /**
+     * Handles radio button click for select mode tab of wizard.
+     */
+    public void clickListenerMode() {
+        setEnablementForCurrentTab();
+    }
+    
     public Boolean getDisableButtonPrev() {
         return disableButtonPrev;
     }
@@ -280,6 +298,18 @@ public class ItemDomainImportWizard implements Serializable {
     public String getImportResultString() {
         return importResult;
     }
+    
+    public Boolean supportsModeCreate() {
+        return importHelper.supportsModeCreate();
+    }
+
+    public Boolean supportsModeUpdate() {
+        return importHelper.supportsModeUpdate();
+    }
+
+    public Boolean supportsModeDelete() {
+        return importHelper.supportsModeDelete();
+    }
 
     public String getValidationMessage() {
         return importHelper.getValidationMessage();
@@ -320,9 +350,9 @@ public class ItemDomainImportWizard implements Serializable {
         String nextStep = event.getNewStep();
         String currStep = event.getOldStep();
         
-        // create helper if moving from select format tab to select file tab
+        // create helper if moving from select format tab
         if ((currStep.endsWith(TAB_SELECT_FORMAT))
-                && (nextStep.endsWith(TAB_SELECT_FILE))) {
+                && (nextStep.endsWith(TAB_SELECT_MODE))) {
             createHelperForSelectedFormat();
             if (importHelper == null) {
                 // don't allow transition if we couldn't create helper
@@ -335,6 +365,13 @@ public class ItemDomainImportWizard implements Serializable {
             }
         }
 
+        // handle select mode tab
+        if ((currStep.endsWith(TAB_SELECT_MODE))
+                && (nextStep.endsWith(TAB_SELECT_FILE))) {
+            
+            importHelper.setImportMode(getSelectedMode());
+        }
+        
         // parse file if moving from select file tab to validate tab
         if ((currStep.endsWith(TAB_SELECT_FILE))
                 && (nextStep.endsWith(TAB_VALIDATE))) {
@@ -417,16 +454,15 @@ public class ItemDomainImportWizard implements Serializable {
         }
 
         setEnablement(nextStep);
-
         currentTab = nextStep;
-
+        
         return nextStep;
     }
     
     protected void createHelperForSelectedFormat() {
-        List<ImportFormatInfo> infoList = getFormatInfoList();
-        ImportFormatInfo selectedFormatInfo = null;
-        for (ImportFormatInfo info : infoList) {
+        List<ImportExportFormatInfo> infoList = getFormatInfoList();
+        ImportExportFormatInfo selectedFormatInfo = null;
+        for (ImportExportFormatInfo info : infoList) {
             if (info.getFormatName().equals(getSelectedFormatName())) {
                 selectedFormatInfo = info;
                 break;
@@ -434,7 +470,7 @@ public class ItemDomainImportWizard implements Serializable {
         }
         try {
             if (selectedFormatInfo != null) {
-                Class helperClass = selectedFormatInfo.getImportHelperClass();
+                Class helperClass = selectedFormatInfo.getHelperClass();
                 importHelper = (ImportHelperBase) helperClass.newInstance();
             }
         } catch (InstantiationException | IllegalAccessException ex) {
@@ -456,6 +492,7 @@ public class ItemDomainImportWizard implements Serializable {
     protected void reset() {
         currentTab = TAB_SELECT_FORMAT;
         selectedFormatName = null;
+        selectedMode = null;
         uploadfileData = null;
         importHelper = null;
         importSuccessful = true;
@@ -518,6 +555,17 @@ public class ItemDomainImportWizard implements Serializable {
             disableButtonFinish = true;
 
             if (getSelectedFormatName()!= null) {
+                disableButtonNext = false;
+            } else {
+                disableButtonNext = true;
+            }
+
+        } else if (tab.endsWith(TAB_SELECT_MODE)) {
+            disableButtonPrev = false;
+            disableButtonCancel = false;
+            disableButtonFinish = true;
+
+            if (selectedMode != null) {
                 disableButtonNext = false;
             } else {
                 disableButtonNext = true;

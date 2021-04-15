@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.constants.CdbPropertyValue;
 import gov.anl.aps.cdb.portal.controllers.settings.CdbDomainEntitySettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.CdbDomainEntityControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeCategoryFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
@@ -20,13 +21,11 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValueBase;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.model.db.utilities.LogUtility;
 import gov.anl.aps.cdb.portal.model.db.utilities.PropertyValueUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.utilities.StorageUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -42,7 +41,7 @@ import org.primefaces.event.RowEditEvent;
  * @param <EntityType>
  * @param <FacadeType>
  */
-public abstract class CdbDomainEntityController<EntityType extends CdbDomainEntity, FacadeType extends CdbEntityFacade<EntityType>, DomainEntitySettingsObject extends CdbDomainEntitySettings> extends CdbEntityController<EntityType, FacadeType, DomainEntitySettingsObject> implements Serializable, ICdbDomainEntityController<EntityType> {
+public abstract class CdbDomainEntityController<ControllerUtility extends CdbDomainEntityControllerUtility<EntityType, FacadeType>, EntityType extends CdbDomainEntity, FacadeType extends CdbEntityFacade<EntityType>, DomainEntitySettingsObject extends CdbDomainEntitySettings> extends CdbEntityController<ControllerUtility, EntityType, FacadeType, DomainEntitySettingsObject> implements Serializable, ICdbDomainEntityController<EntityType> {
 
     private PropertyValue currentEditPropertyValue;
     
@@ -86,7 +85,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
             currentEditPropertyValue = null;
         }
     }
-
+    
     public PropertyValue preparePropertyTypeValueAdd(PropertyType propertyType) {
         return preparePropertyTypeValueAdd(propertyType, propertyType.getDefaultValue());
     }
@@ -97,42 +96,8 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     public PropertyValue preparePropertyTypeValueAdd(PropertyType propertyType, String propertyValueString, String tag) {
         EntityType cdbDomainEntity = getCurrent();
-        return preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyValueString, tag); 
-    }
-    
-    public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity, PropertyType propertyType) {
-        return preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyType.getDefaultValue(), null); 
-    }
-    
-    public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity, 
-            PropertyType propertyType, String propertyValueString, String tag) {
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        return preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyValueString, tag, lastModifiedByUser);
-    }
-    
-    public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity, 
-            PropertyType propertyType, String propertyValueString, String tag, 
-            UserInfo updatedByUser) {        
-        Date lastModifiedOnDateTime = new Date();
-
-        PropertyValue propertyValue = new PropertyValue();
-        propertyValue.setPropertyType(propertyType);
-        propertyValue.setValue(propertyValueString);
-        propertyValue.setUnits(propertyType.getDefaultUnits());
-        cdbDomainEntity.addPropertyValueToPropertyValueList(propertyValue);        
-        propertyValue.setEnteredByUser(updatedByUser);
-        propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
-        if (tag != null) {
-            propertyValue.setTag(tag);
-        }
-
-        cdbDomainEntity.resetPropertyValueLists();
-        
-        // Get method called by GUI populates metadata
-        // Needed for multi-edit or API to also populate metadata
-        propertyValue.getPropertyValueMetadataList(); 
-
-        return propertyValue;
+        ControllerUtility controllerUtility = getControllerUtility();
+        return controllerUtility.preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyValueString, tag); 
     }
     
     /**
@@ -223,6 +188,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     public void updateEditProperty() {        
         this.update();
+        reloadCurrent();
     }
 
     public void deleteCurrentEditPropertyValue() {
@@ -239,6 +205,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     public void savePropertyList() {
         update();
+        reloadCurrent();
     }   
 
     @Override
@@ -273,10 +240,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
      * @param preProcessListDataModel dataModel that will be used for pre
      * process actions.
      */
-    protected void loadPreProcessListDataModelIfNeeded(DataModel preProcessListDataModel) {
-        if (apiMode) {
-            return;
-        }
+    protected void loadPreProcessListDataModelIfNeeded(DataModel preProcessListDataModel) {        
         if (preProcessListDataModel != null) {
             preProcessDomainEntityListDataModel = preProcessListDataModel;
 
@@ -567,7 +531,7 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
 
     public void removeNewLog() {
         if (newLogEdit != null) {
-            EntityType cdbDomainEntity = this.current;
+            EntityType cdbDomainEntity = getCurrent();
             cdbDomainEntity.getLogList().remove(newLogEdit);
             newLogEdit = null;
         }
@@ -576,25 +540,17 @@ public abstract class CdbDomainEntityController<EntityType extends CdbDomainEnti
     public void saveLogList() {
         newLogEdit = null;
         update();
+        reloadCurrent();
     }
     
     public Log prepareAddLog(EntityType cdbDomainEntity) {
-        return prepareAddLog(cdbDomainEntity, null); 
-    }
-
-    public Log prepareAddLog(EntityType cdbDomainEntity, UserInfo user) {
-        Log logEntry = null;
-        if (user == null) {
-            logEntry = LogUtility.createLogEntry();
-        } else {
-            logEntry = LogUtility.createLogEntry(user);
-        }
+        UserInfo user = SessionUtility.getUser();
+        Log logEntry = getControllerUtility().prepareAddLog(cdbDomainEntity, user);         
         
         setNewLogEdit(logEntry);
-        List<Log> cdbDomainEntityLogList = cdbDomainEntity.getLogList();
-        cdbDomainEntityLogList.add(0, logEntry);
+        
         return logEntry; 
-    }
+    }   
 
     public List<Log> getLogList() {
         EntityType cdbDomainEntity = getCurrent();

@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -52,6 +53,10 @@ public class ItemProjectFacade extends CdbEntityFacade<ItemProject> {
         
         // uses findByName() since that method already finds a unique instance by name
         return findByName(name);       
+    }
+    
+    public static ItemProjectFacade getInstance() {
+        return (ItemProjectFacade) SessionUtility.findFacade(ItemProjectFacade.class.getSimpleName()); 
     }
 
 }

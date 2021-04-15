@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.UserRoleSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.UserRoleControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.UserRole;
 import gov.anl.aps.cdb.portal.model.db.beans.UserRoleFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -20,7 +21,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named("userRoleController")
 @SessionScoped
-public class UserRoleController extends CdbEntityController<UserRole, UserRoleFacade, UserRoleSettings> implements Serializable {
+public class UserRoleController extends CdbEntityController<UserRoleControllerUtility, UserRole, UserRoleFacade, UserRoleSettings> implements Serializable {
 
     @EJB
     UserRoleFacade userRoleFacade;
@@ -37,29 +38,6 @@ public class UserRoleController extends CdbEntityController<UserRole, UserRoleFa
     protected UserRoleFacade getEntityDbFacade() {
         return userRoleFacade; 
     }
-
-    @Override
-    protected UserRole createEntityInstance() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "userRole";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "User Role"; 
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().toString();
-        }
-        return "";
-    }
     
     public void prepareAddUserRole(UserInfo userInfoObject) {
         UserRole userRole = new UserRole();
@@ -70,6 +48,11 @@ public class UserRoleController extends CdbEntityController<UserRole, UserRoleFa
     @Override
     protected UserRoleSettings createNewSettingObject() {
         return new UserRoleSettings(this); 
+    }
+
+    @Override
+    protected UserRoleControllerUtility createControllerUtilityInstance() {
+        return new UserRoleControllerUtility(); 
     }
 
     @FacesConverter(forClass = UserRole.class)

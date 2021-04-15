@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.HttpLinkUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableCatalogControllerUtility;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -71,6 +73,11 @@ public class ItemDomainCableCatalog extends ItemDomainCatalogBase<ItemDomainCabl
     @Override
     public Item createInstance() {
         return new ItemDomainCableCatalog(); 
+    } 
+
+    @Override
+    public ItemDomainCableCatalogControllerUtility getItemControllerUtility() {
+        return new ItemDomainCableCatalogControllerUtility(); 
     }
     
     @Override

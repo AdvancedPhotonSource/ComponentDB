@@ -304,7 +304,7 @@ public abstract class ItemEnforcedPropertiesController extends ItemControllerExt
                 enforcedConfigurationPropertyType = propertyTypeController.getCurrent();
                 enforcedConfigurationPropertyType.setName(ENFORCED_CONFIGURATION_PROPERTY_TYPE_NAME);
                 enforcedConfigurationPropertyType.setIsInternal(true);
-                propertyTypeController.create(true, false);
+                propertyTypeController.create(true);
             }
         }
 

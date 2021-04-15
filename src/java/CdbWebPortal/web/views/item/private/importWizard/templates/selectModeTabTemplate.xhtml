@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
+
+    <!-- Must provide params "viewId", "wizardController"-->
+    
+    <ui:param name="rootViewId" value="#{viewId}"/>
+    
+    <p:tab id="#{rootViewId}SelectModeTab">
+        <p:panel header="Select desired mode, then click 'Next Step'.">
+            <p:outputPanel id="#{rootViewId}SelectModePanel">
+                <p:panelGrid>
+                    <p:row>
+                        <p:column>
+
+                            <p:selectOneRadio id="#{rootViewId}SelectModeRadio" 
+                                              value="#{wizardController.selectedMode}" 
+                                              layout="custom">
+                                <f:selectItem itemLabel="Create New Items" 
+                                              itemValue="create" 
+                                              itemDisabled="#{!wizardController.supportsModeCreate()}"/>
+                                <f:selectItem itemLabel="Update Existing Items" 
+                                              itemValue="update"  
+                                              itemDisabled="#{!wizardController.supportsModeUpdate()}"/>
+                                <f:selectItem itemLabel="Compare To Existing Items" 
+                                              itemValue="compare"  
+                                              itemDisabled="#{!wizardController.supportsModeUpdate()}"/>
+                                <f:selectItem itemLabel="Delete Existing Items" 
+                                              itemValue="delete"  
+                                              itemDisabled="#{!wizardController.supportsModeDelete()}"/>
+
+                                <p:ajax event="click"
+                                        listener="#{wizardController.clickListenerMode}"
+                                        oncomplete="update#{rootViewId}WizardButtons();"/>
+
+                            </p:selectOneRadio>
+
+                            <p:panelGrid columns="2">
+
+                                <p:radioButton id="#{rootViewId}RadioCreate" 
+                                               for="#{rootViewId}SelectModeRadio"
+                                               disabled="#{!wizardController.supportsModeCreate()}"
+                                               itemIndex="0" />
+                                <p:outputLabel for="#{rootViewId}RadioCreate" 
+                                               value="Create New Items" />
+
+                                <p:radioButton id="#{rootViewId}RadioUpdate" 
+                                               for="#{rootViewId}SelectModeRadio" 
+                                               disabled="#{!wizardController.supportsModeUpdate()}"
+                                               itemIndex="1" />
+                                <p:outputLabel for="#{rootViewId}RadioUpdate" 
+                                               value="Update Existing Items" />
+
+                                <p:radioButton id="#{rootViewId}RadioCompare" 
+                                               for="#{rootViewId}SelectModeRadio" 
+                                               disabled="#{!wizardController.supportsModeUpdate()}"
+                                               itemIndex="2" />
+                                <p:outputLabel for="#{rootViewId}RadioCompare" 
+                                               value="Compare To Existing Items" />
+
+                                <p:radioButton id="#{rootViewId}RadioDelete" 
+                                               for="#{rootViewId}SelectModeRadio" 
+                                               disabled="#{!wizardController.supportsModeDelete()}"
+                                               itemIndex="3" />
+                                <p:outputLabel for="#{rootViewId}RadioDelete" 
+                                               value="Delete Existing Items" />
+
+                            </p:panelGrid>
+
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>                
+            </p:outputPanel>
+        </p:panel>
+    </p:tab>
+
+</ui:composition>

@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemConnectorSettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemConnectorControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
@@ -25,7 +26,7 @@ import javax.faces.convert.FacesConverter;
 
 @Named("itemConnectorController")
 @SessionScoped
-public class ItemConnectorController extends CdbEntityController<ItemConnector, ItemConnectorFacade, ItemConnectorSettings> implements Serializable {
+public class ItemConnectorController extends CdbEntityController<ItemConnectorControllerUtility, ItemConnector, ItemConnectorFacade, ItemConnectorSettings> implements Serializable {
 
     @EJB
     ItemConnectorFacade itemConnectorFacade;
@@ -37,34 +38,6 @@ public class ItemConnectorController extends CdbEntityController<ItemConnector, 
     @Override
     protected ItemConnectorFacade getEntityDbFacade() {
         return itemConnectorFacade;
-    }
-
-    @Override
-    protected ItemConnector createEntityInstance() {
-        ItemConnector itemConnector = new ItemConnector();
-        Connector connector = new Connector();
-        itemConnector.setConnector(connector);
-        itemConnector.setQuantity(1);
-
-        return itemConnector;
-    }
-
-    @Override
-    public String getEntityTypeName() {
-        return "itemConnector";
-    }
-
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Item Connector";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (current != null) {
-            return current.toString();
-        }
-        return "";
     }
 
     public String getConnectorGender(ItemConnector connector) {
@@ -186,6 +159,11 @@ public class ItemConnectorController extends CdbEntityController<ItemConnector, 
     @Override
     protected ItemConnectorSettings createNewSettingObject() {
         return new ItemConnectorSettings();
+    }
+
+    @Override
+    protected ItemConnectorControllerUtility createControllerUtilityInstance() {
+        return new ItemConnectorControllerUtility(); 
     }
 
     @FacesConverter(forClass = ItemConnector.class)

@@ -7,10 +7,12 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemTypeController;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrPathColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IntegerColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
@@ -51,12 +53,60 @@ public class ImportHelperLocation
     protected List<ColumnSpec> getColumnSpecs() {
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrNameRefColumnSpec(HEADER_PARENT, KEY_PARENT, "setImportParentItem", false, "CDB ID or name of parent location item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'.", ItemDomainLocationController.getInstance(), ItemDomainLocation.class, ""));
-        specs.add(new NameHierarchyColumnSpec(HEADER_BASE_LEVEL, KEY_NAME, KEY_INDENT, "Name hierarchy column", 3));
-        specs.add(new IntegerColumnSpec(HEADER_QR, KEY_QR, "setQrId", false, "QR ID of location (9 digit number)."));
-        specs.add(new IdOrNameRefColumnSpec(HEADER_TYPE, KEY_TYPE, "setItemType", false, "CDB ID or name of location type. Name must be prefixed with '#'.", ItemTypeController.getInstance(), ItemType.class, ItemDomainName.location.getValue()));
-        specs.add(new StringColumnSpec(HEADER_DESCRIPTION, "description", "setDescription", false, "Textual description of location.", 256));
-        specs.add(new FloatColumnSpec(HEADER_SORT_ORDER, KEY_SORT_ORDER, "setImportSortOrder", false, "Sort order within parent item (as decimal), defaults to order in input sheet."));
+        specs.add(new IdOrPathColumnSpec(
+                HEADER_PARENT, 
+                KEY_PARENT, 
+                "setImportParentItem", 
+                "CDB ID, name, or path of parent location item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                ItemDomainLocationController.getInstance(), 
+                ItemDomainLocation.class));
+        
+        specs.add(new NameHierarchyColumnSpec(
+                "Name hierarchy column",
+                ColumnModeOptions.oCREATE(),
+                HEADER_BASE_LEVEL, 
+                KEY_NAME, 
+                KEY_INDENT, 
+                3));
+        
+        specs.add(new IntegerColumnSpec(
+                HEADER_QR, 
+                KEY_QR, 
+                "setQrId", 
+                "QR ID of location (9 digit number).", 
+                null,
+                ColumnModeOptions.oCREATE()));
+        
+        specs.add(new IdOrNameRefColumnSpec(
+                HEADER_TYPE, 
+                KEY_TYPE, 
+                "setItemType", 
+                "CDB ID or name of location type. Name must be prefixed with '#'.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                ItemTypeController.getInstance(), 
+                ItemType.class, 
+                ItemDomainName.location.getValue()));
+        
+        specs.add(new StringColumnSpec(
+                HEADER_DESCRIPTION, 
+                "description", 
+                "setDescription", 
+                "Textual description of location.", 
+                null,
+                ColumnModeOptions.oCREATE(), 
+                256));
+        
+        specs.add(new FloatColumnSpec(
+                HEADER_SORT_ORDER, 
+                KEY_SORT_ORDER, 
+                "setImportSortOrder", 
+                "Sort order within parent item (as decimal), defaults to order in input sheet.", 
+                null,
+                ColumnModeOptions.oCREATE()));
+        
         specs.add(ownerUserColumnSpec());
         specs.add(ownerGroupColumnSpec());
         
@@ -69,8 +119,8 @@ public class ImportHelperLocation
     }
 
     @Override
-    public String getTemplateFilename() {
-        return "Location Template";
+    public String getFilenameBase() {
+        return "Location";
     }
     
     @Override

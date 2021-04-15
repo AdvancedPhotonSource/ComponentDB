@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">      
+
+    <ui:decorate  template="../../common/private/commonChildListActionButtons.xhtml">
+        <ui:define name="variables">
+            <ui:param name="childEntityTypeName"
+                      value="cableConnections"/>
+            <ui:param name="customizableListDataTable"
+                      value="#{false}" />             
+        </ui:define>
+
+        <ui:define name="additionalButtons">
+            <p:commandButton value="Add Connection"
+                             rendered="#{isEntityWriteable}"
+                             immediate="true"
+                             action='#{entityController.prepareAddConnection()}'
+                             onstart="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
+                             update="@form:dialogConnection"/>
+        </ui:define>        
+    </ui:decorate>
+
+    <ui:include src="itemDomainCableDesignConnectionListDataTable.xhtml"/>
+
+</ui:composition>

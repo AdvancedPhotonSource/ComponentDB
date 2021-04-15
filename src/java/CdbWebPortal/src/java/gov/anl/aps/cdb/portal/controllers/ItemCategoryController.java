@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.controllers.settings.ItemCategorySettings;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemCategoryControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -23,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named(ItemCategoryController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemCategoryController extends ItemTypeCategoryController<ItemCategory, ItemCategoryFacade, ItemCategorySettings> implements Serializable {
+public class ItemCategoryController extends ItemTypeCategoryController<ItemCategoryControllerUtility, ItemCategory, ItemCategoryFacade, ItemCategorySettings> implements Serializable {
 
     public static final String CONTROLLER_NAMED = "itemCategoryController";
         
@@ -56,37 +57,18 @@ public class ItemCategoryController extends ItemTypeCategoryController<ItemCateg
     }
 
     @Override
-    public String getEntityTypeName() {
-        return "itemCategory";
-    }
-
-    @Override
-    public String getCurrentEntityInstanceName() {
-        if (getCurrent() != null) {
-            return getCurrent().getName();
-        }
-        return "";
-    }
-
-    @Override
     public List<ItemCategory> getItemTypeCategoryEntityListByDomainName(String domainName) {
         return itemCategoryFacade.findByDomainName(domainName);
-    }
-
-    @Override
-    public ItemCategory createItemTypeCategoryEntity() {
-        ItemCategory itemCategory = new ItemCategory();
-        return itemCategory; 
-    }
-
-    @Override
-    public String getDefaultDisplayEntityTypeName() {
-        return "Item Category";
-    }
+    }   
 
     @Override
     protected ItemCategorySettings createNewSettingObject() {
         return new ItemCategorySettings(this);
+    }
+
+    @Override
+    protected ItemCategoryControllerUtility createControllerUtilityInstance() {
+        return new ItemCategoryControllerUtility(); 
     }
     
     /**

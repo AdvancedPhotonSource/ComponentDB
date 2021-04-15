@@ -76,6 +76,15 @@ public class LocatableItemController implements Serializable {
     protected boolean apiMode = false;
     protected UserInfo apiUser;
 
+    public LocatableItemController() {
+    }
+
+    public LocatableItemController(ItemElementRelationshipFacade itemElementRelationshipFacade, ItemFacade itemFacade, RelationshipTypeFacade relationshipTypeFacade) {        
+        this.itemElementRelationshipFacade = itemElementRelationshipFacade;
+        this.itemFacade = itemFacade;
+        this.relationshipTypeFacade = relationshipTypeFacade; 
+    }
+
     public static synchronized LocatableItemController getApiInstance() {
         if (apiInstance == null) {
             apiInstance = new LocatableItemController();
@@ -664,9 +673,14 @@ public class LocatableItemController implements Serializable {
             return true;
         }
         return false;
+    }   
+    
+    protected void updateItemLocation(LocatableItem item) throws InvalidRequest {
+        UserInfo user = SessionUtility.getUser();
+        updateItemLocation(item, user);
     }
 
-    protected void updateItemLocation(LocatableItem item) throws InvalidRequest {
+    public void updateItemLocation(LocatableItem item, UserInfo updateUser) throws InvalidRequest {
         if (item.getOriginalLocationLoaded() == false) {
             // Location was never loaded. 
             return;
@@ -755,14 +769,7 @@ public class LocatableItemController implements Serializable {
                 ier.setRelationshipDetails(item.getLocationDetails());
 
                 // Add Item Element relationship history record. 
-                ItemElementRelationshipHistory ierh;
-
-                UserInfo updateUser;
-                if (apiMode) {
-                    updateUser = apiUser;
-                } else {
-                    updateUser = (UserInfo) SessionUtility.getUser();
-                }
+                ItemElementRelationshipHistory ierh;               
 
                 ierh = ItemElementRelationshipUtility.createItemElementHistoryRecord(
                         ier, updateUser, new Date());

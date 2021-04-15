@@ -28,7 +28,7 @@ public class RefObjectManager {
         this.domainNameFilter = domainNameFilter;
     }
 
-    public CdbEntity getObjectWithId(String idString, String message_o) {
+    public CdbEntity getObjectWithId(String idString) throws CdbException {
         
         CdbEntity objValue = null;
         try {
@@ -42,31 +42,45 @@ public class RefObjectManager {
                 }
             }
         } catch (NumberFormatException ex) {
-            message_o = "Invalid number format id: " + idString;
+            throw new CdbException("Invalid number format id: " + idString);
         }
         
         return objValue;
     }
     
-    public CdbEntity getObjectWithName(String nameString, String message_o) {
+    public CdbEntity getObjectWithName(String nameString) throws CdbException {
         
         CdbEntity objValue = null;
                 
-        try {
-            objValue = controller.findUniqueByName(nameString, domainNameFilter);
-            if (objValue != null) {
-                // check cache for object so different references use same instance
-                int id = (Integer) objValue.getId();
-                if (objectIdMap.containsKey(id)) {
-                    objValue = objectIdMap.get(id);
-                } else {
-                    // add this instance to cache
-                    objectIdMap.put(id, objValue);
-                }
+        objValue = controller.findUniqueByName(nameString, domainNameFilter);
+        if (objValue != null) {
+            // check cache for object so different references use same instance
+            int id = (Integer) objValue.getId();
+            if (objectIdMap.containsKey(id)) {
+                objValue = objectIdMap.get(id);
+            } else {
+                // add this instance to cache
+                objectIdMap.put(id, objValue);
             }
-        } catch (CdbException ex) {
-            message_o = "Exception searching for object with name: " + nameString
-                    + " reason: " + ex.getMessage();
+        }
+        
+        return objValue;
+    }
+
+    public CdbEntity getObjectWithPath(String pathString) throws CdbException {
+        
+        CdbEntity objValue = null;
+                
+        objValue = controller.findUniqueByPath(pathString);
+        if (objValue != null) {
+            // check cache for object so different references use same instance
+            int id = (Integer) objValue.getId();
+            if (objectIdMap.containsKey(id)) {
+                objValue = objectIdMap.get(id);
+            } else {
+                // add this instance to cache
+                objectIdMap.put(id, objValue);
+            }
         }
         
         return objValue;
