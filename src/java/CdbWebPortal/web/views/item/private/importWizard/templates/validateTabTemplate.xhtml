@@ -33,19 +33,7 @@ See LICENSE file.
                                                 target="#{rootViewId}TableContent" 
                                                 fileName="ValidationReport" />
                             </p:commandButton>  
-
-                            <ui:remove>
-                                <p:commandButton id="#{rootViewid}ExportPdfButton"
-                                                 styleClass="actionButtonRight" 
-                                                 ajax="false" 
-                                                 icon="fa fa-file-pdf-o">
-                                    <p:tooltip for="#{rootViewid}ExportPdfButton" 
-                                               value="Export table to pdf file."/>
-                                    <p:dataExporter type="pdf" 
-                                                    target="#{rootViewId}TableContent" 
-                                                    fileName="ValidationReport" />
-                                </p:commandButton>  
-                            </ui:remove>
+                            
                         </p:column>
 
                     </p:row>

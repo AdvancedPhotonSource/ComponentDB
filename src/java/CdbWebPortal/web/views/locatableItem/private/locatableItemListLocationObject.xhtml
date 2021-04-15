@@ -21,6 +21,7 @@ See LICENSE file.
               filterBy="#{itemListObject.locationString}"
               sortBy="#{itemListObject.locationString}"
               filterMatchMode="contains"
+              exportFunction="#{locatableItemController.getLocationStringForItem(itemListObject)}"
               filterable="#{filterable}">
         <p:watermark for="@(.locationColumnStyleClassWatermark)" 
                      value="Immediate location only (e.g. Cabinet/Room)." />
