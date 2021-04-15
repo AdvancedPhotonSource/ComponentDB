@@ -48,6 +48,23 @@ public class RefObjectManager {
         return objValue;
     }
     
+    public CdbEntity getCacheObject(CdbEntity entity) {
+        CdbEntity result = null;
+        if (entity != null) {
+            // check cache for object so different references use same instance
+            int id = (Integer) entity.getId();
+
+            if (objectIdMap.containsKey(id)) {
+                result = objectIdMap.get(id);
+            } else {
+                // add this instance to cache
+                objectIdMap.put(id, entity);
+                result = entity;
+            }
+        }
+        return result;
+    }
+    
     public CdbEntity getObjectWithName(String nameString) throws CdbException {
         
         CdbEntity objValue = null;
@@ -86,16 +103,4 @@ public class RefObjectManager {
         return objValue;
     }
     
-    public boolean containsKey(int id) {
-        return objectIdMap.containsKey(id);
-    }
-    
-    public CdbEntity get(int id) {
-        return objectIdMap.get(id);
-    }
-    
-    public CdbEntity put(int id, CdbEntity value) {
-        return objectIdMap.put(id, value);
-    } 
-
 }

@@ -180,6 +180,7 @@ public class RefInputHandler extends SimpleInputHandler {
                                 return objWithNameInfo;
                             } else {
                                 objValue = (CdbEntity) objWithNameInfo.getValue();
+                                objValue = getObjectManager().getCacheObject(objValue);
                             }
                         }
 

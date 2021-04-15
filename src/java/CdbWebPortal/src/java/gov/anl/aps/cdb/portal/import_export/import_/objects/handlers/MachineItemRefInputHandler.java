@@ -113,17 +113,6 @@ public class MachineItemRefInputHandler extends RefInputHandler {
             }
             
             objValue = (ItemDomainMachineDesign)(result.getValue());
-            if (objValue != null) {
-                // check cache for object so different references use same instance
-                int id = (Integer) objValue.getId();
-                
-                if (getObjectManager().containsKey(id)) {
-                    objValue = getObjectManager().get(id);
-                } else {
-                    // add this instance to cache
-                    getObjectManager().put(id, objValue);
-                }
-            }
             
             return new ParseInfo(objValue, true, "");
         }
