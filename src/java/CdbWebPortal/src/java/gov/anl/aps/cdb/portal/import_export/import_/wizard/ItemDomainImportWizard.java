@@ -319,14 +319,23 @@ public class ItemDomainImportWizard implements Serializable {
     }
     
     public Boolean supportsModeCreate() {
+        if (importHelper == null) {
+            return false;
+        }
         return importHelper.supportsModeCreate();
     }
 
     public Boolean supportsModeUpdate() {
+        if (importHelper == null) {
+            return false;
+        }
         return importHelper.supportsModeUpdate();
     }
 
     public Boolean supportsModeDelete() {
+        if (importHelper == null) {
+            return false;
+        }
         return importHelper.supportsModeDelete();
     }
 
