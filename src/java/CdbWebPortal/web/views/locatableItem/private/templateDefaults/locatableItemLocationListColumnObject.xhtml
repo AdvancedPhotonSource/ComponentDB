@@ -6,11 +6,18 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://xmlns.jcp.org/jsf/html">  
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">  
 
     <ui:param name="locationString"
               value="#{locatableItemController.getLocationStringForItem(itemListObject)}" />
-    <h:outputText rendered="#{locationString != ''}" value="#{locationString}" />        
-    <h:outputText rendered="#{locationString == ''}" value="#{alternateLocationString}" />
+    <ui:param name="displayLocationString"
+              value="#{locationString != '' ? locationString : alternateLocationString}" /> 
+    
+    <h:outputLabel id="locationStringOutputText"
+                  value="#{displayLocationString}" >
+        <p:tooltip for="locationStringOutputText"
+                   value="#{displayLocationString}" /> 
+    </h:outputLabel>
 
 </ui:composition>
