@@ -33,7 +33,7 @@ See LICENSE file.
                   value="#{locataionMenuModelObjectParam != null 
                            ? locataionMenuModelObjectParam 
                            : itemObject}" />
-        
+
         <ui:param name="locationEditable"
                   value="#{locatableItemController.locationEditable(itemObject)}"/> 
 
@@ -48,10 +48,12 @@ See LICENSE file.
                         <p:tooltip for="locationViewFakeEditShowButton"
                                    value="Item is part of another item, location cannot be updated." />
                     </p:commandLink>
-                                   
+
                     <p:commandLink id="locationViewOutputEditShowButton"
                                    styleClass="fa-link-icon fa-icon fa fa-pencil"
-                                   oncomplete="PF('locationViewOutputEditableWidget').show();
+                                   onclick="PF('loadingDialog').show()"
+                                   oncomplete="PF('loadingDialog').hide();
+                                               PF('locationViewOutputEditableWidget').show();
                                                PF('locationDetailsViewOutputEditableWidget').show();"
                                    update="locationViewOutputEditable"
                                    rendered="#{isEntityWriteable and locationEditable}">
@@ -62,6 +64,7 @@ See LICENSE file.
                     </p:commandLink>
                     <ui:include src="locatableItemLocationRelationshipTree.xhtml">
                         <ui:param name="cdbDomainEntityObject" value="#{itemObject}" />
+                        <ui:param name="locatableItemTreeValue" value="#{locatableItemController.getLocationRelationshipTree(itemObject)}" />
                     </ui:include>
                 </p:outputPanel>
             </f:facet>
@@ -110,6 +113,12 @@ See LICENSE file.
                              onclick="PF('loadingDialog').show()"/>
         </f:facet>
     </p:inplace>
+
+    <h:outputLabel for="itemHousing" value="Housing" styleClass="entityDataLabel"/>
+    <ui:include src="locatableItemLocationRelationshipTree.xhtml">
+        <ui:param name="cdbDomainEntityObject" value="#{itemObject}" />
+        <ui:param name="locatableItemTreeValue" value="#{locatableItemController.getHousingRelationshipTree(itemObject)}" />
+    </ui:include>
 
 </ui:composition>
 

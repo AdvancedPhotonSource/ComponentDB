@@ -210,6 +210,12 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
     }
 
     @Override
+    protected boolean resetFiltersOnPreRenderList() {
+        ItemDomainMachineDesign current = getCurrent();
+        return current != null; 
+    }
+
+    @Override
     protected void prepareEntityView(ItemDomainMachineDesign entity) {
         processPreRenderList();
         if (isMdInventory(entity)) {

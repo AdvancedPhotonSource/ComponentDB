@@ -310,6 +310,7 @@ public class ItemRoute extends ItemBaseRoute {
             // When trees are loaded than the ItemHierarchy nodes can be loaded. 
             for (LocationHistoryObject hist : histories) {
                 controllerUtility.getLocationTreeForLocationHistoryObject(hist);
+                controllerUtility.getHousingTreeForLocationHistoryObject(hist); 
             }
 
             return histories;

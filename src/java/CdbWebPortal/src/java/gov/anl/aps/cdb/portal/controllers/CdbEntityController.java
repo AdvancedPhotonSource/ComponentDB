@@ -521,13 +521,14 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
                             + getDisplayEntityTypeName() + " entities.");
                 }
             }
-            // User authorized. 
-            EntityType entity = getCurrent();
+            // User authorized.
+            EntityType entity = getCurrentFlash();
             if (entity == null || entity.getId() != null) {
                 // entity is not yet set, or current entity is already in db. 
                 prepareCreate();
+            } else {
+                setCurrent(entity);
             }
-
         }
 
     }
@@ -808,7 +809,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @return URL to create page in the entity folder
      */
     public String prepareCreate() {
-        setCurrent(createEntityInstance());
+        setCurrentFlash(createEntityInstance());
         return "create?faces-redirect=true";
     }
 
@@ -836,7 +837,8 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @return URL to cloned instance view
      */
     public String prepareClone(EntityType entity) {        
-        setCurrent(cloneEntityInstance(entity));
+        EntityType cloneEntityInstance = cloneEntityInstance(entity);
+        setCurrentFlash(cloneEntityInstance);
         return getEntityApplicationViewPath() + "/" + getCloneCreatePageName() + "?faces-redirect=true";
     }
 
