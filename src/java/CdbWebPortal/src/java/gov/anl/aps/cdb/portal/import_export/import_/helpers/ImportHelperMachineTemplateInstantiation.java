@@ -235,11 +235,7 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
         // retrieve specified template
         ItemDomainMachineDesign templateItem;
         try {
-            templateItem
-                    = ItemDomainMachineDesignFacade.getInstance().findUniqueByDomainAndEntityTypeAndName(
-                            templateName, 
-                            EntityTypeName.template.getValue(),
-                            null);
+            templateItem = ItemDomainMachineDesignFacade.getInstance().findUniqueTemplateByName(templateName);
         } catch (CdbException ex) {
             isValid = false;
             validString

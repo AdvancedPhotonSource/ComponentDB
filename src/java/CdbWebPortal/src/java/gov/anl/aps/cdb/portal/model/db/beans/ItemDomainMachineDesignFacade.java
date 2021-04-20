@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.beans;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -68,4 +69,36 @@ public class ItemDomainMachineDesignFacade extends ItemFacadeBase<ItemDomainMach
     public List<ItemDomainMachineDesign> findByName(String name) {
         return findByDomainAndName(getDomainName(), name);
     }  
+    
+    /**
+     * Finds unique template item by name, excludes deleted items. 
+     */
+    public ItemDomainMachineDesign findUniqueTemplateByName(String templateName) throws CdbException {
+        
+        if (templateName == null) {
+            return null;
+        }
+        
+        String domainName = getDomainName();
+        if ((domainName == null) || domainName.isEmpty()) {
+            throw new CdbException("findUniqueTemplateByName() error getting domain name");
+        }
+
+        List<ItemDomainMachineDesign> items = 
+                findByDomainAndEntityTypeAndNameExcludeEntityType(
+                        domainName, 
+                        EntityTypeName.template.getValue(), 
+                        templateName,
+                        EntityTypeName.deleted.getValue());
+        if (items.size() > 1) {
+            // ambiguous result, throw exception
+            throw new CdbException("findUniqueByEntityTypeAndName() returns multiple instances");
+        } else if (items.size() == 0) {
+            // no items found
+            return null;
+        } else {
+            // return single item returned by query
+            return items.get(0);
+        }
+    }
 }
