@@ -56,13 +56,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         this.designFacade = facade;
         this.topLevelItems = items;
 
-        addTopLevelChildren(items);
-
-        // Expand first node if tree is only one node.
-        if (items.size() == 1) {
-            List<ItemDomainMachineDesignTreeNode> machineChildren = this.getMachineChildren();
-            machineChildren.get(0).setExpanded(true);
-        }
+        addTopLevelChildren(items);       
 
         this.setExpanded(true);
         childrenLoaded = true;
@@ -72,6 +66,12 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         for (ItemDomainMachineDesign item : topNodes) {
             ItemElement element = createTopLevelMockItemElement(item);
             createChildNode(element);
+        }
+        
+        // Expand first node if tree is only one node.
+        if (topNodes.size() == 1) {
+            List<ItemDomainMachineDesignTreeNode> machineChildren = this.getMachineChildren();
+            machineChildren.get(0).setExpanded(true);
         }
     }
 

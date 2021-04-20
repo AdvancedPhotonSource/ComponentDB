@@ -569,7 +569,7 @@ public class ItemDomainMachineDesignController
 
     public void prepareAssignTemplate() {
         prepareAddNewMachineDesignListConfiguration();
-        templateToCreateNewItem = null; 
+        templateToCreateNewItem = null;
         displayAttachTemplateToMachine = true;
     }
 
@@ -787,7 +787,7 @@ public class ItemDomainMachineDesignController
 
     public void prepareAssignInventoryMachineDesignListConfiguration() {
         setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());
-        ItemElement currentEditItemElement = getCurrentEditItemElement();        
+        ItemElement currentEditItemElement = getCurrentEditItemElement();
         setCatalogForElement(currentEditItemElement.getCatalogItem());
 
         prepareUpdateInstalledInventoryItem();
@@ -853,7 +853,7 @@ public class ItemDomainMachineDesignController
         }
 
         cloneNewTemplateElementForItemsDerivedFromItem(ref);
-        
+
         ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) ref.getContainedItem();
         setCurrent(containedItem);
         reloadCurrent();
@@ -2353,15 +2353,21 @@ public class ItemDomainMachineDesignController
         currentViewIsTemplate = false;
     }
 
+    protected boolean resetFiltersOnPreRenderList() {
+        return true;
+    }
+
     @Override
     public void processPreRenderList() {
         super.processPreRenderList();
         resetListViewVariables();
 
         resetListConfigurationVariables();
-        
-        ItemDomainMachineDesignTreeNode rootTreeNode = getCurrentMachineDesignListRootTreeNode(); 
-        rootTreeNode.clearFilterResults();
+
+        if (resetFiltersOnPreRenderList()) {
+            ItemDomainMachineDesignTreeNode rootTreeNode = getCurrentMachineDesignListRootTreeNode();
+            rootTreeNode.clearFilterResults();
+        }
 
         String paramValue = SessionUtility.getRequestParameterValue("id");
         if (paramValue != null) {
@@ -2492,7 +2498,7 @@ public class ItemDomainMachineDesignController
 
     public String currentDualViewList() {
         setCurrentFlash();
-        
+
         if (currentViewIsTemplate) {
             return templateList();
         }
