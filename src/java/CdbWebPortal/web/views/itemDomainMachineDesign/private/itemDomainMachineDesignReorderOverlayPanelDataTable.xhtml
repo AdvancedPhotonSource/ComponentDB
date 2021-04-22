@@ -18,7 +18,10 @@ See LICENSE file.
             <p:ajax event="rowReorder" listener="#{itemElementController.onListDataTableRowReorder}"
                     update="@form:itemDomainMachineDesignReorderOutputPanel"/>
 
-            <ui:include src="itemDomainMachineDesignListObject.xhtml" />  
+            <ui:decorate template="templates/itemDomainMachineDesignListObjectTemplate.xhtml" >  
+                <ui:param name="includeSearchFields"
+                          value="#{false}" /> 
+            </ui:decorate>
         </p:dataTable>
     </p:panel>
 

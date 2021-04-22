@@ -68,11 +68,6 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
         return (ItemElementController) SessionUtility.findBean("itemElementController");
     }
 
-    public void resetCurrentItemVariables() {
-        currentSettingsItemController = null;
-        currentItemReorderController = null;
-    }
-
     public ItemController getCurrentSettingsItemController() {
         return currentSettingsItemController;
     }
@@ -124,6 +119,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }  
 
     public void setValidContainedItemForCurrent(Item containedItem) {
+        ItemElement current = getCurrent();
         if (current.getId() == null) {
             current.setContainedItem(containedItem);
             return;
@@ -139,6 +135,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     public void revertContainedItemForCurrent() {
+        ItemElement current = getCurrent();
         if (current != null) {
             ItemElement itemElement = findById(current.getId());
             Item containedItem = itemElement.getContainedItem();
@@ -148,6 +145,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     public void toggleIsRequiredForCurrent() {
+        ItemElement current = getCurrent();
         if (current != null) {
             Boolean isRequired = current.getTemporaryIsRequiredValue();
             current.setTemporaryIsRequiredValue(!isRequired);
@@ -155,6 +153,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     public String getIsRequiredButtonValueForCurrent() {
+        ItemElement current = getCurrent();
         if (current != null) {
             Boolean isRequired = current.getTemporaryIsRequiredValue();
             if (isRequired) {
@@ -167,12 +166,14 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     public void revertIsRequiredItemForCurrent() {
+        ItemElement current = getCurrent();
         if (current != null) {
             current.setTemporaryIsRequiredValue(null);
         }
     }
 
     public void submitIsRequiredValueForCurrent() {
+        ItemElement current = getCurrent();
         current.setIsRequired(current.getTemporaryIsRequiredValue());
         updateWithoutRedirect();
     }
@@ -196,7 +197,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
 
     public boolean isDisplayRowExpansionForItemElement(ItemElement itemElement) {
-        if (settingObject.getDisplayFlatTableView() && settingObject.getDisplayRowExpansion()) {
+        if (settingObject.getDisplayRowExpansion()) {
             return isDisplayRowExpansionElementsList(itemElement)
                     || isDisplayRowExpansionLogs(itemElement)
                     || isDisplayRowExpansionProperties(itemElement);
@@ -555,6 +556,7 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     }
     
     public Domain getDefaultDomain() {
+        ItemElement current = getCurrent();
         if (current != null) {
             Item parentItem = current.getParentItem();
             if (parentItem != null) {

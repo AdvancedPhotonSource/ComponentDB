@@ -18,15 +18,7 @@ See LICENSE file.
                      icon="fa fa-file-excel-o">
         <p:tooltip for="#{entityTypeName}ExportXlsButton" value="Export list to excel file."/>
         <p:dataExporter type="xls" target="#{entityListDataTableId}" fileName="#{entityTypeName}List" />
-    </p:commandButton>  
-    <p:commandButton id="#{entityTypeName}ExportPdfButton"
-                     styleClass="actionButtonRight" 
-                     ajax="false" 
-                     rendered="#{listExportable}"
-                     icon="fa fa-file-pdf-o">
-        <p:tooltip for="#{entityTypeName}ExportPdfButton" value="Export list to pdf file."/>
-        <p:dataExporter type="pdf" target="#{entityListDataTableId}" fileName="#{entityTypeName}List" />
-    </p:commandButton>  
+    </p:commandButton>      
     <p:commandButton id="#{entityTypeName}PrintButton"
                      styleClass="actionButtonRight"
                      rendered="#{listExportable}"

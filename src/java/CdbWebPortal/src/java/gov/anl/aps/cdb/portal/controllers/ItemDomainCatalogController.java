@@ -37,24 +37,20 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
 
     public final static String CONTROLLER_NAMED = "itemDomainCatalogController";
 
-    private List<ItemDomainInventory> inventorySparesList = null;
-    private List<ItemDomainInventory> inventoryNonSparesList = null;
-    private Boolean displayInventorySpares = null;
-
     @EJB
-    ItemDomainCatalogFacade itemDomainCatalogFacade;   
-    
+    ItemDomainCatalogFacade itemDomainCatalogFacade;
+
     @Override
     public ItemMultiEditController getItemMultiEditController() {
         return ItemMultiEditDomainCatalogController.getInstance();
-    } 
+    }
 
     public ItemDomainCatalogController() {
         super();
     }
 
-    public static ItemDomainCatalogController getInstance() {        
-        return (ItemDomainCatalogController) SessionUtility.findBean(ItemDomainCatalogController.CONTROLLER_NAMED);        
+    public static ItemDomainCatalogController getInstance() {
+        return (ItemDomainCatalogController) SessionUtility.findBean(ItemDomainCatalogController.CONTROLLER_NAMED);
     }
 
     @Override
@@ -65,7 +61,7 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     @Override
     protected ItemDomainCatalogSettings createNewSettingObject() {
         return new ItemDomainCatalogSettings(this);
-    }   
+    }
 
     @Override
     public boolean getEntityDisplayImportButton() {
@@ -74,40 +70,34 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
 
     @Override
     protected DomainImportExportInfo initializeDomainImportInfo() {
-        
+
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         formatInfo.add(new ImportExportFormatInfo("Basic Catalog Format", ImportHelperCatalog.class));
         formatInfo.add(new ImportExportFormatInfo("Catalog Assembly Format", ImportHelperCatalogAssembly.class));
-        
+
         String completionUrl = "/views/itemDomainCatalog/list?faces-redirect=true";
-        
+
         return new DomainImportExportInfo(formatInfo, completionUrl);
-    }
-    
-    @Override
-    protected void resetVariablesForCurrent() {
-        super.resetVariablesForCurrent();
-        inventoryNonSparesList = null;
-        inventorySparesList = null;
-        displayInventorySpares = null;
     }
 
     public List<ItemDomainInventory> getInventorySparesList() {
+        ItemDomainCatalog current = getCurrent();
+        List<ItemDomainInventory> inventorySparesList = current.getInventorySparesList();
         if (inventorySparesList == null) {
-            ItemDomainCatalog currentItem = getCurrent();
-            if (current != null) {
-                inventorySparesList = new ArrayList<>();
-                for (ItemDomainInventory inventoryItem : currentItem.getInventoryItemList()) {
-                    if (inventoryItem.getSparePartIndicator()) {
-                        inventorySparesList.add(inventoryItem);
-                    }
+            inventorySparesList = new ArrayList<>();
+            for (ItemDomainInventory inventoryItem : current.getInventoryItemList()) {
+                if (inventoryItem.getSparePartIndicator()) {
+                    inventorySparesList.add(inventoryItem);
                 }
             }
+            current.setInventorySparesList(inventorySparesList);
         }
         return inventorySparesList;
     }
 
     public List<ItemDomainInventory> getInventoryNonSparesList() {
+        ItemDomainCatalog current = getCurrent();
+        List<ItemDomainInventory> inventoryNonSparesList = current.getInventoryNonSparesList();
         if (inventoryNonSparesList == null) {
             ItemDomainCatalog currentItem = getCurrent();
             if (currentItem != null) {
@@ -116,6 +106,7 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
                 inventoryNonSparesList = new ArrayList<>(allInventoryItems);
                 inventoryNonSparesList.removeAll(spareItems);
             }
+            current.setInventoryNonSparesList(inventoryNonSparesList);
         }
         return inventoryNonSparesList;
     }
@@ -161,8 +152,11 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
     }
 
     public Boolean getDisplayInventorySpares() {
+        ItemDomainCatalog current = getCurrent();
+        Boolean displayInventorySpares = current.getDisplayInventorySpares();
         if (displayInventorySpares == null) {
             displayInventorySpares = SparePartsBean.isItemContainSparePartConfiguration(getCurrent());
+            current.setDisplayInventorySpares(displayInventorySpares);
         }
         return displayInventorySpares;
     }

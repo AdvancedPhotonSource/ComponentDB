@@ -6,13 +6,17 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
      
     <ui:param name="settingObject" value="#{entityController.settingObject}"/>     
     <ui:param name="renderedLocation"
               value="#{renderedLocation != null 
                        ? renderedLocation 
                        : true}"/>
+    
+    <ui:param name="rendredHousing"
+              value="#{rendredHousing != null ? rendredHousing : true}" /> 
     <!-- specify ui:param alternateLocationString to add string when no location string exists. --> 
 
     <p:column styleClass="locationColumnStyleClassWatermark"
@@ -21,9 +25,10 @@ See LICENSE file.
               filterBy="#{itemListObject.locationString}"
               sortBy="#{itemListObject.locationString}"
               filterMatchMode="contains"
+              exportFunction="#{locatableItemController.getLocationStringForItem(itemListObject)}"
               filterable="#{filterable}">
         <p:watermark for="@(.locationColumnStyleClassWatermark)" 
-                     value="Immediate location only (e.g. Cabinet/Room)." />
+                     value="Immediate location only (e.g. Cabinet/Room) and not derived from housing membership." />
         <ui:include src="templateDefaults/locatableItemLocationListColumnObject.xhtml" /> 
     </p:column>
 
@@ -37,6 +42,11 @@ See LICENSE file.
               sortable="#{sortable}"
               filterMatchMode="contains">
         <ui:include src="templateDefaults/locatableItemLocationDetailsListColumnObject.xhtml"/>
+    </p:column>
+    
+    <p:column headerText="Housing"
+              rendered="#{rendredHousing}">
+        <h:outputText value="#{locatableItemController.getHousingStringForItem(itemListObject)}" /> 
     </p:column>
 
 </ui:composition>

@@ -138,9 +138,7 @@ public abstract class ItemController<
     protected DataModel scopedListDataModel = null;
     protected List<String> displayListDataModelScopeSelectionList = null;
 
-    protected Integer qrIdViewParam = null;
-
-    private TreeNode itemElementListTreeTableRootNode = null;
+    protected Integer qrIdViewParam = null;    
 
     private List<ItemDomainEntity> selectItemCandidateList;
     private List<Item> selectedItems;
@@ -157,12 +155,7 @@ public abstract class ItemController<
 
     protected DataModel allowedChildItemSelectDataModel = null;
 
-    protected List<ItemCategory> domainItemCategoryList = null;
-
-    protected ItemElement currentEditItemElement = null;
-    protected Boolean currentEditItemElementSaveButtonEnabled = false;
-
-    protected ItemSource currentEditItemSource = null;
+    protected List<ItemCategory> domainItemCategoryList = null;      
 
     protected Boolean cloneProperties = false;
     protected Boolean cloneCreateItemElementPlaceholders = false;
@@ -179,9 +172,7 @@ public abstract class ItemController<
 
     protected Integer domainId = null;
 
-    protected Domain defaultControllerDomain = null;
-
-    protected Boolean hasElementReorderChangesForCurrent = false;
+    protected Domain defaultControllerDomain = null;   
 
     protected List<String> expandedRowUUIDs = null;
 
@@ -400,16 +391,6 @@ public abstract class ItemController<
     }
 
     @Override
-    protected void resetVariablesForCurrent() {
-        super.resetVariablesForCurrent();
-        currentEditItemElement = null;
-        currentEditItemSource = null;
-        currentEditItemElementSaveButtonEnabled = false;
-        hasElementReorderChangesForCurrent = false;
-        getItemElementController().resetCurrentItemVariables();
-    }
-
-    @Override
     public List<ItemType> getAvailableItemTypesForCurrentItem() {
         return getAvailableItemTypes(getCurrent());
     }
@@ -566,6 +547,7 @@ public abstract class ItemController<
 
     @Override
     public String getCurrentEntityRelativePermalink() {
+        ItemDomainEntity current = getCurrent();
         return "/views/item/view?id=" + current.getId();
     }
 
@@ -1039,20 +1021,14 @@ public abstract class ItemController<
         return getEntityDbFacade().find(id);
     }
 
-    void prepareItemElementListTreeTable(Item item) {
-        try {
-            itemElementListTreeTableRootNode = ItemElementUtility.createItemElementRoot(item);
-        } catch (CdbException ex) {
-            LOGGER.warn("Could not create item element list for tree view: " + ex.toString());
-        }
-    }
-
     public ItemSource getCurrentEditItemSource() {
-        return currentEditItemSource;
+        ItemDomainEntity current = getCurrent();
+        return current.getCurrentEditItemSource();         
     }
 
     public void setCurrentEditItemSource(ItemSource currentEditItemSource) {
-        this.currentEditItemSource = currentEditItemSource;
+        ItemDomainEntity current = getCurrent();
+        current.setCurrentEditItemSource(currentEditItemSource);
     }
 
     public void itemSourceObjectEditRowEvent(RowEditEvent event) {
@@ -1060,6 +1036,7 @@ public abstract class ItemController<
     }
 
     public void verifySaveCurrentEditItemSource(String onSuccessCommand) {
+        ItemSource currentEditItemSource = getCurrentEditItemSource();
         if (currentEditItemSource != null) {
             if (currentEditItemSource.getSource() == null) {
                 SessionUtility.addErrorMessage("Error", "Source must be specified before proceeding.");
@@ -1092,18 +1069,19 @@ public abstract class ItemController<
     }
 
     public void removeCurrentEditItemSource() {
+        ItemSource currentEditItemSource = getCurrentEditItemSource();
         if (currentEditItemSource != null) {
             ItemDomainEntity current = getCurrent();
             List<ItemSource> itemSourceList = current.getItemSourceList();
 
             itemSourceList.remove(currentEditItemSource);
-            currentEditItemSource = null;
+            setCurrentEditItemSource(null); 
         }
     }
 
-    public void saveSourceList() {
-        currentEditItemSource = null;
+    public void saveSourceList() {        
         update();
+        reloadCurrent();
     }
 
     public void deleteSource(ItemSource itemSource) {
@@ -1114,20 +1092,22 @@ public abstract class ItemController<
     }
 
     public void prepareCreateSingleItemElementSimpleDialog() {
-        Item item = getCurrent();
+        Item item = getCurrent();        
         if (item != null) {
             UserInfo user = SessionUtility.getUser();
-            currentEditItemElement = getControllerUtility().createItemElement(getCurrent(), user);
+            item.setCurrentEditItemElement(getControllerUtility().createItemElement(getCurrent(), user));
         }
     }
 
     public void cancelCreateSingleItemElementSimpleDialog() {
-        currentEditItemElement = null;
-        currentEditItemElementSaveButtonEnabled = false;
+        ItemDomainEntity current = getCurrent();
+        current.setCurrentEditItemElement(null);
+        current.setCurrentEditItemElementSaveButtonEnabled(false);
     }
 
     public void saveCreateSingleItemElementSimpleDialog() {
         Item currentItem = getCurrent();
+        ItemElement currentEditItemElement = currentItem.getCurrentEditItemElement();
         if (currentItem != null) {
             prepareAddItemElement(getCurrent(), currentEditItemElement);
         }
@@ -1145,23 +1125,27 @@ public abstract class ItemController<
         }
 
         update();
+        reloadCurrent(); 
 
-        currentEditItemElement = null;
+        setCurrentEditItemElement(null);
     }
 
     public void changeItemCreateSingleItemElementSimpleDialog() {
+        ItemDomainEntity current = getCurrent();
+        ItemElement currentEditItemElement = current.getCurrentEditItemElement();
         currentEditItemElement.setContainedItem(null);
-        currentEditItemElementSaveButtonEnabled = false;
+        current.setCurrentEditItemElementSaveButtonEnabled(false);
     }
 
     public void validateCreateSingleItemElementSimpleDialog(String onSuccessCommand, String errorSummary) {
         ItemDomainEntity item = getCurrent();
+        ItemElement currentEditItemElement = item.getCurrentEditItemElement();
         try {
             beforeValidateItemElement();
             prepareAddItemElement(item, currentEditItemElement);
             getControllerUtility().checkItemElementsForItem(item);
 
-            currentEditItemElementSaveButtonEnabled = true;
+            item.setCurrentEditItemElementSaveButtonEnabled(true);
             SessionUtility.executeRemoteCommand(onSuccessCommand);
         } catch (CdbException ex) {
             failedValidateItemElement();
@@ -1269,6 +1253,7 @@ public abstract class ItemController<
     }
 
     public void completeSuccessfulItemElementRemoval(ItemElement itemElement) {
+        ItemDomainEntity current = getCurrent();
         if (current != null) {
             Item parentItem = itemElement.getParentItem();
             if (current.equals(parentItem)) {
@@ -1283,11 +1268,12 @@ public abstract class ItemController<
     }
 
     public void completeSuccessfulItemElementUpdate(ItemElement itemElement) {
+        ItemDomainEntity current = getCurrent();
         if (current != null) {
             Item parentItem = itemElement.getParentItem();
             if (current.equals(parentItem)) {
                 // Resaving the item could cause revivial of the element prior update due to various connections. 
-                current = findById(current.getId());
+                setCurrent(findById(current.getId()));
             }
         }
     }
@@ -1297,10 +1283,11 @@ public abstract class ItemController<
     }
 
     public void completeSucessfulDerivedFromItemCreation() {
+        ItemDomainEntity current = getCurrent();
         if (current != null) {
             // Item elements have outdated reference back to parent with new inventory item. 
             // Will allow user to see the latest constraints on item elements.          
-            current = findById(current.getId());
+            setCurrent(findById(current.getId()));
         }
     }
 
@@ -1313,6 +1300,7 @@ public abstract class ItemController<
 
     public void saveItemElementList() {
         update();
+        reloadCurrent();
     }
 
     public List<ItemDomainEntity> getSelectItemCandidateList() {
@@ -1482,7 +1470,7 @@ public abstract class ItemController<
 
         itemDerivedFromItemList.add(0, newItemDerivedFromItem);
 
-        current = newItemDerivedFromItem;
+        setCurrent(newItemDerivedFromItem);
 
         setCurrentDerivedFromItem(derivedFromItem);
     }
@@ -1500,6 +1488,7 @@ public abstract class ItemController<
 
     public void saveItemDerivedFromItemList() {
         update();
+        reloadCurrent();
     }
 
     public void deleteItemDerivedFromItem(ItemDomainEntity itemDerivedFromItem) {
@@ -1734,31 +1723,29 @@ public abstract class ItemController<
     }
 
     public ItemElement getCurrentEditItemElement() {
-        return currentEditItemElement;
+        ItemDomainEntity current = getCurrent();
+        return current.getCurrentEditItemElement(); 
     }
 
     public void setCurrentEditItemElement(ItemElement newItemElementForCurrent) {
-        this.currentEditItemElement = newItemElementForCurrent;
+        ItemDomainEntity current = getCurrent();
+        current.setCurrentEditItemElement(newItemElementForCurrent);
     }
 
     public Boolean getCurrentEditItemElementSaveButtonEnabled() {
-        return currentEditItemElementSaveButtonEnabled;
-    }
-
-    public TreeNode getItemElementListTreeTableRootNode() {
-        return itemElementListTreeTableRootNode;
-    }
-
-    public void setItemElementListTreeTableRootNode(TreeNode itemElementListTreeTableRootNode) {
-        this.itemElementListTreeTableRootNode = itemElementListTreeTableRootNode;
+        ItemDomainEntity current = getCurrent();
+        return current.getCurrentEditItemElementSaveButtonEnabled();
     }
 
     public Boolean getHasElementReorderChangesForCurrent() {
+        ItemDomainEntity current = getCurrent();
+        Boolean hasElementReorderChangesForCurrent = current.getHasElementReorderChangesForCurrent();
         return hasElementReorderChangesForCurrent;
     }
 
     public void setHasElementReorderChangesForCurrent(Boolean hasElementReorderChangesForCurrent) {
-        this.hasElementReorderChangesForCurrent = hasElementReorderChangesForCurrent;
+        ItemDomainEntity current = getCurrent();
+        current.setHasElementReorderChangesForCurrent(hasElementReorderChangesForCurrent);
     }
 
     public boolean getDisplayItemSourceList() {
@@ -2186,16 +2173,24 @@ public abstract class ItemController<
                 } catch (NumberFormatException ex) {
                     throw new InvalidRequest("Invalid value supplied for QR id: " + paramValue);
                 }
-            } else if (current == null) {
+            } 
+            
+            if (getCurrent() == null) {
+                loadCurrentFromFlash();
+            }
+            
+            
+            if (getCurrent() == null) {
                 throw new InvalidRequest(getDisplayEntityTypeName() + " has not been selected.");
             }
+            
+            ItemDomainEntity current = getCurrent();
             return current;
         }
     }
 
     @Override
     public String prepareView(Item item) {
-        prepareItemElementListTreeTable(item);
         return "/views/item/view.xhtml?faces-redirect=true&id=" + item.getId();
     }
 
@@ -2253,6 +2248,7 @@ public abstract class ItemController<
     }
 
     public boolean isCurrentItemTemplate() {
+        ItemDomainEntity current = getCurrent();
         if (current != null) {
             return current.getIsItemTemplate();
         }
@@ -2268,6 +2264,7 @@ public abstract class ItemController<
     }
 
     public void completeSelectionOfTemplate() {
+        ItemDomainEntity current = getCurrent();
         if (this.templateToCreateNewItem != null) {
             current.setItemCategoryList(templateToCreateNewItem.getItemCategoryList());
             current.setItemTypeList(templateToCreateNewItem.getItemTypeList());
@@ -2300,10 +2297,12 @@ public abstract class ItemController<
     }
 
     public Item getCreatedFromTemplateForCurrentItem() {
+        ItemDomainEntity current = getCurrent();
         return current.getCreatedFromTemplate();
     }
 
     public List<Item> getItemsCreatedFromCurrentTemplateItem() {
+        ItemDomainEntity current = getCurrent();
         return getItemsCreatedFromTemplateItem(current);
     }
 
@@ -2316,6 +2315,7 @@ public abstract class ItemController<
     }
 
     public boolean getDisplayCreatedFromTemplateForCurrent() {
+        ItemDomainEntity current = getCurrent();
         if (getEntityDisplayTemplates() && current != null) {
             return !current.getIsItemTemplate();
         }
@@ -2324,7 +2324,7 @@ public abstract class ItemController<
 
     public boolean getDisplayCreatedFromCurrentItemList() {
         if (getEntityDisplayTemplates()) {
-            return current.getIsItemTemplate();
+            return getCurrent().getIsItemTemplate();
         }
         return false;
     }
@@ -2362,6 +2362,7 @@ public abstract class ItemController<
     }
 
     public String getCurrentItemDisplayTitle() {
+        ItemDomainEntity current = getCurrent();
         if (current != null) {
             if (current.getQrId() != null) {
                 return "Qr: " + current.getQrIdDisplay();

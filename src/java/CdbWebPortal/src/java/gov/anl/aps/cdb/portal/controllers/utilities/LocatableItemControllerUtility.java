@@ -44,6 +44,10 @@ public class LocatableItemControllerUtility {
     }
     
     public TreeNode getLocationTreeForLocationHistoryObject(LocationHistoryObject locationHistoryObject) {
-        return locatableItemController.getLocationTreeForLocationHistoryObject(locationHistoryObject); 
+        return locatableItemController.getLocationTreeForLocationHistoryObject(locationHistoryObject);         
+    }
+    
+    public TreeNode getHousingTreeForLocationHistoryObject(LocationHistoryObject locationHistoryObject) {
+        return locatableItemController.getHousingTreeForLocationHistoryObject(locationHistoryObject); 
     }
 }

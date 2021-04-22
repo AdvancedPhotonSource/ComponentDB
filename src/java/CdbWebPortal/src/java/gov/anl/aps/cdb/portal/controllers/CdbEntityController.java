@@ -68,8 +68,6 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     protected SettingObject settingObject = null;
 
-    protected EntityType current = null;
-
     protected DataModel listDataModel = null;
     protected DataTable listDataTable = null;
     protected boolean listDataModelReset = true;
@@ -248,7 +246,10 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @return entity
      */
     public EntityType getCurrent() {
-        return current;
+        ViewScopedCompanionController instance = ViewScopedCompanionController.getInstance();        
+//        Object current = instance.getCurrent(getEntityTypeName());
+        Object current = instance.getCurrent(getFlashCurrentKey());
+        return (EntityType) current;
     }
 
     /**
@@ -288,7 +289,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     /**
      * New current is being set, reset related variables.
      */
-    protected void resetVariablesForCurrent() {
+    protected final void resetVariablesForCurrent() {
         for (ItemControllerExtensionHelper helper : subscribedResetForCurrentControllerHelpers) {
             helper.resetExtensionVariablesForCurrent();
         }
@@ -314,7 +315,8 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      */
     public void setCurrent(EntityType current) {
         resetVariablesForCurrent();
-        this.current = current;
+        ViewScopedCompanionController instance = ViewScopedCompanionController.getInstance();
+        instance.setCurrent(current, getFlashCurrentKey());
     }
 
     /**
@@ -384,7 +386,14 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
             }
             setCurrent(entity);
             return entity;
-        } else if (current == null || current.getId() == null) {
+        } 
+        if (getCurrent() == null) {
+            EntityType currentFlash = getCurrentFlash();
+            setCurrent(currentFlash);
+        }
+        
+        EntityType current = getCurrent();
+        if (current == null || current.getId() == null) {
             throw new InvalidRequest(StringUtility.capitalize(getDisplayEntityTypeName()) + " has not been selected.");
         }
         return current;
@@ -429,7 +438,13 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
             }
             setCurrent(entity);
         }
-
+                
+        if (getCurrent() == null) {
+            EntityType currentFlash = getCurrentFlash();
+            setCurrent(currentFlash);
+        }
+        
+        EntityType current = getCurrent();
         if (current == null || current.getId() == null) {
             throw new InvalidRequest(StringUtility.capitalize(getDisplayEntityTypeName()) + " has not been selected.");
         }
@@ -508,13 +523,14 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
                             + getDisplayEntityTypeName() + " entities.");
                 }
             }
-            // User authorized. 
-            EntityType entity = getCurrent();
+            // User authorized.
+            EntityType entity = getCurrentFlash();
             if (entity == null || entity.getId() != null) {
                 // entity is not yet set, or current entity is already in db. 
                 prepareCreate();
+            } else {
+                setCurrent(entity);
             }
-
         }
 
     }
@@ -526,10 +542,10 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @return entity instance
      */
     public EntityType getSelected() {
-        if (current == null) {
+        if (getCurrent() == null) {
             setCurrent(createEntityInstance());
         }
-        return current;
+        return getCurrent();
     }
 
     /**
@@ -581,8 +597,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @return URL to entity list view
      */
     public String prepareList() {
-        logger.debug("Preparing list data model for " + getDisplayEntityTypeName());
-        current = null;
+        logger.debug("Preparing list data model for " + getDisplayEntityTypeName());        
         if (listDataTable != null) {
             settingObject.updateListSettingsFromListDataTable(listDataTable);
         }
@@ -699,6 +714,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @throws IOException in case of IO errors
      */
     public void verifyView() throws IOException {
+        EntityType current = getCurrent();
         if (current != null) {
             SessionUtility.redirectTo("/views/error/invalidRequest.xhtml");
         }
@@ -721,11 +737,44 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @return entity view URL
      */
     public String prepareView(EntityType entity) {
-        logger.debug("Preparing view");
-        current = entity;
+        logger.debug("Preparing view");        
+        setCurrentFlash(entity);
         settingObject.updateSettings();
         prepareEntityView(entity);
         return view();
+    }
+    
+    /**
+     * Prepare entity view from current and return view URL.
+     * 
+     * @return 
+     */
+    public String prepareView() {
+        EntityType current = getCurrent();
+        return prepareView(current);         
+    }
+    
+    protected void loadCurrentFromFlash() {
+        EntityType currentFlash = getCurrentFlash();
+        
+        setCurrent(currentFlash);
+    }
+    
+    protected EntityType getCurrentFlash() {
+        return (EntityType) SessionUtility.getFlashValue(getFlashCurrentKey()); 
+    }
+    
+    protected void setCurrentFlash() {
+        EntityType current = getCurrent();
+        setCurrentFlash(current);        
+    }
+    
+    protected void setCurrentFlash(EntityType current) {
+        SessionUtility.setFlashValue(getFlashCurrentKey(), current);
+    }
+    
+    private String getFlashCurrentKey() {
+        return getEntityTypeName() + "Current"; 
     }
 
     /**
@@ -743,6 +792,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @return URL to view page in the entity folder with id query paramter.
      */
     public String viewForCurrentEntity() {
+        EntityType current = getCurrent();
         return "view?id=" + current.getId() + "&faces-redirect=true";
     }
 
@@ -761,7 +811,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @return URL to create page in the entity folder
      */
     public String prepareCreate() {
-        setCurrent(createEntityInstance());
+        setCurrentFlash(createEntityInstance());
         return "create?faces-redirect=true";
     }
 
@@ -788,8 +838,9 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @param entity entity instance to be cloned
      * @return URL to cloned instance view
      */
-    public String prepareClone(EntityType entity) {
-        current = cloneEntityInstance(entity);
+    public String prepareClone(EntityType entity) {        
+        EntityType cloneEntityInstance = cloneEntityInstance(entity);
+        setCurrentFlash(cloneEntityInstance);
         return getEntityApplicationViewPath() + "/" + getCloneCreatePageName() + "?faces-redirect=true";
     }
 
@@ -802,6 +853,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     }
 
     public final String getCurrentEntityPermalink() {
+        EntityType current = getCurrent();
         if (current != null) {
             String viewPath = contextRootPermanentUrl;
             viewPath += getCurrentEntityRelativePermalink();
@@ -811,6 +863,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     }
 
     public String getCurrentEntityRelativePermalink() {
+        EntityType current = getCurrent();
         return getEntityApplicationViewPath() + "/view?id=" + current.getId();
     }
 
@@ -827,6 +880,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     // TODO remove this method
     protected final void prepareEntityInsert(EntityType entity) throws CdbException {
         // TODO: This needs to be placed in item controller. 
+        EntityType current = getCurrent();
         if (entity == current) {
             if (entity instanceof Item) {
                 for (ItemControllerExtensionHelper helper : subscribedResetForCurrentControllerHelpers) {
@@ -835,6 +889,10 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
             }
         }
     }      
+    
+    public void createWithoutRedirect() {
+        create(); 
+    }
 
     public String create() {
         return create(false);
@@ -849,11 +907,12 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      */
     public String create(Boolean silent) {
         try {
+            EntityType current = getCurrent();
             performCreateOperations(current);
             if (!silent) {
                 SessionUtility.addInfoMessage("Success", "Created " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             }
-            return view();
+            return viewForCurrentEntity(); 
         } catch (CdbException ex) {
             if (!silent) {
                 SessionUtility.addErrorMessage("Error", "Could not create " + getDisplayEntityTypeName() + ": " + ex.getMessage());
@@ -934,7 +993,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      */
     public String prepareEdit(EntityType entity) {
         resetLogText();
-        current = entity;
+        setCurrentFlash(entity);        
         return edit();
     }
 
@@ -967,6 +1026,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      */
     public String update() {
         try {
+            EntityType current = getCurrent();
             performUpdateOperations(current);
             SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
 
@@ -990,8 +1050,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         resetListDataModel();
         resetSelectDataModel();
         resetLogText();
-
-        reloadCurrent();
+        
         completeEntityUpdate(entity);
     }
 
@@ -1025,7 +1084,9 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     }
 
     public void reloadCurrent() {
+        EntityType current = getCurrent(); 
         current = getEntityDbFacade().find(current.getId());
+        setCurrent(current);
     }
 
     public String inlineUpdate() {
@@ -1033,8 +1094,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
         // An error occured, reload the page with correct information. 
         if (updateResult == null) {
-            reloadCurrent();
-            return view();
+            return viewForCurrentEntity();
         }
 
         return null;
@@ -1066,6 +1126,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
             
             CdbEntityControllerUtility controllerUtility = getControllerUtility();
             UserInfo user = SessionUtility.getUser();
+            EntityType current = getCurrent();
             
             controllerUtility.updateOnRemoval(current, user); 
                                                 
@@ -1109,7 +1170,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      * @param entity entity instance to be deleted
      */
     public void destroy(EntityType entity) {
-        current = entity;
+        setCurrent(entity);
         destroy();
     }
 
@@ -1162,6 +1223,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     public String destroy() {
         logger.debug("Destroying " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName());
         try {
+            EntityType current = getCurrent();
             performDestroyOperations(current);
             SessionUtility.addInfoMessage("Success", "Deleted " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
             return prepareList();
@@ -1398,7 +1460,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      */
     public void resetListDataModelAndSetCurrent(EntityType currentEntity) {
         resetListDataModel();
-        current = currentEntity;
+        setCurrent(currentEntity);
     }
 
     /**
@@ -1469,6 +1531,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     public List<EntityType> getAvailableItemsWithoutCurrent() {
         List<EntityType> entityList = getEntityDbFacade().findAll();
+        EntityType current = getCurrent();
         if (current.getId() != null) {
             entityList.remove(current);
         }

@@ -19,21 +19,26 @@ import org.primefaces.model.TreeNode;
 public class LocationHistoryObject implements Comparable<LocationHistoryObject> {
 
     private TreeNode locationTree = null;
+    private TreeNode housingTree = null; 
+    
     private String locationDetails = null;
 
     private ItemElementHistory itemElementHistory;
     private ItemElementRelationshipHistory itemElementRelationshipHistory;
 
     private Item locationItem = null;
+    private Item housingItem = null; 
 
     // API only data
     private ItemHierarchy locationSingleNodeHierarchy;
+    private ItemHierarchy housingSingleNodeHierarchy; 
 
-    public LocationHistoryObject(ItemElementHistory itemElementHistory, Item locationItem) {
+    public LocationHistoryObject(ItemElementHistory itemElementHistory) {
         this.itemElementHistory = itemElementHistory;
-        this.locationItem = locationItem;
-        if (locationItem != null) {
-            locationDetails = LocatableItemController.generateLocationDetailsFromItem(locationItem);
+        
+        Item parentItem = itemElementHistory.getParentItem();
+        if (parentItem != null) {
+            locationDetails = LocatableItemController.generateLocationDetailsFromItem(parentItem);
         } else {
             locationDetails = "Deleted Item";
             locationDetails += ": " + itemElementHistory.getSnapshotParentName();
@@ -48,9 +53,29 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
         }
         locationDetails = itemElementRelationshipHistory.getRelationshipDetails();
     }
+    
+    @JsonIgnore
+    public Item getParentItem() {
+        if (itemElementHistory != null) {
+            return itemElementHistory.getParentItem(); 
+        }
+        return null; 
+    }
 
     public Item getLocationItem() {
         return locationItem;
+    }
+
+    public void setLocationItem(Item locationItem) {
+        this.locationItem = locationItem;
+    }
+
+    public Item getHousingItem() {
+        return housingItem;
+    }
+
+    public void setHousingItem(Item housingItem) {
+        this.housingItem = housingItem;
     }
 
     @JsonIgnore
@@ -60,6 +85,15 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
 
     public void setLocationTree(TreeNode locationTree) {
         this.locationTree = locationTree;
+    }
+
+    @JsonIgnore
+    public TreeNode getHousingTree() {
+        return housingTree;
+    }
+
+    public void setHousingTree(TreeNode housingTree) {
+        this.housingTree = housingTree;
     }
 
     public String getLocationDetails() {
@@ -96,6 +130,16 @@ public class LocationHistoryObject implements Comparable<LocationHistoryObject> 
             }
         }
         return locationSingleNodeHierarchy;
+    }
+
+    public ItemHierarchy getHousingSingleNodeHierarchy() {
+        if (housingSingleNodeHierarchy == null) {
+            TreeNode housingTree = getHousingTree();
+            if (housingTree != null && housingTree.getChildCount() > 0) {
+                housingSingleNodeHierarchy = ItemHierarchy.createSingleNodeHierarchyFromTreeNode(housingTree); 
+            }
+        }
+        return housingSingleNodeHierarchy;
     }
 
     @Override
