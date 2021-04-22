@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -310,6 +311,14 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
             item.updateFilterMachineNode(filterMachineNode);
         }
         addTopLevelChildren(topLevelItems);
+    }
+    
+    public List<ItemDomainMachineDesign> getFilterResults() {
+        if (filterResults != null) {
+            return filterResults;
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     public void filterChangeEvent(String onComplete) {

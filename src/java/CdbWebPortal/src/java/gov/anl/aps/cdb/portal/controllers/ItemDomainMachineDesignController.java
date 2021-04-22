@@ -2636,12 +2636,36 @@ public class ItemDomainMachineDesignController
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
     
-    protected List<CdbEntity> getExportEntityList() {        
-        List<CdbEntity> entityList = new ArrayList<>();
-        if (getCurrent() != null) {
-            entityList.add(getCurrent());
-        }        
-        return entityList;
+    public void collectHierarchyItems(
+            ItemDomainMachineDesign parentItem,
+            List<ItemDomainMachineDesign> collectedItems,
+            boolean isRootItem) {
+
+        if (isRootItem) {
+            collectedItems.add(parentItem);
+        }
+
+        List<ItemElement> displayList = parentItem.getItemElementDisplayList();
+        for (ItemElement ie : displayList) {
+            Item childItem = ie.getContainedItem();
+            if (childItem instanceof ItemDomainMachineDesign) {
+                collectedItems.add((ItemDomainMachineDesign) childItem);
+                collectHierarchyItems((ItemDomainMachineDesign) childItem, collectedItems, false);
+            }
+        }
+
+    }
+
+    @Override
+    protected List<ItemDomainMachineDesign> getExportEntityList() {        
+        ItemDomainMachineDesignTreeNode currentTree = getCurrentMachineDesignListRootTreeNode();
+        List<ItemDomainMachineDesign> filteredItems = currentTree.getFilterResults();
+        List<ItemDomainMachineDesign> filteredHierarchyItems = new ArrayList<>();
+        List<ItemElement> ignoredElementListParameter = new ArrayList<>();
+        for (ItemDomainMachineDesign item : filteredItems) {
+            collectHierarchyItems(item, filteredHierarchyItems, true);
+        }
+        return filteredHierarchyItems;
     }
     
     // </editor-fold>       

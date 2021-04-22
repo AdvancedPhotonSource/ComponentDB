@@ -1414,8 +1414,8 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return filteredObjectList;
     }
     
-    public List<CdbEntity> getFilteredEntities() {
-        return (List<CdbEntity>) filteredObjectList;
+    public List<EntityType> getFilteredEntities() {
+        return filteredObjectList;
     }
 
     /**
@@ -1718,11 +1718,11 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return false;
     }
     
-    protected List<CdbEntity> getExportEntityList() {
+    protected List<EntityType> getExportEntityList() {
         
         DataModel dataModel = getListDataModel();
         
-        List<CdbEntity> entityList = null;
+        List<EntityType> entityList = null;
         if (dataModel instanceof ItemLazyDataModel) {
             ItemLazyDataModel lazyDataModel = (ItemLazyDataModel) dataModel;
             entityList = lazyDataModel.getFilteredEntities();
@@ -1743,8 +1743,12 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     public String prepareExport() throws CdbException {          
         ItemDomainExportWizard wizard = ItemDomainExportWizard.getInstance();
         wizard.setDomainInfo(getDomainExportInfo());
-        List<CdbEntity> entityList = getExportEntityList();
-        wizard.setExportEntityList(entityList);
+        List<EntityType> entityList = getExportEntityList();
+        if (entityList.isEmpty()) {
+            SessionUtility.addErrorMessage("Error", "No items selected for export. Consider using filter to select items.");
+            return "";
+        }
+        wizard.setExportEntityList((List<CdbEntity>)entityList);
         return "export?faces-redirect=true";
     }
     
