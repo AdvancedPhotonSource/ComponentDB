@@ -4,24 +4,20 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperOptionType;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.RootMachineItemWizardOptionHelper;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.SingleColumnInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.AssignedItemHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.MachineItemRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
@@ -36,7 +32,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.ss.usermodel.Row;
 
 /**
  *
@@ -44,116 +39,7 @@ import org.apache.poi.ss.usermodel.Row;
  */
 public class ImportHelperMachineHierarchy 
         extends ImportHelperHierarchyBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
-    
-    /**
-     * Using a custom handler so that we can use catalog or inventory item id's
-     * in a single column.  There is not a way to do this with IdRef handler, as
-     * it needs a particular controller instance to use for the lookup.  The
-     * query we need here is on the ItemFacade.
-     */
-    private class AssignedItemHandler extends SingleColumnInputHandler {
         
-        public AssignedItemHandler() {
-            super(HEADER_ASSIGNED_ITEM);
-        }
-        
-        @Override
-        public ValidInfo handleInput(
-                Row row,
-                Map<Integer, String> cellValueMap,
-                Map<String, Object> rowMap) {
-            
-            boolean isValid = true;
-            String validString = "";
-            
-            String parsedValue = cellValueMap.get(getColumnIndex());
-            
-            Item assignedItem = null;
-            if ((parsedValue != null) && (!parsedValue.isEmpty())) {
-                // assigned item is specified
-                
-                int id;
-                try {
-                    id = Integer.valueOf(parsedValue);
-                    assignedItem = ItemFacade.getInstance().findById(id);
-                    if (assignedItem == null) {
-                        String msg = "Unable to find object for: " + getColumnName()
-                                + " with id: " + parsedValue;
-                        isValid = false;
-                        validString = msg;
-                        LOGGER.info("AssignedItemHandler.handleInput() " + msg);
-                    }
-                    rowMap.put(KEY_ASSIGNED_ITEM, assignedItem);
-                    
-                } catch (NumberFormatException ex) {
-                    String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
-                    isValid = false;
-                    validString = msg;
-                    LOGGER.info("AssignedItemHandler.handleInput() " + msg);  
-                }                
-            }
-
-            return new ValidInfo(isValid, validString);
-        }
-    }
-    
-    /**
-     * Using a custom handler for location so we can ignore the word "parent"
-     * in a column that otherwise expects location item id's.  We could use the
-     * standard IdRef handler if we didn't need to worry about "parent".
-     */
-    private class LocationHandler extends SingleColumnInputHandler {
-        
-        public LocationHandler() {
-            super(HEADER_LOCATION);
-        }
-        
-        @Override
-        public ValidInfo handleInput(
-                Row row,
-                Map<Integer, String> cellValueMap,
-                Map<String, Object> rowMap) {
-            
-            boolean isValid = true;
-            String validString = "";
-            
-            String parsedValue = cellValueMap.get(getColumnIndex());
-            
-            ItemDomainLocation itemLocation = null;
-            if ((parsedValue != null) && (!parsedValue.isEmpty())) {
-                // location is specified
-                
-                // ignore word "parent"
-                if (!parsedValue.equalsIgnoreCase("parent")) {
-                    int id;
-                    try {
-                        id = Integer.valueOf(parsedValue);
-                        itemLocation = ItemDomainLocationController.getInstance().findById(id);
-                        if (itemLocation == null) {
-                            String msg = "Unable to find object for: " + getColumnName()
-                                    + " with id: " + parsedValue;
-                            isValid = false;
-                            validString = msg;
-                            LOGGER.info("LocationHandler.handleInput() " + msg);
-
-                        } else {
-                            // set location
-                            rowMap.put(KEY_LOCATION, itemLocation);
-                        }
-
-                    } catch (NumberFormatException ex) {
-                        String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
-                        isValid = false;
-                        validString = msg;
-                        LOGGER.info("LocationHandler.handleInput() " + msg);
-                    }              
-                }
-            }
-
-            return new ValidInfo(isValid, validString);
-        }
-    }
-    
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineHierarchy.class.getName());
     
     private static final String KEY_NAME = "name";

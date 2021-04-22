@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineHierarchy;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineItemUpdate;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineTemplateInstantiation;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
@@ -2563,13 +2564,44 @@ public class ItemDomainMachineDesignController
     protected DomainImportExportInfo initializeDomainImportInfo() {
 
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportExportFormatInfo("Machine Hierarchy Creation", ImportHelperMachineHierarchy.class));
-        formatInfo.add(new ImportExportFormatInfo("Machine Template Instantiation", ImportHelperMachineTemplateInstantiation.class));
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Machine Hierarchy Creation", ImportHelperMachineHierarchy.class));
+        formatInfo.add(new ImportExportFormatInfo(
+                "Machine Template Instantiation", ImportHelperMachineTemplateInstantiation.class));
+        formatInfo.add(new ImportExportFormatInfo(
+                "Machine Element Updating", ImportHelperMachineItemUpdate.class));
 
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
+
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+    
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo("Basic Machine Element Update Format", ImportHelperMachineItemUpdate.class));
+        
+        String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
+    protected List<CdbEntity> getExportEntityList() {        
+        List<CdbEntity> entityList = new ArrayList<>();
+        if (getCurrent() != null) {
+            entityList.add(getCurrent());
+        }        
+        return entityList;
+    }
+    
     // </editor-fold>       
 
     // <editor-fold defaultstate="collapsed" desc="Delete support">   

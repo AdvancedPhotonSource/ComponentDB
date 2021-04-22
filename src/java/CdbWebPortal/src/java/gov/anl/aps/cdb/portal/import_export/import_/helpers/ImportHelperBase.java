@@ -1353,6 +1353,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return rootTreeNode;
     }
     
+    protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
+        throw new UnsupportedOperationException("Helper does not implement createEntityInstance().");
+    }
+    
     /**
      * Provides callback for helper subclass to do post processing after the
      * import commit completes.  For example, the helper may need to update some
@@ -1550,7 +1554,5 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public abstract EntityControllerType getEntityController();
     
     public abstract String getFilenameBase();
-    
-    protected abstract CreateInfo createEntityInstance(Map<String, Object> rowMap);
     
 }

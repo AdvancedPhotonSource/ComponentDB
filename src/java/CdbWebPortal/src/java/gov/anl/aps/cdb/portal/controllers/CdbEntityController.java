@@ -34,6 +34,7 @@ import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import java.io.IOException;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -1654,20 +1655,32 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return false;
     }
     
-    /**
-     * Prepares export wizard.
-     */
-    public String prepareExport() throws CdbException {          
-        ItemDomainExportWizard wizard = ItemDomainExportWizard.getInstance();
-        wizard.setDomainInfo(getDomainExportInfo());
+    protected List<CdbEntity> getExportEntityList() {
+        
         DataModel dataModel = getListDataModel();
-        List<CdbEntity> entityList;
+        
+        List<CdbEntity> entityList = null;
         if (dataModel instanceof ItemLazyDataModel) {
             ItemLazyDataModel lazyDataModel = (ItemLazyDataModel) dataModel;
             entityList = lazyDataModel.getFilteredEntities();
         } else {
             entityList = getFilteredEntities();
         }
+        
+        if (entityList == null) {
+            entityList = new ArrayList<>();
+        }
+        
+        return entityList;
+    }
+    
+    /**
+     * Prepares export wizard.
+     */
+    public String prepareExport() throws CdbException {          
+        ItemDomainExportWizard wizard = ItemDomainExportWizard.getInstance();
+        wizard.setDomainInfo(getDomainExportInfo());
+        List<CdbEntity> entityList = getExportEntityList();
         wizard.setExportEntityList(entityList);
         return "export?faces-redirect=true";
     }
