@@ -19,9 +19,6 @@ import java.io.Serializable;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.application.ViewHandler;
-import javax.faces.component.UIViewRoot;
-import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.servlet.http.HttpSession;
 import org.apache.logging.log4j.LogManager;
@@ -44,6 +41,7 @@ public class LoginController implements Serializable {
     private String password = null;
     private boolean loggedInAsAdmin = false;
     private boolean loggedInAsMaintainer = false;
+    private boolean loggedInAsAdvancedUser = false; 
     private boolean loggedInAsUser = false;
     private boolean checkedSession = false;
     private boolean registeredSession = false;
@@ -55,7 +53,9 @@ public class LoginController implements Serializable {
 
     private static final String AdminGroupListPropertyName = "cdb.portal.adminGroupList";
     private static final String MaintainerGroupListPropertyName = "cdb.portal.maintainerGroupList";
+    private static final String AdvancedGroupListPropertyName = "cdb.portal.advancedGroupList";
     private static final List<String> maintainerGroupNameList = ConfigurationUtility.getPortalPropertyList(MaintainerGroupListPropertyName);
+    private static final List<String> advancedGroupNameList = ConfigurationUtility.getPortalPropertyList(AdvancedGroupListPropertyName); 
     private static final List<String> adminGroupNameList = ConfigurationUtility.getPortalPropertyList(AdminGroupListPropertyName);
     private static final Logger logger = LogManager.getLogger(LoginController.class.getName());
 
@@ -93,7 +93,11 @@ public class LoginController implements Serializable {
             }
 
         }
-        return (loggedInAsAdmin || loggedInAsUser || loggedInAsMaintainer);
+        return (loggedInAsAdmin || loggedInAsUser || loggedInAsMaintainer || loggedInAsAdvancedUser );
+    }
+    
+    public boolean isLoggedInForImport() {
+        return (loggedInAsAdmin || loggedInAsMaintainer || loggedInAsAdvancedUser );
     }
 
     public boolean isLoggedInAsAdmin() {
@@ -102,6 +106,14 @@ public class LoginController implements Serializable {
 
     public void setLoggedInAsAdmin(boolean loggedInAsAdmin) {
         this.loggedInAsAdmin = loggedInAsAdmin;
+    }
+
+    public boolean isLoggedInAsAdvancedUser() {
+        return loggedInAsAdvancedUser;
+    }
+
+    public void setLoggedInAsAdvancedUser(boolean loggedInAsAdvancedUser) {
+        this.loggedInAsAdvancedUser = loggedInAsAdvancedUser;
     }
 
     public boolean isLoggedInAsMaintainer() {
@@ -127,6 +139,10 @@ public class LoginController implements Serializable {
     private boolean isMaintainer(String username) {
         return isMaintainer(username, userFacade);
     }
+    
+    private boolean isAdvanced(String username) {
+        return isAdvanced(username, userFacade);
+    }
 
     public static boolean isAdmin(String username, UserInfoFacade userFacade) {
         UserInfo findByUsername = userFacade.findByUsername(username);
@@ -140,6 +156,14 @@ public class LoginController implements Serializable {
         UserInfo findByUsername = userFacade.findByUsername(username);
         if (findByUsername != null) {
             return findByUsername.isUserMaintainer();
+        }
+        return false;
+    }
+    
+    public static boolean isAdvanced(String username, UserInfoFacade userFacade) {
+        UserInfo findByUsername = userFacade.findByUsername(username);
+        if (findByUsername != null) {
+            return findByUsername.isUserAdvanced();
         }
         return false;
     }
@@ -203,6 +227,7 @@ public class LoginController implements Serializable {
         SessionUtility.setUser(user);
         boolean isAdminUser = isAdmin(username);
         boolean isMaintainer = isMaintainer(username);
+        boolean isAdvanced = isAdvanced(username); 
         if (isAdminUser) {
             loggedInAsAdmin = true;
             SessionUtility.setRole(CdbRole.ADMIN);
@@ -211,7 +236,11 @@ public class LoginController implements Serializable {
             loggedInAsMaintainer = true;
             SessionUtility.setRole(CdbRole.MAINTAINER);
             SessionUtility.addInfoMessage("Successful Login", "Maintainer " + username + " is logged in.");
-        } else {
+        } else if (isAdvanced) {
+            loggedInAsAdvancedUser = true; 
+            SessionUtility.setRole(CdbRole.ADVANCED);
+            SessionUtility.addInfoMessage("Successful Login", "Advanced user " + username + " is logged in.");
+        }else {
             loggedInAsUser = true;
             SessionUtility.setRole(CdbRole.USER);
             SessionUtility.addInfoMessage("Successful Login", "User " + username + " is logged in.");
@@ -269,7 +298,9 @@ public class LoginController implements Serializable {
             return "Administrator";
         } else if (isLoggedInAsMaintainer()) {
             return "Maintainer";
-        } else {
+        } else if (isLoggedInAsAdvancedUser()) {
+            return "Advanced user";
+        }else {
             return "User";
         }
     }
@@ -382,6 +413,10 @@ public class LoginController implements Serializable {
 
     public static List<String> getAdminGroupNameList() {
         return adminGroupNameList;
+    }
+
+    public static List<String> getAdvancedGroupNameList() {
+        return advancedGroupNameList;
     }
 
     public static List<String> getMaintainerGroupNameList() {
