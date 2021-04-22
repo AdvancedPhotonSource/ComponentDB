@@ -22,7 +22,7 @@ See LICENSE file.
     <ui:define name="middleCenter">
 
         <h:form id="importCableInventoryForm" 
-                rendered="#{loginController.loggedInAsAdmin and pageRendered}">
+                rendered="#{loginController.loggedInForImport and pageRendered}">
 
             <div class="pageTitle">
                 <h1>Import Cable Inventory</h1>

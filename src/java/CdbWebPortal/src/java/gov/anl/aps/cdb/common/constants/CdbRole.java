@@ -11,7 +11,8 @@ public enum CdbRole {
 
     USER("user"),
     ADMIN("admin"),
-    MAINTAINER("maintainer");
+    MAINTAINER("maintainer"),
+    ADVANCED("advanced");
 
     private final String type;
 
