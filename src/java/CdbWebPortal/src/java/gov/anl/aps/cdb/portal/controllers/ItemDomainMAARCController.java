@@ -62,11 +62,8 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
 
     private Integer filePropertyTypeId = null;
     private boolean attemptedFetchFilePropertyType = false;
-
-    private Boolean loadGallery = null;
-    private String currentViewableUUIDToDownload = null;
-
-    private List<ItemElementRelationship> relatedRelationshipsForCurrent = null;
+    
+    private String currentViewableUUIDToDownload = null;   
 
     private ItemDomainMAARCLazyDataModel maarcListDataModel;
 
@@ -172,6 +169,9 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
     public void destroyRelationship(ItemElementRelationship ier) {
         ItemElementRelationshipController ierc = ItemElementRelationshipController.getInstance();
         ierc.destroy(ier);
+        
+        ItemDomainMAARC current = getCurrent();
+        List<ItemElementRelationship> relatedRelationshipsForCurrent = current.getRelatedRelationshipsForCurrent();
 
         relatedRelationshipsForCurrent.remove(ier);
     }   
@@ -192,9 +192,12 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
     }
 
     public List<ItemElementRelationship> getRelatedRelationshipsForCurrent() {
+        ItemDomainMAARC current = getCurrent();
+        List<ItemElementRelationship> relatedRelationshipsForCurrent = current.getRelatedRelationshipsForCurrent();
         if (relatedRelationshipsForCurrent == null) {
             List<ItemElementRelationship> itemElementRelationshipList1 = getCurrent().getSelfElement().getItemElementRelationshipList1();
             relatedRelationshipsForCurrent = new ArrayList<>();
+            current.setRelatedRelationshipsForCurrent(relatedRelationshipsForCurrent);
 
             for (ItemElementRelationship ier : itemElementRelationshipList1) {
                 if (ier.getRelationshipType().getName().equals(MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME)) {
@@ -204,13 +207,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
         }
 
         return relatedRelationshipsForCurrent;
-    }
-
-    @Override
-    protected void resetVariablesForCurrent() {
-        super.resetVariablesForCurrent();
-        relatedRelationshipsForCurrent = null;
-        loadGallery = null;
     }
 
     @Override
@@ -440,6 +436,8 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
      * @return
      */
     public boolean isLoadGallery() {
+        ItemDomainMAARC current = getCurrent();
+        Boolean loadGallery = current.getLoadGallery();
         if (loadGallery == null) {
             if (getControllerUtility().isEntityTypeFile(getCurrent())) {
                 // File
@@ -456,12 +454,14 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
 
                 loadGallery = false;
             }
+            current.setLoadGallery(loadGallery);
         }
         return loadGallery;
     }
 
     public void setLoadGallery(boolean renderGallery) {
-        this.loadGallery = renderGallery;
+        ItemDomainMAARC current = getCurrent();
+        current.setLoadGallery(renderGallery);
     }
 
     private boolean loadGalleryForItemNeeded(ItemDomainMAARC item) {

@@ -16,13 +16,16 @@ import org.primefaces.model.menu.DefaultMenuModel;
  */
 public abstract class LocatableItem extends Item {
 
-    private transient List<Item> cachedLocationHierarchy = null; 
+    private transient List<ItemDomainLocation> cachedLocationHierarchy = null; 
+    private transient List<Item> cachedHousingHierarchy = null; 
     private transient TreeNode locationTree = null;
+    private transient TreeNode housingTree = null; 
     protected transient String locationDetails = null;        
     protected transient Item membershipLocation; 
     protected transient ItemDomainLocation location;
     private transient ItemElementRelationship locationRelationship; 
     private transient String locationString;
+    private transient String housingString; 
     private transient DefaultMenuModel locationMenuModel;
     private transient String importLocationItemString = null;
 
@@ -30,15 +33,27 @@ public abstract class LocatableItem extends Item {
     private transient Boolean originalLocationLoaded = false;
     
     public void resetLocationVariables() {
-        locationTree = null; 
-        locationDetails = null;         
+        locationTree = null;
+        housingTree = null;
+        locationDetails = null;
         location = null;
-        locationString = null; 
-        locationMenuModel = null; 
-        originalLocationLoaded = false; 
+        locationString = null;
+        housingString = null;
+        locationMenuModel = null;
+        originalLocationLoaded = false;
         locationRelationship = null;
-        membershipLocation = null;      
-        cachedLocationHierarchy = null; 
+        membershipLocation = null;
+        cachedLocationHierarchy = null;
+        cachedHousingHierarchy = null; 
+    }
+
+    @JsonIgnore
+    public TreeNode getHousingTree() {
+        return housingTree;
+    }
+
+    public void setHousingTree(TreeNode housingTree) {
+        this.housingTree = housingTree;
     }
 
     @JsonIgnore
@@ -51,11 +66,20 @@ public abstract class LocatableItem extends Item {
     }
 
     @JsonIgnore
-    public List<Item> getCachedLocationHierarchy() {
+    public List<Item> getCachedHousingHierarchy() {
+        return cachedHousingHierarchy;
+    }
+
+    public void setCachedHousingHierarchy(List<Item> cachedHousingHierarchy) {        
+        this.cachedHousingHierarchy = cachedHousingHierarchy;
+    }
+
+    @JsonIgnore
+    public List<ItemDomainLocation> getCachedLocationHierarchy() {
         return cachedLocationHierarchy;
     }
 
-    public void setCachedLocationHierarchy(List<Item> cachedLocationHierarchy) {
+    public void setCachedLocationHierarchy(List<ItemDomainLocation> cachedLocationHierarchy) {
         this.cachedLocationHierarchy = cachedLocationHierarchy;
     }
 
@@ -126,6 +150,15 @@ public abstract class LocatableItem extends Item {
 
     public void setLocationRelationship(ItemElementRelationship locationRelationship) {
         this.locationRelationship = locationRelationship;
+    }
+
+    @JsonIgnore
+    public String getHousingString() {
+        return housingString;
+    }
+
+    public void setHousingString(String housingString) {
+        this.housingString = housingString;
     }
 
     @JsonIgnore

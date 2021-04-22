@@ -4,19 +4,26 @@
  */
 
 
-const VERIFY_VIEW_MAX_ATTEMPTS = 10;
+const VERIFY_VIEW_MAX_ATTEMPTS = 25;
 
-var sessionTimeout = false; 
+var sessionTimeout = false;
 
 window.onload = function () {
     var thisPageId = document.getElementById('viewCurrentPageIdHiddenText').value;
+    var singleTabKey = document.getElementById('singleTabViewKeyHiddenText').innerHTML;
+
     var currentPageUrl = window.location.href;
-    if (thisPageId === "") {
-        // New page generate a view UUID 
-        prepareNewViewID();
+
+    if (singleTabKey !== "") {
+        if (thisPageId === "") {
+            // New page generate a view UUID 
+            prepareNewViewID();
+        } else {
+            // Old page prepare to start verify 
+            prepareTestExistingViewID();
+        }
     } else {
-        // Old page prepare to start verify 
-        prepareTestExistingViewID();
+        startPageVerify(false);
     }
 };
 
@@ -26,7 +33,7 @@ function setCurrentPageViewId() {
     startPageVerify();
 }
 
-function startPageVerify() {
+function startPageVerify(includeTabCheck = true) {    
     // See if already generated
     var timeHash = document.getElementById('currentTimeHashHiddenText').innerHTML;
     var failureCount = 0;
@@ -34,8 +41,8 @@ function startPageVerify() {
     function verifyView() {
         setTimeout(function () {
             if (sessionTimeout) {
-                invalidateCurrentSession(); 
-                return; 
+                invalidateCurrentSession();
+                return;
             }
             verifyViewOpenPageIdHiddenText();
             var newTimeHash = document.getElementById('currentTimeHashHiddenText').innerHTML;
@@ -44,7 +51,7 @@ function startPageVerify() {
                 failureCount = 0;
                 verifyView();
             } else {
-                failureCount ++; 
+                failureCount++;
                 if (failureCount == VERIFY_VIEW_MAX_ATTEMPTS) {
                     PF('sessionLostDialogWidget').show();
                 } else {
@@ -55,12 +62,14 @@ function startPageVerify() {
     }
 
     verifyView();
-    verifyViewOpenPageIdHiddenText();
+    if (includeTabCheck) {        
+        verifyViewOpenPageIdHiddenText();
+    }
 }
 
-function sessionTimedOutEvent() {    
+function sessionTimedOutEvent() {
     PF('sessionTimeoutDialogWidget').show();
-    sessionTimeout = true; 
+    sessionTimeout = true;
 }
 
 function testExistingPageId() {

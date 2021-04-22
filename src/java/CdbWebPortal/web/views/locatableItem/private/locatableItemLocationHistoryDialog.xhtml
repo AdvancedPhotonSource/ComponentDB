@@ -21,15 +21,19 @@ See LICENSE file.
                      var="itemElementLocationRelationshipHistoryObject"
                      draggableColumns="true"
                      rows="15">
+            <p:column headerText="Housing">
+                <p:tree value="#{locatableItemController.getHousingTreeForLocationHistoryObject(itemElementLocationRelationshipHistoryObject)}"
+                        var="node"
+                        styleClass="transparent-tree">
+                    <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
+                </p:tree>
+            </p:column>
             <p:column headerText="Location">
-                
-                <p:outputPanel rendered="#{itemElementLocationRelationshipHistoryObject.locationItem != null}">
-                    <p:tree value="#{locatableItemController.getLocationTreeForLocationHistoryObject(itemElementLocationRelationshipHistoryObject)}"
-                            var="node"
-                            styleClass="transparent-tree">
-                        <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
-                    </p:tree>
-                </p:outputPanel>
+                <p:tree value="#{locatableItemController.getLocationTreeForLocationHistoryObject(itemElementLocationRelationshipHistoryObject)}"
+                        var="node"
+                        styleClass="transparent-tree">
+                    <ui:include src="../../itemDomainLocation/private/itemDomainLocationTreeObject.xhtml" />
+                </p:tree>
             </p:column>
             <p:column headerText="Location Details">
                 <h:outputText value="#{itemElementLocationRelationshipHistoryObject.locationDetails}" />

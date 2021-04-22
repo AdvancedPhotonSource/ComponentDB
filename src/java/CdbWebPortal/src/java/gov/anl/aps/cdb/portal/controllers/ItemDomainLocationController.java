@@ -55,9 +55,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     private FilterViewItemHierarchySelection filterViewLocationSelection = null;
 
     private boolean renderLocationSelectionDialog = false;
-    private boolean renderLocationInplaceEditTieredMenu = false;
-
-    private static DefaultMenuModel parentSelectionMenuModel = null;
+    private boolean renderLocationInplaceEditTieredMenu = false;   
 
     @EJB
     DomainFacade domainFacade;
@@ -80,11 +78,6 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
         locationsWithInventoryItemsRootNode = null;
         locationsWithInventoryItemAssemblyRootNode = null;
-    }
-
-    @Override
-    protected void resetVariablesForCurrent() {
-        parentSelectionMenuModel = null;
     }
 
     public FilterViewItemHierarchySelection getFilterViewLocationSelection() {
@@ -293,6 +286,8 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     }
 
     public DefaultMenuModel getParentSelectionMenuModel(String updateTarget) {
+        ItemDomainLocation current = getCurrent();
+        DefaultMenuModel parentSelectionMenuModel = current.getParentSelectionMenuModel();
         if (parentSelectionMenuModel == null) {
             LocatableItemController instance = LocatableItemController.getInstance();
             List<ItemHierarchyCache> locationItemHierarchyCaches = instance.getLocationItemHierarchyCaches();
@@ -318,12 +313,16 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
                     null,
                     updateTarget,
                     updateTarget);
+            current.setParentSelectionMenuModel(parentSelectionMenuModel);
         }
         return parentSelectionMenuModel;
     }
 
     public void updateParentForCurrent(Item newParent) {
         updateParentForItem(getCurrent(), newParent);
+        
+        ItemDomainLocation current = getCurrent();
+        DefaultMenuModel parentSelectionMenuModel = current.getParentSelectionMenuModel();
         
         DefaultSubMenu topNode = (DefaultSubMenu) parentSelectionMenuModel.getElements().get(0);
         topNode.setLabel(newParent.getName());

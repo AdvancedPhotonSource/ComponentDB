@@ -34,7 +34,7 @@ See LICENSE file.
                              oncomplete="PF('#{entityTypeName}#{itemConnectorEntityTypeName}AddDialogWidget').hide()"
                              icon="ui-icon-disk"
                              update="#{itemConnectorEntityTypeName}ListDataTable"
-                             action="#{itemConnectorController.create()}"/>
+                             action="#{itemConnectorController.createWithoutRedirect()}"/>
             <p:commandButton label="Cancel" icon="ui-icon-arrowreturnthick-1-w"
                              value="Cancel"
                              update="#{itemConnectorEntityTypeName}ListDataTable"

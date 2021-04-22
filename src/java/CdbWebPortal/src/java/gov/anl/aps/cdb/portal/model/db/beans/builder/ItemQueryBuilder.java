@@ -64,7 +64,7 @@ public abstract class ItemQueryBuilder {
     private String wherePart;
     private String sortPart;
     private String joinPart;
-
+    
     public ItemQueryBuilder(Domain domain, Map filterMap, String sortField, SortOrder sortOrder) {
         this.domain = domain;
         this.filterMap = filterMap;
@@ -142,8 +142,10 @@ public abstract class ItemQueryBuilder {
         appendWhere("=", "i.domain.id", domain.getId());
 
         for (Object key : filterMap.keySet()) {
-            FilterMeta filter = (FilterMeta) filterMap.get(key);
-            Object filterValue = filter.getFilterValue();
+            Object filterValue = filterMap.get(key);
+            if (filterValue instanceof FilterMeta) {                
+                filterValue = ((FilterMeta)filterValue).getFilterValue();
+            }
 
             if (filterValue != null) {
                 String keyString = key.toString();
@@ -540,6 +542,7 @@ public abstract class ItemQueryBuilder {
 
         if (object != null && object instanceof String) {
             if (comparator.equalsIgnoreCase(QUERY_LIKE)) {
+                value = ((String)value).replace('*', '%'); 
                 value = "%" + value + "%";
             }
 

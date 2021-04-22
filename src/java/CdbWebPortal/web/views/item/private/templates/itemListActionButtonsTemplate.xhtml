@@ -39,9 +39,9 @@ See LICENSE file.
         <p:commandButton value="Import"
                          icon="fa fa-plus"
                          action="#{entityController[importEntityActionFunctionName]}"
-                         rendered="#{loginController.loggedInAsAdmin
+                         rendered="#{loginController.loggedInForImport
                                      and entityController.entityDisplayImportButton}"
-                         onstart="PF('loadingDialog').show();"
+                         onclick="PF('loadingDialog').show();"
                          oncomplete="PF('loadingDialog').hide();"/> 
         
         <p:commandButton value="Export"

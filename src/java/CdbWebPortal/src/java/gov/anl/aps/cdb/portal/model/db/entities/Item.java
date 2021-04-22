@@ -12,8 +12,6 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
-import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.utilities.EntityTypeControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
@@ -375,6 +373,13 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String descriptionFromAPI;
 
     protected transient PropertyValue coreMetadataPropertyValue = null;
+    
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
+    protected transient ItemElement currentEditItemElement = null;
+    protected transient Boolean currentEditItemElementSaveButtonEnabled = false;
+    protected transient ItemSource currentEditItemSource = null;
+    protected transient Boolean hasElementReorderChangesForCurrent = false;
+    // </editor-fold>
 
     public Item() {
     }
@@ -1004,7 +1009,8 @@ public class Item extends CdbDomainEntity implements Serializable {
         return domain.getId(); 
     }
 
-    @JsonIgnore
+//    TODO v3.13.0 update app to utilize the domainID 
+//    @JsonIgnore
     public Domain getDomain() {
         return domain;
     }
@@ -1560,4 +1566,42 @@ public class Item extends CdbDomainEntity implements Serializable {
         }
         return maxSortOrder;
     }
+
+    // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
+    @JsonIgnore
+    public ItemElement getCurrentEditItemElement() {
+        return currentEditItemElement;
+    }
+
+    public void setCurrentEditItemElement(ItemElement currentEditItemElement) {
+        this.currentEditItemElement = currentEditItemElement;
+    }
+
+    @JsonIgnore
+    public Boolean getCurrentEditItemElementSaveButtonEnabled() {
+        return currentEditItemElementSaveButtonEnabled;
+    }
+
+    public void setCurrentEditItemElementSaveButtonEnabled(Boolean currentEditItemElementSaveButtonEnabled) {
+        this.currentEditItemElementSaveButtonEnabled = currentEditItemElementSaveButtonEnabled;
+    }
+
+    @JsonIgnore
+    public ItemSource getCurrentEditItemSource() {
+        return currentEditItemSource;
+    }
+
+    public void setCurrentEditItemSource(ItemSource currentEditItemSource) {
+        this.currentEditItemSource = currentEditItemSource;
+    }
+
+    @JsonIgnore
+    public Boolean getHasElementReorderChangesForCurrent() {
+        return hasElementReorderChangesForCurrent;
+    }
+
+    public void setHasElementReorderChangesForCurrent(Boolean hasElementReorderChangesForCurrent) {
+        this.hasElementReorderChangesForCurrent = hasElementReorderChangesForCurrent;
+    }
+    // </editor-fold>
 }

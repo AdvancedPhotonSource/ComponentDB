@@ -40,6 +40,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuModel;
 
@@ -79,10 +80,10 @@ public class LocatableItemController implements Serializable {
     public LocatableItemController() {
     }
 
-    public LocatableItemController(ItemElementRelationshipFacade itemElementRelationshipFacade, ItemFacade itemFacade, RelationshipTypeFacade relationshipTypeFacade) {        
+    public LocatableItemController(ItemElementRelationshipFacade itemElementRelationshipFacade, ItemFacade itemFacade, RelationshipTypeFacade relationshipTypeFacade) {
         this.itemElementRelationshipFacade = itemElementRelationshipFacade;
         this.itemFacade = itemFacade;
-        this.relationshipTypeFacade = relationshipTypeFacade; 
+        this.relationshipTypeFacade = relationshipTypeFacade;
     }
 
     public static synchronized LocatableItemController getApiInstance() {
@@ -114,6 +115,13 @@ public class LocatableItemController implements Serializable {
             itemDomainLocationController = ItemDomainLocationController.getInstance();
         }
         return itemDomainLocationController;
+    }
+
+    public TreeNode getHousingRelationshipTree(LocatableItem locatableItem) {
+        if (locatableItem.getHousingTree() == null) {
+            setItemLocationInfo(locatableItem);
+        }
+        return locatableItem.getHousingTree();
     }
 
     public TreeNode getLocationRelationshipTree(LocatableItem locatableItem) {
@@ -149,6 +157,28 @@ public class LocatableItemController implements Serializable {
                 }
             }
             return item.getLocationString();
+        }
+        return null;
+    }
+
+    /**
+     * Gets a housing string for an item and loads it if necessary.
+     *
+     * @param item
+     * @return
+     */
+    public String getHousingStringForItem(LocatableItem item) {
+        if (item != null) {
+            String housingString = item.getHousingString();
+            if (housingString == null) {
+                loadHousingStringForItem(item);
+
+                housingString = item.getHousingString();
+                if (housingString == null) {
+                    item.setHousingString("");
+                }
+            }
+            return housingString;
         }
         return null;
     }
@@ -205,6 +235,15 @@ public class LocatableItemController implements Serializable {
         setItemLocationInfo(locatableItem, false, true);
     }
 
+    /**
+     * Load current item location information & set housing string.
+     *
+     * @param locatableItem
+     */
+    public void loadHousingStringForItem(LocatableItem locatableItem) {
+        setItemLocationInfo(locatableItem, false, true);
+    }
+
     public void setItemLocationInfo(LocatableItem locatableItem) {
         setItemLocationInfo(locatableItem, true, true);
     }
@@ -226,19 +265,21 @@ public class LocatableItemController implements Serializable {
     private void loadItemLocationInfo(
             ItemElementRelationship locationRelationship,
             LocatableItem locatableItem,
-            boolean loadLocationTreeForItem,
-            boolean loadLocationHierarchyString) {
+            boolean loadTreeForItem,
+            boolean loadHierarchyString) {
 
         if (locationRelationship != null) {
             loadItemLocationInfoFromRelationship(locationRelationship, locatableItem);
         }
         loadItemLocationInfoItemMembership(locatableItem);
 
-        if (loadLocationTreeForItem) {
+        if (loadTreeForItem) {
             updateLocationTreeForItem(locatableItem);
+            updateHousingTreeForItem(locatableItem);
         }
-        if (loadLocationHierarchyString) {
+        if (loadHierarchyString) {
             updateLocationStringForItem(locatableItem);
+            updateHousingStringForItem(locatableItem);
         }
     }
 
@@ -289,7 +330,7 @@ public class LocatableItemController implements Serializable {
             }
 
             if (parentItem != null) {
-                locationItem = parentItem;               
+                locationItem = parentItem;
             }
 
             return locationItem;
@@ -326,28 +367,37 @@ public class LocatableItemController implements Serializable {
      *
      * @param item
      */
+    public void updateHousingStringForItem(LocatableItem item) {
+        if (item != null) {
+            Item activeLocation = item.getActiveLocation();
+            if (activeLocation == null) {
+                return;
+            }
+
+            List<Item> housingHierarchy = getHousingHierarchyListForItem(item);
+            if (housingHierarchy != null) {
+                String housingString = ItemUtility.generateHierarchyNodeString(housingHierarchy);
+                item.setHousingString(housingString);
+            }
+        }
+    }
+
+    /**
+     * Using the current location set in item, generate a location string.
+     *
+     * @param item
+     */
     public void updateLocationStringForItem(LocatableItem item) {
         if (item != null) {
             Item activeLocation = item.getActiveLocation();
             if (activeLocation == null) {
                 return;
             }
-            Domain domain = activeLocation.getDomain();
-            String domainName = domain.getName();
-            
-            if (domain.getId() == ItemDomainName.MACHINE_DESIGN_ID) {
-                domainName = "Machine Element";
-            }
-            
 
-            if (domain.getId() == ItemDomainName.LOCATION_ID) {
-                List<Item> locationHierarchyListForItem = getLocationHierarchyListForItem(item);
-                if (locationHierarchyListForItem != null) {
-                    String locationString = ItemUtility.generateHierarchyNodeString(locationHierarchyListForItem);
-                    item.setLocationString(locationString);
-                }
-            } else {
-                String locationString = "Child of " + domainName + ": " + activeLocation.toString();
+            List<ItemDomainLocation> locationHierarchy = getLocationHierarchyListForItem(item);
+            if (locationHierarchy != null) {
+                List<Item> itemHierarchy = (List<Item>) (List<?>) locationHierarchy; 
+                String locationString = ItemUtility.generateHierarchyNodeString(itemHierarchy);
                 item.setLocationString(locationString);
             }
         }
@@ -359,37 +409,97 @@ public class LocatableItemController implements Serializable {
      * @param item
      */
     public void updateLocationTreeForItem(LocatableItem item) {
-        List<Item> hiearchyList = getLocationHierarchyListForItem(item);
-        if (hiearchyList != null) {
-            List<Item> revList = new ArrayList<>();
-            revList.addAll(hiearchyList);
-            Collections.reverse(revList);
-            
-            TreeNode treeBranch = ItemUtility.generateHierarchyNodeTreeBranch(revList);
-            prepLocationTreeForView(treeBranch);
-            item.setLocationTree(treeBranch);
+        Item activeLocation = item.getActiveLocation();
+        TreeNode locTree = generateLocationTreeForLocationItem(activeLocation);
+        item.setLocationTree(locTree);
+    }
+
+    /**
+     * Update housing tree variable for item.
+     *
+     * @param item
+     */
+    private void updateHousingTreeForItem(LocatableItem item) {
+        Item activeLocation = item.getMembershipLocation();
+        TreeNode housingTree = generateHousingTreeForLocationItem(activeLocation);
+        item.setHousingTree(housingTree);
+    }
+
+    public TreeNode getHousingTreeForLocationHistoryObject(LocationHistoryObject locationHistoryObject) {
+        TreeNode housingTree = locationHistoryObject.getHousingTree();
+        if (housingTree == null) {
+            Item parentItem = locationHistoryObject.getParentItem();
+            if (parentItem != null) {
+                List<Item> housingHierarchy = generateHousingHierarchyList(parentItem);
+                if (housingHierarchy != null && housingHierarchy.size() > 0) {
+                    int last = housingHierarchy.size() - 1;
+                    Item housingItem = housingHierarchy.get(last);
+                    locationHistoryObject.setHousingItem(housingItem);                    
+                }
+                housingTree = generateHousingTreeForLocationItem(housingHierarchy);
+            }
+            locationHistoryObject.setHousingTree(housingTree);
         }
+        return housingTree;
     }
 
     public TreeNode getLocationTreeForLocationHistoryObject(LocationHistoryObject locationHistoryObject) {
         TreeNode locationTree = locationHistoryObject.getLocationTree();
         if (locationTree == null) {
             Item locationItem = locationHistoryObject.getLocationItem();
-            locationTree = generateLocationTreeForLocationItem(locationItem);
+            if (locationItem == null) {
+                locationItem = locationHistoryObject.getParentItem();
+                List<ItemDomainLocation> hierarchyList = generateLocationHierarchyList(locationItem);
+                if (hierarchyList != null && hierarchyList.size() > 0) {
+                    int lastNode = hierarchyList.size() - 1;
+                    locationItem = hierarchyList.get(lastNode);
+                    locationHistoryObject.setLocationItem(locationItem);
+                    locationTree = generateLocationTreeForLocationItem(hierarchyList);
+                }
+            } else {
+                locationTree = generateLocationTreeForLocationItem(locationItem);
+            }
             locationHistoryObject.setLocationTree(locationTree);
         }
         return locationTree;
     }
 
+    public TreeNode generateHousingTreeForLocationItem(Item location) {
+        List<Item> housingHierarchy = generateHousingHierarchyList(location);
+        return generateHousingTreeForLocationItem(housingHierarchy);
+    }
+
+    public TreeNode generateHousingTreeForLocationItem(List<Item> housingHierarchy) {
+        if (housingHierarchy != null) {
+            List<Item> revList = new ArrayList<>();
+            revList.addAll(housingHierarchy);
+            Collections.reverse(revList);
+            TreeNode treeBranch = ItemUtility.generateHierarchyNodeTreeBranch(revList);
+            prepLocationTreeForView(treeBranch);
+            return treeBranch;
+        }
+        return new DefaultTreeNode();
+    }
+
     public TreeNode generateLocationTreeForLocationItem(Item location) {
         if (location != null) {
-            List<Item> hierarchyList = generateLocationHierarchyList(location);
-            TreeNode treeRoot = ItemUtility.generateHierarchyNodeTreeBranch(hierarchyList);
+            List<ItemDomainLocation> hierarchyList = generateLocationHierarchyList(location);
+            return generateLocationTreeForLocationItem(hierarchyList);
+        }
+        return new DefaultTreeNode();
+    }
+
+    public TreeNode generateLocationTreeForLocationItem(List<ItemDomainLocation> hierarchyList) {
+        if (hierarchyList != null) {
+            List<Item> revList = new ArrayList<>();
+            revList.addAll(hierarchyList);
+            Collections.reverse(revList);
+            TreeNode treeRoot = ItemUtility.generateHierarchyNodeTreeBranch(revList);
             prepLocationTreeForView(treeRoot);
 
             return treeRoot;
         }
-        return null;
+        return new DefaultTreeNode();
     }
 
     private void prepLocationTreeForView(TreeNode root) {
@@ -400,16 +510,25 @@ public class LocatableItemController implements Serializable {
         }
     }
 
-    public List<Item> getLocationHierarchyListForItem(LocatableItem item) {
-        List<Item> cachedLocationHierarchy = item.getCachedLocationHierarchy();
+    public List<Item> getHousingHierarchyListForItem(LocatableItem item) {
+        List<Item> cachedHousingHierarchy = item.getCachedHousingHierarchy();
+        if (cachedHousingHierarchy == null) {
+            Item activeLocation = item.getActiveLocation();
+            cachedHousingHierarchy = generateHousingHierarchyList(activeLocation);
+            item.setCachedHousingHierarchy(cachedHousingHierarchy);
+        }
+
+        return cachedHousingHierarchy;
+    }
+
+    public List<ItemDomainLocation> getLocationHierarchyListForItem(LocatableItem item) {
+        List<ItemDomainLocation> cachedLocationHierarchy = item.getCachedLocationHierarchy();
         if (cachedLocationHierarchy != null) {
             return cachedLocationHierarchy;
         } else {
             Item location = item.getActiveLocation();
             if (location != null) {
-                List<Item> hierarchyList = generateLocationHierarchyList(location);
-
-                hierarchyList = appendMachineDesignContext(item, hierarchyList);
+                List<ItemDomainLocation> hierarchyList = generateLocationHierarchyList(location);                
 
                 item.setCachedLocationHierarchy(hierarchyList);
 
@@ -421,50 +540,22 @@ public class LocatableItemController implements Serializable {
 
     }
 
-    public List<Item> appendMachineDesignContext(LocatableItem item, List<Item> hierarchyList) {
-        if (item instanceof ItemDomainMachineDesign) {
-            LocatableItem membershipLocation = (LocatableItem) item.getMembershipLocation();
-            
-            if (membershipLocation != null) {
-                Item activeLocation = item.getActiveLocation();
-                
-                if (activeLocation.equals(membershipLocation) == false) {
-                    List<Item> finalHierarchy = generateLocationHierarchyList(membershipLocation);
-
-                    for (int i = finalHierarchy.size() - 1; i >= 0; i--) {
-                        Item memberItem = finalHierarchy.get(i);
-                        if (memberItem instanceof ItemDomainLocation) {
-                            int hieararchyLastSize = hierarchyList.size();
-                            for (int j = hieararchyLastSize - 2; j >= 0; j--) {
-                                Item hierarchyItem = hierarchyList.get(j);
-                                if (hierarchyItem.equals(memberItem)) {
-                                    finalHierarchy.addAll(hierarchyList.subList(j + 1, hieararchyLastSize));
-                                    break;
-                                }
-                            }
-                            break;
-                        }
-                    }
-                    hierarchyList = finalHierarchy;
-                }
-
-                hierarchyList = appendMachineDesignContext(membershipLocation, hierarchyList);
-            }
-        }
-
-        return hierarchyList;
-    }
-
-    public List<Item> generateLocationHierarchyList(Item lowestLocationItem) {
+    public List<ItemDomainLocation> generateLocationHierarchyList(Item lowestLocationItem) {
         if (lowestLocationItem != null) {
-            List<Item> itemHerarchyList = new ArrayList<>();
+            List<ItemDomainLocation> itemHerarchyList = new ArrayList<>();
             Item currentLowestItem = lowestLocationItem;
 
             while (currentLowestItem != null) {
-                itemHerarchyList.add(0, currentLowestItem);
+                if (currentLowestItem instanceof ItemDomainLocation) {
+                    itemHerarchyList.add(0, (ItemDomainLocation) currentLowestItem);
+                }
                 if (currentLowestItem instanceof LocatableItem) {
-                    setItemLocationInfo((LocatableItem) currentLowestItem, false, false);
-                    currentLowestItem = ((LocatableItem) currentLowestItem).getActiveLocation();
+                    Item lowestItem = ((LocatableItem) currentLowestItem).getActiveLocation();
+                    if (lowestItem == null) {
+                        setItemLocationInfo((LocatableItem) currentLowestItem, false, false);
+                        lowestItem = ((LocatableItem) currentLowestItem).getActiveLocation();
+                    }
+                    currentLowestItem = lowestItem;
                 } else {
                     // Location item 
                     currentLowestItem = getParentLocationItem(currentLowestItem);
@@ -472,6 +563,36 @@ public class LocatableItemController implements Serializable {
             }
 
             return itemHerarchyList;
+        }
+        return null;
+    }
+
+    public List<Item> generateHousingHierarchyList(Item lowestLocationItem) {
+        if (lowestLocationItem != null) {
+            List<Item> housingHierarchyList = new ArrayList<>();
+
+            Item currentLowestItem = lowestLocationItem;
+
+            while (currentLowestItem != null) {
+                if (currentLowestItem instanceof LocatableItem == false) {
+                    break;
+                }
+                housingHierarchyList.add(0, currentLowestItem);
+
+                if (currentLowestItem instanceof ItemDomainMachineDesign) {
+                    currentLowestItem = ((ItemDomainMachineDesign) currentLowestItem).getParentMachineDesign();
+                } else {
+                    Item activeLocation = ((LocatableItem) currentLowestItem).getActiveLocation();
+
+                    if (activeLocation == null) {
+                        setItemLocationInfo((LocatableItem) currentLowestItem, false, false);
+                        activeLocation = ((LocatableItem) currentLowestItem).getActiveLocation();
+                    }
+                    currentLowestItem = activeLocation;
+                }
+            }
+
+            return housingHierarchyList;
         }
         return null;
     }
@@ -516,7 +637,7 @@ public class LocatableItemController implements Serializable {
             }
 
             if (location != null) {
-                List<Item> locationList = generateLocationHierarchyList(location);
+                List<ItemDomainLocation> locationList = generateLocationHierarchyList(location);
                 List<ItemHierarchyCache> currentItemHierarchyCache = getLocationItemHierarchyCaches();
                 for (Item locationItem : locationList) {
                     if (currentItemHierarchyCache != null) {
@@ -633,8 +754,7 @@ public class LocatableItemController implements Serializable {
         historyMemberList.addAll(item.getHistoryMemberList2());
 
         for (ItemElementHistory itemElementHistory : historyMemberList) {
-            Item locationItem = getLocationItemFromElementObject(itemElementHistory, item);
-            LocationHistoryObject historyObject = new LocationHistoryObject(itemElementHistory, locationItem);
+            LocationHistoryObject historyObject = new LocationHistoryObject(itemElementHistory);
             historyObjectList.add(historyObject);
         }
 
@@ -649,8 +769,7 @@ public class LocatableItemController implements Serializable {
 
         if (domain.getId() == ItemDomainName.MACHINE_DESIGN_ID) {
             return "Child of Machine Element";
-        }
-        else if (domain.getId() != ItemDomainName.INVENTORY_ID) {
+        } else if (domain.getId() != ItemDomainName.INVENTORY_ID) {
             partOf = domain.getName();
         }
 
@@ -673,8 +792,8 @@ public class LocatableItemController implements Serializable {
             return true;
         }
         return false;
-    }   
-    
+    }
+
     protected void updateItemLocation(LocatableItem item) throws InvalidRequest {
         UserInfo user = SessionUtility.getUser();
         updateItemLocation(item, user);
@@ -748,7 +867,7 @@ public class LocatableItemController implements Serializable {
             }
 
             List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
-            
+
             // iterate through list to find location relationship, in case pointer has been reloaded
             ItemElementRelationship ier = null;
             String relationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue();
@@ -769,7 +888,7 @@ public class LocatableItemController implements Serializable {
                 ier.setRelationshipDetails(item.getLocationDetails());
 
                 // Add Item Element relationship history record. 
-                ItemElementRelationshipHistory ierh;               
+                ItemElementRelationshipHistory ierh;
 
                 ierh = ItemElementRelationshipUtility.createItemElementHistoryRecord(
                         ier, updateUser, new Date());
@@ -781,7 +900,7 @@ public class LocatableItemController implements Serializable {
                 }
 
                 ierhList.add(ierh);
-                
+
             } else {
                 logger.error("updateItemLocation(): item location relationship unexpectedly null for item: " + item.toString());
             }

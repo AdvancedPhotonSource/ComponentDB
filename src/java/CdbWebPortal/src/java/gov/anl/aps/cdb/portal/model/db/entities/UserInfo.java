@@ -339,6 +339,17 @@ public class UserInfo extends SettingEntity implements Serializable {
     }
     
     @JsonIgnore
+    public boolean isUserAdvanced() {
+        List<String> advancedGroupNameList = LoginController.getAdvancedGroupNameList();
+        for (String advancedGroupName : advancedGroupNameList) {
+            if (isUserMemberOfUserGroup(advancedGroupName)) {
+                return true; 
+            }
+        }
+        return false;        
+    }
+    
+    @JsonIgnore
     public boolean isUserMaintainer() {
         List<String> maintainerGroupNameList = LoginController.getMaintainerGroupNameList();
         for (String maintainerGroupName : maintainerGroupNameList) {

@@ -116,12 +116,15 @@ public class InventoryBillOfMaterialItem {
 
     private void setDefaultProject() {
         if (inventoryItem != null) {
-            ItemDomainCatalog catalogItem = getCatalogItem();
-            if (catalogItem != null) {
-                if (catalogItem.getItemProjectList() != null
-                        & !catalogItem.getItemProjectList().isEmpty()) {
-                    List<ItemProject> catalogItemProjectList = catalogItem.getItemProjectList();
-                    inventoryItem.setItemProjectList(new ArrayList<>(catalogItemProjectList));
+            if (inventoryItem.getItemProjectList() == null
+                    || inventoryItem.getItemProjectList().isEmpty()) {
+                ItemDomainCatalog catalogItem = getCatalogItem();
+                if (catalogItem != null) {
+                    if (catalogItem.getItemProjectList() != null
+                            && !catalogItem.getItemProjectList().isEmpty()) {
+                        List<ItemProject> catalogItemProjectList = catalogItem.getItemProjectList();
+                        inventoryItem.setItemProjectList(new ArrayList<>(catalogItemProjectList));
+                    }
                 }
             }
         }
