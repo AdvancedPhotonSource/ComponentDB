@@ -563,6 +563,19 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         return newItem;
     }
+    
+    public Float getExportSortOrder() {
+        ItemDomainMachineDesign parentItem = getParentMachineDesign();
+        if (parentItem == null) {
+            return null;
+        }
+        for (ItemElement parentRelElement : parentItem.getItemElementDisplayList()) {
+            if (parentRelElement.getContainedItem1Id().equals(this.getId())) {
+                return parentRelElement.getSortOrder();
+            }
+        }
+        return null;
+    }
 // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        

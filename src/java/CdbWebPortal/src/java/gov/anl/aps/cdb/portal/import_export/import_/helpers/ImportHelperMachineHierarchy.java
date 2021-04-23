@@ -158,6 +158,7 @@ public class ImportHelperMachineHierarchy
                 "importAssignedItemString", 
                 "CDB ID or name of assigned catalog or inventory item. Name must be unique and prefixed with '#'.", 
                 null,
+                false,
                 ColumnModeOptions.oCREATE(), 
                 assignedItemHandler));
         
@@ -168,6 +169,7 @@ public class ImportHelperMachineHierarchy
                 "importLocationItemString", 
                 "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored). Name must be unique and prefixed with '#'.", 
                 null,
+                false,
                 ColumnModeOptions.oCREATE(), 
                 locationHandler));
 

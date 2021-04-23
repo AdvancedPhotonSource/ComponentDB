@@ -68,7 +68,7 @@ public class MachineImportCommon {
                 KEY_SORT_ORDER,
                 "setImportSortOrder",
                 "Sort order within parent item (as decimal), defaults to order in input sheet when creating new items.",
-                null,
+                "getExportSortOrder",
                 options);
     }
     
@@ -89,7 +89,8 @@ public class MachineImportCommon {
                 HEADER_ASSIGNED_ITEM,
                 "importAssignedItemString",
                 "CDB ID or name of assigned catalog or inventory item. Name must be unique and prefixed with '#'.",
-                null,
+                "getAssignedItem",
+                true,
                 options,
                 assignedItemHandler);
     }
@@ -100,7 +101,8 @@ public class MachineImportCommon {
                 HEADER_LOCATION,
                 "importLocationItemString",
                 "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored). Name must be unique and prefixed with '#'.",
-                null,
+                "getExportLocation",
+                true,
                 options,
                 locationHandler);
     }

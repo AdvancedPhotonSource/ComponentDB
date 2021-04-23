@@ -1511,7 +1511,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "importLocationItemString", 
                 "setImportLocationItem", 
                 "Item location.", 
-                "getLocationItem",
+                "getExportLocation",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemDomainLocationController.getInstance(), 
                 ItemDomainLocation.class, 
@@ -1524,7 +1524,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "locationDetails", 
                 "setLocationDetails", 
                 "Location details for item.", 
-                "getLocationDetails",
+                "getExportLocationDetails",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256);
     }
