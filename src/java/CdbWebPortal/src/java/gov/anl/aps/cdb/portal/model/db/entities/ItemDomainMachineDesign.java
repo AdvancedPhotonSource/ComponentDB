@@ -383,9 +383,38 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     public void setImportSortOrder(Float importSortOrder) {
+        
         this.importSortOrder = importSortOrder;
+        
+        // update sort order if item already exists, we set sort order in setImportChildParentRelationship() for new items
+        if (this.getId() != null) {
+            ItemDomainMachineDesign parentItem = getParentMachineDesign();
+            if (parentItem == null) {
+                return;
+            }
+            for (ItemElement parentRelElement : parentItem.getItemElementDisplayList()) {
+                if (parentRelElement.getContainedItem1Id().equals(this.getId())) {
+                    parentRelElement.setSortOrder(importSortOrder);
+                    return;
+                }
+            }
+        }
     }
 
+    @JsonIgnore
+    public Float getExportSortOrder() {
+        ItemDomainMachineDesign parentItem = getParentMachineDesign();
+        if (parentItem == null) {
+            return null;
+        }
+        for (ItemElement parentRelElement : parentItem.getItemElementDisplayList()) {
+            if (parentRelElement.getContainedItem1Id().equals(this.getId())) {
+                return parentRelElement.getSortOrder();
+            }
+        }
+        return null;
+    }
+    
     @JsonIgnore
     public ItemDomainCatalog getImportAssignedCatalogItem() {
         return importAssignedCatalogItem;
@@ -564,18 +593,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         return newItem;
     }
     
-    public Float getExportSortOrder() {
-        ItemDomainMachineDesign parentItem = getParentMachineDesign();
-        if (parentItem == null) {
-            return null;
-        }
-        for (ItemElement parentRelElement : parentItem.getItemElementDisplayList()) {
-            if (parentRelElement.getContainedItem1Id().equals(this.getId())) {
-                return parentRelElement.getSortOrder();
-            }
-        }
-        return null;
-    }
 // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        

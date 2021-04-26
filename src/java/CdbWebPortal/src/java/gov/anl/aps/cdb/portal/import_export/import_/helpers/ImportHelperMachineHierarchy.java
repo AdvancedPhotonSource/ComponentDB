@@ -258,8 +258,6 @@ public class ImportHelperMachineHierarchy
         boolean isValid = true;
         String validString = "";
 
-        boolean isValidAssignedItem = true;
-
         // determine sort order
         Float itemSortOrder = (Float) rowMap.get(KEY_SORT_ORDER);
         if ((itemSortOrder == null) && (itemParent != null)) {
@@ -287,49 +285,9 @@ public class ImportHelperMachineHierarchy
             return new ValidInfo(isValid, validString);
         }
 
-        // set assigned item
-        Item assignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
-        if (assignedItem != null) {
-            if (assignedItem instanceof ItemDomainCatalog) {
-                item.setImportAssignedCatalogItem((ItemDomainCatalog) assignedItem);
-            } else if (assignedItem instanceof ItemDomainInventory) {
-                item.setImportAssignedInventoryItem((ItemDomainInventory) assignedItem);
-            } else {
-                String msg = "Invalid object type for assigned item: " + assignedItem.getClass().getName();
-                isValid = false;
-                validString = msg;
-            }
-        }
-
-        // set location
-        ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(KEY_LOCATION);
-        if (itemLocation != null) {
-            item.setImportLocationItem(itemLocation);
-        }
-
         if (item.getIsItemTemplate()) {
-            // template item handling
-            
             templateItemCount = templateItemCount + 1;
-
-            if ((item.getImportAssignedInventoryItem() != null)) {
-
-                // template not allowed to have assigned inventory
-                String msg = "Template cannot have assigned inventory item";
-                validString = appendToString(validString, msg);
-                isValid = false;
-                isValidAssignedItem = false;
-            }
-
-            if (item.getImportLocationItem() != null) {
-                // template not allowed to have location
-                String msg = "Template cannot have location item";
-                validString = appendToString(validString, msg);
-                isValid = false;
-            }
-
         } else {            
-            // non-template item handling
             nonTemplateItemCount = nonTemplateItemCount + 1;
         }
 
@@ -344,10 +302,6 @@ public class ImportHelperMachineHierarchy
             item.setImportChildParentRelationship(itemParent, itemSortOrder);
         }
         
-        if (isValidAssignedItem) {
-            item.applyImportAssignedItem();
-        }
-
         return new ValidInfo(isValid, validString);
     }
 

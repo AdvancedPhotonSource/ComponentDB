@@ -78,6 +78,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM Item i WHERE i.name = :name"),
     @NamedQuery(name = "Item.findByDomainNameAndName",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName AND i.name = :name"),
+    @NamedQuery(name = "Item.findByDomainNameAndNameExcludeEntityType",
+            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName AND i.name = :name AND (i.id not in (SELECT DISTINCT(i.id) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :excludeEntityTypeName))"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndNameExcludeEntityType",
             query = "SELECT DISTINCT(i) FROM Item i WHERE i.name = :name AND i.domain.name = :domainName AND (i.id in (SELECT DISTINCT(i.id) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName)) AND (i.id not in (SELECT DISTINCT(i.id) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :excludeEntityTypeName))"),
     @NamedQuery(name = "Item.findByItemIdentifier1",
@@ -1436,6 +1438,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @JsonIgnore
+    @Override
     public Boolean getIsItemDeleted() {
         if (isItemDeleted == null) {
             isItemDeleted = isItemDeleted(this);

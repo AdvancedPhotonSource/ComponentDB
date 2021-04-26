@@ -673,7 +673,9 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             }
             if (itemParentNames.equals(pathParentNames)) {
                 // candidate item parent path matches specified path
-                return candidateItem;
+                if (!candidateItem.getIsItemDeleted()) {
+                    return candidateItem;
+                }
             }
         }
                     

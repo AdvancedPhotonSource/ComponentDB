@@ -2661,9 +2661,10 @@ public class ItemDomainMachineDesignController
         ItemDomainMachineDesignTreeNode currentTree = getCurrentMachineDesignListRootTreeNode();
         List<ItemDomainMachineDesign> filteredItems = currentTree.getFilterResults();
         List<ItemDomainMachineDesign> filteredHierarchyItems = new ArrayList<>();
-        List<ItemElement> ignoredElementListParameter = new ArrayList<>();
         for (ItemDomainMachineDesign item : filteredItems) {
-            collectHierarchyItems(item, filteredHierarchyItems, true);
+            if (!item.getIsItemDeleted()) {
+                collectHierarchyItems(item, filteredHierarchyItems, true);
+            }
         }
         return filteredHierarchyItems;
     }

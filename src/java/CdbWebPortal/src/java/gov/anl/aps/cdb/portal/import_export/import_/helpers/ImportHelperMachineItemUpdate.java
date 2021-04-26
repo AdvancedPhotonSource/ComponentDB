@@ -26,7 +26,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase {
         specs.add(MachineImportCommon.nameColumnSpec(ColumnModeOptions.rUPDATE()));
         specs.add(MachineImportCommon.altNameColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(MachineImportCommon.descriptionColumnSpec(ColumnModeOptions.oUPDATE()));
-        specs.add(MachineImportCommon.sortOrderColumnSpec(ColumnModeOptions.rUPDATE()));
+        specs.add(MachineImportCommon.sortOrderColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(MachineImportCommon.assignedItemColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(MachineImportCommon.locationColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(locationDetailsColumnSpec());

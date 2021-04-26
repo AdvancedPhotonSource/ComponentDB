@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
@@ -341,7 +342,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
             throw new CdbException("findUniqueByName() not implemented by facade");
         }
 
-        List<ItemDomainEntity> items = findByDomainAndName(domainName, name);
+        List<ItemDomainEntity> items = findByDomainAndNameExcludeDeleted(domainName, name);
         if (items.size() > 1) {
             // ambiguous result, throw exception
             throw new CdbException("findUniqueByName() returns multiple instances");
@@ -359,6 +360,19 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndName")
                     .setParameter("domainName", domainName)
                     .setParameter("name", name)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
+
+    public List<ItemDomainEntity> findByDomainAndNameExcludeDeleted(String domainName, String name) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndNameExcludeEntityType")
+                    .setParameter("domainName", domainName)
+                    .setParameter("name", name)
+                    .setParameter("excludeEntityTypeName", EntityTypeName.deleted.getValue())
                     .getResultList();
         } catch (NoResultException ex) {
 

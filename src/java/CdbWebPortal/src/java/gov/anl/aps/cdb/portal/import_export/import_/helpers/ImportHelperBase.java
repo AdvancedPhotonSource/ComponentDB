@@ -1156,19 +1156,23 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 diffString = diffString + "'" + diff.getNewValue() + "'";
                 diffString = diffString + "</span>";
             }
+            
             if (entity.hasImportUpdates()) {
+                
                 entity.setImportDiffs(diffString);
+                
+                // skip uniqueness checks for rows without updates, or if row is already invalid
+                if (isValid) {
+                    ValidInfo uniqueValidInfo = checkEntityUniqueness(entity);
+                    if (!uniqueValidInfo.isValid()) {
+                        isValid = false;
+                        validString = appendToString(validString, uniqueValidInfo.getValidString());
+                    }
+                }
             } else {
                 entity.setImportDiffs("No updates detected for item.");
             }
 
-            // skip uniqueness checks in update mode for rows already flagged as invalid,
-            // otherwise error reporting is confusing
-            ValidInfo uniqueValidInfo = checkEntityUniqueness(entity);
-            if (!uniqueValidInfo.isValid()) {
-                isValid = false;
-                validString = appendToString(validString, uniqueValidInfo.getValidString());
-            }
         }
         return new CreateInfo(entity, isValid, validString);
     }
@@ -1392,6 +1396,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 existingItem = newInvalidUpdateInstance();
                 isValid = false;
                 validString = "Unable to retrieve existing item with id: " + itemId;
+            } else {
+                if (existingItem.getIsItemDeleted()) {                    
+//                    existingItem = newInvalidUpdateInstance();
+                    isValid = false;
+                    validString = "Item with id: " + itemId + " is deleted";
+                }
             }
         } else {
             existingItem = newInvalidUpdateInstance();
@@ -1447,7 +1457,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setOwnerUser", 
                 "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", 
                 "getOwnerUser",
-                ColumnModeOptions.oCREATErUPDATE(),
+                ColumnModeOptions.rCREATErUPDATE(),
                 UserInfoController.getInstance(), 
                 UserInfo.class, 
                 "");
@@ -1460,7 +1470,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setOwnerUserGroup", 
                 "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", 
                 "getOwnerUserGroup",
-                ColumnModeOptions.oCREATErUPDATE(), 
+                ColumnModeOptions.rCREATErUPDATE(), 
                 UserGroupController.getInstance(), 
                 UserGroup.class, 
                 "");

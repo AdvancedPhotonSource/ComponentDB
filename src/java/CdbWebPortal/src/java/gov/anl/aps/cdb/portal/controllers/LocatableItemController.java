@@ -298,7 +298,7 @@ public class LocatableItemController implements Serializable {
     }
 
     private Item getParentLocationItem(Item item) {
-        if (item.getItemElementMemberList() == null) {
+        if ((item.getItemElementMemberList() == null) || (item.getItemElementMemberList2() == null)) {
             // For new items it will be null
             return null;
         }

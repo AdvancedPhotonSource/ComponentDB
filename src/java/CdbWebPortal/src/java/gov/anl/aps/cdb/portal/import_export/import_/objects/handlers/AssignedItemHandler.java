@@ -7,7 +7,11 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportCommon;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import java.util.Map;
 import org.apache.poi.ss.usermodel.Row;
 
@@ -64,4 +68,44 @@ public class AssignedItemHandler extends SingleColumnInputHandler {
         return new ValidInfo(isValid, validString);
     }
     
+    @Override
+    public ValidInfo updateEntity(Map<String, Object> rowMap, CdbEntity entity) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        ItemDomainMachineDesign item = null;
+        if (!(entity instanceof ItemDomainMachineDesign)) {
+            isValid = false;
+            validString = "Item must be ItemDomainMachineDesign to use AssignedItemHandler.";
+            return new ValidInfo(isValid, validString);
+        } else {
+            item = (ItemDomainMachineDesign) entity;
+        }
+
+        // set assigned item
+        Item assignedItem = (Item) rowMap.get(MachineImportCommon.KEY_ASSIGNED_ITEM);
+        if (assignedItem != null) {
+            if (assignedItem instanceof ItemDomainCatalog) {
+                item.setImportAssignedCatalogItem((ItemDomainCatalog) assignedItem);
+            } else if (assignedItem instanceof ItemDomainInventory) {
+                item.setImportAssignedInventoryItem((ItemDomainInventory) assignedItem);
+            } else {
+                isValid = false;
+                validString = "Invalid object type for assigned item: " + assignedItem.getClass().getName();
+            }
+        }
+
+        if ((item.getIsItemTemplate()) && ((item.getImportAssignedInventoryItem() != null))) {
+            // template not allowed to have assigned inventory
+            isValid = false;
+            validString = "Template cannot have assigned inventory item";
+            return new ValidInfo(isValid, validString);
+        }
+        
+        item.applyImportAssignedItem();
+
+        return new ValidInfo(isValid, validString);
+    }
+
 }

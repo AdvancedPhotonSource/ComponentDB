@@ -155,4 +155,9 @@ public class CdbEntity implements Serializable, Cloneable {
         hasImportUpdates = hasUpdates;
     }
 
+    @JsonIgnore
+    public Boolean getIsItemDeleted() {
+        return false;
+    }
+
 }
