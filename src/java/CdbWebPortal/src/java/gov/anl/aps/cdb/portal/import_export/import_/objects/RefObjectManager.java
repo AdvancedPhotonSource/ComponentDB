@@ -38,6 +38,10 @@ public class RefObjectManager {
             } else {
                 objValue = controller.findById(id);
                 if (objValue != null) {
+                    if (objValue.getIsItemDeleted()) {
+                        objValue = null;
+                        throw new CdbException("Item with id " + id + " is deleted");
+                    }
                     objectIdMap.put(objValue.getId(), objValue);
                 }
             }
@@ -48,12 +52,33 @@ public class RefObjectManager {
         return objValue;
     }
     
+    public CdbEntity getCacheObject(CdbEntity entity) {
+        CdbEntity result = null;
+        if (entity != null) {
+            // check cache for object so different references use same instance
+            int id = (Integer) entity.getId();
+
+            if (objectIdMap.containsKey(id)) {
+                result = objectIdMap.get(id);
+            } else {
+                // add this instance to cache
+                objectIdMap.put(id, entity);
+                result = entity;
+            }
+        }
+        return result;
+    }
+    
     public CdbEntity getObjectWithName(String nameString) throws CdbException {
         
         CdbEntity objValue = null;
                 
         objValue = controller.findUniqueByName(nameString, domainNameFilter);
         if (objValue != null) {
+            if (objValue.getIsItemDeleted()) {
+                objValue = null;
+                throw new CdbException("Item with name " + nameString + " is deleted");
+            }
             // check cache for object so different references use same instance
             int id = (Integer) objValue.getId();
             if (objectIdMap.containsKey(id)) {
@@ -73,6 +98,10 @@ public class RefObjectManager {
                 
         objValue = controller.findUniqueByPath(pathString);
         if (objValue != null) {
+            if (objValue.getIsItemDeleted()) {
+                objValue = null;
+                throw new CdbException("Item with path " + pathString + " is deleted");
+            }
             // check cache for object so different references use same instance
             int id = (Integer) objValue.getId();
             if (objectIdMap.containsKey(id)) {
@@ -85,5 +114,5 @@ public class RefObjectManager {
         
         return objValue;
     }
-
+    
 }

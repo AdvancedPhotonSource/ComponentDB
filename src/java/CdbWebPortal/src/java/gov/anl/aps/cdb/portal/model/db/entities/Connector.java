@@ -61,8 +61,8 @@ public class Connector extends CdbEntity implements Serializable {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
     @ManyToMany
     private List<PropertyValue> propertyValueList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "connector")
-    private List<ItemConnector> itemConnectorList;
+    @OneToMany(mappedBy = "connector")
+    private List<ItemConnector> itemConnectorList; // removed CascadeType.ALL since this circular relationship was causing duplicate ItemConnectors to be created (since create operation cascaded)
     @JoinColumn(name = "connector_type_id", referencedColumnName = "id")
     @ManyToOne
     private ConnectorType connectorType;

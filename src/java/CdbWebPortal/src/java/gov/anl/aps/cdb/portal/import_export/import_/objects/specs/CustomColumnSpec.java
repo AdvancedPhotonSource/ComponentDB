@@ -4,6 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.CustomOutputHandler;
+import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import java.util.List;
@@ -15,16 +17,19 @@ import java.util.List;
 public class CustomColumnSpec extends ColumnSpec {
     
     private InputHandler inputHandler;
+    private boolean exportIds;
     
     public CustomColumnSpec(
             String header, 
             String importPropertyName, 
             String description,
             String exportGetterMethod, 
+            boolean exportIds,
             List<ColumnModeOptions> options,
             InputHandler handler) {
         
         super(header, importPropertyName, null, description, exportGetterMethod, options);
+        this.exportIds = exportIds;
         this.inputHandler = handler;
     }
     
@@ -33,4 +38,12 @@ public class CustomColumnSpec extends ColumnSpec {
         return inputHandler;
     }
     
+    @Override
+    public OutputHandler getOutputHandler() {
+        return new CustomOutputHandler(
+                getHeader(),
+                getDescription(),
+                getExportGetterMethod(),
+                exportIds);
+    }
 }

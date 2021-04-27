@@ -9,6 +9,7 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../item/private/templates/itemListTemplate.xhtml">
     
     <ui:param name="entityController" value="#{itemDomainCableDesignController}" />        
@@ -23,18 +24,53 @@ See LICENSE file.
     </ui:define>
     
     <ui:define name="domainEntityListExtraColumns">
+        
         <p:column headerText="Endpoints"
                   filterable="#{true}"
                   filterBy="#{itemListObject.endpointsString}" 
                   filterMatchMode="contains">
             <h:outputText value="#{itemListObject.endpointsString}" /> 
-        </p:column>        
+        </p:column>   
+        
         <p:column headerText="Catalog Item"
                   filterable="#{true}"
                   filterBy="#{itemListObject.catalogItemString}" 
                   filterMatchMode="contains">
             <h:outputText value="#{itemListObject.catalogItemString}" /> 
-        </p:column>        
+        </p:column>
+
+        <ui:decorate template="private/templates/listViewEndpointDeviceColumn.xhtml">
+            <ui:param name="endpointNum" value="1" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointPortColumn.xhtml">
+            <ui:param name="endpointNum" value="1" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointConnectorColumn.xhtml">
+            <ui:param name="endpointNum" value="1" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointMetadataColumns.xhtml">
+            <ui:param name="endpointNum" value="1" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointDeviceColumn.xhtml">
+            <ui:param name="endpointNum" value="2" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointPortColumn.xhtml">
+            <ui:param name="endpointNum" value="2" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointConnectorColumn.xhtml">
+            <ui:param name="endpointNum" value="2" />                
+        </ui:decorate>
+
+        <ui:decorate template="private/templates/listViewEndpointMetadataColumns.xhtml">
+            <ui:param name="endpointNum" value="2" />                
+        </ui:decorate>
+
     </ui:define>
     
     <ui:define name="domainEntityListDataTableParameters">
@@ -45,6 +81,47 @@ See LICENSE file.
                   value="#{true}"/>                
     </ui:define>
     
+    <ui:define name="domainEntityExtraTabs">
+        
+        <p:tab title="Endpoint Connection Details">
+            <p:panelGrid columns="2">
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointDevice.xhtml">
+                    <ui:param name="endpointNum" value="1" />                
+                </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointPort.xhtml">
+                    <ui:param name="endpointNum" value="1" />                
+                </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointConnector.xhtml">
+                    <ui:param name="endpointNum" value="1" />                
+                </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointDevice.xhtml">
+                    <ui:param name="endpointNum" value="2" />                
+                </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointPort.xhtml">
+                    <ui:param name="endpointNum" value="2" />                
+                </ui:decorate>
+                <ui:decorate template="private/templates/listCustomizeOptionEndpointConnector.xhtml">
+                    <ui:param name="endpointNum" value="2" />                
+                </ui:decorate>
+            </p:panelGrid>
+        </p:tab>
+        
+        <p:tab title="Endpoint Metadata">
+                
+            <ui:decorate template="private/templates/listCustomizeEndpointMetadataOptions.xhtml">
+                <ui:param name="endpointNum" value="1" />                
+            </ui:decorate>
+
+            <ui:decorate template="private/templates/listCustomizeEndpointMetadataOptions.xhtml">
+                <ui:param name="endpointNum" value="2" />                
+            </ui:decorate>
+
+        </p:tab>
+        
+    </ui:define>
+    
+    <ui:define name="rowExpansionCustomizeOptionsTab"/>
+
 </ui:composition>
 
 

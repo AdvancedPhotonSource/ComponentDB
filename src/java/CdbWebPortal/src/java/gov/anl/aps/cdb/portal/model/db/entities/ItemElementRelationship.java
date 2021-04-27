@@ -83,7 +83,7 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     @ManyToOne(optional = false)
     private ItemElement firstItemElement;
     @JoinColumn(name = "first_item_connector_id", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private ItemConnector firstItemConnector;
     @Column(name = "first_sort_order")
     private Float firstSortOrder;

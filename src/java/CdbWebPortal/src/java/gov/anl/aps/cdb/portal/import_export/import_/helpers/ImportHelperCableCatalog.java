@@ -259,7 +259,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
     
     @Override 
     protected ValidInfo preImport() {
-        getEntityController().migrateCoreMetadataPropertyType();
+        getEntityController().createOrMigrateCoreMetadataPropertyType();
         return new ValidInfo(true, "");
     }
     

@@ -38,6 +38,14 @@ See LICENSE file.
             <ui:include src="private/itemDomainCableDesignConnectionsList.xhtml"/>
                 
         </p:panel>
+        
+        <p:panel header="Available Cable Connectors" 
+                 toggleable="true" 
+                 collapsed="#{!entityController.displayConnectorsList}">
+            
+            <ui:include src="private/itemDomainCableDesignConnectorsList.xhtml"/>
+                
+        </p:panel>
     </ui:define>
     
 </ui:composition>

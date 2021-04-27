@@ -10,7 +10,9 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ParseInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -26,7 +28,8 @@ public class RefInputHandler extends SimpleInputHandler {
     private boolean idOnly = false;
     private boolean singleValue = true;
     private boolean allowPaths = false;
-    private RefObjectManager objectManager;
+    
+    private static Map<String, RefObjectManager> objectManagerMap = new HashMap<>();
     
     public RefInputHandler(
             int columnIndex,
@@ -101,16 +104,44 @@ public class RefInputHandler extends SimpleInputHandler {
         this.allowPaths = allowPaths;
     }
     
-    private RefObjectManager getObjectManager() {
-        if (objectManager == null) {
-            objectManager = new RefObjectManager(controller, domainNameFilter);
+    protected RefObjectManager getObjectManager() {
+        String entityTypeName = this.controller.getEntityTypeName();
+        if (!objectManagerMap.containsKey(entityTypeName)) {
+            // add a new RefObjectManager instance for entity type if not present in map
+            objectManagerMap.put(entityTypeName, new RefObjectManager(controller, domainNameFilter));
         }
-        return objectManager;
+        return objectManagerMap.get(this.controller.getEntityTypeName());
     }
 
     @Override
     public Class getParamType() {
         return paramType;
+    }
+    
+    /**
+     * Allows subclasses to customize look up for single object by name. 
+     */
+    protected ParseInfo getSingleObjectByName(String nameString) {
+        
+        CdbEntity objValue = null;
+        String msg = "";
+
+        try {
+            objValue = getObjectManager().getObjectWithName(nameString.trim());
+        } catch (CdbException ex) {
+            msg = "Exception searching for object: "
+                    + nameString + " reason: " + ex.getMessage();
+        }
+
+        if (objValue == null) {
+            if (msg.isEmpty()) {
+                msg = "Unable to find object for: "
+                        + getColumnName() + " with name: " + nameString;
+            }
+            return new ParseInfo<>(null, false, msg);
+        }
+        
+        return new ParseInfo<>(objValue, true, "");                        
     }
 
     @Override
@@ -136,15 +167,21 @@ public class RefInputHandler extends SimpleInputHandler {
                         CdbEntity objValue = null;
                         String msg = "";
                         
-                        try {
-                            if (allowPaths && (nameString.charAt(0) == '/')) {
+                        if (allowPaths && (nameString.charAt(0) == '/')) {
+                            try {
                                 objValue = getObjectManager().getObjectWithPath(nameString.trim());
-                            } else {
-                                objValue = getObjectManager().getObjectWithName(nameString.trim());
+                            } catch (CdbException ex) {
+                                msg = "Exception searching for object: "
+                                        + nameString + " reason: " + ex.getMessage();
                             }
-                        } catch (CdbException ex) {
-                            msg = "Exception searching for object: " 
-                                    + nameString + " reason: " + ex.getMessage();
+                        } else {
+                            ParseInfo objWithNameInfo = getSingleObjectByName(nameString);
+                            if (!objWithNameInfo.getValidInfo().isValid()) {
+                                return objWithNameInfo;
+                            } else {
+                                objValue = (CdbEntity) objWithNameInfo.getValue();
+                                objValue = getObjectManager().getCacheObject(objValue);
+                            }
                         }
 
                         if (objValue == null) {

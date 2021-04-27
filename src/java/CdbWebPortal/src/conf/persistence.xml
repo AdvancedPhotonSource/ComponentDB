@@ -4,6 +4,7 @@
     <jta-data-source>CdbDataSource</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <shared-cache-mode>NONE</shared-cache-mode>
-    <properties/>
+    <properties>
+    </properties>
   </persistence-unit>
 </persistence>

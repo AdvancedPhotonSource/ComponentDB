@@ -56,17 +56,17 @@ public class ItemConnector extends CdbEntity implements Serializable {
     @ManyToOne(optional = false)
     private Item item;
     @JoinColumn(name = "connector_id", referencedColumnName = "id")
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
-    private Connector connector;
+    @ManyToOne(optional = false)
+    private Connector connector; // removed CascadeType.PERSIST that was preventing of sharing existing Connector by new ItemConnector (since create operation cascaded to Connector)
     @OneToMany(mappedBy = "firstItemConnector")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList;
     @OneToMany(mappedBy = "secondItemConnector")
     private List<ItemElementRelationshipHistory> itemElementRelationshipHistoryList1;
     @OneToMany(mappedBy = "itemConnector")
     private List<ItemResource> itemResourceList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "firstItemConnector")
+    @OneToMany(mappedBy = "firstItemConnector") // removed cascade = CascadeType.ALL because I'm afraid it will cause problems as for second item connector below
     private List<ItemElementRelationship> itemElementRelationshipList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "secondItemConnector")
+    @OneToMany(mappedBy = "secondItemConnector") // removed cascade = CascadeType.ALL because it causes deleting item connector from cable design update to delete metadata property values for the ItemElementRelationship
     private List<ItemElementRelationship> itemElementRelationshipList1;
     
     private transient ItemConnector itemConnectorOfItemConnectedTo; 
@@ -222,6 +222,18 @@ public class ItemConnector extends CdbEntity implements Serializable {
         }
         
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemConnector[ id=" + id + " ]";
+    }
+    
+    public boolean isConnected() {
+        List<ItemElementRelationship> relationshipList = getItemElementRelationshipList();
+        if ((relationshipList != null) && (!relationshipList.isEmpty())) {
+            return true;
+        }
+        relationshipList = getItemElementRelationshipList1();
+        if ((relationshipList != null) && (!relationshipList.isEmpty())) {
+            return true;
+        }
+        return false;
     }
     
 }
