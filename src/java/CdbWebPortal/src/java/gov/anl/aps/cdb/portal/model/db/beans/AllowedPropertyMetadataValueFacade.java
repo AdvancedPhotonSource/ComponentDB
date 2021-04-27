@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -26,6 +27,10 @@ public class AllowedPropertyMetadataValueFacade extends CdbEntityFacade<AllowedP
 
     public AllowedPropertyMetadataValueFacade() {
         super(AllowedPropertyMetadataValue.class);
+    }
+    
+    public static AllowedPropertyMetadataValueFacade getInstance() {
+        return (AllowedPropertyMetadataValueFacade) SessionUtility.findFacade(AllowedPropertyMetadataValueFacade.class.getSimpleName()); 
     }
     
 }

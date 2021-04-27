@@ -25,6 +25,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InitializeInfo;
@@ -87,7 +88,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
     private static final String HEADER_IS_VALID = "Is Valid";
     private static final String PROPERTY_IS_VALID = "isValidImportString";
-    private static final String HEADER_VALID_STRING = "Valid String";
+    private static final String HEADER_VALID_STRING = "Validation Info";
     private static final String PROPERTY_VALID_STRING = "validStringImport";
     private static final String HEADER_DIFFS = "Differences";
     private static final String PROPERTY_DIFFS = "importDiffs";
@@ -119,6 +120,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private String summaryMessage = "";
     protected TreeNode rootTreeNode = new DefaultTreeNode("Root", null);
     private int numExpectedColumns = 0;
+    private List<HelperWizardOption> wizardOptions = null;
 
     public ImportHelperBase() {
     }
@@ -153,7 +155,34 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             importMode = ImportMode.COMPARE;
         }
     }
+    
+    public List<HelperWizardOption> getWizardOptions() {
+        if (wizardOptions == null) {
+            wizardOptions = new ArrayList<>();
+            List<HelperWizardOption> helperOptions = initializeWizardOptions();
+            for (HelperWizardOption option : helperOptions) {
+                if (option.getMode() == getImportMode()) {
+                    wizardOptions.add(option);
+                }
+            }
+        }
+        return wizardOptions;
+    }
+    
+    /**
+     * Initializes list of wizard options, overridden by subclasses to customize. 
+     */
+    protected List<HelperWizardOption> initializeWizardOptions() {
+        return new ArrayList<>();
+    }
 
+    /**
+     * Validates wizard options.  Overridden by subclasses to customize.
+     */
+    public ValidInfo validateWizardOptions() {
+        return new ValidInfo(true, "");
+    }
+    
     public List<OutputColumnModel> getTableViewColumns() {
         return outputColumns;
     }
@@ -195,19 +224,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 handlers.addAll(initInfo.getInputHandlers());
                 
                 // set validation table columns depending on  mode
-                boolean addToTable = true;
-                if (getImportMode() == ImportMode.COMPARE) {
-                    if (!spec.getPropertyName().equals(KEY_EXISTING_ITEM_ID)) {
-                        addToTable = false;
-                    }
-                } else if (getImportMode() == ImportMode.DELETE) {
-                    if (!spec.isUsedForMode(ImportMode.DELETE)) {
-                        addToTable = false;
-                    }
-                }
-                if (addToTable) {
+                if (spec.isUsedForMode(getImportMode())) {
                     outputColumns.addAll(initInfo.getOutputColumns());
-                }
+                }                
             }
             
             colIndex = colIndex + initInfo.getNumColumns();   
@@ -852,12 +871,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 mode = ImportMode.UPDATE;
             }
             if ((!col.isUsedForMode(mode))
-                    && ((cellValue != null) && (!cellValue.isEmpty()))) {                
+                    && ((cellValue != null) && (!cellValue.isEmpty()))) {    
                 
-                isValid = false;
-                validString = appendToString(validString, 
-                        "Value should not be specified in current mode for " 
-                                + columnNameForIndex(col.getColumnIndex()));
+                if (mode != ImportMode.DELETE) {       
+                    // skip this requirement for delete mode
+                    isValid = false;
+                    validString = appendToString(validString,
+                            "Value should not be specified in current mode for "
+                            + columnNameForIndex(col.getColumnIndex()));
+                }
             }
         }
         
@@ -974,8 +996,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         ValidInfo createValidInfo = createInfo.getValidInfo();
         if (!createValidInfo.isValid()) {
-            validString = appendToString(validString, createValidInfo.getValidString());
-            isValid = false;
+            return createInfo;
         }
         
         // capture item field values for display in validation table
@@ -996,21 +1017,24 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             isValid = false;
         }
         
-        String diffString = "";
-        boolean first = true;
-        for (String key : fieldValueMap.keySet()) {
-            if (!first) {
-                diffString = diffString + "<br>";
-            } else {
-                first = false;
+        // display field values as diffs, but only if item is valid
+        if (isValid) {
+            String diffString = "";
+            boolean first = true;
+            for (String key : fieldValueMap.keySet()) {
+                if (!first) {
+                    diffString = diffString + "<br>";
+                } else {
+                    first = false;
+                }
+                String value = fieldValueMap.get(key);
+                diffString = diffString + key + ": ";
+                diffString = diffString + "<span style=\"color:red\">";
+                diffString = diffString + "'" + value + "'";
+                diffString = diffString + "</span>";
             }
-            String value = fieldValueMap.get(key);
-            diffString = diffString + key + ": ";
-            diffString = diffString + "<span style=\"color:red\">";
-            diffString = diffString + "'" + value + "'";
-            diffString = diffString + "</span>";
+            entity.setImportDiffs(diffString);
         }
-        entity.setImportDiffs(diffString);
         
         return new CreateInfo(entity, isValid, validString);
     }
@@ -1040,8 +1064,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         
         ValidInfo createValidInfo = createInfo.getValidInfo();
         if (!createValidInfo.isValid()) {
-            validString = appendToString(validString, createValidInfo.getValidString());
-            isValid = false;
+            return createInfo;
         }
         
         // capture item field values for comparison later with updated field values
@@ -1054,6 +1077,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                             + preUpdateValueMapResult.getValidInfo().getValidString()); 
         }
         FieldValueMap preUpdateMap = preUpdateValueMapResult.getValueMap();
+        
+        // allow subclass to manipulate the retrieved entity
+        ValidInfo updateEntityValidInfo = null;
+        updateEntityValidInfo = updateEntityInstance(entity, rowDict);
+        if (!updateEntityValidInfo.isValid()) {
+            validString = appendToString(validString, updateEntityValidInfo.getValidString());
+            isValid = false;
+        }
 
         // invoke each input handler to update the entity with row dictionary values
         ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(entity, rowDict);
@@ -1061,73 +1092,88 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             validString = appendToString(validString, updateValidInfo.getValidString());
             isValid = false;
         }
-
-        // capture item field values for comparison later with updated field values
-        FieldValueMapResult postUpdateValueMapResult = getFieldValueMap(entity);
-        if (!postUpdateValueMapResult.getValidInfo().isValid()) {
-            isValid = false;
-            validString = appendToString(
-                    validString, 
-                    "Post update field snapshot failed: " 
-                            + postUpdateValueMapResult.getValidInfo().getValidString()); 
-        }
-        FieldValueMap postUpdateMap = postUpdateValueMapResult.getValueMap();
         
-        // capture differences between original and updated values
-        FieldValueDifferenceMap fieldDiffMap = FieldValueMap.difference(preUpdateMap, postUpdateMap);
-        
-        // for compare mode, set unchanged values on entity
-        if (getImportMode() == ImportMode.COMPARE) {
-            String unchangedString = "";
-            boolean first = true;
-            for (String key : preUpdateMap.keySet()) {
-                if (!fieldDiffMap.keySet().contains(key)) {
-                    if (!first) {
-                        unchangedString = unchangedString + "<br>";
-                    } else {
-                        first = false;
-                    }
-                    String value = preUpdateMap.get(key);
-                    unchangedString = unchangedString + key + ": ";
-                    unchangedString = unchangedString + "<span style=\"color:green\">";
-                    unchangedString = unchangedString + "'" + value + "'";
-                    unchangedString = unchangedString + "</span>";
-                }
-            }
-            entity.setImportUnchanged(unchangedString);
-        }        
-        
-        // set update diffs string on entity if there are diffs        
-        String diffString = "";
-        boolean first = true;
-        for (String key : fieldDiffMap.keySet()) {
-            if (!first) {
-                diffString = diffString + "<br>";
-            } else {
-                first = false;
-            }
-            FieldValueDifference diff = fieldDiffMap.get(key);
-            diffString = diffString + key + ": ";
-            diffString = diffString + "<span style=\"color:red\">";
-            diffString = diffString + "'" + diff.getOldValue() + "'";
-            diffString = diffString + "</span>";
-            diffString = diffString + " -> ";
-            diffString = diffString + "<span style=\"color:green\">";
-            diffString = diffString + "'" + diff.getNewValue() + "'";
-            diffString = diffString + "</span>";
-        }
-        entity.setImportDiffs(diffString);
-
-        // skip uniqueness checks in update mode for rows already flagged as invalid,
-        // otherwise error reporting is confusing
         if (isValid) {
-            ValidInfo uniqueValidInfo = checkEntityUniqueness(entity);
-            if (!uniqueValidInfo.isValid()) {
-                isValid = false;
-                validString = appendToString(validString, uniqueValidInfo.getValidString());
-            }
-        }
 
+            // capture item field values for comparison later with original field values
+            FieldValueMapResult postUpdateValueMapResult = getFieldValueMap(entity);
+            if (!postUpdateValueMapResult.getValidInfo().isValid()) {
+                isValid = false;
+                validString = appendToString(
+                        validString,
+                        "Post update field snapshot failed: "
+                        + postUpdateValueMapResult.getValidInfo().getValidString());
+            }
+            FieldValueMap postUpdateMap = postUpdateValueMapResult.getValueMap();
+
+            // capture differences between original and updated values
+            FieldValueDifferenceMap fieldDiffMap = FieldValueMap.difference(preUpdateMap, postUpdateMap);
+            
+            // flag entities with changes so we can ignore the ones that don't
+            if (fieldDiffMap.keySet().isEmpty()) {
+                entity.hasImportUpdates(false);
+            } else {
+                entity.hasImportUpdates(true);
+            }
+
+            // for compare mode, set unchanged values on entity
+            if (getImportMode() == ImportMode.COMPARE) {
+                String unchangedString = "";
+                boolean first = true;
+                for (String key : preUpdateMap.keySet()) {
+                    if (!fieldDiffMap.keySet().contains(key)) {
+                        if (!first) {
+                            unchangedString = unchangedString + "<br>";
+                        } else {
+                            first = false;
+                        }
+                        String value = preUpdateMap.get(key);
+                        unchangedString = unchangedString + key + ": ";
+                        unchangedString = unchangedString + "<span style=\"color:green\">";
+                        unchangedString = unchangedString + "'" + value + "'";
+                        unchangedString = unchangedString + "</span>";
+                    }
+                }
+                entity.setImportUnchanged(unchangedString);
+            }
+
+            // set update diffs string on entity if there are diffs        
+            String diffString = "";
+            boolean first = true;
+            for (String key : fieldDiffMap.keySet()) {
+                if (!first) {
+                    diffString = diffString + "<br>";
+                } else {
+                    first = false;
+                }
+                FieldValueDifference diff = fieldDiffMap.get(key);
+                diffString = diffString + key + ": ";
+                diffString = diffString + "<span style=\"color:red\">";
+                diffString = diffString + "'" + diff.getOldValue() + "'";
+                diffString = diffString + "</span>";
+                diffString = diffString + " -> ";
+                diffString = diffString + "<span style=\"color:green\">";
+                diffString = diffString + "'" + diff.getNewValue() + "'";
+                diffString = diffString + "</span>";
+            }
+            
+            if (entity.hasImportUpdates()) {
+                
+                entity.setImportDiffs(diffString);
+                
+                // skip uniqueness checks for rows without updates, or if row is already invalid
+                if (isValid) {
+                    ValidInfo uniqueValidInfo = checkEntityUniqueness(entity);
+                    if (!uniqueValidInfo.isValid()) {
+                        isValid = false;
+                        validString = appendToString(validString, uniqueValidInfo.getValidString());
+                    }
+                }
+            } else {
+                entity.setImportDiffs("No updates detected for item.");
+            }
+
+        }
         return new CreateInfo(entity, isValid, validString);
     }
     
@@ -1311,6 +1357,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return rootTreeNode;
     }
     
+    protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
+        throw new UnsupportedOperationException("Helper does not implement createEntityInstance().");
+    }
+    
     /**
      * Provides callback for helper subclass to do post processing after the
      * import commit completes.  For example, the helper may need to update some
@@ -1346,6 +1396,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 existingItem = newInvalidUpdateInstance();
                 isValid = false;
                 validString = "Unable to retrieve existing item with id: " + itemId;
+            } else {
+                if (existingItem.getIsItemDeleted()) {                    
+//                    existingItem = newInvalidUpdateInstance();
+                    isValid = false;
+                    validString = "Item with id: " + itemId + " is deleted";
+                }
             }
         } else {
             existingItem = newInvalidUpdateInstance();
@@ -1357,12 +1413,28 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
     
     /**
+     * Allows subclass to manipulate entity during update process. Default implementation
+     * does nothing.
+     */
+    protected ValidInfo updateEntityInstance(EntityType entity, Map<String, Object> rowMap) {
+        return new ValidInfo(true, "");
+    }
+    
+    /**
      * Updates list of items in update mode.  Allows subclasses to override with
      * custom behavior.
      */
     protected void updateList() throws CdbException, RuntimeException {
+        List<EntityType> updateEntities = new ArrayList<>();
+        for (EntityType entity : rows) {
+            if (entity.hasImportUpdates()) {
+                updateEntities.add(entity);
+            }
+        }
         EntityControllerType controller = this.getEntityController();
-        controller.updateList(rows);
+        if (!updateEntities.isEmpty()) {
+            controller.updateList(updateEntities);
+        }
     }
     
     /**
@@ -1385,7 +1457,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setOwnerUser", 
                 "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", 
                 "getOwnerUser",
-                ColumnModeOptions.oCREATErUPDATE(),
+                ColumnModeOptions.rCREATErUPDATE(),
                 UserInfoController.getInstance(), 
                 UserInfo.class, 
                 "");
@@ -1398,7 +1470,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setOwnerUserGroup", 
                 "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", 
                 "getOwnerUserGroup",
-                ColumnModeOptions.oCREATErUPDATE(), 
+                ColumnModeOptions.rCREATErUPDATE(), 
                 UserGroupController.getInstance(), 
                 UserGroup.class, 
                 "");
@@ -1449,7 +1521,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "importLocationItemString", 
                 "setImportLocationItem", 
                 "Item location.", 
-                "getLocationItem",
+                "getExportLocation",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemDomainLocationController.getInstance(), 
                 ItemDomainLocation.class, 
@@ -1462,7 +1534,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "locationDetails", 
                 "setLocationDetails", 
                 "Location details for item.", 
-                "getLocationDetails",
+                "getExportLocationDetails",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256);
     }
@@ -1474,7 +1546,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setImportExistingItemId", 
                 "CDB ID of existing item to update.", 
                 "getId",
-                ColumnModeOptions.rUPDATErDELETE());
+                ColumnModeOptions.rUPDATErDELETErCOMPARE());
     }
 
     public BooleanColumnSpec deleteExistingItemColumnSpec() {
@@ -1492,7 +1564,5 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public abstract EntityControllerType getEntityController();
     
     public abstract String getFilenameBase();
-    
-    protected abstract CreateInfo createEntityInstance(Map<String, Object> rowMap);
     
 }

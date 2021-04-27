@@ -78,8 +78,10 @@ import org.primefaces.model.TreeNode;
             query = "SELECT i FROM Item i WHERE i.name = :name"),
     @NamedQuery(name = "Item.findByDomainNameAndName",
             query = "SELECT i FROM Item i WHERE i.domain.name = :domainName AND i.name = :name"),
-    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndName",
-            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName AND i.name = :name and etl.name = :entityTypeName"),
+    @NamedQuery(name = "Item.findByDomainNameAndNameExcludeEntityType",
+            query = "SELECT i FROM Item i WHERE i.domain.name = :domainName AND i.name = :name AND (i.id not in (SELECT DISTINCT(i.id) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :excludeEntityTypeName))"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndNameExcludeEntityType",
+            query = "SELECT DISTINCT(i) FROM Item i WHERE i.name = :name AND i.domain.name = :domainName AND (i.id in (SELECT DISTINCT(i.id) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName)) AND (i.id not in (SELECT DISTINCT(i.id) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :excludeEntityTypeName))"),
     @NamedQuery(name = "Item.findByItemIdentifier1",
             query = "SELECT i FROM Item i WHERE i.itemIdentifier1 = :itemIdentifier1"),
     @NamedQuery(name = "Item.findByItemIdentifier2",
@@ -373,6 +375,8 @@ public class Item extends CdbDomainEntity implements Serializable {
     private transient String descriptionFromAPI;
 
     protected transient PropertyValue coreMetadataPropertyValue = null;
+    protected transient ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
+    
     
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     protected transient ItemElement currentEditItemElement = null;
@@ -1075,6 +1079,23 @@ public class Item extends CdbDomainEntity implements Serializable {
     public void setItemConnectorList(List<ItemConnector> itemConnectorList) {
         this.itemConnectorList = itemConnectorList;
     }
+    
+    public ItemConnector getConnectorNamed(String connectorName) {
+        List<ItemConnector> connectorList = getItemConnectorList();
+        if (connectorList == null) {
+            return null;
+        }
+        for (ItemConnector itemConnector : connectorList) {
+            Connector connector = itemConnector.getConnector();
+            if (connector != null) {
+                String name = connector.getName();
+                if (name.equals(connectorName)) {
+                    return itemConnector;
+                }
+            }
+        }
+        return null;
+    }
 
     @XmlTransient    
     public List<ItemSource> getItemSourceList() {
@@ -1417,6 +1438,7 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @JsonIgnore
+    @Override
     public Boolean getIsItemDeleted() {
         if (isItemDeleted == null) {
             isItemDeleted = isItemDeleted(this);
@@ -1475,6 +1497,21 @@ public class Item extends CdbDomainEntity implements Serializable {
         return assemblyRootTreeNode;
     }
 
+    public void initializeCoreMetadataPropertyValue() {
+        if (getCoreMetadataPropertyInfo() != null) {
+            if (getPropertyValueList() == null) {
+                setPropertyValueList(new ArrayList<>());
+            }
+            prepareCoreMetadataPropertyValue();
+        }
+    }
+
+    public PropertyValue prepareCoreMetadataPropertyValue() {
+        PropertyType propertyType = getCoreMetadataPropertyType();
+        return getItemControllerUtility().preparePropertyTypeValueAdd(
+                this, propertyType, propertyType.getDefaultValue(), null);
+    }
+
     public PropertyValue getCoreMetadataPropertyValue() {
 
         ItemMetadataPropertyInfo info = getCoreMetadataPropertyInfo();
@@ -1508,7 +1545,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         PropertyValue propertyValue = getCoreMetadataPropertyValue();
 
         if (propertyValue == null) {
-            propertyValue = getItemControllerUtility().prepareCoreMetadataPropertyValue(this);
+            propertyValue = prepareCoreMetadataPropertyValue();
         }
         
         if (value == null) {
@@ -1531,7 +1568,17 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public ItemMetadataPropertyInfo getCoreMetadataPropertyInfo() {
-        return getItemControllerUtility().createCoreMetadataPropertyInfo(); 
+        if (coreMetadataPropertyInfo == null) {
+            coreMetadataPropertyInfo = getItemControllerUtility().createCoreMetadataPropertyInfo();
+        }
+        return coreMetadataPropertyInfo;
+    }
+    
+    /**
+     * Overridden by subclasses that utilize core metadata to customize. 
+     */
+    public PropertyType getCoreMetadataPropertyType() {
+        throw new UnsupportedOperationException("Item subclass must override getCoreMetadataPropertyType()");
     }
 
     protected CdbEntity getEntityById(String id) {

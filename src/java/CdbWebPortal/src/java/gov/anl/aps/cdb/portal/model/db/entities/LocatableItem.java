@@ -198,5 +198,17 @@ public abstract class LocatableItem extends Item {
                 this, location, null);
         importLocationItemString = getLocationString();
     }
+    
+    @JsonIgnore
+    public Item getExportLocation() {
+        LocatableItemController.getInstance().setItemLocationInfo(this);
+        return getLocationItem();
+    }
+    
+    @JsonIgnore 
+    public String getExportLocationDetails() {
+        LocatableItemController.getInstance().setItemLocationInfo(this);
+        return locationDetails; // avoid getter method because it adds values not stored in database
+    }
            
 }

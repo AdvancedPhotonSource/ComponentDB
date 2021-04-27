@@ -4,9 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.import_export.export.objects;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  *
@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public class FieldValueDifferenceMap {
     
-    private Map<String, FieldValueDifference> differenceMap = new HashMap<>();
+    private Map<String, FieldValueDifference> differenceMap = new TreeMap<>();
     
     public Set<String> keySet() {
         return differenceMap.keySet();

@@ -4,20 +4,20 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
-import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.RootMachineItemWizardOptionHelper;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.SingleColumnInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.AssignedItemHandler;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrPathColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.MachineItemRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
@@ -32,7 +32,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.ss.usermodel.Row;
 
 /**
  *
@@ -40,116 +39,7 @@ import org.apache.poi.ss.usermodel.Row;
  */
 public class ImportHelperMachineHierarchy 
         extends ImportHelperHierarchyBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
-    
-    /**
-     * Using a custom handler so that we can use catalog or inventory item id's
-     * in a single column.  There is not a way to do this with IdRef handler, as
-     * it needs a particular controller instance to use for the lookup.  The
-     * query we need here is on the ItemFacade.
-     */
-    private class AssignedItemHandler extends SingleColumnInputHandler {
         
-        public AssignedItemHandler() {
-            super(HEADER_ASSIGNED_ITEM);
-        }
-        
-        @Override
-        public ValidInfo handleInput(
-                Row row,
-                Map<Integer, String> cellValueMap,
-                Map<String, Object> rowMap) {
-            
-            boolean isValid = true;
-            String validString = "";
-            
-            String parsedValue = cellValueMap.get(getColumnIndex());
-            
-            Item assignedItem = null;
-            if ((parsedValue != null) && (!parsedValue.isEmpty())) {
-                // assigned item is specified
-                
-                int id;
-                try {
-                    id = Integer.valueOf(parsedValue);
-                    assignedItem = ItemFacade.getInstance().findById(id);
-                    if (assignedItem == null) {
-                        String msg = "Unable to find object for: " + getColumnName()
-                                + " with id: " + parsedValue;
-                        isValid = false;
-                        validString = msg;
-                        LOGGER.info("AssignedItemHandler.handleInput() " + msg);
-                    }
-                    rowMap.put(KEY_ASSIGNED_ITEM, assignedItem);
-                    
-                } catch (NumberFormatException ex) {
-                    String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
-                    isValid = false;
-                    validString = msg;
-                    LOGGER.info("AssignedItemHandler.handleInput() " + msg);  
-                }                
-            }
-
-            return new ValidInfo(isValid, validString);
-        }
-    }
-    
-    /**
-     * Using a custom handler for location so we can ignore the word "parent"
-     * in a column that otherwise expects location item id's.  We could use the
-     * standard IdRef handler if we didn't need to worry about "parent".
-     */
-    private class LocationHandler extends SingleColumnInputHandler {
-        
-        public LocationHandler() {
-            super(HEADER_LOCATION);
-        }
-        
-        @Override
-        public ValidInfo handleInput(
-                Row row,
-                Map<Integer, String> cellValueMap,
-                Map<String, Object> rowMap) {
-            
-            boolean isValid = true;
-            String validString = "";
-            
-            String parsedValue = cellValueMap.get(getColumnIndex());
-            
-            ItemDomainLocation itemLocation = null;
-            if ((parsedValue != null) && (!parsedValue.isEmpty())) {
-                // location is specified
-                
-                // ignore word "parent"
-                if (!parsedValue.equalsIgnoreCase("parent")) {
-                    int id;
-                    try {
-                        id = Integer.valueOf(parsedValue);
-                        itemLocation = ItemDomainLocationController.getInstance().findById(id);
-                        if (itemLocation == null) {
-                            String msg = "Unable to find object for: " + getColumnName()
-                                    + " with id: " + parsedValue;
-                            isValid = false;
-                            validString = msg;
-                            LOGGER.info("LocationHandler.handleInput() " + msg);
-
-                        } else {
-                            // set location
-                            rowMap.put(KEY_LOCATION, itemLocation);
-                        }
-
-                    } catch (NumberFormatException ex) {
-                        String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
-                        isValid = false;
-                        validString = msg;
-                        LOGGER.info("LocationHandler.handleInput() " + msg);
-                    }              
-                }
-            }
-
-            return new ValidInfo(isValid, validString);
-        }
-    }
-    
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineHierarchy.class.getName());
     
     private static final String KEY_NAME = "name";
@@ -175,20 +65,48 @@ public class ImportHelperMachineHierarchy
     private int nonTemplateItemCount = 0;
     private int templateItemCount = 0;
     
+    private RootMachineItemWizardOptionHelper rootMachineItemWizardOptionHelper = null;
+    
+    private RootMachineItemWizardOptionHelper getRootMachineItemWizardOptionHelper() {
+        if (rootMachineItemWizardOptionHelper == null) {
+            rootMachineItemWizardOptionHelper = new RootMachineItemWizardOptionHelper();
+        }
+        return rootMachineItemWizardOptionHelper;
+    }
+    
+    public String getOptionRootItemName() {
+        return getRootMachineItemWizardOptionHelper().getOptionRootItemName();
+    }
+
+    public void setOptionRootItemName(String optionRootItemName) {
+        getRootMachineItemWizardOptionHelper().setOptionRootItemName(optionRootItemName);
+    }
+    
+    @Override
+    protected List<HelperWizardOption> initializeWizardOptions() {        
+        List<HelperWizardOption> options = new ArrayList<>();        
+        options.add(RootMachineItemWizardOptionHelper.rootMachineItemWizardOption());
+        return options;
+    }
+
+    @Override
+    public ValidInfo validateWizardOptions() {
+        return getRootMachineItemWizardOptionHelper().validate();
+    }
+    
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrPathColumnSpec(
+        specs.add(new MachineItemRefColumnSpec(
                 HEADER_PARENT, 
                 KEY_PARENT, 
                 "setImportMdItem", 
                 "CDB ID, name, or path of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.", 
                 null,
-                ColumnModeOptions.oCREATE(), 
-                ItemDomainMachineDesignController.getInstance(), 
-                ItemDomainMachineDesign.class));
+                ColumnModeOptions.oCREATE(),
+                getRootMachineItemWizardOptionHelper().getRootItem()));
         
         specs.add(new NameHierarchyColumnSpec(
                 "Name hierarchy column", 
@@ -240,6 +158,7 @@ public class ImportHelperMachineHierarchy
                 "importAssignedItemString", 
                 "CDB ID or name of assigned catalog or inventory item. Name must be unique and prefixed with '#'.", 
                 null,
+                false,
                 ColumnModeOptions.oCREATE(), 
                 assignedItemHandler));
         
@@ -250,6 +169,7 @@ public class ImportHelperMachineHierarchy
                 "importLocationItemString", 
                 "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored). Name must be unique and prefixed with '#'.", 
                 null,
+                false,
                 ColumnModeOptions.oCREATE(), 
                 locationHandler));
 
@@ -285,6 +205,7 @@ public class ImportHelperMachineHierarchy
         super.reset();
         nonTemplateItemCount = 0;
         templateItemCount = 0;
+        getRootMachineItemWizardOptionHelper().reset();
     }
     
     @Override
@@ -337,8 +258,6 @@ public class ImportHelperMachineHierarchy
         boolean isValid = true;
         String validString = "";
 
-        boolean isValidAssignedItem = true;
-
         // determine sort order
         Float itemSortOrder = (Float) rowMap.get(KEY_SORT_ORDER);
         if ((itemSortOrder == null) && (itemParent != null)) {
@@ -366,49 +285,9 @@ public class ImportHelperMachineHierarchy
             return new ValidInfo(isValid, validString);
         }
 
-        // set assigned item
-        Item assignedItem = (Item) rowMap.get(KEY_ASSIGNED_ITEM);
-        if (assignedItem != null) {
-            if (assignedItem instanceof ItemDomainCatalog) {
-                item.setImportAssignedCatalogItem((ItemDomainCatalog) assignedItem);
-            } else if (assignedItem instanceof ItemDomainInventory) {
-                item.setImportAssignedInventoryItem((ItemDomainInventory) assignedItem);
-            } else {
-                String msg = "Invalid object type for assigned item: " + assignedItem.getClass().getName();
-                isValid = false;
-                validString = msg;
-            }
-        }
-
-        // set location
-        ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(KEY_LOCATION);
-        if (itemLocation != null) {
-            item.setImportLocationItem(itemLocation);
-        }
-
         if (item.getIsItemTemplate()) {
-            // template item handling
-            
             templateItemCount = templateItemCount + 1;
-
-            if ((item.getImportAssignedInventoryItem() != null)) {
-
-                // template not allowed to have assigned inventory
-                String msg = "Template cannot have assigned inventory item";
-                validString = appendToString(validString, msg);
-                isValid = false;
-                isValidAssignedItem = false;
-            }
-
-            if (item.getImportLocationItem() != null) {
-                // template not allowed to have location
-                String msg = "Template cannot have location item";
-                validString = appendToString(validString, msg);
-                isValid = false;
-            }
-
         } else {            
-            // non-template item handling
             nonTemplateItemCount = nonTemplateItemCount + 1;
         }
 
@@ -423,10 +302,6 @@ public class ImportHelperMachineHierarchy
             item.setImportChildParentRelationship(itemParent, itemSortOrder);
         }
         
-        if (isValidAssignedItem) {
-            item.applyImportAssignedItem();
-        }
-
         return new ValidInfo(isValid, validString);
     }
 

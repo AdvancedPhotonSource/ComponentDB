@@ -16,15 +16,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
-import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
-import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,17 +74,73 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
     
     @Override
     public ItemMetadataPropertyInfo createCoreMetadataPropertyInfo() {
-        ItemMetadataPropertyInfo info = new ItemMetadataPropertyInfo("Cable Design Metadata", CABLE_DESIGN_INTERNAL_PROPERTY_TYPE);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY, "Ext Cable Name", "External cable name (e.g., from CAD or routing tool).", ItemMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY, "Import Cable ID", "Import cable identifier.", ItemMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY, "Alt Cable ID", "Alternate (e.g., group-specific) cable identifier.", ItemMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_LEGACY_QR_ID_KEY, "Legacy QR ID", "Legacy QR identifier, e.g., for cables that have already been assigned a QR code.", ItemMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_LAYING_KEY, "Laying", "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", ItemMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, "Voltage", "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", ItemMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY, "Endpoint1 Desc", "Endpoint details useful for external editing.", ItemMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY, "Endpoint2 Desc", "Endpoint details useful for external editing.", ItemMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ENDPOINT1_ROUTE_KEY, "Endpoint1 Route", "Routing waypoint for first endpoint.", ItemMetadataFieldType.STRING, "", null);
-        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ENDPOINT2_ROUTE_KEY, "Endpoint2 Route", "Routing waypoint for second endpoint.", ItemMetadataFieldType.STRING, "", null);
+        
+        ItemMetadataPropertyInfo info = 
+                new ItemMetadataPropertyInfo("Cable Design Metadata", CABLE_DESIGN_INTERNAL_PROPERTY_TYPE);
+        
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY, 
+                "Ext Cable Name", 
+                "External cable name (e.g., from CAD or routing tool).", 
+                ItemMetadataFieldType.STRING, 
+                "", 
+                null);
+        
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY, 
+                "Import Cable ID", 
+                "Import cable identifier.", 
+                ItemMetadataFieldType.STRING, 
+                "", 
+                null);
+        
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY, 
+                "Alt Cable ID", 
+                "Alternate (e.g., group-specific) cable identifier.", 
+                ItemMetadataFieldType.STRING, 
+                "", 
+                null);
+        
+        info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_LAYING_KEY, 
+                "Laying", 
+                "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 
+                ItemMetadataFieldType.STRING, 
+                "", 
+                null);
+        
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, 
+                "Voltage", 
+                "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 
+                ItemMetadataFieldType.STRING, 
+                "", 
+                null);
+        
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ROUTED_LENGTH_KEY, 
+                "Routed Length", 
+                "Calculated length for cable", 
+                ItemMetadataFieldType.STRING, 
+                "", 
+                null);
+        
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ROUTE_KEY, 
+                "Route", 
+                "Description of cable route", 
+                ItemMetadataFieldType.STRING, 
+                "", 
+                null);
+        
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_NOTES_KEY, 
+                "Notes", 
+                "Notes about this cable", 
+                ItemMetadataFieldType.STRING, 
+                "", 
+                null);
+        
         return info;
     }
     
@@ -100,18 +151,21 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
 
     public void syncConnectors(ItemDomainCableDesign item) {
         
-        List<ItemConnector> itemConnectorList = item.getItemConnectorList();
         List<ItemConnector> connectorsFromAssignedCatalogItem = getConnectorsFromAssignedCatalogItem(item);
-
         if (connectorsFromAssignedCatalogItem == null) {
             return;
+        }
+        
+        List<ItemConnector> itemConnectorList = item.getItemConnectorList();
+        if (itemConnectorList == null) {
+            itemConnectorList = new ArrayList<>();
+            item.setItemConnectorList(itemConnectorList);
         }
 
         if (itemConnectorList.isEmpty()) {
             // Sync all connectors into cable design
             for (ItemConnector connector : connectorsFromAssignedCatalogItem) {
                 ItemConnector clone = cloneInheritedConnector(connector, item);
-
                 itemConnectorList.add(clone);
             }
             
@@ -133,7 +187,7 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
         }
     }
 
-    private static List<ItemConnector> getConnectorsFromAssignedCatalogItem(ItemDomainCableDesign item) {
+    private List<ItemConnector> getConnectorsFromAssignedCatalogItem(ItemDomainCableDesign item) {
         
         Item assignedItem = item.getCatalogItem();
 
@@ -156,10 +210,11 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
         
         ItemConnector clone = new ItemConnector();
 
-        clone.setConnector(catalogConnector.getConnector());
+        Connector connector = catalogConnector.getConnector();
+        clone.setConnector(connector);
         clone.setItem(item);
-
-        return clone;
+        
+       return clone;
     }
     
     public PropertyType prepareConnectionPropertyType(ItemMetadataPropertyInfo propInfo) throws CdbException {
@@ -186,32 +241,22 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
         return propertyType;
     }
 
-    public PropertyValue prepareConnectionPropertyValue(
-            ItemElementRelationship ier, ItemMetadataPropertyInfo info) throws CdbException {
+    public void createOrMigrateConnectionPropertyType() {
         
-        PropertyType propertyType = propertyTypeFacade.findByName(info.getPropertyName());
+        PropertyType propertyType = ItemDomainCableDesign.getConnectionPropertyType();
+        ItemMetadataPropertyInfo info = ItemDomainCableDesign.getConnectionPropertyInfo();
 
         if (propertyType == null) {
-            propertyType = prepareConnectionPropertyType(info);
+            try {
+                propertyType = prepareConnectionPropertyType(info);                
+                // otherwise migrate existing property type object
+            } catch (CdbException ex) {
+                LOGGER.error(ex.getMessage());
+                return;
+            }
+        } else {
+            migrateMetadataPropertyType(propertyType, info);
         }
-
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        
-        PropertyValue propertyValue = new PropertyValue();
-        propertyValue.setPropertyType(propertyType);
-        propertyValue.setValue(propertyType.getDefaultValue());
-        propertyValue.setUnits(propertyType.getDefaultUnits());
-        
-        ier.addPropertyValueToPropertyValueList(propertyValue);
-        propertyValue.setEnteredByUser(lastModifiedByUser);
-        propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
-
-        // Get method called by GUI populates metadata
-        // Needed for multi-edit or API to also populate metadata
-        propertyValue.getPropertyValueMetadataList();
-
-        return propertyValue;
-    }
+    }   
 
 }

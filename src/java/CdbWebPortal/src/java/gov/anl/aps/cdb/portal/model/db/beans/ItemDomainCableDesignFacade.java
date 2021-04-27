@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -31,13 +32,20 @@ public class ItemDomainCableDesignFacade extends ItemFacadeBase<ItemDomainCableD
         return (ItemDomainCableDesignFacade) SessionUtility.findFacade(ItemDomainCableDesignFacade.class.getSimpleName()); 
     }
     
+    /**
+     * Updates cable design item.  Overridden here because, if we edit a cable
+     * to remove cable relationship objects they are not removed from the database
+     * by updating the database for that cable.  Thus they are removed explicitly
+     * here.
+     */
     public ItemDomainCableDesign edit(ItemDomainCableDesign entity) {
         
         ItemDomainCableDesign result = super.edit(entity);
         
-        for (ItemElementRelationship relationship : entity.getDeletedRelationshipList()) {
-            ItemElementRelationshipFacade.getInstance().remove(relationship);
+        for (ItemConnector connector : entity.getDeletedConnectorList()) {
+            ItemConnectorFacade.getInstance().remove(connector);
         }
+        entity.clearDeletedConnectorList();
         
         return result;
     }

@@ -5,13 +5,14 @@
 package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.RootMachineItemWizardOptionHelper;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrPathColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.MachineItemRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -47,19 +48,47 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
 
     private int templateInstantiationCount = 0;
     
+    private RootMachineItemWizardOptionHelper rootMachineItemWizardOptionHelper = null;
+    
+    private RootMachineItemWizardOptionHelper getRootMachineItemWizardOptionHelper() {
+        if (rootMachineItemWizardOptionHelper == null) {
+            rootMachineItemWizardOptionHelper = new RootMachineItemWizardOptionHelper();
+        }
+        return rootMachineItemWizardOptionHelper;
+    }
+    
+    public String getOptionRootItemName() {
+        return getRootMachineItemWizardOptionHelper().getOptionRootItemName();
+    }
+
+    public void setOptionRootItemName(String optionRootItemName) {
+        getRootMachineItemWizardOptionHelper().setOptionRootItemName(optionRootItemName);
+    }
+    
+    @Override
+    protected List<HelperWizardOption> initializeWizardOptions() {        
+        List<HelperWizardOption> options = new ArrayList<>();        
+        options.add(RootMachineItemWizardOptionHelper.rootMachineItemWizardOption());
+        return options;
+    }
+
+    @Override
+    public ValidInfo validateWizardOptions() {
+        return getRootMachineItemWizardOptionHelper().validate();
+    }
+    
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new IdOrPathColumnSpec(
+        specs.add(new MachineItemRefColumnSpec(
                 HEADER_PARENT, 
                 KEY_CONTAINER, 
                 "setImportMdItem", 
                 "CDB ID, name, or path of parent machine design item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.", 
                 null,
                 ColumnModeOptions.oCREATE(), 
-                ItemDomainMachineDesignController.getInstance(), 
-                ItemDomainMachineDesign.class));
+                getRootMachineItemWizardOptionHelper().getRootItem()));
         
         specs.add(new StringColumnSpec(
                 HEADER_TEMPLATE_INVOCATION, 
@@ -109,6 +138,7 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
     protected void reset_() {
         itemByNameMap = new HashMap<>();
         templateInstantiationCount = 0;
+        getRootMachineItemWizardOptionHelper().reset();
     }
     
     @Override
@@ -201,11 +231,7 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
         // retrieve specified template
         ItemDomainMachineDesign templateItem;
         try {
-            templateItem
-                    = ItemDomainMachineDesignFacade.getInstance().findUniqueByDomainAndEntityTypeAndName(
-                            templateName, 
-                            EntityTypeName.template.getValue(),
-                            null);
+            templateItem = ItemDomainMachineDesignFacade.getInstance().findUniqueTemplateByName(templateName);
         } catch (CdbException ex) {
             isValid = false;
             validString

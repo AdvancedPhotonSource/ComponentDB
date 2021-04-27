@@ -30,6 +30,7 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
+import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -431,7 +432,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         
         @Override
         public String save(String remoteCommandSuccess) {            
-            ItemElementRelationship ier = getCurrent().addCableRelationship(selectedMdItem, null);
+            ItemElementRelationship ier = getCurrent().addCableRelationship(selectedMdItem, null, null, null);
             setCableRelationship(ier);
             return super.save(remoteCommandSuccess);
         }
@@ -718,6 +719,10 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return (connection.getMdItem() != null);
     }
     
+    public ItemMetadataPropertyInfo getConnectionPropertyInfo() {
+        return ItemDomainCableDesign.getConnectionPropertyInfo();
+    }
+    
     /**
      * Prepares cable wizard.
      */
@@ -888,11 +893,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return connectionListForCurrent;
     }
     
-    private List<ItemConnector> getUnmappedConnectorsForCurrent() {
+    public List<ItemConnector> getUnmappedConnectorsForCurrent() {
         List<ItemConnector> unmappedConnectors = new ArrayList<>();
-        for (CableDesignConnectionListObject connection : getConnectionListForCurrent()) {
-            if ((connection.getItemConnector() != null) && (connection.getMdItem() == null)) {
-                unmappedConnectors.add(connection.getItemConnector());
+        for (ItemConnector connector : getCurrent().getItemConnectorList()) {
+            if (!connector.isConnected()) {
+                unmappedConnectors.add(connector);
             }
         }
         return unmappedConnectors;
@@ -912,4 +917,12 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return getConnectionListForCurrent().size() > 0;
     }
     
+    public boolean getDisplayConnectorsList() {
+        return getUnmappedConnectorsForCurrent().size() > 0;
+    }
+    
+    public void createOrMigrateConnectionPropertyType() {        
+        getControllerUtility().createOrMigrateConnectionPropertyType();
+    }   
+
 }

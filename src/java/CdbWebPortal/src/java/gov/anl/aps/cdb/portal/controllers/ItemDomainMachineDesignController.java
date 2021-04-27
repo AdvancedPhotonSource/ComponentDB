@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineHierarchy;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineItemUpdate;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineTemplateInstantiation;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
@@ -1396,48 +1397,7 @@ public class ItemDomainMachineDesignController
     }
 
     private void syncMachineDesignConnectors(ItemDomainMachineDesign item) {
-        List<ItemConnector> itemConnectorList = item.getItemConnectorList();
-        List<ItemConnector> connectorsFromAssignedCatalogItem = getConnectorsFromAssignedCatalogItem(item);
-
-        if (connectorsFromAssignedCatalogItem == null) {
-            return;
-        }
-
-        if (itemConnectorList.size() == 0) {
-            // Sync all connectors into machine design
-            for (ItemConnector cconnector : connectorsFromAssignedCatalogItem) {
-                ItemConnector mdConnector = cloneConnectorForMachineDesign(cconnector, item);
-
-                itemConnectorList.add(mdConnector);
-            }
-        } else {
-            // Verify if any new connections were created on the catalog             
-            if (connectorsFromAssignedCatalogItem != null) {
-
-                catConnFor:
-                for (ItemConnector catalogItemConn : connectorsFromAssignedCatalogItem) {
-                    for (ItemConnector mdItemConn : itemConnectorList) {
-                        Connector mdConnector = mdItemConn.getConnector();
-                        Connector catConnector = catalogItemConn.getConnector();
-
-                        if (mdConnector.equals(catConnector)) {
-                            continue catConnFor;
-                        }
-                    }
-                    ItemConnector mdConnector = cloneConnectorForMachineDesign(catalogItemConn, item);
-                    itemConnectorList.add(mdConnector);
-                }
-            }
-        }
-    }
-
-    private ItemConnector cloneConnectorForMachineDesign(ItemConnector catalogConnector, ItemDomainMachineDesign mdItem) {
-        ItemConnector mdConnector = new ItemConnector();
-
-        mdConnector.setConnector(catalogConnector.getConnector());
-        mdConnector.setItem(mdItem);
-
-        return mdConnector;
+        this.getControllerUtility().syncMachineDesignConnectors(item);
     }
 
     public void prepareCableMappingDialog() {
@@ -1512,22 +1472,6 @@ public class ItemDomainMachineDesignController
         resetListConfigurationVariables();
         resetListDataModel();
         expandToSelectedTreeNodeAndSelect();
-    }
-
-    private static List<ItemConnector> getConnectorsFromAssignedCatalogItem(ItemDomainMachineDesign item) {
-        Item assignedItem = item.getAssignedItem();
-
-        Item catalogItem = null;
-        if (assignedItem instanceof ItemDomainInventory) {
-            catalogItem = ((ItemDomainInventory) assignedItem).getCatalogItem();
-        } else if (assignedItem instanceof ItemDomainCatalog) {
-            catalogItem = assignedItem;
-        }
-
-        if (catalogItem != null) {
-            return catalogItem.getItemConnectorList();
-        }
-        return null;
     }
 
     public List<MachineDesignConnectorListObject> getMdConnectorListForCurrent() {
@@ -2662,13 +2606,69 @@ public class ItemDomainMachineDesignController
     protected DomainImportExportInfo initializeDomainImportInfo() {
 
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportExportFormatInfo("Machine Hierarchy Creation", ImportHelperMachineHierarchy.class));
-        formatInfo.add(new ImportExportFormatInfo("Machine Template Instantiation", ImportHelperMachineTemplateInstantiation.class));
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Machine Hierarchy Creation", ImportHelperMachineHierarchy.class));
+        formatInfo.add(new ImportExportFormatInfo(
+                "Machine Template Instantiation", ImportHelperMachineTemplateInstantiation.class));
+        formatInfo.add(new ImportExportFormatInfo(
+                "Machine Element Updating", ImportHelperMachineItemUpdate.class));
 
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
+
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+    
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo("Basic Machine Element Update Format", ImportHelperMachineItemUpdate.class));
+        
+        String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
+    public void collectHierarchyItems(
+            ItemDomainMachineDesign parentItem,
+            List<ItemDomainMachineDesign> collectedItems,
+            boolean isRootItem) {
+
+        if (isRootItem) {
+            collectedItems.add(parentItem);
+        }
+
+        List<ItemElement> displayList = parentItem.getItemElementDisplayList();
+        for (ItemElement ie : displayList) {
+            Item childItem = ie.getContainedItem();
+            if (childItem instanceof ItemDomainMachineDesign) {
+                collectedItems.add((ItemDomainMachineDesign) childItem);
+                collectHierarchyItems((ItemDomainMachineDesign) childItem, collectedItems, false);
+            }
+        }
+
+    }
+
+    @Override
+    protected List<ItemDomainMachineDesign> getExportEntityList() {        
+        ItemDomainMachineDesignTreeNode currentTree = getCurrentMachineDesignListRootTreeNode();
+        List<ItemDomainMachineDesign> filteredItems = currentTree.getFilterResults();
+        List<ItemDomainMachineDesign> filteredHierarchyItems = new ArrayList<>();
+        for (ItemDomainMachineDesign item : filteredItems) {
+            if (!item.getIsItemDeleted()) {
+                collectHierarchyItems(item, filteredHierarchyItems, true);
+            }
+        }
+        return filteredHierarchyItems;
+    }
+    
     // </editor-fold>       
 
     // <editor-fold defaultstate="collapsed" desc="Delete support">   

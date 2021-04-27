@@ -32,4 +32,16 @@ public class ItemConnectorFacade extends CdbEntityFacade<ItemConnector> {
     public static ItemConnectorFacade getInstance() {
         return (ItemConnectorFacade) SessionUtility.findFacade(ItemConnectorFacade.class.getSimpleName()); 
     }
+
+    /**
+     * Creates new ItemConnector.  Overridden here because the cascade on
+     * ItemConnector.connector was removed as it caused problems in the cable design import
+     * code, where new Connector objects were created instead of sharing the
+     * existing Connector for the ItemConnector of the catalog item.
+     */
+    public void create(ItemConnector entity) {        
+        ConnectorFacade.getInstance().create(entity.getConnector());
+        super.create(entity);
+    }
+
 }

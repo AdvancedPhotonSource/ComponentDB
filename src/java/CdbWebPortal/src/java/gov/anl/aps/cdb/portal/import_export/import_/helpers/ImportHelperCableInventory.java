@@ -109,7 +109,7 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
     
     @Override 
     protected ValidInfo preImport() {
-        getEntityController().migrateCoreMetadataPropertyType();
+        getEntityController().createOrMigrateCoreMetadataPropertyType();
         return new ValidInfo(true, "");
     }
     

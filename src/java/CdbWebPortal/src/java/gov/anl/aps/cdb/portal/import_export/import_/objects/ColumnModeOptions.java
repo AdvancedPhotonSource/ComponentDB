@@ -41,6 +41,18 @@ public class ColumnModeOptions {
         return options;
     }
     
+    public static List<ColumnModeOptions> rUPDATE() {
+        List<ColumnModeOptions> options = new ArrayList<>();
+        options.add(new ColumnModeOptions(ImportMode.UPDATE, true));
+        return options;
+    }
+    
+    public static List<ColumnModeOptions> oUPDATE() {
+        List<ColumnModeOptions> options = new ArrayList<>();
+        options.add(new ColumnModeOptions(ImportMode.UPDATE, false));
+        return options;
+    }
+    
     public static List<ColumnModeOptions> oCREATEoUPDATE() {
         List<ColumnModeOptions> options = new ArrayList<>();
         options.add(new ColumnModeOptions(ImportMode.CREATE, false));
@@ -66,6 +78,14 @@ public class ColumnModeOptions {
         List<ColumnModeOptions> options = new ArrayList<>();
         options.add(new ColumnModeOptions(ImportMode.UPDATE, true));
         options.add(new ColumnModeOptions(ImportMode.DELETE, true));
+        return options;
+    }
+    
+    public static List<ColumnModeOptions> rUPDATErDELETErCOMPARE() {
+        List<ColumnModeOptions> options = new ArrayList<>();
+        options.add(new ColumnModeOptions(ImportMode.UPDATE, true));
+        options.add(new ColumnModeOptions(ImportMode.DELETE, true));
+        options.add(new ColumnModeOptions(ImportMode.COMPARE, true));
         return options;
     }
     

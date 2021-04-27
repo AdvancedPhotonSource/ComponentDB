@@ -27,12 +27,14 @@ import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.settings.ICdbSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.export.wizard.ItemDomainExportWizard;
+import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import java.io.IOException;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -1412,8 +1414,8 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return filteredObjectList;
     }
     
-    public List<CdbEntity> getFilteredEntities() {
-        return (List<CdbEntity>) filteredObjectList;
+    public List<EntityType> getFilteredEntities() {
+        return filteredObjectList;
     }
 
     /**
@@ -1716,13 +1718,37 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return false;
     }
     
+    protected List<EntityType> getExportEntityList() {
+        
+        DataModel dataModel = getListDataModel();
+        
+        List<EntityType> entityList = null;
+        if (dataModel instanceof ItemLazyDataModel) {
+            ItemLazyDataModel lazyDataModel = (ItemLazyDataModel) dataModel;
+            entityList = lazyDataModel.getFilteredEntities();
+        } else {
+            entityList = getFilteredEntities();
+        }
+        
+        if (entityList == null) {
+            entityList = new ArrayList<>();
+        }
+        
+        return entityList;
+    }
+    
     /**
      * Prepares export wizard.
      */
-    public String prepareExport() throws CdbException {  
+    public String prepareExport() throws CdbException {          
         ItemDomainExportWizard wizard = ItemDomainExportWizard.getInstance();
         wizard.setDomainInfo(getDomainExportInfo());
-        wizard.setExportEntityList(getFilteredEntities());
+        List<EntityType> entityList = getExportEntityList();
+        if (entityList.isEmpty()) {
+            SessionUtility.addErrorMessage("Error", "No items selected for export. Consider using filter to select items.");
+            return "";
+        }
+        wizard.setExportEntityList((List<CdbEntity>)entityList);
         return "export?faces-redirect=true";
     }
     
