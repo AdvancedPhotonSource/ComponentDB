@@ -9,11 +9,9 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.RootMachineItemWizardOptionHelper;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.MachineItemRefColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -36,87 +34,49 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
     
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineTemplateInstantiation.class.getName());
     
-    private static final String KEY_CONTAINER = "importMdItem";
-    private static final String KEY_TEMPLATE_INVOCATION = "importTemplateAndParameters";
-
-    private static final String HEADER_PARENT = "Parent ID";
-    private static final String HEADER_TEMPLATE_INVOCATION = "Template Instantiation";
-    private static final String HEADER_ALT_NAME = "Machine Design Alternate Name";
-    private static final String HEADER_DESCRIPTION = "Machine Design Item Description";
-    
     private Map<String, ItemDomainMachineDesign> itemByNameMap = new HashMap<>();
 
     private int templateInstantiationCount = 0;
     
-    private RootMachineItemWizardOptionHelper rootMachineItemWizardOptionHelper = null;
+   private MachineImportHelperCommon machineImportHelperCommon = null;
     
-    private RootMachineItemWizardOptionHelper getRootMachineItemWizardOptionHelper() {
-        if (rootMachineItemWizardOptionHelper == null) {
-            rootMachineItemWizardOptionHelper = new RootMachineItemWizardOptionHelper();
+    private MachineImportHelperCommon getMachineImportHelperCommon() {
+        if (machineImportHelperCommon == null) {
+            machineImportHelperCommon = new MachineImportHelperCommon();
         }
-        return rootMachineItemWizardOptionHelper;
+        return machineImportHelperCommon;
     }
     
     public String getOptionRootItemName() {
-        return getRootMachineItemWizardOptionHelper().getOptionRootItemName();
+        return getMachineImportHelperCommon().getOptionRootItemName();
     }
 
     public void setOptionRootItemName(String optionRootItemName) {
-        getRootMachineItemWizardOptionHelper().setOptionRootItemName(optionRootItemName);
+        getMachineImportHelperCommon().setOptionRootItemName(optionRootItemName);
     }
     
     @Override
     protected List<HelperWizardOption> initializeWizardOptions() {        
         List<HelperWizardOption> options = new ArrayList<>();        
-        options.add(RootMachineItemWizardOptionHelper.rootMachineItemWizardOption());
+        options.add(MachineImportHelperCommon.rootMachineItemWizardOption());
         return options;
     }
 
     @Override
     public ValidInfo validateWizardOptions() {
-        return getRootMachineItemWizardOptionHelper().validate();
+        return getMachineImportHelperCommon().validateOptionRootItemName();
     }
     
+    @Override
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new MachineItemRefColumnSpec(
-                HEADER_PARENT, 
-                KEY_CONTAINER, 
-                "setImportMdItem", 
-                "CDB ID, name, or path of parent machine design item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.", 
-                null,
-                ColumnModeOptions.oCREATE(), 
-                getRootMachineItemWizardOptionHelper().getRootItem()));
-        
-        specs.add(new StringColumnSpec(
-                HEADER_TEMPLATE_INVOCATION, 
-                KEY_TEMPLATE_INVOCATION, 
-                "setImportTemplateAndParameters", 
-                "Template to instantiate with required parameters, e.g., 'PS-SR-S{nn}-CAB1(nn=24)'.", 
-                null,
-                ColumnModeOptions.rCREATE(), 
-                0));   
-        
-        specs.add(new StringColumnSpec(
-                HEADER_ALT_NAME, 
-                "alternateName", 
-                "setAlternateName", 
-                "Alternate name.", 
-                null,
-                ColumnModeOptions.oCREATE(), 
-                128));
-        
-        specs.add(new StringColumnSpec(
-                HEADER_DESCRIPTION, 
-                "description", 
-                "setDescription", 
-                "Textual description.", 
-                null,
-                ColumnModeOptions.oCREATE(), 
-                256));
-        
+        specs.add(MachineImportHelperCommon.parentItemColumnSpec(
+                ColumnModeOptions.oCREATE(), getMachineImportHelperCommon()));
+        specs.add(MachineImportHelperCommon.templateInvocationColumnSpec(ColumnModeOptions.rCREATE()));
+        specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(projectListColumnSpec());
         specs.add(ownerUserColumnSpec());
         specs.add(ownerGroupColumnSpec());
@@ -138,7 +98,7 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
     protected void reset_() {
         itemByNameMap = new HashMap<>();
         templateInstantiationCount = 0;
-        getRootMachineItemWizardOptionHelper().reset();
+        getMachineImportHelperCommon().reset();
     }
     
     @Override
@@ -167,7 +127,7 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
         String validString = "";
         ItemDomainMachineDesign invalidInstance = getEntityController().createEntityInstance();
         
-        String templateParams = (String)rowMap.get(KEY_TEMPLATE_INVOCATION);
+        String templateParams = (String)rowMap.get(MachineImportHelperCommon.KEY_TEMPLATE_INVOCATION);
         if ((templateParams == null) || (!templateParams.isEmpty())) {
             
         }
@@ -218,7 +178,7 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
         invalidInstance.setName(templateName);
         
         // check for and set parent item
-        ItemDomainMachineDesign itemParent = (ItemDomainMachineDesign) rowMap.get(KEY_CONTAINER);
+        ItemDomainMachineDesign itemParent = (ItemDomainMachineDesign) rowMap.get(MachineImportHelperCommon.KEY_PARENT);
         if (itemParent == null) {
             // must specify parent for template invocation
             isValid = false;

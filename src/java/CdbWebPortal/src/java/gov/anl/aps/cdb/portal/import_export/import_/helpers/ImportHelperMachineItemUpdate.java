@@ -6,7 +6,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportCommon;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,12 +23,12 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase {
         List<ColumnSpec> specs = new ArrayList<>();
 
         specs.add(existingItemIdColumnSpec());
-        specs.add(MachineImportCommon.nameColumnSpec(ColumnModeOptions.rUPDATE()));
-        specs.add(MachineImportCommon.altNameColumnSpec(ColumnModeOptions.oUPDATE()));
-        specs.add(MachineImportCommon.descriptionColumnSpec(ColumnModeOptions.oUPDATE()));
-        specs.add(MachineImportCommon.sortOrderColumnSpec(ColumnModeOptions.oUPDATE()));
-        specs.add(MachineImportCommon.assignedItemColumnSpec(ColumnModeOptions.oUPDATE()));
-        specs.add(MachineImportCommon.locationColumnSpec(ColumnModeOptions.oUPDATE()));
+        specs.add(MachineImportHelperCommon.nameColumnSpec(ColumnModeOptions.rUPDATE()));
+        specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oUPDATE()));
+        specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oUPDATE()));
+        specs.add(MachineImportHelperCommon.sortOrderColumnSpec(ColumnModeOptions.oUPDATE()));
+        specs.add(MachineImportHelperCommon.assignedItemColumnSpec(ColumnModeOptions.oUPDATE()));
+        specs.add(MachineImportHelperCommon.locationColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(locationDetailsColumnSpec());
         specs.add(projectListColumnSpec());
         specs.add(ownerUserColumnSpec());
