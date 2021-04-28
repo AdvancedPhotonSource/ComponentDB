@@ -1616,6 +1616,7 @@ public abstract class ItemController<
         }
 
         newItemElement.setName(itemElement.getName());
+        newItemElement.setIsRequired(itemElement.getIsRequired());
 
         clonedItem.getFullItemElementList().add(newItemElement);
 
