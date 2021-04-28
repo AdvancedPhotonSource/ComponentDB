@@ -149,8 +149,8 @@ See LICENSE file.
                              update="searchAllMachineNodesBooleanCheckbox itemMachineDesignListDataTable#{viewId}" /> 
         </f:facet>
         
-        <p:selectBooleanCheckbox value="#{itemTreeListObject.filterMachineNode}"                                                                       
-                                 rendered="#{topLevelItem}"/> 
+        <p:selectBooleanCheckbox value="#{mdTreeListObject.filterMachineNode}"                                                                       
+                                 rendered="#{topLevelItem and mdTreeListObject != null}"/> 
     </p:column>
 
     <ui:include src="../../../item/private/templateDefaults/itemListObjectColumns/itemItemIdentifier1.xhtml" >
