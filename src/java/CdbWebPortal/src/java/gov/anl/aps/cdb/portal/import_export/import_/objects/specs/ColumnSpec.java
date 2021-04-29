@@ -146,9 +146,13 @@ public abstract class ColumnSpec {
         List<OutputColumnModel> outputColumns = new ArrayList<>();
 
         String headerValue = headerValueMap.get(colIndex);
-        if ((headerValue == null) || (!headerValue.equals(getHeader()))) {
+        if (headerValue == null) {
+            headerValue = "";
+        }
+        if ((headerValue.isEmpty()) || (!headerValue.equals(getHeader()))) {
             isValid = false;
-            validString = "Import spreadsheet is missing expected column: '" + getHeader() + "'.";
+            validString = "Import spreadsheet is missing expected column: '" 
+                    + getHeader() + "', actual column encountered: '" + headerValue + "'.";
         } else {
             inputColumns.add(getInputColumnModel(colIndex));
             inputHandlers.add(getInputHandler(colIndex));
