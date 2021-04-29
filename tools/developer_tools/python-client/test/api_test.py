@@ -3,7 +3,7 @@ from datetime import datetime
 
 from CdbApiFactory import CdbApiFactory
 from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformation, SimpleLocationInformation, \
-    LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions
+    LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions
 
 
 class MyTestCase(unittest.TestCase):
@@ -467,6 +467,18 @@ class MyTestCase(unittest.TestCase):
         # revert back
         result = self.machineDesignApi.update_assigned_item(self.MACHINE_DESIGN_ID, self.CATALOG_ITEM_ID)
         self.assertNotEqual(result, None)
+
+    def test_md_create_placeholder(self):
+        self.loginAsAdmin()
+
+        options = NewMachinePlaceholderOptions(name='Created From API')
+
+        newMachine = self.machineDesignApi.create_placeholder(self.MACHINE_DESIGN_ID, options)
+        self.assertNotEqual(newMachine, None)
+
+        options = NewMachinePlaceholderOptions(name='Created Child From API')
+        newMachine = self.machineDesignApi.create_placeholder(newMachine.id, options)
+        self.assertNotEqual(newMachine, None)
 
     def test_user_route(self):
         users = self.userApi.get_all1()
