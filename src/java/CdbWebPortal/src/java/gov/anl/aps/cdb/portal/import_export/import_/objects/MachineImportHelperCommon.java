@@ -32,7 +32,7 @@ public class MachineImportHelperCommon {
     public static final String KEY_IS_TEMPLATE = "importIsTemplateString";
     public static final String KEY_TEMPLATE_INVOCATION = "importTemplateAndParameters";
 
-    public static final String HEADER_PARENT = "Parent ID";
+    public static final String HEADER_PARENT = "Parent Item";
     public static final String HEADER_BASE_LEVEL = "Level";
     public static final String HEADER_NAME = "Name";
     public static final String HEADER_ALT_NAME = "Alternate Name";
@@ -63,7 +63,7 @@ public class MachineImportHelperCommon {
     
     public static NameHierarchyColumnSpec nameHierarchyColumnSpec(List<ColumnModeOptions> options) {
         return new NameHierarchyColumnSpec(
-                "Name hierarchy column",
+                "Name hierarchy indent level column, specifies name of item to create within parent at previous indent level. Entries in first level column are created as child of specified parent item, or as top level elements when no parent is specified.",
                 options,
                 HEADER_BASE_LEVEL,
                 KEY_NAME,
@@ -119,7 +119,7 @@ public class MachineImportHelperCommon {
                 HEADER_ASSIGNED_ITEM_DESCRIPTION,
                 "importAssignedItemDescription",
                 "setImportAssignedItemDescription",
-                "Description of catalog or inventory item assigned to machine element (for documentation purposes only).",
+                "Description of catalog or inventory item assigned to machine element (for documentation purposes only, ignored by import mechanism).",
                 null,
                 options,
                 256);
@@ -130,7 +130,7 @@ public class MachineImportHelperCommon {
         return new CustomColumnSpec(
                 HEADER_ASSIGNED_ITEM,
                 "importAssignedItemString",
-                "CDB ID or name of assigned catalog or inventory item. Name must be unique and prefixed with '#'.",
+                "CDB ID or name of assigned catalog or inventory item. Name can only be used for catalog items and must be unique and prefixed with '#'.",
                 "getAssignedItem",
                 true,
                 options,
@@ -142,7 +142,7 @@ public class MachineImportHelperCommon {
         return new CustomColumnSpec(
                 HEADER_LOCATION,
                 "importLocationItemString",
-                "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored). Name must be unique and prefixed with '#'.",
+                "CDB ID of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored).",
                 "getExportLocation",
                 true,
                 options,
@@ -217,11 +217,11 @@ public class MachineImportHelperCommon {
                     rootItem = topLevelMatches.get(0);
                 } else if (topLevelMatches.size() == 0) {
                     isValid = false;
-                    validString = "no matching top-level machine item with name: " + optionRootItemName;
+                    validString = "no matching top-level machine element with name: " + optionRootItemName;
                 } else {
                     // more than one match
                     isValid = false;
-                    validString = "multiple matching top-level machine items with name: " + optionRootItemName;
+                    validString = "multiple matching top-level machine elements with name: " + optionRootItemName;
                 }
             } else {
                 // null out option if empty string

@@ -117,12 +117,14 @@ public abstract class ColumnSpec {
         
         ColumnSpecInitInfo initInfo = initialize_(colIndex, headerValueMap);
         
-        for (InputHandler handler : initInfo.getInputHandlers()) {
-            handler.setColumnSpec(this);
-        }
-        
-        for (InputColumnModel inputColumn : initInfo.getInputColumns()) {
-            inputColumn.setColumnSpec(this);
+        if (initInfo.getValidInfo().isValid()) {        
+            for (InputHandler handler : initInfo.getInputHandlers()) {
+                handler.setColumnSpec(this);
+            }
+
+            for (InputColumnModel inputColumn : initInfo.getInputColumns()) {
+                inputColumn.setColumnSpec(this);
+            }
         }
 
         return initInfo;
@@ -136,15 +138,24 @@ public abstract class ColumnSpec {
             int colIndex,
             Map<Integer, String> headerValueMap) {
         
+        boolean isValid = true;
+        String validString = "";
+        
         List<InputColumnModel> inputColumns = new ArrayList<>();
         List<InputHandler> inputHandlers = new ArrayList<>();
         List<OutputColumnModel> outputColumns = new ArrayList<>();
 
-        inputColumns.add(getInputColumnModel(colIndex));
-        inputHandlers.add(getInputHandler(colIndex));
-        outputColumns.add(getOutputColumnModel(colIndex));
+        String headerValue = headerValueMap.get(colIndex);
+        if ((headerValue == null) || (!headerValue.equals(getHeader()))) {
+            isValid = false;
+            validString = "Import spreadsheet is missing expected column: '" + getHeader() + "'.";
+        } else {
+            inputColumns.add(getInputColumnModel(colIndex));
+            inputHandlers.add(getInputHandler(colIndex));
+            outputColumns.add(getOutputColumnModel(colIndex));
+        }
 
-        ValidInfo validInfo = new ValidInfo(true, "");
+        ValidInfo validInfo = new ValidInfo(isValid, validString);
         return new ColumnSpecInitInfo(validInfo, 1, inputColumns, inputHandlers, outputColumns);
     }
     

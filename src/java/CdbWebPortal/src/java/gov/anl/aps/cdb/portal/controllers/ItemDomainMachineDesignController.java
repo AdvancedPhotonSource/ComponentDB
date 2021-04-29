@@ -2608,11 +2608,11 @@ public class ItemDomainMachineDesignController
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
         formatInfo.add(new ImportExportFormatInfo(
-                "Machine Hierarchy Creation", ImportHelperMachineHierarchy.class));
+                "Machine Hierarchy Creation Format", ImportHelperMachineHierarchy.class));
         formatInfo.add(new ImportExportFormatInfo(
-                "Machine Template Instantiation", ImportHelperMachineTemplateInstantiation.class));
+                "Machine Template Instantiation Format", ImportHelperMachineTemplateInstantiation.class));
         formatInfo.add(new ImportExportFormatInfo(
-                "Machine Element Updating", ImportHelperMachineItemUpdate.class));
+                "Machine Element Update Format", ImportHelperMachineItemUpdate.class));
 
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
@@ -2629,7 +2629,7 @@ public class ItemDomainMachineDesignController
         
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
-        formatInfo.add(new ImportExportFormatInfo("Basic Machine Element Update Format", ImportHelperMachineItemUpdate.class));
+        formatInfo.add(new ImportExportFormatInfo("Machine Element Update Format", ImportHelperMachineItemUpdate.class));
         
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
         

@@ -259,16 +259,6 @@ public class ItemDomainCableDesign extends Item {
         cableRelationship.setSecondItemConnector(cableConnector);
     }
 
-    private PropertyValue getInternalCableDesignPropertyValue() {
-        List<PropertyValue> propertyValueList = getPropertyValueList();
-        for (PropertyValue propertyValue : propertyValueList) {
-            if (propertyValue.getPropertyType().getName().equals(CABLE_DESIGN_INTERNAL_PROPERTY_TYPE)) {
-                return propertyValue;
-            }
-        }
-        return null;
-    }
-
    public static ItemMetadataPropertyInfo getConnectionPropertyInfo() {
         
         if (connectionMetadataPropertyInfo == null) {
