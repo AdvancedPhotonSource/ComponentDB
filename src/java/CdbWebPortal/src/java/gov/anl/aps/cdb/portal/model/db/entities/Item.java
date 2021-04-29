@@ -242,6 +242,7 @@ import org.primefaces.model.TreeNode;
     "descriptionFromAPI",
     "coreMetadataPropertyValue",
     "coreMetadataPropertyInfo",
+    "coreMetadataPropertyType", 
     "PropertyValueList",
     "templateInfoLoaded",
     "createdFromTemplate",

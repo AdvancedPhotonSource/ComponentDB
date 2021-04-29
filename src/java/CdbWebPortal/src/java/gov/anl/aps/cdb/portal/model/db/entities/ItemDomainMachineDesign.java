@@ -185,7 +185,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     @Override
-    public ItemControllerUtility getItemControllerUtility() {
+    public ItemDomainMachineDesignControllerUtility getItemControllerUtility() {
         if (isItemDeleted(this)) {
             return new ItemDomainMachineDesignDeletedControllerUtility();
         }
