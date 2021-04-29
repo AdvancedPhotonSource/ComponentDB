@@ -5,17 +5,21 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
+import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -30,17 +34,17 @@ import org.primefaces.model.TreeNode;
  * @author darek
  */
 public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtility<ItemDomainMachineDesign, ItemDomainMachineDesignFacade> {
-    
+
     private static final Logger logger = LogManager.getLogger(ItemDomainMachineDesignControllerUtility.class.getName());
-    
-    EntityTypeFacade entityTypeFacade; 
+
+    EntityTypeFacade entityTypeFacade;
 
     public ItemDomainMachineDesignControllerUtility() {
         super();
-        entityTypeFacade = EntityTypeFacade.getInstance(); 
+        entityTypeFacade = EntityTypeFacade.getInstance();
     }
-    
-    @Override    
+
+    @Override
     protected boolean verifyItemNameCombinationUniqueness(Item item) {
         boolean unique = super.verifyItemNameCombinationUniqueness(item);
 
@@ -53,7 +57,7 @@ public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtil
 
         return unique;
     }
-    
+
     @Override
     public void checkItem(ItemDomainMachineDesign item) throws CdbException {
         super.checkItem(item);
@@ -75,7 +79,7 @@ public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtil
             }
 
             Integer itemId = item.getId();
-            if (itemId != null) {                
+            if (itemId != null) {
                 ItemDomainMachineDesign originalItem = findById(itemId);
 
                 Item origAssignedItem = originalItem.getAssignedItem();
@@ -97,8 +101,8 @@ public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtil
                 }
             }
         }
-    }   
-    
+    }
+
     private boolean verifyValidTemplateName(String templateName) {
         boolean validTitle = false;
         if (templateName.contains("{")) {
@@ -108,18 +112,18 @@ public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtil
                 validTitle = true;
             }
         }
-        
+
         return validTitle;
     }
 
     /**
-     * Used by import framework.  Looks up entity by path.
+     * Used by import framework. Looks up entity by path.
      */
     @Override
     public ItemDomainMachineDesign findByPath(String path) throws CdbException {
         return findByPath_(path, ItemDomainMachineDesign::getParentMachineDesign);
     }
-        
+
     @Override
     public boolean isEntityHasItemIdentifier2() {
         return false;
@@ -128,34 +132,34 @@ public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtil
     @Override
     public boolean isEntityHasQrId() {
         //TODO add a machine design template and inventory and override with false; 
-        return true; 
+        return true;
     }
 
     @Override
     public boolean isEntityHasName() {
-        return true; 
+        return true;
     }
 
     @Override
     public boolean isEntityHasProject() {
-        return true; 
+        return true;
     }
 
     @Override
     public String getDefaultDomainName() {
-        return ItemDomainName.machineDesign.getValue(); 
+        return ItemDomainName.machineDesign.getValue();
     }
 
     @Override
     protected ItemDomainMachineDesignFacade getItemFacadeInstance() {
-        return ItemDomainMachineDesignFacade.getInstance(); 
-    }       
+        return ItemDomainMachineDesignFacade.getInstance();
+    }
 
     @Override
     public String getDerivedFromItemTitle() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-        
+
     @Override
     public String getEntityTypeName() {
         return "itemMachineDesign";
@@ -164,21 +168,21 @@ public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtil
     @Override
     public String getDisplayEntityTypeName() {
         return "Machine Design Item";
-    }     
-    
+    }
+
     @Override
     protected ItemDomainMachineDesign instenciateNewItemDomainEntity() {
         return new ItemDomainMachineDesign();
     }
-    
+
     public TreeNode getSearchResults(String searchString, boolean caseInsensitive) {
         LinkedList<SearchResult> searchResultList = this.performEntitySearch(searchString, caseInsensitive);
         return getHierarchicalSearchResults(searchResultList);
     }
 
     public TreeNode getHierarchicalSearchResults(LinkedList<SearchResult> searchResultList) {
-        TreeNode searchResultsTreeNode; 
-                
+        TreeNode searchResultsTreeNode;
+
         TreeNode rootTreeNode = new DefaultTreeNode();
         if (searchResultList != null) {
             for (SearchResult result : searchResultList) {
@@ -303,6 +307,44 @@ public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtil
         mdConnector.setItem(mdItem);
 
         return mdConnector;
+    } 
+
+    @Override
+    protected ItemElement createItemElement(ItemDomainMachineDesign item, EntityInfo entityInfo) {
+        ItemElement newElement = super.createItemElement(item, entityInfo); 
+        
+        Item parentItem = newElement.getParentItem(); 
+        
+        int elementSize = parentItem.getItemElementDisplayList().size();
+        float sortOrder = elementSize;        
+        newElement.setSortOrder(sortOrder);
+                
+        return newElement;        
     }
     
+    public ItemDomainMachineDesign createEntityInstanceBasedOnParent(ItemDomainMachineDesign parentMachine, UserInfo sessionUser) throws CdbException {
+        ItemDomainMachineDesign newItem = createEntityInstance(sessionUser);
+        
+        newItem.setItemProjectList(parentMachine.getItemProjectList());
+
+        if (parentMachine.getIsItemTemplate()) {
+            List<EntityType> entityTypeList = new ArrayList<>();
+            EntityType templateEntity = entityTypeFacade.findByName(EntityTypeName.template.getValue());
+            entityTypeList.add(templateEntity);
+            newItem.setEntityTypeList(entityTypeList);
+        }
+        
+        return newItem; 
+    }
+    
+
+    public ItemElement prepareMachinePlaceholder(ItemDomainMachineDesign parentMachine, UserInfo sessionUser) throws CdbException {
+        ItemDomainMachineDesign newItem = createEntityInstanceBasedOnParent(parentMachine, sessionUser);
+        
+        ItemElement itemElement = createItemElement(parentMachine, sessionUser);
+        itemElement.setContainedItem(newItem);        
+        
+        return itemElement; 
+    }
+
 }

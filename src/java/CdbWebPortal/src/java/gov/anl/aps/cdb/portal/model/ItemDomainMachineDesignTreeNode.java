@@ -35,6 +35,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
     private List<ItemDomainMachineDesign> topLevelItems;
 
+    private List<ItemDomainMachineDesign> rawFilterResults;
     private List<ItemDomainMachineDesign> filterResults;
     private Boolean filterAllNodes;
 
@@ -303,7 +304,8 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     }
     
     public void clearFilterResults() {
-        filterResults = null;
+        rawFilterResults = null;
+        filterResults = null; 
         getChildren().clear();
         // Prevent gui from changing the currently set filters. 
         for (ItemDomainMachineDesign item : topLevelItems) {
@@ -322,7 +324,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     }
 
     public void filterChangeEvent(String onComplete) {
-        if (filterResults != null) {
+        if (rawFilterResults != null) {
             return;
         }
         
@@ -335,25 +337,27 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
             ItemDomainMachineDesignQueryBuilder queryBuilder = new ItemDomainMachineDesignQueryBuilder(domain, filterMap);
 
-            filterResults = designFacade.findByDataTableFilterQueryBuilder(queryBuilder);
+            rawFilterResults = designFacade.findByDataTableFilterQueryBuilder(queryBuilder);
 
-            SessionUtility.addInfoMessage("Hang tight, Loading hierarchy results", "Found " + filterResults.size() + " Results.");
+            SessionUtility.addInfoMessage("Hang tight, Loading hierarchy results", "Found " + rawFilterResults.size() + " Results.");
         }
         SessionUtility.executeRemoteCommand(onComplete);
     }
 
     public void finishFiltering() {
-        if (filterResults != null) {
+        if (rawFilterResults != null) {
             getChildren().clear();
 
             int relevantResults = 0;
+            filterResults = new ArrayList<>(); 
             // Passed as array to force pass by reference. 
             Integer[] displayedNodes = new Integer[1];
             displayedNodes[0] = 0;
-            for (ItemDomainMachineDesign item : filterResults) {
+            for (ItemDomainMachineDesign item : rawFilterResults) {
                 ItemDomainMachineDesignTreeNode createTreeFromFilter = createTreeFromFilter(item, true, displayedNodes);
                 if (createTreeFromFilter != null) {
                     relevantResults++;
+                    filterResults.add(item);                     
                 }
             }
 
@@ -428,7 +432,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     public void setNameFilter(String nameFilter) {
         if (this.nameFilter.equals(nameFilter) == false) {
             // Null filter results will trigger the search. 
-            filterResults = null; 
+            rawFilterResults = null; 
         }
         this.nameFilter = nameFilter;
     }

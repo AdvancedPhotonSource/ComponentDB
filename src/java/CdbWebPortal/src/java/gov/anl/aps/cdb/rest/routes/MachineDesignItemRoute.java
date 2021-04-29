@@ -4,19 +4,25 @@
  */
 package gov.anl.aps.cdb.rest.routes;
 
+import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemDomanMachineDesignIdListRequest;
+import gov.anl.aps.cdb.rest.entities.NewMachinePlaceholderOptions;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.Duration;
@@ -27,6 +33,7 @@ import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -129,7 +136,11 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
      * Searches the top-level machine design hierarchy "root" node for children
      * with specified name.
      *
-     * @throws ObjectNotFound
+     * @param rootItemName
+     * @param containerItemName
+     * @param itemName
+     * @return 
+     * @throws gov.anl.aps.cdb.common.exceptions.InvalidArgument 
      */
     @GET
     @Path("/ByHierarchy/{root}/{container}/{name}")
@@ -188,15 +199,19 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
                 
                 List<ItemDomainMachineDesign> mdItems = itemsWithContainerHierarchy(
                         rootItemName, containerItemName, itemName);
-                if (mdItems.size() == 1) {
-                    // one matching item
-                    idList.add(mdItems.get(0).getId());
-                } else if (mdItems.size() == 0) {
-                    // no matching items
-                    idList.add(0);
-                } else {
-                    // multiple matching items
-                    idList.add(-1);
+                switch (mdItems.size()) {
+                    case 1:
+                        // one matching item
+                        idList.add(mdItems.get(0).getId());
+                        break;
+                    case 0:
+                        // no matching items
+                        idList.add(0);
+                        break;
+                    default:
+                        // multiple matching items
+                        idList.add(-1);
+                        break;
                 }
             } else {
                 idList.add(0);
@@ -267,5 +282,61 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @Secured
     public ItemDomainMachineDesign clearAssignedItem(@PathParam("mdItemId") int mdItemId) throws CdbException {
         return updateAssignedItem(mdItemId, null); 
+    }
+    
+    @PUT
+    @Path("/createPlaceholder/{parentMdId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Create machine placeholder item.")    
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainMachineDesign createPlaceholder(
+            @PathParam("parentMdId") int parentMdId, 
+            @RequestBody(required = true) NewMachinePlaceholderOptions newMachinePlaceholderOptions) throws InvalidArgument, AuthorizationError, CdbException {
+        
+        ItemDomainMachineDesign parentItem = facade.findById(parentMdId);
+        if (parentItem instanceof ItemDomainMachineDesign == false) {
+            throw new InvalidArgument("parent item id provided is not a machine.");
+        }
+        
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(parentItem);
+        
+        String name = newMachinePlaceholderOptions.getName();
+        
+        if (name == null || name.isEmpty()) {
+            throw new InvalidArgument("Name must be provided to create a new placeholder.");
+        }
+        
+        ItemDomainMachineDesignControllerUtility itemControllerUtility = parentItem.getItemControllerUtility();
+        
+        ItemElement machinePlaceholder = itemControllerUtility.prepareMachinePlaceholder(parentItem, currentUser);
+        
+        ItemDomainMachineDesign newMachine = (ItemDomainMachineDesign) machinePlaceholder.getContainedItem();
+        
+        // Fetch the rest of the attributes
+        String alternateName = newMachinePlaceholderOptions.getAlternateName();
+        String description = newMachinePlaceholderOptions.getDescription();        
+        
+        newMachine.setName(name);
+        newMachine.setAlternateName(alternateName);
+        newMachine.setDescription(description);
+        
+        if (newMachinePlaceholderOptions.getProjectId() != null) {
+            Integer projectId = newMachinePlaceholderOptions.getProjectId();
+            ItemProjectFacade projectFacade = ItemProjectFacade.getInstance();
+            ItemProject project = projectFacade.find(projectId); 
+            
+            if (project != null) {
+                newMachine.getItemProjectList().clear();
+                newMachine.getItemProjectList().add(project); 
+            } else {
+                throw new InvalidArgument("Project with id: " + projectId + " cannot be found"); 
+            }
+        }
+                
+        itemControllerUtility.saveNewItemElement(machinePlaceholder, currentUser); 
+                
+        return newMachine; 
+        
     }
 }

@@ -61,9 +61,9 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     public ItemControllerUtility() {
         domainFacade = DomainFacade.getInstance();
         itemFacade = getItemFacadeInstance();
-        propertyTypeFacade = PropertyTypeFacade.getInstance(); 
-        propertyTypeMetadataFacade = PropertyTypeMetadataFacade.getInstance(); 
-        allowedPropertyMetadataValueFacade = AllowedPropertyMetadataValueFacade.getInstance(); 
+        propertyTypeFacade = PropertyTypeFacade.getInstance();
+        propertyTypeMetadataFacade = PropertyTypeMetadataFacade.getInstance();
+        allowedPropertyMetadataValueFacade = AllowedPropertyMetadataValueFacade.getInstance();
     }
 
     protected abstract ItemDomainEntityFacade getItemFacadeInstance();
@@ -367,9 +367,9 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         EntityInfo ei = EntityInfoUtility.createEntityInfo(sessionUser);
 
         Domain domain = getDefaultDomain();
-        if (domain != null) {           
-            item.init(domain, ei);            
-        } else {            
+        if (domain != null) {
+            item.init(domain, ei);
+        } else {
             item.init(ei);
         }
 
@@ -379,6 +379,30 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
         return item;
     }
     
+    public final void prepareAddItemElement(ItemDomainEntity item, ItemElement itemElement) {
+        List<ItemElement> itemElementList = item.getFullItemElementList();
+        List<ItemElement> itemElementsDisplayList = item.getItemElementDisplayList();
+
+        itemElementList.add(itemElement);
+        itemElementsDisplayList.add(0, itemElement);
+    }
+
+    public void saveNewItemElement(ItemElement itemElement, UserInfo sessionUser) throws CdbException {
+        ItemDomainEntity parentItem = (ItemDomainEntity) itemElement.getParentItem();
+        ItemDomainEntity containedItem = (ItemDomainEntity) itemElement.getContainedItem();
+
+        if (parentItem != null) {
+            prepareAddItemElement(parentItem, itemElement);
+        }
+        
+        if (containedItem != null && containedItem.getId() == null) {
+            // New item, skip history, it will be done under update of current.                   
+            prepareEntityInsert(containedItem, sessionUser, true);
+        }
+
+        update(parentItem, sessionUser);
+    }
+
     public void migrateMetadataPropertyType(PropertyType propertyType, ItemMetadataPropertyInfo propInfo) {
         // iterate through metadata fields to identify missing information in property type
         boolean updated = false;
@@ -452,11 +476,11 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
         // initialize property type if it is null
         if (propertyType == null) {
-            propertyType = prepareCoreMetadataPropertyType();                
+            propertyType = prepareCoreMetadataPropertyType();
         } else {
             migrateMetadataPropertyType(propertyType, createCoreMetadataPropertyInfo());
         }
-    }   
+    }
 
     public PropertyType prepareCoreMetadataPropertyType() {
         PropertyTypeControllerUtility propertyTypeControllerUtility = new PropertyTypeControllerUtility();
@@ -555,12 +579,12 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
 
         return dbItem != null;
     }
-    
+
     @Override
     public List<ItemDomainEntity> getAllEntities() {
         return getItemList();
     }
-        
+
     public List<ItemDomainEntity> getItemList() {
         return getEntityDbFacade().findByDomain(getDefaultDomainName());
     }
@@ -627,26 +651,27 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
     }
 
     /**
-     * Provides common support for find by path operation for hierarchical entities. 
+     * Provides common support for find by path operation for hierarchical
+     * entities.
      */
     protected ItemDomainEntity findByPath_(
             String path, Function<ItemDomainEntity, ItemDomainEntity> parentGetterMethod) throws CdbException {
-        
+
         if (path.charAt(0) != '/') {
             // first character expected to be forward slash
             throw new CdbException("invalid path format, first character expected to be forward slash");
         }
-        
+
         // tokenize the path string, escaping any embedded delimiters
         String delim = "/";
         String esc = "\\";
         String regex = "(?<!" + Pattern.quote(esc) + ")" + Pattern.quote(delim);
         List<String> pathTokens = Arrays.asList(path.split(regex));
-        
+
         if (pathTokens.isEmpty()) {
             return null;
         }
-        
+
         // get item name and list of parent item names from path
         String itemName = pathTokens.get(pathTokens.size() - 1);
         List<String> pathParentNames = new ArrayList<>();
@@ -656,13 +681,13 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
             pathParentNames = pathTokens.subList(1, pathTokens.size() - 1);
             Collections.reverse(pathParentNames);
         }
-        
+
         // retrieve list of candidate items matching name
         List<ItemDomainEntity> candidateItems = getItemFacadeInstance().findByDomainAndName(getDefaultDomainName(), itemName);
-        
+
         // check path against parents for each candidate
         for (ItemDomainEntity candidateItem : candidateItems) {
-            
+
             // create parent path list for candidate item and compare to specified path
             List<String> itemParentNames = new ArrayList<>();
             ItemDomainEntity candidateParent = parentGetterMethod.apply(candidateItem);
@@ -678,9 +703,9 @@ public abstract class ItemControllerUtility<ItemDomainEntity extends Item, ItemD
                 }
             }
         }
-                    
+
         // no match
         return null;
     }
-        
+
 }
