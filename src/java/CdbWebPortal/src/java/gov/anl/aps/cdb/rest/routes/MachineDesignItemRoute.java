@@ -38,6 +38,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import jdk.javadoc.internal.doclets.toolkit.util.DocPath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
@@ -338,5 +339,27 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
                 
         return newMachine; 
         
+    }
+    
+    @POST
+    @Path("/moveMachine/{mdId}/{newParentId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Move machine to a new parent.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemElement moveMachine(@PathParam("mdId") int childId,
+            @PathParam("newParentId") int newParentId) throws AuthorizationError, CdbException {
+        
+        ItemDomainMachineDesign childMd = facade.find(childId);
+        ItemDomainMachineDesign newParentMdId = facade.find(newParentId);
+        
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(childMd);
+        verifyCurrentUserPermissionForItem(newParentMdId);
+        
+        
+        ItemDomainMachineDesignControllerUtility itemControllerUtility = childMd.getItemControllerUtility();
+        ItemElement machineElement = itemControllerUtility.performMachineMove(newParentMdId, childMd, currentUser);
+
+        return machineElement;
     }
 }
