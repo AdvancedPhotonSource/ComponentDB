@@ -65,6 +65,7 @@ import gov.anl.aps.cdb.rest.entities.SimpleLocationInformation;
 import gov.anl.aps.cdb.rest.entities.LogEntryEditInformation;
 import gov.anl.aps.cdb.rest.entities.NewLocationInformation;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.io.ByteArrayInputStream;
@@ -373,7 +374,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public ItemLocationInformation updateItemLocation(SimpleLocationInformation locationInformation) throws ObjectNotFound, InvalidArgument, CdbException {
+    public ItemLocationInformation updateItemLocation(@RequestBody(required = true) SimpleLocationInformation locationInformation) throws ObjectNotFound, InvalidArgument, CdbException {
         LOGGER.debug("Updating location for item with id: " + locationInformation.getLocatableItemId());
         // Validate ids provided 
         Item item = getItemByIdBase(locationInformation.getLocatableItemId());
@@ -424,7 +425,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Operation(summary = "Update permission, please provide a full permission object or just set the attribute that needs to be updated in the permission object.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public ItemPermissions updateItemPermission(ItemPermissions permissions) throws ObjectNotFound, CdbException {
+    public ItemPermissions updateItemPermission(@RequestBody(required = true) ItemPermissions permissions) throws ObjectNotFound, CdbException {
         Integer itemId = permissions.getItemId();
         LOGGER.debug("Updating permissions for item with id: " + itemId);
 
@@ -471,7 +472,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public Item updateItemDetails(Item item) throws ObjectNotFound, CdbException {
+    public Item updateItemDetails(@RequestBody(required = true) Item item) throws ObjectNotFound, CdbException {
         LOGGER.debug("Updating details for item with id: " + item.getId());
 
         int itemId = item.getId();
@@ -548,7 +549,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public PropertyValue updateItemStatus(@PathParam("itemId") int itemId, ItemStatusBasicObject status) throws InvalidArgument, ObjectNotFound, CdbException {
+    public PropertyValue updateItemStatus(@PathParam("itemId") int itemId, @RequestBody(required = true) ItemStatusBasicObject status) throws InvalidArgument, ObjectNotFound, CdbException {
         Item itemById = getItemByIdBase(itemId);
 
         UserInfo currentUser = verifyCurrentUserPermissionForItem(itemById);
@@ -624,7 +625,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public PropertyValue updateItemPropertyValue(@PathParam("itemId") int itemId, PropertyValue propertyValue) throws InvalidArgument, ObjectNotFound, CdbException {
+    public PropertyValue updateItemPropertyValue(@PathParam("itemId") int itemId, @RequestBody(required = true) PropertyValue propertyValue) throws InvalidArgument, ObjectNotFound, CdbException {
         LOGGER.debug("Updating details for item with id: " + itemId);
         Item dbItem = getItemByIdBase(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
@@ -687,7 +688,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public PropertyValue updateItemPropertyMetadata(@PathParam("itemId") int itemId, @PathParam("propertyValueId") int propertyValueId, PropertyMetadata propertyMetadata) throws InvalidArgument, ObjectNotFound, CdbException {
+    public PropertyValue updateItemPropertyMetadata(@PathParam("itemId") int itemId, @PathParam("propertyValueId") int propertyValueId, @RequestBody(required = true) PropertyMetadata propertyMetadata) throws InvalidArgument, ObjectNotFound, CdbException {
         LOGGER.debug("Updating property metadata for item with id: " + itemId);
         Item dbItem = getItemByIdBase(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
@@ -745,7 +746,8 @@ public class ItemRoute extends ItemBaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public PropertyValue addItemPropertyValue(@PathParam("itemId") int itemId, PropertyValue propertyValue) throws InvalidArgument, ObjectNotFound, CdbException {
+    public PropertyValue addItemPropertyValue(@PathParam("itemId") int itemId, 
+            @RequestBody(required = true) PropertyValue propertyValue) throws InvalidArgument, ObjectNotFound, CdbException {
         LOGGER.debug("Adding property to item with id: " + itemId);
         Item dbItem = getItemByIdBase(itemId);
         UserInfo updatedByUser = getCurrentRequestUserInfo();
@@ -795,7 +797,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public Log addLogEntryToItem(LogEntryEditInformation logEntryEditInformation) throws ObjectNotFound, CdbException {
+    public Log addLogEntryToItem(@RequestBody(required = true) LogEntryEditInformation logEntryEditInformation) throws ObjectNotFound, CdbException {
         LOGGER.debug("Adding log for item with id: " + logEntryEditInformation.getItemId());
         int itemId = logEntryEditInformation.getItemId();
         Item itemById = getItemByIdBase(itemId);
@@ -821,7 +823,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public PropertyValue uploadDocumentForItem(@PathParam("itemId") int itemId, FileUploadObject documentUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
+    public PropertyValue uploadDocumentForItem(@PathParam("itemId") int itemId, @RequestBody(required = true) FileUploadObject documentUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
         return uploadForItem(itemId, documentUpload, 1);
     }
 
@@ -831,7 +833,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public PropertyValue uploadImageForItem(@PathParam("itemId") int itemId, FileUploadObject imageUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
+    public PropertyValue uploadImageForItem(@PathParam("itemId") int itemId, @RequestBody(required = true) FileUploadObject imageUpload) throws AuthorizationError, DbError, IOException, ObjectNotFound, CdbException {
         return uploadForItem(itemId, imageUpload, 0);
     }
 
@@ -986,7 +988,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Path("/ByDomain/{domainName}/Concise")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ConciseItem> getConciseItemsByDomain(@PathParam("domainName") String domainName, ConciseItemOptions options) {
+    public List<ConciseItem> getConciseItemsByDomain(@PathParam("domainName") String domainName, @RequestBody(required = true) ConciseItemOptions options) {
         LOGGER.debug("Fetch concise items for domain: " + domainName);
         List<Item> itemList = itemFacade.findByDomain(domainName);
         return ConciseItem.createList(itemList, options); 
@@ -1003,7 +1005,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Path("/Catalog/Concise")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ConciseItem> getConciseCatalogItems(ConciseItemOptions options) {
+    public List<ConciseItem> getConciseCatalogItems(@RequestBody(required = true) ConciseItemOptions options) {
         List<Item> catalogItems = getItemsByDomain(ItemDomainName.catalog.getValue());               
         return ConciseItem.createList(catalogItems, options); 
     }
@@ -1032,7 +1034,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Path("/Inventory/Concise")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ConciseItem> getConciseInventoryItems(ConciseItemOptions options) {
+    public List<ConciseItem> getConciseInventoryItems(@RequestBody(required = true) ConciseItemOptions options) {
         List<Item> inventoryItems = getItemsByDomain(ItemDomainName.inventory.getValue());        
         
         return ConciseItem.createList(inventoryItems, options); 
@@ -1105,7 +1107,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Consumes(MediaType.APPLICATION_JSON)
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public ItemDomainLocation createLocation(NewLocationInformation newLocationInformation) throws AuthorizationError, InvalidArgument, CdbException {
+    public ItemDomainLocation createLocation(@RequestBody(required = true) NewLocationInformation newLocationInformation) throws AuthorizationError, InvalidArgument, CdbException {
         String newLocationName = newLocationInformation.getLocationName();
         String newlocationType = newLocationInformation.getLocationType();
         String locationDescription = newLocationInformation.getLocationDescription();

@@ -38,7 +38,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import jdk.javadoc.internal.doclets.toolkit.util.DocPath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.model.TreeNode;
@@ -172,7 +171,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @Path("/IdList")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Integer> getHierarchyIdList(ItemDomanMachineDesignIdListRequest request) throws InvalidArgument {
+    public List<Integer> getHierarchyIdList(@RequestBody(required = true) ItemDomanMachineDesignIdListRequest request) throws InvalidArgument {
         
         Instant start = Instant.now();
         
