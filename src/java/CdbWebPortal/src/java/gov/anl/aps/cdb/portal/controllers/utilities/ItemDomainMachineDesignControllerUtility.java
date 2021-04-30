@@ -346,5 +346,33 @@ public class ItemDomainMachineDesignControllerUtility extends ItemControllerUtil
         
         return itemElement; 
     }
+    
+    public ItemElement performMachineMove(ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
+        if ((newParent instanceof ItemDomainMachineDesign && child instanceof ItemDomainMachineDesign) == false) {
+            throw new CdbException("Both items provided must be of type machine design"); 
+        }
+        if ((newParent.getEntityTypeList().isEmpty() && child.getEntityTypeList().isEmpty()) == false) {
+            throw new CdbException("Moving machines is currently only supported for standard machines."); 
+        }                 
+        
+        ItemElement currentItemElement = child.getParentMachineElement();
+        
+        // Continue to reassignment of parent.        
+        if (currentItemElement != null) {
+            String uniqueName = generateUniqueElementNameForItem(newParent);
+            currentItemElement.setName(uniqueName);
+            currentItemElement.setParentItem(newParent);
+        } else {
+            // Dragging in top level            
+            currentItemElement = createItemElement(newParent, sessionUser);
+            currentItemElement.setContainedItem(child);
+        }
+
+        prepareAddItemElement(newParent, currentItemElement);
+        
+        update(newParent, sessionUser); 
+        
+        return currentItemElement; 
+    }
 
 }
