@@ -119,8 +119,7 @@ public class ItemDomainMachineDesignController
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop variables">
-    private static final String JS_SOURCE_MD_ID_PASSED_KEY = "sourceId";
-    private static final String JS_SOURCE_MD_ELEMENT_ID_PASSED_KEY = "sourceElementId";
+    private static final String JS_SOURCE_MD_ID_PASSED_KEY = "sourceId";    
     private static final String JS_DESTINATION_MD_ID_PASSED_KEY = "destinationId";
     // </editor-fold>   
 
@@ -142,17 +141,10 @@ public class ItemDomainMachineDesignController
             return;
         }
 
-        String sourceIdStr = SessionUtility.getRequestParameterValue(JS_SOURCE_MD_ID_PASSED_KEY);
-        String sourceElementIdStr = SessionUtility.getRequestParameterValue(JS_SOURCE_MD_ELEMENT_ID_PASSED_KEY);
+        String sourceIdStr = SessionUtility.getRequestParameterValue(JS_SOURCE_MD_ID_PASSED_KEY);        
         String destinationIdStr = SessionUtility.getRequestParameterValue(JS_DESTINATION_MD_ID_PASSED_KEY);
         int sourceId = Integer.parseInt(sourceIdStr);
-        int destId = Integer.parseInt(destinationIdStr);
-
-        ItemElement currentItemElement = null;
-        if (sourceElementIdStr.isEmpty() == false) {
-            int sourceElementId = Integer.parseInt(sourceElementIdStr);
-            currentItemElement = itemElementFacade.find(sourceElementId);
-        }
+        int destId = Integer.parseInt(destinationIdStr);       
 
         ItemDomainMachineDesign parent = findById(destId);
         ItemDomainMachineDesign child = findById(sourceId);
@@ -165,24 +157,18 @@ public class ItemDomainMachineDesignController
         if (loginController.isEntityWriteable(child.getEntityInfo()) == false) {
             SessionUtility.addErrorMessage("Insufficient privilages", "The user doesn't have permissions to item: " + child.toString());
             return;
+        }                
+
+        UserInfo sessionUser = SessionUtility.getUser();
+        try {
+            getControllerUtility().performMachineMove(parent, child, sessionUser);
+            resetListDataModel();
+            resetSelectDataModel();
+        } catch (CdbException ex) {
+            LOGGER.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+            return;
         }
-
-        // Continue to reassignment of parent.
-        setCurrent(parent);
-        if (currentItemElement != null) {
-            String uniqueName = getControllerUtility().generateUniqueElementNameForItem(parent);
-            currentItemElement.setName(uniqueName);
-            currentItemElement.setParentItem(parent);
-        } else {
-            // Dragging in top level
-            UserInfo user = SessionUtility.getUser();
-            currentItemElement = getControllerUtility().createItemElement(parent, user);
-            currentItemElement.setContainedItem(child);
-        }
-
-        prepareAddItemElement(parent, currentItemElement);
-
-        update();
 
         child = findById(sourceId);
         expandToSpecificMachineDesignItem(child);

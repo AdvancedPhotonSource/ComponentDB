@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import gov.anl.aps.cdb.rest.entities.SourceIdListRequest;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,7 @@ public class SourceRoute extends BaseRoute {
     @Path("/IdList")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Integer> getSourceIdList(SourceIdListRequest request) {
+    public List<Integer> getSourceIdList(@RequestBody(required = true) SourceIdListRequest request) {
         List<String> nameList = request.getNameList();
         LOGGER.debug("Fetching list of source id's by name list size: " + nameList.size());
         List<Integer> idList = new ArrayList<>(nameList.size());

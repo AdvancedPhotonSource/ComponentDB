@@ -171,7 +171,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @Path("/IdList")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Integer> getHierarchyIdList(ItemDomanMachineDesignIdListRequest request) throws InvalidArgument {
+    public List<Integer> getHierarchyIdList(@RequestBody(required = true) ItemDomanMachineDesignIdListRequest request) throws InvalidArgument {
         
         Instant start = Instant.now();
         
@@ -338,5 +338,27 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
                 
         return newMachine; 
         
+    }
+    
+    @POST
+    @Path("/moveMachine/{mdId}/{newParentId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Move machine to a new parent.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemElement moveMachine(@PathParam("mdId") int childId,
+            @PathParam("newParentId") int newParentId) throws AuthorizationError, CdbException {
+        
+        ItemDomainMachineDesign childMd = facade.find(childId);
+        ItemDomainMachineDesign newParentMdId = facade.find(newParentId);
+        
+        UserInfo currentUser = verifyCurrentUserPermissionForItem(childMd);
+        verifyCurrentUserPermissionForItem(newParentMdId);
+        
+        
+        ItemDomainMachineDesignControllerUtility itemControllerUtility = childMd.getItemControllerUtility();
+        ItemElement machineElement = itemControllerUtility.performMachineMove(newParentMdId, childMd, currentUser);
+
+        return machineElement;
     }
 }

@@ -19,6 +19,8 @@ class MyTestCase(unittest.TestCase):
     INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID = 41
     INVENTORY_FIRST_CONTAINED_INVALID_ITEM_ID = 97
     MACHINE_DESIGN_ID = 93
+    MACHINE_DESIGN_PARENT_ID = 94
+    MACHINE_DESIGN_CHILD_ID = 95
     TEST_PROPERTY_TYPE_NAME = "Test Property"
     LOCATION_QRID_TESTUSER_PERMISSIONS = 101111101
     SAMPLE_IMAGE_PATH = './data/AnlLogo.png'
@@ -148,10 +150,11 @@ class MyTestCase(unittest.TestCase):
 
     def verify_contained_item(self, item_hierarchy_object, expected_contained_item):
         result_item_children = item_hierarchy_object.child_items
-        item = result_item_children[0].item
-        if item is not None:
-            contained_item_id = item.id
-            return expected_contained_item == item.id
+        if result_item_children.__len__() != 0:
+            item = result_item_children[0].item
+            if item is not None:
+                contained_item_id = item.id
+                return expected_contained_item == item.id
         return expected_contained_item is None
 
     def test_update_contained_item(self):
@@ -479,6 +482,23 @@ class MyTestCase(unittest.TestCase):
         options = NewMachinePlaceholderOptions(name='Created Child From API')
         newMachine = self.machineDesignApi.create_placeholder(newMachine.id, options)
         self.assertNotEqual(newMachine, None)
+
+    def test_md_move_machine(self):
+        self.loginAsAdmin()
+
+        hierarchy = self.itemApi.get_item_hierarchy_by_id(self.MACHINE_DESIGN_PARENT_ID)
+
+        self.assertEqual(self.verify_contained_item(hierarchy, self.MACHINE_DESIGN_CHILD_ID), False,
+                         msg='The item was already assigned to machine parent')
+
+        element = self.machineDesignApi.move_machine(self.MACHINE_DESIGN_CHILD_ID, self.MACHINE_DESIGN_PARENT_ID)
+
+        self.assertNotEqual(element, None, msg='No result given from move machine')
+
+        hierarchy = self.itemApi.get_item_hierarchy_by_id(self.MACHINE_DESIGN_PARENT_ID)
+
+        self.assertEqual(self.verify_contained_item(hierarchy, self.MACHINE_DESIGN_CHILD_ID), True,
+                         msg='The move item command failed to move machine to new parent.')
 
     def test_user_route(self):
         users = self.userApi.get_all1()

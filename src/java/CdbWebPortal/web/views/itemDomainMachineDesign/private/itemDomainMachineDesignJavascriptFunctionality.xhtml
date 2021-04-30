@@ -87,10 +87,9 @@ See LICENSE file.
 
             var rowItem = document.getElementById(baseId);
             idItem = rowItem.getElementsByClassName("mdId")[0];
-            idElement = rowItem.getElementsByClassName("mdElementId")[0]
             nameItem = rowItem.getElementsByClassName("mdName")[0];
 
-            return [idItem.innerHTML, nameItem.innerHTML, idElement.innerHTML];
+            return [idItem.innerHTML, nameItem.innerHTML];
         }
 
 
@@ -104,7 +103,6 @@ See LICENSE file.
             var destination = getMachineDesignId(droppableId);
 
             window.sourceDDId = source[0];
-            window.sourceDDElementId = source[2];
             window.destinationDDId = destination[0];
             var sourceName = source[1];
             var destinationName = destination[1];
@@ -118,7 +116,6 @@ See LICENSE file.
         function finishDrop() {
             machineDesignDropEventTrigger([
                 {name: 'sourceId', value: window.sourceDDId},
-                {name: 'sourceElementId', value: window.sourceDDElementId},
                 {name: 'destinationId', value: window.destinationDDId}
             ]);
         }
