@@ -156,10 +156,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
     
-    public List<HelperWizardOption> getWizardOptions() {
+    public List<HelperWizardOption> getImportWizardOptions() {
         if (wizardOptions == null) {
             wizardOptions = new ArrayList<>();
-            List<HelperWizardOption> helperOptions = initializeWizardOptions();
+            List<HelperWizardOption> helperOptions = initializeImportWizardOptions();
             for (HelperWizardOption option : helperOptions) {
                 if (option.getMode() == getImportMode()) {
                     wizardOptions.add(option);
@@ -172,14 +172,36 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     /**
      * Initializes list of wizard options, overridden by subclasses to customize. 
      */
-    protected List<HelperWizardOption> initializeWizardOptions() {
+    protected List<HelperWizardOption> initializeImportWizardOptions() {
         return new ArrayList<>();
     }
 
     /**
      * Validates wizard options.  Overridden by subclasses to customize.
      */
-    public ValidInfo validateWizardOptions() {
+    public ValidInfo validateImportWizardOptions() {
+        return new ValidInfo(true, "");
+    }
+    
+    public List<HelperWizardOption> getExportWizardOptions() {
+        if (wizardOptions == null) {
+            wizardOptions = new ArrayList<>();
+            wizardOptions.addAll(initializeExportWizardOptions());
+        }
+        return wizardOptions;
+    }
+    
+    /**
+     * Initializes list of wizard options, overridden by subclasses to customize. 
+     */
+    protected List<HelperWizardOption> initializeExportWizardOptions() {
+        return new ArrayList<>();
+    }
+
+    /**
+     * Validates wizard options.  Overridden by subclasses to customize.
+     */
+    public ValidInfo validateExportWizardOptions() {
         return new ValidInfo(true, "");
     }
     

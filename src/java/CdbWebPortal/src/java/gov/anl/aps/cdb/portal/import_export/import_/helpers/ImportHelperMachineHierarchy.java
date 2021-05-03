@@ -44,24 +44,24 @@ public class ImportHelperMachineHierarchy
         return machineImportHelperCommon;
     }
     
-    public String getOptionRootItemName() {
-        return getMachineImportHelperCommon().getOptionRootItemName();
+    public String getOptionImportRootItemName() {
+        return getMachineImportHelperCommon().getOptionImportRootItemName();
     }
 
-    public void setOptionRootItemName(String optionRootItemName) {
-        getMachineImportHelperCommon().setOptionRootItemName(optionRootItemName);
+    public void setOptionImportRootItemName(String optionRootItemName) {
+        getMachineImportHelperCommon().setOptionImportRootItemName(optionRootItemName);
     }
     
     @Override
-    protected List<HelperWizardOption> initializeWizardOptions() {        
+    protected List<HelperWizardOption> initializeImportWizardOptions() {        
         List<HelperWizardOption> options = new ArrayList<>();        
-        options.add(MachineImportHelperCommon.rootMachineItemWizardOption());
+        options.add(MachineImportHelperCommon.optionImportRootMachineItem());
         return options;
     }
 
     @Override
-    public ValidInfo validateWizardOptions() {
-        return getMachineImportHelperCommon().validateOptionRootItemName();
+    public ValidInfo validateImportWizardOptions() {
+        return getMachineImportHelperCommon().validateOptionImportRootItemName();
     }
     
     @Override

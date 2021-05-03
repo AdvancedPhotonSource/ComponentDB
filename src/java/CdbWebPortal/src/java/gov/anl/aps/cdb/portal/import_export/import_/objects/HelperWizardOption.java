@@ -67,4 +67,17 @@ public class HelperWizardOption {
         this.mode = mode;
     }
     
+    public static ValidInfo validateIntegerOption(String optionVal, String optionName) {
+        boolean isValid = true;
+        String validString = "";
+        try {
+            int intVal = Integer.valueOf(optionVal);
+        } catch (NumberFormatException ex) {
+            isValid = false;
+            validString = "Option value must be integer, option name: " + optionName 
+                    + " value: " + optionVal + ".";
+        }
+        return new ValidInfo(isValid, validString);
+    }
+    
 }

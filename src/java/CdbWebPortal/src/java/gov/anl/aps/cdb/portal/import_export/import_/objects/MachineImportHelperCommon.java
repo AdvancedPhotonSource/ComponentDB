@@ -44,8 +44,12 @@ public class MachineImportHelperCommon {
     public static final String HEADER_TEMPLATE = "Is Template?";
     public static final String HEADER_TEMPLATE_INVOCATION = "Template Instantiation";
     
-    private String optionRootItemName = null;
+    public static final String OPTION_EXPORT_NUM_LEVELS = "Number of Hierarchy Levels";
+    
+    private String optionImportRootItemName = null;
     private ItemDomainMachineDesign rootItem = null;
+    
+    private String optionExportNumLevels = null;
 
     public static MachineItemRefColumnSpec parentItemColumnSpec(
             List<ColumnModeOptions> options,
@@ -170,42 +174,37 @@ public class MachineImportHelperCommon {
                 0);
     }
     
-    public static HelperWizardOption rootMachineItemWizardOption() {
+    public static HelperWizardOption optionImportRootMachineItem() {
         return new HelperWizardOption(
                 "Default Root Machine Item",
                 "Root of machine hierarchy to locate items within, used to locate items by name without specifying full path.",
-                "optionRootItemName",
+                "optionImportRootItemName",
                 HelperOptionType.STRING,
                 ImportMode.CREATE);
     }
 
-    public String getOptionRootItemName() {
-        return optionRootItemName;
+    public String getOptionImportRootItemName() {
+        return optionImportRootItemName;
     }
 
-    public void setOptionRootItemName(String optionRootItemName) {
-        this.optionRootItemName = optionRootItemName;
+    public void setOptionImportRootItemName(String optionImportRootItemName) {
+        this.optionImportRootItemName = optionImportRootItemName;
     }
     
     public ItemDomainMachineDesign getRootItem() {
         return rootItem;
     }
     
-    public void reset() {
-        rootItem = null;
-        optionRootItemName = null;
-    }
-    
-    public ValidInfo validateOptionRootItemName() {
+    public ValidInfo validateOptionImportRootItemName() {
 
         boolean isValid = true;
         String validString = "";
 
-        if (optionRootItemName != null) {
-            if ((!optionRootItemName.isEmpty())) {
+        if (optionImportRootItemName != null) {
+            if ((!optionImportRootItemName.isEmpty())) {
                 List<ItemDomainMachineDesign> topLevelMatches = new ArrayList<>();
                 List<ItemDomainMachineDesign> matchingItems
-                        = ItemDomainMachineDesignFacade.getInstance().findByName(optionRootItemName);
+                        = ItemDomainMachineDesignFacade.getInstance().findByName(optionImportRootItemName);
                 for (ItemDomainMachineDesign item : matchingItems) {
                     if (item.getParentMachineDesign() == null) {
                         // top-level item matches name
@@ -217,18 +216,42 @@ public class MachineImportHelperCommon {
                     rootItem = topLevelMatches.get(0);
                 } else if (topLevelMatches.size() == 0) {
                     isValid = false;
-                    validString = "no matching top-level machine element with name: " + optionRootItemName;
+                    validString = "no matching top-level machine element with name: " + optionImportRootItemName;
                 } else {
                     // more than one match
                     isValid = false;
-                    validString = "multiple matching top-level machine elements with name: " + optionRootItemName;
+                    validString = "multiple matching top-level machine elements with name: " + optionImportRootItemName;
                 }
             } else {
                 // null out option if empty string
-                optionRootItemName = null;
+                optionImportRootItemName = null;
             }
         }
 
         return new ValidInfo(isValid, validString);
     }
+
+    public static HelperWizardOption optionExportNumLevels() {
+        return new HelperWizardOption(
+                OPTION_EXPORT_NUM_LEVELS,
+                "Number of hierarchy levels to export, starting from top-level.",
+                "optionExportNumLevels",
+                HelperOptionType.INTEGER,
+                null);
+    }
+
+    public String getOptionExportNumLevels() {
+        return optionExportNumLevels;
+    }
+
+    public void setOptionExportNumLevels(String numLevels) {
+        this.optionExportNumLevels = numLevels;
+    }
+    
+    public void reset() {
+        rootItem = null;
+        optionImportRootItemName = null;
+        optionExportNumLevels = null;
+    }
+    
 }

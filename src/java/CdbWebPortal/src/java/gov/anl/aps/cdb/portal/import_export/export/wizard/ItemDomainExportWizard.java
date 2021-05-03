@@ -6,6 +6,8 @@ package gov.anl.aps.cdb.portal.import_export.export.wizard;
 
 import gov.anl.aps.cdb.portal.import_export.export.objects.GenerateExportResult;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
@@ -60,6 +62,10 @@ public class ItemDomainExportWizard implements Serializable {
                 ItemDomainExportWizard.CONTROLLER_NAMED);
     }
 
+    public ImportHelperBase getImportHelper() {
+        return importHelper;
+    }
+    
     public void setDomainInfo(DomainImportExportInfo info) {
         reset();
         domainInfo = info;
@@ -144,12 +150,24 @@ public class ItemDomainExportWizard implements Serializable {
         return disableButtonCancel;
     }
 
+    public List<HelperWizardOption> getWizardOptions() {
+        if (importHelper == null) {
+            return new ArrayList<>();
+        } else {
+            return importHelper.getExportWizardOptions();
+        }
+    }   
+    
+    public boolean isRenderOptions() {
+        return (!getWizardOptions().isEmpty());
+    }
+    
     public String onFlowProcess(FlowEvent event) {
 
         String nextStep = event.getNewStep();
         String currStep = event.getOldStep();
         
-        // create helper if moving from select format tab
+        // handle transition from select format tab
         if ((currStep.endsWith(TAB_SELECT_FORMAT))
                 && (nextStep.endsWith(TAB_SELECT_OPTIONS))) {
             
@@ -173,11 +191,30 @@ public class ItemDomainExportWizard implements Serializable {
                 currentTab = currStep;
                 return currStep;
             }
+            
+            // skip options tab if no options specified
+            if (importHelper.getExportWizardOptions().isEmpty()) {
+                nextStep = "exportWizard" + TAB_DOWNLOAD_FILE;
+            }
         }
 
-        // handle select mode tab
-        if ((currStep.endsWith(TAB_SELECT_OPTIONS))
+        // handle transition to download tab file
+        if (((currStep.endsWith(TAB_SELECT_OPTIONS)) || (currStep.endsWith(TAB_SELECT_FORMAT)))
                 && (nextStep.endsWith(TAB_DOWNLOAD_FILE))) {
+            
+            // validate wizard options if appropriate
+            if (currStep.endsWith(TAB_SELECT_OPTIONS)) {
+                ValidInfo validOptionsInfo = importHelper.validateExportWizardOptions();
+                if (!validOptionsInfo.isValid()) {
+                    // don't allow transition if options validation fails
+                    SessionUtility.addErrorMessage(
+                            "Invalid format options",
+                            validOptionsInfo.getValidString());
+                    setEnablement(currStep);
+                    currentTab = currStep;
+                    return currStep;
+                }
+            }
             
             importHelper.setExportEntityList(exportEntityList);
             generateExportFile();
@@ -291,12 +328,7 @@ public class ItemDomainExportWizard implements Serializable {
             disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonFinish = true;
-
-            if (selectedFormatOption != null) {
-                disableButtonNext = false;
-            } else {
-                disableButtonNext = true;
-            }
+            disableButtonNext = false;
 
         } else if (tab.endsWith(TAB_DOWNLOAD_FILE)) {
             disableButtonPrev = true;
