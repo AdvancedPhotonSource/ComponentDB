@@ -181,6 +181,7 @@ public class ItemDomainExportWizard implements Serializable {
             }
             
             createHelperForSelectedFormat();
+            importHelper.setExportEntityList(exportEntityList);
             
             if (importHelper == null) {
                 // don't allow transition if we couldn't create helper
@@ -202,8 +203,10 @@ public class ItemDomainExportWizard implements Serializable {
         if (((currStep.endsWith(TAB_SELECT_OPTIONS)) || (currStep.endsWith(TAB_SELECT_FORMAT)))
                 && (nextStep.endsWith(TAB_DOWNLOAD_FILE))) {
             
-            // validate wizard options if appropriate
+            // validate and handle wizard options if appropriate
             if (currStep.endsWith(TAB_SELECT_OPTIONS)) {
+                
+                // validate options
                 ValidInfo validOptionsInfo = importHelper.validateExportWizardOptions();
                 if (!validOptionsInfo.isValid()) {
                     // don't allow transition if options validation fails
@@ -214,9 +217,20 @@ public class ItemDomainExportWizard implements Serializable {
                     currentTab = currStep;
                     return currStep;
                 }
+                
+                // handle options
+                ValidInfo handleOptionsInfo = importHelper.handleExportWizardOptions();
+                if (!handleOptionsInfo.isValid()) {
+                    // don't allow transition if handling options fails
+                    SessionUtility.addErrorMessage(
+                            "Error handling format options",
+                            handleOptionsInfo.getValidString());
+                    setEnablement(currStep);
+                    currentTab = currStep;
+                    return currStep;
+                }
             }
             
-            importHelper.setExportEntityList(exportEntityList);
             generateExportFile();
             
             if (downloadFile == null) {

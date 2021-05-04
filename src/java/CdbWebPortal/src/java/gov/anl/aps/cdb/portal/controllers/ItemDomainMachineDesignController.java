@@ -2636,37 +2636,11 @@ public class ItemDomainMachineDesignController
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
     
-    public void collectHierarchyItems(
-            ItemDomainMachineDesign parentItem,
-            List<ItemDomainMachineDesign> collectedItems,
-            boolean isRootItem) {
-
-        if (isRootItem) {
-            collectedItems.add(parentItem);
-        }
-
-        List<ItemElement> displayList = parentItem.getItemElementDisplayList();
-        for (ItemElement ie : displayList) {
-            Item childItem = ie.getContainedItem();
-            if (childItem instanceof ItemDomainMachineDesign) {
-                collectedItems.add((ItemDomainMachineDesign) childItem);
-                collectHierarchyItems((ItemDomainMachineDesign) childItem, collectedItems, false);
-            }
-        }
-
-    }
-
     @Override
     protected List<ItemDomainMachineDesign> getExportEntityList() {        
         ItemDomainMachineDesignTreeNode currentTree = getCurrentMachineDesignListRootTreeNode();
         List<ItemDomainMachineDesign> filteredItems = currentTree.getFilterResults();
-        List<ItemDomainMachineDesign> filteredHierarchyItems = new ArrayList<>();
-        for (ItemDomainMachineDesign item : filteredItems) {
-            if (!item.getIsItemDeleted()) {
-                collectHierarchyItems(item, filteredHierarchyItems, true);
-            }
-        }
-        return filteredHierarchyItems;
+        return filteredItems;
     }
     
     // </editor-fold>       

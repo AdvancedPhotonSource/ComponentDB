@@ -72,10 +72,15 @@ public class HelperWizardOption {
         String validString = "";
         try {
             int intVal = Integer.valueOf(optionVal);
+            if (intVal < 0) {
+                isValid = false;
+                validString = "Option: " + optionName 
+                        + " value must be positive integer.";
+            }
         } catch (NumberFormatException ex) {
             isValid = false;
-            validString = "Option value must be integer, option name: " + optionName 
-                    + " value: " + optionVal + ".";
+            validString = "Option: " + optionName 
+                    + " value must be integer, specified value: " + optionVal + ".";
         }
         return new ValidInfo(isValid, validString);
     }

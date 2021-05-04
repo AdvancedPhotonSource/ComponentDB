@@ -10,6 +10,8 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +50,27 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase {
         return HelperWizardOption.validateIntegerOption(
                 getMachineImportHelperCommon().getOptionExportNumLevels(),
                 MachineImportHelperCommon.OPTION_EXPORT_NUM_LEVELS);
+    }
+    
+    public ValidInfo handleExportWizardOptions() {
+        
+        boolean isValid = true;
+        String validString = "";
+
+        int numLevels = Integer.valueOf(getOptionExportNumLevels());
+        
+        List <CdbEntity> entityList = getExportEntityList();
+        List<ItemDomainMachineDesign> filteredHierarchyItems = new ArrayList<>();
+        for (CdbEntity entity : entityList) {
+            ItemDomainMachineDesign item = (ItemDomainMachineDesign) entity;
+            if (!item.getIsItemDeleted()) {
+                ItemDomainMachineDesign.collectHierarchyItems(item, filteredHierarchyItems, numLevels);
+            }
+        }
+        
+        setExportEntityList(filteredHierarchyItems);
+        
+        return new ValidInfo(isValid, validString);
     }
     
     @Override

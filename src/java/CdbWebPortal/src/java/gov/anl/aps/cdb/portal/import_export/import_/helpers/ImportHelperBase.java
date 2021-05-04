@@ -205,6 +205,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new ValidInfo(true, "");
     }
     
+    /**
+     * Handle options, subclasses override to customize.
+     */
+    public ValidInfo handleExportWizardOptions() {
+        return new ValidInfo(true, "");
+    }
+    
     public List<OutputColumnModel> getTableViewColumns() {
         return outputColumns;
     }

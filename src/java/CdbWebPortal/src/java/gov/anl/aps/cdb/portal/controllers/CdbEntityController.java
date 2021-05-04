@@ -1718,6 +1718,10 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return false;
     }
     
+    /**
+     * Return list of entities for current export operation.  Subclasses
+     * may override to customize.
+     */
     protected List<EntityType> getExportEntityList() {
         
         DataModel dataModel = getListDataModel();
