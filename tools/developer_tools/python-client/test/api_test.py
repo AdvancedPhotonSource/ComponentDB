@@ -13,6 +13,7 @@ class MyTestCase(unittest.TestCase):
     ADMIN_PASSWORD = 'cdb'
     CATALOG_ITEM_ID = 2
     INVENTORY_ITEM_ID = 56
+    INVENTORY_ITEM_ELEMENT_NAME = "E1"
     INVENTORY_ITEM_QRID = 1010001
     INVENTORY_ITEM_CHILDREN = 3
     INVENTORY_FIRST_CONTAINED_ITEM_ID = 45
@@ -151,27 +152,29 @@ class MyTestCase(unittest.TestCase):
     def verify_contained_item(self, item_hierarchy_object, expected_contained_item):
         result_item_children = item_hierarchy_object.child_items
         if result_item_children.__len__() != 0:
-            item = result_item_children[0].item
-            if item is not None:
-                contained_item_id = item.id
-                return expected_contained_item == item.id
+            for result_child in result_item_children:
+                item = result_child.item
+                if item is not None:
+                    contained_item_id = item.id
+                    if expected_contained_item == contained_item_id:
+                        return True
         return expected_contained_item is None
 
     def test_update_contained_item(self):
         result = self.itemApi.get_item_hierarchy_by_id(self.INVENTORY_ITEM_ID)
         result_item_children = result.child_items
 
-        element_id = result_item_children[0].element_id
+        for child_item in result_item_children:
+            if child_item.element_name == self.INVENTORY_ITEM_ELEMENT_NAME:
+                element_id = child_item.element_id
 
-        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_ITEM_ID),
-                         True, msg='Update already happened.')
+        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_ITEM_ID), True, msg='Update already happened.')
 
         self.loginAsAdmin()
         result = self.itemApi.update_contained_item(element_id, self.INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID)
         self.assertNotEqual(result, None)
         result = self.itemApi.get_item_hierarchy_by_id(self.INVENTORY_ITEM_ID)
-        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID),
-                         True, msg='Contained item updated..')
+        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID), True, msg='Contained item updated..')
 
         failed = False
         try:
@@ -181,12 +184,10 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(failed, True, msg='Updated contained item with invalid item.')
 
         result = self.itemApi.clear_contained_item(element_id)
-        self.assertEqual(self.verify_contained_item(result, None),
-                         True, msg='Contained item failed to clear.')
+        self.assertEqual(self.verify_contained_item(result, None), True, msg='Contained item failed to clear.')
 
         result = self.itemApi.update_contained_item(element_id, self.INVENTORY_FIRST_CONTAINED_ITEM_ID)
-        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_ITEM_ID),
-                         True, msg='Failed to restore to original contained item.')
+        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_ITEM_ID), True, msg='Failed to restore to original contained item.')
 
     def test_get_items_derived_from_item(self):
         # Fetch inventory items for a catalog item.
