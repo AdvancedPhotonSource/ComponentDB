@@ -159,7 +159,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Operation(summary = "Update the contained item in a item hierarchy.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public ItemHierarchy updateContainedItem(@PathParam("elementId") int elementId, @PathParam("parentItemId") Integer parentItemId) throws ObjectNotFound, CdbException {
+    public ItemHierarchy updateContainedItem(@PathParam("elementId") int elementId, @PathParam("parentItemId") Integer containedItemId) throws ObjectNotFound, CdbException {
         LOGGER.debug("Updating contained item for item element id: " + elementId);
         ItemElement find = itemElementFacade.find(elementId);
 
@@ -171,8 +171,8 @@ public class ItemRoute extends ItemBaseRoute {
 
         Item newContainedItem = null;
 
-        if (parentItemId != null) {
-            newContainedItem = getItemByIdBase(parentItemId);
+        if (containedItemId != null) {
+            newContainedItem = getItemByIdBase(containedItemId);
         }
 
         UserInfo updatedByUser = getCurrentRequestUserInfo();
