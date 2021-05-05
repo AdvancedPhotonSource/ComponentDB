@@ -6,7 +6,7 @@ import base64
 import os
 
 from cdbApi import ApiException, DomainApi, FileUploadObject, LocationItemsApi, LogApi, PropertyValueApi, \
-	ComponentCatalogItemsApi
+	ComponentCatalogItemsApi, ComponentInventoryItemsApi
 from cdbApi.api.item_api import ItemApi
 from cdbApi.api.downloads_api import DownloadsApi
 from cdbApi.api.property_type_api import PropertyTypeApi
@@ -40,6 +40,7 @@ class CdbApiFactory:
 		self.machineDesignItemApi = MachineDesignItemsApi(api_client=self.apiClient)
 		self.locationItemApi = LocationItemsApi(api_client=self.apiClient)
 		self.componentCatalogItemApi = ComponentCatalogItemsApi(api_client=self.apiClient)
+		self.componentInventoryItemApi = ComponentInventoryItemsApi(api_client=self.apiClient)
 
 		self.authApi = AuthenticationApi(api_client=self.apiClient)
 
