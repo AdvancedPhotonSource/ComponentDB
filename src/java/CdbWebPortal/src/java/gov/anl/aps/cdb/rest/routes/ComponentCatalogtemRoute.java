@@ -40,10 +40,10 @@ public class ComponentCatalogtemRoute extends ItemBaseRoute {
     @PUT
     @Path("/create")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Create machine placeholder item.")    
+    @Operation(summary = "Create catalog item.")    
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public ItemDomainCatalog create(@RequestBody(required = true) NewCatalogInformation catalogInformation) throws InvalidArgument, CdbException {
+    public ItemDomainCatalog createCatalog(@RequestBody(required = true) NewCatalogInformation catalogInformation) throws InvalidArgument, CdbException {
         ItemDomainCatalogControllerUtility utility = new ItemDomainCatalogControllerUtility(); 
         UserInfo requestUser = getCurrentRequestUserInfo();
         
