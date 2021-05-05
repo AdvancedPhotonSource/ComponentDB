@@ -132,6 +132,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public List<CdbEntity> getExportEntityList() {
         return exportEntityList;
     }
+    
+    public int getExportEntityCount() {
+        if (exportEntityList == null) {
+            return 0;
+        } else {
+            return exportEntityList.size();
+        }
+    }
 
     public void setExportEntityList(List<CdbEntity> exportEntityList) {
         this.exportEntityList = exportEntityList;

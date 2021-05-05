@@ -33,6 +33,7 @@ public class ItemDomainExportWizard implements Serializable {
 
     protected static final String TAB_SELECT_FORMAT = "SelectFormatTab";
     protected static final String TAB_SELECT_OPTIONS = "SelectOptionsTab";
+    protected static final String TAB_CONFIRMATION = "ConfirmationTab";
     protected static final String TAB_DOWNLOAD_FILE = "DownloadFileTab";
     
     protected String currentTab = TAB_SELECT_FORMAT;
@@ -53,6 +54,9 @@ public class ItemDomainExportWizard implements Serializable {
     
     // models for select options tab
     private String selectedFormatOption = null;
+    
+    // models for confirmation tab
+    private String confirmationMessage = null;
     
     // models for file download tab
     private StreamedContent downloadFile;
@@ -162,6 +166,10 @@ public class ItemDomainExportWizard implements Serializable {
         return (!getWizardOptions().isEmpty());
     }
     
+    public String getConfirmationMessage() {
+        return confirmationMessage;
+    }
+    
     public String onFlowProcess(FlowEvent event) {
 
         String nextStep = event.getNewStep();
@@ -195,13 +203,13 @@ public class ItemDomainExportWizard implements Serializable {
             
             // skip options tab if no options specified
             if (importHelper.getExportWizardOptions().isEmpty()) {
-                nextStep = "exportWizard" + TAB_DOWNLOAD_FILE;
+                nextStep = "exportWizard" + TAB_CONFIRMATION;
             }
         }
 
-        // handle transition to download tab file
+        // handle transition to confirmation tab file
         if (((currStep.endsWith(TAB_SELECT_OPTIONS)) || (currStep.endsWith(TAB_SELECT_FORMAT)))
-                && (nextStep.endsWith(TAB_DOWNLOAD_FILE))) {
+                && (nextStep.endsWith(TAB_CONFIRMATION))) {
             
             // validate and handle wizard options if appropriate
             if (currStep.endsWith(TAB_SELECT_OPTIONS)) {
@@ -231,6 +239,15 @@ public class ItemDomainExportWizard implements Serializable {
                 }
             }
             
+            confirmationMessage = "Click 'Next Step' to export " 
+                    + importHelper.getExportEntityCount() 
+                    + " items, or 'Cancel' to modify item selection.";
+        }
+        
+        // handle transition to download tab file
+        if ((currStep.endsWith(TAB_CONFIRMATION)) 
+                && (nextStep.endsWith(TAB_DOWNLOAD_FILE))) {
+                        
             generateExportFile();
             
             if (downloadFile == null) {
@@ -339,6 +356,12 @@ public class ItemDomainExportWizard implements Serializable {
             }
 
         } else if (tab.endsWith(TAB_SELECT_OPTIONS)) {
+            disableButtonPrev = false;
+            disableButtonCancel = false;
+            disableButtonFinish = true;
+            disableButtonNext = false;
+
+        } else if (tab.endsWith(TAB_CONFIRMATION)) {
             disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonFinish = true;
