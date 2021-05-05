@@ -44,9 +44,9 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
         ItemElement itemSelfElement = item.getSelfElement();
         item.getFullItemElementList().clear();
         item.getFullItemElementList().add(itemSelfElement);
-        
+
         List<ItemDomainInventory> newItemsToAdd = getNewItemsToAdd(item);
-        
+
         if (newItemsToAdd != null) {
             // Clear new item elements for new items. In case a previous insert failed. 
             for (ItemDomainInventory itemToAdd : newItemsToAdd) {
@@ -62,26 +62,26 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
         }
         clearItemElementsForItem(item);
         updatePermissionOnAllNewPartsIfNeeded(newItemsToAdd, item);
-        addItemElementsFromBillOfMaterials(item);
+        addItemElementsFromBillOfMaterials(item, userInfo);
 
         super.prepareEntityInsert(item, userInfo);
         checkNewItemsToAdd(item, newItemsToAdd, userInfo);
     }
-    
+
     private List<ItemDomainInventory> getNewItemsToAdd(ItemDomainInventory item) {
         InventoryBillOfMaterialItem bom = item.getContainedInBOM();
         List<ItemDomainInventory> newItemsToAdd = null;
         if (bom != null) {
             newItemsToAdd = bom.getNewItemsToAdd();
         }
-        return newItemsToAdd; 
+        return newItemsToAdd;
     }
 
     @Override
-    public void prepareEntityUpdate(ItemDomainInventory item, UserInfo userInfo) throws CdbException {        
-        List<ItemDomainInventory> newItemsToAdd = getNewItemsToAdd(item); 
-        checkNewItemsToAdd(item, newItemsToAdd, userInfo);       
-        addItemElementsFromBillOfMaterials(item);
+    public void prepareEntityUpdate(ItemDomainInventory item, UserInfo userInfo) throws CdbException {
+        List<ItemDomainInventory> newItemsToAdd = getNewItemsToAdd(item);
+        checkNewItemsToAdd(item, newItemsToAdd, userInfo);
+        addItemElementsFromBillOfMaterials(item, userInfo);
         super.prepareEntityUpdate(item, userInfo);
     }
 
@@ -161,7 +161,7 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
             }
         }
     }
-    
+
     public void changeBillOfMaterialsState(InventoryBillOfMaterialItem bomItem, String previousState) {
         if (SessionUtility.runningFaces()) {
             // TODO rewrite the BOM to not require this.
@@ -171,7 +171,7 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
         }
     }
 
-    public void addItemElementsFromBillOfMaterials(ItemDomainInventory item) throws CdbException {
+    public void addItemElementsFromBillOfMaterials(ItemDomainInventory item, UserInfo sessionUser) throws CdbException {
         // Bill of materials list.
         List<InventoryBillOfMaterialItem> bomItems = item.getInventoryDomainBillOfMaterialList();
 
@@ -184,20 +184,22 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
                 // API Mode
                 // Bill of materials is loaded from updated values set from API to check against db values. 
                 Integer id = item.getId();
-                ItemDomainInventory findById = findById(id);
-                List<ItemElement> fullItemElementList = findById.getFullItemElementList();
+                if (id != null) {
+                    ItemDomainInventory findById = findById(id);
+                    List<ItemElement> fullItemElementList = findById.getFullItemElementList();
 
-                ItemElement selfElement = item.getSelfElement();
-                item.setFullItemElementList(fullItemElementList);
-                item.resetItemElementVars();
+                    ItemElement selfElement = item.getSelfElement();
+                    item.setFullItemElementList(fullItemElementList);
+                    item.resetItemElementVars();
 
-                // Restore self element
-                for (int i = 0; i < fullItemElementList.size(); i++) {
-                    ItemElement itemElement = fullItemElementList.get(i);
-                    if (itemElement.equals(selfElement)) {
-                        fullItemElementList.remove(i);
-                        fullItemElementList.add(i, selfElement);
-                        break;
+                    // Restore self element
+                    for (int i = 0; i < fullItemElementList.size(); i++) {
+                        ItemElement itemElement = fullItemElementList.get(i);
+                        if (itemElement.equals(selfElement)) {
+                            fullItemElementList.remove(i);
+                            fullItemElementList.add(i, selfElement);
+                            break;
+                        }
                     }
                 }
             }
@@ -223,7 +225,8 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
 
                 if (currentInventoryItemElement == null) {
                     currentInventoryItemElement = new ItemElement();
-                    currentInventoryItemElement.init(item, bomItem.getCatalogItemElement());
+                    
+                    currentInventoryItemElement.init(item, bomItem.getCatalogItemElement(), sessionUser);
                     item.getFullItemElementList().add(currentInventoryItemElement);
                     logger.debug("Creating instance adding element " + currentInventoryItemElement + " to item " + item);
                 }
@@ -246,7 +249,7 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
 
                     // No need to do that for existing items. 
                     if (currentBomState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
-                        addItemElementsFromBillOfMaterials(inventoryItem);
+                        addItemElementsFromBillOfMaterials(inventoryItem, sessionUser);
                         updateContainedItemForElement(currentInventoryItemElement, inventoryItem);
                     } else if (currentBomState.equals(InventoryBillOfMaterialItemStates.existingItem.getValue())) {
                         if (currentInventoryItemElement.getContainedItem() == inventoryItem == false) {
@@ -300,7 +303,7 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
     public String getDerivedFromItemTitle() {
         return "Catalog Item";
     }
-    
+
     @Override
     public String getEntityTypeName() {
         return "componentInstance";
@@ -310,17 +313,17 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
     public String getDisplayEntityTypeName() {
         return "Inventory Item";
     }
-        
+
     @Override
     public List<ItemDomainInventory> getItemList() {
         return itemFacade.findByDomainOrderByDerivedFromItem(getDefaultDomainName());
     }
-    
+
     @Override
     protected ItemDomainInventory instenciateNewItemDomainEntity() {
         return new ItemDomainInventory();
-    }   
-    
+    }
+
     @Override
     public String getStatusPropertyTypeName() {
         return ItemDomainInventory.ITEM_DOMAIN_INVENTORY_STATUS_PROPERTY_TYPE_NAME;

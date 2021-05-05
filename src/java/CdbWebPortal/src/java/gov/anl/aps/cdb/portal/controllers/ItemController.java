@@ -1591,7 +1591,8 @@ public abstract class ItemController<
         ItemElement newItemElement = new ItemElement();
 
         if (itemElement.getDerivedFromItemElement() != null) {
-            newItemElement.init(clonedItem, itemElement.getDerivedFromItemElement());
+            UserInfo user = SessionUtility.getUser();
+            newItemElement.init(clonedItem, itemElement.getDerivedFromItemElement(), user);
         } else {
             newItemElement.init(clonedItem);
         }
