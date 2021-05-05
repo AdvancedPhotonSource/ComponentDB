@@ -4,7 +4,7 @@ from datetime import datetime
 from CdbApiFactory import CdbApiFactory
 from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformation, SimpleLocationInformation, \
     LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions, \
-    NewCatalogInformation
+    NewCatalogInformation, NewInventoryInformation
 
 
 class MyTestCase(unittest.TestCase):
@@ -26,6 +26,7 @@ class MyTestCase(unittest.TestCase):
     TEST_PROPERTY_TYPE_NAME = "Test Property"
     LOCATION_QRID_TESTUSER_PERMISSIONS = 101111101
     TEST_NEW_CATALOG_ITEM_NAME = "new catalog from test"
+    TEST_NEW_INVENTORY_ITEM_TAG = "TEST_TAG"
     SAMPLE_IMAGE_PATH = './data/AnlLogo.png'
     SAMPLE_DOC_PATH = './data/CdbSchema-v3.0-3.pdf'
 
@@ -38,6 +39,7 @@ class MyTestCase(unittest.TestCase):
         self.cableCatalogApi = self.factory.cableCatalogItemApi
         self.machineDesignApi = self.factory.machineDesignItemApi
         self.componentCatalogApi = self.factory.componentCatalogItemApi
+        self.componentInventoryApi = self.factory.componentInventoryItemApi
         self.propertyTypeApi = self.factory.propertyTypeApi
         self.propertyValueApi = self.factory.propertyValueApi
         self.domainApi = self.factory.domainApi
@@ -541,7 +543,7 @@ class MyTestCase(unittest.TestCase):
         failed = False
 
         try:
-            new_catalog_item = self.componentCatalogApi.create(info)
+            new_catalog_item = self.componentCatalogApi.create_catalog(info)
         except OpenApiException as ex:
             failed = True
 
@@ -550,12 +552,31 @@ class MyTestCase(unittest.TestCase):
         full_project_list = self.itemApi.get_item_project_list()
         info.item_projects_list = [full_project_list[0]]
         try:
-            new_catalog_item = self.componentCatalogApi.create(info)
+            new_catalog_item = self.componentCatalogApi.create_catalog(info)
         except OpenApiException as ex:
             self.fail(msg=ex.body)
 
         self.assertNotEquals(new_catalog_item.id, None, msg="New catalog item wasn't created")
 
+    def test_create_inventory_item(self):
+        self.loginAsAdmin()
+        info = NewInventoryInformation(catalog_id=self.CATALOG_ITEM_ID)
+
+        try:
+            result = self.componentInventoryApi.create_inventory(info)
+        except OpenApiException as ex:
+            self.fail(msg=ex.body)
+
+        self.assertNotEqual(result.id, None, msg='New inventory not returned.')
+
+        info.tag = self.TEST_NEW_INVENTORY_ITEM_TAG
+
+        try:
+            result = self.componentInventoryApi.create_inventory(info)
+        except OpenApiException as ex:
+            self.fail(msg=ex.body)
+
+        self.assertEqual(result.tag, self.TEST_NEW_INVENTORY_ITEM_TAG, msg="tag name kept from API entered.")
 
 if __name__ == '__main__':
     unittest.main()
