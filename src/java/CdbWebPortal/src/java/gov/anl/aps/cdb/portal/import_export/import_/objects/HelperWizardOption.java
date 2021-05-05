@@ -70,17 +70,19 @@ public class HelperWizardOption {
     public static ValidInfo validateIntegerOption(String optionVal, String optionName) {
         boolean isValid = true;
         String validString = "";
-        try {
-            int intVal = Integer.valueOf(optionVal);
-            if (intVal < 0) {
+        if ((optionVal != null) && (!optionVal.isEmpty())) {
+            try {
+                int intVal = Integer.valueOf(optionVal);
+                if (intVal < 0) {
+                    isValid = false;
+                    validString = "Option: " + optionName
+                            + " value must be positive integer.";
+                }
+            } catch (NumberFormatException ex) {
                 isValid = false;
-                validString = "Option: " + optionName 
-                        + " value must be positive integer.";
+                validString = "Option: " + optionName
+                        + " value must be integer, specified value: " + optionVal + ".";
             }
-        } catch (NumberFormatException ex) {
-            isValid = false;
-            validString = "Option: " + optionName 
-                    + " value must be integer, specified value: " + optionVal + ".";
         }
         return new ValidInfo(isValid, validString);
     }

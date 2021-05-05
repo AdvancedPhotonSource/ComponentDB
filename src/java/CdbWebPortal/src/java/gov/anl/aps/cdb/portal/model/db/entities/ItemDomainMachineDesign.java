@@ -597,7 +597,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             ItemDomainMachineDesign parentItem,
             List<ItemDomainMachineDesign> collectedItems,
             int currentLevel,
-            int numLevels) {
+            Integer numLevels) {
         
         currentLevel = currentLevel + 1;
         
@@ -606,7 +606,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             Item childItem = ie.getContainedItem();
             if (childItem instanceof ItemDomainMachineDesign) {
                 collectedItems.add((ItemDomainMachineDesign) childItem);
-                if (currentLevel < numLevels) {
+                if ((numLevels == null) || (currentLevel < numLevels)) {
                     collectHierarchyItems(
                             (ItemDomainMachineDesign) childItem,
                             collectedItems,
@@ -621,10 +621,10 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public static void collectHierarchyItems(
             ItemDomainMachineDesign parentItem,
             List<ItemDomainMachineDesign> collectedItems,
-            int numLevels) {
+            Integer numLevels) {
 
         collectedItems.add(parentItem);
-        if (numLevels > 1) {
+        if ((numLevels == null) || (numLevels > 1)) {
             collectHierarchyItems(parentItem, collectedItems, 1, numLevels);
         }
     }

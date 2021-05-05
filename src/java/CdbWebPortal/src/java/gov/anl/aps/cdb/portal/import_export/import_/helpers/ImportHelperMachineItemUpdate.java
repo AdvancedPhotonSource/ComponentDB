@@ -57,7 +57,11 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase {
         boolean isValid = true;
         String validString = "";
 
-        int numLevels = Integer.valueOf(getOptionExportNumLevels());
+        Integer numLevels = null;
+        String optionVal = getOptionExportNumLevels();
+        if ((optionVal != null) && (!optionVal.isBlank())) {
+            numLevels = Integer.valueOf(optionVal);
+        }
         
         List <CdbEntity> entityList = getExportEntityList();
         List<ItemDomainMachineDesign> filteredHierarchyItems = new ArrayList<>();
