@@ -3,7 +3,8 @@ from datetime import datetime
 
 from CdbApiFactory import CdbApiFactory
 from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformation, SimpleLocationInformation, \
-    LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions
+    LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions, \
+    NewCatalogInformation
 
 
 class MyTestCase(unittest.TestCase):
@@ -24,6 +25,7 @@ class MyTestCase(unittest.TestCase):
     MACHINE_DESIGN_CHILD_ID = 95
     TEST_PROPERTY_TYPE_NAME = "Test Property"
     LOCATION_QRID_TESTUSER_PERMISSIONS = 101111101
+    TEST_NEW_CATALOG_ITEM_NAME = "new catalog from test"
     SAMPLE_IMAGE_PATH = './data/AnlLogo.png'
     SAMPLE_DOC_PATH = './data/CdbSchema-v3.0-3.pdf'
 
@@ -35,6 +37,7 @@ class MyTestCase(unittest.TestCase):
         self.userApi = self.factory.usersApi
         self.cableCatalogApi = self.factory.cableCatalogItemApi
         self.machineDesignApi = self.factory.machineDesignItemApi
+        self.componentCatalogApi = self.factory.componentCatalogItemApi
         self.propertyTypeApi = self.factory.propertyTypeApi
         self.propertyValueApi = self.factory.propertyValueApi
         self.domainApi = self.factory.domainApi
@@ -531,6 +534,28 @@ class MyTestCase(unittest.TestCase):
         for domain in domains:
             items = self.itemApi.get_concise_items_by_domain(domain.name, concise_item_options=options)
             self.assertNotEqual(items, None, msg="Failed fetching items of domain %s" % domain.name)
+
+    def test_create_catalog_item(self):
+        self.loginAsAdmin()
+        info = NewCatalogInformation(name=self.TEST_NEW_CATALOG_ITEM_NAME)
+        failed = False
+
+        try:
+            new_catalog_item = self.componentCatalogApi.create(info)
+        except OpenApiException as ex:
+            failed = True
+
+        self.assertEqual(failed, True, msg='Not all required arguments were passed in.')
+
+        full_project_list = self.itemApi.get_item_project_list()
+        info.item_projects_list = [full_project_list[0]]
+        try:
+            new_catalog_item = self.componentCatalogApi.create(info)
+        except OpenApiException as ex:
+            self.fail(msg=ex.body)
+
+        self.assertNotEquals(new_catalog_item.id, None, msg="New catalog item wasn't created")
+
 
 if __name__ == '__main__':
     unittest.main()
