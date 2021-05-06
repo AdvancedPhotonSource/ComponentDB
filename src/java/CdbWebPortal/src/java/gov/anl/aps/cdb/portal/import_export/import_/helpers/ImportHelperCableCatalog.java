@@ -35,7 +35,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "name", 
                 "setName", 
                 "Cable type name, uniquely identifies cable type.", 
-                null,
+                "getName",
                 ColumnModeOptions.rCREATErUPDATE(),
                 128));
         
@@ -44,7 +44,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "alternateName", 
                 "setAlternateName", 
                 "Alternate cable type name.", 
-                null,
+                "getAlternateName",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 128));
         
@@ -53,7 +53,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "description", 
                 "setDescription", 
                 "Textual description of cable type.", 
-                null,
+                "getDescription",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -62,7 +62,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "urlDisplay", 
                 "setUrl", 
                 "Raw URL for documentation pdf file, e.g., http://www.example.com/documentation.pdf", 
-                null,
+                "getUrl",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -71,7 +71,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "imageUrlDisplay", 
                 "setImageUrl", 
                 "Raw URL for image file, e.g., http://www.example.com/image.jpg", 
-                null,
+                "getImageUrl",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -80,7 +80,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 ImportHelperCatalogBase.KEY_MFR, 
                 "", 
                 "ID or name of CDB source for manufacturer. Name must be unique and prefixed with '#'.", 
-                null,
+                "getExportManufacturer",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 SourceController.getInstance(), 
                 Source.class, 
@@ -91,7 +91,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 ImportHelperCatalogBase.KEY_PART_NUM, 
                 "setPartNumber", 
                 "Manufacturer's part number.", 
-                null,
+                "getPartNumber",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 32));
         
@@ -100,7 +100,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "altPartNumber", 
                 "setAltPartNumber", 
                 "Manufacturer's alternate part number, e.g., 760152413", 
-                null,
+                "getAltPartNumber",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -109,7 +109,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "diameter", 
                 "setDiameter", 
                 "Diameter in inches (max).", 
-                null,
+                "getDiameter",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -118,7 +118,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "weight", 
                 "setWeight", 
                 "Nominal weight in lbs/1000 feet.", 
-                null,
+                "getWeight",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -127,7 +127,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "conductors", 
                 "setConductors", 
                 "Number of conductors/fibers", 
-                null,
+                "getConductors",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -136,7 +136,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "insulation", 
                 "setInsulation", 
                 "Description of cable insulation.", 
-                null,
+                "getInsulation",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -145,7 +145,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "jacketColor", 
                 "setJacketColor", 
                 "Jacket color.", 
-                null,
+                "getJacketColor",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -154,7 +154,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "voltageRating", 
                 "setVoltageRating", 
                 "Voltage rating (VRMS).", 
-                null,
+                "getVoltageRating",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -163,7 +163,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "fireLoad", 
                 "setFireLoad", 
                 "Fire load rating.", 
-                null,
+                "getFireLoad",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -172,7 +172,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "heatLimit", 
                 "setHeatLimit", 
                 "Heat limit.", 
-                null,
+                "getHeatLimit",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -181,7 +181,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "bendRadius", 
                 "setBendRadius", 
                 "Bend radius in inches.", 
-                null,
+                "getBendRadius",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -190,7 +190,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "radTolerance", 
                 "setRadTolerance", 
                 "Radiation tolerance rating.", 
-                null,
+                "getRadTolerance",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -199,7 +199,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "totalLength", 
                 "setTotalLength", 
                 "Total cable length required.", 
-                null,
+                "getTotalLength",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -208,7 +208,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "reelLength", 
                 "setReelLength", 
                 "Standard reel length for this type of cable.", 
-                null,
+                "getReelLength",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -217,7 +217,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "reelQuantity", 
                 "setReelQuantity", 
                 "Number of standard reels required for total length.", 
-                null,
+                "getReelQuantity",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -226,7 +226,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "leadTime", 
                 "setLeadTime", 
                 "Standard procurement lead time for this type of cable.", 
-                null,
+                "getLeadTime",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -235,7 +235,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "procurementStatus", 
                 "setProcurementStatus", 
                 "Procurement status.", 
-                null,
+                "getProcurementStatus",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         

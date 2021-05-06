@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.utilities.EntityTypeControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.utilities.ItemElementUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
@@ -374,9 +375,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     // API generation variables    
     private transient String descriptionFromAPI;
 
-    protected transient PropertyValue coreMetadataPropertyValue = null;
     protected transient ItemMetadataPropertyInfo coreMetadataPropertyInfo = null;
-    
+    protected transient PropertyType coreMetadataPropertyType = null;    
+    protected transient PropertyValue coreMetadataPropertyValue = null;
     
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     protected transient ItemElement currentEditItemElement = null;
@@ -1574,13 +1575,18 @@ public class Item extends CdbDomainEntity implements Serializable {
         return coreMetadataPropertyInfo;
     }
     
-    /**
-     * Overridden by subclasses that utilize core metadata to customize. 
-     */
     public PropertyType getCoreMetadataPropertyType() {
-        throw new UnsupportedOperationException("Item subclass must override getCoreMetadataPropertyType()");
+        if (coreMetadataPropertyType == null) {
+            coreMetadataPropertyType =
+                    PropertyTypeFacade.getInstance().findByName(
+                            getCoreMetadataPropertyInfo().getPropertyName());
+            if (coreMetadataPropertyType == null) {
+                coreMetadataPropertyType = getItemControllerUtility().prepareCoreMetadataPropertyType();
+            }
+        }
+        return coreMetadataPropertyType;
     }
-
+    
     protected CdbEntity getEntityById(String id) {
 
         if (id != null && !id.isEmpty()) {

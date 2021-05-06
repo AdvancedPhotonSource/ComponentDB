@@ -122,18 +122,6 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
-    @Override
-    public PropertyType getCoreMetadataPropertyType() {
-        if (coreMetadataPropertyType == null) {
-            coreMetadataPropertyType =
-                    PropertyTypeFacade.getInstance().findByName(getCoreMetadataPropertyInfo().getPropertyName());
-            if (coreMetadataPropertyType == null) {
-                coreMetadataPropertyType = getItemControllerUtility().prepareCoreMetadataPropertyType();
-            }
-        }
-        return coreMetadataPropertyType;
-    }
-    
     private RelationshipType getCableConnectionRelationshipType() {
         EntityInfo entityInfo = this.getEntityInfo();
         UserInfo ownerUser = entityInfo.getOwnerUser();

@@ -40,6 +40,11 @@ public class ItemDomainCableCatalogControllerUtility extends ItemDomainCatalogBa
     } 
     
     @Override
+    public String getDisplayEntityTypeName() {
+        return "Cable Catalog Item";
+    }
+        
+    @Override
     public ItemMetadataPropertyInfo createCoreMetadataPropertyInfo() {
         ItemMetadataPropertyInfo info = new ItemMetadataPropertyInfo("Cable Type Metadata", CABLE_CATALOG_INTERNAL_PROPERTY_TYPE);
         info.addField(ItemDomainCableCatalog.CABLE_PROPERTY_URL_KEY, "Documentation URL", "Raw URL for documentation pdf file.", ItemMetadataFieldType.URL, "", null);

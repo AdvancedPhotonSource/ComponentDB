@@ -150,10 +150,4 @@ public abstract class ItemDomainCatalogBaseControllerUtility<ItemCatalogBaseDoma
         return "component";
     }
 
-    @Override
-    public String getDisplayEntityTypeName() {
-        return "Catalog Item";
-    }
-
-        
 }

@@ -26,6 +26,19 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
         return sourceString;
     }
     
+    @JsonIgnore
+    public Source getExportManufacturer() {
+        List<ItemSource> itemSourceList = getItemSourceList();
+        if (itemSourceList != null) {
+            for (ItemSource source : itemSourceList) {
+                if (source.getIsManufacturer()) {
+                    return source.getSource();
+                }
+            }
+        }
+        return null;
+    }
+    
     public void setManufacturerInfo(Source source, String partNum) {
         if (source != null) {
             List<ItemSource> itemSourceList = new ArrayList<>();
