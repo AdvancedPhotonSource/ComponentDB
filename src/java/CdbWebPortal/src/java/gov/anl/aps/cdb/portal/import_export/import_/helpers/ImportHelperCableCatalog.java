@@ -31,6 +31,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
         List<ColumnSpec> specs = new ArrayList<>();
         
         specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
         
         specs.add(new StringColumnSpec(
                 "Name", 
@@ -256,6 +257,11 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
 
     @Override
     public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeDelete() {
         return true;
     }
 
