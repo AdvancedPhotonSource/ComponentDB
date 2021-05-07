@@ -185,8 +185,8 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public ItemElement() {
     }
 
-    public void init(Item parentItem, ItemElement derivedFromItemElement) {
-        init(parentItem, derivedFromItemElement, null);
+    public void init(Item parentItem, ItemElement derivedFromItemElement, UserInfo userInfo) {
+        init(parentItem, derivedFromItemElement, null, userInfo, userInfo.getUserGroupList().get(0)); 
     }
 
     public void init(Item parentItem, ItemElement derivedFromItemElement, EntityInfo entityInfo) {
@@ -201,7 +201,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
             UserGroup ownerGroup) {
         
         if (entityInfo == null) {
-            entityInfo = EntityInfoUtility.createEntityInfo(ownerUser, ownerGroup);
+            entityInfo = EntityInfoUtility.createEntityInfo(ownerUser, ownerUser, ownerGroup);
         }
         this.setEntityInfo(entityInfo);
         this.setParentItem(parentItem);

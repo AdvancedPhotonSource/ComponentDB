@@ -159,7 +159,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Operation(summary = "Update the contained item in a item hierarchy.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
-    public ItemHierarchy updateContainedItem(@PathParam("elementId") int elementId, @PathParam("parentItemId") Integer parentItemId) throws ObjectNotFound, CdbException {
+    public ItemHierarchy updateContainedItem(@PathParam("elementId") int elementId, @PathParam("parentItemId") Integer containedItemId) throws ObjectNotFound, CdbException {
         LOGGER.debug("Updating contained item for item element id: " + elementId);
         ItemElement find = itemElementFacade.find(elementId);
 
@@ -171,8 +171,8 @@ public class ItemRoute extends ItemBaseRoute {
 
         Item newContainedItem = null;
 
-        if (parentItemId != null) {
-            newContainedItem = getItemByIdBase(parentItemId);
+        if (containedItemId != null) {
+            newContainedItem = getItemByIdBase(containedItemId);
         }
 
         UserInfo updatedByUser = getCurrentRequestUserInfo();
@@ -988,7 +988,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Path("/ByDomain/{domainName}/Concise")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ConciseItem> getConciseItemsByDomain(@PathParam("domainName") String domainName, @RequestBody(required = true) ConciseItemOptions options) {
+    public List<ConciseItem> getConciseItemsByDomain(@PathParam("domainName") String domainName, ConciseItemOptions options) {
         LOGGER.debug("Fetch concise items for domain: " + domainName);
         List<Item> itemList = itemFacade.findByDomain(domainName);
         return ConciseItem.createList(itemList, options); 
@@ -1005,7 +1005,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Path("/Catalog/Concise")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ConciseItem> getConciseCatalogItems(@RequestBody(required = true) ConciseItemOptions options) {
+    public List<ConciseItem> getConciseCatalogItems(ConciseItemOptions options) {
         List<Item> catalogItems = getItemsByDomain(ItemDomainName.catalog.getValue());               
         return ConciseItem.createList(catalogItems, options); 
     }
@@ -1034,7 +1034,7 @@ public class ItemRoute extends ItemBaseRoute {
     @Path("/Inventory/Concise")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<ConciseItem> getConciseInventoryItems(@RequestBody(required = true) ConciseItemOptions options) {
+    public List<ConciseItem> getConciseInventoryItems(ConciseItemOptions options) {
         List<Item> inventoryItems = getItemsByDomain(ItemDomainName.inventory.getValue());        
         
         return ConciseItem.createList(inventoryItems, options); 

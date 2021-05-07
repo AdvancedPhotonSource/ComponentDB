@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -74,10 +75,12 @@ public class ItemMultiEditDomainInventoryController extends ItemMultiEditLocatab
         // Create a bill of materials for later creating placeholder elements.         
         List<ItemElement> itemElementDisplayList = derivedFromItemForNewItems.getItemElementDisplayList();
         List<ItemElement> newItemItemElementList = item.getFullItemElementList();
+        
+        UserInfo user = SessionUtility.getUser();
 
         for (ItemElement catalogItemElement : itemElementDisplayList) {
             ItemElement newItemElement = new ItemElement();
-            newItemElement.init(item, catalogItemElement);
+            newItemElement.init(item, catalogItemElement, user);
             newItemItemElementList.add(newItemElement);
         }
 
