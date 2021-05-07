@@ -55,6 +55,60 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
         }
     }
     
+    public void updateManufacturerInfo(Source source, String partNum) {
+        
+        if (source != null) {
+            
+            // create source list if it doesn't exist
+            List<ItemSource> itemSourceList = getItemSourceList();
+            if (itemSourceList == null) {
+                itemSourceList = new ArrayList<>();
+                this.setItemSourceList(itemSourceList);
+            }
+            
+            // remove mfr flag for existing source if any
+            ItemSource newMfrSource = null;
+            ItemSource oldMfrSource = null;
+            for (ItemSource itemSource : itemSourceList) {
+                if (itemSource.getIsManufacturer()) {
+                    itemSource.setIsManufacturer(false);
+                    oldMfrSource = itemSource;
+                }
+                if (itemSource.getSource().getName().equals(source.getName())) {
+                    newMfrSource = itemSource;
+                }
+            }
+            
+            // create new ItemSource if we didn't find existing one
+            if (newMfrSource == null) {
+                newMfrSource = new ItemSource();
+                newMfrSource.setItem(this);
+                newMfrSource.setSource(source);
+                itemSourceList.add(newMfrSource);
+            }
+                               
+            // set mfr flag and part number
+            newMfrSource.setIsManufacturer(true);
+            if ((partNum != null) && (!partNum.isBlank())) {
+                newMfrSource.setPartNumber(partNum);
+            }
+                
+            sourceString = source.getName();
+        }
+    }
+    
+    public void removeManufactuterInfo() {
+        List<ItemSource> itemSourceList = getItemSourceList();
+        if (itemSourceList != null) {
+            for (ItemSource itemSource : itemSourceList) {
+                if (itemSource.getIsManufacturer()) {
+                    itemSource.setIsManufacturer(false);
+//                    itemSourceList.remove(itemSource);
+                }
+            }
+        }
+    }
+    
     @JsonIgnore
     public String getPartNumber() {
         return this.getItemIdentifier1();

@@ -8,7 +8,9 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogBaseController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.Map;
@@ -39,20 +41,38 @@ public abstract class ImportHelperCatalogBase <CatalogEntityType extends ItemDom
     @Override
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         
-        String methodLogName = "createEntityInstance() ";
         boolean isValid = true;
         String validString = "";
         
-        ItemDomainCatalogBase item = getEntityController().createEntityInstance();
+        ItemDomainCatalogBase entity = getEntityController().createEntityInstance();
         
         // create ItemSource for manufacturer and part number
         Source itemSource = (Source) rowMap.get(KEY_MFR);
         String itemPartNum = (String) rowMap.get(KEY_PART_NUM);
         if (itemSource != null) {
-            item.setManufacturerInfo(itemSource, itemPartNum);
+            entity.setManufacturerInfo(itemSource, itemPartNum);
         }
         
-        return new CreateInfo(item, isValid, validString);
+        return new CreateInfo(entity, true, "");
     }  
 
+    @Override
+    protected ValidInfo updateEntityInstance(CatalogEntityType entity, Map<String, Object> rowMap) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        // update or delete ItemSource if manufacturer is updated
+        Source itemSource = (Source) rowMap.get(KEY_MFR);
+        String itemPartNum = (String) rowMap.get(KEY_PART_NUM);
+        
+        if (itemSource != null) {
+            entity.updateManufacturerInfo(itemSource, itemPartNum);
+        } else {
+            entity.removeManufactuterInfo();
+        }
+        
+        return new ValidInfo(isValid, validString);
+    }
+    
 }

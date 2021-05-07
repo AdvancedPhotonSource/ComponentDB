@@ -30,6 +30,8 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
         
         List<ColumnSpec> specs = new ArrayList<>();
         
+        specs.add(existingItemIdColumnSpec());
+        
         specs.add(new StringColumnSpec(
                 "Name", 
                 "name", 
@@ -253,6 +255,11 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
     }
 
     @Override
+    public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
     public String getFilenameBase() {
         return "Cable Type Catalog";
     }
@@ -264,7 +271,8 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
     }
     
     @Override
-    protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
-        return super.createEntityInstance(rowMap);
-    }  
+    protected ItemDomainCableCatalog newInvalidUpdateInstance() {
+        return getEntityController().createEntityInstance();
+    }
+
 }
