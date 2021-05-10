@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableCatalogSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableCatalogControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableCatalogConnectors;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
@@ -104,7 +105,12 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     protected DomainImportExportInfo initializeDomainImportInfo() {
         
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportExportFormatInfo("Basic Cable Catalog Format", ImportHelperCableCatalog.class));
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Basic Cable Catalog Format", ImportHelperCableCatalog.class));
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Cable Catalog Connector Creation Format", ImportHelperCableCatalogConnectors.class));
         
         String completionUrl = "/views/itemDomainCableCatalog/list?faces-redirect=true";
         

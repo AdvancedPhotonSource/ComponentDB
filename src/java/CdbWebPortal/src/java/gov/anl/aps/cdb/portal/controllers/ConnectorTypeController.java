@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ConnectorTypeSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorTypeControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ConnectorType;
 import gov.anl.aps.cdb.portal.model.db.beans.ConnectorTypeFacade;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 
 import java.io.Serializable;
 import javax.ejb.EJB;
@@ -24,6 +25,10 @@ public class ConnectorTypeController extends CdbEntityController<ConnectorTypeCo
     
     @EJB
     ConnectorTypeFacade connectorTypeFacade;
+
+    public static ConnectorTypeController getInstance() {
+        return (ConnectorTypeController) SessionUtility.findBean("connectorTypeController"); 
+    }         
 
     @Override
     protected ConnectorTypeFacade getEntityDbFacade() {
