@@ -27,6 +27,9 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
         
         List<ColumnSpec> specs = new ArrayList<>();
         
+        specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
+
         specs.add(new StringColumnSpec(
                 "Name", 
                 "name", 
@@ -87,4 +90,20 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         return super.createEntityInstance(rowMap);
     }  
+
+    @Override
+    public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeDelete() {
+        return true;
+    }
+
+    @Override
+    protected ItemDomainCatalog newInvalidUpdateInstance() {
+        return getEntityController().createEntityInstance();
+    }
+
 }
