@@ -10,7 +10,6 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.Map;
@@ -25,17 +24,21 @@ public abstract class ImportHelperCatalogBase <CatalogEntityType extends ItemDom
     protected final static String KEY_MFR = "sourceString";
     protected final static String KEY_PART_NUM = "partNumber";
     
-    public IdOrNameRefColumnSpec sourceColumnSpec(int colIndex) {
+    public IdOrNameRefColumnSpec sourceColumnSpec(String columnHeader) {
         return new IdOrNameRefColumnSpec(
-                "Source", 
-                ImportHelperCatalogBase.KEY_MFR, 
+                columnHeader, 
+                KEY_MFR, 
                 "", 
-                "Item source.", 
-                null,
+                "ID or name of CDB source for manufacturer. Name must be unique and prefixed with '#'.", 
+                "getExportManufacturer",
                 ColumnModeOptions.oCREATEoUPDATE(),
                 SourceController.getInstance(), 
                 Source.class, 
                 null);
+    }
+    
+    public IdOrNameRefColumnSpec sourceColumnSpec() {
+        return sourceColumnSpec("Source");
     }
     
     @Override

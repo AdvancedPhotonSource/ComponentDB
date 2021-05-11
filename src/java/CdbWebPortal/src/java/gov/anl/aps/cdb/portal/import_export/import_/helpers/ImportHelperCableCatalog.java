@@ -9,7 +9,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCableCatalogController;
 import gov.anl.aps.cdb.portal.controllers.SourceController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.IdOrNameRefColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
@@ -17,7 +16,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -78,16 +76,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
-        specs.add(new IdOrNameRefColumnSpec(
-                "Manufacturer", 
-                ImportHelperCatalogBase.KEY_MFR, 
-                "", 
-                "ID or name of CDB source for manufacturer. Name must be unique and prefixed with '#'.", 
-                "getExportManufacturer",
-                ColumnModeOptions.oCREATEoUPDATE(), 
-                SourceController.getInstance(), 
-                Source.class, 
-                ""));
+        specs.add(sourceColumnSpec("Manufacturer"));
         
         specs.add(new StringColumnSpec(
                 "Part Number", 

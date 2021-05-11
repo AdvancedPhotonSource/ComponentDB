@@ -110,6 +110,15 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
     }
     
     @JsonIgnore
+    public String getAlternateName() {
+        return getItemIdentifier2();
+    }
+
+    public void setAlternateName(String n) {
+        setItemIdentifier2(n);
+    }
+
+    @JsonIgnore
     public String getPartNumber() {
         return this.getItemIdentifier1();
     }

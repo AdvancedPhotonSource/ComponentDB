@@ -32,7 +32,7 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
                 "name", 
                 "setName", 
                 "Catalog item name.", 
-                null,
+                "getName",
                 ColumnModeOptions.rCREATErUPDATE(), 
                 128));
         
@@ -41,7 +41,7 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
                 ImportHelperCatalogBase.KEY_PART_NUM, 
                 "setPartNumber", 
                 "Model number.", 
-                null,
+                "getPartNumber",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 128));
         
@@ -50,7 +50,7 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
                 "description", 
                 "setDescription", 
                 "Textual description.", 
-                null,
+                "getDescription",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -59,11 +59,11 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
                 "alternateName", 
                 "setAlternateName", 
                 "Alternate item name.", 
-                null,
+                "getAlternateName",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 128));
         
-        specs.add(sourceColumnSpec(4));
+        specs.add(sourceColumnSpec());
         specs.add(projectListColumnSpec());
         specs.add(technicalSystemListColumnSpec(ItemDomainName.catalog.getValue()));
         specs.add(functionListColumnSpec(ItemDomainName.catalog.getValue()));

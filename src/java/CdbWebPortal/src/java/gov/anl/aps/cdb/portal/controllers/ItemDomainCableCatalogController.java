@@ -94,6 +94,11 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         return true; 
     }    
 
+    @Override
+    protected ItemDomainCableCatalogControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainCableCatalogControllerUtility(); 
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
     
     @Override
@@ -117,11 +122,6 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
 
-    @Override
-    protected ItemDomainCableCatalogControllerUtility createControllerUtilityInstance() {
-        return new ItemDomainCableCatalogControllerUtility(); 
-    }
-    
     @Override
     public boolean getEntityDisplayExportButton() {
         return true;

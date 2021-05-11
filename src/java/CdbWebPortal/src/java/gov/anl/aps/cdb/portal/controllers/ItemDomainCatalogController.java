@@ -63,23 +63,6 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
         return new ItemDomainCatalogSettings(this);
     }
 
-    @Override
-    public boolean getEntityDisplayImportButton() {
-        return true;
-    }
-
-    @Override
-    protected DomainImportExportInfo initializeDomainImportInfo() {
-
-        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportExportFormatInfo("Basic Catalog Format", ImportHelperCatalog.class));
-        formatInfo.add(new ImportExportFormatInfo("Catalog Assembly Format", ImportHelperCatalogAssembly.class));
-
-        String completionUrl = "/views/itemDomainCatalog/list?faces-redirect=true";
-
-        return new DomainImportExportInfo(formatInfo, completionUrl);
-    }
-
     public List<ItemDomainInventory> getInventorySparesList() {
         ItemDomainCatalog current = getCurrent();
         List<ItemDomainInventory> inventorySparesList = current.getInventorySparesList();
@@ -166,4 +149,45 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
         return new ItemDomainCatalogControllerUtility();
     }
 
+    // <editor-fold defaultstate="collapsed" desc="import/export support">   
+
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
+
+    @Override
+    protected DomainImportExportInfo initializeDomainImportInfo() {
+
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportExportFormatInfo(
+                "Basic Catalog Create/Update Format", ImportHelperCatalog.class));
+        formatInfo.add(new ImportExportFormatInfo(
+                "Catalog Assembly Create Format", ImportHelperCatalogAssembly.class));
+
+        String completionUrl = "/views/itemDomainCatalog/list?faces-redirect=true";
+
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+    
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(
+                new ImportExportFormatInfo(
+                        "Basic Catalog Create/Update Format",  ImportHelperCatalog.class));
+        
+        String completionUrl = "/views/itemDomainCableCatalog/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
+    // </editor-fold>   
 }
