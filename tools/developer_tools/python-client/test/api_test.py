@@ -4,7 +4,7 @@ from datetime import datetime
 from CdbApiFactory import CdbApiFactory
 from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformation, SimpleLocationInformation, \
     LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions, \
-    NewCatalogInformation, NewInventoryInformation
+    NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation
 
 
 class MyTestCase(unittest.TestCase):
@@ -13,6 +13,7 @@ class MyTestCase(unittest.TestCase):
     ADMIN_USERNAME = 'cdb'
     ADMIN_PASSWORD = 'cdb'
     CATALOG_ITEM_ID = 2
+    CATALOG_ITEM_ID_2 = 18
     INVENTORY_ITEM_ID = 56
     INVENTORY_ITEM_ELEMENT_NAME = "E1"
     INVENTORY_ITEM_QRID = 1010001
@@ -557,6 +558,24 @@ class MyTestCase(unittest.TestCase):
             self.fail(msg=ex.body)
 
         self.assertNotEquals(new_catalog_item.id, None, msg="New catalog item wasn't created")
+
+    def test_create_catalog_element(self):
+        self.loginAsAdmin()
+        info = NewCatalogElementInformation(catalog_item_id=self.CATALOG_ITEM_ID)
+        try:
+            element = self.componentCatalogApi.add_catalog_element(self.CATALOG_ITEM_ID_2, info)
+        except OpenApiException as ex:
+            self.fail(msg="Failed to create catalog element. ")
+
+        self.assertNotEqual(None, element.id, msg='No Element id was returned to user.')
+
+        info.part_name = 'TEST_E_NAME'
+        try:
+            element = self.componentCatalogApi.add_catalog_element(self.CATALOG_ITEM_ID_2, info)
+        except OpenApiException as ex:
+            self.fail(msg="Failed to create catalog element. ")
+
+        self.assertEqual(info.part_name, element.name, msg='Custom part name was not set.')
 
     def test_create_inventory_item(self):
         self.loginAsAdmin()
