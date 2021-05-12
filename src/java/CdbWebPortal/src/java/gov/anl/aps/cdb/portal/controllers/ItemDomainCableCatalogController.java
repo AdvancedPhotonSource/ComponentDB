@@ -112,10 +112,10 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
         formatInfo.add(new ImportExportFormatInfo(
-                "Basic Cable Catalog Format", ImportHelperCableCatalog.class));
+                "Basic Cable Catalog Create/Update Format", ImportHelperCableCatalog.class));
         
         formatInfo.add(new ImportExportFormatInfo(
-                "Cable Catalog Connector Creation Format", ImportHelperCableCatalogConnectors.class));
+                "Cable Catalog Connectors Create Format", ImportHelperCableCatalogConnectors.class));
         
         String completionUrl = "/views/itemDomainCableCatalog/list?faces-redirect=true";
         
