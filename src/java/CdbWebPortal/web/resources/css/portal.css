@@ -1382,3 +1382,11 @@ h2 {
         background-color: lightgreen;
     }
 }
+
+.wideMenuItem > ul {
+    width: auto !important;     
+}
+
+.wideMenuItem > ul > li {
+    width: 250px !important;     
+}

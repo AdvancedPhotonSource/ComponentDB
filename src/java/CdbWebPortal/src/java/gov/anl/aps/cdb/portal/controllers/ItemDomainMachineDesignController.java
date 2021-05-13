@@ -92,8 +92,8 @@ public class ItemDomainMachineDesignController
 
     // </editor-fold>       
     // <editor-fold defaultstate="collapsed" desc="Dual list view configuration variables ">
-    private TreeNode selectedItemInListTreeTable = null;
-    private TreeNode lastExpandedNode = null;
+    private ItemDomainMachineDesignTreeNode selectedItemInListTreeTable = null;
+    private ItemDomainMachineDesignTreeNode lastExpandedNode = null;
 
     private ItemDomainMachineDesignTreeNode currentMachineDesignListRootTreeNode = null;
     private ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode = null;
@@ -119,7 +119,7 @@ public class ItemDomainMachineDesignController
 
     // </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Machine Design drag and drop variables">
-    private static final String JS_SOURCE_MD_ID_PASSED_KEY = "sourceId";    
+    private static final String JS_SOURCE_MD_ID_PASSED_KEY = "sourceId";
     private static final String JS_DESTINATION_MD_ID_PASSED_KEY = "destinationId";
     // </editor-fold>   
 
@@ -141,10 +141,10 @@ public class ItemDomainMachineDesignController
             return;
         }
 
-        String sourceIdStr = SessionUtility.getRequestParameterValue(JS_SOURCE_MD_ID_PASSED_KEY);        
+        String sourceIdStr = SessionUtility.getRequestParameterValue(JS_SOURCE_MD_ID_PASSED_KEY);
         String destinationIdStr = SessionUtility.getRequestParameterValue(JS_DESTINATION_MD_ID_PASSED_KEY);
         int sourceId = Integer.parseInt(sourceIdStr);
-        int destId = Integer.parseInt(destinationIdStr);       
+        int destId = Integer.parseInt(destinationIdStr);
 
         ItemDomainMachineDesign parent = findById(destId);
         ItemDomainMachineDesign child = findById(sourceId);
@@ -157,7 +157,7 @@ public class ItemDomainMachineDesignController
         if (loginController.isEntityWriteable(child.getEntityInfo()) == false) {
             SessionUtility.addErrorMessage("Insufficient privilages", "The user doesn't have permissions to item: " + child.toString());
             return;
-        }                
+        }
 
         UserInfo sessionUser = SessionUtility.getUser();
         try {
@@ -177,7 +177,7 @@ public class ItemDomainMachineDesignController
     // </editor-fold>   
     // <editor-fold defaultstate="collapsed" desc="Undocumented Fold">
     private String mdSearchString;
-    private List<TreeNode> searchResultsList;
+    private List<ItemDomainMachineDesignTreeNode> searchResultsList;
     private boolean searchCollapsed;
 
     protected ItemElement currentHierarchyItemElement;
@@ -334,7 +334,7 @@ public class ItemDomainMachineDesignController
     public void searchMachineDesign() {
         Pattern searchPattern = Pattern.compile(Pattern.quote(mdSearchString), Pattern.CASE_INSENSITIVE);
 
-        TreeNode mdRoot = getCurrentMachineDesignListRootTreeNode();
+        ItemDomainMachineDesignTreeNode mdRoot = getCurrentMachineDesignListRootTreeNode();
 
         searchResultsList = new ArrayList();
 
@@ -354,7 +354,8 @@ public class ItemDomainMachineDesignController
         searchCollapsed = true;
     }
 
-    public void searchMachineDesign(TreeNode parentNode, Pattern searchPattern, List<TreeNode> results) {
+    public void searchMachineDesign(ItemDomainMachineDesignTreeNode parentNode, 
+            Pattern searchPattern, List<ItemDomainMachineDesignTreeNode> results) {
         Object data = parentNode.getData();
         parentNode.setExpanded(false);
         if (data != null) {
@@ -371,7 +372,7 @@ public class ItemDomainMachineDesignController
             }
         }
 
-        for (TreeNode node : parentNode.getChildren()) {
+        for (ItemDomainMachineDesignTreeNode node : parentNode.getMachineChildren()) {
             searchMachineDesign(node, searchPattern, results);
         }
     }
@@ -395,7 +396,7 @@ public class ItemDomainMachineDesignController
                 }
             }
 
-            TreeNode result = searchResultsList.get(indx);
+            ItemDomainMachineDesignTreeNode result = searchResultsList.get(indx);
             selectItemInTreeTable(result);
         }
     }
@@ -417,35 +418,29 @@ public class ItemDomainMachineDesignController
     }
 
     public void expandSelectedTreeNode() {
-        TreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
+        ItemDomainMachineDesignTreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
         if (selectedItemInListTreeTable != null) {
             boolean expanded = !selectedItemInListTreeTable.isExpanded();
-            expandAllChildren(selectedItemInListTreeTable, expanded);
+            try {
+                selectedItemInListTreeTable.expandAllChildren(expanded);
+            } catch (CdbException ex) {
+                selectedItemInListTreeTable.setExpanded(true); 
+                SessionUtility.addWarningMessage("Warning", ex.getErrorMessage());
+            }
         } else {
             SessionUtility.addInfoMessage("No tree node is selected", "Select a tree node and try again.");
         }
     }
 
-    private void expandAllChildren(TreeNode treeNode, boolean expanded) {
-        treeNode.setExpanded(expanded);
-
-        List<TreeNode> children = treeNode.getChildren();
-        if (children != null) {
-            for (TreeNode child : children) {
-                expandAllChildren(child, expanded);
-            }
-        }
-    }
-
-    public TreeNode getSelectedItemInListTreeTable() {
+    public ItemDomainMachineDesignTreeNode getSelectedItemInListTreeTable() {
         return selectedItemInListTreeTable;
     }
 
-    public void setSelectedItemInListTreeTable(TreeNode selectedItemInListTreeTable) {
+    public void setSelectedItemInListTreeTable(ItemDomainMachineDesignTreeNode selectedItemInListTreeTable) {
         this.selectedItemInListTreeTable = selectedItemInListTreeTable;
     }
 
-    private void selectItemInTreeTable(TreeNode newSelection) {
+    private void selectItemInTreeTable(ItemDomainMachineDesignTreeNode newSelection) {
         TreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
         if (selectedItemInListTreeTable != null) {
             selectedItemInListTreeTable.setSelected(false);
@@ -722,7 +717,7 @@ public class ItemDomainMachineDesignController
 
         expandToSpecificTreeNode(selectedItemInListTreeTable);
         if (detachedDomainId == ItemDomainName.MACHINE_DESIGN_ID) {
-            for (TreeNode node : getCurrentMachineDesignListRootTreeNode().getChildren()) {
+            for (ItemDomainMachineDesignTreeNode node : getCurrentMachineDesignListRootTreeNode().getMachineChildren()) {
                 ItemElement ie = (ItemElement) node.getData();
                 Item ci = ie.getContainedItem();
                 if (containedItem.equals(ci)) {
@@ -877,14 +872,14 @@ public class ItemDomainMachineDesignController
 
     private void expandToSpecificMachineDesignItem(ItemDomainMachineDesign item) {
 
-        TreeNode machineDesignTreeRootTreeNode = getCurrentMachineDesignListRootTreeNode();
+        ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode = getCurrentMachineDesignListRootTreeNode();
 
         if (selectedItemInListTreeTable != null) {
             selectedItemInListTreeTable.setSelected(false);
             selectedItemInListTreeTable = null;
         }
 
-        TreeNode selectedNode = expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, item);
+        ItemDomainMachineDesignTreeNode selectedNode = expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, item);
         selectedItemInListTreeTable = selectedNode;
     }
 
@@ -898,8 +893,8 @@ public class ItemDomainMachineDesignController
      * @param item Child node to expand the nodes above.
      * @return
      */
-    public static TreeNode expandToSpecificMachineDesignItem(
-            TreeNode machineDesignTreeRootTreeNode,
+    public static ItemDomainMachineDesignTreeNode expandToSpecificMachineDesignItem(
+            ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode,
             ItemDomainMachineDesign item) {
 
         Stack<ItemDomainMachineDesign> machineDesingItemStack = new Stack<>();
@@ -926,14 +921,14 @@ public class ItemDomainMachineDesignController
             }
         }
 
-        List<TreeNode> children = machineDesignTreeRootTreeNode.getChildren();
+        List<ItemDomainMachineDesignTreeNode> children = machineDesignTreeRootTreeNode.getMachineChildren(); 
 
-        TreeNode result = null;
+        ItemDomainMachineDesignTreeNode result = null;
 
         while (children != null && machineDesingItemStack.size() > 0) {
             ItemDomainMachineDesign pop = machineDesingItemStack.pop();
 
-            for (TreeNode treeNode : children) {
+            for (ItemDomainMachineDesignTreeNode treeNode : children) {
                 ItemElement data = (ItemElement) treeNode.getData();
                 Item containedItem = data.getContainedItem();
                 if (isItemMachineDesignStatic(containedItem)) {
@@ -945,7 +940,7 @@ public class ItemDomainMachineDesignController
                             break;
                         } else {
                             treeNode.setExpanded(true);
-                            children = treeNode.getChildren();
+                            children = treeNode.getMachineChildren(); 
                             break;
                         }
                     }
@@ -955,7 +950,7 @@ public class ItemDomainMachineDesignController
         return result;
     }
 
-    private void expandToSpecificTreeNodeAndSelect(TreeNode treeNode) {
+    private void expandToSpecificTreeNodeAndSelect(ItemDomainMachineDesignTreeNode treeNode) {
         expandToSpecificTreeNode(treeNode);
         selectedItemInListTreeTable = lastExpandedNode;
         lastExpandedNode.setSelected(true);
@@ -981,7 +976,7 @@ public class ItemDomainMachineDesignController
         ItemElement itemElement = (ItemElement) treeNode.getData();
         Item item = itemElement.getContainedItem();
 
-        for (TreeNode ittrTreeNode : lastExpandedNode.getChildren()) {
+        for (ItemDomainMachineDesignTreeNode ittrTreeNode : lastExpandedNode.getMachineChildren()) {
             ItemElement element = (ItemElement) ittrTreeNode.getData();
             Item ittrItem = element.getContainedItem();
             if (item.equals(ittrItem)) {
@@ -1202,7 +1197,7 @@ public class ItemDomainMachineDesignController
 
             ItemDomainMachineDesign selectedItem = getItemFromSelectedItemInTreeTable();
             UserInfo user = SessionUtility.getUser();
-            ItemDomainMachineDesign newMachineDesign; 
+            ItemDomainMachineDesign newMachineDesign;
             try {
                 newMachineDesign = getControllerUtility().createEntityInstanceBasedOnParent(selectedItem, user);
             } catch (CdbException ex) {
@@ -1286,11 +1281,11 @@ public class ItemDomainMachineDesignController
             newCatalogItemsInMachineDesignModel = new DefaultTreeNode();
             TreeNode parent = new DefaultTreeNode(getCurrent());
             newCatalogItemsInMachineDesignModel.getChildren().add(parent);
-            parent.setExpanded(true);
-            lastExpandedNode = parent;
+            parent.setExpanded(true);                        
         }
+        TreeNode topItem = newCatalogItemsInMachineDesignModel.getChildren().get(0); 
         TreeNode newCatalogNode = new DefaultTreeNode(catalogItem);
-        lastExpandedNode.getChildren().add(newCatalogNode);
+        topItem.getChildren().add(newCatalogNode);
 
         catalogItemsDraggedAsChildren.add(catalogItem);
     }

@@ -20,7 +20,6 @@ import org.primefaces.model.TreeNode;
 import org.primefaces.model.menu.DefaultMenuItem;
 import org.primefaces.model.menu.DefaultMenuModel;
 import org.primefaces.model.menu.DefaultSubMenu;
-import org.primefaces.model.menu.MenuElement;
 
 /**
  * DB utility class for item elements.
@@ -32,6 +31,9 @@ public class ItemElementUtility {
     private final static String SELECTION_MENU_MODEL_ONCLICK_TEMPLATE = "#{%s.%s(itemGenericViewController.findById(%s))}";
     private final static String CLEAR_ITEM_ONCLICK_TEMPLATE = "#{%s.%s(%s)}";
     private final static String ACTIVE_LOCATION_MENU_ITEM_STYLE = "activeLocationMenuItem";
+    private final static Integer MENU_MODEL_MAX_LENGTH = 35;
+    private final static Integer MENU_MODEL_TEXT_WIDE_MIN = 20;
+    private final static String MENU_MODEL_WIDE_STYLE_NAME = "wideMenuItem";
 
     private static final Logger logger = LogManager.getLogger(ItemElementUtility.class.getName());
 
@@ -116,20 +118,20 @@ public class ItemElementUtility {
     }
 
     public static void prepareItemElementHistory(List<ItemElement> originalItemElementList,
-            List<ItemElement> newItemElementList, EntityInfo entityInfo) {                        
+            List<ItemElement> newItemElementList, EntityInfo entityInfo) {
         for (ItemElement itemElementValue : newItemElementList) {
             int index = -1;
             if (originalItemElementList != null) {
                 index = originalItemElementList.indexOf(itemElementValue);
             }
-            
+
             if (index >= 0) {
                 // Original element was there.
                 ItemElement originalItemElement = originalItemElementList.get(index);
                 prepareItemElementHistory(originalItemElement, itemElementValue, entityInfo);
             } else {
                 prepareItemElementHistory(null, itemElementValue, entityInfo);
-                
+
                 // New item elements may be created hierarchically
                 Item containedItem = itemElementValue.getContainedItem();
                 if (containedItem != null) {
@@ -168,7 +170,7 @@ public class ItemElementUtility {
      * Generates hierarchy of nodes in the form of MenuModel meant to be used as
      * a model in a tiered menu.Could be used in other menus.
      *
-     * @param firstLevelItemList - List of all children cached in hierarchy. 
+     * @param firstLevelItemList - List of all children cached in hierarchy.
      * @param baseNodeName - String that will be displayed on the initial
      * submenu.
      * @param selectionController - [Null accepted] Controller to select item
@@ -176,7 +178,8 @@ public class ItemElementUtility {
      * selection controller to be called for menuitem command.
      * @param activeItemList - [Null accepted] If provided a location selected
      * style will be applied to the location that lead to the lowest location.
-     * @param nullOption - Allows for clearing the selection. if null is provided item cannot be cleared. 
+     * @param nullOption - Allows for clearing the selection. if null is
+     * provided item cannot be cleared.
      * @return
      */
     public static DefaultMenuModel generateItemSelectionMenuModel(List<ItemHierarchyCache> firstLevelItemList,
@@ -192,7 +195,7 @@ public class ItemElementUtility {
         if (firstLevelItemList != null) {
             DefaultSubMenu defaultSubMenu = DefaultSubMenu.builder()
                     .label(baseNodeName)
-                    .build();             
+                    .build();
             generatedMenuModel.getElements().add(defaultSubMenu);
 
             // Add null item 
@@ -202,7 +205,7 @@ public class ItemElementUtility {
                         .command(String.format(CLEAR_ITEM_ONCLICK_TEMPLATE, selectionController, selectionMethod, "null"))
                         .update(updateTarget)
                         .process(processTarget)
-                        .build();                
+                        .build();
                 defaultSubMenu.getElements().add(nullMenuItem);
             }
 
@@ -211,7 +214,7 @@ public class ItemElementUtility {
             DefaultMenuItem menuItem = DefaultMenuItem.builder()
                     .value(baseNodeName)
                     .disabled(true)
-                    .build(); 
+                    .build();
             generatedMenuModel.getElements().add(menuItem);
         }
 
@@ -239,8 +242,24 @@ public class ItemElementUtility {
             String updateTarget,
             String processTarget) {
 
-        for (ItemHierarchyCache itemCache : itemList) {
+        int size = itemList.size();
+        int setIndex = 0;
+        DefaultSubMenu currentSubmenu = submenu;
+
+        for (int i = 0; i < size; i++) {
+            ItemHierarchyCache itemCache = itemList.get(i);
+
             Item item = itemCache.getParentItem();
+
+            if (size > MENU_MODEL_MAX_LENGTH && i == setIndex * MENU_MODEL_MAX_LENGTH) {
+                setIndex++;
+                int nextSize = (MENU_MODEL_MAX_LENGTH * setIndex) - 1;
+                if (nextSize > size) {
+                    nextSize = size - 1;
+                }
+                currentSubmenu = DefaultSubMenu.builder().label(i + "..." + nextSize).build();
+                submenu.getElements().add(currentSubmenu);
+            }
 
             boolean applyLocationActiveStyle = false;
             if (activeItemList != null) {
@@ -255,8 +274,8 @@ public class ItemElementUtility {
             if (createSubmenu) {
                 DefaultSubMenu childSubmenu = DefaultSubMenu.builder()
                         .label(item.getName())
-                        .build();                 
-                
+                        .build();
+
                 if (applyLocationActiveStyle) {
                     childSubmenu.setStyleClass(ACTIVE_LOCATION_MENU_ITEM_STYLE);
                     if (activeItemList.indexOf(item) != activeItemList.size() - 1) {
@@ -265,14 +284,18 @@ public class ItemElementUtility {
                     }
                 }
 
-                submenu.getElements().add(childSubmenu);
+                if (childSubmenu.getLabel().length() > MENU_MODEL_TEXT_WIDE_MIN) {
+                    currentSubmenu.setStyleClass(MENU_MODEL_WIDE_STYLE_NAME);
+                }
+
+                currentSubmenu.getElements().add(childSubmenu);
                 addMenuItemToSubmenu(childSubmenu, item,
                         setLocationController, setLocationMethod,
                         applyLocationActiveStyle, updateTarget, processTarget);
 
                 generateItemSelectionMenuModel(childSubmenu, itemChildren, setLocationController, setLocationMethod, activeItemList, updateTarget, processTarget);
             } else {
-                addMenuItemToSubmenu(submenu, item,
+                addMenuItemToSubmenu(currentSubmenu, item,
                         setLocationController, setLocationMethod,
                         applyLocationActiveStyle, updateTarget, processTarget);
             }
@@ -301,9 +324,10 @@ public class ItemElementUtility {
             boolean applyActiveLocationStyle,
             String updateTarget,
             String processTarget) {
+        String label = item.getName(); 
         DefaultMenuItem menuItem = DefaultMenuItem.builder()
-                .value(item.getName())
-                .build(); 
+                .value(label)
+                .build();
 
         if (applyActiveLocationStyle) {
             menuItem.setStyleClass(ACTIVE_LOCATION_MENU_ITEM_STYLE);
@@ -315,6 +339,11 @@ public class ItemElementUtility {
             menuItem.setUpdate(updateTarget);
             menuItem.setProcess(processTarget);
         }
+
+        if (label.length() > MENU_MODEL_TEXT_WIDE_MIN) {
+            currentSubmenu.setStyleClass(MENU_MODEL_WIDE_STYLE_NAME);
+        }
+
         currentSubmenu.getElements().add(menuItem);
     }
 

@@ -20,8 +20,8 @@ See LICENSE file.
                      rows="#{resources.SelectDataTableNumberOfRows}"
                      paginator="true">            
             
-            <p:column>
-                <h:outputText id="dragIcon" styleClass="fa fa-arrows-alt" />
+            <p:column headerText="Drag Handle">
+                <h:outputText id="dragIcon" styleClass="centeredContent fa fa-arrows-alt" />
                 <p:draggable for="dragIcon" revert="true" helper="clone"/>
             </p:column>
             

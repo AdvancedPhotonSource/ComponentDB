@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemDomainMachineDesignQueryBuilder;
@@ -28,6 +29,8 @@ import org.primefaces.model.TreeNode;
  * @author Dariusz
  */
 public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
+    
+    private final static Integer MAXIMUM_EXPANDED_NODES = 250; 
 
     private String nameFilter = "";
     private Domain domain;
@@ -62,6 +65,10 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
         this.setExpanded(true);
         childrenLoaded = true;
+    }
+
+    public ItemDomainMachineDesignTreeNode(Object data) {
+        super(data);
     }
 
     private void addTopLevelChildren(List<ItemDomainMachineDesign> topNodes) {
@@ -457,6 +464,56 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
             }
         }
         this.filterAllNodes = filterAllNodes;
+    }
+    
+    public void expandAllChildren(boolean expanded) throws CdbException {
+        Integer count = expandAllChildren(this, expanded, 0); 
+        if (expanded && count > MAXIMUM_EXPANDED_NODES) {
+            throw new CdbException("Exceeded maximum expanded nodes. Select a child and expand again."); 
+        }
+    }
+    
+    private Integer expandAllChildren(TreeNode treeNode, boolean expanded, Integer count) {
+        treeNode.setExpanded(expanded);
+        count++;
+        if (expanded && count > MAXIMUM_EXPANDED_NODES) {
+            treeNode.setExpanded(!expanded);
+            return count;
+        }
+
+        List<TreeNode> children = treeNode.getChildren();
+        if (children != null) {
+            boolean keepGoing = children.size() > 0;
+            int direction = 1;
+            int i = 0;
+            while (keepGoing) {
+                TreeNode child = children.get(i);
+                i += direction;
+
+                if (direction == 1) {
+                    count = expandAllChildren(child, expanded, count);
+                    if (expanded && count > MAXIMUM_EXPANDED_NODES) {
+                        direction = -1;
+                        i--; 
+                    } else {
+                        if (i >= children.size()) {
+                            keepGoing = false; 
+                        }
+                    }                    
+                } else {
+                    expandAllChildren(child, !expanded, 0);
+                    if (i < 0) { 
+                        keepGoing = false; 
+                    }
+                }
+            }
+        }
+
+        if (expanded && count > MAXIMUM_EXPANDED_NODES) {
+            treeNode.setExpanded(!expanded);
+        }
+
+        return count;
     }
 
     public class MachineTreeConfiguration {
