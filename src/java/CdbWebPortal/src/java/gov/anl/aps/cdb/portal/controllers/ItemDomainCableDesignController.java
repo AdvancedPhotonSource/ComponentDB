@@ -262,7 +262,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         private void expandTreeAndSelectNode() {
 
-            TreeNode machineDesignTreeRootTreeNode = getMdTree();
+            ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode = getMdTree();
 
             if (selectedMdTreeNode != null) {
                 selectedMdTreeNode.setSelected(false);
