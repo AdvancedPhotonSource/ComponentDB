@@ -28,7 +28,18 @@ See LICENSE file.
         <ui:decorate template="private/templates/additionPanelGridContentTemplate.xhtml" />
     </ui:define>
 
-    <ui:define name="additionalRightItemPanels">        
+    <ui:define name="additionalRightItemPanels">
+        
+        <p:panel header="End Metadata"
+                 toggleable="true"
+                 collapsed="true">
+            <p:accordionPanel multiple="true"
+                              activeIndex="">
+                <p:tab title="End 1"/>
+                <p:tab title="End 2"/>
+            </p:accordionPanel>
+        </p:panel>
+        
         <p:panel header="Device Connections" 
                  toggleable="true" 
                  collapsed="#{!entityController.displayConnectionsList}">

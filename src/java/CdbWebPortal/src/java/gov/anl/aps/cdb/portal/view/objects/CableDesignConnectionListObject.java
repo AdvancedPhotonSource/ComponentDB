@@ -78,76 +78,6 @@ public class CableDesignConnectionListObject {
         return mdConnector;
     }
 
-    public String getDescription() throws CdbException {
-        return cableDesign.getConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_DESCRIPTION_KEY);
-    }
-
-    public void setDescription(String value) throws CdbException {
-        cableDesign.setConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_DESCRIPTION_KEY, value);
-    }
-    
-    public String getRoute() throws CdbException {
-        return cableDesign.getConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_ROUTE_KEY);
-    }
-
-    public void setRoute(String value) throws CdbException {
-        cableDesign.setConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_ROUTE_KEY, value);
-    }
-    
-    public String getPinlist() throws CdbException {
-        return cableDesign.getConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_PINLIST_KEY);
-    }
-
-    public void setPinlist(String value) throws CdbException {
-        cableDesign.setConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_PINLIST_KEY, value);
-    }
-    
-    public String getEndLength() throws CdbException {
-        return cableDesign.getConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_END_LENGTH_KEY);
-    }
-
-    public void setEndLength(String value) throws CdbException {
-        cableDesign.setConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_END_LENGTH_KEY, value);
-    }
-    
-    public String getTermination() throws CdbException {
-        return cableDesign.getConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_TERMINATION_KEY);
-    }
-
-    public void setTermination(String value) throws CdbException {
-        cableDesign.setConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_TERMINATION_KEY, value);
-    }
-    
-    public String getNotes() throws CdbException {
-        return cableDesign.getConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_NOTES_KEY);
-    }
-
-    public void setNotes(String value) throws CdbException {
-        cableDesign.setConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_NOTES_KEY, value);
-    }
-    
-    public String getDrawing() throws CdbException {
-        return cableDesign.getConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_DRAWING_KEY);
-    }
-
-    public void setDrawing(String value) throws CdbException {
-        cableDesign.setConnectionPropertyFieldValue(
-                cableRelationship, ItemDomainCableDesign.CONNECTION_PROPERTY_DRAWING_KEY, value);
-    }
-    
     public static List<CableDesignConnectionListObject> getConnectionList(ItemDomainCableDesign item) {
         
         List<CableDesignConnectionListObject> connList = new ArrayList<>();
@@ -198,7 +128,7 @@ public class CableDesignConnectionListObject {
             return null;
         }
         
-        ItemMetadataPropertyInfo info = ItemDomainCableDesign.getConnectionPropertyInfo();
+        ItemMetadataPropertyInfo info = ItemDomainCableDesign.getEndPropertyInfo();
 
         List<PropertyValue> propertyValueList = cableRelationship.getPropertyValueList();
         if (propertyValueList == null) {

@@ -720,7 +720,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     public ItemMetadataPropertyInfo getConnectionPropertyInfo() {
-        return ItemDomainCableDesign.getConnectionPropertyInfo();
+        return ItemDomainCableDesign.getEndPropertyInfo();
     }
     
     /**
@@ -827,7 +827,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     @Override
     public boolean getEntityDisplayItemMemberships() {
-        return true;
+        return false;
     }
 
     @Override
@@ -888,8 +888,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return getUnmappedConnectorsForCurrent().size() > 0;
     }
     
-    public void createOrMigrateConnectionPropertyType() {        
-        getControllerUtility().createOrMigrateConnectionPropertyType();
+    public void createOrMigrateEndPropertyType() {        
+        getControllerUtility().createOrMigrateEndPropertyType();
     }   
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   

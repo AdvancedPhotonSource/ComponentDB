@@ -392,7 +392,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     @Override 
     protected ValidInfo preImport() {
         getEntityController().createOrMigrateCoreMetadataPropertyType();
-        getEntityController().createOrMigrateConnectionPropertyType();
+        getEntityController().createOrMigrateEndPropertyType();
         return new ValidInfo(true, "");
     }
     

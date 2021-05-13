@@ -217,7 +217,7 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
        return clone;
     }
     
-    public PropertyType prepareConnectionPropertyType(ItemMetadataPropertyInfo propInfo) throws CdbException {
+    public PropertyType prepareEndPropertyType(ItemMetadataPropertyInfo propInfo) throws CdbException {
         
         PropertyTypeControllerUtility propertyTypeControllerUtility = new PropertyTypeControllerUtility();
         PropertyType propertyType = propertyTypeControllerUtility.createEntityInstance(null);
@@ -241,14 +241,14 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
         return propertyType;
     }
 
-    public void createOrMigrateConnectionPropertyType() {
+    public void createOrMigrateEndPropertyType() {
         
-        PropertyType propertyType = ItemDomainCableDesign.getConnectionPropertyType();
-        ItemMetadataPropertyInfo info = ItemDomainCableDesign.getConnectionPropertyInfo();
+        PropertyType propertyType = ItemDomainCableDesign.getEndPropertyType();
+        ItemMetadataPropertyInfo info = ItemDomainCableDesign.getEndPropertyInfo();
 
         if (propertyType == null) {
             try {
-                propertyType = prepareConnectionPropertyType(info);                
+                propertyType = prepareEndPropertyType(info);                
                 // otherwise migrate existing property type object
             } catch (CdbException ex) {
                 LOGGER.error(ex.getMessage());
