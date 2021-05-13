@@ -1369,7 +1369,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         if (derivedFromItem != null) {
             searchResult.doesValueContainPattern("derived from name", derivedFromItem.getName(), searchPattern);
         }
-
+        searchResult.doesValueContainPattern("QrId", getQrIdFilter(), searchPattern); 
         searchResult.doesValueContainPattern("created by", getEntityInfo().getCreatedByUser().getUsername(), searchPattern);
         searchResult.doesValueContainPattern("last modified by", getEntityInfo().getLastModifiedByUser().getUsername(), searchPattern);
         if (getEntityInfo().getOwnerUser() != null) {
