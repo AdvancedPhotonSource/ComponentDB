@@ -9,6 +9,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../item/private/templates/itemViewTemplate.xhtml">
 
     <ui:param name="entityController" value="#{itemDomainCableDesignController}" />        
@@ -35,8 +36,18 @@ See LICENSE file.
                  collapsed="true">
             <p:accordionPanel multiple="true"
                               activeIndex="">
-                <p:tab title="End 1"/>
-                <p:tab title="End 2"/>
+                <p:tab title="End 1">
+                    <ui:decorate template="private/templates/endMetadataPanel.xhtml">
+                        <ui:param name="endName" value="End 1"/>
+                        <ui:param name="endMethodSuffix" value="Endpoint1"/>
+                    </ui:decorate>
+                </p:tab>
+                <p:tab title="End 2">
+                    <ui:decorate template="private/templates/endMetadataPanel.xhtml">
+                        <ui:param name="endName" value="End 2"/>
+                        <ui:param name="endMethodSuffix" value="Endpoint2"/>
+                    </ui:decorate>
+                </p:tab>
             </p:accordionPanel>
         </p:panel>
         

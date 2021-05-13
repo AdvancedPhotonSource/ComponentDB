@@ -180,7 +180,7 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     }
 
     public ItemMetadataPropertyInfo getConnectionPropertyInfo() {
-        return parentController.getConnectionPropertyInfo();
+        return parentController.getEndPropertyInfo();
     }
     
     public Boolean getDisplayEndpoints() {

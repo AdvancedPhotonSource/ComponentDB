@@ -719,7 +719,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return (connection.getMdItem() != null);
     }
     
-    public ItemMetadataPropertyInfo getConnectionPropertyInfo() {
+    public ItemMetadataPropertyInfo getEndPropertyInfo() {
         return ItemDomainCableDesign.getEndPropertyInfo();
     }
     

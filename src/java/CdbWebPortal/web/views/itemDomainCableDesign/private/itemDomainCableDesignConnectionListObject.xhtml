@@ -22,10 +22,6 @@ See LICENSE file.
     
     <p:columnGroup type="header">
         <p:row>
-            <p:column id="moreInfoColumn" 
-                      headerText="More Info"
-                      styleClass="narrowColumn">
-            </p:column>
             <p:column>
                 <f:facet name="header">
                     <h:outputText styleClass="ui-icon ui-icon-machine-design" />
@@ -59,11 +55,6 @@ See LICENSE file.
             </p:column>
         </p:row>
     </p:columnGroup>
-
-    <p:column headerText="More Info"
-              styleClass="narrowColumn">
-        <p:rowToggler/>
-    </p:column>
 
     <p:column headerText="Device"
               exportFunction="#{facesUtility.getToString(connectedToItem)}">
@@ -114,64 +105,5 @@ See LICENSE file.
                       value="#{itemConnectorObject.connector}" />
         </ui:include>
     </p:column>
-
-    <p:rowExpansion styleClass="domainEntityRowExpansion">
-        <p:outputPanel>
-            <p:accordionPanel activeIndex="" multiple="true">
-                <p:tab title="Connection/Endpoint Metadata">
-                    <p:panelGrid columns="2">
-                        <c:forEach items="#{entityController.connectionPropertyInfo.fields}"
-                                   var="metadataField">  
-                            
-                            <ui:param name="metadataKey" value="#{metadataField.key}"/>
-                            <ui:param name="metadataLabel" value="#{metadataField.label}"/>
-                            <ui:param name="metadataType" value="#{metadataField.typeString}"/>
-                            <ui:param name="metadataDescription" value="#{metadataField.description}"/>
-                            <ui:param name="fieldProperty" value="#{metadataType != 'url' ? metaDataKey : metadataKey.concat('Display')}"/>
-
-                            <h:outputLabel for="connectionProperty#{metadataKey}#{relationshipId}" 
-                                           value="#{metadataLabel}" 
-                                           styleClass="entityDataLabel"
-                                           title="#{metadataDescription}"/>
-
-                            <p:inplace id="connectionProperty#{metadataKey}#{relationshipId}" 
-                                       widgetVar="connectionProperty#{metadataKey}#{relationshipId}Widget"
-                                       editor="#{isEntityWriteable}"                
-                                       toggleable="false"
-                                       styleClass="entityDataText">
-                                <p:ajax event="save" 
-                                        update="@this" 
-                                        oncomplete="inlineSaveEntity()" />
-                                <f:facet name="output">
-                                    <p:outputPanel styleClass="inlineFlexOutputPanel">
-                                        <p:commandLink id="#{metadataKey}#{relationshipId}EditShowButton"
-                                                       styleClass="fa-link-icon fa-icon fa fa-pencil"
-                                                       onclick="PF('connectionProperty#{metadataKey}#{relationshipId}Widget').show();"
-                                                       rendered="#{isEntityWriteable}">
-                                        </p:commandLink>
-                                        <h:outputText value="#{connection[metadataKey]}" 
-                                                      title="#{metadataLabel}" 
-                                                      rendered="#{metadataType != 'url'}"
-                                                      styleClass="entityDataText" />
-                                        <h:outputLink value="#{connection[metadataKey]}"
-                                                      target="_blank"
-                                                      rendered="#{metadataType == 'url'}">
-                                            "#{itemObject.getConnectionPropertyFieldValue(relationship, metadataKey)}"
-                                        </h:outputLink>
-                                    </p:outputPanel>
-                                </f:facet>
-                                <f:facet name="input">
-                                    <p:inputText value="#{connection[metadataKey]}" 
-                                                 title="#{metadataLabel}" 
-                                                 styleClass="entityDataText"/>
-                                </f:facet>
-                            </p:inplace>
-
-                        </c:forEach>
-                    </p:panelGrid>
-                </p:tab>
-            </p:accordionPanel>
-        </p:outputPanel>
-    </p:rowExpansion>
 
 </ui:composition>
