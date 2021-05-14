@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import gov.anl.aps.cdb.common.constants.ItemMetadataFieldType;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -13,12 +12,8 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControl
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
-import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.DiscriminatorValue;
@@ -78,24 +73,21 @@ public class ItemDomainCableDesign extends Item {
     public final static String CABLE_DESIGN_PROPERTY_ROUTED_LENGTH_KEY = "routedLength";
     public final static String CABLE_DESIGN_PROPERTY_ROUTE_KEY = "route";
     public final static String CABLE_DESIGN_PROPERTY_NOTES_KEY = "notes";
-    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT1_DESC_KEY = "endpoint1Description";
-    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT2_DESC_KEY = "endpoint2Description";
-    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT1_ROUTE_KEY = "endpoint1Route";
-    public final static String CABLE_DESIGN_PROPERTY_ENDPOINT2_ROUTE_KEY = "endpoint2Route";
+    public final static String CABLE_DESIGN_PROPERTY_END1_DESCRIPTION_KEY = "endpoint1Description";
+    public final static String CABLE_DESIGN_PROPERTY_END1_ROUTE_KEY = "endpoint1Route";
+    public final static String CABLE_DESIGN_PROPERTY_END1_ENDLENGTH_KEY = "endpoint1EndLength";
+    public final static String CABLE_DESIGN_PROPERTY_END1_TERMINATION_KEY = "endpoint1Termination";
+    public final static String CABLE_DESIGN_PROPERTY_END1_PINLIST_KEY = "endpoint1Pinlist";
+    public final static String CABLE_DESIGN_PROPERTY_END1_NOTES_KEY = "endpoint1Notes";
+    public final static String CABLE_DESIGN_PROPERTY_END1_DRAWING_KEY = "endpoint1Drawing";
+    public final static String CABLE_DESIGN_PROPERTY_END2_DESCRIPTION_KEY = "endpoint2Description";
+    public final static String CABLE_DESIGN_PROPERTY_END2_ROUTE_KEY = "endpoint2Route";
+    public final static String CABLE_DESIGN_PROPERTY_END2_ENDLENGTH_KEY = "endpoint2EndLength";
+    public final static String CABLE_DESIGN_PROPERTY_END2_TERMINATION_KEY = "endpoint2Termination";
+    public final static String CABLE_DESIGN_PROPERTY_END2_PINLIST_KEY = "endpoint2Pinlist";
+    public final static String CABLE_DESIGN_PROPERTY_END2_NOTES_KEY = "endpoint2Notes";
+    public final static String CABLE_DESIGN_PROPERTY_END2_DRAWING_KEY = "endpoint2Drawing";
     
-    private final static String END_1 = "End 1";
-    private final static String END_2 = "End 2";
-    
-    private static ItemMetadataPropertyInfo endMetadataPropertyInfo = null;
-    public final static String CABLE_DESIGN_END_PROPERTY_TYPE = "cable_design_end_property_type";
-    public final static String END_PROPERTY_DESCRIPTION_KEY = "description";
-    public final static String END_PROPERTY_ROUTE_KEY = "route";
-    public final static String END_PROPERTY_PINLIST_KEY = "pinlist";
-    public final static String END_PROPERTY_END_LENGTH_KEY = "endLength";
-    public final static String END_PROPERTY_TERMINATION_KEY = "termination";
-    public final static String END_PROPERTY_NOTES_KEY = "notes";
-    public final static String END_PROPERTY_DRAWING_KEY = "drawing";
-
     private static final String endpointsSeparator = " | ";
     
     private static RelationshipType cableRelationshipType = null;
@@ -248,167 +240,6 @@ public class ItemDomainCableDesign extends Item {
         cableRelationship.setFirstItemElement(newItemElement);
         cableRelationship.setFirstItemConnector(endpointConnector);
         cableRelationship.setSecondItemConnector(cableConnector);
-    }
-
-   public static ItemMetadataPropertyInfo getEndPropertyInfo() {
-        
-        if (endMetadataPropertyInfo == null) {
-            
-            endMetadataPropertyInfo = new ItemMetadataPropertyInfo(
-                    "Cable End Metadata", CABLE_DESIGN_END_PROPERTY_TYPE);
-            
-            endMetadataPropertyInfo.addField(
-                    END_PROPERTY_DESCRIPTION_KEY, 
-                    "Description", 
-                    "End description.", 
-                    ItemMetadataFieldType.STRING, 
-                    "", 
-                    null);
-            
-            endMetadataPropertyInfo.addField(
-                    END_PROPERTY_ROUTE_KEY, 
-                    "Route", 
-                    "Routing waypoint for cable end.", 
-                    ItemMetadataFieldType.STRING, 
-                    "", 
-                    null);
-            
-            endMetadataPropertyInfo.addField(
-                    END_PROPERTY_END_LENGTH_KEY, 
-                    "End Length", 
-                    "Calculated length for cable end.", 
-                    ItemMetadataFieldType.STRING, 
-                    "", 
-                    null);
-            
-            endMetadataPropertyInfo.addField(
-                    END_PROPERTY_TERMINATION_KEY, 
-                    "Termination", 
-                    "Termination for cable end.", 
-                    ItemMetadataFieldType.STRING, 
-                    "", 
-                    null);
-            
-            endMetadataPropertyInfo.addField(
-                    END_PROPERTY_PINLIST_KEY, 
-                    "Pinlist", 
-                    "Pin mapping details for cable end.", 
-                    ItemMetadataFieldType.STRING, 
-                    "", 
-                    null);
-
-            endMetadataPropertyInfo.addField(
-                    END_PROPERTY_NOTES_KEY, 
-                    "Notes", 
-                    "Notes for cable end.", 
-                    ItemMetadataFieldType.STRING, 
-                    "", 
-                    null);
-            
-            endMetadataPropertyInfo.addField(
-                    END_PROPERTY_DRAWING_KEY, 
-                    "Drawing", 
-                    "Drawing for cable end.", 
-                    ItemMetadataFieldType.STRING, 
-                    "", 
-                    null);
-            
-        }
-        return endMetadataPropertyInfo;
-    }
-
-    public static PropertyType getEndPropertyType() {
-        if (endPropertyType == null) {
-            endPropertyType = 
-                    PropertyTypeFacade.getInstance().findByName(getEndPropertyInfo().getPropertyName());
-        }
-        return endPropertyType;
-    }
-
-    public PropertyValue getEndPropertyValue(String end) {
-
-        ItemMetadataPropertyInfo info = getEndPropertyInfo();
-
-        if (info != null) {
-            List<PropertyValue> propertyValueList = getPropertyValueList();
-            if (propertyValueList == null) {
-                return null;
-            }
-            for (PropertyValue propertyValue : propertyValueList) {
-                if ((propertyValue.getPropertyType().getName().equals(info.getPropertyName()))
-                        && (propertyValue.getValue().equals(end))) {
-                    return propertyValue;
-                }
-            }
-        }
-
-        return null;
-    }
-    
-    public PropertyValue prepareEndPropertyValue(
-            String end, ItemMetadataPropertyInfo info) throws CdbException {
-        
-        PropertyType propertyType = getEndPropertyType();
-
-        if (propertyType == null) {
-            propertyType = getItemControllerUtility().prepareEndPropertyType(info);
-        }
-
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        Date lastModifiedOnDateTime = new Date();
-        
-        PropertyValue propertyValue = new PropertyValue();
-        propertyValue.setPropertyType(propertyType);
-        propertyValue.setValue(end);
-        propertyValue.setUnits(propertyType.getDefaultUnits());
-        
-        addPropertyValueToPropertyValueList(propertyValue);
-        propertyValue.setEnteredByUser(lastModifiedByUser);
-        propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
-
-        // Get method called by GUI populates metadata
-        // Needed for multi-edit or API to also populate metadata
-        propertyValue.getPropertyValueMetadataList();
-
-        return propertyValue;
-    }
-
-    public void setEndPropertyFieldValue(
-            String end, String key, String value) throws CdbException {
-        
-        validateEndPropertyFieldKey(key);
-
-        PropertyValue propertyValue = getEndPropertyValue(end);
-
-        if (propertyValue == null) {
-            propertyValue = prepareEndPropertyValue(end, getEndPropertyInfo());
-        }
-        
-        if (value == null) {
-            value = "";
-        }
-        
-        propertyValue.setPropertyMetadataValue(key, value);
-    }
-
-    private void validateEndPropertyFieldKey(String key) throws CdbException {
-        ItemMetadataPropertyInfo info = getEndPropertyInfo();
-        if (!info.hasKey(key)) {
-            throw new CdbException(
-                    "Invalid metadata key used to get/set connection property field value: " + key);
-        }
-    }
-    
-    public String getEndPropertyFieldValue(String end, String key) throws CdbException {
-
-        validateEndPropertyFieldKey(key);
-
-        PropertyValue propertyValue = getEndPropertyValue(end);
-        if (propertyValue != null) {
-            return propertyValue.getPropertyMetadataValueForKey(key);
-        } else {
-            return "";
-        }
     }
 
     public void setEndpoint(
@@ -893,97 +724,6 @@ public class ItemDomainCableDesign extends Item {
         return getConnectorForEndpoint(1.0f);
     }
 
-    @JsonIgnore
-    public String getDescriptionEndpoint1() throws CdbException {
-        if (endpoint1Description == null) {
-            endpoint1Description = getEndPropertyFieldValue(END_1, END_PROPERTY_DESCRIPTION_KEY);
-        }
-        return endpoint1Description;
-    }
-
-    public void setDescriptionEndpoint1(String description) throws CdbException {
-        endpoint1Description = description;
-        setEndPropertyFieldValue(END_1, END_PROPERTY_DESCRIPTION_KEY, description);
-    }
-    
-    @JsonIgnore
-    public String getRouteEndpoint1() throws CdbException {
-        if (endpoint1Route == null) {
-            endpoint1Route = getEndPropertyFieldValue(END_1, END_PROPERTY_ROUTE_KEY);
-        }
-        return endpoint1Route;
-    }
-
-    public void setRouteEndpoint1(String route) throws CdbException {
-        endpoint1Route = route;
-        setEndPropertyFieldValue(END_1, END_PROPERTY_ROUTE_KEY, route);
-    }
-    
-    @JsonIgnore
-    public String getPinlistEndpoint1() throws CdbException {
-        if (endpoint1Pinlist == null) {
-            endpoint1Pinlist = getEndPropertyFieldValue(END_1, END_PROPERTY_PINLIST_KEY);
-        }
-        return endpoint1Pinlist;
-    }
-
-    public void setPinlistEndpoint1(String pinlist) throws CdbException {
-        endpoint1Pinlist = pinlist;
-        setEndPropertyFieldValue(END_1, END_PROPERTY_PINLIST_KEY, pinlist);
-    }
-    
-    @JsonIgnore
-    public String getEndLengthEndpoint1() throws CdbException {
-        if (endpoint1EndLength == null) {
-            endpoint1EndLength = getEndPropertyFieldValue(END_1, END_PROPERTY_END_LENGTH_KEY);
-        }
-        return endpoint1EndLength;
-    }
-
-    public void setEndLengthEndpoint1(String endLength) throws CdbException {
-        endpoint1EndLength = endLength;
-        setEndPropertyFieldValue(END_1, END_PROPERTY_END_LENGTH_KEY, endLength);
-    }
-    
-    @JsonIgnore
-    public String getTerminationEndpoint1() throws CdbException {
-        if (endpoint1Termination == null) {
-            endpoint1Termination = getEndPropertyFieldValue(END_1, END_PROPERTY_TERMINATION_KEY);
-        }
-        return endpoint1Termination;
-    }
-
-    public void setTerminationEndpoint1(String termination) throws CdbException {
-        endpoint1Termination = termination;
-        setEndPropertyFieldValue(END_1, END_PROPERTY_TERMINATION_KEY, termination);
-    }
-    
-    @JsonIgnore
-    public String getNotesEndpoint1() throws CdbException {
-        if (endpoint1Notes == null) {
-            endpoint1Notes = getEndPropertyFieldValue(END_1, END_PROPERTY_NOTES_KEY);
-        }
-        return endpoint1Notes;
-    }
-
-    public void setNotesEndpoint1(String notes) throws CdbException {
-        endpoint1Notes = notes;
-        setEndPropertyFieldValue(END_1, END_PROPERTY_NOTES_KEY, notes);
-    }
-    
-    @JsonIgnore
-    public String getDrawingEndpoint1() throws CdbException {
-        if (endpoint1Drawing == null) {
-            endpoint1Drawing = getEndPropertyFieldValue(END_1, END_PROPERTY_DRAWING_KEY);
-        }
-        return endpoint1Drawing;
-    }
-
-    public void setDrawingEndpoint1(String drawing) throws CdbException {
-        endpoint1Drawing = drawing;
-        setEndPropertyFieldValue(END_1, END_PROPERTY_DRAWING_KEY, drawing);
-    }
-
     public Item getEndpoint2() {
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
         if (cableRelationship != null) {
@@ -1027,95 +767,187 @@ public class ItemDomainCableDesign extends Item {
     }
 
     @JsonIgnore
-    public String getDescriptionEndpoint2() throws CdbException {
+    public String getEndpoint1Description() throws CdbException {
+
+        if (endpoint1Description == null) {
+            endpoint1Description = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_DESCRIPTION_KEY);
+        }
+        return endpoint1Description;
+    }
+
+    public void setEndpoint1Description(String description) throws CdbException {
+        this.endpoint1Description = description;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_DESCRIPTION_KEY, description);
+    }
+    
+    @JsonIgnore
+    public String getEndpoint1Route() throws CdbException {
+        if (endpoint1Route == null) {
+            endpoint1Route = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_ROUTE_KEY);
+        }
+        return endpoint1Route;
+    }
+
+    public void setEndpoint1Route(String route) throws CdbException {
+        endpoint1Route = route;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_ROUTE_KEY, route);
+    }
+    
+    @JsonIgnore
+    public String getEndpoint1Pinlist() throws CdbException {
+        if (endpoint1Pinlist == null) {
+            endpoint1Pinlist = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_PINLIST_KEY);
+        }
+        return endpoint1Pinlist;
+    }
+
+    public void setEndpoint1Pinlist(String pinlist) throws CdbException {
+        endpoint1Pinlist = pinlist;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_PINLIST_KEY, pinlist);
+    }
+    
+    @JsonIgnore
+    public String getEndpoint1EndLength() throws CdbException {
+        if (endpoint1EndLength == null) {
+            endpoint1EndLength = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_ENDLENGTH_KEY);
+        }
+        return endpoint1EndLength;
+    }
+
+    public void setEndpoint1EndLength(String endLength) throws CdbException {
+        endpoint1EndLength = endLength;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_ENDLENGTH_KEY, endLength);
+    }
+    
+    @JsonIgnore
+    public String getEndpoint1Termination() throws CdbException {
+        if (endpoint1Termination == null) {
+            endpoint1Termination = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_TERMINATION_KEY);
+        }
+        return endpoint1Termination;
+    }
+
+    public void setEndpoint1Termination(String termination) throws CdbException {
+        endpoint1Termination = termination;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_TERMINATION_KEY, termination);
+    }
+    
+    @JsonIgnore
+    public String getEndpoint1Notes() throws CdbException {
+        if (endpoint1Notes == null) {
+            endpoint1Notes = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_NOTES_KEY);
+        }
+        return endpoint1Notes;
+    }
+
+    public void setEndpoint1Notes(String notes) throws CdbException {
+        endpoint1Notes = notes;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_NOTES_KEY, notes);
+    }
+    
+    @JsonIgnore
+    public String getEndpoint1Drawing() throws CdbException {
+        if (endpoint1Drawing == null) {
+            endpoint1Drawing = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_DRAWING_KEY);
+        }
+        return endpoint1Drawing;
+    }
+
+    public void setEndpoint1Drawing(String drawing) throws CdbException {
+        endpoint1Drawing = drawing;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END1_DRAWING_KEY, drawing);
+    }
+
+    @JsonIgnore
+    public String getEndpoint2Description() throws CdbException {
+
         if (endpoint2Description == null) {
-            endpoint2Description = getEndPropertyFieldValue(END_2, END_PROPERTY_DESCRIPTION_KEY);
+            endpoint2Description = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_DESCRIPTION_KEY);
         }
         return endpoint2Description;
     }
 
-    public void setDescriptionEndpoint2(String description) throws CdbException {
-        endpoint2Description = description;
-        setEndPropertyFieldValue(END_2, END_PROPERTY_DESCRIPTION_KEY, description);
+    public void setEndpoint2Description(String description) throws CdbException {
+        this.endpoint2Description = description;
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_DESCRIPTION_KEY, description);
     }
     
     @JsonIgnore
-    public String getRouteEndpoint2() throws CdbException {
+    public String getEndpoint2Route() throws CdbException {
         if (endpoint2Route == null) {
-            endpoint2Route = getEndPropertyFieldValue(END_2, END_PROPERTY_ROUTE_KEY);
+            endpoint2Route = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_ROUTE_KEY);
         }
         return endpoint2Route;
     }
 
-    public void setRouteEndpoint2(String route) throws CdbException {
+    public void setEndpoint2Route(String route) throws CdbException {
         endpoint2Route = route;
-        setEndPropertyFieldValue(END_2, END_PROPERTY_ROUTE_KEY, route);
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_ROUTE_KEY, route);
     }
     
     @JsonIgnore
-    public String getPinlistEndpoint2() throws CdbException {
+    public String getEndpoint2Pinlist() throws CdbException {
         if (endpoint2Pinlist == null) {
-            endpoint2Pinlist = getEndPropertyFieldValue(END_2, END_PROPERTY_PINLIST_KEY);
+            endpoint2Pinlist = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_PINLIST_KEY);
         }
         return endpoint2Pinlist;
     }
 
-    public void setPinlistEndpoint2(String pinlist) throws CdbException {
+    public void setEndpoint2Pinlist(String pinlist) throws CdbException {
         endpoint2Pinlist = pinlist;
-        setEndPropertyFieldValue(END_2, END_PROPERTY_PINLIST_KEY, pinlist);
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_PINLIST_KEY, pinlist);
     }
     
     @JsonIgnore
-    public String getEndLengthEndpoint2() throws CdbException {
+    public String getEndpoint2EndLength() throws CdbException {
         if (endpoint2EndLength == null) {
-            endpoint2EndLength = getEndPropertyFieldValue(END_2, END_PROPERTY_END_LENGTH_KEY);
+            endpoint2EndLength = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_ENDLENGTH_KEY);
         }
         return endpoint2EndLength;
     }
 
-    public void setEndLengthEndpoint2(String endLength) throws CdbException {
+    public void setEndpoint2EndLength(String endLength) throws CdbException {
         endpoint2EndLength = endLength;
-        setEndPropertyFieldValue(END_2, END_PROPERTY_END_LENGTH_KEY, endLength);
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_ENDLENGTH_KEY, endLength);
     }
     
     @JsonIgnore
-    public String getTerminationEndpoint2() throws CdbException {
+    public String getEndpoint2Termination() throws CdbException {
         if (endpoint2Termination == null) {
-            endpoint2Termination = getEndPropertyFieldValue(END_2, END_PROPERTY_TERMINATION_KEY);
+            endpoint2Termination = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_TERMINATION_KEY);
         }
         return endpoint2Termination;
     }
 
-    public void setTerminationEndpoint2(String termination) throws CdbException {
+    public void setEndpoint2Termination(String termination) throws CdbException {
         endpoint2Termination = termination;
-        setEndPropertyFieldValue(END_2, END_PROPERTY_TERMINATION_KEY, termination);
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_TERMINATION_KEY, termination);
     }
     
     @JsonIgnore
-    public String getNotesEndpoint2() throws CdbException {
+    public String getEndpoint2Notes() throws CdbException {
         if (endpoint2Notes == null) {
-            endpoint2Notes = getEndPropertyFieldValue(END_2, END_PROPERTY_NOTES_KEY);
+            endpoint2Notes = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_NOTES_KEY);
         }
         return endpoint2Notes;
     }
 
-    public void setNotesEndpoint2(String notes) throws CdbException {
+    public void setEndpoint2Notes(String notes) throws CdbException {
         endpoint2Notes = notes;
-        setEndPropertyFieldValue(END_2, END_PROPERTY_NOTES_KEY, notes);
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_NOTES_KEY, notes);
     }
     
     @JsonIgnore
-    public String getDrawingEndpoint2() throws CdbException {
+    public String getEndpoint2Drawing() throws CdbException {
         if (endpoint2Drawing == null) {
-            endpoint2Drawing = getEndPropertyFieldValue(END_2, END_PROPERTY_DRAWING_KEY);
+            endpoint2Drawing = getCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_DRAWING_KEY);
         }
         return endpoint2Drawing;
     }
 
-    public void setDrawingEndpoint2(String drawing) throws CdbException {
+    public void setEndpoint2Drawing(String drawing) throws CdbException {
         endpoint2Drawing = drawing;
-        setEndPropertyFieldValue(END_2, END_PROPERTY_DRAWING_KEY, drawing);
+        setCoreMetadataPropertyFieldValue(CABLE_DESIGN_PROPERTY_END2_DRAWING_KEY, drawing);
     }
-
     
 }

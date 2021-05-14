@@ -719,10 +719,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return (connection.getMdItem() != null);
     }
     
-    public ItemMetadataPropertyInfo getEndPropertyInfo() {
-        return ItemDomainCableDesign.getEndPropertyInfo();
-    }
-    
     /**
      * Prepares cable wizard.
      */
@@ -888,10 +884,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return getUnmappedConnectorsForCurrent().size() > 0;
     }
     
-    public void createOrMigrateEndPropertyType() {        
-        getControllerUtility().createOrMigrateEndPropertyType();
-    }   
-
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
     
     @Override

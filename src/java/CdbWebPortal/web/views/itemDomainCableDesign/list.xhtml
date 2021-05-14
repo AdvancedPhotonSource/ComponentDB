@@ -51,10 +51,6 @@ See LICENSE file.
             <ui:param name="endpointNum" value="1" />                
         </ui:decorate>
 
-        <ui:decorate template="private/templates/listViewEndpointMetadataColumns.xhtml">
-            <ui:param name="endpointNum" value="1" />                
-        </ui:decorate>
-
         <ui:decorate template="private/templates/listViewEndpointDeviceColumn.xhtml">
             <ui:param name="endpointNum" value="2" />                
         </ui:decorate>
@@ -64,10 +60,6 @@ See LICENSE file.
         </ui:decorate>
 
         <ui:decorate template="private/templates/listViewEndpointConnectorColumn.xhtml">
-            <ui:param name="endpointNum" value="2" />                
-        </ui:decorate>
-
-        <ui:decorate template="private/templates/listViewEndpointMetadataColumns.xhtml">
             <ui:param name="endpointNum" value="2" />                
         </ui:decorate>
 
@@ -106,6 +98,7 @@ See LICENSE file.
             </p:panelGrid>
         </p:tab>
         
+        <ui:remove>
         <p:tab title="End Metadata">
                 
             <ui:decorate template="private/templates/listCustomizeEndpointMetadataOptions.xhtml">
@@ -117,6 +110,7 @@ See LICENSE file.
             </ui:decorate>
 
         </p:tab>
+        </ui:remove>
         
     </ui:define>
     

@@ -141,6 +141,118 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "", 
                 null);
         
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_DESCRIPTION_KEY,
+                "End1 Description",
+                "End description.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_ROUTE_KEY,
+                "End1 Route",
+                "Routing waypoint for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_ENDLENGTH_KEY,
+                "End1 Length",
+                "Calculated length for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_TERMINATION_KEY,
+                "End1 Termination",
+                "Termination for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_PINLIST_KEY,
+                "End1 Pinlist",
+                "Pin mapping details for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_NOTES_KEY,
+                "End1 Notes",
+                "Notes for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_DRAWING_KEY,
+                "End1 Drawing",
+                "Drawing for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+        
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_DESCRIPTION_KEY,
+                "End2 Description",
+                "End description.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_ROUTE_KEY,
+                "End2 Route",
+                "Routing waypoint for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_ENDLENGTH_KEY,
+                "End2 Length",
+                "Calculated length for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_TERMINATION_KEY,
+                "End2 Termination",
+                "Termination for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_PINLIST_KEY,
+                "End2 Pinlist",
+                "Pin mapping details for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_NOTES_KEY,
+                "End2 Notes",
+                "Notes for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+
+        info.addField(
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_DRAWING_KEY,
+                "End2 Drawing",
+                "Drawing for cable end.",
+                ItemMetadataFieldType.STRING,
+                "",
+                null);
+        
         return info;
     }
     
@@ -217,46 +329,4 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
        return clone;
     }
     
-    public PropertyType prepareEndPropertyType(ItemMetadataPropertyInfo propInfo) throws CdbException {
-        
-        PropertyTypeControllerUtility propertyTypeControllerUtility = new PropertyTypeControllerUtility();
-        PropertyType propertyType = propertyTypeControllerUtility.createEntityInstance(null);
-
-        propertyType.setIsInternal(true);
-        propertyType.setName(propInfo.getPropertyName());
-        propertyType.setDescription(propInfo.getDisplayName());
-
-//        List<Domain> allowedDomainList = new ArrayList<>();
-//        allowedDomainList.add(getDefaultDomain());
-//        propertyType.setAllowedDomainList(allowedDomainList);
-
-        List<PropertyTypeMetadata> ptmList = new ArrayList<>();
-        for (ItemMetadataFieldInfo fieldInfo : propInfo.getFields()) {
-            PropertyTypeMetadata ptm = newPropertyTypeMetadataForField(fieldInfo, propertyType);
-            ptmList.add(ptm);
-        }
-        propertyType.setPropertyTypeMetadataList(ptmList);
-
-        propertyTypeControllerUtility.create(propertyType, null);
-        return propertyType;
-    }
-
-    public void createOrMigrateEndPropertyType() {
-        
-        PropertyType propertyType = ItemDomainCableDesign.getEndPropertyType();
-        ItemMetadataPropertyInfo info = ItemDomainCableDesign.getEndPropertyInfo();
-
-        if (propertyType == null) {
-            try {
-                propertyType = prepareEndPropertyType(info);                
-                // otherwise migrate existing property type object
-            } catch (CdbException ex) {
-                LOGGER.error(ex.getMessage());
-                return;
-            }
-        } else {
-            migrateMetadataPropertyType(propertyType, info);
-        }
-    }   
-
 }

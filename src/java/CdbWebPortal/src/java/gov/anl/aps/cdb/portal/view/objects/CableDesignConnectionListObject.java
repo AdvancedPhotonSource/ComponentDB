@@ -122,24 +122,4 @@ public class CableDesignConnectionListObject {
         return connList;
     }
     
-    public PropertyValue getConnectionMetadataPropertyValue() {
-        
-        if (cableRelationship == null) {
-            return null;
-        }
-        
-        ItemMetadataPropertyInfo info = ItemDomainCableDesign.getEndPropertyInfo();
-
-        List<PropertyValue> propertyValueList = cableRelationship.getPropertyValueList();
-        if (propertyValueList == null) {
-            return null;
-        }
-        for (PropertyValue propertyValue : propertyValueList) {
-            if (propertyValue.getPropertyType().getName().equals(info.getPropertyName())) {
-                return propertyValue;
-            }
-        }
-        
-        return null;
-    }
 }
