@@ -64,9 +64,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient ItemElement currentHierarchyItemElement;
 
     private transient ItemElement parentMachineElement;
-    
-    private transient boolean filterMachineNode = true; 
-    private transient boolean skipSetfilterMachineNode = false; 
+
+    private transient boolean filterMachineNode = true;
+    private transient boolean skipSetfilterMachineNode = false;
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
@@ -122,24 +122,24 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setCurrentHierarchyItemElement(ItemElement currentHierarchyItemElement) {
         this.currentHierarchyItemElement = currentHierarchyItemElement;
     }
-    
+
     @JsonIgnore
     public boolean isFilterMachineNode() {
         return filterMachineNode;
     }
 
-    public void setFilterMachineNode(boolean filterMachineNode) {        
+    public void setFilterMachineNode(boolean filterMachineNode) {
         if (skipSetfilterMachineNode) {
-            skipSetfilterMachineNode = false; 
+            skipSetfilterMachineNode = false;
             return;
         }
         this.filterMachineNode = filterMachineNode;
     }
-    
-    public void updateFilterMachineNode(boolean filterMachineNode) {        
+
+    public void updateFilterMachineNode(boolean filterMachineNode) {
         this.filterMachineNode = filterMachineNode;
         // GUI will try and override the boolean one time during update. 
-        skipSetfilterMachineNode = true; 
+        skipSetfilterMachineNode = true;
     }
 
     @JsonIgnore
@@ -151,7 +151,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
 
         return null;
-    }   
+    }
 
     @JsonIgnore
     public ItemElement getParentMachineElement() {
@@ -163,8 +163,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
                     Item parentItem = memberElement.getParentItem();
                     if (parentItem instanceof ItemDomainMachineDesign) {
                         // Should only be one. 
-                        parentMachineElement = memberElement; 
-                        return parentMachineElement; 
+                        parentMachineElement = memberElement;
+                        return parentMachineElement;
                     }
                 }
             }
@@ -205,10 +205,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     @Override
     public String getLocationDetails() {
-        if (location != null) {
-            return locationDetails;
-        }
-        return super.getLocationDetails();
+        return locationDetails;
     }
 
     public static boolean isItemDeleted(Item item) {
@@ -383,9 +380,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     public void setImportSortOrder(Float importSortOrder) {
-        
+
         this.importSortOrder = importSortOrder;
-        
+
         // update sort order if item already exists, we set sort order in setImportChildParentRelationship() for new items
         if (this.getId() != null) {
             ItemDomainMachineDesign parentItem = getParentMachineDesign();
@@ -414,7 +411,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
         return null;
     }
-    
+
     @JsonIgnore
     public ItemDomainCatalog getImportAssignedCatalogItem() {
         return importAssignedCatalogItem;
@@ -592,9 +589,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         return newItem;
     }
-    
-// </editor-fold>
 
+// </editor-fold>
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     @JsonIgnore
     public List<ItemElementRelationship> getRelatedMAARCRelationshipsForCurrent() {

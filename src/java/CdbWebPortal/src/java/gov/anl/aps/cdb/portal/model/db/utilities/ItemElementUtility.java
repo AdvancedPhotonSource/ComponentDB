@@ -75,6 +75,26 @@ public class ItemElementUtility {
         if (itemElementList == null) {
             return;
         }
+
+        itemElementList.sort((ItemElement o1, ItemElement o2) -> {
+            Float so1 = o1.getRelevantItemElementSortOrder();
+            Float so2 = o2.getRelevantItemElementSortOrder();
+            if (so1 == null) {
+                so1 = Float.NEGATIVE_INFINITY;
+            }
+            if (so2 == null) {
+                so2 = Float.NEGATIVE_INFINITY;
+            }
+
+            if (so1 > so2) {
+                return 1;
+            } else if (so1 < so2) {
+                return -1;
+            }
+
+            return 0;
+        });
+
         itemTreeBranch.add(item);
         for (ItemElement itemElement : itemElementList) {
             Item childItem = itemElement.getContainedItem();
@@ -324,7 +344,7 @@ public class ItemElementUtility {
             boolean applyActiveLocationStyle,
             String updateTarget,
             String processTarget) {
-        String label = item.getName(); 
+        String label = item.getName();
         DefaultMenuItem menuItem = DefaultMenuItem.builder()
                 .value(label)
                 .build();
