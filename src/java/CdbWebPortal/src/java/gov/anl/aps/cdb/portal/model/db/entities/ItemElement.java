@@ -73,10 +73,10 @@ import org.primefaces.model.TreeNode;
     "importParentItem",
     "importPartDescription",
     "importPartName",
-    "importPartRequired", 
+    "importPartRequired",
     "importPartCatalogItemName",
     "importPartCatalogItem",
-    "importChildItem", 
+    "importChildItem",
     "importChildItemName",
     "itemElementRelationshipList",
     "itemElementRelationshipList1",
@@ -160,7 +160,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private transient TreeNode childItemElementListTreeTableRootNode = null;
     private transient ItemElementConstraintInformation constraintInformation;
     private transient boolean markedForDeletion = false;
-    
+
     // <editor-fold defaultstate="collapsed" desc="Import Variables">
     private transient Item importParentItem;
     private transient String importChildItemName;
@@ -186,7 +186,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     public void init(Item parentItem, ItemElement derivedFromItemElement, UserInfo userInfo) {
-        init(parentItem, derivedFromItemElement, null, userInfo, userInfo.getUserGroupList().get(0)); 
+        init(parentItem, derivedFromItemElement, null, userInfo, userInfo.getUserGroupList().get(0));
     }
 
     public void init(Item parentItem, ItemElement derivedFromItemElement, EntityInfo entityInfo) {
@@ -194,12 +194,12 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     public void init(
-            Item parentItem, 
-            ItemElement derivedFromItemElement, 
+            Item parentItem,
+            ItemElement derivedFromItemElement,
             EntityInfo entityInfo,
             UserInfo ownerUser,
             UserGroup ownerGroup) {
-        
+
         if (entityInfo == null) {
             entityInfo = EntityInfoUtility.createEntityInfo(ownerUser, ownerUser, ownerGroup);
         }
@@ -234,15 +234,19 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         this.id = id;
     }
 
+    public Float getRelevantItemElementSortOrder() {
+        if (derivedFromItemElement != null && parentItem != null) {
+            String inventoryDomain = ItemDomainName.inventory.getValue();
+            if (parentItem.getDomain().getName().equals(inventoryDomain)) {
+                return derivedFromItemElement.getSortOrder();
+            }
+        }
+        return getSortOrder();
+    }
+
     public Object getCustomizableSortOrder() {
         if (sortByPropertyTypeId == null) {
-            if (derivedFromItemElement != null && parentItem != null) {
-                String inventoryDomain = ItemDomainName.inventory.getValue();
-                if (parentItem.getDomain().getName().equals(inventoryDomain)) {
-                    return derivedFromItemElement.getSortOrder();
-                }
-            }
-            return getSortOrder();
+            return getRelevantItemElementSortOrder();
         } else {
             return getPropertyValue(sortByPropertyTypeId);
         }
@@ -364,12 +368,12 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public void setLogList(List<Log> logList) {
         this.logList = logList;
     }
-    
+
     public Integer getParentItemId() {
-        if (parentItem != null) {           
+        if (parentItem != null) {
             return parentItem.getId();
         }
-        return null; 
+        return null;
     }
 
     @XmlTransient
@@ -380,7 +384,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public void setParentItem(Item parentItem) {
         this.parentItem = parentItem;
     }
-    
+
     public Integer getContainedItem1Id() {
         if (containedItem1 != null) {
             return containedItem1.getId();
@@ -397,7 +401,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         resetCatalogInventoryMachineDesingItems();
         this.containedItem1 = containedItem;
     }
-    
+
     public Integer getContainedItem2Id() {
         if (containedItem2 != null) {
             return containedItem2.getId();
@@ -492,11 +496,11 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     public void setConstraintInformation(ItemElementConstraintInformation constraintInformation) {
         this.constraintInformation = constraintInformation;
     }
-    
+
     public void setMarkedForDeletion(boolean markForDeletion) {
         this.markedForDeletion = markForDeletion;
     }
-    
+
     @XmlTransient
     public boolean isMarkedForDeletion() {
         return this.markedForDeletion;
@@ -660,26 +664,26 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         if (other.getId() != null) {
             return (other.getId().equals(id));
         }
-        
+
         // special case for import
-        if ((this.importParentItem != null) && 
-                (other.importParentItem != null)) {
-            if ((this.importParentItem == other.importParentItem) &&
-                (this.getName().equals(other.getName()))) {
+        if ((this.importParentItem != null)
+                && (other.importParentItem != null)) {
+            if ((this.importParentItem == other.importParentItem)
+                    && (this.getName().equals(other.getName()))) {
                 return true;
             } else {
                 return false;
             }
         }
-        
+
         // Verify other metadata 
-        if (ObjectUtility.equals(this.getName(), other.getName()) && 
-                ObjectUtility.equals(this.getParentItem(), other.getParentItem()) &&
-                ObjectUtility.equals(this.getContainedItem(), other.getContainedItem()) &&
-                ObjectUtility.equals(this.getContainedItem2(), other.getContainedItem2())) {
-            return true; 
+        if (ObjectUtility.equals(this.getName(), other.getName())
+                && ObjectUtility.equals(this.getParentItem(), other.getParentItem())
+                && ObjectUtility.equals(this.getContainedItem(), other.getContainedItem())
+                && ObjectUtility.equals(this.getContainedItem2(), other.getContainedItem2())) {
+            return true;
         } else {
-            return false; 
+            return false;
         }
     }
 
@@ -712,11 +716,10 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     }
 
     // <editor-fold defaultstate="collapsed" desc="import functionality">
-    
     public void setImportParentItem(Item parentItem) {
         setImportParentItem(parentItem, null, null, null);
     }
-    
+
     public Item getImportParentItem() {
         return getParentItem();
     }
@@ -745,7 +748,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
             }
             this.setEntityInfo(entityInfo);
         }
-        
+
         importParentItem = parentItem;
     }
 
