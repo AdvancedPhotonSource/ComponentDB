@@ -31,28 +31,6 @@ See LICENSE file.
 
     <ui:define name="additionalRightItemPanels">
         
-        <ui:remove>
-        <p:panel header="End Metadata"
-                 toggleable="true"
-                 collapsed="true">
-            <p:accordionPanel multiple="true"
-                              activeIndex="">
-                <p:tab title="End 1">
-                    <ui:decorate template="private/templates/endMetadataPanel.xhtml">
-                        <ui:param name="endName" value="End 1"/>
-                        <ui:param name="endMethodSuffix" value="Endpoint1"/>
-                    </ui:decorate>
-                </p:tab>
-                <p:tab title="End 2">
-                    <ui:decorate template="private/templates/endMetadataPanel.xhtml">
-                        <ui:param name="endName" value="End 2"/>
-                        <ui:param name="endMethodSuffix" value="Endpoint2"/>
-                    </ui:decorate>
-                </p:tab>
-            </p:accordionPanel>
-        </p:panel>
-        </ui:remove>
-        
         <p:panel header="Device Connections" 
                  toggleable="true" 
                  collapsed="#{!entityController.displayConnectionsList}">

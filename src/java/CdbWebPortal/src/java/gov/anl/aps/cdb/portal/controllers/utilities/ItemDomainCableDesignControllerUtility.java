@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.constants.ItemMetadataFieldType;
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
@@ -16,9 +15,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import static gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign.CABLE_DESIGN_INTERNAL_PROPERTY_TYPE;
 import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableInventory;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
-import gov.anl.aps.cdb.portal.model.db.entities.PropertyTypeMetadata;
-import gov.anl.aps.cdb.portal.view.objects.ItemMetadataFieldInfo;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -31,6 +27,10 @@ import org.apache.logging.log4j.Logger;
 public class ItemDomainCableDesignControllerUtility extends ItemControllerUtility<ItemDomainCableDesign, ItemDomainCableDesignFacade> {
 
     private static final Logger LOGGER = LogManager.getLogger(CdbEntityControllerUtility.class.getName());
+    
+    private static final String GROUP_CABLE = "Cable";
+    private static final String GROUP_END1 = "End 1";
+    private static final String GROUP_END2 = "End 2";
 
     @Override
     public boolean isEntityHasQrId() {
@@ -84,7 +84,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "External cable name (e.g., from CAD or routing tool).", 
                 ItemMetadataFieldType.STRING, 
                 "", 
-                null);
+                null,
+                GROUP_CABLE);
         
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_IMPORT_CABLE_ID_KEY, 
@@ -92,7 +93,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Import cable identifier.", 
                 ItemMetadataFieldType.STRING, 
                 "", 
-                null);
+                null,
+                GROUP_CABLE);
         
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ALT_CABLE_ID_KEY, 
@@ -100,14 +102,16 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Alternate (e.g., group-specific) cable identifier.", 
                 ItemMetadataFieldType.STRING, 
                 "", 
-                null);
+                null,
+                GROUP_CABLE);
         
         info.addField(ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_LAYING_KEY, 
                 "Laying", 
                 "Laying style e.g., S=single-layer, M=multi-layer, T=triangular, B=bundle", 
                 ItemMetadataFieldType.STRING, 
                 "", 
-                null);
+                null,
+                GROUP_CABLE);
         
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_VOLTAGE_KEY, 
@@ -115,7 +119,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Voltage aplication e.g., COM=communication, CTRL=control, IW=instrumentation, LV=low voltage, MV=medium voltage", 
                 ItemMetadataFieldType.STRING, 
                 "", 
-                null);
+                null,
+                GROUP_CABLE);
         
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ROUTED_LENGTH_KEY, 
@@ -123,7 +128,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Calculated length for cable", 
                 ItemMetadataFieldType.STRING, 
                 "", 
-                null);
+                null,
+                GROUP_CABLE);
         
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_ROUTE_KEY, 
@@ -131,7 +137,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Description of cable route", 
                 ItemMetadataFieldType.STRING, 
                 "", 
-                null);
+                null,
+                GROUP_CABLE);
         
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_NOTES_KEY, 
@@ -139,7 +146,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Notes about this cable", 
                 ItemMetadataFieldType.STRING, 
                 "", 
-                null);
+                null,
+                GROUP_CABLE);
         
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_DESCRIPTION_KEY,
@@ -147,7 +155,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "End description.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END1);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_ROUTE_KEY,
@@ -155,7 +164,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Routing waypoint for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END1);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_ENDLENGTH_KEY,
@@ -163,7 +173,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Calculated length for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END1);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_TERMINATION_KEY,
@@ -171,7 +182,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Termination for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END1);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_PINLIST_KEY,
@@ -179,7 +191,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Pin mapping details for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END1);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_NOTES_KEY,
@@ -187,7 +200,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Notes for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END1);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_DRAWING_KEY,
@@ -195,7 +209,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Drawing for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END1);
         
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_DESCRIPTION_KEY,
@@ -203,7 +218,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "End description.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END2);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_ROUTE_KEY,
@@ -211,7 +227,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Routing waypoint for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END2);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_ENDLENGTH_KEY,
@@ -219,7 +236,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Calculated length for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END2);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_TERMINATION_KEY,
@@ -227,7 +245,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Termination for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END2);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_PINLIST_KEY,
@@ -235,7 +254,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Pin mapping details for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END2);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_NOTES_KEY,
@@ -243,7 +263,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Notes for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END2);
 
         info.addField(
                 ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_DRAWING_KEY,
@@ -251,7 +272,8 @@ public class ItemDomainCableDesignControllerUtility extends ItemControllerUtilit
                 "Drawing for cable end.",
                 ItemMetadataFieldType.STRING,
                 "",
-                null);
+                null,
+                GROUP_END2);
         
         return info;
     }
