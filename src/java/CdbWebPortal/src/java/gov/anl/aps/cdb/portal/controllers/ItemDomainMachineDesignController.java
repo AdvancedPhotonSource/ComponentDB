@@ -483,6 +483,11 @@ public class ItemDomainMachineDesignController
             }
         }
         return false;
+    } 
+
+    @Override
+    public String prepareView(Item item) {
+        return super.prepareView(item) + "&mode=detail"; 
     }
 
     public String showDetailsForCurrentSelectedTreeNode() {
