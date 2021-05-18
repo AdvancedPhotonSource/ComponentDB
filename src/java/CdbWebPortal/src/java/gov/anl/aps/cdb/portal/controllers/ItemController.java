@@ -2345,8 +2345,7 @@ public abstract class ItemController<
             }
         }
 
-        String newUrl = desiredViewId + "?" + paramString + "faces-redirect=true";
-        ClientViewManagerController.addAppropriateLastUrl(newUrl);
+        String newUrl = desiredViewId + "?" + paramString + "faces-redirect=true";        
 
         SessionUtility.navigateTo(newUrl);
         return null;
