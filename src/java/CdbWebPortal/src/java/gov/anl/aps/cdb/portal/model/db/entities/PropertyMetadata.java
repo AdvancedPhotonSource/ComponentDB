@@ -47,7 +47,7 @@ public class PropertyMetadata extends PropertyMetadataBase implements Serializab
     private String metadataKey;
     @Basic(optional = false)
     @NotNull
-    @Size(min = 0, max = 256)
+    @Size(min = 0, max = 256, message = "Metadata value cannot be more than 256 characters long.")
     @Column(name = "metadata_value")
     private String metadataValue;
     @JoinColumn(name = "property_value_id", referencedColumnName = "id")
