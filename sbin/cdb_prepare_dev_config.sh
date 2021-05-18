@@ -48,6 +48,13 @@ configFile=$portalSrcDir/web/WEB-INF/glassfish-web.xml
 cmd="cat $configFile.template | sed 's?CDB_DATA_DIR?$CDB_DATA_DIR?g' > $configFile"
 eval $cmd || exit 1
 
+echo "Modifying web config file"
+webConfigFile=$portalSrcDir/web/WEB-INF/web.xml
+cmd="cat $webConfigFile.template \
+    | sed 's?CDB_PROJECT_STAGE?Development?g' \
+    > $webConfigFile"
+eval $cmd || exit 1
+
 echo "Modifying cdb.portal.properties config file"
 portalSrcDir=$CDB_ROOT_DIR/src/java/CdbWebPortal
 configFile=$portalSrcDir/src/java/cdb.portal.properties
