@@ -1,6 +1,8 @@
 language: 
   - java
 
+sudo: true
+
 jdk:
   - openjdk11
 
