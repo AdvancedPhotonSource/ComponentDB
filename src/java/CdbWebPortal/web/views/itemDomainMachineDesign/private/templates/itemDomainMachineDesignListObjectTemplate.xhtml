@@ -267,13 +267,15 @@ See LICENSE file.
         <ui:param name="rendered" value="#{hideOptionalColumns and hideSearchColumns}" /> 
     </ui:include>
 
-    <p:column styleClass="narrowColumn"
+    <p:column styleClass="narrowColumnNoPad"
               rendered="#{hideOptionalColumns 
                           and hideSearchColumns}">
-        <f:facet name="header">
-            <span class="favorite" />
-        </f:facet>
-
+        <p:commandLink id="#{entityTypeName}ListViewLink" 
+                       action="#{entityController.prepareView(itemListObject)}" 
+                       styleClass="ui-icon ui-icon-info" 
+                       title="View">
+            <p:tooltip for="#{entityTypeName}ListViewLink" value="View item details."/>
+        </p:commandLink>
         <ui:include src="../../../common/private/reusedParts/listActionLinksFavoritesLink.xhtml" >
             <ui:param name="renderFavorites" value="#{settingController.userHaveUpdateFavoritesPermission and hideSearchColumns}" />
             <ui:param name="toggleFavoritesAction" value="toggleItemInFavoritesList" />

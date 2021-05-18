@@ -24,6 +24,7 @@ window.onload = function () {
         }
     } else {
         startPageVerify(false);
+        addSessionUrl(); 
     }
 };
 

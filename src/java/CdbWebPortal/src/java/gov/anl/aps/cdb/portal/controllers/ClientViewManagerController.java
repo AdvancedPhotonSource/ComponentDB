@@ -20,7 +20,7 @@ import javax.inject.Named;
 public class ClientViewManagerController implements Serializable {
 
     public static final String controllerNamed = "clientViewManagerController";
-    
+
     Map<String, String> viewUUID;
     CdbEntityController entityController = null;
     String currentUrl = null;
@@ -30,11 +30,17 @@ public class ClientViewManagerController implements Serializable {
     String defaultReturnToUrl = "list?faces-redirect=true";
 
     public ClientViewManagerController() {
-        viewUUID = new HashMap<>(); 
+        viewUUID = new HashMap<>();
     }
 
     public void generateNewViewUUID(String singleTabViewKey) {
+        addSessionUrl();
+
         String viewUUID = UUID.randomUUID().toString();
+        this.viewUUID.put(singleTabViewKey, viewUUID);
+    }
+
+    public void addSessionUrl() {
         String sessionUrl = SessionUtility.getRedirectToCurrentView();
 
         if (!skipAddLastUrl) {
@@ -43,8 +49,6 @@ public class ClientViewManagerController implements Serializable {
         skipAddLastUrl = false;
 
         currentUrl = sessionUrl;
-        
-        this.viewUUID.put(singleTabViewKey, viewUUID); 
     }
 
     public String returnToPreviousPage() {
@@ -52,19 +56,30 @@ public class ClientViewManagerController implements Serializable {
             return defaultReturnToUrl;
         }
         int redirectIdx = lastUrlList.size() - 2;
+        boolean valid = false;
         String redirectUrl = lastUrlList.get(redirectIdx);
+        while (!valid) {
+            if (redirectUrl.contains("edit.xhtml") || redirectUrl.contains("view.xhtml")) {
+                if (redirectUrl.contains("id=")) {
+                    valid = true;
+                } else {
+                    redirectIdx = redirectIdx - 1;
+                    if (redirectIdx < 0) {
+                        redirectUrl = defaultReturnToUrl;
+                        redirectIdx = 0;
+                        break;
+                    } else {
+                        redirectUrl = lastUrlList.get(redirectIdx);
+                    }
+                }
+            } else {
+                valid = true;
+            }
+        }
+
         lastUrlList = lastUrlList.subList(0, redirectIdx);
 
         return redirectUrl;
-    }
-
-    public static void addAppropriateLastUrl(String lastUrl) {
-        ClientViewManagerController thisController = (ClientViewManagerController) SessionUtility.findBean(controllerNamed);
-
-        if (thisController != null) {
-            thisController.addLastUrl(lastUrl);
-            thisController.skipAddLastUrl = true;
-        }
     }
 
     private void addLastUrl(String lastUrl) {
@@ -76,7 +91,7 @@ public class ClientViewManagerController implements Serializable {
     }
 
     public String getViewUUID(String singleTabViewKey) {
-        return viewUUID.get(singleTabViewKey); 
+        return viewUUID.get(singleTabViewKey);
     }
 
     public String redrectToLastShownUrl() {

@@ -38,7 +38,7 @@ See LICENSE file.
                 <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourcePartNumber.xhtml"/> 
             </p:column>
 
-            <h:outputText value="Cost"/> 
+            <h:outputText value="Cost [$]"/> 
             <p:column>
                 <ui:include src="templateDefaults/itemSourceFieldEditValues/itemSourceCost.xhtml"/> 
             </p:column>
@@ -88,7 +88,7 @@ See LICENSE file.
 
                 <p:commandButton value="Close" 
                                  icon="ui-icon-arrowreturnthick-1-w"
-                                 oncomplete="PF('#{entityTypeName}ItemSourceAddDialogWidget').hide()"
+                                 oncomplete="PF('#{entityTypeName}ItemSourceAddDialogWidget').hide()"                                 
                                  immediate="true"
                                  action="#{entityController.removeCurrentEditItemSource()}"
                                  update="@form"

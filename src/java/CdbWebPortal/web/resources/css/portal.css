@@ -506,7 +506,7 @@ select {
     width: 300px;
 }
 
-.narrowColumn {
+.narrowColumn, .narrowColumnNoPad {
     width: 26px;    
 }
 
