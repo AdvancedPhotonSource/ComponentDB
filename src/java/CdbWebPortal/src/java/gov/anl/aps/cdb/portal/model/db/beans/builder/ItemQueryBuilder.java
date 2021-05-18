@@ -53,6 +53,7 @@ public abstract class ItemQueryBuilder {
 
     private Set<String> firstIERNames = null;
     private Set<String> secondIERNames = null; 
+    private Set<String> connectorNames = null; 
 
     private boolean fiel_included_in_where;
 
@@ -75,6 +76,7 @@ public abstract class ItemQueryBuilder {
         this.coreMetadataNames = new HashSet<>(); 
         this.firstIERNames = new HashSet<>(); 
         this.secondIERNames = new HashSet<>(); 
+        this.connectorNames = new HashSet<>(); 
         
         this.fiel_included_in_where = false;
     }
@@ -131,6 +133,10 @@ public abstract class ItemQueryBuilder {
         
         for (String cmName : coreMetadataNames) {
             joinPart += " JOIN " + CORE_METADATA_PROPERTY_JOIN_NAME + ".propertyMetadataList " + cmName;
+        }
+        
+        for (String connName : connectorNames) {
+            joinPart += " JOIN i.itemConnectorList " + connName;
         }
 
         return joinPart;
@@ -352,6 +358,16 @@ public abstract class ItemQueryBuilder {
         includeFiel();
     }
 
+    protected void addConnectorNameWhere(String key, String connectorName) {
+        addConnectorWhere(key, "connector.name", connectorName);
+    }
+    
+    private void addConnectorWhere(String key, String dbFieldName, String value) {
+        String queryName = key + "." + dbFieldName; 
+        appendWhere(QUERY_LIKE, queryName, value);
+        connectorNames.add(key);
+    }
+    
     private void updateIncludes(String parent) {
         switch (parent) {
             case ITEM_ELEMENTS_LIST_JOIN_NAME:
