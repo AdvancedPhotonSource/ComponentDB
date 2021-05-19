@@ -3,7 +3,8 @@ from datetime import datetime
 
 from CdbApiFactory import CdbApiFactory
 from cdbApi import OpenApiException, ItemStatusBasicObject, NewLocationInformation, SimpleLocationInformation, \
-    LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions
+    LogEntryEditInformation, PropertyValue, PropertyMetadata, ConciseItemOptions, NewMachinePlaceholderOptions, \
+    NewCatalogInformation, NewInventoryInformation, NewCatalogElementInformation
 
 
 class MyTestCase(unittest.TestCase):
@@ -12,15 +13,21 @@ class MyTestCase(unittest.TestCase):
     ADMIN_USERNAME = 'cdb'
     ADMIN_PASSWORD = 'cdb'
     CATALOG_ITEM_ID = 2
+    CATALOG_ITEM_ID_2 = 18
     INVENTORY_ITEM_ID = 56
+    INVENTORY_ITEM_ELEMENT_NAME = "E1"
     INVENTORY_ITEM_QRID = 1010001
     INVENTORY_ITEM_CHILDREN = 3
     INVENTORY_FIRST_CONTAINED_ITEM_ID = 45
     INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID = 41
     INVENTORY_FIRST_CONTAINED_INVALID_ITEM_ID = 97
     MACHINE_DESIGN_ID = 93
+    MACHINE_DESIGN_PARENT_ID = 94
+    MACHINE_DESIGN_CHILD_ID = 95
     TEST_PROPERTY_TYPE_NAME = "Test Property"
     LOCATION_QRID_TESTUSER_PERMISSIONS = 101111101
+    TEST_NEW_CATALOG_ITEM_NAME = "new catalog from test"
+    TEST_NEW_INVENTORY_ITEM_TAG = "TEST_TAG"
     SAMPLE_IMAGE_PATH = './data/AnlLogo.png'
     SAMPLE_DOC_PATH = './data/CdbSchema-v3.0-3.pdf'
 
@@ -32,6 +39,8 @@ class MyTestCase(unittest.TestCase):
         self.userApi = self.factory.usersApi
         self.cableCatalogApi = self.factory.cableCatalogItemApi
         self.machineDesignApi = self.factory.machineDesignItemApi
+        self.componentCatalogApi = self.factory.componentCatalogItemApi
+        self.componentInventoryApi = self.factory.componentInventoryItemApi
         self.propertyTypeApi = self.factory.propertyTypeApi
         self.propertyValueApi = self.factory.propertyValueApi
         self.domainApi = self.factory.domainApi
@@ -148,27 +157,30 @@ class MyTestCase(unittest.TestCase):
 
     def verify_contained_item(self, item_hierarchy_object, expected_contained_item):
         result_item_children = item_hierarchy_object.child_items
-        item = result_item_children[0].item
-        if item is not None:
-            contained_item_id = item.id
-            return expected_contained_item == item.id
+        if result_item_children.__len__() != 0:
+            for result_child in result_item_children:
+                item = result_child.item
+                if item is not None:
+                    contained_item_id = item.id
+                    if expected_contained_item == contained_item_id:
+                        return True
         return expected_contained_item is None
 
     def test_update_contained_item(self):
         result = self.itemApi.get_item_hierarchy_by_id(self.INVENTORY_ITEM_ID)
         result_item_children = result.child_items
 
-        element_id = result_item_children[0].element_id
+        for child_item in result_item_children:
+            if child_item.element_name == self.INVENTORY_ITEM_ELEMENT_NAME:
+                element_id = child_item.element_id
 
-        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_ITEM_ID),
-                         True, msg='Update already happened.')
+        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_ITEM_ID), True, msg='Update already happened.')
 
         self.loginAsAdmin()
         result = self.itemApi.update_contained_item(element_id, self.INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID)
         self.assertNotEqual(result, None)
         result = self.itemApi.get_item_hierarchy_by_id(self.INVENTORY_ITEM_ID)
-        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID),
-                         True, msg='Contained item updated..')
+        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_NEW_ITEM_ID), True, msg='Contained item updated..')
 
         failed = False
         try:
@@ -178,12 +190,10 @@ class MyTestCase(unittest.TestCase):
         self.assertEqual(failed, True, msg='Updated contained item with invalid item.')
 
         result = self.itemApi.clear_contained_item(element_id)
-        self.assertEqual(self.verify_contained_item(result, None),
-                         True, msg='Contained item failed to clear.')
+        self.assertEqual(self.verify_contained_item(result, None), True, msg='Contained item failed to clear.')
 
         result = self.itemApi.update_contained_item(element_id, self.INVENTORY_FIRST_CONTAINED_ITEM_ID)
-        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_ITEM_ID),
-                         True, msg='Failed to restore to original contained item.')
+        self.assertEqual(self.verify_contained_item(result, self.INVENTORY_FIRST_CONTAINED_ITEM_ID), True, msg='Failed to restore to original contained item.')
 
     def test_get_items_derived_from_item(self):
         # Fetch inventory items for a catalog item.
@@ -468,6 +478,35 @@ class MyTestCase(unittest.TestCase):
         result = self.machineDesignApi.update_assigned_item(self.MACHINE_DESIGN_ID, self.CATALOG_ITEM_ID)
         self.assertNotEqual(result, None)
 
+    def test_md_create_placeholder(self):
+        self.loginAsAdmin()
+
+        options = NewMachinePlaceholderOptions(name='Created From API')
+
+        newMachine = self.machineDesignApi.create_placeholder(self.MACHINE_DESIGN_ID, options)
+        self.assertNotEqual(newMachine, None)
+
+        options = NewMachinePlaceholderOptions(name='Created Child From API')
+        newMachine = self.machineDesignApi.create_placeholder(newMachine.id, options)
+        self.assertNotEqual(newMachine, None)
+
+    def test_md_move_machine(self):
+        self.loginAsAdmin()
+
+        hierarchy = self.itemApi.get_item_hierarchy_by_id(self.MACHINE_DESIGN_PARENT_ID)
+
+        self.assertEqual(self.verify_contained_item(hierarchy, self.MACHINE_DESIGN_CHILD_ID), False,
+                         msg='The item was already assigned to machine parent')
+
+        element = self.machineDesignApi.move_machine(self.MACHINE_DESIGN_CHILD_ID, self.MACHINE_DESIGN_PARENT_ID)
+
+        self.assertNotEqual(element, None, msg='No result given from move machine')
+
+        hierarchy = self.itemApi.get_item_hierarchy_by_id(self.MACHINE_DESIGN_PARENT_ID)
+
+        self.assertEqual(self.verify_contained_item(hierarchy, self.MACHINE_DESIGN_CHILD_ID), True,
+                         msg='The move item command failed to move machine to new parent.')
+
     def test_user_route(self):
         users = self.userApi.get_all1()
         self.assertNotEqual(users, None)
@@ -498,6 +537,65 @@ class MyTestCase(unittest.TestCase):
         for domain in domains:
             items = self.itemApi.get_concise_items_by_domain(domain.name, concise_item_options=options)
             self.assertNotEqual(items, None, msg="Failed fetching items of domain %s" % domain.name)
+
+    def test_create_catalog_item(self):
+        self.loginAsAdmin()
+        info = NewCatalogInformation(name=self.TEST_NEW_CATALOG_ITEM_NAME)
+        failed = False
+
+        try:
+            new_catalog_item = self.componentCatalogApi.create_catalog(info)
+        except OpenApiException as ex:
+            failed = True
+
+        self.assertEqual(failed, True, msg='Not all required arguments were passed in.')
+
+        full_project_list = self.itemApi.get_item_project_list()
+        info.item_projects_list = [full_project_list[0]]
+        try:
+            new_catalog_item = self.componentCatalogApi.create_catalog(info)
+        except OpenApiException as ex:
+            self.fail(msg=ex.body)
+
+        self.assertNotEquals(new_catalog_item.id, None, msg="New catalog item wasn't created")
+
+    def test_create_catalog_element(self):
+        self.loginAsAdmin()
+        info = NewCatalogElementInformation(catalog_item_id=self.CATALOG_ITEM_ID)
+        try:
+            element = self.componentCatalogApi.add_catalog_element(self.CATALOG_ITEM_ID_2, info)
+        except OpenApiException as ex:
+            self.fail(msg="Failed to create catalog element. ")
+
+        self.assertNotEqual(None, element.id, msg='No Element id was returned to user.')
+
+        info.part_name = 'TEST_E_NAME'
+        try:
+            element = self.componentCatalogApi.add_catalog_element(self.CATALOG_ITEM_ID_2, info)
+        except OpenApiException as ex:
+            self.fail(msg="Failed to create catalog element. ")
+
+        self.assertEqual(info.part_name, element.name, msg='Custom part name was not set.')
+
+    def test_create_inventory_item(self):
+        self.loginAsAdmin()
+        info = NewInventoryInformation(catalog_id=self.CATALOG_ITEM_ID)
+
+        try:
+            result = self.componentInventoryApi.create_inventory(info)
+        except OpenApiException as ex:
+            self.fail(msg=ex.body)
+
+        self.assertNotEqual(result.id, None, msg='New inventory not returned.')
+
+        info.tag = self.TEST_NEW_INVENTORY_ITEM_TAG
+
+        try:
+            result = self.componentInventoryApi.create_inventory(info)
+        except OpenApiException as ex:
+            self.fail(msg=ex.body)
+
+        self.assertEqual(result.tag, self.TEST_NEW_INVENTORY_ITEM_TAG, msg="tag name kept from API entered.")
 
 if __name__ == '__main__':
     unittest.main()

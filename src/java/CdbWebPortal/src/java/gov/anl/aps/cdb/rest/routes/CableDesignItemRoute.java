@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableDesign;
 import gov.anl.aps.cdb.rest.entities.ItemDomainCableDesignIdListRequest;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,7 @@ public class CableDesignItemRoute extends BaseRoute {
     @Path("/IdList")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Integer> getCableDesignIdList(ItemDomainCableDesignIdListRequest request) {
+    public List<Integer> getCableDesignIdList(@RequestBody(required = true) ItemDomainCableDesignIdListRequest request) {
         List<String> nameList = request.getNameList();
         LOGGER.debug("Fetching list of cable design id's by name list size: " + nameList.size());
         List<Integer> idList = new ArrayList<>(nameList.size());

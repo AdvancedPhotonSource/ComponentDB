@@ -41,7 +41,7 @@ public abstract class ItemBaseRoute extends BaseRoute {
         UserInfo updatedByUser = getCurrentRequestUserInfo();
         
         if (!verifyUserPermissionForItem(updatedByUser, item)) {            
-            AuthorizationError ex = new AuthorizationError("User does not have permission to update property value for the item");
+            AuthorizationError ex = new AuthorizationError("User does not have permission to update the item");
             LOGGER.error(ex);
             throw ex; 
         }

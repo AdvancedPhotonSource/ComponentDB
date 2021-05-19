@@ -93,6 +93,10 @@ configFile=WEB-INF/glassfish-web.xml
 cmd="cat $configFile | sed 's?<context-root.*?<context-root>${CDB_CONTEXT_ROOT}</context-root>?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 
+webConfigFile=WEB-INF/web.xml
+cmd="cat $webConfigFile.template | sed 's?CDB_PROJECT_STAGE?Production?g' > $webConfigFile"
+eval $cmd
+
 cmd="cat $configFile | sed 's?dir=.*\"?dir=${CDB_DATA_DIR}\"?g' > $configFile.2 && mv $configFile.2 $configFile"
 eval $cmd
 

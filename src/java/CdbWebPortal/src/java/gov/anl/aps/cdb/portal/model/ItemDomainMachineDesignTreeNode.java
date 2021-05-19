@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemDomainMachineDesignQueryBuilder;
@@ -28,6 +29,8 @@ import org.primefaces.model.TreeNode;
  * @author Dariusz
  */
 public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
+    
+    private final static Integer MAXIMUM_EXPANDED_NODES = 250; 
 
     private String nameFilter = "";
     private Domain domain;
@@ -35,6 +38,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
     private List<ItemDomainMachineDesign> topLevelItems;
 
+    private List<ItemDomainMachineDesign> rawFilterResults;
     private List<ItemDomainMachineDesign> filterResults;
     private Boolean filterAllNodes;
 
@@ -61,6 +65,10 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
         this.setExpanded(true);
         childrenLoaded = true;
+    }
+
+    public ItemDomainMachineDesignTreeNode(Object data) {
+        super(data);
     }
 
     private void addTopLevelChildren(List<ItemDomainMachineDesign> topNodes) {
@@ -303,7 +311,8 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     }
     
     public void clearFilterResults() {
-        filterResults = null;
+        rawFilterResults = null;
+        filterResults = null; 
         getChildren().clear();
         // Prevent gui from changing the currently set filters. 
         for (ItemDomainMachineDesign item : topLevelItems) {
@@ -322,7 +331,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     }
 
     public void filterChangeEvent(String onComplete) {
-        if (filterResults != null) {
+        if (rawFilterResults != null) {
             return;
         }
         
@@ -335,25 +344,27 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
             ItemDomainMachineDesignQueryBuilder queryBuilder = new ItemDomainMachineDesignQueryBuilder(domain, filterMap);
 
-            filterResults = designFacade.findByDataTableFilterQueryBuilder(queryBuilder);
+            rawFilterResults = designFacade.findByDataTableFilterQueryBuilder(queryBuilder);
 
-            SessionUtility.addInfoMessage("Hang tight, Loading hierarchy results", "Found " + filterResults.size() + " Results.");
+            SessionUtility.addInfoMessage("Hang tight, Loading hierarchy results", "Found " + rawFilterResults.size() + " Results.");
         }
         SessionUtility.executeRemoteCommand(onComplete);
     }
 
     public void finishFiltering() {
-        if (filterResults != null) {
+        if (rawFilterResults != null) {
             getChildren().clear();
 
             int relevantResults = 0;
+            filterResults = new ArrayList<>(); 
             // Passed as array to force pass by reference. 
             Integer[] displayedNodes = new Integer[1];
             displayedNodes[0] = 0;
-            for (ItemDomainMachineDesign item : filterResults) {
+            for (ItemDomainMachineDesign item : rawFilterResults) {
                 ItemDomainMachineDesignTreeNode createTreeFromFilter = createTreeFromFilter(item, true, displayedNodes);
                 if (createTreeFromFilter != null) {
                     relevantResults++;
+                    filterResults.add(item);                     
                 }
             }
 
@@ -397,6 +408,10 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
             if (element.equals(childElement)) {
                 childNode = node;
+                if (childNode.isExpanded() == false) {
+                    displayedNodes[0]++;
+                    childNode.setExpanded(true);
+                }
                 break;
             }
         }
@@ -428,7 +443,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     public void setNameFilter(String nameFilter) {
         if (this.nameFilter.equals(nameFilter) == false) {
             // Null filter results will trigger the search. 
-            filterResults = null; 
+            rawFilterResults = null; 
         }
         this.nameFilter = nameFilter;
     }
@@ -453,6 +468,56 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
             }
         }
         this.filterAllNodes = filterAllNodes;
+    }
+    
+    public void expandAllChildren(boolean expanded) throws CdbException {
+        Integer count = expandAllChildren(this, expanded, 0); 
+        if (expanded && count > MAXIMUM_EXPANDED_NODES) {
+            throw new CdbException("Exceeded maximum expanded nodes. Select a child and expand again."); 
+        }
+    }
+    
+    private Integer expandAllChildren(TreeNode treeNode, boolean expanded, Integer count) {
+        treeNode.setExpanded(expanded);
+        count++;
+        if (expanded && count > MAXIMUM_EXPANDED_NODES) {
+            treeNode.setExpanded(!expanded);
+            return count;
+        }
+
+        List<TreeNode> children = treeNode.getChildren();
+        if (children != null) {
+            boolean keepGoing = children.size() > 0;
+            int direction = 1;
+            int i = 0;
+            while (keepGoing) {
+                TreeNode child = children.get(i);
+                i += direction;
+
+                if (direction == 1) {
+                    count = expandAllChildren(child, expanded, count);
+                    if (expanded && count > MAXIMUM_EXPANDED_NODES) {
+                        direction = -1;
+                        i--; 
+                    } else {
+                        if (i >= children.size()) {
+                            keepGoing = false; 
+                        }
+                    }                    
+                } else {
+                    expandAllChildren(child, !expanded, 0);
+                    if (i < 0) { 
+                        keepGoing = false; 
+                    }
+                }
+            }
+        }
+
+        if (expanded && count > MAXIMUM_EXPANDED_NODES) {
+            treeNode.setExpanded(!expanded);
+        }
+
+        return count;
     }
 
     public class MachineTreeConfiguration {

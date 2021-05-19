@@ -8,12 +8,8 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../item/private/templates/itemListDataTableRowExpansionTemplate.xhtml">       
     
-    <ui:define name="assemblyTab">
-        <ui:param name="isInventory" value="#{itemDomainInventoryController.isInventory(itemListObject)}" />
-                          
-        <ui:include src="#{isInventory 
-                           ? 'templateDefaults/itemDomainInventoryAssemblyTab.xhtml'
-                           : '../../item/private/templateDefaults/itemListRowExpansion/itemAssemblyTab.xhtml'}"/>
+    <ui:define name="assemblyTab">                          
+        <ui:include src="templateDefaults/itemDomainInventoryAssemblyTab.xhtml"/>
     </ui:define>
     
 </ui:composition>

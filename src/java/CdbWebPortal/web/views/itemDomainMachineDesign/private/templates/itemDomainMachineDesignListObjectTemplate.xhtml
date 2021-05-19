@@ -55,7 +55,7 @@ See LICENSE file.
               filterBy="#{itemTreeListObject.name}"
               filterMatchMode="contains"
               filterable="#{filterable}"
-              colspan="3">
+              colspan="2">
         <f:facet name="header">
             Machine Element Name
             <ui:fragment>
@@ -83,7 +83,6 @@ See LICENSE file.
         <p:outputPanel id="draggableMachineDesign#{itemListObject.id}"
                        styleClass="inlineOutputPanel">                           
             <div class="mdId" style="display: none">#{itemListObject.id}</div>
-            <div class="mdElementId" style="display: none">#{itemElementListObject.id}</div>
             <div class="mdName" style="display: none">#{itemListObject.name}</div>
 
             <ui:param name="domainIcon" 
@@ -149,8 +148,8 @@ See LICENSE file.
                              update="searchAllMachineNodesBooleanCheckbox itemMachineDesignListDataTable#{viewId}" /> 
         </f:facet>
         
-        <p:selectBooleanCheckbox value="#{itemTreeListObject.filterMachineNode}"                                                                       
-                                 rendered="#{topLevelItem}"/> 
+        <p:selectBooleanCheckbox value="#{mdTreeListObject.filterMachineNode}"                                                                       
+                                 rendered="#{topLevelItem and mdTreeListObject != null}"/> 
     </p:column>
 
     <ui:include src="../../../item/private/templateDefaults/itemListObjectColumns/itemItemIdentifier1.xhtml" >
@@ -268,13 +267,15 @@ See LICENSE file.
         <ui:param name="rendered" value="#{hideOptionalColumns and hideSearchColumns}" /> 
     </ui:include>
 
-    <p:column styleClass="narrowColumn"
+    <p:column styleClass="narrowColumnNoPad"
               rendered="#{hideOptionalColumns 
                           and hideSearchColumns}">
-        <f:facet name="header">
-            <span class="favorite" />
-        </f:facet>
-
+        <p:commandLink id="#{entityTypeName}ListViewLink" 
+                       action="#{entityController.prepareView(itemListObject)}" 
+                       styleClass="ui-icon ui-icon-info" 
+                       title="View">
+            <p:tooltip for="#{entityTypeName}ListViewLink" value="View item details."/>
+        </p:commandLink>
         <ui:include src="../../../common/private/reusedParts/listActionLinksFavoritesLink.xhtml" >
             <ui:param name="renderFavorites" value="#{settingController.userHaveUpdateFavoritesPermission and hideSearchColumns}" />
             <ui:param name="toggleFavoritesAction" value="toggleItemInFavoritesList" />

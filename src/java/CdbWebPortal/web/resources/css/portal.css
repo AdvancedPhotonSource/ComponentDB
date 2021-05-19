@@ -506,7 +506,7 @@ select {
     width: 300px;
 }
 
-.narrowColumn {
+.narrowColumn, .narrowColumnNoPad {
     width: 26px;    
 }
 
@@ -1381,4 +1381,12 @@ h2 {
         width: 100%;
         background-color: lightgreen;
     }
+}
+
+.wideMenuItem > ul {
+    width: auto !important;     
+}
+
+.wideMenuItem > ul > li {
+    width: 250px !important;     
 }

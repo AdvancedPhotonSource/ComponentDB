@@ -136,6 +136,9 @@ See LICENSE file.
                                          update="viewOpenPageIdHiddenText"
                                          process="@this"
                                          oncomplete="setCurrentPageViewId()" /> 
+                        
+                        <p:remoteCommand name="addSessionUrl"
+                                         action="#{clientViewManagerController.addSessionUrl()}" /> 
 
                         <p:remoteCommand name="prepareTestExistingViewID" 
                                          update="viewOpenPageIdHiddenText"

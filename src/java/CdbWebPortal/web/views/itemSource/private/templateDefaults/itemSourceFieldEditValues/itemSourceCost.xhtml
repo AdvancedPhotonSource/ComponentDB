@@ -13,7 +13,7 @@ See LICENSE file.
     <ui:param name="inputStyleClass"
               value="#{inputStyleClass != null ? inputStyleClass : 'cellInput'}"/> 
    
-    <h:inputText id="cost#{viewName}" value="#{itemSourceObject.cost}" styleClass="#{inputStyleClass}"/>
+    <h:inputText id="cost#{viewName}" value="#{itemSourceObject.cost}" styleClass="#{inputStyleClass}" onkeypress="debugger; if((event.charCode &lt; 48 &#38;&#38; event.charCode !== 46) || event.charCode &gt; 57) return false;"/>
     <p:tooltip for="cost#{viewName}" value="Cost is optional."/>
     
 </ui:composition>
