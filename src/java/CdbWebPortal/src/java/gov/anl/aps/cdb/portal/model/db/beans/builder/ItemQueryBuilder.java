@@ -38,7 +38,8 @@ public abstract class ItemQueryBuilder {
     private static final String ITEM_TYPE_LIST_JOIN_NAME = "itl"; 
     private static final String CORE_METADATA_PROPERTY_JOIN_NAME = "cmp";
 
-    private static final String QUERY_LIKE = "LIKE";
+    protected static final String QUERY_LIKE = "LIKE";
+    protected static final String QUERY_EQUALS = "=";
     
     private final String METADATA_FIELD_START = "Metadata-"; 
     private final String PROPERTY_FIELD_START = "propertyColumn"; 
@@ -53,7 +54,6 @@ public abstract class ItemQueryBuilder {
 
     private Set<String> firstIERNames = null;
     private Set<String> secondIERNames = null; 
-    private Set<String> connectorNames = null; 
 
     private boolean fiel_included_in_where;
 
@@ -76,7 +76,6 @@ public abstract class ItemQueryBuilder {
         this.coreMetadataNames = new HashSet<>(); 
         this.firstIERNames = new HashSet<>(); 
         this.secondIERNames = new HashSet<>(); 
-        this.connectorNames = new HashSet<>(); 
         
         this.fiel_included_in_where = false;
     }
@@ -135,10 +134,6 @@ public abstract class ItemQueryBuilder {
             joinPart += " JOIN " + CORE_METADATA_PROPERTY_JOIN_NAME + ".propertyMetadataList " + cmName;
         }
         
-        for (String connName : connectorNames) {
-            joinPart += " JOIN i.itemConnectorList " + connName;
-        }
-
         return joinPart;
 
     }
@@ -300,7 +295,7 @@ public abstract class ItemQueryBuilder {
         addFirstRelationshipWhere(key, relationshipTypeName, "secondItemElement.parentItem.name", relationshipItemName);
     }
     
-    private void addFirstRelationshipWhere(String key, String relationshipTypeName, String dbFieldName, String value) {
+    protected void addFirstRelationshipWhere(String key, String relationshipTypeName, String dbFieldName, String value) {
         prepareFirstRelationshipQueryByRelationshipName(key, relationshipTypeName);
         
         String queryName = key + "." + dbFieldName; 
@@ -326,7 +321,7 @@ public abstract class ItemQueryBuilder {
         addSecondRelationshipWhere(key, relationshipTypeName, "firstItemElement.parentItem.name", relationshipItemName);
     }
     
-    private void addSecondRelationshipWhere(String key, String relationshipTypeName, String dbFieldName, String value) {
+    protected void addSecondRelationshipWhere(String key, String relationshipTypeName, String dbFieldName, String value) {
         prepareSecondRelationshipQueryByRelationshipName(key, relationshipTypeName);
         
         String queryName = key + "." + dbFieldName; 
@@ -358,16 +353,6 @@ public abstract class ItemQueryBuilder {
         includeFiel();
     }
 
-    protected void addConnectorNameWhere(String key, String connectorName) {
-        addConnectorWhere(key, "connector.name", connectorName);
-    }
-    
-    private void addConnectorWhere(String key, String dbFieldName, String value) {
-        String queryName = key + "." + dbFieldName; 
-        appendWhere(QUERY_LIKE, queryName, value);
-        connectorNames.add(key);
-    }
-    
     private void updateIncludes(String parent) {
         switch (parent) {
             case ITEM_ELEMENTS_LIST_JOIN_NAME:
@@ -544,7 +529,7 @@ public abstract class ItemQueryBuilder {
         return queryString;
     }
 
-    private void appendWhere(String comparator, String key, Object object) {
+    protected void appendWhere(String comparator, String key, Object object) {
         if (wherePart.isEmpty()) {
             wherePart += " WHERE ";
         } else {
