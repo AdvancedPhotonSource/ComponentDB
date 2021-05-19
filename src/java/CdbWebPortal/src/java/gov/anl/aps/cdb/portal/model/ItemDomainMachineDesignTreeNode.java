@@ -408,6 +408,10 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
             if (element.equals(childElement)) {
                 childNode = node;
+                if (childNode.isExpanded() == false) {
+                    displayedNodes[0]++;
+                    childNode.setExpanded(true);
+                }
                 break;
             }
         }
