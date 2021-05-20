@@ -36,6 +36,9 @@ public class Traveler extends BinderTraveler {
     private LinkedList<SharedWith> sharedWith; 
     private LinkedList<String> devices; 
     
+    private String referenceReleasedForm; 
+    private String referenceReleasedFormVer; 
+    
     // Calculated cache or temporary variables     
     private String FormName; 
 
@@ -149,6 +152,14 @@ public class Traveler extends BinderTraveler {
     
     public double getFinishedValue() {
         return getFinishedInput(); 
+    }
+
+    public String getReferenceReleasedForm() {
+        return referenceReleasedForm;
+    }
+
+    public String getReferenceReleasedFormVer() {
+        return referenceReleasedFormVer;
     }
 
     @Override
