@@ -65,6 +65,7 @@ See LICENSE file.
 
             <p:panel header="Archive Options"
                      collapsed="#{travelerDomainTemplateController.travelersForTemplateArchiveCollapsed}"
+                     rendered="#{loginController.loggedInAsAdmin}" 
                      toggleable="true">
 
                 <f:ajax event="toggle" onevent="travelerInstanceForTemplateToggleArchivePanel()" /> 
