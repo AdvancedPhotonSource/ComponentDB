@@ -60,7 +60,11 @@ See LICENSE file.
     <p:column headerText="Archived On"
               rendered="#{renderedArchivedOn}">
         <h:outputText value="#{travelerObject.localArchivedOn}" />
-    </p:column>                  
+    </p:column>
+    
+    <p:column headerText="Version">
+        <h:outputText value="#{travelerObject.referenceReleasedFormVer}"/> 
+    </p:column>
 
 </ui:composition>
 

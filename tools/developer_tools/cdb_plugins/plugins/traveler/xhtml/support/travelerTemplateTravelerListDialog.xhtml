@@ -7,7 +7,8 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <ui:param name="travelerSuccessUpdateTarget"
               value="#{travelerSuccessUpdateTarget != null ? travelerSuccessUpdateTarget : 'travelerTemplateListDataTable'}" />
@@ -26,12 +27,17 @@ See LICENSE file.
                   value="#{travelerDomainTemplateController.travelersCreatedFromTemplate}"/>
 
         <p:outputPanel id="travelerTemplateTravelerListDialogPanel">            
-            <p:dataTable value="#{travelersCreatedFromTemplate}"
+            <p:dataTable id="travelerTemplateTravelerListDialogDataTable"
+                         widgetVar="travelerTemplateTravelerListDialogDataTableWidget"
+                         value="#{travelersCreatedFromTemplate}"
+                         selection="#{travelerDomainTemplateController.selectedTravelersCreatedFromTemplate}"
+                         selectionMode="multiple"                         
                          var="createdFromTemplateObj"
                          emptyMessage="No travelers have been created yet."
                          paginator="true" 
                          paginatorPosition="bottom"
-                         rows="#{resources.DialogDataTableNumberOfRows}">
+                         rowKey="#{createdFromTemplateObj.traveler.id}"
+                         rows="25"> 
 
                 <ui:param name="travelerObject"
                           value="#{createdFromTemplateObj.traveler}"/>
@@ -50,7 +56,64 @@ See LICENSE file.
                               value="#{false}"/>
                 </ui:include>
 
+                <p:column headerText="Latest">
+                    <h:outputText value="#{createdFromTemplateObj.latestFormVersion}"/> 
+                </p:column>
+
             </p:dataTable>
+
+
+            <p:panel header="Archive Options"
+                     collapsed="#{travelerDomainTemplateController.travelersForTemplateArchiveCollapsed}"
+                     rendered="#{loginController.loggedInAsAdmin}" 
+                     toggleable="true">
+
+                <f:ajax event="toggle" onevent="travelerInstanceForTemplateToggleArchivePanel()" /> 
+                <p:remoteCommand name="travelerInstanceForTemplateToggleArchivePanel"
+                                 onstart="PF('loadingDialog').show()"
+                                 action="#{travelerDomainTemplateController.toggleArchivedPanel()}"                                 
+                                 oncomplete="onShowtravelerTemplateTravelerListDialog()" /> 
+                
+                <p:commandButton id="travelerTemplateTravelerListDialogArchiveModeToggle"
+                                 value="Current Mode: #{travelerDomainTemplateController.archiveMode}" 
+                                 action="#{travelerDomainTemplateController.toggleShowArchived()}" 
+                                 onclick="PF('loadingDialog').show();"
+                                 oncomplete="onShowtravelerTemplateTravelerListDialog();" > 
+                    <p:tooltip for="travelerTemplateTravelerListDialogArchiveModeToggle"
+                               value="Click to toggle between archive and unarchive modes" /> 
+                </p:commandButton>
+
+                <p:menuButton value="Smart select">
+                    <p:menuitem value="All" 
+                                action="#{travelerDomainTemplateController.selectAllTravelersForTemplate(false)}" 
+                                update="travelerTemplateTravelerListDialogDataTable"/>
+                    <p:menuitem value="All w/ 0 input" 
+                                action="#{travelerDomainTemplateController.selectAllTravelersForTemplate(true)}" 
+                                update="travelerTemplateTravelerListDialogDataTable"/>
+                    <p:menuitem value="Latest" 
+                                action="#{travelerDomainTemplateController.selectTravelersForTemplate(true, false)}"
+                                update="travelerTemplateTravelerListDialogDataTable"/>
+                    <p:menuitem value="Latest w/ 0 input" 
+                                action="#{travelerDomainTemplateController.selectTravelersForTemplate(true, true)}"
+                                update="travelerTemplateTravelerListDialogDataTable"/>
+                    <p:menuitem value="Non-latest" 
+                                action="#{travelerDomainTemplateController.selectTravelersForTemplate(false, false)}"
+                                update="travelerTemplateTravelerListDialogDataTable"/>
+                    <p:menuitem value="Non-latest w/ 0 input" 
+                                action="#{travelerDomainTemplateController.selectTravelersForTemplate(false, true)}"
+                                update="travelerTemplateTravelerListDialogDataTable"/>
+                    <p:menuitem value="Reset" 
+                                action="#{travelerDomainTemplateController.resetTravelersForTemplateSelection}" 
+                                update="travelerTemplateTravelerListDialogDataTable"/> 
+                </p:menuButton>
+
+                <p:commandButton value="#{travelerDomainTemplateController.archiveMode} Selection"
+                                 action="#{travelerDomainTemplateController.archiveSelectedTravelersCreatedFromTemplate()}"
+                                 onclick="PF('loadingDialog').show();"
+                                 oncomplete="onShowtravelerTemplateTravelerListDialog();"/> 
+
+            </p:panel>
+
         </p:outputPanel>
 
         <f:facet name="footer">                                                                 
@@ -64,6 +127,7 @@ See LICENSE file.
                      update="travelerTemplateTravelerListDialogPanel"
                      onstart="PF('loadingDialog').show()"
                      oncomplete="PF('travelerTemplateTravelerListDialogWidget').initPosition();
+                     PF('travelerTemplateTravelerListDialogDataTableWidget').unselectAllRows(); 
                      PF('loadingDialog').hide();" />
 
 </ui:composition>
