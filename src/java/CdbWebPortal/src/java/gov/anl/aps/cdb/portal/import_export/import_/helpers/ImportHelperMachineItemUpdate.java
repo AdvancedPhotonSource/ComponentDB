@@ -64,15 +64,15 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase {
         }
         
         List <CdbEntity> entityList = getExportEntityList();
-        List<ItemDomainMachineDesign> filteredHierarchyItems = new ArrayList<>();
-        for (CdbEntity entity : entityList) {
-            ItemDomainMachineDesign item = (ItemDomainMachineDesign) entity;
-            if (!item.getIsItemDeleted()) {
-                ItemDomainMachineDesign.collectHierarchyItems(item, filteredHierarchyItems, numLevels);
-            }
-        }
-        
-        setExportEntityList(filteredHierarchyItems);
+//        List<ItemDomainMachineDesign> filteredHierarchyItems = new ArrayList<>();
+//        for (CdbEntity entity : entityList) {
+//            ItemDomainMachineDesign item = (ItemDomainMachineDesign) entity;
+//            if (!item.getIsItemDeleted()) {
+//                ItemDomainMachineDesign.collectHierarchyItems(item, filteredHierarchyItems, numLevels);
+//            }
+//        }
+//        
+//        setExportEntityList(filteredHierarchyItems);
         
         return new ValidInfo(isValid, validString);
     }
