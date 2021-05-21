@@ -2621,13 +2621,45 @@ public class ItemDomainMachineDesignController
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
     
-    @Override
-    protected List<ItemDomainMachineDesign> getExportEntityList() {
-        ItemDomainMachineDesignTreeNode currentTree = getCurrentMachineDesignListRootTreeNode();
-        List<ItemDomainMachineDesign> filteredItems = currentTree.getFilterResults();
-        return filteredItems;
-    }
+    private static List<ItemDomainMachineDesign> createListForTreeNodeHierarchy(
+            ItemDomainMachineDesignTreeNode node,
+            boolean enforceMaxLevels,
+            Integer maxLevels,
+            int currentLevel) {
+        
+        List<ItemDomainMachineDesign> itemList = new ArrayList<>();
+        
+        if (enforceMaxLevels && (currentLevel >= maxLevels)) {
+            return itemList;
+        }
+        
+        currentLevel = currentLevel + 1;
+        
+        // walk tree node hierarchy to create list
+        node.setExpanded(true);
+        for (ItemDomainMachineDesignTreeNode childNode : node.getMachineChildren()) {
+            ItemElement dataElem = childNode.getElement();
+            if (dataElem != null) {
+                Item item = dataElem.getContainedItem();
+                if (item instanceof ItemDomainMachineDesign) {
+                    itemList.add((ItemDomainMachineDesign) item);
+                    itemList.addAll(createListForTreeNodeHierarchy(
+                            childNode, enforceMaxLevels, maxLevels, currentLevel));
+                }
+            }
+        }
 
+        return itemList;
+    }
+    
+    public static List<ItemDomainMachineDesign> createListForTreeNodeHierarchy(
+            ItemDomainMachineDesignTreeNode rootNode,
+            boolean enforceMaxLevels,
+            Integer maxLevels) {
+        
+        return createListForTreeNodeHierarchy(rootNode, enforceMaxLevels, maxLevels, 0);        
+    }
+    
     // </editor-fold>       
     // <editor-fold defaultstate="collapsed" desc="Delete support">   
     private void addChildrenForItemToHierarchyNode(

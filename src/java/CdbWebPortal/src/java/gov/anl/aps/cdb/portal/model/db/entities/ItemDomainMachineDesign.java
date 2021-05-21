@@ -590,41 +590,6 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         return newItem;
     }
     
-    private static void collectHierarchyItems(
-            ItemDomainMachineDesign parentItem,
-            List<ItemDomainMachineDesign> collectedItems,
-            int currentLevel,
-            Integer numLevels) {
-        
-        currentLevel = currentLevel + 1;
-        
-        List<ItemElement> displayList = parentItem.getItemElementDisplayList();
-        for (ItemElement ie : displayList) {
-            Item childItem = ie.getContainedItem();
-            if (childItem instanceof ItemDomainMachineDesign) {
-                collectedItems.add((ItemDomainMachineDesign) childItem);
-                if ((numLevels == null) || (currentLevel < numLevels)) {
-                    collectHierarchyItems(
-                            (ItemDomainMachineDesign) childItem,
-                            collectedItems,
-                            currentLevel,
-                            numLevels);
-                }
-            }
-        }
-
-    }
-    
-    public static void collectHierarchyItems(
-            ItemDomainMachineDesign parentItem,
-            List<ItemDomainMachineDesign> collectedItems,
-            Integer numLevels) {
-
-        collectedItems.add(parentItem);
-        if ((numLevels == null) || (numLevels > 1)) {
-            collectHierarchyItems(parentItem, collectedItems, 1, numLevels);
-        }
-    }
 // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        

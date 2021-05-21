@@ -128,6 +128,17 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public List<EntityType> getRows() {
         return rows;
     }
+    
+    public ValidInfo generateExportEntityList() {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        List<CdbEntity> entityList = getEntityController().getExportEntityList();
+        setExportEntityList(entityList);
+        
+        return new ValidInfo(isValid, validString);
+    }
 
     public List<CdbEntity> getExportEntityList() {
         return exportEntityList;

@@ -40,8 +40,6 @@ public class ItemDomainExportWizard implements Serializable {
 
     protected ImportHelperBase importHelper = null;
     
-    private List<CdbEntity> exportEntityList = new ArrayList<>();
-
     private Boolean disableButtonPrev = true;
     private Boolean disableButtonNext = true;
     private Boolean disableButtonFinish = true;
@@ -57,6 +55,7 @@ public class ItemDomainExportWizard implements Serializable {
     
     // models for confirmation tab
     private String confirmationMessage = null;
+    private boolean hasError = false;
     
     // models for file download tab
     private StreamedContent downloadFile;
@@ -75,14 +74,6 @@ public class ItemDomainExportWizard implements Serializable {
         domainInfo = info;
     }
 
-    public List<CdbEntity> getExportEntityList() {
-        return exportEntityList;
-    }
-
-    public void setExportEntityList(List<CdbEntity> exportEntityList) {
-        this.exportEntityList = exportEntityList;
-    }
-    
     public List<ImportExportFormatInfo> getFormatInfoList() {
         if (domainInfo != null) {
             return domainInfo.getFormatInfoList();
@@ -179,17 +170,7 @@ public class ItemDomainExportWizard implements Serializable {
         if ((currStep.endsWith(TAB_SELECT_FORMAT))
                 && (nextStep.endsWith(TAB_SELECT_OPTIONS))) {
             
-            if (exportEntityList.isEmpty()) {
-                SessionUtility.addErrorMessage(
-                    "No rows for export in filtered item list",
-                    "Please cancel and modify filters to select data for export.");
-                setEnablement(currStep);
-                currentTab = currStep;
-                return currStep;
-            }
-            
             createHelperForSelectedFormat();
-            importHelper.setExportEntityList(exportEntityList);
             
             if (importHelper == null) {
                 // don't allow transition if we couldn't create helper
@@ -239,9 +220,24 @@ public class ItemDomainExportWizard implements Serializable {
                 }
             }
             
-            confirmationMessage = "Click 'Next Step' to export " 
-                    + importHelper.getExportEntityCount() 
-                    + " items, or 'Cancel' to modify item selection.";
+            hasError = false;
+            ValidInfo entityListInfo = importHelper.generateExportEntityList();
+            if (!entityListInfo.isValid()) {
+                hasError = true;
+                confirmationMessage = entityListInfo.getValidString();
+            } else {
+                int entityCount = importHelper.getExportEntityCount();
+
+                if (entityCount == 0) {
+                    hasError = true;
+                    confirmationMessage = "No rows selected for export, please cancel "
+                            + "and modify filters to select data for export.";
+                } else {
+                    confirmationMessage = "Click 'Next Step' to export "
+                            + importHelper.getExportEntityCount()
+                            + " items, or 'Cancel' to modify item selection.";
+                }
+            }
         }
         
         // handle transition to download tab file
@@ -301,7 +297,7 @@ public class ItemDomainExportWizard implements Serializable {
         selectedFormatName = null;
         selectedFormatOption = null;
         importHelper = null;
-        exportEntityList = new ArrayList<>();
+        hasError = false;
     }
 
     /**
@@ -362,10 +358,17 @@ public class ItemDomainExportWizard implements Serializable {
             disableButtonNext = false;
 
         } else if (tab.endsWith(TAB_CONFIRMATION)) {
-            disableButtonPrev = false;
-            disableButtonCancel = false;
-            disableButtonFinish = true;
-            disableButtonNext = false;
+            if (!hasError) {
+                disableButtonPrev = false;
+                disableButtonCancel = false;
+                disableButtonFinish = true;
+                disableButtonNext = false;
+            } else {
+                disableButtonPrev = false;
+                disableButtonCancel = false;
+                disableButtonFinish = true;
+                disableButtonNext = true;
+            }
 
         } else if (tab.endsWith(TAB_DOWNLOAD_FILE)) {
             disableButtonPrev = true;

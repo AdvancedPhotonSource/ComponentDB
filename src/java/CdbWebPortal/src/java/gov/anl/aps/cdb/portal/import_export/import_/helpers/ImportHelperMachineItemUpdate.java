@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import java.util.ArrayList;
@@ -52,31 +53,34 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase {
                 MachineImportHelperCommon.OPTION_EXPORT_NUM_LEVELS);
     }
     
-    public ValidInfo handleExportWizardOptions() {
+    @Override
+    public ValidInfo generateExportEntityList() {
         
         boolean isValid = true;
         String validString = "";
-
+        
         Integer numLevels = null;
         String optionVal = getOptionExportNumLevels();
         if ((optionVal != null) && (!optionVal.isBlank())) {
             numLevels = Integer.valueOf(optionVal);
         }
+
+        ItemDomainMachineDesignTreeNode currentTree = 
+                getEntityController().getCurrentMachineDesignListRootTreeNode();
+        // List<ItemDomainMachineDesign> filteredItems = currentTree.getFilterResults();
+
+        // create list from tree node hierarchy
+        List<ItemDomainMachineDesign> entityList = 
+                ItemDomainMachineDesignController.createListForTreeNodeHierarchy(
+                        currentTree,
+                        numLevels != null,
+                        numLevels);
         
-        List <CdbEntity> entityList = getExportEntityList();
-//        List<ItemDomainMachineDesign> filteredHierarchyItems = new ArrayList<>();
-//        for (CdbEntity entity : entityList) {
-//            ItemDomainMachineDesign item = (ItemDomainMachineDesign) entity;
-//            if (!item.getIsItemDeleted()) {
-//                ItemDomainMachineDesign.collectHierarchyItems(item, filteredHierarchyItems, numLevels);
-//            }
-//        }
-//        
-//        setExportEntityList(filteredHierarchyItems);
+        setExportEntityList(entityList);
         
         return new ValidInfo(isValid, validString);
     }
-    
+
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
 
