@@ -682,6 +682,7 @@ public class ItemDomainCableDesign extends Item {
         }
     }
 
+    @JsonIgnore
     public Item getEndpoint1() {
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
         if (cableRelationship != null) {
@@ -691,6 +692,7 @@ public class ItemDomainCableDesign extends Item {
         }
     }
 
+    @JsonIgnore
     public String getEndpoint1String() {
         Item iEndpoint1 = this.getEndpoint1();
         if (iEndpoint1 != null) {
@@ -724,6 +726,7 @@ public class ItemDomainCableDesign extends Item {
         return getConnectorForEndpoint(1.0f);
     }
 
+    @JsonIgnore
     public Item getEndpoint2() {
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
         if (cableRelationship != null) {
@@ -733,6 +736,7 @@ public class ItemDomainCableDesign extends Item {
         }
     }
 
+    @JsonIgnore
     public String getEndpoint2String() {
         Item iEndpoint2 = this.getEndpoint2();
         if (iEndpoint2 != null) {

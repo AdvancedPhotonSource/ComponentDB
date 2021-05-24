@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.util.List;
@@ -241,6 +242,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         return false;
     }
 
+    @JsonIgnore
     public String getImportConnectorName() {
         return importConnectorName;
     }
@@ -249,6 +251,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         this.importConnectorName = importConnectorName;
     }
 
+    @JsonIgnore
     public String getImportConnectorDescription() {
         return importConnectorDescription;
     }
@@ -257,6 +260,7 @@ public class ItemConnector extends CdbEntity implements Serializable {
         this.importConnectorDescription = importConnectorDescription;
     }
 
+    @JsonIgnore
     public Boolean getImportConnectorGenderIsMale() {
         return importConnectorGenderIsMale;
     }
@@ -265,10 +269,12 @@ public class ItemConnector extends CdbEntity implements Serializable {
         this.importConnectorGenderIsMale = importConnectorGenderIsMale;
     }
 
+    @JsonIgnore
     public ConnectorType getImportConnectorType() {
         return importConnectorType;
     }
     
+    @JsonIgnore
     public String getImportConnectorTypeString() {
         if (importConnectorType != null) {
             return importConnectorType.getName();
