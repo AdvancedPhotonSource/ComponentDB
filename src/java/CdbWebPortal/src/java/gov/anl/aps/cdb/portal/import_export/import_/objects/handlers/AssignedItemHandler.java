@@ -4,7 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
-import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportCommon;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
@@ -28,7 +28,7 @@ import org.apache.poi.ss.usermodel.Row;
 public class AssignedItemHandler extends SingleColumnInputHandler {
 
     public AssignedItemHandler() {
-        super(MachineImportCommon.HEADER_ASSIGNED_ITEM);
+        super(MachineImportHelperCommon.HEADER_ASSIGNED_ITEM);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class AssignedItemHandler extends SingleColumnInputHandler {
                     isValid = false;
                     validString = msg;
                 }
-                rowMap.put(MachineImportCommon.KEY_ASSIGNED_ITEM, assignedItem);
+                rowMap.put(MachineImportHelperCommon.KEY_ASSIGNED_ITEM, assignedItem);
 
             } catch (NumberFormatException ex) {
                 String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
@@ -84,7 +84,7 @@ public class AssignedItemHandler extends SingleColumnInputHandler {
         }
 
         // set assigned item
-        Item assignedItem = (Item) rowMap.get(MachineImportCommon.KEY_ASSIGNED_ITEM);
+        Item assignedItem = (Item) rowMap.get(MachineImportHelperCommon.KEY_ASSIGNED_ITEM);
         if (assignedItem != null) {
             if (assignedItem instanceof ItemDomainCatalog) {
                 item.setImportAssignedCatalogItem((ItemDomainCatalog) assignedItem);

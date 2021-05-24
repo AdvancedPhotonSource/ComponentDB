@@ -21,12 +21,19 @@ public class ItemMetadataFieldInfo {
     protected String units;
     private List<String> allowedValues;
 
-    public ItemMetadataFieldInfo(String k, String l, String d, ItemMetadataFieldType t, String u, List<String> allowedValues) {
-        key = k;
-        label = l;
-        description = d;
-        type = t;
-        units = u;
+    public ItemMetadataFieldInfo(
+            String key, 
+            String label, 
+            String description, 
+            ItemMetadataFieldType type, 
+            String units, 
+            List<String> allowedValues) {
+        
+        this.key = key;
+        this.label = label;
+        this.description = description;
+        this.type = type;
+        this.units = units;
         if (allowedValues != null) {
             this.allowedValues = allowedValues;
         } else {

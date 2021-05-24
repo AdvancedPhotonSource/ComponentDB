@@ -38,7 +38,8 @@ public abstract class ItemQueryBuilder {
     private static final String ITEM_TYPE_LIST_JOIN_NAME = "itl"; 
     private static final String CORE_METADATA_PROPERTY_JOIN_NAME = "cmp";
 
-    private static final String QUERY_LIKE = "LIKE";
+    protected static final String QUERY_LIKE = "LIKE";
+    protected static final String QUERY_EQUALS = "=";
     
     private final String METADATA_FIELD_START = "Metadata-"; 
     private final String PROPERTY_FIELD_START = "propertyColumn"; 
@@ -132,7 +133,7 @@ public abstract class ItemQueryBuilder {
         for (String cmName : coreMetadataNames) {
             joinPart += " JOIN " + CORE_METADATA_PROPERTY_JOIN_NAME + ".propertyMetadataList " + cmName;
         }
-
+        
         return joinPart;
 
     }
@@ -294,7 +295,7 @@ public abstract class ItemQueryBuilder {
         addFirstRelationshipWhere(key, relationshipTypeName, "secondItemElement.parentItem.name", relationshipItemName);
     }
     
-    private void addFirstRelationshipWhere(String key, String relationshipTypeName, String dbFieldName, String value) {
+    protected void addFirstRelationshipWhere(String key, String relationshipTypeName, String dbFieldName, String value) {
         prepareFirstRelationshipQueryByRelationshipName(key, relationshipTypeName);
         
         String queryName = key + "." + dbFieldName; 
@@ -320,7 +321,7 @@ public abstract class ItemQueryBuilder {
         addSecondRelationshipWhere(key, relationshipTypeName, "firstItemElement.parentItem.name", relationshipItemName);
     }
     
-    private void addSecondRelationshipWhere(String key, String relationshipTypeName, String dbFieldName, String value) {
+    protected void addSecondRelationshipWhere(String key, String relationshipTypeName, String dbFieldName, String value) {
         prepareSecondRelationshipQueryByRelationshipName(key, relationshipTypeName);
         
         String queryName = key + "." + dbFieldName; 
@@ -528,7 +529,7 @@ public abstract class ItemQueryBuilder {
         return queryString;
     }
 
-    private void appendWhere(String comparator, String key, Object object) {
+    protected void appendWhere(String comparator, String key, Object object) {
         if (wherePart.isEmpty()) {
             wherePart += " WHERE ";
         } else {

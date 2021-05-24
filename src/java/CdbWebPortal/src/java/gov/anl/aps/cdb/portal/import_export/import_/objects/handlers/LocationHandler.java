@@ -5,7 +5,7 @@
 package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportCommon;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
@@ -25,7 +25,7 @@ import org.apache.poi.ss.usermodel.Row;
 public class LocationHandler extends SingleColumnInputHandler {
 
     public LocationHandler() {
-        super(MachineImportCommon.HEADER_LOCATION);
+        super(MachineImportHelperCommon.HEADER_LOCATION);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class LocationHandler extends SingleColumnInputHandler {
 
                     } else {
                         // set location
-                        rowMap.put(MachineImportCommon.KEY_LOCATION, itemLocation);
+                        rowMap.put(MachineImportHelperCommon.KEY_LOCATION, itemLocation);
                     }
 
                 } catch (NumberFormatException ex) {
@@ -88,7 +88,7 @@ public class LocationHandler extends SingleColumnInputHandler {
         }
                 
         // set location
-        ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(MachineImportCommon.KEY_LOCATION);
+        ItemDomainLocation itemLocation = (ItemDomainLocation) rowMap.get(MachineImportHelperCommon.KEY_LOCATION);
         if (itemLocation != null) {
             item.setImportLocationItem(itemLocation);
         }

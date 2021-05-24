@@ -16,14 +16,14 @@ See LICENSE file.
         <f:viewAction action="#{logController.processPreRender()}"/>
     </f:metadata>
 
-    <ui:param name="entityController" value="#{itemDomainMachineDesignController}"/>    
+    <ui:param name="entityController" value="#{itemDomainCatalogController}"/>    
 
     <ui:define name="middleCenter">
 
-        <h:form id="exportMachineDesignForm">
+        <h:form id="exportCatalogForm">
 
             <div class="pageTitle">
-                <h1>Export Machine Elements</h1>
+                <h1>Export Catalog</h1>
             </div>
 
             <ui:include src="../item/private/exportWizard/exportWizard.xhtml">

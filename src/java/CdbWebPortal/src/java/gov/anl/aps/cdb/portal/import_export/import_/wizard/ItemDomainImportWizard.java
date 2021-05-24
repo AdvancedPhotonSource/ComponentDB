@@ -252,7 +252,7 @@ public class ItemDomainImportWizard implements Serializable {
         if (importHelper == null) {
             return new ArrayList<>();
         } else {
-            return importHelper.getWizardOptions();
+            return importHelper.getImportWizardOptions();
         }
     }   
     
@@ -400,7 +400,7 @@ public class ItemDomainImportWizard implements Serializable {
             importHelper.setImportMode(getSelectedMode());
             
             // skip options tab if no options specified
-            if (importHelper.getWizardOptions().isEmpty()) {
+            if (importHelper.getImportWizardOptions().isEmpty()) {
                 nextStep = "importWizard" + TAB_SELECT_FILE;
             }
         }
@@ -408,7 +408,7 @@ public class ItemDomainImportWizard implements Serializable {
         // handle format options tab
         if ((currStep.endsWith(TAB_FORMAT_OPTIONS))
                 && (nextStep.endsWith(TAB_SELECT_FILE))) {
-            ValidInfo validOptionsInfo = importHelper.validateWizardOptions();
+            ValidInfo validOptionsInfo = importHelper.validateImportWizardOptions();
             if (!validOptionsInfo.isValid()) {
                 // don't allow transition if options validation fails
                 SessionUtility.addErrorMessage(

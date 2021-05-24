@@ -12,42 +12,49 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:f="http://xmlns.jcp.org/jsf/core">
 
-    <p:panelGrid columns="2"
-                 rendered="#{entityController.coreMetadataPropertyInfo != null}">
-        <c:forEach items="#{entityController.coreMetadataPropertyInfo.fields}"
-                   var="metadataField">  
+    <p:accordionPanel multiple="true"
+                      activeIndex="">
+        <c:forEach items="#{entityController.coreMetadataPropertyInfo.groupList}"
+                   var="fieldGroup">
+            <p:tab title="#{fieldGroup}">
+                <p:panelGrid columns="2">
+                    <c:forEach items="#{entityController.coreMetadataPropertyInfo.getFieldsInGroup(fieldGroup)}"
+                               var="metadataField">  
 
-            <ui:param name="metadataKey" value="#{metadataField.key}"/>
-            <ui:param name="metadataLabel" value="#{metadataField.label}"/>
-            <ui:param name="metadataType" value="#{metadataField.typeString}"/>
-            <ui:param name="metadataDescription" value="#{metadataField.description}"/>
+                        <ui:param name="metadataKey" value="#{metadataField.key}"/>
+                        <ui:param name="metadataLabel" value="#{metadataField.label}"/>
+                        <ui:param name="metadataType" value="#{metadataField.typeString}"/>
+                        <ui:param name="metadataDescription" value="#{metadataField.description}"/>
 
-            <h:outputLabel for="#{metadataKey}#{viewName}" 
-                           value="#{metadataLabel}" 
-                           styleClass="entityDataLabel"
-                           title="#{metadataDescription}"/>
-            
-            <p:column id="#{metadataKey}#{viewName}">
-                <p:inputText value="#{itemObject[metadataKey]}" 
-                             title="#{metadataLabel}" 
-                             rendered="#{metadataType != 'url'}"
-                             styleClass="entityDataText"/>
-                <h:inputTextarea id="#{metadataKey}ITA#{viewName}"
-                                 value="#{itemObject[metadataKey]}" 
-                                 title="#{metadataLabel}" 
-                                 rendered="#{metadataType == 'url'}"
-                                 styleClass="entityDataText">
-                    <p:ajax event="blur" 
-                            process="@this"
-                            update="#{metadataKey}#{viewName}" /> 
-                </h:inputTextarea>
+                        <h:outputLabel for="#{metadataKey}#{viewName}" 
+                                       value="#{metadataLabel}" 
+                                       styleClass="entityDataLabel"
+                                       title="#{metadataDescription}"/>
 
-                <p:message for="#{metadataKey}ITA#{viewName}" />
-            </p:column>
+                        <p:column id="#{metadataKey}#{viewName}">
+                            <p:inputText value="#{itemObject[metadataKey]}" 
+                                         title="#{metadataLabel}" 
+                                         rendered="#{metadataType != 'url'}"
+                                         styleClass="entityDataText"/>
+                            <h:inputTextarea id="#{metadataKey}ITA#{viewName}"
+                                             value="#{itemObject[metadataKey]}" 
+                                             title="#{metadataLabel}" 
+                                             rendered="#{metadataType == 'url'}"
+                                             styleClass="entityDataText">
+                                <p:ajax event="blur" 
+                                        process="@this"
+                                        update="#{metadataKey}#{viewName}" /> 
+                            </h:inputTextarea>
 
+                            <p:message for="#{metadataKey}ITA#{viewName}" />
+                        </p:column>
+
+                    </c:forEach>
+                </p:panelGrid>
+            </p:tab>
         </c:forEach>
-    </p:panelGrid>
-    
+    </p:accordionPanel>
+
     <div class="actionButton">
         <p:commandButton id="#{entityTypeName}CoreMetadataPropertyEditSaveButton" 
                          action="#{entityController.update()}" 

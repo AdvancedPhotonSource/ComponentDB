@@ -51,6 +51,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     private transient ItemDomainMachineDesign importMdItem = null;
     private transient String importPath = null;
+    private transient String importParentPath = null;
     private transient ItemDomainCatalog importAssignedCatalogItem = null;
     private transient ItemDomainInventory importAssignedInventoryItem = null;
     private transient String importAssignedItemDescription = null;
@@ -309,6 +310,18 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setImportPath(String importPath) {
         this.importPath = importPath;
+    }
+
+    @JsonIgnore
+    public String getImportParentPath() {
+        if (importParentPath == null) {
+            importParentPath = getParentPath();
+        }
+        return importParentPath;
+    }
+
+    public void setImportParentPath(String importParentPath) {
+        this.importParentPath = importParentPath;
     }
 
     public String getAlternateName() {
@@ -589,8 +602,20 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         return newItem;
     }
-
+    
+    @JsonIgnore
+    public String getParentPath() {
+        if (this.getParentMachineDesign() == null) {
+            return "/";
+        } else {
+            return this.getParentMachineDesign().getParentPath() 
+                    + this.getParentMachineDesign().getName() 
+                    + "/";
+        }
+    }
+    
 // </editor-fold>
+    
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     @JsonIgnore
     public List<ItemElementRelationship> getRelatedMAARCRelationshipsForCurrent() {

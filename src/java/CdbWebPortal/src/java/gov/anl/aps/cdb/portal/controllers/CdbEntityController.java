@@ -1718,7 +1718,11 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return false;
     }
     
-    protected List<EntityType> getExportEntityList() {
+    /**
+     * Return list of entities for current export operation.  Subclasses
+     * may override to customize.
+     */
+    public List<EntityType> getExportEntityList() {
         
         DataModel dataModel = getListDataModel();
         
@@ -1743,12 +1747,6 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     public String prepareExport() throws CdbException {          
         ItemDomainExportWizard wizard = ItemDomainExportWizard.getInstance();
         wizard.setDomainInfo(getDomainExportInfo());
-        List<EntityType> entityList = getExportEntityList();
-        if (entityList.isEmpty()) {
-            SessionUtility.addErrorMessage("Error", "No items selected for export. Consider using filter to select items.");
-            return "";
-        }
-        wizard.setExportEntityList((List<CdbEntity>)entityList);
         return "export?faces-redirect=true";
     }
     

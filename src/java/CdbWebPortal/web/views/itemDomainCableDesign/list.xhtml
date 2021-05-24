@@ -51,10 +51,6 @@ See LICENSE file.
             <ui:param name="endpointNum" value="1" />                
         </ui:decorate>
 
-        <ui:decorate template="private/templates/listViewEndpointMetadataColumns.xhtml">
-            <ui:param name="endpointNum" value="1" />                
-        </ui:decorate>
-
         <ui:decorate template="private/templates/listViewEndpointDeviceColumn.xhtml">
             <ui:param name="endpointNum" value="2" />                
         </ui:decorate>
@@ -64,10 +60,6 @@ See LICENSE file.
         </ui:decorate>
 
         <ui:decorate template="private/templates/listViewEndpointConnectorColumn.xhtml">
-            <ui:param name="endpointNum" value="2" />                
-        </ui:decorate>
-
-        <ui:decorate template="private/templates/listViewEndpointMetadataColumns.xhtml">
             <ui:param name="endpointNum" value="2" />                
         </ui:decorate>
 
@@ -83,7 +75,7 @@ See LICENSE file.
     
     <ui:define name="domainEntityExtraTabs">
         
-        <p:tab title="Endpoint Connection Details">
+        <p:tab title="Connection Details">
             <p:panelGrid columns="2">
                 <ui:decorate template="private/templates/listCustomizeOptionEndpointDevice.xhtml">
                     <ui:param name="endpointNum" value="1" />                
@@ -104,18 +96,6 @@ See LICENSE file.
                     <ui:param name="endpointNum" value="2" />                
                 </ui:decorate>
             </p:panelGrid>
-        </p:tab>
-        
-        <p:tab title="Endpoint Metadata">
-                
-            <ui:decorate template="private/templates/listCustomizeEndpointMetadataOptions.xhtml">
-                <ui:param name="endpointNum" value="1" />                
-            </ui:decorate>
-
-            <ui:decorate template="private/templates/listCustomizeEndpointMetadataOptions.xhtml">
-                <ui:param name="endpointNum" value="2" />                
-            </ui:decorate>
-
         </p:tab>
         
     </ui:define>

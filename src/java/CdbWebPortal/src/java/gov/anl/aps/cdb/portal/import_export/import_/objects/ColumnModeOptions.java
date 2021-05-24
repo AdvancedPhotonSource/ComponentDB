@@ -15,10 +15,16 @@ public class ColumnModeOptions {
 
     private ImportMode mode;
     private boolean required;
+    private boolean unchangeable = false;
                     
     public ColumnModeOptions(ImportMode mode, boolean required) {
         this.mode = mode;
         this.required = required;
+    }
+
+    public ColumnModeOptions(ImportMode mode, boolean required, boolean unchangeable) {
+        this(mode, required);
+        this.unchangeable = unchangeable;
     }
 
     public ImportMode getMode() {
@@ -27,6 +33,10 @@ public class ColumnModeOptions {
 
     public boolean isRequired() {
         return required;
+    }
+    
+    public boolean isUnchangeable() {
+        return unchangeable;
     }
     
     public static List<ColumnModeOptions> rCREATE() {
@@ -50,6 +60,12 @@ public class ColumnModeOptions {
     public static List<ColumnModeOptions> oUPDATE() {
         List<ColumnModeOptions> options = new ArrayList<>();
         options.add(new ColumnModeOptions(ImportMode.UPDATE, false));
+        return options;
+    }
+    
+    public static List<ColumnModeOptions> uUPDATE() {
+        List<ColumnModeOptions> options = new ArrayList<>();
+        options.add(new ColumnModeOptions(ImportMode.UPDATE, false, true));
         return options;
     }
     
