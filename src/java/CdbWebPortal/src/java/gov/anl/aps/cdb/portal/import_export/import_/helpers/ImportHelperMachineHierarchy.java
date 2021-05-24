@@ -7,21 +7,9 @@ package gov.anl.aps.cdb.portal.import_export.import_.helpers;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.RootMachineItemWizardOptionHelper;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.AssignedItemHandler;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationHandler;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.MachineItemRefColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyColumnSpec;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import java.util.ArrayList;
@@ -42,56 +30,38 @@ public class ImportHelperMachineHierarchy
         
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineHierarchy.class.getName());
     
-    private static final String KEY_NAME = "name";
-    private static final String KEY_INDENT = "indentLevel";
-    private static final String KEY_ASSIGNED_ITEM = "assignedItem";
-    private static final String KEY_LOCATION = "location";
-    private static final String KEY_PARENT = "importMdItem";
-    private static final String KEY_IS_TEMPLATE = "importIsTemplateString";
-    private static final String KEY_SORT_ORDER = "importSortOrder";
-    
-    private static final String HEADER_PARENT = "Parent ID";
-    private static final String HEADER_BASE_LEVEL = "Level";
-    private static final String HEADER_ALT_NAME = "Machine Design Alternate Name";
-    private static final String HEADER_DESCRIPTION = "Machine Design Item Description";
-    private static final String HEADER_SORT_ORDER = "Sort Order";
-    private static final String HEADER_ASSIGNED_ITEM = "Assigned Catalog/Inventory Item Description";
-    private static final String HEADER_ASSIGNED_ITEM_ID = "Assigned Catalog/Inventory Item";
-    private static final String HEADER_LOCATION = "Location";
-    private static final String HEADER_TEMPLATE = "Is Template?";
-
     private Map<Integer, ItemDomainMachineDesign> parentIndentMap = new HashMap<>();
     
     private int nonTemplateItemCount = 0;
     private int templateItemCount = 0;
     
-    private RootMachineItemWizardOptionHelper rootMachineItemWizardOptionHelper = null;
+    private MachineImportHelperCommon machineImportHelperCommon = null;
     
-    private RootMachineItemWizardOptionHelper getRootMachineItemWizardOptionHelper() {
-        if (rootMachineItemWizardOptionHelper == null) {
-            rootMachineItemWizardOptionHelper = new RootMachineItemWizardOptionHelper();
+    private MachineImportHelperCommon getMachineImportHelperCommon() {
+        if (machineImportHelperCommon == null) {
+            machineImportHelperCommon = new MachineImportHelperCommon();
         }
-        return rootMachineItemWizardOptionHelper;
+        return machineImportHelperCommon;
     }
     
-    public String getOptionRootItemName() {
-        return getRootMachineItemWizardOptionHelper().getOptionRootItemName();
+    public String getOptionImportRootItemName() {
+        return getMachineImportHelperCommon().getOptionImportRootItemName();
     }
 
-    public void setOptionRootItemName(String optionRootItemName) {
-        getRootMachineItemWizardOptionHelper().setOptionRootItemName(optionRootItemName);
+    public void setOptionImportRootItemName(String optionRootItemName) {
+        getMachineImportHelperCommon().setOptionImportRootItemName(optionRootItemName);
     }
     
     @Override
-    protected List<HelperWizardOption> initializeWizardOptions() {        
+    protected List<HelperWizardOption> initializeImportWizardOptions() {        
         List<HelperWizardOption> options = new ArrayList<>();        
-        options.add(RootMachineItemWizardOptionHelper.rootMachineItemWizardOption());
+        options.add(MachineImportHelperCommon.optionImportRootMachineItem());
         return options;
     }
 
     @Override
-    public ValidInfo validateWizardOptions() {
-        return getRootMachineItemWizardOptionHelper().validate();
+    public ValidInfo validateImportWizardOptions() {
+        return getMachineImportHelperCommon().validateOptionImportRootItemName();
     }
     
     @Override
@@ -99,90 +69,17 @@ public class ImportHelperMachineHierarchy
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(new MachineItemRefColumnSpec(
-                HEADER_PARENT, 
-                KEY_PARENT, 
-                "setImportMdItem", 
-                "CDB ID, name, or path of parent machine design item.  Can only be provided for level 0 item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.", 
-                null,
-                ColumnModeOptions.oCREATE(),
-                getRootMachineItemWizardOptionHelper().getRootItem()));
-        
-        specs.add(new NameHierarchyColumnSpec(
-                "Name hierarchy column", 
-                ColumnModeOptions.oCREATE(),
-                HEADER_BASE_LEVEL, 
-                KEY_NAME, 
-                KEY_INDENT, 
-                3));
-        
-        specs.add(new StringColumnSpec(
-                HEADER_ALT_NAME, 
-                "alternateName", 
-                "setAlternateName", 
-                "Alternate machine design item name.", 
-                null,
-                ColumnModeOptions.oCREATE(), 
-                128));
-        
-        specs.add(new StringColumnSpec(
-                HEADER_DESCRIPTION, 
-                "description", 
-                "setDescription", 
-                "Textual description of machine design item.", 
-                null,
-                ColumnModeOptions.oCREATE(), 
-                256));
-        
-        specs.add(new FloatColumnSpec(
-                HEADER_SORT_ORDER, 
-                KEY_SORT_ORDER, 
-                "setImportSortOrder", 
-                "Sort order within parent item (as decimal), defaults to order in input sheet.", 
-                null,
-                ColumnModeOptions.oCREATE()));
-        
-        specs.add(new StringColumnSpec(
-                HEADER_ASSIGNED_ITEM, 
-                "importAssignedItemDescription", 
-                "setImportAssignedItemDescription", 
-                "Textual description of machine design item.", 
-                null,
-                ColumnModeOptions.oCREATE(), 
-                256));
-
-        AssignedItemHandler assignedItemHandler = new AssignedItemHandler();
-        
-        specs.add(new CustomColumnSpec(
-                HEADER_ASSIGNED_ITEM_ID, 
-                "importAssignedItemString", 
-                "CDB ID or name of assigned catalog or inventory item. Name must be unique and prefixed with '#'.", 
-                null,
-                false,
-                ColumnModeOptions.oCREATE(), 
-                assignedItemHandler));
-        
-        LocationHandler locationHandler = new LocationHandler();
-        
-        specs.add(new CustomColumnSpec(
-                HEADER_LOCATION, 
-                "importLocationItemString", 
-                "CDB ID or name of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored). Name must be unique and prefixed with '#'.", 
-                null,
-                false,
-                ColumnModeOptions.oCREATE(), 
-                locationHandler));
-
+        specs.add(MachineImportHelperCommon.parentItemColumnSpec(
+                ColumnModeOptions.oCREATE(), getMachineImportHelperCommon()));
+        specs.add(MachineImportHelperCommon.nameHierarchyColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(MachineImportHelperCommon.sortOrderColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(MachineImportHelperCommon.assignedItemDescriptionColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(MachineImportHelperCommon.assignedItemColumnSpec(ColumnModeOptions.oCREATE()));
+        specs.add(MachineImportHelperCommon.locationColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(locationDetailsColumnSpec());
-        
-        specs.add(new BooleanColumnSpec(
-                HEADER_TEMPLATE, 
-                KEY_IS_TEMPLATE, 
-                "setImportIsTemplate", 
-                "True/yes if item is template, false/no otherwise.", 
-                null,
-                ColumnModeOptions.rCREATE()));
-        
+        specs.add(MachineImportHelperCommon.isTemplateColumnSpec(ColumnModeOptions.rCREATE()));        
         specs.add(projectListColumnSpec());
         specs.add(ownerUserColumnSpec());
         specs.add(ownerGroupColumnSpec());
@@ -205,7 +102,7 @@ public class ImportHelperMachineHierarchy
         super.reset();
         nonTemplateItemCount = 0;
         templateItemCount = 0;
-        getRootMachineItemWizardOptionHelper().reset();
+        getMachineImportHelperCommon().reset();
     }
     
     @Override
@@ -233,17 +130,17 @@ public class ImportHelperMachineHierarchy
     
     @Override
     protected String getKeyName_() {
-        return KEY_NAME;
+        return MachineImportHelperCommon.KEY_NAME;
     }
             
     @Override
     protected String getKeyIndent_() {
-        return KEY_INDENT;
+        return MachineImportHelperCommon.KEY_INDENT;
     }
             
     @Override
     protected String getKeyParent_() {
-        return KEY_PARENT;
+        return MachineImportHelperCommon.KEY_PARENT;
     }
             
     @Override
@@ -259,7 +156,7 @@ public class ImportHelperMachineHierarchy
         String validString = "";
 
         // determine sort order
-        Float itemSortOrder = (Float) rowMap.get(KEY_SORT_ORDER);
+        Float itemSortOrder = (Float) rowMap.get(MachineImportHelperCommon.KEY_SORT_ORDER);
         if ((itemSortOrder == null) && (itemParent != null)) {
             // get maximum sort order value for existing children
             Float maxSortOrder = itemParent.getMaxSortOrder();
@@ -275,7 +172,7 @@ public class ImportHelperMachineHierarchy
         item.setItemIdentifier2(viewUUID);
 
         // set flag indicating item is template
-        Boolean itemIsTemplate = (Boolean) rowMap.get(KEY_IS_TEMPLATE);
+        Boolean itemIsTemplate = (Boolean) rowMap.get(MachineImportHelperCommon.KEY_IS_TEMPLATE);
         if (itemIsTemplate != null) {
             item.setImportIsTemplate(itemIsTemplate);
         } else {

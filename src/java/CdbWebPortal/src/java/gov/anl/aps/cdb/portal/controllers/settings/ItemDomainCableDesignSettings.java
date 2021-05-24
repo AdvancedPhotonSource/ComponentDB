@@ -179,10 +179,6 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         displayNumberOfItemsPerPage = 25;
     }
 
-    public ItemMetadataPropertyInfo getConnectionPropertyInfo() {
-        return parentController.getConnectionPropertyInfo();
-    }
-    
     public Boolean getDisplayEndpoints() {
         return displayEndpoints;
     }
@@ -261,22 +257,6 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
 
     public void setLegacyQrIdDisplay(boolean legacyQrIdDisplay) {
         this.legacyQrIdDisplay = legacyQrIdDisplay;
-    }
-
-    public boolean isEndpoint1DescriptionDisplay() {
-        return endpoint1DescriptionDisplay;
-    }
-
-    public void setEndpoint1DescriptionDisplay(boolean endpoint1DescriptionDisplay) {
-        this.endpoint1DescriptionDisplay = endpoint1DescriptionDisplay;
-    }
-
-    public boolean isEndpoint2DescriptionDisplay() {
-        return endpoint2DescriptionDisplay;
-    }
-
-    public void setEndpoint2DescriptionDisplay(boolean endpoint2DescriptionDisplay) {
-        this.endpoint2DescriptionDisplay = endpoint2DescriptionDisplay;
     }
 
     public String getFilterEndpoints() {
@@ -395,227 +375,227 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         this.notesFilter = notesFilter;
     }
 
-    public boolean isDescriptionEndpoint1Display() {
+    public boolean isEndpoint1DescriptionDisplay() {
         return descriptionEndpoint1Display;
     }
 
-    public void setDescriptionEndpoint1Display(boolean descriptionEndpoint1Display) {
+    public void setEndpoint1DescriptionDisplay(boolean descriptionEndpoint1Display) {
         this.descriptionEndpoint1Display = descriptionEndpoint1Display;
     }
 
-    public String getDescriptionEndpoint1Filter() {
+    public String getEndpoint1DescriptionFilter() {
         return descriptionEndpoint1Filter;
     }
 
-    public void setDescriptionEndpoint1Filter(String descriptionEndpoint1Filter) {
+    public void setEndpoint1DescriptionFilter(String descriptionEndpoint1Filter) {
         this.descriptionEndpoint1Filter = descriptionEndpoint1Filter;
     }
 
-    public boolean isRouteEndpoint1Display() {
+    public boolean isEndpoint1RouteDisplay() {
         return routeEndpoint1Display;
     }
 
-    public void setRouteEndpoint1Display(boolean routeEndpoint1Display) {
+    public void setEndpoint1RouteDisplay(boolean routeEndpoint1Display) {
         this.routeEndpoint1Display = routeEndpoint1Display;
     }
 
-    public String getRouteEndpoint1Filter() {
+    public String getEndpoint1RouteFilter() {
         return routeEndpoint1Filter;
     }
 
-    public void setRouteEndpoint1Filter(String routeEndpoint1Filter) {
+    public void setEndpoint1RouteFilter(String routeEndpoint1Filter) {
         this.routeEndpoint1Filter = routeEndpoint1Filter;
     }
 
-    public boolean isEndLengthEndpoint1Display() {
+    public boolean isEndpoint1EndLengthDisplay() {
         return endLengthEndpoint1Display;
     }
 
-    public void setEndLengthEndpoint1Display(boolean endLengthEndpoint1Display) {
+    public void setEndpoint1EndLengthDisplay(boolean endLengthEndpoint1Display) {
         this.endLengthEndpoint1Display = endLengthEndpoint1Display;
     }
 
-    public String getEndLengthEndpoint1Filter() {
+    public String getEndpoint1EndLengthFilter() {
         return endLengthEndpoint1Filter;
     }
 
-    public void setEndLengthEndpoint1Filter(String endLengthEndpoint1Filter) {
+    public void setEndpoint1EndLengthFilter(String endLengthEndpoint1Filter) {
         this.endLengthEndpoint1Filter = endLengthEndpoint1Filter;
     }
 
-    public boolean isTerminationEndpoint1Display() {
+    public boolean isEndpoint1TerminationDisplay() {
         return terminationEndpoint1Display;
     }
 
-    public void setTerminationEndpoint1Display(boolean terminationEndpoint1Display) {
+    public void setEndpoint1TerminationDisplay(boolean terminationEndpoint1Display) {
         this.terminationEndpoint1Display = terminationEndpoint1Display;
     }
 
-    public String getTerminationEndpoint1Filter() {
+    public String getEndpoint1TerminationFilter() {
         return terminationEndpoint1Filter;
     }
 
-    public void setTerminationEndpoint1Filter(String terminationEndpoint1Filter) {
+    public void setEndpoint1TerminationFilter(String terminationEndpoint1Filter) {
         this.terminationEndpoint1Filter = terminationEndpoint1Filter;
     }
 
-    public boolean isPinlistEndpoint1Display() {
+    public boolean isEndpoint1PinlistDisplay() {
         return pinlistEndpoint1Display;
     }
 
-    public void setPinlistEndpoint1Display(boolean pinlistEndpoint1Display) {
+    public void setEndpoint1PinlistDisplay(boolean pinlistEndpoint1Display) {
         this.pinlistEndpoint1Display = pinlistEndpoint1Display;
     }
 
-    public String getPinlistEndpoint1Filter() {
+    public String getEndpoint1PinlistFilter() {
         return pinlistEndpoint1Filter;
     }
 
-    public void setPinlistEndpoint1Filter(String pinlistEndpoint1Filter) {
+    public void setEndpoint1PinlistFilter(String pinlistEndpoint1Filter) {
         this.pinlistEndpoint1Filter = pinlistEndpoint1Filter;
     }
 
-    public boolean isNotesEndpoint1Display() {
+    public boolean isEndpoint1NotesDisplay() {
         return notesEndpoint1Display;
     }
 
-    public void setNotesEndpoint1Display(boolean notesEndpoint1Display) {
+    public void setEndpoint1NotesDisplay(boolean notesEndpoint1Display) {
         this.notesEndpoint1Display = notesEndpoint1Display;
     }
 
-    public String getNotesEndpoint1Filter() {
+    public String getEndpoint1NotesFilter() {
         return notesEndpoint1Filter;
     }
 
-    public void setNotesEndpoint1Filter(String notesEndpoint1Filter) {
+    public void setEndpoint1NotesFilter(String notesEndpoint1Filter) {
         this.notesEndpoint1Filter = notesEndpoint1Filter;
     }
 
-    public boolean isDrawingEndpoint1Display() {
+    public boolean isEndpoint1DrawingDisplay() {
         return drawingEndpoint1Display;
     }
 
-    public void setDrawingEndpoint1Display(boolean drawingEndpoint1Display) {
+    public void setEndpoint1DrawingDisplay(boolean drawingEndpoint1Display) {
         this.drawingEndpoint1Display = drawingEndpoint1Display;
     }
 
-    public String getDrawingEndpoint1Filter() {
+    public String getEndpoint1DrawingFilter() {
         return drawingEndpoint1Filter;
     }
 
-    public void setDrawingEndpoint1Filter(String drawingEndpoint1Filter) {
+    public void setEndpoint1DrawingFilter(String drawingEndpoint1Filter) {
         this.drawingEndpoint1Filter = drawingEndpoint1Filter;
     }
 
-    public boolean isDescriptionEndpoint2Display() {
+    public boolean isEndpoint2DescriptionDisplay() {
         return descriptionEndpoint2Display;
     }
 
-    public void setDescriptionEndpoint2Display(boolean descriptionEndpoint2Display) {
+    public void setEndpoint2DescriptionDisplay(boolean descriptionEndpoint2Display) {
         this.descriptionEndpoint2Display = descriptionEndpoint2Display;
     }
 
-    public String getDescriptionEndpoint2Filter() {
+    public String getEndpoint2DescriptionFilter() {
         return descriptionEndpoint2Filter;
     }
 
-    public void setDescriptionEndpoint2Filter(String descriptionEndpoint2Filter) {
+    public void setEndpoint2DescriptionFilter(String descriptionEndpoint2Filter) {
         this.descriptionEndpoint2Filter = descriptionEndpoint2Filter;
     }
 
-    public boolean isRouteEndpoint2Display() {
+    public boolean isEndpoint2RouteDisplay() {
         return routeEndpoint2Display;
     }
 
-    public void setRouteEndpoint2Display(boolean routeEndpoint2Display) {
+    public void setEndpoint2RouteDisplay(boolean routeEndpoint2Display) {
         this.routeEndpoint2Display = routeEndpoint2Display;
     }
 
-    public String getRouteEndpoint2Filter() {
+    public String getEndpoint2RouteFilter() {
         return routeEndpoint2Filter;
     }
 
-    public void setRouteEndpoint2Filter(String routeEndpoint2Filter) {
+    public void setEndpoint2RouteFilter(String routeEndpoint2Filter) {
         this.routeEndpoint2Filter = routeEndpoint2Filter;
     }
 
-    public boolean isEndLengthEndpoint2Display() {
+    public boolean isEndpoint2EndLengthDisplay() {
         return endLengthEndpoint2Display;
     }
 
-    public void setEndLengthEndpoint2Display(boolean endLengthEndpoint2Display) {
+    public void setEndpoint2EndLengthDisplay(boolean endLengthEndpoint2Display) {
         this.endLengthEndpoint2Display = endLengthEndpoint2Display;
     }
 
-    public String getEndLengthEndpoint2Filter() {
+    public String getEndpoint2EndLengthFilter() {
         return endLengthEndpoint2Filter;
     }
 
-    public void setEndLengthEndpoint2Filter(String endLengthEndpoint2Filter) {
+    public void setEndpoint2EndLengthFilter(String endLengthEndpoint2Filter) {
         this.endLengthEndpoint2Filter = endLengthEndpoint2Filter;
     }
 
-    public boolean isTerminationEndpoint2Display() {
+    public boolean isEndpoint2TerminationDisplay() {
         return terminationEndpoint2Display;
     }
 
-    public void setTerminationEndpoint2Display(boolean terminationEndpoint2Display) {
+    public void setEndpoint2TerminationDisplay(boolean terminationEndpoint2Display) {
         this.terminationEndpoint2Display = terminationEndpoint2Display;
     }
 
-    public String getTerminationEndpoint2Filter() {
+    public String getEndpoint2TerminationFilter() {
         return terminationEndpoint2Filter;
     }
 
-    public void setTerminationEndpoint2Filter(String terminationEndpoint2Filter) {
+    public void setEndpoint2TerminationFilter(String terminationEndpoint2Filter) {
         this.terminationEndpoint2Filter = terminationEndpoint2Filter;
     }
 
-    public boolean isPinlistEndpoint2Display() {
+    public boolean isEndpoint2PinlistDisplay() {
         return pinlistEndpoint2Display;
     }
 
-    public void setPinlistEndpoint2Display(boolean pinlistEndpoint2Display) {
+    public void setEndpoint2PinlistDisplay(boolean pinlistEndpoint2Display) {
         this.pinlistEndpoint2Display = pinlistEndpoint2Display;
     }
 
-    public String getPinlistEndpoint2Filter() {
+    public String getEndpoint2PinlistFilter() {
         return pinlistEndpoint2Filter;
     }
 
-    public void setPinlistEndpoint2Filter(String pinlistEndpoint2Filter) {
+    public void setEndpoint2PinlistFilter(String pinlistEndpoint2Filter) {
         this.pinlistEndpoint2Filter = pinlistEndpoint2Filter;
     }
 
-    public boolean isNotesEndpoint2Display() {
+    public boolean isEndpoint2NotesDisplay() {
         return notesEndpoint2Display;
     }
 
-    public void setNotesEndpoint2Display(boolean notesEndpoint2Display) {
+    public void setEndpoint2NotesDisplay(boolean notesEndpoint2Display) {
         this.notesEndpoint2Display = notesEndpoint2Display;
     }
 
-    public String getNotesEndpoint2Filter() {
+    public String getEndpoint2NotesFilter() {
         return notesEndpoint2Filter;
     }
 
-    public void setNotesEndpoint2Filter(String notesEndpoint2Filter) {
+    public void setEndpoint2NotesFilter(String notesEndpoint2Filter) {
         this.notesEndpoint2Filter = notesEndpoint2Filter;
     }
 
-    public boolean isDrawingEndpoint2Display() {
+    public boolean isEndpoint2DrawingDisplay() {
         return drawingEndpoint2Display;
     }
 
-    public void setDrawingEndpoint2Display(boolean drawingEndpoint2Display) {
+    public void setEndpoint2DrawingDisplay(boolean drawingEndpoint2Display) {
         this.drawingEndpoint2Display = drawingEndpoint2Display;
     }
 
-    public String getDrawingEndpoint2Filter() {
+    public String getEndpoint2DrawingFilter() {
         return drawingEndpoint2Filter;
     }
 
-    public void setDrawingEndpoint2Filter(String drawingEndpoint2Filter) {
+    public void setEndpoint2DrawingFilter(String drawingEndpoint2Filter) {
         this.drawingEndpoint2Filter = drawingEndpoint2Filter;
     }
 

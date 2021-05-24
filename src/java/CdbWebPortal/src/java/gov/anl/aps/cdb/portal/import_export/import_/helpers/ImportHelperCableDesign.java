@@ -35,24 +35,10 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     private static final String KEY_ENDPOINT1_ITEM = "endpoint1String";
     private static final String KEY_ENDPOINT1_PORT = "endpoint1Port";
     private static final String KEY_ENDPOINT1_CONNECTOR = "endpoint1Connector";
-    private static final String KEY_ENDPOINT1_DESCRIPTION = "descriptionEndpoint1";
-    private static final String KEY_ENDPOINT1_ROUTE = "routeEndpoint1";
-    private static final String KEY_ENDPOINT1_END_LENGTH = "endLengthEndpoint1";
-    private static final String KEY_ENDPOINT1_TERMINATION = "terminationEndpoint1";
-    private static final String KEY_ENDPOINT1_PINLIST = "pinlistEndpoint1";
-    private static final String KEY_ENDPOINT1_NOTES = "notesEndpoint1";
-    private static final String KEY_ENDPOINT1_DRAWING = "drawingEndpoint1";
 
     private static final String KEY_ENDPOINT2_ITEM = "endpoint2String";
     private static final String KEY_ENDPOINT2_PORT = "endpoint2Port";
     private static final String KEY_ENDPOINT2_CONNECTOR = "endpoint2Connector";
-    private static final String KEY_ENDPOINT2_DESCRIPTION = "descriptionEndpoint2";
-    private static final String KEY_ENDPOINT2_ROUTE = "routeEndpoint2";
-    private static final String KEY_ENDPOINT2_END_LENGTH = "endLengthEndpoint2";
-    private static final String KEY_ENDPOINT2_TERMINATION = "terminationEndpoint2";
-    private static final String KEY_ENDPOINT2_PINLIST = "pinlistEndpoint2";
-    private static final String KEY_ENDPOINT2_NOTES = "notesEndpoint2";
-    private static final String KEY_ENDPOINT2_DRAWING = "drawingEndpoint2";
 
     @Override
     protected List<ColumnSpec> getColumnSpecs() {
@@ -203,64 +189,64 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Desc", 
-                KEY_ENDPOINT1_DESCRIPTION, 
-                "setDescriptionEndpoint1", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_DESCRIPTION_KEY, 
+                "setEndpoint1Description", 
                 "Endpoint1 description.", 
-                "getDescriptionEndpoint1",
+                "getEndpoint1Description",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Route", 
-                KEY_ENDPOINT1_ROUTE, 
-                "setRouteEndpoint1", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_ROUTE_KEY, 
+                "setEndpoint1Route", 
                 "Routing waypoint for endpoint1.", 
-                "getRouteEndpoint1",
+                "getEndpoint1Route",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 End Length", 
-                KEY_ENDPOINT1_END_LENGTH, 
-                "setEndLengthEndpoint1", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_ENDLENGTH_KEY, 
+                "setEndpoint1EndLength", 
                 "End length for endpoint1.", 
-                "getEndLengthEndpoint1",
+                "getEndpoint1EndLength",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Termination", 
-                KEY_ENDPOINT1_TERMINATION, 
-                "setTerminationEndpoint1", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_TERMINATION_KEY, 
+                "setEndpoint1Termination", 
                 "Termination for endpoint1.", 
-                "getTerminationEndpoint1",
+                "getEndpoint1Termination",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Pinlist", 
-                KEY_ENDPOINT1_PINLIST, 
-                "setPinlistEndpoint1", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_PINLIST_KEY, 
+                "setEndpoint1Pinlist", 
                 "Pinlist for endpoint1.", 
-                "getPinlistEndpoint1",
+                "getEndpoint1Pinlist",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Notes", 
-                KEY_ENDPOINT1_NOTES, 
-                "setNotesEndpoint1", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_NOTES_KEY, 
+                "setEndpoint1Notes", 
                 "Notes for endpoint1.", 
-                "getNotesEndpoint1",
+                "getEndpoint1Notes",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint1 Drawing", 
-                KEY_ENDPOINT1_DRAWING, 
-                "setDrawingEndpoint1", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END1_DRAWING_KEY, 
+                "setEndpoint1Drawing", 
                 "Drawing for endpoint1.", 
-                "getDrawingEndpoint1",
+                "getEndpoint1Drawing",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
@@ -295,64 +281,64 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Desc", 
-                KEY_ENDPOINT2_DESCRIPTION, 
-                "setDescriptionEndpoint2", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_DESCRIPTION_KEY, 
+                "setEndpoint2Description", 
                 "Endpoint2 description.", 
-                "getDescriptionEndpoint2",
+                "getEndpoint2Description",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Route", 
-                KEY_ENDPOINT2_ROUTE, 
-                "setRouteEndpoint2", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_ROUTE_KEY, 
+                "setEndpoint2Route", 
                 "Routing waypoint for endpoint2.", 
-                "getRouteEndpoint2",
+                "getEndpoint2Route",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 End Length", 
-                KEY_ENDPOINT2_END_LENGTH, 
-                "setEndLengthEndpoint2", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_ENDLENGTH_KEY, 
+                "setEndpoint2EndLength", 
                 "End length for endpoint2.", 
-                "getEndLengthEndpoint2",
+                "getEndpoint2EndLength",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Termination", 
-                KEY_ENDPOINT2_TERMINATION, 
-                "setTerminationEndpoint2", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_TERMINATION_KEY, 
+                "setEndpoint2Termination", 
                 "Termination for endpoint2.", 
-                "getTerminationEndpoint2",
+                "getEndpoint2Termination",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Pinlist", 
-                KEY_ENDPOINT2_PINLIST, 
-                "setPinlistEndpoint2", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_PINLIST_KEY, 
+                "setEndpoint2Pinlist", 
                 "Pinlist for endpoint2.", 
-                "getPinlistEndpoint2",
+                "getEndpoint2Pinlist",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Notes", 
-                KEY_ENDPOINT2_NOTES, 
-                "setNotesEndpoint2", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_NOTES_KEY, 
+                "setEndpoint2Notes", 
                 "Notes for endpoint2.", 
-                "getNotesEndpoint2",
+                "getEndpoint2Notes",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
         specs.add(new StringColumnSpec(
                 "Endpoint2 Drawing", 
-                KEY_ENDPOINT2_DRAWING, 
-                "setDrawingEndpoint2", 
+                ItemDomainCableDesign.CABLE_DESIGN_PROPERTY_END2_DRAWING_KEY, 
+                "setEndpoint2Drawing", 
                 "Drawing for endpoint2.", 
-                "getDrawingEndpoint2",
+                "getEndpoint2Drawing",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));  
         
@@ -392,7 +378,6 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     @Override 
     protected ValidInfo preImport() {
         getEntityController().createOrMigrateCoreMetadataPropertyType();
-        getEntityController().createOrMigrateConnectionPropertyType();
         return new ValidInfo(true, "");
     }
     
@@ -438,27 +423,10 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         // handle endpoint1 ======        
         // shouldn't specify endpoint properties if endpoint is not specified
         if (endpoint1Item == null) {
-            String endpoint1Description = (String) rowMap.get(KEY_ENDPOINT1_DESCRIPTION);
-            String endpoint1Route = (String) rowMap.get(KEY_ENDPOINT1_ROUTE);
-            String endpoint1EndLength = (String) rowMap.get(KEY_ENDPOINT1_END_LENGTH);
-            String endpoint1Termination = (String) rowMap.get(KEY_ENDPOINT1_TERMINATION);
-            String endpoint1Pinlist = (String) rowMap.get(KEY_ENDPOINT1_PINLIST);
-            String endpoint1Notes = (String) rowMap.get(KEY_ENDPOINT1_NOTES);
-            String endpoint1Drawing = (String) rowMap.get(KEY_ENDPOINT1_DRAWING);
-            if ((endpoint1PortName != null)
-                    || (endpoint1ConnectorName != null)
-                    || (endpoint1Description != null)
-                    || (endpoint1Route != null)
-                    || (endpoint1EndLength != null)
-                    || (endpoint1Termination != null)
-                    || (endpoint1Pinlist != null)
-                    || (endpoint1Notes != null)
-                    || (endpoint1Drawing != null)) {
-                
+            if ((endpoint1PortName != null) || (endpoint1ConnectorName != null)) {                
                 isValid = false;
                 validString = appendToString(
-                        validString, "Endpoint1 properties cannot be specified if endpoint1 is not specified.");
-                
+                        validString, "Endpoint1 properties cannot be specified if endpoint1 is not specified.");                
             }
         } else {
             ValidInfo endpoint1ValidInfo =
@@ -473,27 +441,10 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
         // handle endpoint2 ======        
         // shouldn't specify endpoint properties if endpoint is not specified
         if (endpoint2Item == null) {
-            String endpoint2Description = (String) rowMap.get(KEY_ENDPOINT2_DESCRIPTION);
-            String endpoint2Route = (String) rowMap.get(KEY_ENDPOINT2_ROUTE);
-            String endpoint2EndLength = (String) rowMap.get(KEY_ENDPOINT2_END_LENGTH);
-            String endpoint2Termination = (String) rowMap.get(KEY_ENDPOINT2_TERMINATION);
-            String endpoint2Pinlist = (String) rowMap.get(KEY_ENDPOINT2_PINLIST);
-            String endpoint2Notes = (String) rowMap.get(KEY_ENDPOINT2_NOTES);
-            String endpoint2Drawing = (String) rowMap.get(KEY_ENDPOINT2_DRAWING);
-            if ((endpoint2PortName != null)
-                    || (endpoint2ConnectorName != null)
-                    || (endpoint2Description != null)
-                    || (endpoint2Route != null)
-                    || (endpoint2EndLength != null)
-                    || (endpoint2Termination != null)
-                    || (endpoint2Pinlist != null)
-                    || (endpoint2Notes != null)
-                    || (endpoint2Drawing != null)) {
-                
+            if ((endpoint2PortName != null) || (endpoint2ConnectorName != null)) {                
                 isValid = false;
                 validString = appendToString(
-                        validString, "Endpoint2 properties cannot be specified if endpoint2 is not specified.");
-                
+                        validString, "Endpoint2 properties cannot be specified if endpoint2 is not specified.");                
             }
         } else {
             ValidInfo endpoint2ValidInfo =

@@ -6,6 +6,8 @@ package gov.anl.aps.cdb.portal.import_export.export.wizard;
 
 import gov.anl.aps.cdb.portal.import_export.export.objects.GenerateExportResult;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
@@ -31,14 +33,13 @@ public class ItemDomainExportWizard implements Serializable {
 
     protected static final String TAB_SELECT_FORMAT = "SelectFormatTab";
     protected static final String TAB_SELECT_OPTIONS = "SelectOptionsTab";
+    protected static final String TAB_CONFIRMATION = "ConfirmationTab";
     protected static final String TAB_DOWNLOAD_FILE = "DownloadFileTab";
     
     protected String currentTab = TAB_SELECT_FORMAT;
 
     protected ImportHelperBase importHelper = null;
     
-    private List<CdbEntity> exportEntityList = new ArrayList<>();
-
     private Boolean disableButtonPrev = true;
     private Boolean disableButtonNext = true;
     private Boolean disableButtonFinish = true;
@@ -52,6 +53,10 @@ public class ItemDomainExportWizard implements Serializable {
     // models for select options tab
     private String selectedFormatOption = null;
     
+    // models for confirmation tab
+    private String confirmationMessage = null;
+    private boolean hasError = false;
+    
     // models for file download tab
     private StreamedContent downloadFile;
 
@@ -60,19 +65,15 @@ public class ItemDomainExportWizard implements Serializable {
                 ItemDomainExportWizard.CONTROLLER_NAMED);
     }
 
+    public ImportHelperBase getImportHelper() {
+        return importHelper;
+    }
+    
     public void setDomainInfo(DomainImportExportInfo info) {
         reset();
         domainInfo = info;
     }
 
-    public List<CdbEntity> getExportEntityList() {
-        return exportEntityList;
-    }
-
-    public void setExportEntityList(List<CdbEntity> exportEntityList) {
-        this.exportEntityList = exportEntityList;
-    }
-    
     public List<ImportExportFormatInfo> getFormatInfoList() {
         if (domainInfo != null) {
             return domainInfo.getFormatInfoList();
@@ -144,23 +145,30 @@ public class ItemDomainExportWizard implements Serializable {
         return disableButtonCancel;
     }
 
+    public List<HelperWizardOption> getWizardOptions() {
+        if (importHelper == null) {
+            return new ArrayList<>();
+        } else {
+            return importHelper.getExportWizardOptions();
+        }
+    }   
+    
+    public boolean isRenderOptions() {
+        return (!getWizardOptions().isEmpty());
+    }
+    
+    public String getConfirmationMessage() {
+        return confirmationMessage;
+    }
+    
     public String onFlowProcess(FlowEvent event) {
 
         String nextStep = event.getNewStep();
         String currStep = event.getOldStep();
         
-        // create helper if moving from select format tab
+        // handle transition from select format tab
         if ((currStep.endsWith(TAB_SELECT_FORMAT))
                 && (nextStep.endsWith(TAB_SELECT_OPTIONS))) {
-            
-            if (exportEntityList.isEmpty()) {
-                SessionUtility.addErrorMessage(
-                    "No rows for export in filtered item list",
-                    "Please cancel and modify filters to select data for export.");
-                setEnablement(currStep);
-                currentTab = currStep;
-                return currStep;
-            }
             
             createHelperForSelectedFormat();
             
@@ -173,13 +181,69 @@ public class ItemDomainExportWizard implements Serializable {
                 currentTab = currStep;
                 return currStep;
             }
+            
+            // skip options tab if no options specified
+            if (importHelper.getExportWizardOptions().isEmpty()) {
+                nextStep = "exportWizard" + TAB_CONFIRMATION;
+            }
         }
 
-        // handle select mode tab
-        if ((currStep.endsWith(TAB_SELECT_OPTIONS))
-                && (nextStep.endsWith(TAB_DOWNLOAD_FILE))) {
+        // handle transition to confirmation tab file
+        if (((currStep.endsWith(TAB_SELECT_OPTIONS)) || (currStep.endsWith(TAB_SELECT_FORMAT)))
+                && (nextStep.endsWith(TAB_CONFIRMATION))) {
             
-            importHelper.setExportEntityList(exportEntityList);
+            // validate and handle wizard options if appropriate
+            if (currStep.endsWith(TAB_SELECT_OPTIONS)) {
+                
+                // validate options
+                ValidInfo validOptionsInfo = importHelper.validateExportWizardOptions();
+                if (!validOptionsInfo.isValid()) {
+                    // don't allow transition if options validation fails
+                    SessionUtility.addErrorMessage(
+                            "Invalid format options",
+                            validOptionsInfo.getValidString());
+                    setEnablement(currStep);
+                    currentTab = currStep;
+                    return currStep;
+                }
+                
+                // handle options
+                ValidInfo handleOptionsInfo = importHelper.handleExportWizardOptions();
+                if (!handleOptionsInfo.isValid()) {
+                    // don't allow transition if handling options fails
+                    SessionUtility.addErrorMessage(
+                            "Error handling format options",
+                            handleOptionsInfo.getValidString());
+                    setEnablement(currStep);
+                    currentTab = currStep;
+                    return currStep;
+                }
+            }
+            
+            hasError = false;
+            ValidInfo entityListInfo = importHelper.generateExportEntityList();
+            if (!entityListInfo.isValid()) {
+                hasError = true;
+                confirmationMessage = entityListInfo.getValidString();
+            } else {
+                int entityCount = importHelper.getExportEntityCount();
+
+                if (entityCount == 0) {
+                    hasError = true;
+                    confirmationMessage = "No rows selected for export, please cancel "
+                            + "and modify filters to select data for export.";
+                } else {
+                    confirmationMessage = "Click 'Next Step' to export "
+                            + importHelper.getExportEntityCount()
+                            + " items, or 'Cancel' to modify item selection.";
+                }
+            }
+        }
+        
+        // handle transition to download tab file
+        if ((currStep.endsWith(TAB_CONFIRMATION)) 
+                && (nextStep.endsWith(TAB_DOWNLOAD_FILE))) {
+                        
             generateExportFile();
             
             if (downloadFile == null) {
@@ -233,7 +297,7 @@ public class ItemDomainExportWizard implements Serializable {
         selectedFormatName = null;
         selectedFormatOption = null;
         importHelper = null;
-        exportEntityList = new ArrayList<>();
+        hasError = false;
     }
 
     /**
@@ -291,10 +355,18 @@ public class ItemDomainExportWizard implements Serializable {
             disableButtonPrev = false;
             disableButtonCancel = false;
             disableButtonFinish = true;
+            disableButtonNext = false;
 
-            if (selectedFormatOption != null) {
+        } else if (tab.endsWith(TAB_CONFIRMATION)) {
+            if (!hasError) {
+                disableButtonPrev = false;
+                disableButtonCancel = false;
+                disableButtonFinish = true;
                 disableButtonNext = false;
             } else {
+                disableButtonPrev = false;
+                disableButtonCancel = false;
+                disableButtonFinish = true;
                 disableButtonNext = true;
             }
 

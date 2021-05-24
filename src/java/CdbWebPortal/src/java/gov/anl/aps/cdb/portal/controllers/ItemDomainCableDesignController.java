@@ -719,10 +719,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return (connection.getMdItem() != null);
     }
     
-    public ItemMetadataPropertyInfo getConnectionPropertyInfo() {
-        return ItemDomainCableDesign.getConnectionPropertyInfo();
-    }
-    
     /**
      * Prepares cable wizard.
      */
@@ -827,7 +823,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     @Override
     public boolean getEntityDisplayItemMemberships() {
-        return true;
+        return false;
     }
 
     @Override
@@ -853,39 +849,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-    
-    @Override
-    public boolean getEntityDisplayImportButton() {
-        return true;
-    }
-
-    @Override
-    protected DomainImportExportInfo initializeDomainImportInfo() {
-        
-        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
-        
-        String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
-        
-        return new DomainImportExportInfo(formatInfo, completionUrl);
-    }
-
-    @Override
-    public boolean getEntityDisplayExportButton() {
-        return true;
-    }
-    
-    @Override
-    protected DomainImportExportInfo initializeDomainExportInfo() {
-        
-        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-        
-        formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
-        
-        String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
-        
-        return new DomainImportExportInfo(formatInfo, completionUrl);
     }
     
     public List<CableDesignConnectionListObject> getConnectionListForCurrent() {
@@ -921,8 +884,40 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return getUnmappedConnectorsForCurrent().size() > 0;
     }
     
-    public void createOrMigrateConnectionPropertyType() {        
-        getControllerUtility().createOrMigrateConnectionPropertyType();
-    }   
+    // <editor-fold defaultstate="collapsed" desc="import/export support">   
+    
+    @Override
+    public boolean getEntityDisplayImportButton() {
+        return true;
+    }
 
+    @Override
+    protected DomainImportExportInfo initializeDomainImportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
+        
+        String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+
+    @Override
+    public boolean getEntityDisplayExportButton() {
+        return true;
+    }
+    
+    @Override
+    protected DomainImportExportInfo initializeDomainExportInfo() {
+        
+        List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
+        
+        formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
+        
+        String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
+        
+        return new DomainImportExportInfo(formatInfo, completionUrl);
+    }
+    
+    // </editor-fold>   
 }

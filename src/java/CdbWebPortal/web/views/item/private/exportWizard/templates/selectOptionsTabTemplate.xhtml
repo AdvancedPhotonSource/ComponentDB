@@ -8,51 +8,39 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:f="http://xmlns.jcp.org/jsf/core">   
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">   
 
     <!-- Must provide params "viewId", "wizardController"-->
     
     <ui:param name="rootViewId" value="#{viewId}"/>
     
     <p:tab id="#{rootViewId}SelectOptionsTab">
-        <p:panel header="Specify whether to use standard or custom output columns, then click 'Next Step'.">
-            <p:outputPanel id="#{rootViewId}SelectOptionsPanel">
+        <p:panel header="Specify export options, then click 'Next Step'.">
+            <p:outputPanel id="#{rootViewId}SelectOptionsPanel"
+                           rendered="#{wizardController.renderOptions}">
                 <p:panelGrid>
                     <p:row>
                         <p:column>
-
-                            <p:selectOneRadio id="#{rootViewId}SelectFormatOptionRadio" 
-                                              value="#{wizardController.selectedFormatOption}" 
-                                              layout="custom">
-                                <f:selectItem itemLabel="Use Standard Format" 
-                                              itemValue="standard"/>
-                                <f:selectItem itemLabel="Use Custom Format" 
-                                              itemValue="custom"  
-                                              itemDisabled="#{!wizardController.supportsCustomFormat()}"/>
-
-                                <p:ajax event="click"
-                                        listener="#{wizardController.clickListenerFormat}"
-                                        oncomplete="update#{rootViewId}WizardButtons();"/>
-
-                            </p:selectOneRadio>
-
                             <p:panelGrid columns="2">
 
-                                <p:radioButton id="#{rootViewId}RadioStandard" 
-                                               for="#{rootViewId}SelectFormatOptionRadio"
-                                               itemIndex="0" />
-                                <p:outputLabel for="#{rootViewId}RadioStandard" 
-                                               value="Use Standard Format" />
+                                <c:forEach items="#{wizardController.wizardOptions}"
+                                           var="option">  
 
-                                <p:radioButton id="#{rootViewId}RadioCustom" 
-                                               for="#{rootViewId}SelectFormatOptionRadio" 
-                                               disabled="#{!wizardController.supportsCustomFormat()}"
-                                               itemIndex="1" />
-                                <p:outputLabel for="#{rootViewId}RadioCustom" 
-                                               value="Use Custom Format" />
+                                    <ui:param name="optionId" value="#{option.property}Option"/>
+                                    <ui:param name="optionLabel" value="#{option.label}"/>
+                                    <ui:param name="optionDescription" value ="#{option.description}"/>
+                                    <ui:param name="optionProperty" value ="#{option.property}"/>
 
+                                    <p:outputLabel for="#{optionId}" 
+                                                   value="#{optionLabel}"/>
+
+                                    <p:inputText id="#{optionId}" 
+                                                 value="#{wizardController.importHelper[optionProperty]}" 
+                                                 title="#{optionDescription}"/>
+
+                                </c:forEach>
                             </p:panelGrid>
-
                         </p:column>
                     </p:row>
 

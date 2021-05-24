@@ -27,12 +27,15 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
         
         List<ColumnSpec> specs = new ArrayList<>();
         
+        specs.add(existingItemIdColumnSpec());
+        specs.add(deleteExistingItemColumnSpec());
+
         specs.add(new StringColumnSpec(
                 "Name", 
                 "name", 
                 "setName", 
                 "Catalog item name.", 
-                null,
+                "getName",
                 ColumnModeOptions.rCREATErUPDATE(), 
                 128));
         
@@ -41,7 +44,7 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
                 ImportHelperCatalogBase.KEY_PART_NUM, 
                 "setPartNumber", 
                 "Model number.", 
-                null,
+                "getPartNumber",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 128));
         
@@ -50,7 +53,7 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
                 "description", 
                 "setDescription", 
                 "Textual description.", 
-                null,
+                "getDescription",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 256));
         
@@ -59,11 +62,11 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
                 "alternateName", 
                 "setAlternateName", 
                 "Alternate item name.", 
-                null,
+                "getAlternateName",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 128));
         
-        specs.add(sourceColumnSpec(4));
+        specs.add(sourceColumnSpec());
         specs.add(projectListColumnSpec());
         specs.add(technicalSystemListColumnSpec(ItemDomainName.catalog.getValue()));
         specs.add(functionListColumnSpec(ItemDomainName.catalog.getValue()));
@@ -87,4 +90,20 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
     protected CreateInfo createEntityInstance(Map<String, Object> rowMap) {
         return super.createEntityInstance(rowMap);
     }  
+
+    @Override
+    public boolean supportsModeUpdate() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeDelete() {
+        return true;
+    }
+
+    @Override
+    protected ItemDomainCatalog newInvalidUpdateInstance() {
+        return getEntityController().createEntityInstance();
+    }
+
 }

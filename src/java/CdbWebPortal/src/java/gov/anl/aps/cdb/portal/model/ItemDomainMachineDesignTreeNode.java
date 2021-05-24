@@ -159,7 +159,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     }
 
     public List<ItemDomainMachineDesignTreeNode> getMachineChildren() {
-        return (List<ItemDomainMachineDesignTreeNode>) (List<?>) super.getChildren();
+        return (List<ItemDomainMachineDesignTreeNode>) (List<?>) this.getChildren();
     }
 
     private void fetchChildren() {

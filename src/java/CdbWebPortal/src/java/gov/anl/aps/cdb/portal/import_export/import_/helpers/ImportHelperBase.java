@@ -114,6 +114,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     private List<OutputColumnModel> outputColumns = new ArrayList<>();
     
+    private List<String> unchangeableProperties = new ArrayList<>();
+    
     protected byte[] templateExcelFile = null;
     protected boolean validInput = true;
     private String validationMessage = "";
@@ -128,9 +130,28 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     public List<EntityType> getRows() {
         return rows;
     }
+    
+    public ValidInfo generateExportEntityList() {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        List<CdbEntity> entityList = getEntityController().getExportEntityList();
+        setExportEntityList(entityList);
+        
+        return new ValidInfo(isValid, validString);
+    }
 
     public List<CdbEntity> getExportEntityList() {
         return exportEntityList;
+    }
+    
+    public int getExportEntityCount() {
+        if (exportEntityList == null) {
+            return 0;
+        } else {
+            return exportEntityList.size();
+        }
     }
 
     public void setExportEntityList(List<CdbEntity> exportEntityList) {
@@ -156,10 +177,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
     }
     
-    public List<HelperWizardOption> getWizardOptions() {
+    public List<HelperWizardOption> getImportWizardOptions() {
         if (wizardOptions == null) {
             wizardOptions = new ArrayList<>();
-            List<HelperWizardOption> helperOptions = initializeWizardOptions();
+            List<HelperWizardOption> helperOptions = initializeImportWizardOptions();
             for (HelperWizardOption option : helperOptions) {
                 if (option.getMode() == getImportMode()) {
                     wizardOptions.add(option);
@@ -172,14 +193,43 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     /**
      * Initializes list of wizard options, overridden by subclasses to customize. 
      */
-    protected List<HelperWizardOption> initializeWizardOptions() {
+    protected List<HelperWizardOption> initializeImportWizardOptions() {
         return new ArrayList<>();
     }
 
     /**
      * Validates wizard options.  Overridden by subclasses to customize.
      */
-    public ValidInfo validateWizardOptions() {
+    public ValidInfo validateImportWizardOptions() {
+        return new ValidInfo(true, "");
+    }
+    
+    public List<HelperWizardOption> getExportWizardOptions() {
+        if (wizardOptions == null) {
+            wizardOptions = new ArrayList<>();
+            wizardOptions.addAll(initializeExportWizardOptions());
+        }
+        return wizardOptions;
+    }
+    
+    /**
+     * Initializes list of wizard options, overridden by subclasses to customize. 
+     */
+    protected List<HelperWizardOption> initializeExportWizardOptions() {
+        return new ArrayList<>();
+    }
+
+    /**
+     * Validates wizard options.  Overridden by subclasses to customize.
+     */
+    public ValidInfo validateExportWizardOptions() {
+        return new ValidInfo(true, "");
+    }
+    
+    /**
+     * Handle options, subclasses override to customize.
+     */
+    public ValidInfo handleExportWizardOptions() {
         return new ValidInfo(true, "");
     }
     
@@ -226,7 +276,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 // set validation table columns depending on  mode
                 if (spec.isUsedForMode(getImportMode())) {
                     outputColumns.addAll(initInfo.getOutputColumns());
-                }                
+                }
+                
+                if (spec.isUnchangeable()) {
+                    unchangeableProperties.add(spec.getHeader());
+                }
             }
             
             colIndex = colIndex + initInfo.getNumColumns();   
@@ -305,6 +359,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         validInput = true;
         validationMessage = "";
         rootTreeNode = new DefaultTreeNode("Root", null);
+        unchangeableProperties = new ArrayList<>();
 
         // allow subclass to reset
         reset_();
@@ -337,6 +392,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         } else {
             cell.setCellType(CellType.STRING);
             parsedValue = cell.getStringCellValue().trim();
+            if ((!parsedValue.isEmpty()) && (parsedValue.charAt(0) == '\'')) {
+                if (parsedValue.length() > 1) {
+                    parsedValue = parsedValue.substring(1);
+                } else {
+                    parsedValue = "";
+                }
+            }
         }
 
         return parsedValue;
@@ -1147,6 +1209,16 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     first = false;
                 }
                 FieldValueDifference diff = fieldDiffMap.get(key);
+                
+                // check for unchangeable property
+                if (unchangeableProperties.contains(key)) {
+                    isValid = false;
+                    validString = appendToString(
+                            validString,
+                            "Value cannot be changed for column: " + key);
+                }
+
+                // add to diff string
                 diffString = diffString + key + ": ";
                 diffString = diffString + "<span style=\"color:red\">";
                 diffString = diffString + "'" + diff.getOldValue() + "'";

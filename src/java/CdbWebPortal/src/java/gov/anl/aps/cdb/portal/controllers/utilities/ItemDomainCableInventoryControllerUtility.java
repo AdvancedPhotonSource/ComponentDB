@@ -18,6 +18,8 @@ import java.util.List;
  */
 public class ItemDomainCableInventoryControllerUtility extends ItemDomainInventoryBaseControllerUtility<ItemDomainCableInventory, ItemDomainCableInventoryFacade> {
 
+    private final static String GROUP_PHYSICAL = "Physical";
+    
     @Override
     public String getDefaultDomainName() {
         return ItemDomainName.cableInventory.getValue(); 
@@ -50,8 +52,20 @@ public class ItemDomainCableInventoryControllerUtility extends ItemDomainInvento
 
     @Override
     public ItemMetadataPropertyInfo createCoreMetadataPropertyInfo() {
-        ItemMetadataPropertyInfo info = new ItemMetadataPropertyInfo("Cable Inventory Metadata", ItemDomainCableInventory.CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE);
-        info.addField(ItemDomainCableInventory.CABLE_INVENTORY_PROPERTY_LENGTH_KEY, "Length", "Installed length of cable.", ItemMetadataFieldType.STRING, "", null);
+        
+        ItemMetadataPropertyInfo info = new ItemMetadataPropertyInfo(
+                "Cable Inventory Metadata", 
+                ItemDomainCableInventory.CABLE_INVENTORY_INTERNAL_PROPERTY_TYPE);
+        
+        info.addField(
+                ItemDomainCableInventory.CABLE_INVENTORY_PROPERTY_LENGTH_KEY, 
+                "Length", 
+                "Installed length of cable.", 
+                ItemMetadataFieldType.STRING, 
+                "", 
+                null,
+                GROUP_PHYSICAL);
+        
         return info;
     }
             

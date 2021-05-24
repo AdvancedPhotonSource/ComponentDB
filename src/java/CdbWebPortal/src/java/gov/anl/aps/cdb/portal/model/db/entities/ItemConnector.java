@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.util.List;
@@ -71,6 +72,11 @@ public class ItemConnector extends CdbEntity implements Serializable {
     
     private transient ItemConnector itemConnectorOfItemConnectedTo; 
     private transient Item itemConnectedVia; 
+    
+    private transient String importConnectorName = null;
+    private transient String importConnectorDescription = null;
+    private transient Boolean importConnectorGenderIsMale = null;
+    private transient ConnectorType importConnectorType = null;
         
     public ItemConnector() {
     }
@@ -235,5 +241,73 @@ public class ItemConnector extends CdbEntity implements Serializable {
         }
         return false;
     }
+
+    @JsonIgnore
+    public String getImportConnectorName() {
+        return importConnectorName;
+    }
+
+    public void setImportConnectorName(String importConnectorName) {
+        this.importConnectorName = importConnectorName;
+    }
+
+    @JsonIgnore
+    public String getImportConnectorDescription() {
+        return importConnectorDescription;
+    }
+
+    public void setImportConnectorDescription(String importConnectorDescription) {
+        this.importConnectorDescription = importConnectorDescription;
+    }
+
+    @JsonIgnore
+    public Boolean getImportConnectorGenderIsMale() {
+        return importConnectorGenderIsMale;
+    }
+
+    public void setImportConnectorGenderIsMale(Boolean importConnectorGenderIsMale) {
+        this.importConnectorGenderIsMale = importConnectorGenderIsMale;
+    }
+
+    @JsonIgnore
+    public ConnectorType getImportConnectorType() {
+        return importConnectorType;
+    }
     
+    @JsonIgnore
+    public String getImportConnectorTypeString() {
+        if (importConnectorType != null) {
+            return importConnectorType.getName();
+        } else {
+            return "";
+        }
+    }
+
+    public void setImportConnectorType(ConnectorType importConnectorType) {
+        this.importConnectorType = importConnectorType;
+    }
+
+    public void setImportConnectorDetails(
+            String connectorName,
+            String connectorDesc,
+            Boolean isMale,
+            ConnectorType connectorType) {
+        
+        Connector conn = new Connector();
+        
+        conn.setName(connectorName);
+        if (connectorDesc != null) {
+            conn.setDescription(connectorDesc);
+        }
+        
+        if (isMale != null) {
+            conn.setIsMale(isMale);
+        }
+        
+        if (connectorType != null) {
+            conn.setConnectorType(connectorType);
+        }
+        
+        this.setConnector(conn);        
+    }
 }

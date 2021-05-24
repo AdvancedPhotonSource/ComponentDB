@@ -2593,11 +2593,11 @@ public class ItemDomainMachineDesignController
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
 
         formatInfo.add(new ImportExportFormatInfo(
-                "Machine Hierarchy Creation", ImportHelperMachineHierarchy.class));
+                "Machine Hierarchy Creation Format", ImportHelperMachineHierarchy.class));
         formatInfo.add(new ImportExportFormatInfo(
-                "Machine Template Instantiation", ImportHelperMachineTemplateInstantiation.class));
+                "Machine Template Instantiation Format", ImportHelperMachineTemplateInstantiation.class));
         formatInfo.add(new ImportExportFormatInfo(
-                "Machine Element Updating", ImportHelperMachineItemUpdate.class));
+                "Machine Element Update Format", ImportHelperMachineItemUpdate.class));
 
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
@@ -2613,47 +2613,53 @@ public class ItemDomainMachineDesignController
     protected DomainImportExportInfo initializeDomainExportInfo() {
 
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-
-        formatInfo.add(new ImportExportFormatInfo("Basic Machine Element Update Format", ImportHelperMachineItemUpdate.class));
-
+        
+        formatInfo.add(new ImportExportFormatInfo("Machine Element Update Format", ImportHelperMachineItemUpdate.class));
+        
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
-
-    public void collectHierarchyItems(
-            ItemDomainMachineDesign parentItem,
-            List<ItemDomainMachineDesign> collectedItems,
-            boolean isRootItem) {
-
-        if (isRootItem) {
-            collectedItems.add(parentItem);
+    
+    private static List<ItemDomainMachineDesign> createListForTreeNodeHierarchy(
+            ItemDomainMachineDesignTreeNode node,
+            boolean enforceMaxLevels,
+            Integer maxLevels,
+            int currentLevel) {
+        
+        List<ItemDomainMachineDesign> itemList = new ArrayList<>();
+        
+        if (enforceMaxLevels && (currentLevel >= maxLevels)) {
+            return itemList;
         }
-
-        List<ItemElement> displayList = parentItem.getItemElementDisplayList();
-        for (ItemElement ie : displayList) {
-            Item childItem = ie.getContainedItem();
-            if (childItem instanceof ItemDomainMachineDesign) {
-                collectedItems.add((ItemDomainMachineDesign) childItem);
-                collectHierarchyItems((ItemDomainMachineDesign) childItem, collectedItems, false);
+        
+        currentLevel = currentLevel + 1;
+        
+        // walk tree node hierarchy to create list
+        node.setExpanded(true);
+        for (ItemDomainMachineDesignTreeNode childNode : node.getMachineChildren()) {
+            ItemElement dataElem = childNode.getElement();
+            if (dataElem != null) {
+                Item item = dataElem.getContainedItem();
+                if (item instanceof ItemDomainMachineDesign) {
+                    itemList.add((ItemDomainMachineDesign) item);
+                    itemList.addAll(createListForTreeNodeHierarchy(
+                            childNode, enforceMaxLevels, maxLevels, currentLevel));
+                }
             }
         }
 
+        return itemList;
     }
-
-    @Override
-    protected List<ItemDomainMachineDesign> getExportEntityList() {
-        ItemDomainMachineDesignTreeNode currentTree = getCurrentMachineDesignListRootTreeNode();
-        List<ItemDomainMachineDesign> filteredItems = currentTree.getFilterResults();
-        List<ItemDomainMachineDesign> filteredHierarchyItems = new ArrayList<>();
-        for (ItemDomainMachineDesign item : filteredItems) {
-            if (!item.getIsItemDeleted()) {
-                collectHierarchyItems(item, filteredHierarchyItems, true);
-            }
-        }
-        return filteredHierarchyItems;
+    
+    public static List<ItemDomainMachineDesign> createListForTreeNodeHierarchy(
+            ItemDomainMachineDesignTreeNode rootNode,
+            boolean enforceMaxLevels,
+            Integer maxLevels) {
+        
+        return createListForTreeNodeHierarchy(rootNode, enforceMaxLevels, maxLevels, 0);        
     }
-
+    
     // </editor-fold>       
     // <editor-fold defaultstate="collapsed" desc="Delete support">   
     private void addChildrenForItemToHierarchyNode(

@@ -29,4 +29,9 @@ public class ItemDomainCatalogControllerUtility extends ItemDomainCatalogBaseCon
         return new ItemDomainCatalog();
     }
        
+    @Override
+    public String getDisplayEntityTypeName() {
+        return "Catalog Item";
+    }
+        
 }

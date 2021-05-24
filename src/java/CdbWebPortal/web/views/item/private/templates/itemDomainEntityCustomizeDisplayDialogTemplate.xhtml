@@ -66,25 +66,32 @@ See LICENSE file.
     <ui:define name="coreMetadataPropertyValueCustomizeOptionsTab">
         <p:tab title="#{entitySettingObject.coreMetadataPropertyInfo.displayName}"
                rendered="#{entitySettingObject.coreMetadataPropertyInfo != null}">
-            <p:panelGrid columns="2"
-                         rendered="#{entitySettingObject.coreMetadataPropertyInfo != null}">
-                <c:forEach items="#{entitySettingObject.coreMetadataPropertyInfo.fields}"
-                           var="metadataField">  
+            <p:accordionPanel multiple="true"
+                              activeIndex="">
+                <c:forEach items="#{entitySettingObject.coreMetadataPropertyInfo.groupList}"
+                           var="fieldGroup">
+                    <p:tab title="#{fieldGroup}">
+                        <p:panelGrid columns="2">
+                            <c:forEach items="#{entitySettingObject.coreMetadataPropertyInfo.getFieldsInGroup(fieldGroup)}"
+                                       var="metadataField">  
 
-                    <ui:param name="metadataKey" value="#{metadataField.key}"/>
-                    <ui:param name="metadataLabel" value="#{metadataField.label}"/>
-                    <ui:param name="metadataDescription" value="#{metadataField.description}"/>
-                    <ui:param name="propertyName" value="#{metadataKey}Display"/>
+                                <ui:param name="metadataKey" value="#{metadataField.key}"/>
+                                <ui:param name="metadataLabel" value="#{metadataField.label}"/>
+                                <ui:param name="metadataDescription" value="#{metadataField.description}"/>
+                                <ui:param name="propertyName" value="#{metadataKey}Display"/>
 
-                    <p:selectBooleanCheckbox id="#{metadataKey}"
-                                             value="#{entitySettingObject[propertyName]}"/>  
-                    <h:outputLabel for="#{metadataKey}" 
-                                   value="#{metadataLabel}" 
-                                   styleClass="dialogDataLabel"
-                                   title="#{metadataDescription}"/>
+                                <p:selectBooleanCheckbox id="#{metadataKey}"
+                                                         value="#{entitySettingObject[propertyName]}"/>  
+                                <h:outputLabel for="#{metadataKey}" 
+                                               value="#{metadataLabel}" 
+                                               styleClass="dialogDataLabel"
+                                               title="#{metadataDescription}"/>
 
+                            </c:forEach>
+                        </p:panelGrid>    
+                    </p:tab>
                 </c:forEach>
-            </p:panelGrid>    
+            </p:accordionPanel>
         </p:tab>
     </ui:define>
 

@@ -9,6 +9,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
                 template="../item/private/templates/itemViewTemplate.xhtml">
 
     <ui:param name="entityController" value="#{itemDomainCableDesignController}" />        
@@ -28,7 +29,8 @@ See LICENSE file.
         <ui:decorate template="private/templates/additionPanelGridContentTemplate.xhtml" />
     </ui:define>
 
-    <ui:define name="additionalRightItemPanels">        
+    <ui:define name="additionalRightItemPanels">
+        
         <p:panel header="Device Connections" 
                  toggleable="true" 
                  collapsed="#{!entityController.displayConnectionsList}">
