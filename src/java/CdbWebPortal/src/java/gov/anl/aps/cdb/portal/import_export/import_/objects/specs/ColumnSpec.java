@@ -200,5 +200,10 @@ public abstract class ColumnSpec {
             return columnModeOptionsMap.get(mode).isRequired();
         }
     }
+    
+    public boolean isUnchangeable() {
+        ColumnModeOptions opts = columnModeOptionsMap.get(ImportMode.UPDATE);
+        return (opts != null) && (opts.isUnchangeable());
+    }
 
 }

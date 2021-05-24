@@ -33,6 +33,7 @@ public class MachineImportHelperCommon {
     public static final String KEY_TEMPLATE_INVOCATION = "importTemplateAndParameters";
 
     public static final String HEADER_PARENT = "Parent Item";
+    public static final String HEADER_PATH = "Parent Path";
     public static final String HEADER_BASE_LEVEL = "Level";
     public static final String HEADER_NAME = "Name";
     public static final String HEADER_ALT_NAME = "Alternate Name";
@@ -73,6 +74,17 @@ public class MachineImportHelperCommon {
                 KEY_NAME,
                 KEY_INDENT,
                 3);
+    }
+    
+    public static StringColumnSpec parentPathColumnSpec(List<ColumnModeOptions> options) {
+        return new StringColumnSpec(
+                HEADER_PATH, 
+                "importParentPath", 
+                "setImportParentPath", 
+                "Parent path, for documentation purposes only, ignored on update.", 
+                "getImportParentPath", 
+                options, 
+                0);
     }
 
     public static StringColumnSpec nameColumnSpec(List<ColumnModeOptions> options) {

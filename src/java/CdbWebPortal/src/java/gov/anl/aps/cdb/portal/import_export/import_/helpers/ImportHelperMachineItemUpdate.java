@@ -87,6 +87,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase {
         List<ColumnSpec> specs = new ArrayList<>();
 
         specs.add(existingItemIdColumnSpec());
+        specs.add(MachineImportHelperCommon.parentPathColumnSpec(ColumnModeOptions.uUPDATE()));
         specs.add(MachineImportHelperCommon.nameColumnSpec(ColumnModeOptions.rUPDATE()));
         specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oUPDATE()));
         specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oUPDATE()));

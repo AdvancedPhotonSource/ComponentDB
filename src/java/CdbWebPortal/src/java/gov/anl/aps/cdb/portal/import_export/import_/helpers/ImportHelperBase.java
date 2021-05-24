@@ -114,6 +114,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     
     private List<OutputColumnModel> outputColumns = new ArrayList<>();
     
+    private List<String> unchangeableProperties = new ArrayList<>();
+    
     protected byte[] templateExcelFile = null;
     protected boolean validInput = true;
     private String validationMessage = "";
@@ -274,7 +276,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 // set validation table columns depending on  mode
                 if (spec.isUsedForMode(getImportMode())) {
                     outputColumns.addAll(initInfo.getOutputColumns());
-                }                
+                }
+                
+                if (spec.isUnchangeable()) {
+                    unchangeableProperties.add(spec.getHeader());
+                }
             }
             
             colIndex = colIndex + initInfo.getNumColumns();   
@@ -353,6 +359,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         validInput = true;
         validationMessage = "";
         rootTreeNode = new DefaultTreeNode("Root", null);
+        unchangeableProperties = new ArrayList<>();
 
         // allow subclass to reset
         reset_();
@@ -1202,6 +1209,16 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     first = false;
                 }
                 FieldValueDifference diff = fieldDiffMap.get(key);
+                
+                // check for unchangeable property
+                if (unchangeableProperties.contains(key)) {
+                    isValid = false;
+                    validString = appendToString(
+                            validString,
+                            "Value cannot be changed for column: " + key);
+                }
+
+                // add to diff string
                 diffString = diffString + key + ": ";
                 diffString = diffString + "<span style=\"color:red\">";
                 diffString = diffString + "'" + diff.getOldValue() + "'";
