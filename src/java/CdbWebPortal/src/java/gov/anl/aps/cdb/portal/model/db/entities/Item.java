@@ -255,7 +255,9 @@ import org.primefaces.model.TreeNode;
             ItemDomainCatalog.class,
             ItemDomainInventory.class,
             ItemDomainMachineDesign.class,
-            ItemDomainCable.class,
+            ItemDomainCableCatalog.class,
+            ItemDomainCableInventory.class,
+            ItemDomainCableDesign.class,
             ItemDomainMAARC.class,
             ItemDomainLocation.class
         }

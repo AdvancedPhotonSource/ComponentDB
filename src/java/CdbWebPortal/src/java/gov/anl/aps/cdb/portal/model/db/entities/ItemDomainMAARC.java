@@ -6,9 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMAARCControllerUtility;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -18,10 +16,7 @@ import javax.persistence.Entity;
  * @author djarosz
  */
 @Entity
-@DiscriminatorValue(value = ItemDomainName.MAARC_ID + "")  
-@Schema(name = "ItemDomainMAARC",
-        allOf = Item.class
-)
+@DiscriminatorValue(value = ItemDomainName.MAARC_ID + "")
 public class ItemDomainMAARC extends Item {
     
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">

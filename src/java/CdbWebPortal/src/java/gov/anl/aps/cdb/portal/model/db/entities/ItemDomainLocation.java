@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
@@ -22,9 +21,6 @@ import org.primefaces.model.menu.DefaultMenuModel;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.LOCATION_ID + "")
-@Schema(name = "ItemDomainLocation",
-        allOf = Item.class
-)
 public class ItemDomainLocation extends Item {
     
     private transient ItemDomainLocation importParentItem = null;

@@ -10,7 +10,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -22,10 +21,7 @@ import org.apache.logging.log4j.Logger;
  * @author djarosz
  */
 @Entity
-@DiscriminatorValue(value = ItemDomainName.CATALOG_ID + "")  
-@Schema(name = "ItemDomainCatalog",
-        allOf = Item.class
-)
+@DiscriminatorValue(value = ItemDomainName.CATALOG_ID + "")
 public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory> {
     
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCatalog.class.getName());
@@ -60,15 +56,7 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     @Override
     public ItemController getItemDomainController() {
         return ItemDomainCatalogController.getInstance();
-    }
-    
-    public String getAlternateName() {
-        return getItemIdentifier2();
-    }
-
-    public void setAlternateName(String n) {
-        setItemIdentifier2(n);
-    }
+    }        
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     @JsonIgnore

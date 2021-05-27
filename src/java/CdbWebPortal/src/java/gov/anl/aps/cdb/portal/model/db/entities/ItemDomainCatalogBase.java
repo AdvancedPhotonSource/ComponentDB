@@ -13,19 +13,19 @@ import java.util.List;
  * @author djarosz
  */
 public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends Item {
-    
+
     private transient String sourceString = null;
 
     @JsonIgnore
     public List<InventoryItem> getInventoryItemList() {
-        return (List<InventoryItem>)(List<?>) super.getDerivedFromItemList(); 
+        return (List<InventoryItem>) (List<?>) super.getDerivedFromItemList();
     }
-    
+
     @JsonIgnore
     public String getSourceString() {
         return sourceString;
     }
-    
+
     @JsonIgnore
     public Source getExportManufacturer() {
         List<ItemSource> itemSourceList = getItemSourceList();
@@ -38,7 +38,7 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
         }
         return null;
     }
-    
+
     public void setManufacturerInfo(Source source, String partNum) {
         if (source != null) {
             List<ItemSource> itemSourceList = new ArrayList<>();
@@ -54,18 +54,18 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
             sourceString = source.getName();
         }
     }
-    
+
     public void updateManufacturerInfo(Source source, String partNum) {
-        
+
         if (source != null) {
-            
+
             // create source list if it doesn't exist
             List<ItemSource> itemSourceList = getItemSourceList();
             if (itemSourceList == null) {
                 itemSourceList = new ArrayList<>();
                 this.setItemSourceList(itemSourceList);
             }
-            
+
             // remove mfr flag for existing source if any
             ItemSource newMfrSource = null;
             ItemSource oldMfrSource = null;
@@ -78,7 +78,7 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
                     newMfrSource = itemSource;
                 }
             }
-            
+
             // create new ItemSource if we didn't find existing one
             if (newMfrSource == null) {
                 newMfrSource = new ItemSource();
@@ -86,17 +86,17 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
                 newMfrSource.setSource(source);
                 itemSourceList.add(newMfrSource);
             }
-                               
+
             // set mfr flag and part number
             newMfrSource.setIsManufacturer(true);
             if ((partNum != null) && (!partNum.isBlank())) {
                 newMfrSource.setPartNumber(partNum);
             }
-                
+
             sourceString = source.getName();
         }
     }
-    
+
     public void removeManufactuterInfo() {
         List<ItemSource> itemSourceList = getItemSourceList();
         if (itemSourceList != null) {
@@ -108,8 +108,7 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
             }
         }
     }
-    
-    @JsonIgnore
+
     public String getAlternateName() {
         return getItemIdentifier2();
     }
@@ -122,9 +121,9 @@ public abstract class ItemDomainCatalogBase<InventoryItem extends Item> extends 
     public String getPartNumber() {
         return this.getItemIdentifier1();
     }
-    
+
     public void setPartNumber(String n) {
         this.setItemIdentifier1(n);
     }
-    
+
 }
