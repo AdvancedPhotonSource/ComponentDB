@@ -557,7 +557,7 @@ class MyTestCase(unittest.TestCase):
         except OpenApiException as ex:
             self.fail(msg=ex.body)
 
-        self.assertNotEquals(new_catalog_item.id, None, msg="New catalog item wasn't created")
+        self.assertNotEqual(new_catalog_item.id, None, msg="New catalog item wasn't created")
 
     def test_create_catalog_element(self):
         self.loginAsAdmin()
