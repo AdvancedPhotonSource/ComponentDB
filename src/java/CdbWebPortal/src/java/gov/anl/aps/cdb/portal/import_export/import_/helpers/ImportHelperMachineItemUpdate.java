@@ -11,7 +11,6 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperC
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +53,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase {
     }
     
     @Override
-    public ValidInfo generateExportEntityList() {
-        
-        boolean isValid = true;
-        String validString = "";
+    public List<ItemDomainMachineDesign> generateExportEntityList_() {
         
         Integer numLevels = null;
         String optionVal = getOptionExportNumLevels();
@@ -76,9 +72,7 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase {
                         numLevels != null,
                         numLevels);
         
-        setExportEntityList(entityList);
-        
-        return new ValidInfo(isValid, validString);
+        return entityList;
     }
 
     @Override

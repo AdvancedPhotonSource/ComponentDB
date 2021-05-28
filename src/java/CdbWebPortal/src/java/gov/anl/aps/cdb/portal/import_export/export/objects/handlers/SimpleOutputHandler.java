@@ -6,8 +6,8 @@ package gov.anl.aps.cdb.portal.import_export.export.objects.handlers;
 
 import gov.anl.aps.cdb.portal.import_export.export.objects.ColumnValueResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.ExportColumnData;
-import gov.anl.aps.cdb.portal.import_export.export.objects.FieldValueMapResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.HandleOutputResult;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ExportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import java.lang.reflect.InvocationTargetException;
@@ -25,21 +25,28 @@ import java.util.List;
 public class SimpleOutputHandler extends SingleColumnOutputHandler {
     
     protected String domainGetterMethod = null;
+    protected String domainTransferGetterMethod = null;
     
     public SimpleOutputHandler(
             String columnName,
             String description,
-            String domainGetterMethod) {
+            String domainGetterMethod,
+            String domainTransferGetterMethod) {
         
         super(columnName, description);
         this.domainGetterMethod = domainGetterMethod;
+        this.domainTransferGetterMethod = domainTransferGetterMethod;
     }
 
     public String getDomainGetterMethod() {
         return domainGetterMethod;
     }
 
-    protected ColumnValueResult getColumnValue(CdbEntity entity, boolean useIdValues) {
+    public String getDomainTransferGetterMethod() {
+        return domainTransferGetterMethod;
+    }
+
+    protected ColumnValueResult getColumnValue(CdbEntity entity, ExportMode exportMode, boolean useIdValues) {
         
         boolean isValid = true;
         String validString = "";
@@ -47,7 +54,19 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
         // use reflection to retrieve value for column
         Object returnValue = null;
         String errorMsg = "";
-        String methodName = getDomainGetterMethod();
+        
+        // determine getter method base on mode
+        String methodName = null;
+        if (exportMode == ExportMode.TRANSFER) {
+            // default to regular export getter method if transfer method not specified
+            methodName = getDomainTransferGetterMethod();
+            if (methodName == null) {
+                methodName = getDomainGetterMethod();
+            }
+        } else {
+            methodName = getDomainGetterMethod();
+        }
+        
         try {
             if ((methodName != null) && (!methodName.isBlank())) {
                 // use reflection to invoke setter method on entity instance
@@ -102,15 +121,21 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
     }
 
     public ColumnValueResult handleOutput(CdbEntity entity, boolean useIdValues) {
-        return getColumnValue(entity, useIdValues);
+        return getColumnValue(entity, ExportMode.EXPORT, useIdValues);
     }
 
     @Override
-    public HandleOutputResult handleOutput(List<CdbEntity> entities) {
-        return handleOutput(entities, false);
+    public HandleOutputResult handleOutput(List<CdbEntity> entities, ExportMode exportMode) {
+        boolean useIdValues;
+        if (exportMode == ExportMode.TRANSFER) {
+            useIdValues = false;
+        } else {
+            useIdValues = true;
+        }
+        return handleOutput(entities, exportMode, useIdValues);
     }
     
-    public HandleOutputResult handleOutput(List<CdbEntity> entities, boolean useIdValues) {
+    public HandleOutputResult handleOutput(List<CdbEntity> entities, ExportMode exportMode, boolean useIdValues) {
 
         boolean isValid = true;
         String validString = "";
@@ -118,7 +143,7 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
 
         List<String> columnValues = new ArrayList<>();
         for (CdbEntity entity : entities) {
-            ColumnValueResult columnValueResult = getColumnValue(entity, useIdValues);
+            ColumnValueResult columnValueResult = getColumnValue(entity, exportMode, useIdValues);
             if (!columnValueResult.getValidInfo().isValid()) {
                 return new HandleOutputResult(columnValueResult.getValidInfo(), null);
             } else {

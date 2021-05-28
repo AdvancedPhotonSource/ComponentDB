@@ -480,6 +480,24 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setImportAssignedItemDescription(String importAssignedItemDescription) {
         this.importAssignedItemDescription = importAssignedItemDescription;
     }
+    
+    @JsonIgnore
+    public String getImportCatalogItemTransfer() {
+        
+        Item assignedItem = getAssignedItem();
+        Item catalogItem = null;
+        if (assignedItem instanceof ItemDomainInventory) {
+            catalogItem = ((ItemDomainInventory) assignedItem).getCatalogItem();
+        } else if (assignedItem instanceof ItemDomainCatalog) {
+            catalogItem = assignedItem;
+        }
+        
+        if (catalogItem != null) {
+            return "#" + catalogItem.getName();
+        } else {
+            return null;
+        }
+    }
 
     public void setImportLocationItem(ItemDomainLocation locationItem) {
         if (locationItem != null) {

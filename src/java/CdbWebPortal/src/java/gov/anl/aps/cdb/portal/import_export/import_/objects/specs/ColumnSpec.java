@@ -30,6 +30,7 @@ public abstract class ColumnSpec {
     private String entitySetterMethod;
     private String description;
     protected String exportGetterMethod;
+    protected String exportTransferGetterMethod;
     
     private Map<ImportMode, ColumnModeOptions> columnModeOptionsMap = new HashMap<>();
         
@@ -83,6 +84,22 @@ public abstract class ColumnSpec {
         this.exportGetterMethod = exportGetterMethod;
     }
 
+    /**
+     * Creates a column spec appropriate for import and export.
+     */
+    public ColumnSpec(
+            String header, 
+            String importPropertyName, 
+            String importSetterMethod, 
+            String description, 
+            String exportGetterMethod,
+            String exportTransferGetterMethod,
+            List<ColumnModeOptions> options) {
+        
+        this(header, importPropertyName, importSetterMethod, description, exportGetterMethod, options);
+        this.exportTransferGetterMethod = exportTransferGetterMethod;
+    }
+
     public String getHeader() {
         return header;
     }
@@ -101,6 +118,10 @@ public abstract class ColumnSpec {
     
     public String getExportGetterMethod() {
         return exportGetterMethod;
+    }
+    
+    public String getExportTransferGetterMethod() {
+        return exportTransferGetterMethod;
     }
     
     public int getInputTemplateColumns(
@@ -182,7 +203,8 @@ public abstract class ColumnSpec {
         if (exportGetterMethod == null || exportGetterMethod.isBlank()) {
             return new BlankColumnOutputHandler(getHeader(), getDescription());
         }
-        return new SimpleOutputHandler(getHeader(), getDescription(), getExportGetterMethod());
+        return new SimpleOutputHandler(
+                getHeader(), getDescription(), getExportGetterMethod(), getExportTransferGetterMethod());
     }
     
     private void addColumnModeOptions(ColumnModeOptions options) {

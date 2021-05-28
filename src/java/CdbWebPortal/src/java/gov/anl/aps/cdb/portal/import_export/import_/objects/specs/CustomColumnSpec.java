@@ -33,6 +33,21 @@ public class CustomColumnSpec extends ColumnSpec {
         this.inputHandler = handler;
     }
     
+    public CustomColumnSpec(
+            String header, 
+            String importPropertyName, 
+            String description,
+            String exportGetterMethod, 
+            String exportTransferGetterMethod,
+            boolean exportIds,
+            List<ColumnModeOptions> options,
+            InputHandler handler) {
+        
+        super(header, importPropertyName, null, description, exportGetterMethod, exportTransferGetterMethod, options);
+        this.exportIds = exportIds;
+        this.inputHandler = handler;
+    }
+    
     public InputHandler getInputHandler(int colIndex) {
         inputHandler.setFirstColumnIndex(colIndex);
         return inputHandler;
@@ -44,6 +59,7 @@ public class CustomColumnSpec extends ColumnSpec {
                 getHeader(),
                 getDescription(),
                 getExportGetterMethod(),
+                getExportTransferGetterMethod(),
                 exportIds);
     }
 }
