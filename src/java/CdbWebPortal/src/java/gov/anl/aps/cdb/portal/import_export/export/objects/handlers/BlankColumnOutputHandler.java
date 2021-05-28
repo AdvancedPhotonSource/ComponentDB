@@ -23,7 +23,7 @@ public class BlankColumnOutputHandler extends SimpleOutputHandler {
     }
 
     @Override
-    protected ColumnValueResult getColumnValue(CdbEntity entity, ExportMode exportMode, boolean useIdValues) {
+    protected ColumnValueResult getColumnValue(CdbEntity entity, ExportMode exportMode) {
         ValidInfo validInfo = new ValidInfo(true, "");
         return new ColumnValueResult(validInfo, "");
     }

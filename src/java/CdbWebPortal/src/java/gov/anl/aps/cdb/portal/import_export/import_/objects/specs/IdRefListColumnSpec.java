@@ -58,6 +58,6 @@ public class IdRefListColumnSpec extends IdRefColumnSpec {
                 getHeader(),
                 getDescription(),
                 getExportGetterMethod(),
-                false);
+                null);
     }
 }

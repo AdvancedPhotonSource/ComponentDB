@@ -46,7 +46,7 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
         return domainTransferGetterMethod;
     }
 
-    protected ColumnValueResult getColumnValue(CdbEntity entity, ExportMode exportMode, boolean useIdValues) {
+    protected ColumnValueResult getColumnValue(CdbEntity entity, ExportMode exportMode) {
         
         boolean isValid = true;
         String validString = "";
@@ -87,41 +87,22 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
             return new ColumnValueResult(validInfo, null);
         }
 
-        String columnValue = "";
-        if (returnValue != null) {
-            if (useIdValues) {
-                if (returnValue instanceof List) {
-                    List<CdbEntity> objList = (List<CdbEntity>) returnValue;
-                    boolean isFirstItem = true;
-                    for (CdbEntity obj : objList) {
-                        if (!isFirstItem) {
-                            columnValue = columnValue + ", ";
-                        } else {
-                            isFirstItem = false;
-                        }
-                        columnValue = columnValue + obj.getId().toString();
-                    }
-
-                } else if (returnValue instanceof CdbEntity) {
-                    CdbEntity obj = (CdbEntity) returnValue;
-                    columnValue = obj.getId().toString();
-                }
-            } else {
-                columnValue = returnValue.toString();
-            }
-        }
+        String columnValue = formatCellValue(returnValue, exportMode);
         
         ValidInfo validInfo = new ValidInfo(isValid, validString);
         return new ColumnValueResult(validInfo, columnValue);
     }
-
-    @Override
-    public ColumnValueResult handleOutput(CdbEntity entity) {
-        return handleOutput(entity, false);
+    
+    protected String formatCellValue(Object value, ExportMode exportMode) {  
+        if (value != null) {
+            return value.toString();
+        } else {
+            return "";
+        }
     }
 
-    public ColumnValueResult handleOutput(CdbEntity entity, boolean useIdValues) {
-        return getColumnValue(entity, ExportMode.EXPORT, useIdValues);
+    public ColumnValueResult handleOutput(CdbEntity entity) {
+        return getColumnValue(entity, ExportMode.EXPORT);
     }
 
     @Override
@@ -143,7 +124,7 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
 
         List<String> columnValues = new ArrayList<>();
         for (CdbEntity entity : entities) {
-            ColumnValueResult columnValueResult = getColumnValue(entity, exportMode, useIdValues);
+            ColumnValueResult columnValueResult = getColumnValue(entity, exportMode);
             if (!columnValueResult.getValidInfo().isValid()) {
                 return new HandleOutputResult(columnValueResult.getValidInfo(), null);
             } else {

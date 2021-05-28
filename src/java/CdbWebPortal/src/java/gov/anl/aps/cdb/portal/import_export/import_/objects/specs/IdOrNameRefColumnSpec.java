@@ -63,6 +63,6 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
                 getHeader(),
                 getDescription(),
                 getExportGetterMethod(),
-                true);
+                null);
     }
 }
