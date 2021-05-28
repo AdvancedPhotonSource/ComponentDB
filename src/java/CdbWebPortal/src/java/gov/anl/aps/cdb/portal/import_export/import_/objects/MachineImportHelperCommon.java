@@ -148,7 +148,7 @@ public class MachineImportHelperCommon {
                 "importAssignedItemString",
                 "CDB ID or name of assigned catalog or inventory item. Name can only be used for catalog items and must be unique and prefixed with '#'.",
                 "getAssignedItem",
-                "getImportCatalogItemTransfer",
+                "getCatalogItemAttributeMap",
                 true,
                 options,
                 assignedItemHandler);

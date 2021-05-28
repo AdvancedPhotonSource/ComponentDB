@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.import_export.export.objects.handlers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.import_export.export.objects.ColumnValueResult;
 import gov.anl.aps.cdb.portal.import_export.export.objects.ExportColumnData;
 import gov.anl.aps.cdb.portal.import_export.export.objects.HandleOutputResult;
@@ -87,13 +88,19 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
             return new ColumnValueResult(validInfo, null);
         }
 
-        String columnValue = formatCellValue(returnValue, exportMode);
+        String columnValue = null;
+        try {
+            columnValue = formatCellValue(returnValue, exportMode);
+        } catch (CdbException ex) {
+            isValid = false;
+            validString = ex.getMessage();
+        }
         
         ValidInfo validInfo = new ValidInfo(isValid, validString);
         return new ColumnValueResult(validInfo, columnValue);
     }
     
-    protected String formatCellValue(Object value, ExportMode exportMode) {  
+    protected String formatCellValue(Object value, ExportMode exportMode) throws CdbException {  
         if (value != null) {
             return value.toString();
         } else {

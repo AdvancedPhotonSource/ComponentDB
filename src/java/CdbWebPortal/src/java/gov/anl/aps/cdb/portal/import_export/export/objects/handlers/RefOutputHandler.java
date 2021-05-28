@@ -4,9 +4,13 @@
  */
 package gov.anl.aps.cdb.portal.import_export.export.objects.handlers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ExportMode;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -24,7 +28,7 @@ public class RefOutputHandler extends SimpleOutputHandler {
     }
     
     @Override
-    protected String formatCellValue(Object value, ExportMode exportMode) {  
+    protected String formatCellValue(Object value, ExportMode exportMode) throws CdbException {  
         
         // use id's for export mode, but don't for transfer mode
         boolean useIdValues;
@@ -54,7 +58,18 @@ public class RefOutputHandler extends SimpleOutputHandler {
                     columnValue = obj.getId().toString();
                 }
             } else {
-                columnValue = value.toString();
+                if (value instanceof Map) {
+                    Map map = (Map) value;
+                    ObjectMapper mapper = new ObjectMapper();
+                    try {
+                        columnValue = mapper.writeValueAsString(map);
+                    } catch (JsonProcessingException e) {
+                        throw new CdbException("Error converting attribute map to json.");
+                    }
+                    
+                } else {
+                    columnValue = value.toString();
+                }
             }
         }
         

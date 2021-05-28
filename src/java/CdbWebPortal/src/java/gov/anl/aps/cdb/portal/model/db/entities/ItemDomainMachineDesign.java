@@ -5,6 +5,8 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
@@ -24,7 +26,9 @@ import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import javax.faces.model.DataModel;
 import javax.persistence.DiscriminatorValue;
@@ -482,7 +486,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
     
     @JsonIgnore
-    public String getImportCatalogItemTransfer() {
+    public Map<String,String> getCatalogItemAttributeMap() throws CdbException {
         
         Item assignedItem = getAssignedItem();
         Item catalogItem = null;
@@ -493,7 +497,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
         
         if (catalogItem != null) {
-            return "#" + catalogItem.getName();
+            // create map of attributes and return as json string representation
+            
+            Map<String,String> attributeMap = new HashMap<>();
+            attributeMap.put("name", catalogItem.getName());
+            attributeMap.put("modelNumber", catalogItem.getItemIdentifier1());
+            attributeMap.put("alternateName", catalogItem.getItemIdentifier2());
+            ObjectMapper mapper = new ObjectMapper();
+            return attributeMap;
+            
         } else {
             return null;
         }
