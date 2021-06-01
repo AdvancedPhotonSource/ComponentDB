@@ -84,7 +84,7 @@ public class ImportHelperLocation
                 KEY_TYPE, 
                 "setItemType", 
                 "CDB ID or name of location type. Name must be prefixed with '#'.", 
-                null,
+                null, null,
                 ColumnModeOptions.oCREATE(), 
                 ItemTypeController.getInstance(), 
                 ItemType.class, 

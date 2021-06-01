@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.import_export.export.objects.handlers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.common.objects.CdbObject;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ExportMode;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -71,6 +72,10 @@ public class RefOutputHandler extends SimpleOutputHandler {
                 } else if (value instanceof Item) {
                     Item item = (Item) value;
                     columnValue = "#" + item.getName();
+                    
+                } else if (value instanceof CdbObject) {
+                    CdbObject obj = (CdbObject) value;
+                    columnValue = "#" + obj.getName();
                     
                 } else {
                     columnValue = "#" + value.toString();

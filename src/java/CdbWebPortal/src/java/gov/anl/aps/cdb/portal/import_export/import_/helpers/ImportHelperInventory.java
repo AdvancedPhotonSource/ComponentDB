@@ -39,7 +39,7 @@ public class ImportHelperInventory
                 KEY_CATALOG_ITEM, 
                 "setCatalogItem", 
                 "ID or name of catalog item for inventory unit. Name must be unique and prefixed with '#'.", 
-                null,
+                null, null,
                 ColumnModeOptions.rCREATErUPDATE(), 
                 ItemDomainCatalogController.getInstance(), 
                 ItemDomainCatalog.class, 

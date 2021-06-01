@@ -30,7 +30,7 @@ public abstract class ImportHelperCatalogBase <CatalogEntityType extends ItemDom
                 KEY_MFR, 
                 "", 
                 "ID or name of CDB source for manufacturer. Name must be unique and prefixed with '#'.", 
-                "getExportManufacturer",
+                "getExportManufacturer", null,
                 ColumnModeOptions.oCREATEoUPDATE(),
                 SourceController.getInstance(), 
                 Source.class, 

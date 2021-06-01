@@ -5,8 +5,6 @@
 package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
-import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.RefOutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
@@ -29,12 +27,11 @@ public class IdOrNameRefListColumnSpec extends IdOrNameRefColumnSpec {
             Class paramType, 
             String domainNameFilter) {
         
-        super(
-                header, 
+        super(header, 
                 importPropertyName, 
                 importSetterMethod, 
                 description, 
-                exportGetterMethod, 
+                exportGetterMethod, null, 
                 options,
                 controller, 
                 paramType,
@@ -55,12 +52,4 @@ public class IdOrNameRefListColumnSpec extends IdOrNameRefColumnSpec {
                 false);
     }
 
-    @Override
-    public OutputHandler getOutputHandler() {
-        return new RefOutputHandler(
-                getHeader(),
-                getDescription(),
-                getExportGetterMethod(),
-                null);
-    }
 }

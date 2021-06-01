@@ -44,7 +44,7 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
                 KEY_TEMPLATE, 
                 "setImportMdItem", 
                 "ID or name of CDB machine design template. Name must be unique and prefixed with '#'.", 
-                null,
+                null, null,
                 ColumnModeOptions.rCREATErUPDATE(), 
                 ItemDomainMachineDesignController.getInstance(), 
                 ItemDomainMachineDesign.class, 
