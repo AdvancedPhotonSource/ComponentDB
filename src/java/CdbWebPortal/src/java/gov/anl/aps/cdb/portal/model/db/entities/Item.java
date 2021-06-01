@@ -1045,8 +1045,8 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
     
     @JsonIgnore
-    public String getOwnerUserName() {
-        return this.getEntityInfo().getOwnerUserDisplayName();
+    public String getOwnerUsername() {
+        return this.getEntityInfo().getOwnerUsername();
     }
     
     @JsonIgnore

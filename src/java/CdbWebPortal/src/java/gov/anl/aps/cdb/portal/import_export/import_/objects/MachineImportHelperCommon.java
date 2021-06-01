@@ -149,7 +149,6 @@ public class MachineImportHelperCommon {
                 "CDB ID or name of assigned catalog or inventory item. Name can only be used for catalog items and must be unique and prefixed with '#'.",
                 "getAssignedItem",
                 "getCatalogItemAttributeMap",
-                true,
                 options,
                 assignedItemHandler);
     }
@@ -161,7 +160,6 @@ public class MachineImportHelperCommon {
                 "importLocationItemString",
                 "CDB ID of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored).",
                 "getExportLocation",
-                true,
                 options,
                 locationHandler);
     }
@@ -172,7 +170,7 @@ public class MachineImportHelperCommon {
                 KEY_IS_TEMPLATE,
                 "setImportIsTemplate",
                 "True/yes if item is template, false/no otherwise.",
-                null,
+                "getIsItemTemplate",
                 options);
     }
     

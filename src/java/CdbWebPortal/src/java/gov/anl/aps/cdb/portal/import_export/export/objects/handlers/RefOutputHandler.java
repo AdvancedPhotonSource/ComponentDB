@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ExportMode;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import java.util.List;
 import java.util.Map;
 
@@ -67,8 +68,12 @@ public class RefOutputHandler extends SimpleOutputHandler {
                         throw new CdbException("Error converting attribute map to json.");
                     }
                     
+                } else if (value instanceof Item) {
+                    Item item = (Item) value;
+                    columnValue = "#" + item.getName();
+                    
                 } else {
-                    columnValue = value.toString();
+                    columnValue = "#" + value.toString();
                 }
             }
         }
