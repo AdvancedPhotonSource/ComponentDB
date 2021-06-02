@@ -11,8 +11,9 @@ package gov.anl.aps.cdb.portal.import_export.export.objects.handlers;
 public class CustomOutputHandler extends RefOutputHandler {
     
     public CustomOutputHandler(
-            String columnName, String description, String domainGetterMethod, String domainTransferGetterMethod) {
-        super(columnName, description, domainGetterMethod, domainTransferGetterMethod);
+            String columnName, String description, String getterMethod) {
+        
+        super(columnName, description, getterMethod);
     }
     
 }

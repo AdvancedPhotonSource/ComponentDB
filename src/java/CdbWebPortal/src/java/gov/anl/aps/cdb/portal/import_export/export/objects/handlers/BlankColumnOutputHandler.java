@@ -19,7 +19,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 public class BlankColumnOutputHandler extends SimpleOutputHandler {
     
     public BlankColumnOutputHandler(String columnName, String description) {
-        super(columnName, description, null, null);
+        super(columnName, description, null);
     }
 
     @Override

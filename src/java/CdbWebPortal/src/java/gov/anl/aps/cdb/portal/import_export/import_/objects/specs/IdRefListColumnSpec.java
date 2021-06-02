@@ -54,12 +54,4 @@ public class IdRefListColumnSpec extends IdRefColumnSpec {
                 false);
     }
 
-    @Override
-    public OutputHandler getOutputHandler() {
-        return new RefOutputHandler(
-                getHeader(),
-                getDescription(),
-                getExportGetterMethod(),
-                null);
-    }
 }

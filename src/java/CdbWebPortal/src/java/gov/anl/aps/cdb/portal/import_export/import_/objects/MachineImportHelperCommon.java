@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.AssignedItemHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.MachineItemRefColumnSpec;
@@ -127,6 +128,7 @@ public class MachineImportHelperCommon {
                 "setImportSortOrder",
                 "Sort order within parent item (as decimal), defaults to order in input sheet when creating new items.",
                 "getExportSortOrder",
+                ColumnSpec.BLANK_COLUMN_EXPORT_METHOD,
                 options);
     }
     

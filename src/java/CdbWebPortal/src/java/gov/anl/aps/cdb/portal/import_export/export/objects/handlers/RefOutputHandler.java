@@ -23,10 +23,9 @@ public class RefOutputHandler extends SimpleOutputHandler {
     public RefOutputHandler(
             String columnName, 
             String description, 
-            String domainGetterMethod,
-            String domainTransferGetterMethod) {
+            String getterMethod) {
         
-        super(columnName, description, domainGetterMethod, domainTransferGetterMethod);
+        super(columnName, description, getterMethod);
     }
     
     @Override

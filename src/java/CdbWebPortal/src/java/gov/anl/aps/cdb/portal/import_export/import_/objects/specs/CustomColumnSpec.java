@@ -49,11 +49,10 @@ public class CustomColumnSpec extends ColumnSpec {
     }
     
     @Override
-    public OutputHandler getOutputHandler() {
+    public OutputHandler createOutputHandler(String getterMethod) {
         return new CustomOutputHandler(
                 getHeader(),
                 getDescription(),
-                getExportGetterMethod(),
-                getExportTransferGetterMethod());
+                getterMethod);
     }
 }

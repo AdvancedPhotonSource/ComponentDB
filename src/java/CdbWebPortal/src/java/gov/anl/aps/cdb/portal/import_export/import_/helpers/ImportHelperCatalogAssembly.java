@@ -71,6 +71,7 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
                 "setSortOrder", 
                 "Sort order within parent catalog item (as decimal), defaults to order in input sheet.", 
                 null,
+                null,
                 ColumnModeOptions.oCREATE()));
         
         specs.add(new BooleanColumnSpec(

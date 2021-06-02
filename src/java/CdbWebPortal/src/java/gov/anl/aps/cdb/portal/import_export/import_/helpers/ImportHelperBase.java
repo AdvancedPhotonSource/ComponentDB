@@ -489,7 +489,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         List<ExportColumnData> exportContent = new ArrayList<>();
         List<CdbEntity> entities = getExportEntityList();
         for (ColumnSpec spec : getColumnSpecs()) {
-            OutputHandler handler = spec.getOutputHandler();
+            OutputHandler handler = spec.getOutputHandler(getExportMode());
             if (handler == null) {                
                 ValidInfo validInfo = new ValidInfo(false, "Unexpected error, no output handler for column: " + spec.getHeader());
                 return new GenerateExportResult(validInfo, null);
@@ -593,7 +593,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 continue;
             }
             
-            OutputHandler handler = spec.getOutputHandler();
+            OutputHandler handler = spec.getOutputHandler(ExportMode.EXPORT);
             if (handler == null) {                
                 ValidInfo validInfo = new ValidInfo(false, "Unexpected error, no output handler for column: " + spec.getHeader());
                 return new FieldValueMapResult(validInfo, valueMap);

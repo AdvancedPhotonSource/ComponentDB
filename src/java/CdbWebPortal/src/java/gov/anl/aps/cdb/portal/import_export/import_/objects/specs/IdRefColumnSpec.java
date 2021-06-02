@@ -59,11 +59,10 @@ public class IdRefColumnSpec extends ColumnSpec {
     }
 
     @Override
-    public OutputHandler getOutputHandler() {
+    public OutputHandler createOutputHandler(String getterMethod) {
         return new RefOutputHandler(
                 getHeader(),
                 getDescription(),
-                getExportGetterMethod(),
-                getExportTransferGetterMethod());
+                getterMethod);
     }
 }

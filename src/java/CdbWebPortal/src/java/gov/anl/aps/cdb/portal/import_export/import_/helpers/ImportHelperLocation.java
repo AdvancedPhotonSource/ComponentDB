@@ -105,6 +105,7 @@ public class ImportHelperLocation
                 "setImportSortOrder", 
                 "Sort order within parent item (as decimal), defaults to order in input sheet.", 
                 null,
+                null,
                 ColumnModeOptions.oCREATE()));
         
         specs.add(ownerUserColumnSpec());

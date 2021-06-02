@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandle
 import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.SimpleOutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ExportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
@@ -24,6 +25,8 @@ import java.util.Map;
  * @author craig
  */
 public abstract class ColumnSpec {
+    
+    public final static String BLANK_COLUMN_EXPORT_METHOD = "blankExportGetterMethod";
 
     private String header;
     private String propertyName;
@@ -199,12 +202,33 @@ public abstract class ColumnSpec {
 
     protected abstract InputHandler getInputHandler(int colIndex);
     
-    public OutputHandler getOutputHandler() {
-        if (exportGetterMethod == null || exportGetterMethod.isBlank()) {
-            return new BlankColumnOutputHandler(getHeader(), getDescription());
+    public OutputHandler getOutputHandler(ExportMode exportMode) {
+        
+        // determine getter method base on mode
+        // NOTE: to specify that a column should be blank in transfer mode,
+        // but contain a value in export mode, the constant BLANK_COLUMN_EXPORT_METHOD
+        // should be specified as the exportTransferGetterMethod, and a regular getter
+        // method specified for exportGetterMode.
+        String methodName = null;
+        if (exportMode == ExportMode.TRANSFER) {
+            // default to regular export getter method if transfer method not specified
+            methodName = exportTransferGetterMethod;
+            if (methodName == null) {
+                methodName = exportGetterMethod;
+            }
+        } else {
+            methodName = exportGetterMethod;
         }
-        return new SimpleOutputHandler(
-                getHeader(), getDescription(), getExportGetterMethod(), getExportTransferGetterMethod());
+        
+        if (methodName == null || methodName.isBlank() || methodName == BLANK_COLUMN_EXPORT_METHOD) {
+            return new BlankColumnOutputHandler(getHeader(), getDescription());
+        } else {
+            return createOutputHandler(methodName);
+        }
+    }
+    
+    protected OutputHandler createOutputHandler(String getterMethod) {
+        return new SimpleOutputHandler(getHeader(), getDescription(), getterMethod);
     }
     
     private void addColumnModeOptions(ColumnModeOptions options) {

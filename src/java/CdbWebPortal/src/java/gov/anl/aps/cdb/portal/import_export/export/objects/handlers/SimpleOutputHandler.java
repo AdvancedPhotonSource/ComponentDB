@@ -25,26 +25,19 @@ import java.util.List;
  */
 public class SimpleOutputHandler extends SingleColumnOutputHandler {
     
-    protected String domainGetterMethod = null;
-    protected String domainTransferGetterMethod = null;
+    protected String getterMethod = null;
     
     public SimpleOutputHandler(
             String columnName,
             String description,
-            String domainGetterMethod,
-            String domainTransferGetterMethod) {
+            String getterMethod) {
         
         super(columnName, description);
-        this.domainGetterMethod = domainGetterMethod;
-        this.domainTransferGetterMethod = domainTransferGetterMethod;
+        this.getterMethod = getterMethod;
     }
 
-    public String getDomainGetterMethod() {
-        return domainGetterMethod;
-    }
-
-    public String getDomainTransferGetterMethod() {
-        return domainTransferGetterMethod;
+    public String getGetterMethod() {
+        return getterMethod;
     }
 
     protected ColumnValueResult getColumnValue(CdbEntity entity, ExportMode exportMode) {
@@ -56,23 +49,11 @@ public class SimpleOutputHandler extends SingleColumnOutputHandler {
         Object returnValue = null;
         String errorMsg = "";
         
-        // determine getter method base on mode
-        String methodName = null;
-        if (exportMode == ExportMode.TRANSFER) {
-            // default to regular export getter method if transfer method not specified
-            methodName = getDomainTransferGetterMethod();
-            if (methodName == null) {
-                methodName = getDomainGetterMethod();
-            }
-        } else {
-            methodName = getDomainGetterMethod();
-        }
-        
+        String methodName = getGetterMethod();
         try {
             if ((methodName != null) && (!methodName.isBlank())) {
                 // use reflection to invoke setter method on entity instance
                 Method method;
-//                Class paramType = getParamType();
                 method = entity.getClass().getMethod(methodName);
                 returnValue = method.invoke(entity);
             }
