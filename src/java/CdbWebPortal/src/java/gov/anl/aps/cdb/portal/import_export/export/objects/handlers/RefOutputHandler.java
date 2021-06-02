@@ -42,7 +42,9 @@ public class RefOutputHandler extends SimpleOutputHandler {
         
         String columnValue = "";
         if (value != null) {
+            
             if (useIdValues) {
+                
                 if (value instanceof List) {
                     List<CdbEntity> objList = (List<CdbEntity>) value;
                     boolean isFirstItem = true;
@@ -59,7 +61,9 @@ public class RefOutputHandler extends SimpleOutputHandler {
                     CdbEntity obj = (CdbEntity) value;
                     columnValue = obj.getId().toString();
                 }
+                
             } else {
+                
                 if (value instanceof Map) {
                     Map map = (Map) value;
                     ObjectMapper mapper = new ObjectMapper();
@@ -67,6 +71,19 @@ public class RefOutputHandler extends SimpleOutputHandler {
                         columnValue = mapper.writeValueAsString(map);
                     } catch (JsonProcessingException e) {
                         throw new CdbException("Error converting attribute map to json.");
+                    }
+                    
+                } else if (value instanceof List) {
+                    List list = (List) value;
+                    int count = 0;
+                    for (Object obj : list) {
+                        if (count == 0) {
+                            columnValue = "#"; 
+                        } else {
+                            columnValue = columnValue + ", ";
+                        }
+                        columnValue = columnValue + obj.toString();
+                        count = count + 1;
                     }
                     
                 } else if (value instanceof Item) {

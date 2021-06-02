@@ -854,6 +854,15 @@ public class Item extends CdbDomainEntity implements Serializable {
         return itemProjectList;
     }
     
+    @JsonIgnore    
+    public List<String> getItemProjectNameList() {
+        List<String> projectNames = new ArrayList<>();
+        for (ItemProject project : getItemProjectList()) {
+            projectNames.add(project.getName());
+        }
+        return projectNames;
+    }
+    
     public void setItemProjectList(List<ItemProject> itemProjectList) {
         this.itemProjectString = null;
         this.itemProjectList = itemProjectList;
