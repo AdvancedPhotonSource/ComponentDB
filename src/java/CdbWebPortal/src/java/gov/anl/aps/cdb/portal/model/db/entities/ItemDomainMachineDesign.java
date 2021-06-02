@@ -486,19 +486,32 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
     
     @JsonIgnore
-    public Map<String,String> getCatalogItemAttributeMap() throws CdbException {
-        
+    public ItemDomainCatalog getCatalogItem() {
         Item assignedItem = getAssignedItem();
-        Item catalogItem = null;
+        ItemDomainCatalog catalogItem = null;
         if (assignedItem instanceof ItemDomainInventory) {
             catalogItem = ((ItemDomainInventory) assignedItem).getCatalogItem();
         } else if (assignedItem instanceof ItemDomainCatalog) {
-            catalogItem = assignedItem;
+            catalogItem = (ItemDomainCatalog) assignedItem;
         }
-        
+        return catalogItem;
+    }
+    
+    @JsonIgnore
+    public String getCatalogItemName() {
+        ItemDomainCatalog catalogItem = getCatalogItem();
         if (catalogItem != null) {
-            // create map of attributes and return as json string representation
-            
+            return catalogItem.getName();
+        } else {
+            return null;
+        }
+    }
+    
+    @JsonIgnore
+    public Map<String,String> getCatalogItemAttributeMap() throws CdbException {
+        ItemDomainCatalog catalogItem = getCatalogItem();
+        if (catalogItem != null) {
+            // create map of attributes and return as json string representation            
             Map<String,String> attributeMap = new HashMap<>();
             attributeMap.put("name", catalogItem.getName());
             attributeMap.put("modelNumber", catalogItem.getItemIdentifier1());

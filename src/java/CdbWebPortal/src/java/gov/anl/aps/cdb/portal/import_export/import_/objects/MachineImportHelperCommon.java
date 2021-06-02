@@ -138,7 +138,7 @@ public class MachineImportHelperCommon {
                 "importAssignedItemDescription",
                 "setImportAssignedItemDescription",
                 "Description of catalog or inventory item assigned to machine element (for documentation purposes only, ignored by import mechanism).",
-                null,
+                "getCatalogItemName",
                 options,
                 256);
     }
