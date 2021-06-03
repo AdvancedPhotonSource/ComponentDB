@@ -220,7 +220,6 @@ public class RefInputHandler extends SimpleInputHandler {
                     return parseInfo;
                 } else {
                     objValue = (CdbEntity) parseInfo.getValue();
-                    objValue = getObjectManager().getCacheObject(objValue);
                     return new ParseInfo<>(objValue, true, "");
                 }
 
@@ -255,7 +254,6 @@ public class RefInputHandler extends SimpleInputHandler {
                                 return objWithNameInfo;
                             } else {
                                 objValue = (CdbEntity) objWithNameInfo.getValue();
-                                objValue = getObjectManager().getCacheObject(objValue);
                             }
                         }
 
