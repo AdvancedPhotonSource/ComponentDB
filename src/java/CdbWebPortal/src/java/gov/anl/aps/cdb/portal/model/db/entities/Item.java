@@ -24,7 +24,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -263,6 +265,10 @@ import org.primefaces.model.TreeNode;
 public class Item extends CdbDomainEntity implements Serializable {
 
     private static final Logger LOGGER = LogManager.getLogger(Item.class.getName());
+    
+    public static final String ATTRIBUTE_DOMAIN_NAME = "domainName";
+    public static final String ATTRIBUTE_NAME = "name";
+    public static final String ATTRIBUTE_QR_ID = "qrId";
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -573,6 +579,30 @@ public class Item extends CdbDomainEntity implements Serializable {
             qrIdFilter = dispQr + " " + qrId + " " + dispQr.replace(" ", "");
         }
         return qrIdFilter;
+    }
+    
+    @JsonIgnore
+    public Map<String,String> getAttributeMap() {
+        Map<String, String> attributeMap = new HashMap<>();
+        
+        Domain domain = getDomain();
+        attributeMap.put(ATTRIBUTE_DOMAIN_NAME, domain.getName());
+        
+        attributeMap.put(ATTRIBUTE_NAME, getName());
+        
+        if (domain.getItemIdentifier1Label() != null) {
+            attributeMap.put(domain.getItemIdentifier1Label(), getItemIdentifier1());
+        }
+        
+        if (domain.getItemIdentifier2Label() != null) {
+            attributeMap.put(domain.getItemIdentifier2Label(), getItemIdentifier2());
+        }
+        
+        if (getQrId() != null) {
+            attributeMap.put(ATTRIBUTE_QR_ID, String.valueOf(getQrId()));
+        }
+        
+        return attributeMap;
     }
 
     @Size(max = 256)
@@ -1051,6 +1081,11 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public void setEntityInfo(EntityInfo entityInfo) {
         this.getSelfElement().setEntityInfo(entityInfo);
+    }
+    
+    @JsonIgnore
+    public String getOwnerDisplayName() {
+        return this.getEntityInfo().getOwnerUserDisplayName();
     }
     
     @JsonIgnore

@@ -99,7 +99,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private static final String HEADER_ORIG = "Unchanged";
     private static final String PROPERTY_ORIG = "importUnchanged";
     
-    protected static final String KEY_USER = "ownerUserName";
+    protected static final String KEY_USER = "ownerDisplayName";
     protected static final String KEY_GROUP = "ownerUserGroupName";
     protected static final String KEY_EXISTING_ITEM_ID = "importExistingItemId";
     protected static final String KEY_DELETE_EXISTING_ITEM = "importDeleteExistingItem";

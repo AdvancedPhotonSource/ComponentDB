@@ -5,8 +5,6 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
@@ -16,7 +14,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
@@ -26,7 +23,6 @@ import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -511,14 +507,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public Map<String,String> getCatalogItemAttributeMap() throws CdbException {
         ItemDomainCatalog catalogItem = getCatalogItem();
         if (catalogItem != null) {
-            // create map of attributes and return as json string representation            
-            Map<String,String> attributeMap = new HashMap<>();
-            attributeMap.put("name", catalogItem.getName());
-            attributeMap.put("modelNumber", catalogItem.getItemIdentifier1());
-            attributeMap.put("alternateName", catalogItem.getItemIdentifier2());
-            ObjectMapper mapper = new ObjectMapper();
-            return attributeMap;
-            
+            return catalogItem.getAttributeMap();            
         } else {
             return null;
         }

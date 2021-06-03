@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model.db.beans;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 
 /**
@@ -84,6 +85,10 @@ public abstract class CdbEntityFacade<T> {
     
     public T findUniqueByName(String name, String domainName) throws CdbException {
         throw new CdbException("findUniqueByName() operation not implemented by facade");
+    }
+    
+    public T findUniqueWithAttributes(Map<String,String> attributeMap) throws CdbException {
+        throw new CdbException("findUniqueWithAttributes() operation not implemented by facade");
     }
     
 }

@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -284,6 +285,10 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         }
 
         return getControllerUtility().findByPath(path);
+    }
+
+    public EntityType findUniqueWithAttributes(Map<String,String> attributeMap) throws CdbException {
+        return getEntityDbFacade().findUniqueWithAttributes(attributeMap);
     }
 
     /**
