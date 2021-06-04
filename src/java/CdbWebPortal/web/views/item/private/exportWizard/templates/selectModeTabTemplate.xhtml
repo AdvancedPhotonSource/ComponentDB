@@ -15,7 +15,7 @@ See LICENSE file.
     <ui:param name="rootViewId" value="#{viewId}"/>
     
     <p:tab id="#{rootViewId}SelectModeTab">
-        <p:panel header="Select desired mode, then click 'Next Step'.">
+        <p:panel header="Select desired output style, then click 'Next Step'.">
             <p:outputPanel id="#{rootViewId}SelectModePanel">
                 <p:panelGrid>
                     <p:row>
@@ -43,7 +43,7 @@ See LICENSE file.
                                                itemIndex="0" />
                                 <p:outputLabel for="#{rootViewId}RadioExport" 
                                                rendered="#{wizardController.supportsModeExport()}"
-                                               value="Export Format" />
+                                               value="Create regular export output (with ids)" />
 
                                 <p:radioButton id="#{rootViewId}RadioTransfer" 
                                                for="#{rootViewId}SelectModeRadio" 
@@ -51,7 +51,7 @@ See LICENSE file.
                                                itemIndex="1" />
                                 <p:outputLabel for="#{rootViewId}RadioTransfer" 
                                                rendered="#{wizardController.supportsModeTransfer()}"
-                                               value="Transfer Format" />
+                                               value="Create output for transfer to another system (without ids)" />
 
                             </p:panelGrid>
 
