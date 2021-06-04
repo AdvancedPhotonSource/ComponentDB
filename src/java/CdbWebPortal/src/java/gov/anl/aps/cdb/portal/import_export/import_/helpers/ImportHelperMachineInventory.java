@@ -73,7 +73,7 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
                 "qrId", 
                 "setQrId", 
                 "Integer QR id of inventory unit.", 
-                null,
+                null, null,
                 ColumnModeOptions.oCREATEoUPDATE()));
         
         specs.add(new StringColumnSpec(

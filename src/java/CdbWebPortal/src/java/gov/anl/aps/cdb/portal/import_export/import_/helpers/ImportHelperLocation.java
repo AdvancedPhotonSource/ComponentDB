@@ -76,7 +76,7 @@ public class ImportHelperLocation
                 KEY_QR, 
                 "setQrId", 
                 "QR ID of location (9 digit number).", 
-                null,
+                null, null,
                 ColumnModeOptions.oCREATE()));
         
         specs.add(new IdOrNameRefColumnSpec(

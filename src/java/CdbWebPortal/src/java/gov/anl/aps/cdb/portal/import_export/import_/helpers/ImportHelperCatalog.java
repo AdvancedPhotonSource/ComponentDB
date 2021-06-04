@@ -101,6 +101,10 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
         return true;
     }
 
+    public boolean supportsModeTransfer() {
+        return true;
+    }
+
     @Override
     protected ItemDomainCatalog newInvalidUpdateInstance() {
         return getEntityController().createEntityInstance();

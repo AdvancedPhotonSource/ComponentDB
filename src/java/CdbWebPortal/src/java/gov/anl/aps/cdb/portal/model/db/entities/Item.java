@@ -827,6 +827,15 @@ public class Item extends CdbDomainEntity implements Serializable {
     public List<ItemCategory> getItemCategoryList() {
         return itemCategoryList;
     }
+    
+    @JsonIgnore
+    public List<String> getItemCategoryNameList() {
+        List<String> result = new ArrayList<>();
+        for (ItemCategory category : getItemCategoryList()) {
+            result.add(category.getName());
+        }
+        return result;
+    }
 
     @JsonIgnore
     public String getItemCategoryString() {
@@ -865,6 +874,15 @@ public class Item extends CdbDomainEntity implements Serializable {
     @XmlTransient
     public List<ItemType> getItemTypeList() {
         return itemTypeList;
+    }
+    
+    @JsonIgnore
+    public List<String> getItemTypeNameList() {
+        List<String> result = new ArrayList<>();
+        for (ItemType type : getItemTypeList()) {
+            result.add(type.getName());
+        }
+        return result;
     }
    
     public void setItemTypeList(List<ItemType> itemTypeList) {

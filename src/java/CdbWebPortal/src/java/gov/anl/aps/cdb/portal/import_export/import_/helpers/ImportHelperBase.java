@@ -1615,7 +1615,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setItemCategoryListImport", 
                 "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", 
                 "getItemCategoryList",
-                null,
+                "getItemCategoryNameList",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemCategoryController.getInstance(), 
                 List.class, 
@@ -1629,7 +1629,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setItemTypeList", 
                 "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", 
                 "getItemTypeList",
-                null,
+                "getItemTypeNameList",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemTypeController.getInstance(), 
                 List.class, 
@@ -1667,6 +1667,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setImportExistingItemId", 
                 "CDB ID of existing item to update.", 
                 "getId",
+                ColumnSpec.BLANK_COLUMN_EXPORT_METHOD,
                 ColumnModeOptions.rUPDATErDELETErCOMPARE());
     }
 
