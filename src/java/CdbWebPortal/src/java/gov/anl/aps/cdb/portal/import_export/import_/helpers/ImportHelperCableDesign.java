@@ -152,7 +152,8 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 KEY_CATALOG_ITEM, 
                 "", 
                 "Numeric ID or name of CDB cable type catalog item. Name must be unique and prefixed with '#'.", 
-                "getCatalogItem", null,
+                "getCatalogItem", 
+                "getCatalogItemAttributeMap",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemDomainCableCatalogController.getInstance(), 
                 Item.class, 
@@ -163,7 +164,8 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 KEY_ENDPOINT1_ITEM, 
                 "", 
                 "Numeric ID or name of CDB machine design item for endpoint1. Name must be unique and prefixed with '#'.", 
-                "getEndpoint1", null,
+                "getEndpoint1", 
+                "getEndpoint1AttributeMap",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemDomainMachineDesignController.getInstance(), 
                 Item.class, 
@@ -255,7 +257,8 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 KEY_ENDPOINT2_ITEM, 
                 "", 
                 "Numeric ID or name of CDB machine design item for endpoint2. Name must be unique and prefixed with '#'.", 
-                "getEndpoint2", null,
+                "getEndpoint2", 
+                "getEndpoint2AttributeMap",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemDomainMachineDesignController.getInstance(), 
                 Item.class, 
@@ -362,6 +365,11 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
 
     @Override
     public boolean supportsModeDelete() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeTransfer() {
         return true;
     }
 

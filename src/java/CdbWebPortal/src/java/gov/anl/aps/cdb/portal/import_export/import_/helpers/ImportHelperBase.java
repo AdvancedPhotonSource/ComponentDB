@@ -1587,7 +1587,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setOwnerUserGroup", 
                 "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", 
                 "getOwnerUserGroup", 
-                null,
+                null, // exportTransferGetterMethod not needed here because UserGroup.toString() gives us what we want
                 ColumnModeOptions.rCREATErUPDATE(), 
                 UserGroupController.getInstance(), 
                 UserGroup.class, 
