@@ -101,6 +101,7 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
         return true;
     }
 
+    @Override
     public boolean supportsModeTransfer() {
         return true;
     }

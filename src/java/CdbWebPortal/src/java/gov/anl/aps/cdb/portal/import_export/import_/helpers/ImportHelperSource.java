@@ -98,6 +98,7 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
         return true;
     }
 
+    @Override
     public boolean supportsModeTransfer() {
         return true;
     }

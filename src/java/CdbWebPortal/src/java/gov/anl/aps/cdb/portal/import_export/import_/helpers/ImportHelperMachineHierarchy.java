@@ -122,9 +122,7 @@ public class ImportHelperMachineHierarchy
         return false;
     }
 
-    /**
-     * Specifies whether helper supports exporting a transfer format.
-     */
+    @Override
     public boolean supportsModeTransfer() {
         return true;
     }
