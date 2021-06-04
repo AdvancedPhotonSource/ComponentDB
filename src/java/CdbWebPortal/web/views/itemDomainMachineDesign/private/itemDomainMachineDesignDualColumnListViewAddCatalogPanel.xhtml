@@ -13,18 +13,20 @@ See LICENSE file.
     <p:panel header="Add Catalog to Machine Element"
              id="addCatalogListConfigurationPanel"
              rendered="#{entityController.displayAddCatalogItemListConfigurationPanel}">
-        
+
         <p:dataTable id="addCatalogToMachineDesignDataTable"
+                     sortMode="single"
+                     stripedRows="true"
                      value="#{itemDomainCatalogController.availableItems}"
                      var="itemListObject"
                      rows="#{resources.SelectDataTableNumberOfRows}"
                      paginator="true">            
-            
+
             <p:column headerText="Drag Handle">
                 <h:outputText id="dragIcon" styleClass="centeredContent fa fa-arrows-alt" />
                 <p:draggable for="dragIcon" revert="true" helper="clone"/>
             </p:column>
-            
+
             <ui:include src="../../item/private/itemListObject.xhtml" >
                 <ui:param name="entityController"
                           value="#{itemDomainCatalogController}" /> 
@@ -33,17 +35,16 @@ See LICENSE file.
                 <ui:param name="sortable"
                           value="#{false}"/>
             </ui:include>
-        
+
         </p:dataTable>
-        
+
         <br/>
-        
+
         <ui:include src="itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
-        
+
     </p:panel>    
 
 
 </ui:composition>
 
 
- 

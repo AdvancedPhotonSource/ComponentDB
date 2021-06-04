@@ -70,7 +70,7 @@ See LICENSE file.
                                          onstart="PF('loadingDialog').show();
                                                   PF('#{entityTypeName}ItemCreateWizardWidget').back();" 
                                          oncomplete="PF('loadingDialog').hide();"
-                                         icon="ui-icon-arrowthick-1-w"
+                                         icon="fa fa-arrow-left"
                                          update="@form"
                                          rendered="#{!entityController.isCreateWizardOnFirstStep()}"/>
                         <ui:include src="../../../common/private/commonCreateCancelButton.xhtml" />
@@ -84,7 +84,7 @@ See LICENSE file.
                                          onstart="PF('loadingDialog').show();
                                                   PF('#{entityTypeName}ItemCreateWizardWidget').next();"
                                          oncomplete="PF('loadingDialog').hide();"
-                                         icon="ui-icon-arrowthick-1-e"
+                                         icon="fa fa-arrow-right"
                                          iconPos="right"
                                          update="@form"
                                          rendered="#{!entityController.isCreateWizardOnLastStep()}"/>

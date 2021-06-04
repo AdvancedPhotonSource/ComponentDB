@@ -193,19 +193,19 @@ public class ItemDomainCableInventorySettings extends ItemSettings<ItemDomainCab
         if (dataTable == null) {
             return;
         }
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterByLocation = (String) filters.get("location.name").getFilterField();
-        filterByLocationDetails = (String) filters.get("locationDetails").getFilterField();
-        filterByQrId = (String) filters.get("qrId").getFilterField();
-        filterBySerialNumber = (String) filters.get("serialNumber").getFilterField();
-        filterByTag = (String) filters.get("tag").getFilterField();
-        filterByStatus = (String) filters.get("status").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterByLocation = (String) filters.get("location.name").getField();
+        filterByLocationDetails = (String) filters.get("locationDetails").getField();
+        filterByQrId = (String) filters.get("qrId").getField();
+        filterBySerialNumber = (String) filters.get("serialNumber").getField();
+        filterByTag = (String) filters.get("tag").getField();
+        filterByStatus = (String) filters.get("status").getField();
 
-        filterByPropertyValue1 = (String) filters.get("propertyValue1").getFilterField();
-        filterByPropertyValue2 = (String) filters.get("propertyValue2").getFilterField();
-        filterByPropertyValue3 = (String) filters.get("propertyValue3").getFilterField();
-        filterByPropertyValue4 = (String) filters.get("propertyValue4").getFilterField();
-        filterByPropertyValue5 = (String) filters.get("propertyValue5").getFilterField();
+        filterByPropertyValue1 = (String) filters.get("propertyValue1").getField();
+        filterByPropertyValue2 = (String) filters.get("propertyValue2").getField();
+        filterByPropertyValue3 = (String) filters.get("propertyValue3").getField();
+        filterByPropertyValue4 = (String) filters.get("propertyValue4").getField();
+        filterByPropertyValue5 = (String) filters.get("propertyValue5").getField();
     }
     
     @Override

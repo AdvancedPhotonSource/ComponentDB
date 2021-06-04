@@ -46,6 +46,8 @@ See LICENSE file.
         <br/>
 
         <p:dataTable id="itemElementConstraintInformationDataTable"
+                     sortMode="single"
+                     stripedRows="true"
                      value="#{constraintInfo.relatedConstraintInfo}"
                      var="relatedConstraintInfo"
                      rowStyleClass="#{relatedConstraintInfo.getRowStyle()}"

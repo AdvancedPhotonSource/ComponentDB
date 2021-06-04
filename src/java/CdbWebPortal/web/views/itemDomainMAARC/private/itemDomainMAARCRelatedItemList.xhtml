@@ -16,6 +16,8 @@ See LICENSE file.
     </ui:include>
 
     <p:dataTable id="#{entityTypeName}RelationshipListDataTable"
+                 sortMode="single"
+                 stripedRows="true"
                  value="#{entityController.relatedRelationshipsForCurrent}"
                  var="itemElementRelationship">    
         <ui:param name="itemListObject"

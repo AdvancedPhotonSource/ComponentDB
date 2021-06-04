@@ -41,13 +41,13 @@ See LICENSE file.
                                   alt="Save" 
                                   update="dialogCatalog"
                                   disabled="#{entityController.dialogCatalog.disableButtonSave}"
-                                  icon="ui-icon-check"/>
+                                  icon="fa fa-save"/>
 
                 <p:commandButton action="#{entityController.dialogCatalog.cancel()}" 
                                  immediate="true" 
                                  value="Cancel" alt="Cancel" 
                                  update="dialogCatalog"
-                                 icon="ui-icon-cancel" />
+                                 icon="fa fa-close" />
 
                 <p:remoteCommand name="saveCatalogSuccess"                             
                                  actionListener="#{entityController.dialogCatalog.actionListenerSaveSuccess}"

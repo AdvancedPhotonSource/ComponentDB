@@ -19,6 +19,8 @@ See LICENSE file.
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  rows="#{userRoleSettingObject.displayNumberOfItemsPerPage}"
+                 sortMode="single"
+                 stripedRows="true"
                  emptyMessage="No roles found."
                  rowStyleClass="#{userRoleObject.userRolePK != null ? '' : 'newItemInRow'}">
 
@@ -67,7 +69,7 @@ See LICENSE file.
         <p:column headerText="actions">
             <p:commandLink id="userInfoUserRoleDeleteButton" action="#{entityController.deleteUserRole(userRoleObject)}" 
                            actionListener="#{userRoleController.destroy(userRoleObject)}"
-                           styleClass="ui-icon ui-icon-trash" title="Delete" update="@form">
+                           styleClass="fa fa-link-icon fa-trash" title="Delete" update="@form">
                 <p:tooltip for="userInfoUserRoleDeleteButton" value="Delete user role."/>
             </p:commandLink>
         </p:column>

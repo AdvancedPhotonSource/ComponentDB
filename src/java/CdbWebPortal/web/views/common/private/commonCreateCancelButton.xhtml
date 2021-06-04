@@ -14,7 +14,7 @@ See LICENSE file.
     <ui:param name="cancelButtonRendered" value="#{cancelButtonRendered != null ? cancelButtonRendered : true}" /> 
 
     <p:commandButton id="#{entityTypeName}CreateCancelButton" action="#{entityController.prepareList()}" immediate="true" 
-                     value="#{cancelButtonText}" alt="Cancel" icon="fa fa-times-circle-o" rendered="#{cancelButtonRendered}">
+                     value="#{cancelButtonText}" alt="Cancel" icon="fa fa-close" rendered="#{cancelButtonRendered}">
         <p:tooltip for="#{entityTypeName}CreateCancelButton" value="Cancel and return to #{entityController.displayEntityTypeName} list page."/>
     </p:commandButton>
 

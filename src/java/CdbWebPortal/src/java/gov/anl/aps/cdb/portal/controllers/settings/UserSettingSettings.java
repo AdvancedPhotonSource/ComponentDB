@@ -56,9 +56,9 @@ public class UserSettingSettings extends CdbEntitySettingsBase<UserSettingContro
             return;
         }
 
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterBySettingType = (String) filters.get("settingType").getFilterField();
-        filterByValue = (String) filters.get("value").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterBySettingType = (String) filters.get("settingType").getField();
+        filterByValue = (String) filters.get("value").getField();
     }
 
     public String getFilterBySettingType() {

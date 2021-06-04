@@ -19,6 +19,8 @@ See LICENSE file.
 
     <p:dataTable id="#{childEntityTypeName}ListDataTable"
                  widgetVar="#{childEntityTypeName}ListDataTableWidget"
+                 sortMode="single"
+                 stripedRows="true"
                  value="#{itemElementDataList}"
                  var="itemElementObject"
                  filteredValue="#{itemElementController.filteredObjectList}"

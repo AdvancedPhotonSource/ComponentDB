@@ -24,6 +24,8 @@ See LICENSE file.
         <ui:insert name="templateCss">
             <link href="#{pathContextRoot}/resources/css/portal.css" rel="stylesheet" type="text/css"/>
         </ui:insert>
+        <h:outputStylesheet library="webjars" name="font-awesome/4.7.0/css/font-awesome.min-jsf.css" />
+
         <link rel="icon" type="image/png" href="#{pathContextRoot}/resources/images/anl.ico"/>
         <title>#{resources.CdbPortalTitle}<ui:insert name="pageTitle"></ui:insert></title>                
     </h:head>
@@ -46,7 +48,7 @@ See LICENSE file.
 
                             <p:outputLabel value="Role: #{loginController.displayRole()}"/>
                             <br/>
-                                                        
+
                             <h:form>
                                 <p:outputLabel id="portalResetSession"
                                                styleClass="clckableLabel"
@@ -118,10 +120,10 @@ See LICENSE file.
                 <ui:insert name="bottom">
                     <h:form prependId="false">                        
                         <ui:param name="singleTabViewKey" value="#{singleTabViewKey != null ? singleTabViewKey : null}"/> 
-                        
+
                         <h:outputText style="display: none" id="singleTabViewKeyHiddenText"
                                       value="#{singleTabViewKey}"/>
-                        
+
                         <h:outputText style="display: none" id="viewOpenPageIdHiddenText"
                                       value="#{clientViewManagerController.getViewUUID(singleTabViewKey)}"/>
 
@@ -130,13 +132,13 @@ See LICENSE file.
 
                         <input style="display: none"
                                id="viewCurrentPageIdHiddenText"/>                                                     
-                        
+
                         <p:remoteCommand name="prepareNewViewID"
                                          action="#{clientViewManagerController.generateNewViewUUID(singleTabViewKey)}"
                                          update="viewOpenPageIdHiddenText"
                                          process="@this"
                                          oncomplete="setCurrentPageViewId()" /> 
-                        
+
                         <p:remoteCommand name="addSessionUrl"
                                          action="#{clientViewManagerController.addSessionUrl()}" /> 
 
@@ -156,10 +158,10 @@ See LICENSE file.
 
                         <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
                                        onidle="sessionTimedOutEvent()"/>                                             
-                        
+
                         <p:remoteCommand name="invalidateCurrentSession"
                                          action="#{loginController.sessionIdleListener}" /> 
-                        
+
                         <p:remoteCommand autoRun="#{!loginController.registeredSession}"
                                          action="#{loginController.registerSession()}"/>                                                 
 

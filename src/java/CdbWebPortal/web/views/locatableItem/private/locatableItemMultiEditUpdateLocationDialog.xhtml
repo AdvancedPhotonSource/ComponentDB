@@ -27,7 +27,10 @@ Ensure that multiedit controller contains updateLocation and updateLocationDetai
 
         <p:outputPanel rendered="#{currentItemObject != null}">
 
-            <ui:include src="locatableItemLocationSelectTreeSelection.xhtml" /> 
+            <ui:include src="locatableItemLocationSelectTreeSelection.xhtml"> 
+                <ui:param name="locatableItemLocationSelectTreeRendered" 
+                          value="#{currentItemObject != null}" /> 
+            </ui:include>
 
             <p:panelGrid columns="2">
                 <h:outputText value="Location Details" /> 

@@ -14,7 +14,7 @@ See LICENSE file.
                   value="#{entityController.current}" /> 
         <ui:param name="isEntityWriteable" 
                   value="#{isEntityWriteable == null ? loginController.isEntityWriteable(itemObject.entityInfo) : isEntityWriteable}"/>    
-        
+
         <p:panel header="Details"
                  id="machineDesignDetailsPanel"
                  styleClass="detailsPanelViewDetailsPanel">
@@ -51,12 +51,12 @@ See LICENSE file.
                  collapsed="#{entityController.displayContentsOfCreatedFromTemplateItem}">
             <ui:include src="../../item/private/itemListCreatedFromTemplateDataTable.xhtml" /> 
         </p:panel>
-                
+
         <p:panel header="Inventory"
                  rendered="#{entityController.currentViewIsTemplate}"
                  collapsed="#{entityController.collapseContentsOfInventoryItem}"                 
                  toggleable="true">
-            
+
             <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
                 <ui:param name="childEntityTypeName" value="machineDesingInventory" />
                 <ui:param name="displayAddButton" value="#{loginController.loggedIn}" />
@@ -69,14 +69,16 @@ See LICENSE file.
                              action="#{itemDomainMachineDesignInventoryController.prepareCreateInventoryFromTemplate(itemObject)}"                              
                              update="itemDomainMachineDesignCreateMDInventoryDialog"
                              oncomplete="PF('loadingDialog').hide();
-                                         PF('itemDomainMachineDesignCreateMDInventoryDialogWidget').show()"/>
-            
+                             PF('itemDomainMachineDesignCreateMDInventoryDialogWidget').show()"/>
+
             <ui:param name="inventoryList"
                       value="#{itemObject.derivedFromItemList}" />
             <ui:param name="filterableInventory"
                       value="#{facesUtility.islistSizeOverMin(inventoryList, 10)}"/>
-                             
+
             <p:dataTable id="machineDesingInventoryListDataTable"
+                         sortMode="single"
+                         stripedRows="true"
                          value="#{inventoryList}"
                          var="inventoryObject"
                          rows="10"

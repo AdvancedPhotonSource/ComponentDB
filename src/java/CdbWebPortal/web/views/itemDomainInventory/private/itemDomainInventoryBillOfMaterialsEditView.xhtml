@@ -31,7 +31,9 @@ See LICENSE file.
                     <p:column styleClass="panelGridBorderedCell">                
                     -->
                     <p:panel>
-                        <p:tree value="#{itemDomainInventoryController.currentItemBOMListTree}"
+                        <ui:param name="currentItemVOMListTreeValue"
+                                  value="#{itemDomainInventoryController.currentHasPartsToDisplay ? itemDomainInventoryController.currentItemBOMListTree : null}" />
+                        <p:tree value="#{currentItemVOMListTreeValue}"
                                 id="partsTree"
                                 var="inventoryBOM"
                                 selectionMode="single"
@@ -39,23 +41,23 @@ See LICENSE file.
                                 >
                             <p:ajax event="select" update="#{fullUpateTarget}"/>
 
-                            <p:treeNode type="newItem" icon="ui-icon-plus">
+                            <p:treeNode type="newItem" icon="fa fa-plus">
                                 <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
                                     <ui:param name="viewName" value="newItem"/>
                                 </ui:include>
                             </p:treeNode>
-                            <p:treeNode type="existingItem" icon="ui-icon-check">
+                            <p:treeNode type="existingItem" icon="fa fa-check">
                                 <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
                                     <ui:param name="viewName" value="existingItem"/>
                                 </ui:include>
                             </p:treeNode>
-                            <p:treeNode type="placeholder" icon="ui-icon-close">
+                            <p:treeNode type="placeholder" icon="fa fa-close">
                                 <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
                                     <ui:param name="viewName" value="placeholder"/>
                                 </ui:include>
                             </p:treeNode>
                             <p:treeNode rendered="#{itemDomainInventoryController.showOptionalPartsInBom}"
-                                        type="unspecifiedOptional" icon="ui-icon-radio-off" >
+                                        type="unspecifiedOptional" icon="fa fa-circle-o" >
                                 <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
                                     <ui:param name="viewName" value="unspecifiedOptional"/>
                                 </ui:include>

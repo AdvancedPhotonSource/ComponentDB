@@ -60,11 +60,11 @@ See LICENSE file.
             <ui:include src="reusedParts/listTypeCategoryActionButtons.xhtml"/>
         </ui:insert>
 
-        <p:button id="#{entityTypeName}ViewGroupsButton" href="../#{entityTypeGroupName}/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="ui-icon-info" styleClass="actionButtonRight">
+        <p:button id="#{entityTypeName}ViewGroupsButton" href="../#{entityTypeGroupName}/list.xhtml" rendered="#{entityController.entityHasGroups()}" alt="View Groups" icon="fa fa-info" styleClass="actionButtonRight">
             <p:tooltip for="#{entityTypeName}ViewGroupsButton" value="View groups."/>
         </p:button>
 
-        <p:commandButton id="showEntityListPageHelpFragmentButton" icon="ui-icon-help" styleClass="actionButtonRight" onclick="PF('showEntityListPageHelpFragmentPanelWidget').toggle()" rendered="#{displayShowEntityListPageHelpFragmentButton}">
+        <p:commandButton id="showEntityListPageHelpFragmentButton" icon="fa fa-question" styleClass="actionButtonRight" onclick="PF('showEntityListPageHelpFragmentPanelWidget').toggle()" rendered="#{displayShowEntityListPageHelpFragmentButton}">
             <p:tooltip for="showEntityListPageHelpFragmentButton" value="Toggle help information for this entity"/>
         </p:commandButton>
 
