@@ -14,7 +14,7 @@ See LICENSE file.
             <p:submenu label="Browse"
                        id="browseByDropdownButton"
                        icon="fa fa-search"
-                       styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') 
+                       styleClass="wideSubMenu #{(fn:startsWith(view.viewId, '/views/itemDomainCatalog/browse') 
                                      or fn:startsWith(view.viewId, '/views/itemDomainInventory/browse')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Browse By Function" 
                             id="browseByFunctionButton"
@@ -49,7 +49,7 @@ See LICENSE file.
                             url="#{request.contextPath}/views/itemDomainCableCatalog/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableCatalog/list') ? 'activeMenuItem' : ''} "/>
             </p:submenu>
-            
+
             <p:submenu label="Inventory"
                        icon="ui-icon-inventory"
                        id="inventoryDropdownButton"
@@ -71,7 +71,7 @@ See LICENSE file.
                             url="#{request.contextPath}/views/itemDomainMachineDesignInventory/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignInventory/list') ? 'activeMenuItem' : ''} "/>                                
             </p:submenu>
-            
+
             <p:submenu label="Design"
                        id="designMenubarDropdownButton"
                        icon="ui-icon-design"
@@ -88,19 +88,19 @@ See LICENSE file.
                             url="#{request.contextPath}/views/itemDomainCableDesign/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list') ? 'activeMenuItem' : ''} "/>
             </p:submenu>
-            
+
             <p:menuitem value="MAARC" 
                         icon="ui-icon-maarc"
                         id="maarcMenubarButton" url="#{request.contextPath}/views/itemDomainMAARC/list" 
                         rendered="#{resources.EnabledMAARCDomainFunctionality}"
                         styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMAARC/') ? 'activeMenuItem' : ''} "/>
-            
-            
+
+
             <f:facet name="options">
-                <p:panelGrid columns="2" styleClass="plainPanelGrid">                         
-                    <p:column>                        
+                <p:menubar styleClass="menuBarSupportingItems">    
+                    <p:menuitem styleClass="noButtonMenuItem">
                         <p:inputText id="menuBarSearchInput" placeholder="Search"
-                                     autocomplete="off"
+                                     autocomplete="off"                                 
                                      styleClass="expandingInputText entityDataText menuBarInputText" 
                                      value="#{searchController.inputBoxSearchString}" 
                                      title="Search String"/>
@@ -109,76 +109,73 @@ See LICENSE file.
                                          style="display: none" 
                                          update="@form" 
                                          action="#{searchController.performInputBoxSearch()}"/>
-                    </p:column>
-                    
-                    <p:menubar styleClass="menuBarSupportingItems">                        
-                        <p:submenu label="Administrative"
-                                   id="administrativeButton"
-                                   icon="fa fa-superpowers"
-                                   rendered="#{loginController.loggedInAsAdmin}"
-                                   styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainLocation') 
-                                                  or fn:startsWith(view.viewId, '/views/adminLog')
-                                                  or fn:startsWith(view.viewId, '/views/system')
-                                                  or fn:startsWith(view.viewId, '/views/propertyType')
-                                                  or fn:startsWith(view.viewId, '/views/source')
-                                                  or fn:startsWith(view.viewId, '/views/userInfo')
-                                                  or fn:startsWith(view.viewId, '/views/connectorType')) ? 'activeSubMenuParentItem' : ''} ">
-                            <p:menuitem value="Locations" 
+                    </p:menuitem>
+                    <p:submenu label="Administrative"
+                               id="administrativeButton"
+                               icon="fa fa-superpowers"
+                               rendered="#{loginController.loggedInAsAdmin}"
+                               styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainLocation') 
+                                             or fn:startsWith(view.viewId, '/views/adminLog')
+                                             or fn:startsWith(view.viewId, '/views/system')
+                                             or fn:startsWith(view.viewId, '/views/propertyType')
+                                             or fn:startsWith(view.viewId, '/views/source')
+                                             or fn:startsWith(view.viewId, '/views/userInfo')
+                                             or fn:startsWith(view.viewId, '/views/connectorType')) ? 'activeSubMenuParentItem' : ''} ">
+                        <p:menuitem value="Locations" 
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     id="adminLocationsButton"
                                     icon="fa fa-building"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainLocation/') ? 'activeMenuItem' : ''} "
                                     action="#{itemDomainLocationController.prepareListFromViewPath('/views/itemDomainLocation')}"/>
-                            
-                            <p:menuitem value="Logs" 
+
+                        <p:menuitem value="Logs" 
                                     icon="fa fa-book"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/adminLog/') ? 'activeMenuItem' : ''} "
                                     url="#{request.contextPath}/views/adminLog/browseSystemLogs" />
-                            
-                            <p:menuitem value="Sessions"
-                                        icon="fa fa-connectdevelop"
-                                        rendered="#{loginController.loggedInAsAdmin}"
-                                        styleClass="#{fn:startsWith(view.viewId, '/views/system/') ? 'activeMenuItem' : ''} "
-                                        url="#{request.contextPath}/views/system/browseSystemSessions" /> 
-                            
-                            <p:menuitem value="Property Types" 
-                                        id="adminPropertyTypesButton"
+
+                        <p:menuitem value="Sessions"
+                                    icon="fa fa-connectdevelop"
+                                    rendered="#{loginController.loggedInAsAdmin}"
+                                    styleClass="#{fn:startsWith(view.viewId, '/views/system/') ? 'activeMenuItem' : ''} "
+                                    url="#{request.contextPath}/views/system/browseSystemSessions" /> 
+
+                        <p:menuitem value="Property Types" 
+                                    id="adminPropertyTypesButton"
                                     icon="fa fa-th"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/propertyType/') ? 'activeMenuItem' : ''} "
                                     action="#{propertyTypeController.prepareListFromViewPath('/views/propertyType')}"/>
-                            
-                            <p:menuitem value="Sources"
+
+                        <p:menuitem value="Sources"
                                     icon="fa fa-globe"
                                     id="adminSourcesButton"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/source/') ? 'activeMenuItem' : ''} "
                                     action="#{sourceController.prepareListFromViewPath('/views/source')}"/>
-                            
-                            <p:menuitem value="Users"
+
+                        <p:menuitem value="Users"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     icon="fa fa-users"
                                     id="usersButton"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/userInfo/') ? 'activeMenuItem' : ''} "
                                     action="#{userInfoController.prepareListFromViewPath('/views/userInfo')}"/>                        
-                            
-                            <p:menuitem value="Connector Types"
+
+                        <p:menuitem value="Connector Types"
                                     rendered="#{loginController.loggedInAsAdmin}"
                                     id="connectorTypesButton"
                                     icon="ui-icon-connector"
                                     styleClass="#{fn:startsWith(view.viewId, '/views/connectorType/') ? 'activeMenuItem' : ''} "
                                     action="#{connectorTypeController.prepareListFromViewPath('/views/connectorType')}"/>                        
-                        </p:submenu>                                                                        
-                        
-                        <p:menuitem value="Settings"
-                                    action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
-                                    rendered="#{loginController.loggedIn}" icon="fa fa-cogs"/>
-                        <p:menuitem value="Login" id="loginButton" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="fa fa-sign-in"/>
-                        <p:menuitem value="Logout" id="logoutButton" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="fa fa-sign-out"/>
-                        <p:menuitem value="About" url="#{request.contextPath}/views/about.xhtml" icon="fa fa-question"/>
-                    </p:menubar>                    
-                </p:panelGrid>
+                    </p:submenu>                                                                        
+
+                    <p:menuitem value="Settings"
+                                action="#{userInfoController.prepareSessionUserEdit('/views/userInfo/edit')}" 
+                                rendered="#{loginController.loggedIn}" icon="fa fa-cogs"/>
+                    <p:menuitem value="Login" id="loginButton" onclick="PF('loginDialogWidget').show()" rendered="#{!loginController.loggedIn}" icon="fa fa-sign-in"/>
+                    <p:menuitem value="Logout" id="logoutButton" action="#{loginController.logout()}" rendered="#{loginController.loggedIn}" icon="fa fa-sign-out"/>
+                    <p:menuitem value="About" url="#{request.contextPath}/views/about.xhtml" icon="fa fa-question"/>
+                </p:menubar>
             </f:facet>
         </p:menubar>
         <p:tooltip for="maarcMenubarButton" value="Measurement and Analysis Archive" />

@@ -657,6 +657,11 @@ h2 {
     border: none;    
 }
 
+.noButtonMenuItem {
+    padding: 0px !important; 
+    background: 0; 
+}
+
 .mainMenuBar .ui-menu {
     border: 0px;
 }
@@ -680,33 +685,22 @@ h2 {
     padding-top: 5px !important;    
 }
 
-.mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link {    
-    background: #acd6f2;
-    background-image: -webkit-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: -moz-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: -ms-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: -o-linear-gradient(top, #acd6f2, #d9f1ff);
-    background-image: linear-gradient(to bottom, #acd6f2, #d9f1ff);
-    padding: 0.4rem !important; 
-    padding-right: 0.6rem !important;
+.wideSubMenu ul {
+    width: 200px !important; 
 }
 
-.mainMenuBar .activeSubMenuParentItem .ui-submenu-link {
-    background: #76bff0 !important;
-    background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -moz-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -ms-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
+.mainMenuBar .ui-menu .ui-menuitem .noButtonMenuItem {
+    padding: 0px !important;
+} 
+
+.mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link {
+    background-color: rgba(255, 255, 255, 0.4);
+    
 }
 
+.mainMenuBar .activeSubMenuParentItem .ui-submenu-link, 
 .mainMenuBar .activeMenuItem {
-    background: #76bff0 !important;
-    background-image: -webkit-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -moz-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -ms-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: -o-linear-gradient(top, #76bff0, #8ed2fa) !important;
-    background-image: linear-gradient(to bottom, #76bff0, #8ed2fa) !important;
+   background-color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .mainMenuBar .ui-menu .ui-menuitem .ui-menuitem-link:hover {    
@@ -1273,12 +1267,13 @@ h2 {
 
 .expandingInputText.ui-state-focus {
     width: 250px;
+    height: 30px;
 }
 
 .expandingInputText {
     width: 60px;
-    transition-duration: 0.5s;
-    transition-property: width; 
+    transition-duration: 0.5s !important;
+    transition-property: width, height !important;     
 }
 
 .menuBarInputText {
