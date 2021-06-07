@@ -72,6 +72,7 @@ import org.primefaces.model.DefaultTreeNode;
 import org.primefaces.model.StreamedContent;
 import org.primefaces.model.TreeNode;
 import org.primefaces.model.file.UploadedFile;
+import org.primefaces.util.SerializableSupplier;
 
 /**
  *
@@ -413,7 +414,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             buildTemplateExcelFile();
         }
         InputStream inStream = new ByteArrayInputStream(templateExcelFile);
-        return new DefaultStreamedContent(inStream, "xlsx", getTemplateExcelFilename() + ".xlsx");
+                
+        DefaultStreamedContent.Builder builder = DefaultStreamedContent.builder();        
+        builder.stream(() -> inStream); 
+        builder.contentType("xlsx"); 
+        builder.name(getTemplateExcelFilename() + ".xlsx"); 
+        
+        DefaultStreamedContent streamedContent = builder.build();       
+        
+        return streamedContent;         
     }
 
     private void buildTemplateExcelFile() {
@@ -545,7 +554,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         StreamedContent content = null;
         if (exportFile != null) {
             InputStream inStream = new ByteArrayInputStream(exportFile);
-            content = new DefaultStreamedContent(inStream, "xlsx", getExportFilename() + ".xlsx");
+            
+            DefaultStreamedContent.Builder builder = DefaultStreamedContent.builder();
+            builder.stream(() -> inStream); 
+            builder.contentType("xlsx"); 
+            builder.name(getExportFilename() + ".xlsx");
+            content = builder.build(); 
         } else {
             isValid = false;
             validString = "Unexpected error creating Excel file content";
