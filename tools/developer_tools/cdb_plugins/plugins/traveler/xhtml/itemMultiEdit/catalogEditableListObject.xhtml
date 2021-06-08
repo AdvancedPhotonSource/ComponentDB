@@ -17,13 +17,13 @@ See LICENSE file.
               value="#{travelerDomainTemplateController != null ? travelerDomainTemplateController : itemTravelerDomainCatalogController}" />
 
     <p:column rendered="#{travelerDomainTemplateController.isDisplayMultiEditTravelerTemplate}">
-        
+
         <f:facet name="header">            
             Traveler Template
             <p:commandLink styleClass="fa fa-link-icon fa-cogs"                           
                            onstart="PF('loadingDialog').show()"                          
                            oncomplete="PF('loadingDialog').hide();
-                                       showTravelerTemplateMultiEditApplyToAllDialog()"
+                           showTravelerTemplateMultiEditApplyToAllDialog()"
                            action="#{travelerDomainTemplateController.prepareMultiEditAppplyTempalteToAllItems()}"
                            update="@form:travelerTemplateMultiEditApplyToAllDialog"
                            title="Apply traveler template value to all items."/> 
@@ -35,16 +35,18 @@ See LICENSE file.
                        action="#{travelerDomainTemplateController.loadTemplatesFormMultiEditItem(itemObject)}"
                        update="@parent:travelerTemplateListing"
                        oncomplete="PF('loadingDialog').hide();
-                                   PF('travelerTemplateListing#{itemObject.viewUUID}Widget').show()"/>
+                       PF('travelerTemplateListing#{itemObject.viewUUID}Widget').show()"/>
         <p:commandLink styleClass="fa fa-link-icon fa-plus" 
                        title="Add a traveler template to item"
                        action="#{travelerDomainTemplateController.addTravelerTemplateToNewCurrentItem(itemObject)}"
                        oncomplete="PF('travelerTemplateAddDialogWidget').show()"/>
-            
+
 
         <p:overlayPanel id="travelerTemplateListing"
                         widgetVar="travelerTemplateListing#{itemObject.viewUUID}Widget">
             <p:dataTable value="#{travelerDomainTemplateController.getTemplatesForMultiEditItem(itemObject)}"
+                         sortMode="single"
+                         stripedRows="true"
                          var="templateObject">
                 <ui:include src="../support/travelerTemplateListObject.xhtml" />
             </p:dataTable>                            

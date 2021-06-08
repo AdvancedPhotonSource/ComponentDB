@@ -23,6 +23,8 @@ See LICENSE file.
                  paginator="true" 
                  paginatorPosition="bottom"
                  rows="#{resources.DialogSearchResultsDataTableNumberOfRows}"
+                 sortMode="single"
+                 stripedRows="true"
                  paginatorAlwaysVisible="true"
                  emptyMessage="No traveler templates found. #{additonalTravelerTemplateEmptyMessage}">                
         
@@ -55,12 +57,12 @@ See LICENSE file.
         <p:column headerText="Actions" exportable="false">
             <div>
 
-                <ui:param name="templateViewStyleClass" value="#{travelerTemplate.createdBy == loginController.username ? 'ui-icon-pencil' : 'ui-icon-info'}" />
+                <ui:param name="templateViewStyleClass" value="#{travelerTemplate.createdBy == loginController.username ? 'fa-pencil' : 'fa-info'}" />
 
                 <h:outputLink id="travelerTemplateViewLink"
                               target="_blank"
                               value="#{travelerDomainTemplateController.getTravelerTemplateUrl(travelerTemplate.id)}"
-                              styleClass="ui-icon #{templateViewStyleClass}">
+                              styleClass="fa #{templateViewStyleClass}">
                     <p:tooltip for="travelerTemplateViewLink" value="Go to traveler template."/>  
                 </h:outputLink>
 
