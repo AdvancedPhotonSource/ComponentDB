@@ -29,8 +29,8 @@ import org.primefaces.model.TreeNode;
  * @author Dariusz
  */
 public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
-    
-    private final static Integer MAXIMUM_EXPANDED_NODES = 250; 
+
+    private final static Integer MAXIMUM_EXPANDED_NODES = 250;
 
     private String nameFilter = "";
     private Domain domain;
@@ -61,7 +61,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         this.designFacade = facade;
         this.topLevelItems = items;
 
-        addTopLevelChildren(items);       
+        addTopLevelChildren(items);
 
         this.setExpanded(true);
         childrenLoaded = true;
@@ -76,7 +76,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
             ItemElement element = createTopLevelMockItemElement(item);
             createChildNode(element);
         }
-        
+
         // Expand first node if tree is only one node.
         if (topNodes.size() == 1) {
             List<ItemDomainMachineDesignTreeNode> machineChildren = this.getMachineChildren();
@@ -309,19 +309,21 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
         return false;
     }
-    
+
     public void clearFilterResults() {
         rawFilterResults = null;
-        filterResults = null; 
+        filterResults = null;
         getChildren().clear();
         // Prevent gui from changing the currently set filters. 
-        for (ItemDomainMachineDesign item : topLevelItems) {
-            boolean filterMachineNode = item.isFilterMachineNode();
-            item.updateFilterMachineNode(filterMachineNode);
+        if (topLevelItems != null) {
+            for (ItemDomainMachineDesign item : topLevelItems) {
+                boolean filterMachineNode = item.isFilterMachineNode();
+                item.updateFilterMachineNode(filterMachineNode);
+            }
+            addTopLevelChildren(topLevelItems);
         }
-        addTopLevelChildren(topLevelItems);
     }
-    
+
     public List<ItemDomainMachineDesign> getFilterResults() {
         if (filterResults != null) {
             return filterResults;
@@ -334,7 +336,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         if (rawFilterResults != null) {
             return;
         }
-        
+
         Map filterMap = new HashMap();
 
         if (nameFilter.isEmpty()) {
@@ -356,7 +358,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
             getChildren().clear();
 
             int relevantResults = 0;
-            filterResults = new ArrayList<>(); 
+            filterResults = new ArrayList<>();
             // Passed as array to force pass by reference. 
             Integer[] displayedNodes = new Integer[1];
             displayedNodes[0] = 0;
@@ -364,7 +366,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
                 ItemDomainMachineDesignTreeNode createTreeFromFilter = createTreeFromFilter(item, true, displayedNodes);
                 if (createTreeFromFilter != null) {
                     relevantResults++;
-                    filterResults.add(item);                     
+                    filterResults.add(item);
                 }
             }
 
@@ -443,7 +445,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     public void setNameFilter(String nameFilter) {
         if (this.nameFilter.equals(nameFilter) == false) {
             // Null filter results will trigger the search. 
-            rawFilterResults = null; 
+            rawFilterResults = null;
         }
         this.nameFilter = nameFilter;
     }
@@ -451,10 +453,12 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     public Boolean getFilterAllNodes() {
         if (filterAllNodes == null) {
             filterAllNodes = true;
-            for (ItemDomainMachineDesign item : topLevelItems) {
-                if (item.isFilterMachineNode() == false) {
-                    filterAllNodes = false;
-                    break;
+            if (topLevelItems != null) {
+                for (ItemDomainMachineDesign item : topLevelItems) {
+                    if (item.isFilterMachineNode() == false) {
+                        filterAllNodes = false;
+                        break;
+                    }
                 }
             }
         }
@@ -469,14 +473,14 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         }
         this.filterAllNodes = filterAllNodes;
     }
-    
+
     public void expandAllChildren(boolean expanded) throws CdbException {
-        Integer count = expandAllChildren(this, expanded, 0); 
+        Integer count = expandAllChildren(this, expanded, 0);
         if (expanded && count > MAXIMUM_EXPANDED_NODES) {
-            throw new CdbException("Exceeded maximum expanded nodes. Select a child and expand again."); 
+            throw new CdbException("Exceeded maximum expanded nodes. Select a child and expand again.");
         }
     }
-    
+
     private Integer expandAllChildren(TreeNode treeNode, boolean expanded, Integer count) {
         treeNode.setExpanded(expanded);
         count++;
@@ -498,16 +502,16 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
                     count = expandAllChildren(child, expanded, count);
                     if (expanded && count > MAXIMUM_EXPANDED_NODES) {
                         direction = -1;
-                        i--; 
+                        i--;
                     } else {
                         if (i >= children.size()) {
-                            keepGoing = false; 
+                            keepGoing = false;
                         }
-                    }                    
+                    }
                 } else {
                     expandAllChildren(child, !expanded, 0);
-                    if (i < 0) { 
-                        keepGoing = false; 
+                    if (i < 0) {
+                        keepGoing = false;
                     }
                 }
             }
