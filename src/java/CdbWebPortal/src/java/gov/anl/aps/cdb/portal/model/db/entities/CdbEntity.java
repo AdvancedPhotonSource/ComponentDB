@@ -36,8 +36,8 @@ public class CdbEntity implements Serializable, Cloneable {
     private transient Boolean hasImportUpdates;
     
     protected static final long serialVersionUID = 1L;
-    @Override
-    public Object clone() throws CloneNotSupportedException {
+    
+    public Object clone(UserInfo currentUser) throws CloneNotSupportedException {
         return super.clone();
     }
     
