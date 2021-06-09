@@ -100,6 +100,11 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     public boolean entityCanBeCreatedByUsers() {
         return false;
     }
+    
+    @Override
+    public boolean isShowCloneCreateItemElementsPlaceholdersOption() {
+        return false; 
+    }
 
     /**
      * Get a list of items that are located somewhere down the hierarchy of

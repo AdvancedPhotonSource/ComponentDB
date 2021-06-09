@@ -26,10 +26,7 @@ import org.apache.logging.log4j.Logger;
  * @author djarosz
  */
 @Entity
-@DiscriminatorValue(value = ItemDomainName.CATALOG_ID + "")  
-@Schema(name = "ItemDomainCatalog",
-        allOf = Item.class
-)
+@DiscriminatorValue(value = ItemDomainName.CATALOG_ID + "")
 public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory> {
     
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainCatalog.class.getName());
@@ -73,7 +70,7 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     public void setAlternateName(String n) {
         setItemIdentifier2(n);
     }
-    
+
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     @JsonIgnore
     public List<ItemDomainInventory> getInventorySparesList() {

@@ -257,7 +257,9 @@ import org.primefaces.model.TreeNode;
             ItemDomainCatalog.class,
             ItemDomainInventory.class,
             ItemDomainMachineDesign.class,
-            ItemDomainCable.class,
+            ItemDomainCableCatalog.class,
+            ItemDomainCableInventory.class,
+            ItemDomainCableDesign.class,
             ItemDomainMAARC.class,
             ItemDomainLocation.class
         }
@@ -434,8 +436,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @Override
-    public Item clone() throws CloneNotSupportedException {
-        return clone(null, null);
+    public Item clone(UserInfo userInfo) throws CloneNotSupportedException {
+        UserGroup firstGroup = userInfo.getUserGroupList().get(0); 
+        return clone(userInfo, firstGroup);
     }
 
     public Item clone(UserInfo ownerUser, UserGroup ownerGroup) throws CloneNotSupportedException {

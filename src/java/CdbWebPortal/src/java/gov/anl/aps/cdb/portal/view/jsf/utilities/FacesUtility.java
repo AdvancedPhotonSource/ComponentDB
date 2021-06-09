@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.view.jsf.utilities;
 import gov.anl.aps.cdb.common.constants.CdbProperty;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
@@ -35,6 +36,11 @@ public class FacesUtility {
 
     public SelectOneMenu getSelectOneMenu() {
         return selectOneMenu;
+    }
+    
+    public void updateToToday(Date date) {        
+        Date newDate = new Date();
+        date.setTime(newDate.getTime());        
     }
 
     public void setSelectOneMenu(SelectOneMenu selectOneMenu) {

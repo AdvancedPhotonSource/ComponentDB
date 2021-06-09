@@ -21,7 +21,6 @@ import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +37,6 @@ import org.apache.logging.log4j.Logger;
  */
 @Entity
 @DiscriminatorValue(value = ItemDomainName.MACHINE_DESIGN_ID + "")
-@Schema(name = "ItemDomainMachineDesign",
-        allOf = Item.class
-)
 public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesign.class.getName());
