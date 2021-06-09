@@ -8,7 +8,6 @@ import gov.anl.aps.cdb.portal.controllers.SourceController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.SourceFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Source;
@@ -96,6 +95,11 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
 
     @Override
     public boolean supportsModeDelete() {
+        return true;
+    }
+
+    @Override
+    public boolean supportsModeTransfer() {
         return true;
     }
 

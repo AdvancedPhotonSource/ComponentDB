@@ -19,8 +19,9 @@ public class IntegerColumnSpec extends ColumnSpec {
             String header, 
             String importPropertyName, 
             String importSetterMethod, 
-            String description,
-            String exportGetterMethod,
+            String description, 
+            String exportGetterMethod, 
+            String exportTransferGetterMethod, 
             List<ColumnModeOptions> options) {
         
         super(
@@ -29,6 +30,7 @@ public class IntegerColumnSpec extends ColumnSpec {
                 importSetterMethod, 
                 description, 
                 exportGetterMethod,
+                exportTransferGetterMethod,
                 options);
     }
 

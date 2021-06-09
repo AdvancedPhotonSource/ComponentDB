@@ -44,7 +44,7 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
                 KEY_TEMPLATE, 
                 "setImportMdItem", 
                 "ID or name of CDB machine design template. Name must be unique and prefixed with '#'.", 
-                null,
+                null, null,
                 ColumnModeOptions.rCREATErUPDATE(), 
                 ItemDomainMachineDesignController.getInstance(), 
                 ItemDomainMachineDesign.class, 
@@ -73,7 +73,7 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
                 "qrId", 
                 "setQrId", 
                 "Integer QR id of inventory unit.", 
-                null,
+                null, null,
                 ColumnModeOptions.oCREATEoUPDATE()));
         
         specs.add(new StringColumnSpec(

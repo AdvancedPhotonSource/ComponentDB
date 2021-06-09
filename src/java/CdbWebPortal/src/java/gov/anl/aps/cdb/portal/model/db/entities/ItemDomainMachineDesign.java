@@ -14,7 +14,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
@@ -25,6 +24,7 @@ import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorListObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 import javax.faces.model.DataModel;
 import javax.persistence.DiscriminatorValue;
@@ -479,6 +479,38 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setImportAssignedItemDescription(String importAssignedItemDescription) {
         this.importAssignedItemDescription = importAssignedItemDescription;
+    }
+    
+    @JsonIgnore
+    public ItemDomainCatalog getCatalogItem() {
+        Item assignedItem = getAssignedItem();
+        ItemDomainCatalog catalogItem = null;
+        if (assignedItem instanceof ItemDomainInventory) {
+            catalogItem = ((ItemDomainInventory) assignedItem).getCatalogItem();
+        } else if (assignedItem instanceof ItemDomainCatalog) {
+            catalogItem = (ItemDomainCatalog) assignedItem;
+        }
+        return catalogItem;
+    }
+    
+    @JsonIgnore
+    public String getCatalogItemName() {
+        ItemDomainCatalog catalogItem = getCatalogItem();
+        if (catalogItem != null) {
+            return catalogItem.getName();
+        } else {
+            return null;
+        }
+    }
+    
+    @JsonIgnore
+    public Map<String,String> getCatalogItemAttributeMap() throws CdbException {
+        ItemDomainCatalog catalogItem = getCatalogItem();
+        if (catalogItem != null) {
+            return catalogItem.getAttributeMap();            
+        } else {
+            return null;
+        }
     }
 
     public void setImportLocationItem(ItemDomainLocation locationItem) {

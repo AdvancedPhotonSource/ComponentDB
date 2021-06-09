@@ -41,7 +41,7 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
                 KEY_PARENT_ITEM, 
                 "", 
                 "ID or name of parent catalog item. Name must be unique and prefixed with '#'.", 
-                null,
+                null, null,
                 ColumnModeOptions.rCREATE(), 
                 ItemDomainCatalogController.getInstance(), 
                 Item.class, 
@@ -71,6 +71,7 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
                 "setSortOrder", 
                 "Sort order within parent catalog item (as decimal), defaults to order in input sheet.", 
                 null,
+                null,
                 ColumnModeOptions.oCREATE()));
         
         specs.add(new BooleanColumnSpec(
@@ -95,7 +96,7 @@ public class ImportHelperCatalogAssembly extends ImportHelperBase<ItemElement, I
                 "importChildItem", 
                 "setImportChildItem", 
                 "ID or name of catalog item for part. Name must be unique and prefixed with '#'.", 
-                null,
+                null, null,
                 ColumnModeOptions.rCREATE(), 
                 ItemDomainCatalogController.getInstance(), 
                 Item.class, 

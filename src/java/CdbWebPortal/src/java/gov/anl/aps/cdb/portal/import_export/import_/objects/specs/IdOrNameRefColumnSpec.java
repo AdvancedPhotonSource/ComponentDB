@@ -6,8 +6,6 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects.specs;
 
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.InputHandler;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandler;
-import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.RefOutputHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.RefInputHandler;
 import java.util.List;
@@ -24,8 +22,9 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
             String header, 
             String importPropertyName, 
             String importSetterMethod, 
-            String description,
-            String exportGetterMethod,
+            String description, 
+            String exportGetterMethod, 
+            String exportTransferGetterMethod, 
             List<ColumnModeOptions> options, 
             CdbEntityController controller, 
             Class paramType, 
@@ -36,10 +35,12 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
                 importPropertyName, 
                 importSetterMethod, 
                 description, 
-                exportGetterMethod, 
+                exportGetterMethod,
+                exportTransferGetterMethod,
                 options,
                 controller, 
                 paramType);
+        
         this.domainNameFilter = domainNameFilter;
     }
 
@@ -57,12 +58,4 @@ public class IdOrNameRefColumnSpec extends IdRefColumnSpec {
                 true);
     }
 
-    @Override
-    public OutputHandler getOutputHandler() {
-        return new RefOutputHandler(
-                getHeader(),
-                getDescription(),
-                getExportGetterMethod(),
-                true);
-    }
 }

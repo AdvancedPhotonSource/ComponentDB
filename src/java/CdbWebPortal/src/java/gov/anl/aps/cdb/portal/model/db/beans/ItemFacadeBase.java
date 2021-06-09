@@ -19,6 +19,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -408,6 +409,35 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         return null;
     }
+    
+    @Override
+    public ItemDomainEntity findUniqueWithAttributes(Map<String,String> attributeMap) {
+        
+        Item derivedFromItem = null;
+        Domain itemDomain = null;
+        String itemIdentifier1 = null;
+        String itemIdentifier2 = null;
+        
+        String domainName = attributeMap.get(Item.ATTRIBUTE_DOMAIN_NAME);
+        if (domainName != null) {
+            
+            itemDomain = DomainFacade.getInstance().findByName(domainName);
+            if (itemDomain != null) {
+                
+                if (itemDomain.getItemIdentifier1Label() != null) {
+                    itemIdentifier1 = attributeMap.get(itemDomain.getItemIdentifier1Label());
+                }
+                
+                if (itemDomain.getItemIdentifier2Label() != null) {
+                    itemIdentifier2 = attributeMap.get(itemDomain.getItemIdentifier2Label());
+                }
+            }
+        }
+        
+        String name = attributeMap.get(Item.ATTRIBUTE_NAME);
+
+        return findByUniqueAttributes(derivedFromItem, itemDomain, name, itemIdentifier1, itemIdentifier2);
+    }  
     
     public List<ItemDomainEntity> findByFilterViewCategoryTypeAttributes(ItemProject itemProject,
             List<ItemCategory> itemCategoryList, ItemType itemType, String itemDomainName) {

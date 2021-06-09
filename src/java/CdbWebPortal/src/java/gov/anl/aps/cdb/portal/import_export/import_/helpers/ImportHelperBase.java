@@ -25,6 +25,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.CreateInfo;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ExportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
@@ -86,6 +87,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private static final String MODE_DELETE = "delete";
     private static final String MODE_COMPARE = "compare";
 
+    private static final String MODE_EXPORT = "export";
+    private static final String MODE_TRANSFER = "transfer";
+
     private static final String HEADER_IS_VALID = "Is Valid";
     private static final String PROPERTY_IS_VALID = "isValidImportString";
     private static final String HEADER_VALID_STRING = "Validation Info";
@@ -95,7 +99,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private static final String HEADER_ORIG = "Unchanged";
     private static final String PROPERTY_ORIG = "importUnchanged";
     
-    protected static final String KEY_USER = "ownerUserName";
+    protected static final String KEY_USER = "ownerDisplayName";
     protected static final String KEY_GROUP = "ownerUserGroupName";
     protected static final String KEY_EXISTING_ITEM_ID = "importExistingItemId";
     protected static final String KEY_DELETE_EXISTING_ITEM = "importDeleteExistingItem";
@@ -107,6 +111,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private List<CdbEntity> exportEntityList;
     
     protected ImportMode importMode;
+    protected ExportMode exportMode;
     
     protected SortedMap<Integer, InputColumnModel> inputColumnMap = new TreeMap<>();
     
@@ -136,10 +141,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         boolean isValid = true;
         String validString = "";
         
-        List<CdbEntity> entityList = getEntityController().getExportEntityList();
-        setExportEntityList(entityList);
+        List<EntityType> entityList = generateExportEntityList_();
+        setExportEntityList((List<CdbEntity>) entityList);
         
         return new ValidInfo(isValid, validString);
+    }
+    
+    protected List<EntityType> generateExportEntityList_() {
+        return getEntityController().getExportEntityList();
     }
 
     public List<CdbEntity> getExportEntityList() {
@@ -174,6 +183,21 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             importMode = ImportMode.DELETE;
         } else if (importModeString.equals(MODE_COMPARE)) {
             importMode = ImportMode.COMPARE;
+        }
+    }
+    
+    public ExportMode getExportMode() {
+        if (exportMode == null) {
+            exportMode  = ExportMode.EXPORT;
+        }
+        return exportMode;
+    }
+    
+    public void setExportMode(String exportModeString) {
+        if (exportModeString.equals(MODE_EXPORT)) {
+            exportMode = ExportMode.EXPORT;
+        } else if (exportModeString.equals(MODE_TRANSFER)) {
+            exportMode = ExportMode.TRANSFER;
         }
     }
     
@@ -465,13 +489,13 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         List<ExportColumnData> exportContent = new ArrayList<>();
         List<CdbEntity> entities = getExportEntityList();
         for (ColumnSpec spec : getColumnSpecs()) {
-            OutputHandler handler = spec.getOutputHandler();
+            OutputHandler handler = spec.getOutputHandler(getExportMode());
             if (handler == null) {                
                 ValidInfo validInfo = new ValidInfo(false, "Unexpected error, no output handler for column: " + spec.getHeader());
                 return new GenerateExportResult(validInfo, null);
             }
             
-            HandleOutputResult handleOutputResult = handler.handleOutput(entities);
+            HandleOutputResult handleOutputResult = handler.handleOutput(entities, getExportMode());
             if (!handleOutputResult.getValidInfo().isValid()) {                
                 ValidInfo validInfo = new ValidInfo(false, handleOutputResult.getValidInfo().getValidString());
                 return new GenerateExportResult(validInfo, null);
@@ -569,7 +593,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 continue;
             }
             
-            OutputHandler handler = spec.getOutputHandler();
+            OutputHandler handler = spec.getOutputHandler(ExportMode.EXPORT);
             if (handler == null) {                
                 ValidInfo validInfo = new ValidInfo(false, "Unexpected error, no output handler for column: " + spec.getHeader());
                 return new FieldValueMapResult(validInfo, valueMap);
@@ -1396,6 +1420,22 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
 
     /**
+     * Specifies whether helper supports export.
+     * Subclasses override to customize.
+     */
+    public boolean supportsModeExport() {
+        return true;
+    }
+
+    /**
+     * Specifies whether helper supports exporting a transfer format.
+     * Subclasses override to customize.
+     */
+    public boolean supportsModeTransfer() {
+        return false;
+    }
+
+    /**
      * Provides pre-import hook for subclasses to override, e.g., to migrate
      * metadata property fields etc.
      */
@@ -1519,7 +1559,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     }
     
     public String getExportFilename() {
-        return getFilenameBase() + " Export";
+        if (getExportMode() == ExportMode.TRANSFER) {
+            return getFilenameBase() + " Transfer";
+        } else {
+            return getFilenameBase() + " Export";
+        }
     }
     
     public IdOrNameRefColumnSpec ownerUserColumnSpec() {
@@ -1528,7 +1572,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 KEY_USER, 
                 "setOwnerUser", 
                 "ID or name of CDB owner user. Name must be unique and prefixed with '#'.", 
-                "getOwnerUser",
+                "getOwnerUser", 
+                "getOwnerUsername",
                 ColumnModeOptions.rCREATErUPDATE(),
                 UserInfoController.getInstance(), 
                 UserInfo.class, 
@@ -1541,7 +1586,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 KEY_GROUP, 
                 "setOwnerUserGroup", 
                 "ID or name of CDB owner user group. Name must be unique and prefixed with '#'.", 
-                "getOwnerUserGroup",
+                "getOwnerUserGroup", 
+                null, // exportTransferGetterMethod not needed here because UserGroup.toString() gives us what we want
                 ColumnModeOptions.rCREATErUPDATE(), 
                 UserGroupController.getInstance(), 
                 UserGroup.class, 
@@ -1555,6 +1601,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setItemProjectList", 
                 "Comma-separated list of IDs of CDB project(s). Name must be unique and prefixed with '#'.", 
                 "getItemProjectList",
+                "getItemProjectNameList",
                 ColumnModeOptions.rCREATErUPDATE(), 
                 ItemProjectController.getInstance(), 
                 List.class, 
@@ -1568,6 +1615,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setItemCategoryListImport", 
                 "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", 
                 "getItemCategoryList",
+                "getItemCategoryNameList",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemCategoryController.getInstance(), 
                 List.class, 
@@ -1581,6 +1629,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setItemTypeList", 
                 "Numeric ID of CDB technical system. Name must be unique and prefixed with '#'.", 
                 "getItemTypeList",
+                "getItemTypeNameList",
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemTypeController.getInstance(), 
                 List.class, 
@@ -1593,7 +1642,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "importLocationItemString", 
                 "setImportLocationItem", 
                 "Item location.", 
-                "getExportLocation",
+                "getExportLocation", null,
                 ColumnModeOptions.oCREATEoUPDATE(), 
                 ItemDomainLocationController.getInstance(), 
                 ItemDomainLocation.class, 
@@ -1618,6 +1667,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 "setImportExistingItemId", 
                 "CDB ID of existing item to update.", 
                 "getId",
+                ColumnSpec.BLANK_COLUMN_EXPORT_METHOD,
                 ColumnModeOptions.rUPDATErDELETErCOMPARE());
     }
 

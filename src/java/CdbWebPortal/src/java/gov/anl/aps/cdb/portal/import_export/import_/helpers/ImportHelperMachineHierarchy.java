@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import java.util.ArrayList;
@@ -65,6 +66,22 @@ public class ImportHelperMachineHierarchy
     }
     
     @Override
+    protected List<ItemDomainMachineDesign> generateExportEntityList_() {
+        
+        ItemDomainMachineDesignTreeNode currentTree = 
+                getEntityController().getCurrentMachineDesignListRootTreeNode();
+
+        // create list from tree node hierarchy
+        List<ItemDomainMachineDesign> entityList = 
+                ItemDomainMachineDesignController.createListForTreeNodeHierarchy(
+                        currentTree,
+                        false,
+                        null);
+        
+        return entityList;
+    }
+
+    @Override
     protected List<ColumnSpec> getColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
@@ -97,6 +114,19 @@ public class ImportHelperMachineHierarchy
         return "Machine Hierarchy";
     }
     
+    /**
+     * Specifies whether helper supports export.
+     * Subclasses override to customize.
+     */
+    public boolean supportsModeExport() {
+        return false;
+    }
+
+    @Override
+    public boolean supportsModeTransfer() {
+        return true;
+    }
+
     @Override
     protected void reset_() {
         super.reset();

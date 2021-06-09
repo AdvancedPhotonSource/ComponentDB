@@ -15,6 +15,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -683,6 +684,16 @@ public class ItemDomainCableDesign extends Item {
     }
 
     @JsonIgnore
+    public Map<String,String> getCatalogItemAttributeMap() throws CdbException {
+        Item catalogItem = getCatalogItem();
+        if (catalogItem != null) {
+            return catalogItem.getAttributeMap();            
+        } else {
+            return null;
+        }
+    }
+
+    @JsonIgnore
     public Item getEndpoint1() {
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
         if (cableRelationship != null) {
@@ -699,6 +710,16 @@ public class ItemDomainCableDesign extends Item {
             return iEndpoint1.getName();
         } else {
             return "";
+        }
+    }
+    
+    @JsonIgnore
+    public Map<String,String> getEndpoint1AttributeMap() throws CdbException {
+        Item endpoint = getEndpoint1();
+        if (endpoint != null) {
+            return endpoint.getAttributeMap();
+        } else {
+            return null;
         }
     }
 
@@ -743,6 +764,16 @@ public class ItemDomainCableDesign extends Item {
             return iEndpoint2.getName();
         } else {
             return "";
+        }
+    }
+
+    @JsonIgnore
+    public Map<String, String> getEndpoint2AttributeMap() throws CdbException {
+        Item endpoint = getEndpoint2();
+        if (endpoint != null) {
+            return endpoint.getAttributeMap();
+        } else {
+            return null;
         }
     }
 

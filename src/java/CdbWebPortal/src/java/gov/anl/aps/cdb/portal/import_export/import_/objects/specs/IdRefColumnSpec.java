@@ -26,7 +26,8 @@ public class IdRefColumnSpec extends ColumnSpec {
             String importPropertyName, 
             String importSetterMethod, 
             String description,
-            String exportGetterMethod, 
+            String exportGetterMethod,
+            String exportTransferGetterMethod,
             List<ColumnModeOptions> options, 
             CdbEntityController controller, 
             Class paramType) {
@@ -37,6 +38,7 @@ public class IdRefColumnSpec extends ColumnSpec {
                 importSetterMethod, 
                 description, 
                 exportGetterMethod,
+                exportTransferGetterMethod,
                 options);
         
         this.controller = controller;
@@ -57,11 +59,10 @@ public class IdRefColumnSpec extends ColumnSpec {
     }
 
     @Override
-    public OutputHandler getOutputHandler() {
+    public OutputHandler createOutputHandler(String getterMethod) {
         return new RefOutputHandler(
                 getHeader(),
                 getDescription(),
-                getExportGetterMethod(),
-                true);
+                getterMethod);
     }
 }
