@@ -13,7 +13,8 @@ See LICENSE file.
 
     <p:selectOneMenu value="#{propertyValueObject.selectedAllowedPropertyValue}"
                      converter="allowedPropertyValueConverter"
-                     var="av" >
+                     var="av" 
+                     onchange="updateEffectiveDate()">
         <f:selectItems value="#{propertyValueObject.propertyType.sortedAllowedPropertyValueList}" 
                        var="allowedValue" 
                        itemLabel="#{allowedValue.value}"/>
@@ -23,6 +24,10 @@ See LICENSE file.
             <p:outputLabel value="#{av.description}" /> 
         </p:column>
     </p:selectOneMenu>
+    
+    <p:remoteCommand name="updateEffectiveDate"
+                     action="#{facesUtility.updateToToday(propertyValueObject.effectiveFromDateTime)}"
+                     update="@parent"/>
 
 </ui:composition>
 
