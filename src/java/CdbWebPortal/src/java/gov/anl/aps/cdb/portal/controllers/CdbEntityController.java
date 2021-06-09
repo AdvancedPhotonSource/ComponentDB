@@ -558,13 +558,9 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     /**
      * Customize display for entity list.
-     *
-     * @return current view URL for page reload
+     *     
      */
-    public String customizeListDisplay() {
-        String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
-        logger.debug("Returning to page: " + returnPage);
-        return returnPage;
+    public void customizeListDisplay() {
     }
 
     /**
