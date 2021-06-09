@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.import_export.import_.objects;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.AssignedItemHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.ColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.CustomColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.FloatColumnSpec;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.MachineItemRefColumnSpec;
@@ -127,6 +128,7 @@ public class MachineImportHelperCommon {
                 "setImportSortOrder",
                 "Sort order within parent item (as decimal), defaults to order in input sheet when creating new items.",
                 "getExportSortOrder",
+                ColumnSpec.BLANK_COLUMN_EXPORT_METHOD,
                 options);
     }
     
@@ -136,7 +138,7 @@ public class MachineImportHelperCommon {
                 "importAssignedItemDescription",
                 "setImportAssignedItemDescription",
                 "Description of catalog or inventory item assigned to machine element (for documentation purposes only, ignored by import mechanism).",
-                null,
+                "getCatalogItemName",
                 options,
                 256);
     }
@@ -148,7 +150,7 @@ public class MachineImportHelperCommon {
                 "importAssignedItemString",
                 "CDB ID or name of assigned catalog or inventory item. Name can only be used for catalog items and must be unique and prefixed with '#'.",
                 "getAssignedItem",
-                true,
+                "getCatalogItemAttributeMap",
                 options,
                 assignedItemHandler);
     }
@@ -160,7 +162,6 @@ public class MachineImportHelperCommon {
                 "importLocationItemString",
                 "CDB ID of CDB location item (use of word 'parent' allowed for documentation purposes, it is ignored).",
                 "getExportLocation",
-                true,
                 options,
                 locationHandler);
     }
@@ -171,7 +172,7 @@ public class MachineImportHelperCommon {
                 KEY_IS_TEMPLATE,
                 "setImportIsTemplate",
                 "True/yes if item is template, false/no otherwise.",
-                null,
+                "getIsItemTemplate",
                 options);
     }
     

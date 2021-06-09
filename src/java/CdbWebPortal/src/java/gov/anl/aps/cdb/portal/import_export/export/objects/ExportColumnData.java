@@ -46,4 +46,8 @@ public class ExportColumnData {
         this.columnValues = columnValues;
     }
     
+    public void add(String value) {
+        this.columnValues.add(value);
+    }
+    
 }

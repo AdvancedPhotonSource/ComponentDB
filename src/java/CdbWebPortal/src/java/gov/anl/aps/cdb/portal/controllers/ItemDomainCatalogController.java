@@ -187,7 +187,7 @@ public class ItemDomainCatalogController extends ItemDomainCatalogBaseController
                 new ImportExportFormatInfo(
                         "Basic Catalog Create/Update Format",  ImportHelperCatalog.class));
         
-        String completionUrl = "/views/itemDomainCableCatalog/list?faces-redirect=true";
+        String completionUrl = "/views/itemDomainCatalog/list?faces-redirect=true";
         
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }

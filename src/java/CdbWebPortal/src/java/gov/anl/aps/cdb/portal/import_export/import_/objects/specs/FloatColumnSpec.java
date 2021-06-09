@@ -21,6 +21,7 @@ public class FloatColumnSpec extends ColumnSpec {
             String importSetterMethod, 
             String description,
             String exportGetterMethod,
+            String exportTransferGetterMethod,
             List<ColumnModeOptions> options) {
         
         super(
@@ -29,6 +30,7 @@ public class FloatColumnSpec extends ColumnSpec {
                 importSetterMethod, 
                 description, 
                 exportGetterMethod,
+                exportTransferGetterMethod,
                 options);
     }
 

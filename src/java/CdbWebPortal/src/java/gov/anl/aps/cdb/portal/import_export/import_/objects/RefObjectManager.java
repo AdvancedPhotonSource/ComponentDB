@@ -79,14 +79,23 @@ public class RefObjectManager {
                 objValue = null;
                 throw new CdbException("Item with name " + nameString + " is deleted");
             }
-            // check cache for object so different references use same instance
-            int id = (Integer) objValue.getId();
-            if (objectIdMap.containsKey(id)) {
-                objValue = objectIdMap.get(id);
-            } else {
-                // add this instance to cache
-                objectIdMap.put(id, objValue);
+            return getCacheObject(objValue);
+        }
+        
+        return objValue;
+    }
+
+    public CdbEntity getObjectWithAttributes(Map<String,String> attributeMap) throws CdbException {
+        
+        CdbEntity objValue = null;
+                
+        objValue = controller.findUniqueWithAttributes(attributeMap);
+        if (objValue != null) {
+            if (objValue.getIsItemDeleted()) {
+                objValue = null;
+                throw new CdbException("Item with attributes " + attributeMap.toString() + " is deleted");
             }
+            return getCacheObject(objValue);
         }
         
         return objValue;
@@ -102,14 +111,7 @@ public class RefObjectManager {
                 objValue = null;
                 throw new CdbException("Item with path " + pathString + " is deleted");
             }
-            // check cache for object so different references use same instance
-            int id = (Integer) objValue.getId();
-            if (objectIdMap.containsKey(id)) {
-                objValue = objectIdMap.get(id);
-            } else {
-                // add this instance to cache
-                objectIdMap.put(id, objValue);
-            }
+            return getCacheObject(objValue);
         }
         
         return objValue;

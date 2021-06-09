@@ -4,8 +4,12 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -45,24 +49,59 @@ public class AssignedItemHandler extends SingleColumnInputHandler {
         Item assignedItem = null;
         if ((parsedValue != null) && (!parsedValue.isEmpty())) {
             // assigned item is specified
+            
+            if (parsedValue.charAt(0) == '{') {
+                // parse as catalog item attribute map
+                
+                Map<String,String> attributeMap = null;
+                try {
+                    attributeMap = RefInputHandler.mapFromJson(parsedValue);
+                } catch (CdbException ex) {
+                    isValid = false;
+                    validString = "Exception parsing assigned item attribute map for column: " + getColumnName();
+                }
+                
+                if (attributeMap == null) {
+                    isValid = false;
+                    validString = "Exception parsing attribute map for column: " + getColumnName();
+                }
+                
+                RefObjectManager mgr = RefInputHandler.getObjectManager(
+                        ItemDomainCatalogController.getInstance(), null);
+                CdbEntity entity = null;
+                try {
+                    entity = mgr.getObjectWithAttributes(attributeMap);
+                } catch (CdbException ex) {
+                    isValid = false;
+                    validString = "Exception looking up by attribute map for column: " + getColumnName();
+                }
+                
+                if (entity == null) {
+                    isValid = false;
+                    validString = "Unable to find object for: " + getColumnName() + " by attribute map";
+                }
+                assignedItem = (Item) entity;
 
-            int id;
-            try {
-                id = Integer.valueOf(parsedValue);
-                assignedItem = ItemFacade.getInstance().findById(id);
-                if (assignedItem == null) {
-                    String msg = "Unable to find object for: " + getColumnName()
-                            + " with id: " + parsedValue;
+            } else {
+                // parse as id
+                int id;
+                try {
+                    id = Integer.valueOf(parsedValue);
+                    assignedItem = ItemFacade.getInstance().findById(id);
+                    if (assignedItem == null) {
+                        String msg = "Unable to find object for: " + getColumnName()
+                                + " with id: " + parsedValue;
+                        isValid = false;
+                        validString = msg;
+                    }                    
+                } catch (NumberFormatException ex) {
+                    String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
                     isValid = false;
                     validString = msg;
                 }
-                rowMap.put(MachineImportHelperCommon.KEY_ASSIGNED_ITEM, assignedItem);
-
-            } catch (NumberFormatException ex) {
-                String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
-                isValid = false;
-                validString = msg;
             }
+            
+            rowMap.put(MachineImportHelperCommon.KEY_ASSIGNED_ITEM, assignedItem);
         }
 
         return new ValidInfo(isValid, validString);

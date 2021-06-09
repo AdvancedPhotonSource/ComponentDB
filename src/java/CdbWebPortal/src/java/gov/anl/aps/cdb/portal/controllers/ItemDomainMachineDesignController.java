@@ -2617,10 +2617,12 @@ public class ItemDomainMachineDesignController
     protected DomainImportExportInfo initializeDomainExportInfo() {
 
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
-
-        formatInfo.add(new ImportExportFormatInfo("Machine Element Update Format", ImportHelperMachineItemUpdate.class
-        ));
-
+        
+        formatInfo.add(new ImportExportFormatInfo(
+                "Machine Element Update Format", ImportHelperMachineItemUpdate.class));
+        formatInfo.add(new ImportExportFormatInfo(
+                "Machine Hierarchy Transfer Format", ImportHelperMachineHierarchy.class));
+        
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
         return new DomainImportExportInfo(formatInfo, completionUrl);

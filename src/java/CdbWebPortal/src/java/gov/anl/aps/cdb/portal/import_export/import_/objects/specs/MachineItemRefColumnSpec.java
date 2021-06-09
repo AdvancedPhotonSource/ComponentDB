@@ -28,12 +28,11 @@ public class MachineItemRefColumnSpec extends IdOrNameRefColumnSpec {
             List<ColumnModeOptions> options,
             ItemDomainMachineDesign rootItem) {
         
-        super(
-                header, 
+        super(header, 
                 importPropertyName, 
                 importSetterMethod, 
                 description, 
-                exportGetterMethod, 
+                exportGetterMethod, null, 
                 options, 
                 ItemDomainMachineDesignController.getInstance(), 
                 ItemDomainMachineDesign.class, 
