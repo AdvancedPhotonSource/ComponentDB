@@ -15,7 +15,10 @@ See LICENSE file.
         <ui:param name="customizeDisplayOnComplete"
                   value="customizeListDisplay()" />
         <p:remoteCommand name="customizeListDisplay"
+                         oncomplete="onCompleteCustomizeListDisplay()"
                          action="#{entityController.customizeListDisplay()}" />
+        <p:remoteCommand name="onCompleteCustomizeListDisplay"
+                         action="#{entityController.list()}" />
     </ui:define>
 
     <ui:define name="customizeDisplayDialogConent">

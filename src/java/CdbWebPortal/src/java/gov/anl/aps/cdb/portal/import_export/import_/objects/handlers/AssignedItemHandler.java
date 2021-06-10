@@ -16,7 +16,10 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import java.io.IOException;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.poi.ss.usermodel.Row;
 
 /**
@@ -49,23 +52,26 @@ public class AssignedItemHandler extends SingleColumnInputHandler {
         Item assignedItem = null;
         if ((parsedValue != null) && (!parsedValue.isEmpty())) {
             // assigned item is specified
-            
+
             if (parsedValue.charAt(0) == '{') {
                 // parse as catalog item attribute map
-                
-                Map<String,String> attributeMap = null;
+
+                Map<String, String> attributeMap = null;
                 try {
                     attributeMap = RefInputHandler.mapFromJson(parsedValue);
                 } catch (CdbException ex) {
                     isValid = false;
                     validString = "Exception parsing assigned item attribute map for column: " + getColumnName();
+                } catch (IOException ex) {
+                    isValid = false;
+                    validString = "Exception parsing assigned item attribute map for column: " + getColumnName();
                 }
-                
+
                 if (attributeMap == null) {
                     isValid = false;
                     validString = "Exception parsing attribute map for column: " + getColumnName();
                 }
-                
+
                 RefObjectManager mgr = RefInputHandler.getObjectManager(
                         ItemDomainCatalogController.getInstance(), null);
                 CdbEntity entity = null;
@@ -75,7 +81,7 @@ public class AssignedItemHandler extends SingleColumnInputHandler {
                     isValid = false;
                     validString = "Exception looking up by attribute map for column: " + getColumnName();
                 }
-                
+
                 if (entity == null) {
                     isValid = false;
                     validString = "Unable to find object for: " + getColumnName() + " by attribute map";
@@ -93,26 +99,26 @@ public class AssignedItemHandler extends SingleColumnInputHandler {
                                 + " with id: " + parsedValue;
                         isValid = false;
                         validString = msg;
-                    }                    
+                    }
                 } catch (NumberFormatException ex) {
                     String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
                     isValid = false;
                     validString = msg;
                 }
             }
-            
+
             rowMap.put(MachineImportHelperCommon.KEY_ASSIGNED_ITEM, assignedItem);
         }
 
         return new ValidInfo(isValid, validString);
     }
-    
+
     @Override
     public ValidInfo updateEntity(Map<String, Object> rowMap, CdbEntity entity) {
-        
+
         boolean isValid = true;
         String validString = "";
-        
+
         ItemDomainMachineDesign item = null;
         if (!(entity instanceof ItemDomainMachineDesign)) {
             isValid = false;
@@ -141,7 +147,7 @@ public class AssignedItemHandler extends SingleColumnInputHandler {
             validString = "Template cannot have assigned inventory item";
             return new ValidInfo(isValid, validString);
         }
-        
+
         item.applyImportAssignedItem();
 
         return new ValidInfo(isValid, validString);
