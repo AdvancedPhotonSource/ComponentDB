@@ -11,10 +11,13 @@ import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ParseInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -176,7 +179,7 @@ public class RefInputHandler extends SimpleInputHandler {
         return new ParseInfo<>(objValue, true, "");                        
     }
     
-    public static Map<String,String> mapFromJson(String value) throws CdbException {
+    public static Map<String,String> mapFromJson(String value) throws CdbException, IOException {
         ObjectMapper mapper = new ObjectMapper();
         Map<String,String> attributeMap = null;
         try {
@@ -207,6 +210,8 @@ public class RefInputHandler extends SimpleInputHandler {
                 try {
                     attributeMap = mapFromJson(strValue);
                 } catch (CdbException e) {
+                    return new ParseInfo<>(null, false, e.getMessage());
+                } catch (IOException e) {
                     return new ParseInfo<>(null, false, e.getMessage());
                 }
                 
