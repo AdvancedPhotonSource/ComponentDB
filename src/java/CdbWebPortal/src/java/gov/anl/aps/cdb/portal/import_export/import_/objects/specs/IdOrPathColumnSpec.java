@@ -26,12 +26,11 @@ public class IdOrPathColumnSpec extends IdOrNameRefColumnSpec {
             CdbEntityController controller, 
             Class paramType) {
         
-        super(
-                header, 
+        super(header, 
                 importPropertyName, 
                 importSetterMethod, 
                 description, 
-                exportGetterMethod, 
+                exportGetterMethod, null, 
                 options,
                 controller, 
                 paramType, 

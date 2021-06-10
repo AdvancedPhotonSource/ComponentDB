@@ -26,6 +26,11 @@ See LICENSE file.
                 <ui:param name="wizardController" value="#{wizardController}" />
             </ui:decorate>
 
+            <ui:decorate template="templates/selectModeTabTemplate.xhtml">
+                <ui:param name="viewId" value="#{rootViewId}" />                
+                <ui:param name="wizardController" value="#{wizardController}" />
+            </ui:decorate>
+
             <ui:decorate template="templates/selectOptionsTabTemplate.xhtml">
                 <ui:param name="viewId" value="#{rootViewId}" />                
                 <ui:param name="wizardController" value="#{wizardController}" />

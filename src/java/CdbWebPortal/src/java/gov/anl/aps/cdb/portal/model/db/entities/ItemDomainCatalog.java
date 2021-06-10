@@ -5,12 +5,17 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogControllerUtility;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import org.apache.logging.log4j.LogManager;
@@ -56,7 +61,15 @@ public class ItemDomainCatalog extends ItemDomainCatalogBase<ItemDomainInventory
     @Override
     public ItemController getItemDomainController() {
         return ItemDomainCatalogController.getInstance();
-    }        
+    }
+    
+    public String getAlternateName() {
+        return getItemIdentifier2();
+    }
+
+    public void setAlternateName(String n) {
+        setItemIdentifier2(n);
+    }
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">
     @JsonIgnore

@@ -4,15 +4,20 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ParseInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -105,12 +110,16 @@ public class RefInputHandler extends SimpleInputHandler {
     }
     
     protected RefObjectManager getObjectManager() {
-        String entityTypeName = this.controller.getEntityTypeName();
+        return getObjectManager(controller, domainNameFilter);
+    }
+    
+    public static RefObjectManager getObjectManager(CdbEntityController controller, String domainNameFilter) {
+        String entityTypeName = controller.getEntityTypeName();
         if (!objectManagerMap.containsKey(entityTypeName)) {
             // add a new RefObjectManager instance for entity type if not present in map
             objectManagerMap.put(entityTypeName, new RefObjectManager(controller, domainNameFilter));
         }
-        return objectManagerMap.get(this.controller.getEntityTypeName());
+        return objectManagerMap.get(controller.getEntityTypeName());
     }
 
     @Override
@@ -144,12 +153,82 @@ public class RefInputHandler extends SimpleInputHandler {
         return new ParseInfo<>(objValue, true, "");                        
     }
 
+    /**
+     * Allows subclasses to customize look up for single object by name. 
+     */
+    protected ParseInfo getObjectWithAttributes(Map<String,String> attributeMap) {
+        
+        CdbEntity objValue = null;
+        String msg = "";
+
+        try {
+            objValue = getObjectManager().getObjectWithAttributes(attributeMap);
+        } catch (CdbException ex) {
+            msg = "Exception searching for object with attributes: "
+                    + attributeMap.toString() + " reason: " + ex.getMessage();
+        }
+
+        if (objValue == null) {
+            if (msg.isEmpty()) {
+                msg = "Unable to find object for: "
+                        + getColumnName() + " with attributes: " + attributeMap.toString();
+            }
+            return new ParseInfo<>(null, false, msg);
+        }
+        
+        return new ParseInfo<>(objValue, true, "");                        
+    }
+    
+    public static Map<String,String> mapFromJson(String value) throws CdbException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String,String> attributeMap = null;
+        try {
+            attributeMap = mapper.readValue(value, Map.class);
+        } catch (JsonProcessingException e) {
+            throw new CdbException("Exception parsing attribute map: " + value);
+        }
+        return attributeMap;
+    }
+
     @Override
     public ParseInfo parseCellValue(String strValue) {
         
         if (strValue != null && strValue.length() > 0) {
             
-            if (strValue.charAt(0) == '#') {
+            if (strValue.charAt(0) == '{') {
+                // look up by map of attributes
+                
+                if (idOnly) {
+                    String msg = "Lookup by attribute map not enabled for column: " + getColumnName();
+                    return new ParseInfo<>(null, false, msg);
+                }
+                
+                CdbEntity objValue = null;
+                String msg = "";
+                
+                Map<String,String> attributeMap = null;
+                try {
+                    attributeMap = mapFromJson(strValue);
+                } catch (CdbException e) {
+                    return new ParseInfo<>(null, false, e.getMessage());
+                } catch (IOException e) {
+                    return new ParseInfo<>(null, false, e.getMessage());
+                }
+                
+                if (attributeMap == null) {
+                    msg = "Exception parsing attribute map for column: " + getColumnName();
+                    return new ParseInfo<>(null, false, msg);
+                }
+                
+                ParseInfo parseInfo = getObjectWithAttributes(attributeMap);
+                if (!parseInfo.getValidInfo().isValid()) {
+                    return parseInfo;
+                } else {
+                    objValue = (CdbEntity) parseInfo.getValue();
+                    return new ParseInfo<>(objValue, true, "");
+                }
+
+            } else if (strValue.charAt(0) == '#') {
                 // lookup by name(s)
                 
                 if (idOnly) {
@@ -180,7 +259,6 @@ public class RefInputHandler extends SimpleInputHandler {
                                 return objWithNameInfo;
                             } else {
                                 objValue = (CdbEntity) objWithNameInfo.getValue();
-                                objValue = getObjectManager().getCacheObject(objValue);
                             }
                         }
 

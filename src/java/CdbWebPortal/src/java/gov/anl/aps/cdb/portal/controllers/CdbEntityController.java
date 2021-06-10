@@ -29,6 +29,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.export.wizard.ItemDomainExportWizard;
 import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import java.io.IOException;
@@ -38,6 +39,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -284,6 +286,10 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         }
 
         return getControllerUtility().findByPath(path);
+    }
+
+    public EntityType findUniqueWithAttributes(Map<String,String> attributeMap) throws CdbException {
+        return getEntityDbFacade().findUniqueWithAttributes(attributeMap);
     }
 
     /**
@@ -558,13 +564,9 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     /**
      * Customize display for entity list.
-     *
-     * @return current view URL for page reload
+     *     
      */
-    public String customizeListDisplay() {
-        String returnPage = SessionUtility.getCurrentViewId() + "?faces-redirect=true";
-        logger.debug("Returning to page: " + returnPage);
-        return returnPage;
+    public void customizeListDisplay() {
     }
 
     /**
@@ -824,7 +826,8 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
     public EntityType cloneEntityInstance(EntityType entity) {
         EntityType clonedEntity;
         try {
-            clonedEntity = (EntityType) (entity.clone());
+            UserInfo user = SessionUtility.getUser();                    
+            clonedEntity = (EntityType) (entity.clone(user));
         } catch (CloneNotSupportedException ex) {
             logger.error("Object cannot be cloned: " + ex);
             clonedEntity = createEntityInstance();

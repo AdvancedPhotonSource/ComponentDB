@@ -250,6 +250,11 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
     public boolean supportsModeDelete() {
         return true;
     }
+    
+    @Override
+    public boolean supportsModeTransfer() {
+        return true;
+    }
 
     @Override
     public String getFilenameBase() {

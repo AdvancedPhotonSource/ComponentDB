@@ -354,7 +354,7 @@ public class ItemDomainMachineDesignController
         searchCollapsed = true;
     }
 
-    public void searchMachineDesign(ItemDomainMachineDesignTreeNode parentNode, 
+    public void searchMachineDesign(ItemDomainMachineDesignTreeNode parentNode,
             Pattern searchPattern, List<ItemDomainMachineDesignTreeNode> results) {
         Object data = parentNode.getData();
         parentNode.setExpanded(false);
@@ -424,7 +424,7 @@ public class ItemDomainMachineDesignController
             try {
                 selectedItemInListTreeTable.expandAllChildren(expanded);
             } catch (CdbException ex) {
-                selectedItemInListTreeTable.setExpanded(true); 
+                selectedItemInListTreeTable.setExpanded(true);
                 SessionUtility.addWarningMessage("Warning", ex.getErrorMessage());
             }
         } else {
@@ -483,11 +483,11 @@ public class ItemDomainMachineDesignController
             }
         }
         return false;
-    } 
+    }
 
     @Override
     public String prepareView(Item item) {
-        return super.prepareView(item) + "&mode=detail"; 
+        return super.prepareView(item) + "&mode=detail";
     }
 
     public String showDetailsForCurrentSelectedTreeNode() {
@@ -926,7 +926,7 @@ public class ItemDomainMachineDesignController
             }
         }
 
-        List<ItemDomainMachineDesignTreeNode> children = machineDesignTreeRootTreeNode.getMachineChildren(); 
+        List<ItemDomainMachineDesignTreeNode> children = machineDesignTreeRootTreeNode.getMachineChildren();
 
         ItemDomainMachineDesignTreeNode result = null;
 
@@ -945,7 +945,7 @@ public class ItemDomainMachineDesignController
                             break;
                         } else {
                             treeNode.setExpanded(true);
-                            children = treeNode.getMachineChildren(); 
+                            children = treeNode.getMachineChildren();
                             break;
                         }
                     }
@@ -1286,9 +1286,9 @@ public class ItemDomainMachineDesignController
             newCatalogItemsInMachineDesignModel = new DefaultTreeNode();
             TreeNode parent = new DefaultTreeNode(getCurrent());
             newCatalogItemsInMachineDesignModel.getChildren().add(parent);
-            parent.setExpanded(true);                        
+            parent.setExpanded(true);
         }
-        TreeNode topItem = newCatalogItemsInMachineDesignModel.getChildren().get(0); 
+        TreeNode topItem = newCatalogItemsInMachineDesignModel.getChildren().get(0);
         TreeNode newCatalogNode = new DefaultTreeNode(catalogItem);
         topItem.getChildren().add(newCatalogNode);
 
@@ -1638,8 +1638,7 @@ public class ItemDomainMachineDesignController
 
                 for (ItemDomainMachineDesign item : favoriteItems) {
 
-                    ItemDomainMachineDesign parentMachineDesign = item.getParentMachineDesign();
-                    boolean parentFound = parentMachineDesign != null;
+                    ItemDomainMachineDesign parentMachineDesign = item.getParentMachineDesign();                    
                     while (parentMachineDesign != null) {
                         ItemDomainMachineDesign ittrParent = parentMachineDesign.getParentMachineDesign();
                         if (ittrParent == null) {
@@ -1647,24 +1646,22 @@ public class ItemDomainMachineDesignController
                         }
                         parentMachineDesign = ittrParent;
                     }
-                    if (parentFound) {
-                        // Ensure mutliple top levels aren't added. 
-                        if (parentFavorites.contains(item)) {
-                            continue;
-                        } else {
-                            parentFavorites.add(item);
-                        }
 
-                        // Ensure multiple top levels aren't added when a child of a favorite is also a favorite. 
-                        if (favoriteItems.contains(item)) {
-                            continue;
-                        }
+                    // Ensure mutliple top levels aren't added. 
+                    if (parentFavorites.contains(item)) {
+                        continue;
+                    } else {
+                        parentFavorites.add(item);
+                    }
+
+                    // Ensure multiple top levels aren't added when a child of a favorite is also a favorite. 
+                    if (favoriteItems.contains(item)) {
+                        continue;
                     }
                 }
 
-                loadMachineDesignRootTreeNode(parentFavorites);
+                favoriteMachineDesignTreeRootTreeNode = loadMachineDesignRootTreeNode(parentFavorites);
             }
-
         }
 
         return favoriteMachineDesignTreeRootTreeNode;
@@ -1675,6 +1672,10 @@ public class ItemDomainMachineDesignController
     }
 
     public void setFavoritesShown(boolean favoritesShown) {
+        if (this.favoritesShown == false && favoritesShown == true) {
+            // Change from not show to shown. 
+            favoriteMachineDesignTreeRootTreeNode = null;
+        }
         this.favoritesShown = favoritesShown;
     }
     // </editor-fold>   
@@ -2593,11 +2594,14 @@ public class ItemDomainMachineDesignController
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
 
         formatInfo.add(new ImportExportFormatInfo(
-                "Machine Hierarchy Creation Format", ImportHelperMachineHierarchy.class));
+                "Machine Hierarchy Creation Format", ImportHelperMachineHierarchy.class
+        ));
         formatInfo.add(new ImportExportFormatInfo(
-                "Machine Template Instantiation Format", ImportHelperMachineTemplateInstantiation.class));
+                "Machine Template Instantiation Format", ImportHelperMachineTemplateInstantiation.class
+        ));
         formatInfo.add(new ImportExportFormatInfo(
-                "Machine Element Update Format", ImportHelperMachineItemUpdate.class));
+                "Machine Element Update Format", ImportHelperMachineItemUpdate.class
+        ));
 
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
@@ -2614,27 +2618,30 @@ public class ItemDomainMachineDesignController
 
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
-        formatInfo.add(new ImportExportFormatInfo("Machine Element Update Format", ImportHelperMachineItemUpdate.class));
+        formatInfo.add(new ImportExportFormatInfo(
+                "Machine Element Update Format", ImportHelperMachineItemUpdate.class));
+        formatInfo.add(new ImportExportFormatInfo(
+                "Machine Hierarchy Transfer Format", ImportHelperMachineHierarchy.class));
         
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";
 
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
-    
+
     private static List<ItemDomainMachineDesign> createListForTreeNodeHierarchy(
             ItemDomainMachineDesignTreeNode node,
             boolean enforceMaxLevels,
             Integer maxLevels,
             int currentLevel) {
-        
+
         List<ItemDomainMachineDesign> itemList = new ArrayList<>();
-        
+
         if (enforceMaxLevels && (currentLevel >= maxLevels)) {
             return itemList;
         }
-        
+
         currentLevel = currentLevel + 1;
-        
+
         // walk tree node hierarchy to create list
         node.setExpanded(true);
         for (ItemDomainMachineDesignTreeNode childNode : node.getMachineChildren()) {
@@ -2651,15 +2658,15 @@ public class ItemDomainMachineDesignController
 
         return itemList;
     }
-    
+
     public static List<ItemDomainMachineDesign> createListForTreeNodeHierarchy(
             ItemDomainMachineDesignTreeNode rootNode,
             boolean enforceMaxLevels,
             Integer maxLevels) {
-        
-        return createListForTreeNodeHierarchy(rootNode, enforceMaxLevels, maxLevels, 0);        
+
+        return createListForTreeNodeHierarchy(rootNode, enforceMaxLevels, maxLevels, 0);
     }
-    
+
     // </editor-fold>       
     // <editor-fold defaultstate="collapsed" desc="Delete support">   
     private void addChildrenForItemToHierarchyNode(

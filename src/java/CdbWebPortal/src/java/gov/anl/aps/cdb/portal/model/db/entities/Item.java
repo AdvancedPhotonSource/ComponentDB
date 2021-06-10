@@ -24,7 +24,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
 import javax.persistence.Basic;
@@ -265,6 +267,10 @@ import org.primefaces.model.TreeNode;
 public class Item extends CdbDomainEntity implements Serializable {
 
     private static final Logger LOGGER = LogManager.getLogger(Item.class.getName());
+    
+    public static final String ATTRIBUTE_DOMAIN_NAME = "domainName";
+    public static final String ATTRIBUTE_NAME = "name";
+    public static final String ATTRIBUTE_QR_ID = "qrId";
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -430,8 +436,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     @Override
-    public Item clone() throws CloneNotSupportedException {
-        return clone(null, null);
+    public Item clone(UserInfo userInfo) throws CloneNotSupportedException {
+        UserGroup firstGroup = userInfo.getUserGroupList().get(0); 
+        return clone(userInfo, firstGroup);
     }
 
     public Item clone(UserInfo ownerUser, UserGroup ownerGroup) throws CloneNotSupportedException {
@@ -575,6 +582,30 @@ public class Item extends CdbDomainEntity implements Serializable {
             qrIdFilter = dispQr + " " + qrId + " " + dispQr.replace(" ", "");
         }
         return qrIdFilter;
+    }
+    
+    @JsonIgnore
+    public Map<String,String> getAttributeMap() {
+        Map<String, String> attributeMap = new HashMap<>();
+        
+        Domain domain = getDomain();
+        attributeMap.put(ATTRIBUTE_DOMAIN_NAME, domain.getName());
+        
+        attributeMap.put(ATTRIBUTE_NAME, getName());
+        
+        if (domain.getItemIdentifier1Label() != null) {
+            attributeMap.put(domain.getItemIdentifier1Label(), getItemIdentifier1());
+        }
+        
+        if (domain.getItemIdentifier2Label() != null) {
+            attributeMap.put(domain.getItemIdentifier2Label(), getItemIdentifier2());
+        }
+        
+        if (getQrId() != null) {
+            attributeMap.put(ATTRIBUTE_QR_ID, String.valueOf(getQrId()));
+        }
+        
+        return attributeMap;
     }
 
     @Size(max = 256)
@@ -799,6 +830,15 @@ public class Item extends CdbDomainEntity implements Serializable {
     public List<ItemCategory> getItemCategoryList() {
         return itemCategoryList;
     }
+    
+    @JsonIgnore
+    public List<String> getItemCategoryNameList() {
+        List<String> result = new ArrayList<>();
+        for (ItemCategory category : getItemCategoryList()) {
+            result.add(category.getName());
+        }
+        return result;
+    }
 
     @JsonIgnore
     public String getItemCategoryString() {
@@ -838,6 +878,15 @@ public class Item extends CdbDomainEntity implements Serializable {
     public List<ItemType> getItemTypeList() {
         return itemTypeList;
     }
+    
+    @JsonIgnore
+    public List<String> getItemTypeNameList() {
+        List<String> result = new ArrayList<>();
+        for (ItemType type : getItemTypeList()) {
+            result.add(type.getName());
+        }
+        return result;
+    }
    
     public void setItemTypeList(List<ItemType> itemTypeList) {
         this.itemTypeString = null;
@@ -854,6 +903,15 @@ public class Item extends CdbDomainEntity implements Serializable {
     @XmlTransient    
     public List<ItemProject> getItemProjectList() {
         return itemProjectList;
+    }
+    
+    @JsonIgnore    
+    public List<String> getItemProjectNameList() {
+        List<String> projectNames = new ArrayList<>();
+        for (ItemProject project : getItemProjectList()) {
+            projectNames.add(project.getName());
+        }
+        return projectNames;
     }
     
     public void setItemProjectList(List<ItemProject> itemProjectList) {
@@ -1047,8 +1105,13 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
     
     @JsonIgnore
-    public String getOwnerUserName() {
+    public String getOwnerDisplayName() {
         return this.getEntityInfo().getOwnerUserDisplayName();
+    }
+    
+    @JsonIgnore
+    public String getOwnerUsername() {
+        return this.getEntityInfo().getOwnerUsername();
     }
     
     @JsonIgnore

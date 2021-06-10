@@ -402,7 +402,7 @@ public class LocatableItemController implements Serializable {
 
             List<ItemDomainLocation> locationHierarchy = getLocationHierarchyListForItem(item);
             if (locationHierarchy != null) {
-                List<Item> itemHierarchy = (List<Item>) (List<?>) locationHierarchy; 
+                List<Item> itemHierarchy = (List<Item>) (List<?>) locationHierarchy;
                 String locationString = ItemUtility.generateHierarchyNodeString(itemHierarchy);
                 item.setLocationString(locationString);
             }
@@ -444,7 +444,7 @@ public class LocatableItemController implements Serializable {
                 if (housingHierarchy != null && housingHierarchy.size() > 0) {
                     int last = housingHierarchy.size() - 1;
                     Item housingItem = housingHierarchy.get(last);
-                    locationHistoryObject.setHousingItem(housingItem);                    
+                    locationHistoryObject.setHousingItem(housingItem);
                 }
                 housingTree = generateHousingTreeForLocationItem(housingHierarchy);
             }
@@ -541,7 +541,7 @@ public class LocatableItemController implements Serializable {
         } else {
             Item location = item.getActiveLocation();
             if (location != null) {
-                List<ItemDomainLocation> hierarchyList = generateLocationHierarchyList(location);                
+                List<ItemDomainLocation> hierarchyList = generateLocationHierarchyList(location);
 
                 item.setCachedLocationHierarchy(hierarchyList);
 
@@ -821,6 +821,7 @@ public class LocatableItemController implements Serializable {
         // Determie updating of location relationship. 
         LocatableItem existingItem = null;
         ItemElementRelationship itemElementRelationship = null;
+        String locationRelationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue();
 
         if (item.getId() != null) {
             existingItem = (LocatableItem) itemFacade.find(item.getId());
@@ -850,6 +851,20 @@ public class LocatableItemController implements Serializable {
 
             locationDifferentOnCurrentItem = ((!Objects.equals(existingItem.getLocationItem(), item.getLocationItem())
                     || !Objects.equals(existingLocationDetails, newLocationDetails)));
+        } else {
+            if (newItemWithNewLocation) {
+                // Check if location relationship was added on another request. 
+                List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
+                if (itemElementRelationshipList != null) {
+                    for (ItemElementRelationship rel : itemElementRelationshipList) {
+                        if (rel.getRelationshipType().getName().equals(locationRelationshipTypeName)) {
+                            // Location was already added to new item
+                            newItemWithNewLocation = false;
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         if (newItemWithNewLocation || locationDifferentOnCurrentItem) {
@@ -883,9 +898,8 @@ public class LocatableItemController implements Serializable {
 
             // iterate through list to find location relationship, in case pointer has been reloaded
             ItemElementRelationship ier = null;
-            String relationshipTypeName = ItemElementRelationshipTypeNames.itemLocation.getValue();
             for (ItemElementRelationship rel : itemElementRelationshipList) {
-                if (rel.getRelationshipType().getName().equals(relationshipTypeName)) {
+                if (rel.getRelationshipType().getName().equals(locationRelationshipTypeName)) {
                     ier = rel;
                     break;
                 }

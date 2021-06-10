@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">   
+
+    <!-- Must provide params "viewId", "wizardController"-->
+    
+    <ui:param name="rootViewId" value="#{viewId}"/>
+    
+    <p:tab id="#{rootViewId}SelectModeTab">
+        <p:panel header="Select desired output style, then click 'Next Step'.">
+            <p:outputPanel id="#{rootViewId}SelectModePanel">
+                <p:panelGrid>
+                    <p:row>
+                        <p:column>
+
+                            <p:selectOneRadio id="#{rootViewId}SelectModeRadio" 
+                                              value="#{wizardController.selectedMode}" 
+                                              layout="custom">
+                                <f:selectItem itemLabel="Create Standard Export Format" 
+                                              itemValue="export"/>
+                                <f:selectItem itemLabel="Create Transfer Format" 
+                                              itemValue="transfer"/>
+
+                                <p:ajax event="click"
+                                        listener="#{wizardController.clickListenerMode}"
+                                        oncomplete="update#{rootViewId}WizardButtons();"/>
+
+                            </p:selectOneRadio>
+
+                            <p:panelGrid columns="2">
+
+                                <p:radioButton id="#{rootViewId}RadioExport" 
+                                               for="#{rootViewId}SelectModeRadio"
+                                               rendered="#{wizardController.supportsModeExport()}"
+                                               itemIndex="0" />
+                                <p:outputLabel for="#{rootViewId}RadioExport" 
+                                               rendered="#{wizardController.supportsModeExport()}"
+                                               value="Create regular export output (with ids)" />
+
+                                <p:radioButton id="#{rootViewId}RadioTransfer" 
+                                               for="#{rootViewId}SelectModeRadio" 
+                                               rendered="#{wizardController.supportsModeTransfer()}"
+                                               itemIndex="1" />
+                                <p:outputLabel for="#{rootViewId}RadioTransfer" 
+                                               rendered="#{wizardController.supportsModeTransfer()}"
+                                               value="Create output for transfer to another system (without ids)" />
+
+                            </p:panelGrid>
+
+                        </p:column>
+                    </p:row>
+
+                </p:panelGrid>                
+            </p:outputPanel>
+        </p:panel>
+    </p:tab>
+
+</ui:composition>

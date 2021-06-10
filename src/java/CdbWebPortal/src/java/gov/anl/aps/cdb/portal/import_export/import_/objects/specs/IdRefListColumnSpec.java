@@ -24,6 +24,7 @@ public class IdRefListColumnSpec extends IdRefColumnSpec {
             String importSetterMethod, 
             String description,
             String exportGetterMethod,
+            String exportTransferGetterMethod,
             List<ColumnModeOptions> options, 
             CdbEntityController controller, 
             Class paramType) {
@@ -33,7 +34,8 @@ public class IdRefListColumnSpec extends IdRefColumnSpec {
                 importPropertyName, 
                 importSetterMethod, 
                 description, 
-                exportGetterMethod, 
+                exportGetterMethod,
+                exportTransferGetterMethod,
                 options,
                 controller, 
                 paramType);
@@ -52,12 +54,4 @@ public class IdRefListColumnSpec extends IdRefColumnSpec {
                 false);
     }
 
-    @Override
-    public OutputHandler getOutputHandler() {
-        return new RefOutputHandler(
-                getHeader(),
-                getDescription(),
-                getExportGetterMethod(),
-                false);
-    }
 }

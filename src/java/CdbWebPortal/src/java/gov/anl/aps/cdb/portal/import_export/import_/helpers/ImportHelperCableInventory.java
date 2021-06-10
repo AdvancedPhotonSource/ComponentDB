@@ -40,7 +40,7 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
                 KEY_CATALOG_ITEM, 
                 "setCatalogItem", 
                 "ID or name of cable catalog item for inventory unit. Name must be unique and prefixed with '#'.", 
-                null,
+                null, null,
                 ColumnModeOptions.rCREATErUPDATE(), 
                 ItemDomainCableCatalogController.getInstance(), 
                 ItemDomainCableCatalog.class, 
@@ -60,7 +60,7 @@ public class ImportHelperCableInventory extends ImportHelperInventoryBase<ItemDo
                 "qrId", 
                 "setQrId", 
                 "Integer QR id of inventory unit.", 
-                null,
+                null, null,
                 ColumnModeOptions.oCREATEoUPDATE()));
         
         specs.add(new StringColumnSpec(

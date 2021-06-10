@@ -76,7 +76,7 @@ public class ImportHelperLocation
                 KEY_QR, 
                 "setQrId", 
                 "QR ID of location (9 digit number).", 
-                null,
+                null, null,
                 ColumnModeOptions.oCREATE()));
         
         specs.add(new IdOrNameRefColumnSpec(
@@ -84,7 +84,7 @@ public class ImportHelperLocation
                 KEY_TYPE, 
                 "setItemType", 
                 "CDB ID or name of location type. Name must be prefixed with '#'.", 
-                null,
+                null, null,
                 ColumnModeOptions.oCREATE(), 
                 ItemTypeController.getInstance(), 
                 ItemType.class, 
@@ -104,6 +104,7 @@ public class ImportHelperLocation
                 KEY_SORT_ORDER, 
                 "setImportSortOrder", 
                 "Sort order within parent item (as decimal), defaults to order in input sheet.", 
+                null,
                 null,
                 ColumnModeOptions.oCREATE()));
         

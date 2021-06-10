@@ -4,8 +4,10 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects.handlers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
@@ -45,25 +47,58 @@ public class LocationHandler extends SingleColumnInputHandler {
 
             // ignore word "parent"
             if (!parsedValue.equalsIgnoreCase("parent")) {
-                int id;
-                try {
-                    id = Integer.valueOf(parsedValue);
-                    itemLocation = ItemDomainLocationController.getInstance().findById(id);
-                    if (itemLocation == null) {
-                        String msg = "Unable to find object for: " + getColumnName()
-                                + " with id: " + parsedValue;
+                
+                ItemDomainLocationController controller = ItemDomainLocationController.getInstance();
+                
+                if (parsedValue.charAt(0) == '#') {
+                    // lookup by name
+                    
+                    if (parsedValue.length() > 1) {
+                        RefObjectManager mgr = RefInputHandler.getObjectManager(controller, null);
+                        CdbEntity entity = null;
+                        String name = parsedValue.substring(1);
+                        try {
+                            entity = mgr.getObjectWithName(name);
+                        } catch (CdbException ex) {
+                            isValid = false;
+                            validString = "Exception looking up by name: "
+                                    + name + " for column: " + getColumnName();
+                        }
+                        
+                        if (entity == null) {
+                            isValid = false;
+                            validString = "Unable to find object for: " + getColumnName() + " with name: " + name;
+                        } else {
+                            itemLocation = (ItemDomainLocation) entity;
+                        }
+                        
+                    } else {
+                        isValid = false;
+                        validString = "No name specified following '#' in column: " + getColumnName();
+                    }
+                    
+                } else {
+                    // lookup by id
+                    
+                    int id;
+                    try {
+                        id = Integer.valueOf(parsedValue);
+                        itemLocation = controller.findById(id);
+                        if (itemLocation == null) {
+                            String msg = "Unable to find object for: " + getColumnName()
+                                    + " with id: " + parsedValue;
+                            isValid = false;
+                            validString = msg;
+                        }
+                    } catch (NumberFormatException ex) {
+                        String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
                         isValid = false;
                         validString = msg;
-
-                    } else {
-                        // set location
-                        rowMap.put(MachineImportHelperCommon.KEY_LOCATION, itemLocation);
                     }
-
-                } catch (NumberFormatException ex) {
-                    String msg = "Invalid id number: " + parsedValue + " for column: " + getColumnName();
-                    isValid = false;
-                    validString = msg;
+                }
+                
+                if (itemLocation != null) {
+                    rowMap.put(MachineImportHelperCommon.KEY_LOCATION, itemLocation);
                 }
             }
         }

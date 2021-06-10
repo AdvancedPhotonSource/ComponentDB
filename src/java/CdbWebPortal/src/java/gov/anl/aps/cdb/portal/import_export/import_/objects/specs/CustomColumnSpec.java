@@ -17,19 +17,29 @@ import java.util.List;
 public class CustomColumnSpec extends ColumnSpec {
     
     private InputHandler inputHandler;
-    private boolean exportIds;
     
     public CustomColumnSpec(
             String header, 
             String importPropertyName, 
             String description,
             String exportGetterMethod, 
-            boolean exportIds,
             List<ColumnModeOptions> options,
             InputHandler handler) {
         
         super(header, importPropertyName, null, description, exportGetterMethod, options);
-        this.exportIds = exportIds;
+        this.inputHandler = handler;
+    }
+    
+    public CustomColumnSpec(
+            String header, 
+            String importPropertyName, 
+            String description,
+            String exportGetterMethod, 
+            String exportTransferGetterMethod,
+            List<ColumnModeOptions> options,
+            InputHandler handler) {
+        
+        super(header, importPropertyName, null, description, exportGetterMethod, exportTransferGetterMethod, options);
         this.inputHandler = handler;
     }
     
@@ -39,11 +49,10 @@ public class CustomColumnSpec extends ColumnSpec {
     }
     
     @Override
-    public OutputHandler getOutputHandler() {
+    public OutputHandler createOutputHandler(String getterMethod) {
         return new CustomOutputHandler(
                 getHeader(),
                 getDescription(),
-                getExportGetterMethod(),
-                exportIds);
+                getterMethod);
     }
 }

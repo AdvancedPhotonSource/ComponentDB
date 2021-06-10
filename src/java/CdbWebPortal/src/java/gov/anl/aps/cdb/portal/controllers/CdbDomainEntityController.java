@@ -207,13 +207,11 @@ public abstract class CdbDomainEntityController<ControllerUtility extends CdbDom
         update();
         reloadCurrent();
     }   
-
+    
     @Override
-    public String customizeListDisplay() {
+    public void customizeListDisplay() {
         resetDomainEntityPropertyTypeIdIndexMappings();
-        forceLoadPreProcessListDataModel();
-
-        return super.customizeListDisplay();
+        forceLoadPreProcessListDataModel();       
     }   
 
     @Override

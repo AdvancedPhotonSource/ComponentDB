@@ -8,7 +8,6 @@ import gov.anl.aps.cdb.portal.import_export.export.objects.GenerateExportResult;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperBase;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.HelperWizardOption;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
-import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
@@ -32,6 +31,7 @@ public class ItemDomainExportWizard implements Serializable {
     public static final String CONTROLLER_NAMED = "exportWizard";
 
     protected static final String TAB_SELECT_FORMAT = "SelectFormatTab";
+    protected static final String TAB_SELECT_MODE = "SelectModeTab";
     protected static final String TAB_SELECT_OPTIONS = "SelectOptionsTab";
     protected static final String TAB_CONFIRMATION = "ConfirmationTab";
     protected static final String TAB_DOWNLOAD_FILE = "DownloadFileTab";
@@ -50,9 +50,9 @@ public class ItemDomainExportWizard implements Serializable {
     // models for select format tab
     private String selectedFormatName = null;
     
-    // models for select options tab
-    private String selectedFormatOption = null;
-    
+    // models for select mode tab
+    private String selectedMode = null;
+
     // models for confirmation tab
     private String confirmationMessage = null;
     private boolean hasError = false;
@@ -106,18 +106,35 @@ public class ItemDomainExportWizard implements Serializable {
         setEnablementForCurrentTab();
     }
 
-    public String getSelectedFormatOption() {
-        return selectedFormatOption;
+    public String getSelectedMode() {
+        return selectedMode;
     }
 
-    public void setSelectedFormatOption(String selectedFormatOption) {
-        this.selectedFormatOption = selectedFormatOption;
+    public void setSelectedMode(String selectedMode) {
+        this.selectedMode = selectedMode;
     }
 
-    public Boolean supportsCustomFormat() {
-        return false;
+    /**
+     * Handles radio button click for select mode tab of wizard.
+     */
+    public void clickListenerMode() {
+        setEnablementForCurrentTab();
     }
     
+    public Boolean supportsModeExport() {
+        if (importHelper == null) {
+            return false;
+        }
+        return importHelper.supportsModeExport();
+    }
+
+    public Boolean supportsModeTransfer() {
+        if (importHelper == null) {
+            return false;
+        }
+        return importHelper.supportsModeTransfer();
+    }
+
     public StreamedContent getDownloadFile() {
         return downloadFile;
     }
@@ -168,7 +185,7 @@ public class ItemDomainExportWizard implements Serializable {
         
         // handle transition from select format tab
         if ((currStep.endsWith(TAB_SELECT_FORMAT))
-                && (nextStep.endsWith(TAB_SELECT_OPTIONS))) {
+                && (nextStep.endsWith(TAB_SELECT_MODE))) {
             
             createHelperForSelectedFormat();
             
@@ -182,14 +199,22 @@ public class ItemDomainExportWizard implements Serializable {
                 return currStep;
             }
             
+        }
+
+        // handle select mode tab
+        if ((currStep.endsWith(TAB_SELECT_MODE))
+                && (nextStep.endsWith(TAB_SELECT_OPTIONS))) {
+            
+            importHelper.setExportMode(getSelectedMode());
+            
             // skip options tab if no options specified
             if (importHelper.getExportWizardOptions().isEmpty()) {
                 nextStep = "exportWizard" + TAB_CONFIRMATION;
             }
         }
-
+        
         // handle transition to confirmation tab file
-        if (((currStep.endsWith(TAB_SELECT_OPTIONS)) || (currStep.endsWith(TAB_SELECT_FORMAT)))
+        if (((currStep.endsWith(TAB_SELECT_OPTIONS)) || (currStep.endsWith(TAB_SELECT_MODE)))
                 && (nextStep.endsWith(TAB_CONFIRMATION))) {
             
             // validate and handle wizard options if appropriate
@@ -295,9 +320,10 @@ public class ItemDomainExportWizard implements Serializable {
     protected void reset() {
         currentTab = TAB_SELECT_FORMAT;
         selectedFormatName = null;
-        selectedFormatOption = null;
+        selectedMode = null;
         importHelper = null;
         hasError = false;
+        confirmationMessage = null;
     }
 
     /**
@@ -346,6 +372,17 @@ public class ItemDomainExportWizard implements Serializable {
             disableButtonFinish = true;
 
             if (getSelectedFormatName()!= null) {
+                disableButtonNext = false;
+            } else {
+                disableButtonNext = true;
+            }
+
+        }  else if (tab.endsWith(TAB_SELECT_MODE)) {
+            disableButtonPrev = false;
+            disableButtonCancel = false;
+            disableButtonFinish = true;
+
+            if (selectedMode != null) {
                 disableButtonNext = false;
             } else {
                 disableButtonNext = true;
