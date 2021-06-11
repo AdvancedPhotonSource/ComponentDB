@@ -168,12 +168,7 @@ public abstract class LocatableItem extends Item {
 
     public void setLocationString(String locationString) {
         this.locationString = locationString;
-    }
-    
-    @Override
-    public Item clone() throws CloneNotSupportedException {
-        return clone(null, null);
-    }
+    }        
 
     @Override
     public Item clone(UserInfo ownerUser, UserGroup ownerGroup) throws CloneNotSupportedException {
