@@ -397,19 +397,11 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public Item() {
     }
-
-    public void init() {
-        EntityInfo ei = null;
-        init(ei);
-    }
-
+    
     public void init(EntityInfo entityInfo) {
-        ItemElement selfElement = new ItemElement();
-        if (entityInfo == null) {
-            selfElement.init(this);
-        } else {
-            selfElement.init(this, entityInfo);
-        }
+        ItemElement selfElement = new ItemElement();        
+        selfElement.init(this, entityInfo);
+        
         this.fullItemElementList = new ArrayList<>();
         this.fullItemElementList.add(selfElement);
 
@@ -422,13 +414,7 @@ public class Item extends CdbDomainEntity implements Serializable {
         init(ei);
 
         this.domain = domain;
-    }
-
-    public void init(Domain domain) {
-        init();
-
-        this.domain = domain;
-    }
+    }   
 
     // Override in sub domains 
     public Item createInstance() {

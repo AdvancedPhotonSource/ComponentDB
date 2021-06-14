@@ -2162,6 +2162,13 @@ public class ItemDomainMachineDesignController
             UserInfo ownerUser,
             UserGroup ownerGroup) throws CdbException, CloneNotSupportedException {
 
+        if (ownerUser == null) {
+            ownerUser = SessionUtility.getUser();            
+        }
+        if (ownerGroup == null) {
+            ownerGroup = ownerUser.getUserGroupList().get(0); 
+        }
+        
         ItemDomainMachineDesign clone = (ItemDomainMachineDesign) templateItem.clone(ownerUser, ownerGroup);
         cloneCreateItemElements(clone, templateItem, true, true);
         setMachineDesginIdentifiersFromTemplateItem(templateItem, clone);
