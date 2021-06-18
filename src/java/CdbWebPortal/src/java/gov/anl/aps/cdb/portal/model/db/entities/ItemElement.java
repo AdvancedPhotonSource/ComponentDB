@@ -102,6 +102,8 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     private String name;
     @Column(name = "is_required")
     private boolean isRequired;
+    @Column(name = "is_housed")
+    private boolean isHoused;
     @Size(max = 256)
     private String description;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
@@ -275,6 +277,14 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
 
     public void setIsRequired(Boolean isRequired) {
         this.isRequired = isRequired;
+    }
+
+    public boolean getIsHoused() {
+        return isHoused;
+    }
+
+    public void setIsHoused(boolean isHoused) {
+        this.isHoused = isHoused;
     }
 
     public Boolean getTemporaryIsRequiredValue() {
@@ -687,11 +697,12 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
         }
     }
 
-    public boolean equalsByIdContainedItemsAndParentItem(ItemElement other) {
+    public boolean equalsByIdContainedItemsAndParentItemAndHousing(ItemElement other) {
         if (this.equals(other)) {
             return nullSafeComparison(this.containedItem1, other.containedItem1)
                     && nullSafeComparison(this.containedItem2, other.containedItem2)
-                    && nullSafeComparison(this.parentItem, other.parentItem);
+                    && nullSafeComparison(this.parentItem, other.parentItem)
+                    && nullSafeComparison(this.isHoused, other.isHoused);
         }
         return false;
     }
