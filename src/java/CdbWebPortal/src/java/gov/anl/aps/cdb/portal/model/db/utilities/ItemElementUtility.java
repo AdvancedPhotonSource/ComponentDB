@@ -166,7 +166,7 @@ public class ItemElementUtility {
 
     public static void prepareItemElementHistory(ItemElement originalItemElement, ItemElement itemElementValue, EntityInfo entityInfo) {
         if (originalItemElement != null) {
-            if (!itemElementValue.equalsByIdContainedItemsAndParentItem(originalItemElement)) {
+            if (!itemElementValue.equalsByIdContainedItemsAndParentItemAndHousing(originalItemElement)) {
                 // Property value was modified.
                 logger.debug("Item element: " + itemElementValue + " was modified, storing history");
 
