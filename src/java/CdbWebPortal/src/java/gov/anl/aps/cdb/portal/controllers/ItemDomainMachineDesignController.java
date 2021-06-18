@@ -108,6 +108,7 @@ public class ItemDomainMachineDesignController
     private boolean displayAddCatalogItemListConfigurationPanel = true;
     private boolean displayAssignCatalogItemListConfigurationPanel = true;
     private boolean displayAssignInventoryItemListConfigurationPanel = true;
+    private boolean displayUpdateInstalledInventoryStateDialogContents = true; 
     private boolean displayAttachTemplateToMachine = true;
     private boolean displayMachineDesignReorderOverlayPanel = true;
     private boolean displayAddCablePanel = true;
@@ -513,6 +514,7 @@ public class ItemDomainMachineDesignController
         displayAddCatalogItemListConfigurationPanel = false;
         displayAssignCatalogItemListConfigurationPanel = false;
         displayAssignInventoryItemListConfigurationPanel = false;
+        displayUpdateInstalledInventoryStateDialogContents = false; 
         displayAttachTemplateToMachine = false;
         displayMachineDesignReorderOverlayPanel = false;
         displayAddCablePanel = false;
@@ -604,6 +606,10 @@ public class ItemDomainMachineDesignController
         return displayAssignInventoryItemListConfigurationPanel;
     }
 
+    public boolean isDisplayUpdateInstalledInventoryStateDialogContents() {
+        return displayUpdateInstalledInventoryStateDialogContents;
+    }
+
     public boolean isDisplayAttachTemplateToMachine() {
         return displayAttachTemplateToMachine;
     }
@@ -659,6 +665,7 @@ public class ItemDomainMachineDesignController
         Item derivedFromItem = assignedItem.getDerivedFromItem();
 
         mdItem.setAssignedItem(derivedFromItem);
+        mdItem.setIsHoused(true);
 
         setCurrent(mdItem);
         update();
@@ -755,6 +762,27 @@ public class ItemDomainMachineDesignController
         // Select current template 
         templateToCreateNewItem = (ItemDomainMachineDesign) templateElement.getContainedItem();
         generateTemplateForElementMachineDesignNameVars();
+    }
+    
+    public void prepareUpdateInventoryInstallState() {
+        updateCurrentUsingSelectedItemInTreeTable();
+                
+        ItemDomainMachineDesign current = getCurrent();
+        boolean isHoused = current.isIsHoused();
+        current.setInventoryIsInstalled(isHoused); 
+        
+        displayUpdateInstalledInventoryStateDialogContents = true; 
+    }
+    
+    public void updateInventoryInstallState() {
+        boolean inventoryIsInstalled = isInventoryIsInstalled();
+        ItemDomainMachineDesign current = getCurrent();
+        current.setIsHoused(inventoryIsInstalled);        
+       
+        update(); 
+        
+        resetListConfigurationVariables();        
+        expandToSelectedTreeNodeAndSelect();
     }
 
     public void prepareAssignInventoryMachineDesignListConfiguration() {
@@ -1524,9 +1552,11 @@ public class ItemDomainMachineDesignController
             ItemElementHistory ieh = new ItemElementHistory();
 
             Item currentAssignedItem = null;
+            boolean is_installed = true; 
             Item currentParentItem = null;
             if (aih != null) {
                 currentAssignedItem = aih.getContainedItem2();
+                is_installed = aih.getIsHoused(); 
             }
             if (pih != null) {
                 currentParentItem = pih.getParentItem();
@@ -1565,6 +1595,7 @@ public class ItemDomainMachineDesignController
                 ieh.setParentItem(currentParentItem);
             }
             ieh.setContainedItem2(currentAssignedItem);
+            ieh.setIsHoused(is_installed);
 
             itemElementHistories.add(ieh);
         }
@@ -1712,6 +1743,7 @@ public class ItemDomainMachineDesignController
         boolean updateNecessary = false;
         ItemElement currentEditItemElement = getCurrentEditItemElement();
         Item inventoryForElement = getInventoryForElement();
+        boolean inventoryIsInstalled = isInventoryIsInstalled();
         ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) currentEditItemElement.getContainedItem();
         Item assignedItem = mdItem.getAssignedItem();
 
@@ -1721,6 +1753,7 @@ public class ItemDomainMachineDesignController
             } else if (verifyValidUnusedInventoryItem(inventoryForElement)) {
                 updateNecessary = true;
                 mdItem.setAssignedItem(inventoryForElement);
+                mdItem.setIsHoused(inventoryIsInstalled);
             }
         } else if (assignedItem.getDomain().getId() == ItemDomainName.INVENTORY_ID) {
             // Item is unselected, select catalog item
@@ -2224,6 +2257,11 @@ public class ItemDomainMachineDesignController
     public void setInventoryForElement(Item inventoryForElement) {
         ItemDomainMachineDesign current = getCurrent();
         current.setInventoryForElement(inventoryForElement);
+    }
+    
+    public boolean isInventoryIsInstalled() {
+        ItemDomainMachineDesign current = getCurrent();
+        return current.isInventoryIsInstalled(); 
     }
 
     public Item getCatalogForElement() {

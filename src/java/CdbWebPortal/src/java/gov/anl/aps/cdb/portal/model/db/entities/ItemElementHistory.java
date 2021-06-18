@@ -57,6 +57,8 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
     private String snapshotElementName;
     @Column(name = "is_required")
     private Boolean isRequired;
+    @Column(name = "is_housed")
+    private boolean isHoused;
     @Size(max = 256)
     private String description;    
     @Column(name = "sort_order")
@@ -115,6 +117,8 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
         this.sortOrder = element.getSortOrder(); 
         this.description = element.getDescription(); 
         
+        this.isHoused = element.getIsHoused(); 
+        
         this.enteredByUser = entityInfo.getLastModifiedByUser();
         this.enteredOnDateTime = entityInfo.getLastModifiedOnDateTime(); 
     }
@@ -138,6 +142,14 @@ public class ItemElementHistory extends CdbEntity implements Serializable {
 
     public void setIsRequired(Boolean isRequired) {
         this.isRequired = isRequired;
+    }
+
+    public boolean getIsHoused() {
+        return isHoused;
+    }
+
+    public void setIsHoused(boolean isHoused) {
+        this.isHoused = isHoused;
     }
 
     public String getDescription() {

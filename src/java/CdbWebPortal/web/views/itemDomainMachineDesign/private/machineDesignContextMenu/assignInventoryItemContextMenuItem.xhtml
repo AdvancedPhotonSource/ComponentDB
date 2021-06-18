@@ -10,6 +10,8 @@ See LICENSE file.
 
     <p:menuitem value="Assign Inventory" 
                 disabled="#{disabledEditContextMenuItemForSelection}"
+                onclick="PF('loadingDialog').show()"
+                oncomplete="PF('loadingDialog').hide()"
                 icon="fa fa-link"
                 action="#{entityController.prepareAssignInventoryMachineDesignListConfiguration()}"
                 update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel emphasizedContentBelowTitleOutputPanel"/>

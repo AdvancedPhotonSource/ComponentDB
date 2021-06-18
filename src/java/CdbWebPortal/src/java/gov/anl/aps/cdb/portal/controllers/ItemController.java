@@ -19,7 +19,6 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesContr
 import gov.anl.aps.cdb.portal.controllers.extensions.ItemMultiEditController;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
-import gov.anl.aps.cdb.portal.model.db.beans.AllowedPropertyMetadataValueFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
@@ -30,7 +29,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ListFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeMetadataFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.UserInfoFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.AllowedPropertyMetadataValue;
@@ -71,7 +69,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -124,12 +121,6 @@ public abstract class ItemController<
 
     @EJB
     protected PropertyTypeFacade propertyTypeFacade;
-
-    @EJB
-    private PropertyTypeMetadataFacade propertyTypeMetadataFacade;
-
-    @EJB
-    private AllowedPropertyMetadataValueFacade allowedPropertyMetadataValueFacade;
 
     private List<ItemElementRelationship> locationRelationshipCache;
 

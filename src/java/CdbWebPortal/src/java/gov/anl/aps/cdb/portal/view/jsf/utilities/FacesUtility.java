@@ -33,7 +33,9 @@ public class FacesUtility {
     private Wizard wizard;
 
     private SelectOneMenu selectOneMenu;
-
+    
+    private Integer jumpToQrIdEntry; 
+  
     public SelectOneMenu getSelectOneMenu() {
         return selectOneMenu;
     }
@@ -149,6 +151,18 @@ public class FacesUtility {
             return object.toString();
         }
         return "";
+    }
+    
+    public String jumpToItemQrId() {               
+        return "/views/item/view?qrId=" + jumpToQrIdEntry + "&faces-redirect=true";
+    }
+
+    public Integer getJumpToQrIdEntry() {
+        return jumpToQrIdEntry;
+    }
+
+    public void setJumpToQrIdEntry(Integer jumpToQrIdEntry) {
+        this.jumpToQrIdEntry = jumpToQrIdEntry;
     }
 
     @FacesConverter("genericSelectOneMenuObjectConverter")

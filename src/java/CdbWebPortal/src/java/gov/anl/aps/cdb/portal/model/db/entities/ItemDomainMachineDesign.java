@@ -72,6 +72,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient ItemDomainMachineDesign newMdInventoryItem = null;
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private transient Item inventoryForElement = null;
+    private transient boolean inventoryIsInstalled = true;    
     private transient Item catalogForElement = null;
     private transient Item originalForElement = null;
     protected transient DataModel installedInventorySelectionForCurrentElement;
@@ -337,7 +338,17 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         ItemElement selfElement = getSelfElement();
         selfElement.setContainedItem2(item);
     }
+    
+    public boolean isIsHoused() {
+        ItemElement selfElement = getSelfElement();
+        return selfElement.getIsHoused();
+    }
 
+    public void setIsHoused(boolean isHoused) {
+        ItemElement selfElement = getSelfElement();
+        selfElement.setIsHoused(isHoused); 
+    }
+       
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult result = super.search(searchPattern);
@@ -706,6 +717,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setInventoryForElement(Item inventoryForElement) {
         this.inventoryForElement = inventoryForElement;
+    }
+
+    @JsonIgnore
+    public boolean isInventoryIsInstalled() {
+        return inventoryIsInstalled;
+    }
+
+    public void setInventoryIsInstalled(boolean inventoryIsInstalled) {
+        this.inventoryIsInstalled = inventoryIsInstalled;
     }
 
     @JsonIgnore

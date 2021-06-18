@@ -31,7 +31,7 @@ See LICENSE file.
                          paginatorPosition="bottom"
                          rows="#{resources.DialogDataTableNumberOfRows}"
                          paginatorAlwaysVisible="false">
-                <p:column headerText="Assigned Item">
+                <p:column headerText="Assigned Item">                    
                     <ui:param name="assignedItem"
                               value="#{historyItem.containedItem2}" /> 
                     <ui:param name="snapshotName"
@@ -48,7 +48,13 @@ See LICENSE file.
                         <h:outputText value="Deleted Item: #{snapshotName}" /> 
                     </ui:fragment>
                 </p:column>
-                
+
+                <p:column headerText="Install State">                                        
+                    <ui:param name="installStateText" 
+                              value="#{historyItem.isHoused ? 'Installed' : 'Planned'}"/>
+                    <h:outputText value="#{installStateText}" /> 
+                </p:column>
+
                 <p:column headerText="Parent Item">
                     <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">                        
                         <ui:param name="itemObject" 

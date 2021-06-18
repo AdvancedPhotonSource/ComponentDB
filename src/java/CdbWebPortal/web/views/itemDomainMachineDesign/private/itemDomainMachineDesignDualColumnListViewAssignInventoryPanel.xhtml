@@ -12,17 +12,22 @@ See LICENSE file.
     <p:panel header="Assign Inventory to Catalog Item"
              id="assignInventoryToListConfigurationPanel"
              rendered="#{entityController.displayAssignInventoryItemListConfigurationPanel}">
-        
+
         <ui:include src="itemDomainMachineDesignItemElementSelectInventoryDataTable.xhtml">
             <ui:param name="viewName"
                       value="ListConfiguration"/>
         </ui:include>
+
+        <ui:param name="currentMd" value="#{entityController.current}"/>
+        <ui:include src="itemDomainMachineDesignInventoryInstallStateSelectBooleanButton.xhtml" /> 
         
+        <br/>
+
         <p:commandButton icon="fa fa-save"
                          value="Save" 
                          action="#{entityController.assignInventoryMachineDesignListConfiguration}"
-                         update="@form"/> 
-        
+                         update="@form"/>                 
+
         <ui:include src="itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
     </p:panel>
 
@@ -30,4 +35,3 @@ See LICENSE file.
 </ui:composition>
 
 
- 

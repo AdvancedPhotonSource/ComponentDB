@@ -312,6 +312,9 @@ public class LocatableItemController implements Serializable {
             }
         } else if (allMembershipList.size() == 1) {
             ItemElement element = allMembershipList.get(0);
+            if (element.getIsHoused()  == false) {
+                return null; 
+            }
 
             return getLocationItemFromElementObject(element, item);
         }

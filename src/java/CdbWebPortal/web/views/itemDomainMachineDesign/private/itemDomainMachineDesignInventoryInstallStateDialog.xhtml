@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">    
+
+    <p:dialog id="itemDomainMachineDesignInventoryInstallStateDialog"
+        widgetVar="itemDomainMachineDesignInventoryInstallStateDialogWidget"
+        styleClass="viewTransparentBackgroundDialog"
+        header="Update Installed/Planned State for Item"
+        resizable="false">
+        <p:outputPanel rendered="#{entityController.displayUpdateInstalledInventoryStateDialogContents}">
+            <ui:param name="currentMd"
+                      value="#{entityController.current}" /> 
+            <p:panelGrid columns="2">
+                <h:outputText value="Machine Design"/>
+                <h:outputText value="#{currentMd.name}"/>
+                <h:outputText value="Inventory Item"/>
+                <h:outputText value="#{currentMd.assignedItem}"/>
+                <h:outputText value="Install State"/> 
+                <ui:include src="itemDomainMachineDesignInventoryInstallStateSelectBooleanButton.xhtml"> 
+                    <ui:param name="viewId"
+                              value="Dialog" /> 
+                </ui:include>
+            </p:panelGrid>
+        </p:outputPanel>
+        
+        <f:facet name="footer">
+            <p:commandButton action="#{itemDomainMachineDesignController.updateInventoryInstallState()}" 
+                             update="@form"
+                             value="Save"
+                             icon="fa fa-save"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"/> 
+        </f:facet>
+    </p:dialog>
+
+</ui:composition>
