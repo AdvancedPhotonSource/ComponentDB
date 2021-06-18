@@ -46,7 +46,7 @@ See LICENSE file.
 
                             <p:outputLabel value="Role: #{loginController.displayRole()}"/>
                             <br/>
-                                                        
+
                             <h:form>
                                 <p:outputLabel id="portalResetSession"
                                                styleClass="clckableLabel"
@@ -57,6 +57,29 @@ See LICENSE file.
                                 </p:outputLabel>        
                                 <p:remoteCommand name="resetPortalSession"
                                                  action="#{loginController.resetSession()}"/> 
+
+                                <br/>
+                                <p:outputLabel id="jumpToQrId"
+                                               styleClass="clckableLabel"
+                                               onclick="PF('jumpToQrIdDialogWidget').show()"
+                                               value="Jump to QRID">
+                                    <p:tooltip for="jumpToQrId" 
+                                               value="Enter a qrid and be forwarded to item with that qrid." />
+                                </p:outputLabel>
+                                
+                                <p:dialog widgetVar="jumpToQrIdDialogWidget"
+                                          resizable="false"
+                                          modal="true"
+                                          header="Jump to Item by QrId"
+                                          styleClass="viewTransparentBackgroundDialog">
+                                    <h:inputText value="#{facesUtility.jumpToQrIdEntry}" />
+                                    
+                                    <p:defaultCommand target="jumpToQrIdCommandButton" />
+                                    <p:commandButton id="jumpToQrIdCommandButton"
+                                                     action="#{facesUtility.jumpToItemQrId()}"
+                                                     value="Go"
+                                                     onclick="PF('loadingDialog').show()"/> 
+                                </p:dialog>
                             </h:form>
 
                             <ui:include src="../views/settings/private/settingsViewAsLabelDialog.xhtml" />
@@ -118,10 +141,10 @@ See LICENSE file.
                 <ui:insert name="bottom">
                     <h:form prependId="false">                        
                         <ui:param name="singleTabViewKey" value="#{singleTabViewKey != null ? singleTabViewKey : null}"/> 
-                        
+
                         <h:outputText style="display: none" id="singleTabViewKeyHiddenText"
                                       value="#{singleTabViewKey}"/>
-                        
+
                         <h:outputText style="display: none" id="viewOpenPageIdHiddenText"
                                       value="#{clientViewManagerController.getViewUUID(singleTabViewKey)}"/>
 
@@ -130,13 +153,13 @@ See LICENSE file.
 
                         <input style="display: none"
                                id="viewCurrentPageIdHiddenText"/>                                                     
-                        
+
                         <p:remoteCommand name="prepareNewViewID"
                                          action="#{clientViewManagerController.generateNewViewUUID(singleTabViewKey)}"
                                          update="viewOpenPageIdHiddenText"
                                          process="@this"
                                          oncomplete="setCurrentPageViewId()" /> 
-                        
+
                         <p:remoteCommand name="addSessionUrl"
                                          action="#{clientViewManagerController.addSessionUrl()}" /> 
 
@@ -156,10 +179,10 @@ See LICENSE file.
 
                         <p:idleMonitor timeout="#{loginController.sessionTimeoutInMiliseconds}"
                                        onidle="sessionTimedOutEvent()"/>                                             
-                        
+
                         <p:remoteCommand name="invalidateCurrentSession"
                                          action="#{loginController.sessionIdleListener}" /> 
-                        
+
                         <p:remoteCommand autoRun="#{!loginController.registeredSession}"
                                          action="#{loginController.registerSession()}"/>                                                 
 
