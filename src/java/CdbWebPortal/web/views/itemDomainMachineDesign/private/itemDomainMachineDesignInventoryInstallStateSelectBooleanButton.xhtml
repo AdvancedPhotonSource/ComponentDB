@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">    
+
+    <p:selectBooleanButton id="currentElementIsInstalledFlagButton#{viewId}" 
+                           value="#{currentMd.inventoryIsInstalled}" 
+                           offLabel="Planned"
+                           onLabel="Installed"> 
+        <p:tooltip for="currentElementIsInstalledFlagButton" >
+            Indicates if the item is "installed" or "planned" for this machine node.
+
+            <br/>
+            <br/><b>Installed (Default)</b>
+            <br/>Item is installed and its location is determined based on machine node. 
+            <br/><b>Planned</b>
+            <br/>Item stays in its location but is marked to be installed on machine node in the future.
+        </p:tooltip>
+    </p:selectBooleanButton>
+
+</ui:composition>

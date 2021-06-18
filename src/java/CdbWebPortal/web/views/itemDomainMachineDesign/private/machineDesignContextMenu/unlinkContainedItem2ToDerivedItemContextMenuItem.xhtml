@@ -8,8 +8,10 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"                                
                 xmlns:p="http://primefaces.org/ui">   
 
-    <p:menuitem value="Unlink assigned inventory"
+    <p:menuitem value="Unlink inventory"
                 icon="fa fa-unlink"
+                onclick="PF('loadingDialog').show()"
+                oncomplete="PF('loadingDialog').hide()"
                 action="#{entityController.unlinkContainedItem2ToDerivedFromItem()}"
                 disabled="#{disabledEditContextMenuItemForSelection}"
                 update="@form"/>

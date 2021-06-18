@@ -19,8 +19,14 @@ See LICENSE file.
               filterBy="#{assignedItem.qrIdFilter}" filterMatchMode="contains"                          
               filterable="#{filterable}"
               sortable="#{sortable}"
-              rendered="#{rendered}" >                    
-        <h:outputText value="#{assignedItem.qrIdDisplay}" />
+              rendered="#{rendered}" >
+        <ui:param name="installedQrIdDisplayValue"
+                  value="#{assignedItem.qrIdDisplay}" />
+        <ui:param name="installedQrIdPlannedText" 
+                  value="#{mdTreeListObject != null and not mdTreeListObject.isHoused ? '(Planned)' : ''}" /> 
+                  
+                  
+        <h:outputText value="#{installedQrIdDisplayValue} #{installedQrIdPlannedText}" />
     </p:column>
 
 </ui:composition>
