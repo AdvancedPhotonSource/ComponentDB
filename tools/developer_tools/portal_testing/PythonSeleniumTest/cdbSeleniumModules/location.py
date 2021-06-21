@@ -12,7 +12,7 @@ class Location(ItemBase):
     EDIT_FORM_NAME = FORM_NAME % 'Edit'
 
     def navigate_to_location_list(self):
-        self._navigate_to_dropdown('administrativeButton', 'adminLocationsButton', '%s/list' % self.VIEW_BASE_NAME)
+        self._navigate_to_dropdown('administrativeButton', 'locationsButton', '%s/list' % self.VIEW_BASE_NAME)
 
     def test_location_pages(self):
         dataTableXpathFormula = '//*[@id="%s:%sListTreeTable_node_0"]/td[%d]/a'
