@@ -58,6 +58,10 @@ a:link:hover, a:visited:hover  {
     margin-bottom: 15px;
 }
 
+#topCenter {
+    padding-top: 10px;
+}
+
 #top {
     position: relative;
     color: white;
