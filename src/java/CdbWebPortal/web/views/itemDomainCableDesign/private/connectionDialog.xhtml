@@ -71,13 +71,13 @@ See LICENSE file.
                                   alt="Save" 
                                   update="dialogConnection"
                                   disabled="#{entityController.dialogConnection.disableButtonSave}"
-                                  icon="ui-icon-check"/>
+                                  icon="fa fa-save"/>
 
                 <p:commandButton action="#{entityController.dialogConnection.cancel()}" 
                                  immediate="true" 
                                  value="Cancel" alt="Cancel" 
                                  update="dialogConnection"
-                                 icon="ui-icon-cancel" />
+                                 icon="fa fa-close" />
 
                 <p:remoteCommand name="saveEndpointSuccess"                             
                                  actionListener="#{entityController.dialogConnection.actionListenerSaveSuccess}"

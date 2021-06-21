@@ -13,13 +13,15 @@ See LICENSE file.
 
     <p:dataTable id="#{itemConnectorEntityTypeName}ListDataTable"
                  value="#{itemConnectorList}"
+                 sortMode="single"
+                 stripedRows="true"
                  var="itemConnectorObject">        
 
         <ui:include src="itemConnectorListObject.xhtml" />
 
         <p:column headerText="Actions" exportable="false">
             <p:commandLink id="#{entityTypeName}ItemConnectorDeleteActionButton"
-                           styleClass="ui-icon ui-icon-trash"
+                           styleClass="fa fa-link-icon fa-trash"
                            onclick="PF('confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget').show()"
                            rendered="#{isEntityWriteable}"
                            title="Delete Item Connector">

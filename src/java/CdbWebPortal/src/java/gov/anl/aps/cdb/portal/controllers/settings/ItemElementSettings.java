@@ -258,12 +258,12 @@ public class ItemElementSettings extends CdbDomainEntitySettings<ItemElementCont
             return;
         }
 
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterByChildItem = (String) filters.get("childItem").getFilterField();
-        filterByComponent = (String) filters.get("component").getFilterField();
-        filterByComponentType = (String) filters.get("componentType").getFilterField();
-        filterByLocation = (String) filters.get("location").getFilterField();
-        filterBySortOrder = (String) filters.get("sortOrder").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterByChildItem = (String) filters.get("childItem").getField();
+        filterByComponent = (String) filters.get("component").getField();
+        filterByComponentType = (String) filters.get("componentType").getField();
+        filterByLocation = (String) filters.get("location").getField();
+        filterBySortOrder = (String) filters.get("sortOrder").getField();
     }
 
     @Override

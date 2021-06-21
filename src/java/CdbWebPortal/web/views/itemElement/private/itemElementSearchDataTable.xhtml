@@ -9,6 +9,8 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
 
     <p:dataTable id="itemElementSearchDataTable" 
+                 sortMode="single"
+                 stripedRows="true"
                  var="searchResultObject" 
                  value="#{itemElementController.searchResultList}" 
                  paginator="true" 

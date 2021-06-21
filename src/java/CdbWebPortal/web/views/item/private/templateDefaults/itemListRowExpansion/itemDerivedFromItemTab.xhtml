@@ -11,6 +11,8 @@ See LICENSE file.
     <p:tab title="#{entityController.itemsDerivedFromItemTitle}"
            rendered="#{entityController.isDisplayRowExpansionItemsDerivedFromItem(itemListObject)}">
         <p:dataTable value="#{itemListObject.derivedFromItemList}"
+                     sortMode="single"
+                     stripedRows="true"
                      var="derivedFromItemObject">
 
             <ui:param name="derivedDomainController" value="#{entityController.defaultDomainDerivedToDomainController}" /> 

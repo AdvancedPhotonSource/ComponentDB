@@ -36,6 +36,8 @@ See LICENSE file.
                 <p:dataTable id="#{viewName}CableTypeDataTable" 
                              var="cableTypeInfo" 
                              value="#{wizardController.spares}"
+                             sortMode="single"
+                             stripedRows="true"
                              emptyMessage="No spares added.">
 
                     <p:column headerText="Cable type">
@@ -60,7 +62,7 @@ See LICENSE file.
                 </p:dataTable>
 
             </p:outputPanel>
-            
+
             <ui:decorate template="sparesDialogTemplate.xhtml">
                 <ui:param name="viewId" value="#{viewName}" />                
                 <ui:param name="wizardController" value="#{wizardController}" />

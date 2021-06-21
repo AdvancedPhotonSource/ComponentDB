@@ -22,7 +22,7 @@ See LICENSE file.
                          onclick="PF('#{entityTypeName}#{viewName}PropertySelectDialogWidget').hide();
                                  PF('#{entityTypeName}#{viewName}PropertySelectListCustomizeDisplayDialogWidget').show()"
                          alt="Customize selection view." 
-                         icon="ui-icon-wrench" 
+                         icon="fa fa-wrench" 
                          styleClass="actionButtonRight">
             <p:tooltip for="#{childEntityTypeName}SelectCustomizeDisplay" value="Customize selection view."/>
         </p:commandButton>
@@ -33,6 +33,8 @@ See LICENSE file.
                  selection="#{propertySelectDataTableSelectionValue}"             
                  rowKey="#{propertyTypeObject.id}"
                  selectionMode="#{propertySelectionMode}"
+                 sortMode="single"
+                 stripedRows="true"
                  binding="#{facesUtility.resetDataTable}"
                  paginator="true"
                  styleClass="leftAlignedText"

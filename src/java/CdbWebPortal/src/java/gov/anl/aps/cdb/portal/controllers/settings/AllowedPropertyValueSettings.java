@@ -89,10 +89,10 @@ public class AllowedPropertyValueSettings extends CdbEntitySettingsBase<AllowedP
             return;
         }
 
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterBySortOrder = (String) filters.get("sortOrder").getFilterField();
-        filterByUnits = (String) filters.get("units").getFilterField();
-        filterByValue = (String) filters.get("value").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterBySortOrder = (String) filters.get("sortOrder").getField();
+        filterByUnits = (String) filters.get("units").getField();
+        filterByValue = (String) filters.get("value").getField();
     }
     
     @Override
