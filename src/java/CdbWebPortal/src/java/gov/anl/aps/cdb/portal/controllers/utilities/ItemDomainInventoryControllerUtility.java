@@ -116,8 +116,8 @@ public class ItemDomainInventoryControllerUtility extends ItemDomainInventoryBas
                 // item is checked by default. 
                 if (parent != newItem) {
                     checkItem(newItem);
-                }
-                performPrepareEntityInsertUpdate(newItem, userInfo);
+                    performPrepareEntityInsertUpdate(newItem, userInfo);
+                }                
             }
             // Cross check the nonadded items. 
             checkUniquenessBetweenNewItemsToAdd(newItemsToAdd);
