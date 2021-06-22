@@ -11,15 +11,12 @@ See LICENSE file.
     <p:submenu icon="ui-icon-inventory"
                label="Linked Inventory"
                disabled="#{disabledEditContextMenuItemForSelection}">
-        
-         <p:menuitem value="Change install state"
-                icon="fa fa-wrench"
-                update="@form:itemDomainMachineDesignInventoryInstallStateDialog"
-                onclick="PF('loadingDialog').show()"
-                oncomplete="PF('loadingDialog').hide(); PF('itemDomainMachineDesignInventoryInstallStateDialogWidget').show();"
-                action="#{entityController.prepareUpdateInventoryInstallState()}"
-                disabled="#{disabledEditContextMenuItemForSelection}"/>
-        
+
+        <p:menuitem value="Change install state"
+                    icon="fa fa-wrench"
+                    onclick="PF('loadingDialog').show(); prepareShowUpdateInventoryInstallStateDialog()"
+                    disabled="#{disabledEditContextMenuItemForSelection}"/>
+
         <ui:include src="unlinkContainedItem2ToDerivedItemContextMenuItem.xhtml" /> 
 
     </p:submenu>
