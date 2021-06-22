@@ -23,6 +23,7 @@ import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1126,6 +1127,22 @@ public class Item extends CdbDomainEntity implements Serializable {
     @XmlTransient
     @JsonIgnore
     public List<ItemConnector> getItemConnectorList() {
+        return itemConnectorList;
+    }
+    
+    @JsonIgnore
+    public List<ItemConnector> getItemConnectorListSorted() {
+        Collections.sort(itemConnectorList, (c1, c2) -> {
+            String c1Name = "";
+            String c2Name = "";
+            if ((c1.getConnector() != null) && (c1.getConnector().getName() != null)) {
+                c1Name = c1.getConnector().getName();
+            }
+            if ((c2.getConnector() != null) && (c2.getConnector().getName() != null)) {
+                c2Name = c2.getConnector().getName();
+            }
+            return c1Name.compareTo(c2Name);
+        });
         return itemConnectorList;
     }
 
