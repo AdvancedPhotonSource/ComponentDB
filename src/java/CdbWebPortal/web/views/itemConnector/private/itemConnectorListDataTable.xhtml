@@ -9,7 +9,7 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">
     
     <ui:param name="itemConnectorList" 
-              value="#{itemConnectorList != null ? itemConnectorList : itemObject.itemConnectorList}"/>
+              value="#{itemConnectorList != null ? itemConnectorList : itemObject.itemConnectorListSorted}"/>
 
     <p:dataTable id="#{itemConnectorEntityTypeName}ListDataTable"
                  value="#{itemConnectorList}"
