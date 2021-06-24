@@ -22,6 +22,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.EntityTypeFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemCategoryFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementRelationshipFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
@@ -121,6 +122,9 @@ public abstract class ItemController<
 
     @EJB
     protected PropertyTypeFacade propertyTypeFacade;
+    
+    @EJB
+    protected ItemConnectorFacade itemConnectorFacade;
 
     private List<ItemElementRelationship> locationRelationshipCache;
 
@@ -1156,6 +1160,7 @@ public abstract class ItemController<
         Item item = getCurrent();
 
         ConnectorControllerUtility connectorControllerUtility = new ConnectorControllerUtility();
+        itemConnector = itemConnectorFacade.find(itemConnector.getId());
         Connector connector = itemConnector.getConnector();
         if (connectorControllerUtility.verifySafeRemovalOfConnector(connector)) {
             completeDeleteItemConnector(itemConnector);
@@ -1187,6 +1192,7 @@ public abstract class ItemController<
                 }
             }
         }
+        reloadCurrent();
     }
 
     private void completeDeleteItemConnector(ItemConnector itemConnector) {
