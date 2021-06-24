@@ -370,7 +370,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
                 }
             }
 
-            if (displayedNodes[0] > 400) {
+            if (displayedNodes[0] > 600) {
                 clearFilterResults();
                 SessionUtility.addErrorMessage("Too many results", "Too many results to display. Please provide a more specific search criteria.");
             } else {
