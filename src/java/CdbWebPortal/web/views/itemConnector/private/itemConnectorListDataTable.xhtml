@@ -8,19 +8,17 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
     
-    <ui:param name="itemConnectorList" 
-              value="#{itemConnectorList != null ? itemConnectorList : itemObject.itemConnectorListSorted}"/>
-
     <p:dataTable id="#{itemConnectorEntityTypeName}ListDataTable"
-                 value="#{itemConnectorList}"
-                 var="itemConnectorObject">        
+                 value="#{itemObject.itemConnectorListSorted}"
+                 var="itemConnectorObject"
+                 widgetVar="#{itemConnectorEntityTypeName}ListDataTableWidget">        
 
         <ui:include src="itemConnectorListObject.xhtml" />
 
         <p:column headerText="Actions" exportable="false">
             <p:commandLink id="#{entityTypeName}ItemConnectorDeleteActionButton"
                            styleClass="ui-icon ui-icon-trash"
-                           onclick="PF('confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget').show()"
+                           onstart="PF('confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget').show()"
                            rendered="#{isEntityWriteable}"
                            title="Delete Item Connector">
                 <p:tooltip for="#{entityTypeName}ItemConnectorDeleteActionButton" value="Delete Item Connector."/>
@@ -32,10 +30,9 @@ See LICENSE file.
                              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert"
                              widgetVar="confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget">
                 <p:commandButton value="Yes" 
-                                 id="confirmYesDestroyLogEntryButton"
                                  action="#{entityController.deleteItemConnector(itemConnectorObject)}" 
                                  onstart="PF('confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget').hide()"
-                                 update="#{itemConnectorEntityTypeName}ListDataTable"/>
+                                 update="@form"/>
                 <p:commandButton value="No" 
                                  onclick="PF('confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget').hide();"/>
             </p:confirmDialog>
