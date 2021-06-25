@@ -33,16 +33,16 @@ public class FacesUtility {
     private Wizard wizard;
 
     private SelectOneMenu selectOneMenu;
-    
-    private Integer jumpToQrIdEntry; 
-  
+
+    private String jumpToQrIdEntry;
+
     public SelectOneMenu getSelectOneMenu() {
         return selectOneMenu;
     }
-    
-    public void updateToToday(Date date) {        
+
+    public void updateToToday(Date date) {
         Date newDate = new Date();
-        date.setTime(newDate.getTime());        
+        date.setTime(newDate.getTime());
     }
 
     public void setSelectOneMenu(SelectOneMenu selectOneMenu) {
@@ -152,16 +152,28 @@ public class FacesUtility {
         }
         return "";
     }
-    
-    public String jumpToItemQrId() {               
-        return "/views/item/view?qrId=" + jumpToQrIdEntry + "&faces-redirect=true";
+
+    public String jumpToItemQrId() {
+        // Remove any spaces 
+        jumpToQrIdEntry = jumpToQrIdEntry.replace(" ", "");
+
+        Integer qrIdNum = null;
+
+        try {
+            qrIdNum = Integer.parseInt(jumpToQrIdEntry);
+        } catch (NumberFormatException ex) {
+            SessionUtility.addErrorMessage("Error parsing qrid", ex.getMessage());
+            return null;
+        }
+
+        return "/views/item/view?qrId=" + qrIdNum + "&faces-redirect=true";
     }
 
-    public Integer getJumpToQrIdEntry() {
+    public String getJumpToQrIdEntry() {
         return jumpToQrIdEntry;
     }
 
-    public void setJumpToQrIdEntry(Integer jumpToQrIdEntry) {
+    public void setJumpToQrIdEntry(String jumpToQrIdEntry) {
         this.jumpToQrIdEntry = jumpToQrIdEntry;
     }
 

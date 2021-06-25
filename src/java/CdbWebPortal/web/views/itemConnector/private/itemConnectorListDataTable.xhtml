@@ -8,14 +8,12 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
     
-    <ui:param name="itemConnectorList" 
-              value="#{itemConnectorList != null ? itemConnectorList : itemObject.itemConnectorList}"/>
-
     <p:dataTable id="#{itemConnectorEntityTypeName}ListDataTable"
+                 widgetVar="#{itemConnectorEntityTypeName}ListDataTableWidget">        
                  value="#{itemConnectorList}"
                  sortMode="single"
                  stripedRows="true"
-                 var="itemConnectorObject">        
+                 var="itemConnectorObject">
 
         <ui:include src="itemConnectorListObject.xhtml" />
 
@@ -34,10 +32,9 @@ See LICENSE file.
                              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert"
                              widgetVar="confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget">
                 <p:commandButton value="Yes" 
-                                 id="confirmYesDestroyLogEntryButton"
                                  action="#{entityController.deleteItemConnector(itemConnectorObject)}" 
                                  onstart="PF('confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget').hide()"
-                                 update="#{itemConnectorEntityTypeName}ListDataTable"/>
+                                 update="@form"/>
                 <p:commandButton value="No" 
                                  onclick="PF('confirmDeleteItemConnector#{itemConnectorObject.viewUUID}Widget').hide();"/>
             </p:confirmDialog>

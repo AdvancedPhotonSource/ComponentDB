@@ -491,8 +491,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                 String updateResult = update();
 
                 // An error occured, reload the page with correct information. 
-                if (updateResult == null) {
-                    reloadCurrent();
+                if (updateResult == null) {                    
                     return view();
                 }
 

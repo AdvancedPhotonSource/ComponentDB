@@ -1031,6 +1031,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         try {
             EntityType current = getCurrent();
             performUpdateOperations(current);
+            reloadCurrent();
             SessionUtility.addInfoMessage("Success", "Updated " + getDisplayEntityTypeName() + " " + getCurrentEntityInstanceName() + ".");
 
             return viewForCurrentEntity();
