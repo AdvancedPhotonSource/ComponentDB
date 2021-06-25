@@ -156,4 +156,13 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
     public List<Item> getFilteredEntities() {
         return itemList;
     }
+
+    @Override
+    public String getRowKey(Object object) {
+        if (object instanceof Item) {
+            return ((Item) object).getViewUUID(); 
+        }
+        return ""; 
+    }
+    
 }

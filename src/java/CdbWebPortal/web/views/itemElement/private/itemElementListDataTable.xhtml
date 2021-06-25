@@ -23,6 +23,7 @@ See LICENSE file.
                  stripedRows="true"
                  value="#{itemElementDataList}"
                  var="itemElementObject"
+                 rowKey="#{itemElementObject.viewUUID}"
                  filteredValue="#{itemElementController.filteredObjectList}"
                  rows="#{itemElementSettingObject.displayNumberOfItemsPerPage}"
                  sortBy="#{itemElementObject.customizableSortOrder}"
