@@ -690,6 +690,7 @@ public abstract class ItemController<
 
     public TreeNode getItemsWithNoParentsRootNode() {
         if (itemsWithNoParentsRootNode == null) {
+            LOGGER.info("Generating a tree from top level items.");
             List<ItemDomainEntity> itemsWitNoParentsList = getItemsWithoutParents();
             itemsWithNoParentsRootNode = new DefaultTreeNode(null, null);
 
@@ -1962,10 +1963,10 @@ public abstract class ItemController<
         String primaryImageValue = getPrimaryImageValueForItem(item);
         if (propertyValue.getValue() != null) {
             if (propertyValue.getValue().equals(primaryImageValue)) {
-                return "ui-icon-check";
+                return "fa fa-check";
             }
         }
-        return "ui-icon-close";
+        return "fa fa-close";
     }
 
     @Override

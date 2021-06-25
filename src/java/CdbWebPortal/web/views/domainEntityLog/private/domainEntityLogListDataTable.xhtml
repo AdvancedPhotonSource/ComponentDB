@@ -22,6 +22,8 @@ See LICENSE file.
                  rows="#{logSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  paginatorAlwaysVisible="false"
+                 sortMode="single"
+                 stripedRows="true"
                  reflow="true"
                  emptyMessage="No #{entityTypeDisplayName} log entries found."
                  editable="true"
@@ -38,14 +40,14 @@ See LICENSE file.
             <p:rowEditor />
             <p:commandLink id="#{entityTypeName}LogUploadAttachmentButton" 
                            oncomplete="PF('logAttachmentUploadDialogWidget').show()" 
-                           styleClass="ui-icon ui-icon-circle-arrow-n"
+                           styleClass="fa fa-link-icon fa-upload"
                            update="@this">
                 <f:setPropertyActionListener value="#{logObject}" target="#{logAttachmentUploadBean.logEntry}"/>
                 <p:tooltip for="#{entityTypeName}LogUploadAttachmentButton" value="Upload #{entityTypeName} log attachment."/>
             </p:commandLink>
 
             <p:commandLink id="#{entityTypeName}LogDestroyButton"
-                           styleClass="ui-icon ui-icon-trash" title="Delete"
+                           styleClass="fa fa-link-icon fa-trash" title="Delete"
                            onstart="PF('confirmDeleteLog#{logObject.viewUUID}Widget').show();">
                 <p:tooltip for="#{entityTypeName}LogDestroyButton" value="Delete #{entityTypeName} log entry."/>
             </p:commandLink>

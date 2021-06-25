@@ -15,8 +15,13 @@ See LICENSE file.
         <p:accordionPanel activeIndex="" multiple="true"  dynamic="true">
             <p:tab title="Elements"
                    rendered="#{itemElementController.isDisplayRowExpansionElementsList(itemElementObject)}">
+                <!-- PF10 tree pre-render solution --> 
+                <ui:param name="itemElementRowExpansionTreeTableValue"
+                          value="#{itemElementController.isDisplayRowExpansionElementsList(itemElementObject) 
+                                   ? itemElementController.getItemElementListTreeTableRootNode(itemElementObject) 
+                                   : null }" /> 
                 <p:treeTable id="itemElementTreeTable#{itemElementObject.viewUUID}"
-                             value="#{itemElementController.getItemElementListTreeTableRootNode(itemElementObject)}" 
+                             value="#{itemElementRowExpansionTreeTableValue}" 
                              var="itemElementTreeObject"
                              emptyMessage="No item elements found."
                              sortBy="#{itemElementTreeObject.customizableSortOrder}"

@@ -9,6 +9,8 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">   
 
     <p:dataTable id="#{itemConnectorEntityTypeName}ListDataTable"
+                 sortMode="single"
+                 stripedRows="true"
                  value="#{entityController.mdConnectorListForCurrent}"
                  var="mdConnectorListForCurrent">
 

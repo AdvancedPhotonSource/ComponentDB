@@ -96,7 +96,7 @@ public abstract class ItemCreateWizardController extends ItemControllerExtension
                 if (menuItemValue != null) {
                     DefaultMenuItem menuItem;
                     menuItem = createMenuItemForCreateWizardSteps(menuItemValue, step.getValue());
-                    createItemWizardStepsMenuModel.addElement(menuItem);
+                    createItemWizardStepsMenuModel.getElements().add(menuItem);                     
                 }
             }
         }
@@ -105,7 +105,8 @@ public abstract class ItemCreateWizardController extends ItemControllerExtension
     }
 
     protected DefaultMenuItem createMenuItemForCreateWizardSteps(String displayValue, String stepValue) {
-        DefaultMenuItem menuElement = new DefaultMenuItem(displayValue);
+        DefaultMenuItem menuElement = new DefaultMenuItem();
+        menuElement.setValue(displayValue);
         String menuElementCommand = "#{";
         menuElementCommand += getItemCreateWizardControllerNamed();
         menuElementCommand += ".updateCurrentWizardStep('" + stepValue + "')";

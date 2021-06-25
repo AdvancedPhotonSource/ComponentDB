@@ -17,7 +17,7 @@ See LICENSE file.
         <div class="dialog">
             <ui:param name="itemDerivedSettingObject" value="#{itemDerivedController.settingObject}" />
             <p:panelGrid columns="2">
-                <p:inputText id="itemDerivedFromItemDisplayNumberOfItemsPerPage" value="#{itemDerivedSettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <p:inputText id="itemDerivedFromItemDisplayNumberOfItemsPerPage" value="#{itemDerivedSettingObject.displayNumberOfItemsPerPage}" styleClass="numItemsPerPageInput"/>
                 <h:outputLabel for="itemDerivedFromItemDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
                 <p:selectBooleanCheckbox id="itemDerivedFromItemDisplayDescription" value="#{itemDerivedSettingObject.displayDescription}"/>  
@@ -42,14 +42,14 @@ See LICENSE file.
                                  action="#{itemDerivedController.customizeListDisplay()}"
                                  update="#{childEntityTypeName}EditListDataTable"
                                  oncomplete="PF('#{childEntityTypeName}EditListCustomizeDisplayDialogWidget').hide()" 
-                                 icon="ui-icon-arrowreturnthick-1-w"/>
+                                 icon="fa fa-close"/>
                 <p:commandButton value="Save" alt="Save"
                                  action="#{userInfoController.saveSettingListForSessionUser()}"
                                  actionListener="#{itemDerivedController.saveListSettingsForSessionUserActionListener}"
                                  oncomplete="PF('#{childEntityTypeName}EditListCustomizeDisplayDialogWidget').hide()" 
                                  update="#{childEntityTypeName}EditListDataTable"
                                  rendered="#{loginController.loggedIn}"
-                                 icon="ui-icon-check"/>
+                                 icon="fa fa-save"/>
             </f:facet>
         </div>
     </p:dialog>

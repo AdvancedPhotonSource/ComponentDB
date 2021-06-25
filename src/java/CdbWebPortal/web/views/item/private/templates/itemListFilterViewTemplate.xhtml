@@ -15,6 +15,9 @@ See LICENSE file.
         <p:dataTable value="#{filterViewListDataModel}"
                      var="filterViewItemResultObject"
                      id="filterViewDatatable"
+                     rowKey="#{filterViewItemResultObject.viewUUID}"
+                     sortMode="single"
+                     stripedRows="true"
                      paginator="true"
                      rows="20">
             <ui:param name="itemListObject" value="#{filterViewItemResultObject.itemObject}"/>
@@ -37,7 +40,7 @@ See LICENSE file.
                         <p:treeTable id="itemFilterViewRowExpansion"
                                      value="#{resultExpansionObject.rootTreeNode}"
                                      var="itemTreeNode">                                    
-                            
+
                             <ui:insert name="partItemElementReference">
                                 <ui:param name="itemElementObject"
                                           value="#{itemTreeNode.hierarchyItemElement}"/> 

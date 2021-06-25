@@ -5,8 +5,6 @@
 package gov.anl.aps.cdb.portal.controllers.settings;
 
 import gov.anl.aps.cdb.portal.controllers.CdbEntityController;
-import gov.anl.aps.cdb.portal.controllers.SettingController;
-import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
 import java.util.Date;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
@@ -83,16 +81,16 @@ public abstract class CdbEntitySettingsBase<EntityController extends CdbEntityCo
             return;
         }
 
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterById = (String) filters.get("id").getFilterField();
-        filterByName = (String) filters.get("name").getFilterField();
-        filterByDescription = (String) filters.get("description").getFilterField();
-        filterByOwnerUser = (String) filters.get("entityInfo.ownerUser.username").getFilterField();
-        filterByOwnerGroup = (String) filters.get("entityInfo.ownerUserGroup.name").getFilterField();
-        filterByCreatedByUser = (String) filters.get("entityInfo.createdByUser.username").getFilterField();
-        filterByCreatedOnDateTime = (String) filters.get("entityInfo.createdOnDateTime").getFilterField();
-        filterByLastModifiedByUser = (String) filters.get("entityInfo.lastModifiedByUser.username").getFilterField();
-        filterByLastModifiedOnDateTime = (String) filters.get("entityInfo.lastModifiedOnDateTime").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterById = (String) filters.get("id").getField();
+        filterByName = (String) filters.get("name").getField();
+        filterByDescription = (String) filters.get("description").getField();
+        filterByOwnerUser = (String) filters.get("entityInfo.ownerUser.username").getField();
+        filterByOwnerGroup = (String) filters.get("entityInfo.ownerUserGroup.name").getField();
+        filterByCreatedByUser = (String) filters.get("entityInfo.createdByUser.username").getField();
+        filterByCreatedOnDateTime = (String) filters.get("entityInfo.createdOnDateTime").getField();
+        filterByLastModifiedByUser = (String) filters.get("entityInfo.lastModifiedByUser.username").getField();
+        filterByLastModifiedOnDateTime = (String) filters.get("entityInfo.lastModifiedOnDateTime").getField();
     }
 
     /**
