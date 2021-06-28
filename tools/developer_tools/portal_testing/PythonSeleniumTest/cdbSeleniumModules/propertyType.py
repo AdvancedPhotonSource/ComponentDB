@@ -33,9 +33,9 @@ class PropertyType(CdbSeleniumModuleBase):
 		descriptionInput.send_keys("Sample Property Type created for tests")
 
 		self._click_on_id('addPropertyTypeForm:allowedDomain')
-		catalogCheckboxXpath = '//*[@id="addPropertyTypeForm:allowedDomain_panel"]/div[2]/ul/li[2]'
+		catalogCheckboxXpath = '//*[@id="addPropertyTypeForm:allowedDomain_panel"]/div[2]/ul/li[2]/div/div[2]'
 		catalogCheckbox = self._wait_for_visible_xpath(catalogCheckboxXpath)
-		inventoryCheckbox = self._wait_for_visible_xpath('//*[@id="addPropertyTypeForm:allowedDomain_panel"]/div[2]/ul/li[3]')
+		inventoryCheckbox = self._wait_for_visible_xpath('//*[@id="addPropertyTypeForm:allowedDomain_panel"]/div[2]/ul/li[3]/div/div[2]')
 		catalogCheckbox.click()
 		inventoryCheckbox.click()
 		self._click_on_id('addPropertyTypeForm:allowedDomain')
