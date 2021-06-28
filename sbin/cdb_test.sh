@@ -61,6 +61,12 @@ chromedriver_version_start=`google-chrome --version | grep -oP "[^A-Z ][0-9]+.[0
 chromedriver_version_regex="$chromedriver_version_start.[0-9]+/chromedriver_linux64.zip"
 chromedriver_version=`curl https://chromedriver.storage.googleapis.com/ | grep -oP $chromedriver_version_regex`
 
+count_results=`echo $chromedriver_version | wc -l`
+
+if [ $count_results > 1 ]; then
+    chromedriver_version=`echo ${chromedriver_version%%$'\n'*}`
+fi
+
 if [ -f "chromedriver" ]; then 
     current_version_result=`./chromedriver --version | grep -oP $chromedriver_version`
     if [[ -z "$current_version_result" ]]; then        
