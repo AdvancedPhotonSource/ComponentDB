@@ -652,7 +652,10 @@ public class ItemDomainCableDesign extends Item {
     public void setCatalogItem(Item itemCableCatalog) {
         // "assign" catalog item to cable design
         ItemElement selfElement = this.getSelfElement();
-        if (!itemCableCatalog.equals(selfElement.getContainedItem2())) {
+        Item assignedItem = selfElement.getContainedItem2();
+        if (((itemCableCatalog == null) && (assignedItem != null)) 
+                || ((itemCableCatalog != null) && (!itemCableCatalog.equals(assignedItem)))) {
+            
             // if changing catalog item, we need to remove cable connectors since they are inherited from catalog item
             clearCableConnectors();
         }

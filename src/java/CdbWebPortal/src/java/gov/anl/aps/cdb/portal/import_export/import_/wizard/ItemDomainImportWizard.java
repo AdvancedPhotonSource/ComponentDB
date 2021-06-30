@@ -269,6 +269,7 @@ public class ItemDomainImportWizard implements Serializable {
         renderSelectSheet = false;
         if (sheetNames.size() > 0) {
             renderSelectSheet = true;
+            setSelectedSheet(sheetNames.get(0));
         } else {
             // workbook contains no sheets so not valid for import
             selectFileErrorMessage =
