@@ -127,6 +127,10 @@ public class RefInputHandler extends SimpleInputHandler {
         return paramType;
     }
     
+    protected CdbEntity getCacheObject(CdbEntity entity) {
+        return getObjectManager().getCacheObject(entity);
+    }
+    
     /**
      * Allows subclasses to customize look up for single object by name. 
      */

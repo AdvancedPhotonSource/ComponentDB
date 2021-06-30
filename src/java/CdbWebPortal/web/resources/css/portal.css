@@ -79,7 +79,10 @@ a:link:hover, a:visited:hover  {
     /* Proposed W3C Markup */
     background-image: linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
 
-    padding: 15px;
+    padding-top: 0px;
+    padding-left: 15px;
+    padding-right: 15px; 
+    padding-bottom: 15px;
     margin: 0px 0px 0px 0px;
     height: 110px;
 }
@@ -129,6 +132,7 @@ footer {
     vertical-align: central;
     text-align: center;
     margin: 0px 170px 0px 170px;
+    padding-top: 15px;
 }
 
 .topRightContent {
@@ -137,6 +141,7 @@ footer {
     vertical-align: central;
     text-align: left;
     font-size: 10px;
+    padding-top: 4px;
 }
 
 .menubar {

@@ -103,7 +103,7 @@ public class ItemElement extends CdbDomainEntity implements Serializable {
     @Column(name = "is_required")
     private boolean isRequired;
     @Column(name = "is_housed")
-    private boolean isHoused;
+    private boolean isHoused = true;
     @Size(max = 256)
     private String description;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
