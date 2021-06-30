@@ -189,8 +189,8 @@ public class MachineImportHelperCommon {
     
     public static HelperWizardOption optionImportRootMachineItem() {
         return new HelperWizardOption(
-                "Default Root Machine Item",
-                "Root of machine hierarchy to locate items within, used to locate items by name without specifying full path.",
+                "Default Root Machine Item (optional)",
+                "Optional root of machine hierarchy to locate items within, used to locate items by name without specifying full path.",
                 "optionImportRootItemName",
                 HelperOptionType.STRING,
                 ImportMode.CREATE);
