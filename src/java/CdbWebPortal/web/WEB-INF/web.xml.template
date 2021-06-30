@@ -8,10 +8,6 @@ See LICENSE file.
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>CDB_PROJECT_STAGE</param-value>
     </context-param>
-    <context-param>
-        <param-name>primefaces.FONT_AWESOME</param-name>
-        <param-value>true</param-value>
-    </context-param>
     <mime-mapping>
         <extension>eot</extension>
         <mime-type>application/vnd.ms-fontobject</mime-type>

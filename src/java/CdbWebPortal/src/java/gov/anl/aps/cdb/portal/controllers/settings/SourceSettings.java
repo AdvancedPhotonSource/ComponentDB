@@ -92,9 +92,9 @@ public class SourceSettings extends CdbEntitySettingsBase<SourceController> {
         if (dataTable == null) {
             return;
         }
-        Map<String, FilterMeta> filters = dataTable.getFilterBy();
-        filterByContactInfo = (String) filters.get("contactInfo").getFilterField();
-        filterByUrl = (String) filters.get("url").getFilterField();
+        Map<String, FilterMeta> filters = dataTable.getFilterByAsMap();
+        filterByContactInfo = (String) filters.get("contactInfo").getField();
+        filterByUrl = (String) filters.get("url").getField();
     }
     
     public Boolean getDisplayContactInfo() {

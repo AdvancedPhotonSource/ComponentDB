@@ -18,7 +18,7 @@ See LICENSE file.
     <ui:define name="customizeDisplayDialogConent">
         <ui:param name="userSettingSettingObject" value="#{userSettingController.settingObject}" />
          <p:panelGrid columns="2">
-            <p:inputText id="displayNumberOfItemsPerPage" value="#{userSettingSettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
+            <p:inputText id="displayNumberOfItemsPerPage" value="#{userSettingSettingObject.displayNumberOfItemsPerPage}" styleClass="numItemsPerPageInput"/>
             <h:outputLabel for="displayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
         </p:panelGrid>
     </ui:define>

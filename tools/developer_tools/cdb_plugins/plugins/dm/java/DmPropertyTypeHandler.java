@@ -61,7 +61,11 @@ public class DmPropertyTypeHandler extends AbstractPropertyTypeHandler {
             InputStream pipedInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
             logger.debug("Serving file download for: " + fileName);
             String mimeContentType = generateMimeContentType(fileName);
-            return new DefaultStreamedContent(pipedInputStream, mimeContentType, fileName);
+            DefaultStreamedContent.Builder builder = DefaultStreamedContent.builder();
+            builder.stream(() -> pipedInputStream); 
+            builder.contentType(mimeContentType);
+            builder.name(fileName); 
+            return builder.build();             
         } catch (ExternalServiceError ex) {
             logger.error("ERROR: " + ex.getMessage());           
             throw ex; 

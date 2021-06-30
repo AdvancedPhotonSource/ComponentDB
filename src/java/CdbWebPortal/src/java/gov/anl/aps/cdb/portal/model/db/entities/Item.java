@@ -1214,6 +1214,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     }
 
     public ItemElement getSelfElement() {
+        if (this.fullItemElementList == null) {
+            return null; 
+        }
         if (selfItemElement == null) {
             for (ItemElement ie : this.fullItemElementList) {
                 if (ie.getName() == null && ie.getDerivedFromItemElement() == null) {

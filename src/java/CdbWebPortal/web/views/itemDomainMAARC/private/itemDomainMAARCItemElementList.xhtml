@@ -22,6 +22,8 @@ See LICENSE file.
                  value="#{itemObject.itemElementDisplayList}"
                  var="itemElementObject"                 
                  rows="#{entityController.settingObject.displayFileNumberOfItemsPerPage}"
+                 sortMode="single"
+                 stripedRows="true"
                  paginator="true">
         <ui:param name="containedItemListObject"
                   value="#{itemElementObject.containedItem}"/>

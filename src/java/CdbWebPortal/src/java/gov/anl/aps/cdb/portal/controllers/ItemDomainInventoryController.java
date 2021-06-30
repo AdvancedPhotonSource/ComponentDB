@@ -505,6 +505,9 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     }
 
     public boolean isCurrentHasPartsToDisplay() {
+        if (getCurrent() == null) {
+            return false; 
+        }
         if (getCurrent().getInventoryDomainBillOfMaterialList() != null) {
             return getCurrent().getInventoryDomainBillOfMaterialList().isEmpty() == false;
         }

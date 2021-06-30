@@ -17,6 +17,8 @@ See LICENSE file.
                      emptyMessage="No released templates were found."
                      value="#{releasedFormsObject.releasedForms}"
                      selection="#{selectedTemplate.selectedReleasedForm}"
+                     sortMode="single"
+                     stripedRows="true"
                      rowKey="#{releasedForm.id}"
                      rendered="#{releasedFormsObject != null}"
                      selectionMode="single"

@@ -1505,7 +1505,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
 
     public void clearSelectFiltersAndResetSelectDataModel() {
         if (selectDataTable != null) {
-            selectDataTable.getFilterBy().clear();
+            selectDataTable.getFilterByAsMap().clear();
         }
         settingObject.clearSelectFilters();
         resetSelectDataModel();

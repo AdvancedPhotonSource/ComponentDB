@@ -12,7 +12,7 @@ See LICENSE file.
     <ui:param name="logSettingObject" value="#{logController.settingObject}" />
 
     <p:panelGrid columns="2">
-        <p:inputText id="logListDisplayNumberOfItemsPerPage" value="#{logSettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
+        <p:inputText id="logListDisplayNumberOfItemsPerPage" value="#{logSettingObject.displayNumberOfItemsPerPage}" styleClass="numItemsPerPageInput"/>
         <h:outputLabel for="logListDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
         <p:selectBooleanCheckbox id="logListDisplayAttachment" value="#{logSettingObject.displayAttachments}"/>  

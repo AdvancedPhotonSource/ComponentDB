@@ -32,10 +32,10 @@ See LICENSE file.
         <f:facet name="footer" >
             <p:commandButton value="Save" 
                              oncomplete="PF('#{entityTypeName}#{itemConnectorEntityTypeName}AddDialogWidget').hide()"
-                             icon="ui-icon-disk"
+                             icon="fa fa-save"
                              update="#{itemConnectorEntityTypeName}ListDataTable"
                              action="#{itemConnectorController.createWithoutRedirect()}"/>
-            <p:commandButton label="Cancel" icon="ui-icon-arrowreturnthick-1-w"
+            <p:commandButton label="Cancel" icon="fa fa-close"
                              value="Cancel"
                              update="#{itemConnectorEntityTypeName}ListDataTable"
                              oncomplete="PF('#{entityTypeName}#{itemConnectorEntityTypeName}AddDialogWidget').hide()"
