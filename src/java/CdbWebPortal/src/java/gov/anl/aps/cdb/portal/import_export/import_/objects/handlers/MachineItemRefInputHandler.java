@@ -81,6 +81,7 @@ public class MachineItemRefInputHandler extends RefInputHandler {
             validString = "no item found with name: " + itemName + " and root item: " + rootParentItem.getName();
         } else if (matches.size() == 1) {
             entity = matches.get(0);
+            entity = super.getCacheObject(entity);
         }
         else if (matches.size() > 1) {
             // more than one match

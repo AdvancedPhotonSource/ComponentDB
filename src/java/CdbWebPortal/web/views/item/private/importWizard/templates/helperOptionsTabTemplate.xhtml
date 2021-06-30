@@ -33,7 +33,8 @@ See LICENSE file.
                                     <ui:param name="optionProperty" value ="#{option.property}"/>
 
                                     <p:outputLabel for="#{optionId}" 
-                                                   value="#{optionLabel}"/>
+                                                   value="#{optionLabel}"
+                                                   title="#{optionDescription}"/>
                                     
                                     <p:inputText id="#{optionId}" 
                                                  value="#{wizardController.importHelper[optionProperty]}" 
