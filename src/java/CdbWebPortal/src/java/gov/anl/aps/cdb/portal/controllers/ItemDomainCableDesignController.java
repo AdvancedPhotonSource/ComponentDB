@@ -865,22 +865,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     }
 
-    /**
-     * Prepares endpoint dialog for editing endpoint1.
-     */
-    public void prepareDialogEndpoint1() {
-        dialogEndpoint.reset();
-        dialogEndpoint.setItemEndpoint(getCurrent().getEndpoint1());
-    }
-
-    /**
-     * Prepares endpoint dialog for editing endpoint2.
-     */
-    public void prepareDialogEndpoint2() {
-        dialogEndpoint.reset();
-        dialogEndpoint.setItemEndpoint(getCurrent().getEndpoint2());
-    }
-    
     public void prepareEditEndpoint(ItemDomainMachineDesign endpoint, Integer id) {
         dialogEndpoint.reset();
         dialogEndpoint.setItemEndpoint(endpoint);

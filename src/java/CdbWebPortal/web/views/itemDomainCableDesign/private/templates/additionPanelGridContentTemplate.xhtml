@@ -41,7 +41,7 @@ See LICENSE file.
                            styleClass="fa-link-icon fa-icon fa fa-pencil"
                            onstart="PF('loadingDialog').show()"
                            oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
-                           action='#{entityController.prepareDialogEndpoint2()}'
+                           action='#{entityController.prepareEditEndpoint(itemObject.endpoint2, 2)}'
                            rendered="#{isEntityWriteable}"
                            update="dialogEndpoint">
                 <p:tooltip for="endpoint2EditShowButton"
