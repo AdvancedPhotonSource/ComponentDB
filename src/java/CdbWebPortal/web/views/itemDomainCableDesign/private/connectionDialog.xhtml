@@ -10,9 +10,9 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:dialog header="Edit Connection Details (Current Endpoint: #{entityController.dialogConnection.itemEndpointString})" 
+    <p:dialog header="Edit Connection Details (Current Connection: #{entityController.dialogConnection.itemEndpointString})" 
               id="dialogConnection"
-              widgetVar="endpointDialog" 
+              widgetVar="connectionDialog" 
               modal="true"
               closable="false"
               width="500">
@@ -28,14 +28,14 @@ See LICENSE file.
                                var="connector"/>
                 <p:ajax event="itemSelect"
                         listener="#{itemDomainCableDesignController.dialogConnection.selectListenerConnector}"
-                        oncomplete="updateButtonsDialogEndpoint();" />        
+                        oncomplete="updateButtonsDialogConnection();" />        
             </p:selectOneMenu>
         </p:panel>
 
         <p:panel>
             <p:outputLabel for="@next" value="Select endpoint item or optional connector"/>
             <ui:decorate template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
-                <ui:param name="viewId" value="endpointDialogTree" />
+                <ui:param name="viewId" value="connectionDialogTree" />
                 <ui:param name="hideOptionalColumns" value="#{false}" />
                 <ui:param name="valueModel" value="#{itemDomainCableDesignController.dialogConnection.mdTree}" />
                 <ui:param name="selectionModel" value="#{itemDomainCableDesignController.dialogConnection.selectedMdTreeNode}" />
@@ -44,10 +44,10 @@ See LICENSE file.
                 <ui:define name="treeTableEvents">
                     <p:ajax event="select"
                             listener="#{itemDomainCableDesignController.dialogConnection.selectListenerEndpoint}"
-                            oncomplete="updateButtonsDialogEndpoint();updateMessageDialogEndpoint();" />
+                            oncomplete="updateButtonsDialogConnection();updateMessageDialogConnection();" />
                     <p:ajax event="unselect"
                             listener="#{itemDomainCableDesignController.dialogConnection.selectListenerEndpoint}"
-                            oncomplete="updateButtonsDialogEndpoint();updateMessageDialogEndpoint();" />
+                            oncomplete="updateButtonsDialogConnection();updateMessageDialogConnection();" />
                 </ui:define>
                 <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
             </ui:decorate>
@@ -66,7 +66,7 @@ See LICENSE file.
 
             <p:outputPanel id="dialogConnectionButtonPanel">
                 <p:commandButton  action="#{entityController.dialogConnection.save('saveEndpointSuccess()')}"
-                                  id="endpointDialogSaveButton"
+                                  id="connectionDialogSaveButton"
                                   value="Save" 
                                   alt="Save" 
                                   update="dialogConnection"
@@ -82,18 +82,15 @@ See LICENSE file.
                 <p:remoteCommand name="saveEndpointSuccess"                             
                                  actionListener="#{entityController.dialogConnection.actionListenerSaveSuccess}"
                                  update="@form"
-                                 onstart="PF('endpointDialog').hide()" />
+                                 onstart="PF('connectionDialog').hide()" />
             </p:outputPanel>
         </f:facet>
 
-        <p:remoteCommand name="updateButtonsDialogEndpoint" 
+        <p:remoteCommand name="updateButtonsDialogConnection" 
                          update="dialogConnectionButtonPanel"/>
 
-        <p:remoteCommand name="updateMessageDialogEndpoint" 
+        <p:remoteCommand name="updateMessageDialogConnection" 
                          update="connectionDialogMessagePanel"/>
-
-        <p:remoteCommand name="updateTreeDialogEndpoint" 
-                         update="itemMachineDesignListDataTableendpointDialogTree"/>
 
     </p:dialog>
 

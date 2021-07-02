@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog header="Select New Endpoint (Current: #{entityController.dialogEndpoint.itemEndpointString})" 
+              id="dialogEndpoint"
+              widgetVar="endpointDialog" 
+              modal="true"
+              closable="false"
+              width="500">
+
+        <ui:decorate template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+            <ui:param name="viewId" value="endpointDialogTree" />
+            <ui:param name="hideOptionalColumns" value="#{false}" />
+            <ui:param name="valueModel" value="#{itemDomainCableDesignController.dialogEndpoint.valueModelTree}" />
+            <ui:param name="selectionModel" value="#{itemDomainCableDesignController.dialogEndpoint.selectionModelEndpoint}" />
+            <ui:param name="rendered" value="#{true}" />
+            <ui:param name="scrollable" value="#{true}" />
+            <ui:define name="treeTableEvents">
+                <p:ajax event="select"
+                        listener="#{itemDomainCableDesignController.dialogEndpoint.selectListenerEndpoint}"
+                        oncomplete="updateButtonsDialogEndpoint();" />
+                <p:ajax event="unselect"
+                        listener="#{itemDomainCableDesignController.dialogEndpoint.selectListenerEndpoint}"
+                        oncomplete="updateButtonsDialogEndpoint();" />
+            </ui:define>
+            <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+        </ui:decorate>
+
+        <f:facet name="footer" class="dialog">
+
+            <p:outputPanel id="dialogEndpointButtonPanel">
+                <p:commandButton  action="#{entityController.dialogEndpoint.save('saveEndpointSuccess()')}"
+                                  id="endpointDialogSaveButton"
+                                  value="Save" 
+                                  alt="Save" 
+                                  update="dialogEndpoint"
+                                  disabled="#{entityController.dialogEndpoint.disableButtonSave}"
+                                  icon="ui-icon-check"/>
+
+                <p:commandButton action="#{entityController.dialogEndpoint.cancel()}" 
+                                 immediate="true" 
+                                 value="Cancel" alt="Cancel" 
+                                 update="dialogEndpoint"
+                                 icon="ui-icon-cancel" />
+
+                <p:remoteCommand name="saveEndpointSuccess"                             
+                                 actionListener="#{entityController.dialogEndpoint.actionListenerSaveSuccess}"
+                                 update="@form"
+                                 onstart="PF('endpointDialog').hide()" />
+            </p:outputPanel>
+        </f:facet>
+
+        <p:remoteCommand name="updateButtonsDialogEndpoint" 
+                         update="dialogEndpointButtonPanel"/>
+
+    </p:dialog>
+
+
+</ui:composition>

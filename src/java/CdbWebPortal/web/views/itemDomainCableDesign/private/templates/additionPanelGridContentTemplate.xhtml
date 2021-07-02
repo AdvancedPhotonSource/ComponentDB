@@ -12,6 +12,49 @@ See LICENSE file.
     
     <p:panelGrid columns="2" styleClass="#{panelGridStyle}">
 
+        <p:outputLabel value="Endpoint1" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <p:commandLink id="endpoint1EditShowButton"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
+                           action='#{entityController.prepareEditEndpoint(itemObject.endpoint1, 1)}'
+                           rendered="#{isEntityWriteable}"
+                           update="dialogEndpoint">
+                <p:tooltip for="endpoint1EditShowButton"
+                           value="Edit First Endpoint" />
+            </p:commandLink>
+
+            <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="viewName"
+                          value="endpoint1"/>
+                <ui:param name="itemObject"
+                          value="#{itemObject.endpoint1}"/>
+            </ui:include>
+        </p:outputPanel>
+
+        <p:outputLabel value="Endpoint2" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <p:commandLink id="endpoint2EditShowButton"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
+                           action='#{entityController.prepareDialogEndpoint2()}'
+                           rendered="#{isEntityWriteable}"
+                           update="dialogEndpoint">
+                <p:tooltip for="endpoint2EditShowButton"
+                           value="Edit Second Endpoint" />
+            </p:commandLink>
+            <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="viewName"
+                          value="endpoint2"/>
+                <ui:param name="itemObject"
+                          value="#{itemObject.endpoint2}"/>
+            </ui:include>
+        </p:outputPanel>
+
         <p:outputLabel value="Assigned Catalog Item" 
                        styleClass="entityDataEmphasizedLabel"/>
         <p:outputPanel styleClass="inlineFlexOutputPanel">
@@ -34,6 +77,9 @@ See LICENSE file.
             </ui:include>            
         </p:outputPanel>
 
+
+        <ui:include src="../endpointDialog.xhtml" >
+        </ui:include>
 
         <ui:include src="../catalogDialog.xhtml" >
         </ui:include>
