@@ -247,8 +247,7 @@ public class ItemDomainCableDesign extends Item {
             Item itemEndpoint,
             ItemConnector endpointConnector,
             ItemConnector cableConnector,
-            float sortOrder,
-            boolean isImport) {
+            float sortOrder) {
 
         ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(sortOrder);
         if (cableRelationship != null) {
@@ -727,7 +726,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint1(Item itemEndpoint) {
-        setEndpoint(itemEndpoint, null, null, 1.0f, false);
+        setEndpoint(itemEndpoint, null, null, 1.0f);
     }
 
     public ValidInfo setEndpoint1Import(
@@ -781,7 +780,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint2(Item itemEndpoint) {
-        setEndpoint(itemEndpoint, null, null, 2.0f, false);
+        setEndpoint(itemEndpoint, null, null, 2.0f);
     }
     
     public ValidInfo setEndpoint2Import(

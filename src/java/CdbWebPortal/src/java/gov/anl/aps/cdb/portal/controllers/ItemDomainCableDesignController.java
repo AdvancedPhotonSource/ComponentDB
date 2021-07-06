@@ -30,7 +30,6 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
-import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +62,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         private Item itemEndpoint = null;
         private ItemDomainMachineDesignTreeNode valueModelTree = null;
         private TreeNode selectionModelEndpoint = null;
-        private Integer relationshipId;
+        private Integer sortOrder;
         
         public Boolean getDisableButtonSave() {
             return disableButtonSave;
@@ -90,12 +89,12 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             }
         }
 
-        public Integer getRelationshipId() {
-            return relationshipId;
+        public Integer getSortOrder() {
+            return sortOrder;
         }
 
-        public void setRelationshipId(Integer relationshipId) {
-            this.relationshipId = relationshipId;
+        public void setSortOrder(Integer sortOrder) {
+            this.sortOrder = sortOrder;
         }
 
         public ItemDomainMachineDesignTreeNode getValueModelTree() {
@@ -118,34 +117,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             this.selectionModelEndpoint = selectionModelEndpoint;
         }
 
-        public Boolean updateEndpoint(Integer relationshipId, Item newEndpoint) {
-
-            ItemElement selfElement = getCurrent().getSelfElement();
-            List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
-
-            if (ierList != null) {
-
-                RelationshipType cableIerType
-                        = RelationshipTypeFacade.getInstance().findByName(
-                                ItemElementRelationshipTypeNames.itemCableConnection.getValue());
-
-                // find cable relationship for old endpoint
-                ItemElementRelationship cableRelationship = ierList.stream()
-                        .filter(ier -> (ier.getId().equals(relationshipId)))
-                        .findAny()
-                        .orElse(null);
-
-                // update cable relationship to new endpoint
-                if (cableRelationship != null) {
-                    getCurrent().updateCableRelationship(cableRelationship, newEndpoint, null, null);
-                } else {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         /**
          * Determines whether endpoint changed, and call update if it did to
          * save the change.
@@ -157,20 +128,20 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
             // endpoint changed, update cable and save
             if (!selectedItemEndpoint.equals(getItemEndpoint())) {
-                if (updateEndpoint(getRelationshipId(), selectedItemEndpoint)) {
+                
+                getCurrent().setEndpoint(selectedItemEndpoint, null, null, getSortOrder());
 
-                    String updateResult = update();
+                String updateResult = update();
 
-                    // An error occured, reload the page with correct information. 
-                    if (updateResult == null) {
-                        reloadCurrent();
-                        return view();
-                    }
-                    
-                    refreshConnectionListForCurrent();
-
-                    SessionUtility.executeRemoteCommand(remoteCommandSuccess);
+                // An error occured, reload the page with correct information. 
+                if (updateResult == null) {
+                    reloadCurrent();
+                    return view();
                 }
+
+                refreshConnectionListForCurrent();
+
+                SessionUtility.executeRemoteCommand(remoteCommandSuccess);
             }
             return null;
         }
@@ -865,10 +836,24 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     }
 
-    public void prepareEditEndpoint(ItemDomainMachineDesign endpoint, Integer id) {
+    public void prepareEditEndpoint(Item endpoint, Integer sortOrder) {
         dialogEndpoint.reset();
         dialogEndpoint.setItemEndpoint(endpoint);
-        dialogEndpoint.setRelationshipId(id);
+        dialogEndpoint.setSortOrder(sortOrder);
+    }
+    
+    /**
+     * Prepares endpoint dialog for editing endpoint1.
+     */
+    public void prepareDialogEndpoint1() {
+        prepareEditEndpoint(getCurrent().getEndpoint1(), 1);
+    }
+
+    /**
+     * Prepares endpoint dialog for editing endpoint2.
+     */
+    public void prepareDialogEndpoint2() {
+        prepareEditEndpoint(getCurrent().getEndpoint2(), 2);
     }
     
     public void prepareDialogCatalog() {
