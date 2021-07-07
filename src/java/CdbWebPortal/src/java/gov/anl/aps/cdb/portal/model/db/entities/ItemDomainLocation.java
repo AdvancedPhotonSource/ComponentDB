@@ -6,10 +6,12 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -28,9 +30,10 @@ public class ItemDomainLocation extends Item {
     private transient Float importSortOrder = null;
     
     private transient ItemElement parentItemElement = null; 
+    private transient List<Item> itemsLocatedHere = null; 
     
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
-    private transient DefaultMenuModel parentSelectionMenuModel = null;
+    private transient DefaultMenuModel parentSelectionMenuModel = null;    
     // </editor-fold>
     
 
@@ -59,6 +62,26 @@ public class ItemDomainLocation extends Item {
             }
         }
         return null;
+    }
+
+    public List<Item> getItemsLocatedHere() {
+        if (itemsLocatedHere == null) {
+            itemsLocatedHere = new ArrayList<>();
+            
+            List<ItemElementRelationship> relationshipList = getItemElementRelationshipList1();
+            String itemLocation = ItemElementRelationshipTypeNames.itemLocation.getValue();
+            for (ItemElementRelationship rel : relationshipList) {
+                RelationshipType relationshipType = rel.getRelationshipType();
+                if (relationshipType.getName().equals(itemLocation)) {
+                    ItemElement firstItemElement = rel.getFirstItemElement();
+                    Item parentItem = firstItemElement.getParentItem();
+                    if (parentItem != null) {
+                        itemsLocatedHere.add(parentItem); 
+                    }
+                }
+            }
+        }
+        return itemsLocatedHere;
     }
 
     @Override
