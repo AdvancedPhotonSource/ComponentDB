@@ -295,6 +295,7 @@ public class LocatableItemController implements Serializable {
     private void loadItemLocationInfoItemMembership(LocatableItem locatableItem) {
         Item parentItem = getParentLocationItem(locatableItem);
         locatableItem.setMembershipLocation(parentItem);
+        locatableItem.setMembershipLoaded(true);
     }
 
     private Item getParentLocationItem(Item item) {
@@ -605,6 +606,26 @@ public class LocatableItemController implements Serializable {
             setItemLocationInfo(inventoryItem);
         }
         return inventoryItem.getLocationItem();
+    }
+    
+    public Item getHousingOrActiveLocation(LocatableItem inventoryItem) {
+        if (inventoryItem.getOriginalLocationLoaded() == false) {
+            setItemLocationInfo(inventoryItem, false, true);            
+        }
+        
+        List<ItemDomainLocation> locationHierarchy = getLocationHierarchyListForItem(inventoryItem);
+        if (locationHierarchy != null && locationHierarchy.size() > 0) {
+            int last = locationHierarchy.size() -1;
+            return locationHierarchy.get(last); 
+        }
+        return null;         
+    }
+    
+    public Item getHousing(LocatableItem item) {
+        if (item.getMembershipLoaded() == false) {
+            loadItemLocationInfoItemMembership(item);
+        }
+        return item.getMembershipLocation(); 
     }
 
     public DefaultMenuModel getItemLocataionDefaultMenuModel(LocatableItem item) {
