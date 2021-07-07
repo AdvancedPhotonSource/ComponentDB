@@ -1326,6 +1326,10 @@ h2 {
     color: #6d0000 !important;
 }
 
+.fa-icon-blue {
+    color: #4e80b6 !important; 
+}
+
 .visibleDatatableOverflow > div:first-child, .visibleDatatableOverflow .ui-sortable-handle {
     overflow: visible; 
 }

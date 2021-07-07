@@ -9,13 +9,25 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">  
 
+    <ui:param name="locationObject" 
+              value="#{locatableItemController.getHousingOrActiveLocation(itemListObject)}" />
+
     <ui:param name="locationString"
               value="#{locatableItemController.getLocationStringForItem(itemListObject)}" />
     <ui:param name="displayLocationString"
               value="#{locationString != '' ? locationString : alternateLocationString}" /> 
-    
+
+    <div class="actionLink">
+        <p:commandLink id="#{entityTypeName}LocationLink" 
+                       onclick="PF('loadingDialog').show()"
+                       action="#{entityController.prepareView(locationObject)}" 
+                       rendered="#{locationObject != null}"
+                       styleClass="fa fa-link-icon fa-building fa-icon-blue" 
+                       title="View Location Item"/>
+    </div>
+
     <h:outputLabel id="locationStringOutputText"
-                  value="#{displayLocationString}" >
+                   value="#{locationObject.name}" >
         <p:tooltip for="locationStringOutputText"
                    value="#{displayLocationString}" /> 
     </h:outputLabel>
