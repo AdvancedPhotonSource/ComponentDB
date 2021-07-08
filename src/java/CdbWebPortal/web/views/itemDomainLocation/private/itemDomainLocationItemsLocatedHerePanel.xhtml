@@ -8,30 +8,25 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:panel header="Items Located Here">            
-        <p:dataTable value="#{itemObject.itemsLocatedHere}"
-                     paginatorAlwaysVisible="true"
-                     paginator="true"
-                     rows="25"
-                     var="itemListObject">
-            <p:column headerText="Item"
-                      filterable="true"
-                      sortBy="#{itemListObject}"
-                      filterBy="#{itemListObject}">
-                <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
-                    <ui:param name="itemObject" 
-                              value="#{itemListObject}" />
-                    <ui:param name="displayString"
-                              value="#{itemListObject}" /> 
-                </ui:include>
-            </p:column>
-            <p:column headerText="Domain"
-                      filterOptions="#{itemDomainLocationController.itemsLocatedHereDomainFilterOptions}"
-                      filterBy="#{itemListObject.domain.name}"
-                      sortBy="#{itemListObject.domain.name}">
-                #{itemListObject.domain.name}
-            </p:column>
-        </p:dataTable>
+    <p:panel header="Locations Located Here">            
+        <ui:include src="itemDomainLocationItemsLocatedHereDataTable.xhtml"> 
+            <ui:param name="itemList"
+                      value="#{itemObject.locationsLocatedHere}" /> 
+        </ui:include>
+    </p:panel>
+    
+    <p:panel header="Inventory Located Here">            
+        <ui:include src="itemDomainLocationItemsLocatedHereDataTable.xhtml"> 
+            <ui:param name="itemList"
+                      value="#{itemObject.inventoryLocatedHere}" /> 
+        </ui:include>
+    </p:panel>
+    
+    <p:panel header="Machines Located Here">            
+        <ui:include src="itemDomainLocationItemsLocatedHereDataTable.xhtml"> 
+            <ui:param name="itemList"
+                      value="#{itemObject.machinesLocatedHere}" /> 
+        </ui:include>
     </p:panel>
 
 

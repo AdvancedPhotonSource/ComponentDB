@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
-import gov.anl.aps.cdb.common.utilities.CollectionUtility;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainLocationSettings;
@@ -30,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.model.SelectItem;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,9 +55,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     private FilterViewItemHierarchySelection filterViewLocationSelection = null;
 
     private boolean renderLocationSelectionDialog = false;
-    private boolean renderLocationInplaceEditTieredMenu = false;   
-    
-    private SelectItem[] itemsLocatedHereDomainFilterOptions; 
+    private boolean renderLocationInplaceEditTieredMenu = false;       
 
     @EJB
     DomainFacade domainFacade;
@@ -346,19 +342,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
             SessionUtility.addErrorMessage("Error", ex.getMessage());
             logger.error(ex);
         }
-    }   
-
-    public SelectItem[] getItemsLocatedHereDomainFilterOptions() {
-        if (itemsLocatedHereDomainFilterOptions == null) {
-            List<String> itemsLocatedHereDomainFilterStringOptions = new ArrayList<>(); 
-            String inventory = ItemDomainName.inventory.getValue();
-            String md = ItemDomainName.machineDesign.getValue();
-            itemsLocatedHereDomainFilterStringOptions.add(inventory);
-            itemsLocatedHereDomainFilterStringOptions.add(md); 
-            itemsLocatedHereDomainFilterOptions = CollectionUtility.getSelectItems(itemsLocatedHereDomainFilterStringOptions, true); 
-        }
-        return itemsLocatedHereDomainFilterOptions;
-    }
+    }    
 
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
