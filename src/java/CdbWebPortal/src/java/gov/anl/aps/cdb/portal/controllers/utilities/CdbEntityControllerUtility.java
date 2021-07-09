@@ -8,8 +8,12 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.SystemLogLevel;
 import gov.anl.aps.cdb.portal.model.db.beans.CdbEntityFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -387,4 +391,39 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         return searchResultList; 
     }
     
+    public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity, PropertyType propertyType) {
+        return preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyType.getDefaultValue(), null);
+    }
+
+    public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity,
+            PropertyType propertyType, String propertyValueString, String tag) {
+        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
+        return preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyValueString, tag, lastModifiedByUser);
+    }
+
+    public PropertyValue preparePropertyTypeValueAdd(EntityType cdbEntity,
+            PropertyType propertyType, String propertyValueString, String tag,
+            UserInfo updatedByUser) {
+        Date lastModifiedOnDateTime = new Date();
+
+        PropertyValue propertyValue = new PropertyValue();
+        propertyValue.setPropertyType(propertyType);
+        propertyValue.setValue(propertyValueString);
+        propertyValue.setUnits(propertyType.getDefaultUnits());
+        cdbEntity.addPropertyValueToPropertyValueList(propertyValue);
+        propertyValue.setEnteredByUser(updatedByUser);
+        propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
+        if (tag != null) {
+            propertyValue.setTag(tag);
+        }
+
+        cdbEntity.resetPropertyValueLists();
+
+        // Get method called by GUI populates metadata
+        // Needed for multi-edit or API to also populate metadata
+        propertyValue.getPropertyValueMetadataList();
+
+        return propertyValue;
+    }
+
 }

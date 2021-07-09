@@ -296,6 +296,11 @@ public abstract class ItemController<
     }
 
     @Override
+    public boolean getEntityDisplayConnectorCableEndDesignation() {
+        return false;
+    }
+
+    @Override
     public final String getEntityEntityTypeName() {
         return getItemItemTypeTitle();
     }
@@ -1200,11 +1205,18 @@ public abstract class ItemController<
         itemConnectorList.remove(itemConnector);
         ItemConnectorController.getInstance().destroy(itemConnector);
     }
+    
+    /**
+     * Initializes new instance of ItemConnector. Subclasses override to customize.
+     */
+    protected void initializeItemConnector(ItemConnector itemConnector) {
+    }
 
     public final void prepareAddItemConnector(Item item) {
         if (item != null) {
             UserInfo user = SessionUtility.getUser();
             ItemConnector itemConnector = getControllerUtility().prepareAddItemConnector(item, user);
+            initializeItemConnector(itemConnector);
 
             ItemConnectorController itemConnectorController = ItemConnectorController.getInstance();
             itemConnectorController.setCurrent(itemConnector);

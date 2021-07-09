@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -24,6 +25,11 @@ public class CdbEntity implements Serializable, Cloneable {
     @JsonIgnore
     private transient String persitanceErrorMessage = null; 
     
+    @JsonIgnore
+    protected transient List<PropertyValue> propertyValueDisplayList = null; 
+    @JsonIgnore
+    protected transient List<PropertyValue> propertyValueInternalList = null; 
+    
     private transient Map<String, String> apiProperties;
     
     // import wizard variables
@@ -36,6 +42,11 @@ public class CdbEntity implements Serializable, Cloneable {
     private transient Boolean hasImportUpdates;
     
     protected static final long serialVersionUID = 1L;
+    
+    public void resetPropertyValueLists() {
+        propertyValueDisplayList = null; 
+        propertyValueInternalList = null; 
+    }
     
     public Object clone(UserInfo currentUser) throws CloneNotSupportedException {
         return super.clone();
@@ -158,6 +169,10 @@ public class CdbEntity implements Serializable, Cloneable {
     @JsonIgnore
     public Boolean getIsItemDeleted() {
         return false;
+    }
+
+    // default implementation is to do nothing
+    public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
     }
 
 }

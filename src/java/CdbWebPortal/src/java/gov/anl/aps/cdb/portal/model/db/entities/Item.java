@@ -1132,16 +1132,30 @@ public class Item extends CdbDomainEntity implements Serializable {
     
     @JsonIgnore
     public List<ItemConnector> getItemConnectorListSorted() {
+        
         Collections.sort(itemConnectorList, (c1, c2) -> {
-            String c1Name = "";
-            String c2Name = "";
-            if ((c1.getConnector() != null) && (c1.getConnector().getName() != null)) {
-                c1Name = c1.getConnector().getName();
+            
+            String c1End = "";
+            String c2End = "";
+            if ((c1.getConnector() != null) && (c1.getConnector().getCableEndDesignation() != null)) {
+                c1End = c1.getConnector().getCableEndDesignation();
             }
-            if ((c2.getConnector() != null) && (c2.getConnector().getName() != null)) {
-                c2Name = c2.getConnector().getName();
+            if ((c2.getConnector() != null) && (c2.getConnector().getCableEndDesignation() != null)) {
+                c2End = c2.getConnector().getCableEndDesignation();
             }
-            return c1Name.compareTo(c2Name);
+            if (!c1End.equals(c2End)) {
+                return c1End.compareTo(c2End);
+            } else {
+                String c1Name = "";
+                String c2Name = "";
+                if ((c1.getConnector() != null) && (c1.getConnector().getName() != null)) {
+                    c1Name = c1.getConnector().getName();
+                }
+                if ((c2.getConnector() != null) && (c2.getConnector().getName() != null)) {
+                    c2Name = c2.getConnector().getName();
+                }
+                return c1Name.compareTo(c2Name);
+            }
         });
         return itemConnectorList;
     }

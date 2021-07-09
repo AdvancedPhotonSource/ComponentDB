@@ -10,7 +10,10 @@ import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -18,6 +21,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
  */
 public class ConnectorControllerUtility extends CdbEntityControllerUtility<Connector, ConnectorFacade> {
         
+    private static final Logger LOGGER = LogManager.getLogger(ConnectorControllerUtility.class.getName());
+
     @Override
     public Connector createEntityInstance(UserInfo sessionUser) {
         return new Connector(); 
@@ -57,4 +62,23 @@ public class ConnectorControllerUtility extends CdbEntityControllerUtility<Conne
         return "connector"; 
     }
     
+    public PropertyType prepareCableEndDesignationPropertyType() {
+        
+        PropertyTypeControllerUtility propertyTypeControllerUtility = new PropertyTypeControllerUtility();
+        PropertyType propertyType = propertyTypeControllerUtility.createEntityInstance(null);
+
+        propertyType.setIsInternal(true);
+        propertyType.setName(Connector.CABLE_END_DESIGNATION_PROPERTY_TYPE);
+        propertyType.setDescription(Connector.CABLE_END_DESIGNATION_PROPERTY_DESCRIPTION);
+
+        try {
+            propertyTypeControllerUtility.create(propertyType, null);
+        } catch (CdbException ex) {
+            LOGGER.error(ex.getMessage());
+            return null;
+        }
+        
+        return propertyType;
+    }
+
 }
