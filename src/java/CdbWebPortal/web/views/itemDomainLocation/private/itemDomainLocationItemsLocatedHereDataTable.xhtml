@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+   
+    <p:dataTable value="#{itemList}"
+                 paginatorAlwaysVisible="true"
+                 paginator="true"
+                 rows="25"
+                 var="itemListObject">
+        <p:column headerText="Item"
+                  filterable="true"
+                  sortBy="#{itemListObject}"
+                  filterBy="#{itemListObject}">
+            <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="itemObject" 
+                          value="#{itemListObject}" />
+                <ui:param name="displayString"
+                          value="#{itemListObject}" /> 
+            </ui:include>
+        </p:column>
+        <p:column headerText="QrId"
+                  filterBy="#{itemListObject.qrIdFilter}"
+                  sortBy="#{itemListObject.qrId}">
+            #{itemListObject.qrIdDisplay}
+        </p:column>        
+    </p:dataTable>
+
+
+</ui:composition>
+
+

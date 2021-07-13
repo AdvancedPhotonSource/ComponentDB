@@ -75,9 +75,12 @@ a:link:hover, a:visited:hover  {
     /* Proposed W3C Markup */
     background-image: linear-gradient(top, #4e80b6 0%, #6da5d8 100%);
 
-    padding: 15px;
+    padding-top: 0px;
+    padding-left: 15px;
+    padding-right: 15px; 
+    padding-bottom: 15px;
     margin: 0px 0px 0px 0px;
-    height: 78px;
+    height: 70px;
 }
 
 #menu {
@@ -125,6 +128,7 @@ footer {
     vertical-align: central;
     text-align: center;
     margin: 0px 170px 0px 170px;
+    padding-top: 15px;
 }
 
 .topRightContent {
@@ -133,6 +137,7 @@ footer {
     vertical-align: central;
     text-align: left;
     font-size: 10px;
+    padding-top: 4px;
 }
 
 .menubar {
@@ -651,6 +656,10 @@ h2 {
 
 .ui-panelgrid tr, .ui-panelgrid td {
     border: none;    
+}
+
+.mainMenuBar .ui-menu {
+    border: 0; 
 }
 
 .mainMenuBar .ui-menu, .mainMenuBar, .mainMenuBar .ui-menu .ui-menu-child {
@@ -1315,6 +1324,10 @@ h2 {
 
 .fa-icon-warning {
     color: #6d0000 !important;
+}
+
+.fa-icon-blue {
+    color: #4e80b6 !important; 
 }
 
 .visibleDatatableOverflow > div:first-child, .visibleDatatableOverflow .ui-sortable-handle {

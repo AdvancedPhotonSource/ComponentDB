@@ -55,7 +55,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     private FilterViewItemHierarchySelection filterViewLocationSelection = null;
 
     private boolean renderLocationSelectionDialog = false;
-    private boolean renderLocationInplaceEditTieredMenu = false;   
+    private boolean renderLocationInplaceEditTieredMenu = false;       
 
     @EJB
     DomainFacade domainFacade;
@@ -342,7 +342,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
             SessionUtility.addErrorMessage("Error", ex.getMessage());
             logger.error(ex);
         }
-    }        
+    }    
 
     @Override
     public boolean getEntityDisplayDerivedFromItem() {

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:panel header="Locations Located Here">            
+        <ui:include src="itemDomainLocationItemsLocatedHereDataTable.xhtml"> 
+            <ui:param name="itemList"
+                      value="#{itemObject.locationsLocatedHere}" /> 
+        </ui:include>
+    </p:panel>
+    
+    <p:panel header="Inventory Located Here">            
+        <ui:include src="itemDomainLocationItemsLocatedHereDataTable.xhtml"> 
+            <ui:param name="itemList"
+                      value="#{itemObject.inventoryLocatedHere}" /> 
+        </ui:include>
+    </p:panel>
+    
+    <p:panel header="Machines Located Here">            
+        <ui:include src="itemDomainLocationItemsLocatedHereDataTable.xhtml"> 
+            <ui:param name="itemList"
+                      value="#{itemObject.machinesLocatedHere}" /> 
+        </ui:include>
+    </p:panel>
+
+
+</ui:composition>
+
+

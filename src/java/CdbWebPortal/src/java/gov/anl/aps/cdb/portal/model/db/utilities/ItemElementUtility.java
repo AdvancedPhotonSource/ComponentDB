@@ -31,7 +31,7 @@ public class ItemElementUtility {
     private final static String SELECTION_MENU_MODEL_ONCLICK_TEMPLATE = "#{%s.%s(itemGenericViewController.findById(%s))}";
     private final static String CLEAR_ITEM_ONCLICK_TEMPLATE = "#{%s.%s(%s)}";
     private final static String ACTIVE_LOCATION_MENU_ITEM_STYLE = "activeLocationMenuItem";
-    private final static Integer MENU_MODEL_MAX_LENGTH = 35;
+    private final static Integer MENU_MODEL_MAX_LENGTH = 25;
     private final static Integer MENU_MODEL_TEXT_WIDE_MIN = 20;
     private final static String MENU_MODEL_WIDE_STYLE_NAME = "wideMenuItem";
 
