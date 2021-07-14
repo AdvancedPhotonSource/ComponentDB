@@ -426,4 +426,23 @@ public abstract class CdbEntityControllerUtility<EntityType extends CdbEntity, F
         return propertyValue;
     }
 
+    public PropertyType prepareCableEndDesignationPropertyType() {
+        
+        PropertyTypeControllerUtility propertyTypeControllerUtility = new PropertyTypeControllerUtility();
+        PropertyType propertyType = propertyTypeControllerUtility.createEntityInstance(null);
+
+        propertyType.setIsInternal(true);
+        propertyType.setName(CdbEntity.CABLE_END_DESIGNATION_PROPERTY_TYPE);
+        propertyType.setDescription(CdbEntity.CABLE_END_DESIGNATION_PROPERTY_DESCRIPTION);
+
+        try {
+            propertyTypeControllerUtility.create(propertyType, null);
+        } catch (CdbException ex) {
+            logger.error(ex.getMessage());
+            return null;
+        }
+        
+        return propertyType;
+    }
+
 }

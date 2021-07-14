@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableCatalogSetting
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableCatalogControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableCatalogConnectors;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableCatalogFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCableCatalog;
@@ -107,7 +108,7 @@ public class ItemDomainCableCatalogController extends ItemDomainCatalogBaseContr
     }
     
     protected void initializeItemConnector(ItemConnector itemConnector) {
-        itemConnector.getConnector().setCableEndDesignation(Connector.DEFAULT_CABLE_END_DESIGNATION);
+        itemConnector.getConnector().setCableEndDesignation(CdbEntity.DEFAULT_CABLE_END_DESIGNATION);
     }
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   

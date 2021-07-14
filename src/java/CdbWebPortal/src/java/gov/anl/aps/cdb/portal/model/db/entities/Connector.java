@@ -4,9 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
-import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,13 +72,6 @@ public class Connector extends CdbEntity implements Serializable {
     @Column(name = "is_male")
     private boolean isMale;
 
-    public static final String CABLE_END_DESIGNATION_PROPERTY_TYPE = "cable_end_designation_property_type";
-    public static final String CABLE_END_DESIGNATION_PROPERTY_DESCRIPTION = "cable end designation";
-    private transient String cableEndDesignation = null;
-    private transient PropertyValue cableEndDesignationPropertyValue = null;
-    private static PropertyType cableEndDesignationPropertyType = null;
-    public static final String DEFAULT_CABLE_END_DESIGNATION = "1";
-    
     public Connector() {
     }
 
@@ -203,6 +194,7 @@ public class Connector extends CdbEntity implements Serializable {
 
     }
     
+    @Override
     public ConnectorControllerUtility getControllerUtility() {
         return new ConnectorControllerUtility(); 
     }
@@ -214,60 +206,4 @@ public class Connector extends CdbEntity implements Serializable {
         propertyValueList.add(0, propertyValue);
     }
     
-    public PropertyType getCableEndDesignationPropertyType() {
-        
-        if (cableEndDesignationPropertyType == null) {
-            
-            cableEndDesignationPropertyType =
-                    PropertyTypeFacade.getInstance().findByName(CABLE_END_DESIGNATION_PROPERTY_TYPE);
-            
-            if (cableEndDesignationPropertyType == null) {
-                cableEndDesignationPropertyType = getControllerUtility().prepareCableEndDesignationPropertyType();
-            }
-        }
-        return cableEndDesignationPropertyType;
-    }
-    
-    public PropertyValue prepareCableEndDesignationPropertyValue() {
-        PropertyType propertyType = getCableEndDesignationPropertyType();
-        return getControllerUtility().preparePropertyTypeValueAdd(
-                this, propertyType, propertyType.getDefaultValue(), null);
-    }
-    
-    public PropertyValue getCableEndDesignationPropertyValue() {
-
-        if (cableEndDesignationPropertyValue == null) {
-            List<PropertyValue> propertyValueList = getPropertyValueList();
-            if (propertyValueList != null) {
-                for (PropertyValue propertyValue : propertyValueList) {
-                    if (propertyValue.getPropertyType().getName().equals(CABLE_END_DESIGNATION_PROPERTY_TYPE)) {
-                        cableEndDesignationPropertyValue = propertyValue;
-                    }
-                }
-            }
-        }
-        
-        if (cableEndDesignationPropertyValue == null) {
-            cableEndDesignationPropertyValue = prepareCableEndDesignationPropertyValue();
-        }
-
-        return cableEndDesignationPropertyValue;
-    }
-
-    public void setCableEndDesignation(String endDesignation) {
-        PropertyValue propertyValue = getCableEndDesignationPropertyValue();
-        if (propertyValue != null) {
-            cableEndDesignation = endDesignation;
-            propertyValue.setValue(endDesignation);
-        }
-    }
-    
-    @JsonIgnore
-    public String getCableEndDesignation() {        
-        if (cableEndDesignation == null) {
-            cableEndDesignation = getCableEndDesignationPropertyValue().getValue();
-        }
-        return cableEndDesignation;
-    }
-
 }

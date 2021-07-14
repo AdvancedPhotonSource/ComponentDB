@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementRelationshipControllerUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -283,6 +284,11 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     @Override
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship[ id=" + id + " ]";
+    }
+    
+    @Override
+    public ItemElementRelationshipControllerUtility getControllerUtility() {
+        return new ItemElementRelationshipControllerUtility(); 
     }
     
 }

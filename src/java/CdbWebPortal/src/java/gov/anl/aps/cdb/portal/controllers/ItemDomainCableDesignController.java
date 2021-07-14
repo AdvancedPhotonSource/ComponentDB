@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.model.ItemDomainCableDesignLazyDataModel;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -59,10 +60,10 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public class EndpointDialog {
 
         private Boolean disableButtonSave = true;
+        private ItemElementRelationship cableRelationship = null;
         private Item itemEndpoint = null;
         private ItemDomainMachineDesignTreeNode valueModelTree = null;
         private TreeNode selectionModelEndpoint = null;
-        private Integer sortOrder;
         
         public Boolean getDisableButtonSave() {
             return disableButtonSave;
@@ -70,6 +71,15 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         public void setDisableButtonSave(Boolean disableButtonSave) {
             this.disableButtonSave = disableButtonSave;
+        }
+        
+        public ItemElementRelationship getCableRelationship() {
+            return cableRelationship;
+        }
+        
+        public void setCableRelationship(ItemElementRelationship cableRelationship) {
+            this.cableRelationship = cableRelationship;
+            setItemEndpoint(cableRelationship.getFirstItemElement().getParentItem());
         }
 
         public Item getItemEndpoint() {
@@ -87,14 +97,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             } else {
                 return itemEndpoint.getName();
             }
-        }
-
-        public Integer getSortOrder() {
-            return sortOrder;
-        }
-
-        public void setSortOrder(Integer sortOrder) {
-            this.sortOrder = sortOrder;
         }
 
         public ItemDomainMachineDesignTreeNode getValueModelTree() {
@@ -129,7 +131,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             // endpoint changed, update cable and save
             if (!selectedItemEndpoint.equals(getItemEndpoint())) {
                 
-                getCurrent().setEndpoint(selectedItemEndpoint, null, null, getSortOrder());
+                getCurrent().updateCableRelationship(cableRelationship, itemEndpoint, null, null);
 
                 String updateResult = update();
 
@@ -584,7 +586,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         
         @Override
         public String save(String remoteCommandSuccess) {            
-            ItemElementRelationship ier = getCurrent().addCableRelationship(selectedMdItem, null, null, null);
+            ItemElementRelationship ier = 
+                    getCurrent().addCableRelationship(selectedMdItem, null, null, CdbEntity.CABLE_END_1, false);
             setCableRelationship(ier);
             return super.save(remoteCommandSuccess);
         }
@@ -836,24 +839,20 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     }
 
-    public void prepareEditEndpoint(Item endpoint, Integer sortOrder) {
+    public void prepareEditEndpoint(ItemElementRelationship cableRelationship) {
         dialogEndpoint.reset();
-        dialogEndpoint.setItemEndpoint(endpoint);
-        dialogEndpoint.setSortOrder(sortOrder);
+        dialogEndpoint.setCableRelationship(cableRelationship);
     }
     
     /**
      * Prepares endpoint dialog for editing endpoint1.
      */
     public void prepareDialogEndpoint1() {
-        prepareEditEndpoint(getCurrent().getEndpoint1(), 1);
+        prepareEditEndpoint(getCurrent().getPrimaryRelationshipForCableEnd(CdbEntity.CABLE_END_1));
     }
 
-    /**
-     * Prepares endpoint dialog for editing endpoint2.
-     */
     public void prepareDialogEndpoint2() {
-        prepareEditEndpoint(getCurrent().getEndpoint2(), 2);
+        prepareEditEndpoint(getCurrent().getPrimaryRelationshipForCableEnd(CdbEntity.CABLE_END_2));
     }
     
     public void prepareDialogCatalog() {

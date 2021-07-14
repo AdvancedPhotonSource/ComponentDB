@@ -62,23 +62,4 @@ public class ConnectorControllerUtility extends CdbEntityControllerUtility<Conne
         return "connector"; 
     }
     
-    public PropertyType prepareCableEndDesignationPropertyType() {
-        
-        PropertyTypeControllerUtility propertyTypeControllerUtility = new PropertyTypeControllerUtility();
-        PropertyType propertyType = propertyTypeControllerUtility.createEntityInstance(null);
-
-        propertyType.setIsInternal(true);
-        propertyType.setName(Connector.CABLE_END_DESIGNATION_PROPERTY_TYPE);
-        propertyType.setDescription(Connector.CABLE_END_DESIGNATION_PROPERTY_DESCRIPTION);
-
-        try {
-            propertyTypeControllerUtility.create(propertyType, null);
-        } catch (CdbException ex) {
-            LOGGER.error(ex.getMessage());
-            return null;
-        }
-        
-        return propertyType;
-    }
-
 }
