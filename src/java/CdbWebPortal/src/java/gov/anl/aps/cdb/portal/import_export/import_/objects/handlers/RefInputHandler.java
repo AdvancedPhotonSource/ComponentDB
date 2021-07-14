@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -34,7 +32,11 @@ public class RefInputHandler extends SimpleInputHandler {
     private boolean singleValue = true;
     private boolean allowPaths = false;
     
-    private static Map<String, RefObjectManager> objectManagerMap = new HashMap<>();
+    private Map<String, RefObjectManager> objectManagerMap = new HashMap<>();
+    
+    public RefInputHandler(String columnName) {
+        super(columnName);
+    }
     
     public RefInputHandler(
             int columnIndex,
@@ -113,7 +115,7 @@ public class RefInputHandler extends SimpleInputHandler {
         return getObjectManager(controller, domainNameFilter);
     }
     
-    public static RefObjectManager getObjectManager(CdbEntityController controller, String domainNameFilter) {
+    public RefObjectManager getObjectManager(CdbEntityController controller, String domainNameFilter) {
         String entityTypeName = controller.getEntityTypeName();
         if (!objectManagerMap.containsKey(entityTypeName)) {
             // add a new RefObjectManager instance for entity type if not present in map
