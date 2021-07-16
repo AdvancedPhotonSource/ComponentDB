@@ -7,6 +7,7 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -88,6 +89,8 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
     
     @JsonIgnore
     private transient String infoActionCommand; 
+    
+    public static final transient SimpleDateFormat JustDateFormat = new SimpleDateFormat("MM/dd/yyyy");
 
     public PropertyValueHistory() {
     }
@@ -160,6 +163,14 @@ public class PropertyValueHistory extends PropertyValueBase implements Serializa
 
     public void setEffectiveFromDateTime(Date effectiveFromDateTime) {
         this.effectiveFromDateTime = effectiveFromDateTime;
+    }
+    
+    @JsonIgnore
+    public String getEffectiveFromDateString() {
+        if (effectiveFromDateTime != null) {
+            return JustDateFormat.format(effectiveFromDateTime); 
+        }
+        return ""; 
     }
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
