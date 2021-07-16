@@ -46,10 +46,20 @@ public class CableDesignConnectionListObject {
     public ItemConnector getItemConnector() {
         return itemConnector;
     }
+    
+    public String getItemConnectorName() {
+        ItemConnector connector = getItemConnector();
+        if (connector != null) {
+            return connector.getConnector().getName();
+        } else {
+            return "";
+        }
+    }
 
     private void setItemConnector(ItemConnector itemConnector) {
         this.itemConnector = itemConnector;
     }
+    
 
     public ItemElementRelationship getCableRelationship() {
         return cableRelationship;
@@ -73,9 +83,27 @@ public class CableDesignConnectionListObject {
     public ItemDomainMachineDesign getMdItem() {
         return mdItem;
     }
+    
+    public String getMdItemName() {
+        ItemDomainMachineDesign item = getMdItem();
+        if (item != null) {
+            return item.getName();
+        } else {
+            return "";
+        }
+    }
 
     public ItemConnector getMdConnector() {
         return mdConnector;
+    }
+    
+    public String getMdConnectorName() {
+        ItemConnector connector = getMdConnector();
+        if (connector != null) {
+            return connector.getConnector().getName();
+        } else {
+            return "";
+        }
     }
 
     public static List<CableDesignConnectionListObject> getConnectionList(ItemDomainCableDesign item) {
@@ -89,16 +117,26 @@ public class CableDesignConnectionListObject {
                         item, 
                         ItemElementRelationshipTypeNames.itemCableConnection.getValue(), 
                         false);
-        // sort relationships by sort order
-        cableRelationshipList = 
-                cableRelationshipList.stream()
-                        .sorted(Comparator.comparing(ItemElementRelationship::getSecondSortOrder))
-                        .collect(Collectors.toList());
         for (ItemElementRelationship cableRelationship : cableRelationshipList) {
             CableDesignConnectionListObject connection = new CableDesignConnectionListObject(item);
             connection.setCableRelationship(cableRelationship, item);
             connList.add(connection);
         }
+        
+        // sort by end, device name, device port name, cable connector name
+        Comparator<CableDesignConnectionListObject> comparator = 
+                Comparator
+                        .comparing((CableDesignConnectionListObject o) 
+                                -> o.getCableRelationship().getCableEndDesignation())
+                        .thenComparing(o -> o.getMdItemName().toLowerCase())
+                        .thenComparing(o -> o.getMdConnectorName().toLowerCase())
+                        .thenComparing(o -> o.getItemConnectorName().toLowerCase());
+
+        connList
+                = connList.stream()
+                        .sorted(comparator)
+                        .collect(Collectors.toList());
+
 
 //        // add unmapped connectors
 //        List<ItemConnector> connectors = item.getItemConnectorList();

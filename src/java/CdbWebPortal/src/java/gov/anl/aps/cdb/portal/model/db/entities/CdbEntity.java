@@ -54,9 +54,11 @@ public class CdbEntity implements Serializable, Cloneable {
     private transient String cableEndDesignation = null;
     private transient PropertyValue cableEndDesignationPropertyValue = null;
     public static final String CABLE_END_DESIGNATION_PROPERTY_DESCRIPTION = "cable end designation";
-    public final static String CABLE_END_1 = "1";
-    public final static String CABLE_END_2 = "2";
-    public static final String DEFAULT_CABLE_END_DESIGNATION = CABLE_END_1;
+    public final static String VALUE_CABLE_END_1 = "1";
+    public final static String VALUE_CABLE_END_2 = "2";
+    public final static String LABEL_CABLE_END_1 = "End1";
+    public final static String LABEL_CABLE_END_2 = "End2";
+    public static final String DEFAULT_CABLE_END_DESIGNATION = VALUE_CABLE_END_1;
     
 
     protected static final long serialVersionUID = 1L;

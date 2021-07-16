@@ -32,6 +32,7 @@ import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -229,6 +230,43 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         private List<String> availableCableConnectorNames;
         private String selectedCableConnectorName;
         private String message;
+        private String cableEndDesignation;
+        
+        public String getMenuValueEnd1() {
+            return CdbEntity.VALUE_CABLE_END_1;
+        }
+
+        public String getMenuValueEnd2() {
+            return CdbEntity.VALUE_CABLE_END_2;
+        }
+        
+        public String getMenuLabelEnd1() {
+            return CdbEntity.LABEL_CABLE_END_1;
+        }
+
+        public String getMenuLabelEnd2() {
+            return CdbEntity.LABEL_CABLE_END_2;
+        }
+        
+        public String getCableEndDesignation() {
+            return cableEndDesignation;
+        }
+        
+        public void setCableEndDesignation(String cableEndDesignation) {
+            this.cableEndDesignation = cableEndDesignation;
+        }
+        
+        public boolean isRenderCableEndDesignation() {
+            return true;
+        }
+        
+        public boolean isDisableCableEndDesignation() {
+            if (getCableRelationship() != null) {
+                return getCableRelationship().isPrimaryCableConnection();  
+            } else {
+                return false;
+            }
+        }
 
         public ItemElementRelationship getCableRelationship() {
             return cableRelationship;
@@ -587,7 +625,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         @Override
         public String save(String remoteCommandSuccess) {            
             ItemElementRelationship ier = 
-                    getCurrent().addCableRelationship(selectedMdItem, null, null, CdbEntity.CABLE_END_1, false);
+                    getCurrent().addCableRelationship(selectedMdItem, null, null, CdbEntity.VALUE_CABLE_END_1, false);
             setCableRelationship(ier);
             return super.save(remoteCommandSuccess);
         }
@@ -848,11 +886,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * Prepares endpoint dialog for editing endpoint1.
      */
     public void prepareDialogEndpoint1() {
-        prepareEditEndpoint(getCurrent().getPrimaryRelationshipForCableEnd(CdbEntity.CABLE_END_1));
+        prepareEditEndpoint(getCurrent().getPrimaryRelationshipForCableEnd(CdbEntity.VALUE_CABLE_END_1));
     }
 
     public void prepareDialogEndpoint2() {
-        prepareEditEndpoint(getCurrent().getPrimaryRelationshipForCableEnd(CdbEntity.CABLE_END_2));
+        prepareEditEndpoint(getCurrent().getPrimaryRelationshipForCableEnd(CdbEntity.VALUE_CABLE_END_2));
     }
     
     public void prepareDialogCatalog() {
@@ -1036,12 +1074,24 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     public List<ItemConnector> getUnmappedConnectorsForCurrent() {
+        
         List<ItemConnector> unmappedConnectors = new ArrayList<>();
         for (ItemConnector connector : getCurrent().getItemConnectorList()) {
             if (!connector.isConnected()) {
                 unmappedConnectors.add(connector);
             }
         }
+        
+        // sort by end, device name, device port name, cable connector name
+        Comparator<ItemConnector> comparator
+                = Comparator
+                        .comparing((ItemConnector c) -> c.getConnectorCableEndDesignation())
+                        .thenComparing(c -> c.getConnectorName().toLowerCase());
+        unmappedConnectors
+                = unmappedConnectors.stream()
+                        .sorted(comparator)
+                        .collect(Collectors.toList());
+
         return unmappedConnectors;
     }
 
@@ -1063,6 +1113,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return getUnmappedConnectorsForCurrent().size() > 0;
     }
     
+    @Override
+    public boolean getEntityDisplayConnectorCableEndDesignation() {
+        return true; 
+    }    
+
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
     
     @Override

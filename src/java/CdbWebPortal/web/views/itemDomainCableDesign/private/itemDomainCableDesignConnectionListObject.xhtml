@@ -19,9 +19,17 @@ See LICENSE file.
               value="#{connection.mdConnector.connector}"/>
     <ui:param name="relationshipId"
               value="#{connection.cableRelationship.id}"/> 
+    <ui:param name="cableEnd"
+              value="#{connection.cableRelationship.cableEndDesignation}"/>
     
     <p:columnGroup type="header">
         <p:row>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText/>
+                    Cable End
+                </f:facet>
+            </p:column>
             <p:column>
                 <f:facet name="header">
                     <h:outputText styleClass="ui-icon ui-icon-machine-design" />
@@ -34,18 +42,6 @@ See LICENSE file.
                     Device Port
                 </f:facet>
             </p:column>
-            <p:column>
-                <f:facet name="header">
-                    <h:outputText styleClass="ui-icon ui-icon-connector" />
-                    Port Type
-                </f:facet>
-            </p:column>
-            <p:column>
-                <f:facet name="header">
-                    <h:outputText styleClass="ui-icon ui-icon-connector" />
-                    Port Gender
-                </f:facet>
-            </p:column>
             <p:column id="cableConnectorNameColumn">
                 <f:facet name="header">
                     <h:outputText value="Cable Connector" />
@@ -56,6 +52,11 @@ See LICENSE file.
         </p:row>
     </p:columnGroup>
 
+    <p:column headerText="Cable End"
+              exportFunction="#{facesUtility.getToString(cableEnd)}">
+        #{cableEnd}
+    </p:column>
+    
     <p:column headerText="Device"
               exportFunction="#{facesUtility.getToString(connectedToItem)}">
         <p:outputPanel styleClass="inlineFlexOutputPanel">
@@ -84,18 +85,6 @@ See LICENSE file.
             <ui:param name="connector"
                       value="#{connectedToPort}" />
         </ui:include>
-    </p:column>
-    
-    <p:column headerText="Port Type"
-              exportFunction="#{facesUtility.getToString(connection.mdConnector.connector.connectorType)}">
-        #{connection.mdConnector.connector.connectorType}
-    </p:column>
-    
-    <ui:param name="portGender"
-              value="#{itemConnectorController.getConnectorGender(connection.mdConnector)}" /> 
-    <p:column headerText="Port Gender"
-              exportFunction="#{facesUtility.getToString(portGender)}">
-        #{portGender}
     </p:column>
     
     <p:column headerText="Cable Connector"

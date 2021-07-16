@@ -51,8 +51,10 @@ See LICENSE file.
                            disabled="#{disabled}"
                            rendered="#{entityController.entityDisplayConnectorCableEndDesignation}">
             <p:ajax oncomplete="#{onChangeConnector}" />
-            <f:selectItem itemValue="1" itemLabel="End1"/>
-            <f:selectItem itemValue="2" itemLabel="End2"/>
+            <f:selectItem itemValue="#{entityController.menuValueCableEnd1}" 
+                          itemLabel="#{entityController.menuLabelCableEnd1}"/>
+            <f:selectItem itemValue="#{entityController.menuValueCableEnd2}" 
+                          itemLabel="#{entityController.menuLabelCableEnd2}"/>
         </p:selectOneButton>
     </p:column>
     

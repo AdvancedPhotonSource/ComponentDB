@@ -95,8 +95,10 @@ public class ItemDomainCableDesign extends Item {
     private static PropertyType endPropertyType = null;
     private static PropertyType coreMetadataPropertyType = null;
     
-    private final static String RELATIONSHIP_LABEL_PRIMARY = "PRI";
-    private final static String RELATIONSHIP_LABEL_DETAIL = "DET";
+    private final static String RELATIONSHIP_LABEL_PRIMARY = 
+            ItemElementRelationship.VALUE_LABEL_PRIMARY_CABLE_CONN;
+    private final static String RELATIONSHIP_LABEL_DETAIL = 
+            ItemElementRelationship.VALUE_LABEL_DETAIL_CABLE_CONN;
 
     @Override
     public Item createInstance() {
@@ -719,7 +721,7 @@ public class ItemDomainCableDesign extends Item {
 
     @JsonIgnore
     public Item getEndpoint1() {
-        return getPrimaryEndpoint(CABLE_END_1);
+        return getPrimaryEndpoint(VALUE_CABLE_END_1);
     }
 
     @JsonIgnore
@@ -743,7 +745,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint1(Item itemEndpoint) {
-        setPrimaryEndpoint(itemEndpoint, null, null, CABLE_END_1);
+        setPrimaryEndpoint(itemEndpoint, null, null, VALUE_CABLE_END_1);
     }
 
     public ValidInfo setEndpoint1Import(
@@ -753,22 +755,22 @@ public class ItemDomainCableDesign extends Item {
         
         endpoint1Port = endpointConnectorName;
         endpoint1Connector = cableConnectorName;
-        return setEndpointImport(itemEndpoint, endpointConnectorName, cableConnectorName, CABLE_END_1);
+        return setEndpointImport(itemEndpoint, endpointConnectorName, cableConnectorName, VALUE_CABLE_END_1);
     }
 
     @JsonIgnore
     public String getEndpoint1Port() {
-        return getPortForEndpoint(CABLE_END_1);
+        return getPortForEndpoint(VALUE_CABLE_END_1);
     }
 
     @JsonIgnore
     public String getEndpoint1Connector() {
-        return getConnectorForEndpoint(CABLE_END_1);
+        return getConnectorForEndpoint(VALUE_CABLE_END_1);
     }
 
     @JsonIgnore
     public Item getEndpoint2() {
-        return getPrimaryEndpoint(CABLE_END_2);
+        return getPrimaryEndpoint(VALUE_CABLE_END_2);
     }
 
     @JsonIgnore
@@ -792,7 +794,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint2(Item itemEndpoint) {
-        setPrimaryEndpoint(itemEndpoint, null, null, CABLE_END_2);
+        setPrimaryEndpoint(itemEndpoint, null, null, VALUE_CABLE_END_2);
     }
     
     public ValidInfo setEndpoint2Import(
@@ -802,17 +804,17 @@ public class ItemDomainCableDesign extends Item {
         
         endpoint2Port = endpointConnectorName;
         endpoint2Connector = cableConnectorName;
-        return setEndpointImport(itemEndpoint, endpointConnectorName, cableConnectorName, CABLE_END_2);
+        return setEndpointImport(itemEndpoint, endpointConnectorName, cableConnectorName, VALUE_CABLE_END_2);
     }
 
     @JsonIgnore
     public String getEndpoint2Port() {
-        return getPortForEndpoint(CABLE_END_2);
+        return getPortForEndpoint(VALUE_CABLE_END_2);
     }
 
     @JsonIgnore
     public String getEndpoint2Connector() {
-        return getConnectorForEndpoint(CABLE_END_2);
+        return getConnectorForEndpoint(VALUE_CABLE_END_2);
     }
 
     @JsonIgnore

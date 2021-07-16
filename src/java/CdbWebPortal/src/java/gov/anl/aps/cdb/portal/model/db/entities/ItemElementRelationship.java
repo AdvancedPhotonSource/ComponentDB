@@ -105,6 +105,9 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     @JoinColumn(name = "resource_type_id", referencedColumnName = "id")
     @ManyToOne
     private ResourceType resourceType;
+    
+    public static String VALUE_LABEL_PRIMARY_CABLE_CONN = "PRI";
+    public static String VALUE_LABEL_DETAIL_CABLE_CONN = "DET";
 
     public ItemElementRelationship() {
     }
@@ -289,6 +292,11 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     @Override
     public ItemElementRelationshipControllerUtility getControllerUtility() {
         return new ItemElementRelationshipControllerUtility(); 
+    }
+    
+    // convenience method for cable relationship type
+    public boolean isPrimaryCableConnection() {
+        return VALUE_LABEL_PRIMARY_CABLE_CONN.equals(getLabel());
     }
     
 }
