@@ -65,10 +65,12 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     private TreeNode currentItemBOMListTree = null;
     private TreeNode selectedItemBOMTreeNode = null;
     private boolean showOptionalPartsInBom = false;
-    private Boolean currentItemBOMTreeHasOptionalItems = null;   
+    private Boolean currentItemBOMTreeHasOptionalItems = null;
+    private Integer BOM_CHILD_MIN_COUNT_FOR_SCROLLPANEL = 30;
+    private boolean isDisplayBomTreeInScrollpanel = false;
 
     private ItemDomainInventoryLazyDataModel itemDomainInventoryLazyDataModel = null;
-    
+
     @EJB
     private ItemDomainInventoryFacade itemDomainInventoryFacade;
 
@@ -84,15 +86,15 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     protected ItemDomainInventorySettings createNewSettingObject() {
         return new ItemDomainInventorySettings(this);
-    }   
+    }
 
     @Override
     protected String generatePaddedUnitName(int itemNumber) {
         return ItemDomainInventory.generatePaddedUnitName(itemNumber);
     }
 
-    public static ItemDomainInventoryController getInstance() {        
-        return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);        
+    public static ItemDomainInventoryController getInstance() {
+        return (ItemDomainInventoryController) findDomainController(DEFAULT_DOMAIN_NAME);
     }
 
     @Override
@@ -123,7 +125,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
 
         return relatedMAARCRelationshipsForCurrent;
     }
-    
+
     @Override
     public List<ItemDomainInventory> getItemListWithProject(ItemProject itemProject) {
         String projectName = itemProject.getName();
@@ -133,12 +135,12 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     public List<EntityType> getFilterableEntityTypes() {
         return getDefaultDomainDerivedFromDomain().getAllowedEntityTypeList();
-    }   
+    }
 
     @Override
     public void resetListDataModel() {
         super.resetListDataModel();
-        itemDomainInventoryLazyDataModel = null; 
+        itemDomainInventoryLazyDataModel = null;
     }
 
     @Override
@@ -181,13 +183,17 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
 
     @Override
     public void prepareAddItemDerivedFromItem(Item item) {
+        isDisplayBomTreeInScrollpanel = getShowInScrollPanel(item); 
         super.prepareAddItemDerivedFromItem(item);
         prepareBillOfMaterialsForCurrentItem();
     }
 
     public void prepareBillOfMaterialsForCurrentItem() {
-        getControllerUtility().prepareBillOfMaterialsForItem(getCurrent());
-    }      
+        ItemDomainInventory current = getCurrent();
+        ItemDomainCatalog catalogItem = current.getCatalogItem();
+        isDisplayBomTreeInScrollpanel = getShowInScrollPanel(catalogItem); 
+        getControllerUtility().prepareBillOfMaterialsForItem(current);
+    }
 
     @Override
     public String prepareView(ItemDomainInventory item) {
@@ -239,7 +245,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         if (getCurrent() != null) {
             getCurrent().setInventoryDomainBillOfMaterialList(null);
             getCurrent().setContainedInBOM(null);
-        }        
+        }
         currentItemBOMListTree = null;
         selectedItemBOMTreeNode = null;
         showOptionalPartsInBom = false;
@@ -253,6 +259,21 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         }
 
         return currentItemBOMListTree;
+    }
+
+    private boolean getShowInScrollPanel(Item catalogItem) {
+        if (catalogItem != null) {
+            List<ItemElement> itemElementDisplayList = catalogItem.getItemElementDisplayList();
+            if (itemElementDisplayList.size() > BOM_CHILD_MIN_COUNT_FOR_SCROLLPANEL) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isIsDisplayBomTreeInScrollpanel() {
+        return isDisplayBomTreeInScrollpanel;
     }
 
     private TreeNode buildTreeNodeFromParentItem(InventoryBillOfMaterialItem startingBOM) {
@@ -319,7 +340,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
 
         this.selectedItemBOMTreeNode = selectedItemBOMTreeNode;
 
-    }       
+    }
 
     public boolean isRenderBomOptionalUnspecified(InventoryBillOfMaterialItem billOfMaterialsItem) {
         if (billOfMaterialsItem != null) {
@@ -396,7 +417,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         ItemDomainInventory current = getCurrent();
         if (current != null && currentItemBOMTreeHasOptionalItems == null) {
             currentItemBOMTreeHasOptionalItems = itemHasOptionalsInBOM(current);
-            if (!currentItemBOMTreeHasOptionalItems) {                                
+            if (!currentItemBOMTreeHasOptionalItems) {
                 InventoryBillOfMaterialItem containedInBOM = current.getContainedInBOM();
                 List<ItemDomainInventory> newItemsToAdd = containedInBOM.getNewItemsToAdd();
                 for (ItemDomainInventory item : newItemsToAdd) {
@@ -452,7 +473,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
         selectedItemBOMTreeNode.setType(bomItem.getState());
 
         if (!previousState.equals(bomItem.getState())) {
-            if (previousState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {                
+            if (previousState.equals(InventoryBillOfMaterialItemStates.newItem.getValue())) {
                 // The current item will not be defined. it has no children.                 
                 selectedItemBOMTreeNode.getChildren().clear();
 
@@ -462,7 +483,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
                 if (catalogItem.getFullItemElementList().size() > 1) {
                     // Assembly may have optionals
                     currentItemBOMTreeHasOptionalItems = null;
-                }               
+                }
             } else if (InventoryBillOfMaterialItemStates.newItem.getValue().equals(bomItem.getState())) {
                 ItemElement catalogItemElement = bomItem.getCatalogItemElement();
                 ItemDomainCatalog catalogItem = (ItemDomainCatalog) catalogItemElement.getContainedItem();
@@ -483,8 +504,8 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
                 }
             }
         }
-    }      
-    
+    }
+
     public boolean isApplyPermissionToAllNewPartsForCurrent() {
         return getControllerUtility().isApplyPermissionToAllNewPartsForItem(getCurrent());
     }
@@ -509,7 +530,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
             return getCurrent().getInventoryDomainBillOfMaterialList().isEmpty() == false;
         }
         return false;
-    }     
+    }
 
     public String getInventoryItemElementDisplayString(ItemElement itemElement) {
         if (itemElement != null) {
@@ -536,7 +557,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
             }
         }
         return null;
-    }   
+    }
 
     @Override
     public boolean isShowCloneCreateItemElementsPlaceholdersOption() {
@@ -547,7 +568,7 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
     @Override
     public String prepareCloneForItemToClone() {
         // Item elements should match the assembly. User has no control over that.
-        cloneCreateItemElementPlaceholders = true;        
+        cloneCreateItemElementPlaceholders = true;
 
         return super.prepareCloneForItemToClone();
     }
@@ -571,19 +592,19 @@ public class ItemDomainInventoryController extends ItemDomainInventoryBaseContro
 
     @Override
     protected DomainImportExportInfo initializeDomainImportInfo() {
-        
+
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         formatInfo.add(new ImportExportFormatInfo("Basic Inventory Format", ImportHelperInventory.class));
-        
+
         String completionUrl = "/views/itemDomainInventory/list?faces-redirect=true";
-        
+
         return new DomainImportExportInfo(formatInfo, completionUrl);
     }
-    
+
     @Override
     public String getDefaultDomainName() {
         return DEFAULT_DOMAIN_NAME;
-    }   
+    }
 
     @Override
     public boolean getEntityDisplayItemElements() {

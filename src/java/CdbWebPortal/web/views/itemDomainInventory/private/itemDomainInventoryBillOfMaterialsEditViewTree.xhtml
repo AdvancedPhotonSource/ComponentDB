@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:tree value="#{itemDomainInventoryController.currentItemBOMListTree}"
+            id="partsTree"
+            var="inventoryBOM"
+            selectionMode="single"
+            selection="#{itemDomainInventoryController.selectedItemBOMTreeNode}">
+        
+        <p:ajax event="select" update="#{fullUpateTarget}"/>
+
+        <p:treeNode type="newItem" icon="ui-icon-plus">
+            <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+                <ui:param name="viewName" value="newItem"/>
+            </ui:include>
+        </p:treeNode>
+        <p:treeNode type="existingItem" icon="ui-icon-check">
+            <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+                <ui:param name="viewName" value="existingItem"/>
+            </ui:include>
+        </p:treeNode>
+        <p:treeNode type="placeholder" icon="ui-icon-close">
+            <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+                <ui:param name="viewName" value="placeholder"/>
+            </ui:include>
+        </p:treeNode>
+        <p:treeNode rendered="#{itemDomainInventoryController.showOptionalPartsInBom}"
+                    type="unspecifiedOptional" icon="ui-icon-radio-off" >
+            <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
+                <ui:param name="viewName" value="unspecifiedOptional"/>
+            </ui:include>
+        </p:treeNode>
+        <p:treeNode>
+            <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml"/>
+        </p:treeNode>
+    </p:tree>
+
+</ui:composition>
+
+
