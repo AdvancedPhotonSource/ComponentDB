@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.primefaces.event.NodeSelectEvent;
@@ -230,7 +231,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         private List<String> availableCableConnectorNames;
         private String selectedCableConnectorName;
         private String message;
-        private String cableEndDesignation;
+        protected String cableEndDesignation;
         
         public String getMenuValueEnd1() {
             return CdbEntity.VALUE_CABLE_END_1;
@@ -256,6 +257,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             this.cableEndDesignation = cableEndDesignation;
         }
         
+        public void selectListenerCableEnd(AjaxBehaviorEvent event) {
+            updateCableConnectorMenu();
+            setEnablement();
+        }
+
         public boolean isRenderCableEndDesignation() {
             return true;
         }
@@ -346,6 +352,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         public void setOrigCableConnector(ItemConnector origCableConnector) {
             this.origCableConnector = origCableConnector;
+            setSelectedCableConnector(origCableConnector);
         }
 
         public ItemConnector getSelectedCableConnector() {
@@ -356,38 +363,39 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             this.selectedCableConnector = selectedCableConnector;
         }
 
-        /**
-         * Prepares list of available cable connectors to use as model for menu,
-         * and map for looking up connector by name when menu selection changes.
-         * This is called in preparing the dialog. This is to work around issue
-         * where newly cloned connector doesn't have an id, which causes an 
-         * exception in the framework code trying to look up connector by id
-         * when the menu selection changes.
-        */
-        public void setAvailableCableConnectors(
-                List<ItemConnector> availableCableConnectors,
-                ItemConnector currentConnector) {
+        private void updateCableConnectorMenu() {
             
+            // get list of unmapped connectors, plus connector for this connection if any
+            List<ItemConnector> availableConnectors = getUnmappedConnectorsForCurrent(cableEndDesignation);
+            if (selectedCableConnector != null) {
+                availableConnectors.add(selectedCableConnector);
+            }
+
             availableCableConnectorNames = new ArrayList<>();
             cableConnectorNameMap = new HashMap<>();
-            for (ItemConnector connector : availableCableConnectors) {
+            for (ItemConnector connector : availableConnectors) {
                 String connectorName = connector.getConnector().toString();
                 availableCableConnectorNames.add(connectorName);
                 cableConnectorNameMap.put(connectorName, connector);
             }
-            
+
             // set selected item and original item
-            setOrigCableConnector(currentConnector);
-            if (currentConnector != null) {
-                String currentConnectorName = currentConnector.getConnector().toString();
+            if (selectedCableConnector != null) {
+                String currentConnectorName = selectedCableConnector.getConnector().toString();
                 setSelectedCableConnectorName(currentConnectorName);
             } else {
                 setSelectedCableConnectorName("");
             }
-            
         }
 
         public List<String> getAvailableCableConnectorNames() {
+            if (availableCableConnectorNames == null) {
+                if (cableEndDesignation != null) {
+                    updateCableConnectorMenu();
+                } else {
+                    return new ArrayList<>();
+                }
+            }
             return availableCableConnectorNames;
         }
 
@@ -625,7 +633,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         @Override
         public String save(String remoteCommandSuccess) {            
             ItemElementRelationship ier = 
-                    getCurrent().addCableRelationship(selectedMdItem, null, null, CdbEntity.VALUE_CABLE_END_1, false);
+                    getCurrent().addCableRelationship(selectedMdItem, null, null, cableEndDesignation, false);
             setCableRelationship(ier);
             return super.save(remoteCommandSuccess);
         }
@@ -906,30 +914,21 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         dialogConnection.setOrigMdItem(connection.getMdItem());
         dialogConnection.setOrigMdConnector(connection.getMdConnector());
         dialogConnection.setCableRelationship(connection.getCableRelationship());
-        
-        // get list of unmapped connectors, plus connector for this connection if any
-        List<ItemConnector> unmappedConnectors = getUnmappedConnectorsForCurrent();
+        String cableEnd = connection.getCableRelationship().getCableEndDesignation();
+        dialogConnection.setCableEndDesignation(cableEnd);
         if (connection.getItemConnector() != null) {
-            unmappedConnectors.add(connection.getItemConnector());
-            dialogConnection.setSelectedCableConnector(connection.getItemConnector());
+            dialogConnection.setOrigCableConnector(connection.getItemConnector());
         }
-        dialogConnection.setAvailableCableConnectors(unmappedConnectors, connection.getItemConnector());
-        
+
         // expand MD tree to specified md item and connector
         dialogConnection.expandTreeAndSelectNode();
         dialogConnection.setSelectedEndpointAndConnector();
         
     }
     
-    public void prepareAddConnection() {
-        
-        dialogConnection = new ConnectionCreateDialog();
-        
+    public void prepareAddConnection() {        
+        dialogConnection = new ConnectionCreateDialog();        
         dialogConnection.reset();
-        
-        // get list of unmapped connectors
-        List<ItemConnector> unmappedConnectors = getUnmappedConnectorsForCurrent();
-        dialogConnection.setAvailableCableConnectors(unmappedConnectors, null);
     }
     
     public Boolean renderEditLinkForConnection(CableDesignConnectionListObject connection) {
@@ -1074,10 +1073,16 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     public List<ItemConnector> getUnmappedConnectorsForCurrent() {
-        
+        return getUnmappedConnectorsForCurrent(null);
+    }
+    
+    public List<ItemConnector> getUnmappedConnectorsForCurrent(String cableEnd) {
+        boolean filterCableEnd = (cableEnd != null);
         List<ItemConnector> unmappedConnectors = new ArrayList<>();
         for (ItemConnector connector : getCurrent().getItemConnectorList()) {
             if (!connector.isConnected()) {
+                if ((!filterCableEnd) 
+                        || ((connector.getConnector().getCableEndDesignation() != null) && (connector.getConnector().getCableEndDesignation().equals(cableEnd))))
                 unmappedConnectors.add(connector);
             }
         }

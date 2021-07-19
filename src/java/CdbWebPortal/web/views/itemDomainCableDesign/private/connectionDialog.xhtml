@@ -31,6 +31,8 @@ See LICENSE file.
                                   itemLabel="#{itemDomainCableDesignController.dialogConnection.menuLabelEnd1}"/>
                     <f:selectItem itemValue="#{itemDomainCableDesignController.dialogConnection.menuValueEnd2}" 
                                   itemLabel="#{itemDomainCableDesignController.dialogConnection.menuLabelEnd2}"/>
+                    <p:ajax listener="#{itemDomainCableDesignController.dialogConnection.selectListenerCableEnd}"
+                            oncomplete="updateCableConnectors();" />        
                 </p:selectOneButton>
             </p:panel>
             
@@ -41,7 +43,7 @@ See LICENSE file.
                     <f:selectItem itemLabel="Unspecified" itemValue=""/>
                     <f:selectItems value="#{itemDomainCableDesignController.dialogConnection.availableCableConnectorNames}"
                                    var="connector"/>
-                    <p:ajax event="itemSelect"
+                     <p:ajax event="itemSelect"
                             listener="#{itemDomainCableDesignController.dialogConnection.selectListenerConnector}"
                             oncomplete="updateButtonsDialogConnection();" />        
                 </p:selectOneMenu>
@@ -107,6 +109,9 @@ See LICENSE file.
 
             <p:remoteCommand name="updateMessageDialogConnection" 
                              update="connectionDialogMessagePanel"/>
+            
+            <p:remoteCommand name="updateCableConnectors"
+                             update="cableConnectorMenu"/>
 
         </p:panel>
 
