@@ -31,39 +31,23 @@ See LICENSE file.
                     <p:column styleClass="panelGridBorderedCell">                
                     -->
                     <p:panel>
-                        <p:tree value="#{itemDomainInventoryController.currentItemBOMListTree}"
-                                id="partsTree"
-                                var="inventoryBOM"
-                                selectionMode="single"
-                                selection="#{itemDomainInventoryController.selectedItemBOMTreeNode}"                                    
-                                >
-                            <p:ajax event="select" update="#{fullUpateTarget}"/>
+                        <ui:param name="showTreeInScrollPanel"
+                                  value="#{itemDomainInventoryController.isDisplayBomTreeInScrollpanel}" /> 
 
-                            <p:treeNode type="newItem" icon="ui-icon-plus">
-                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
-                                    <ui:param name="viewName" value="newItem"/>
-                                </ui:include>
-                            </p:treeNode>
-                            <p:treeNode type="existingItem" icon="ui-icon-check">
-                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
-                                    <ui:param name="viewName" value="existingItem"/>
-                                </ui:include>
-                            </p:treeNode>
-                            <p:treeNode type="placeholder" icon="ui-icon-close">
-                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
-                                    <ui:param name="viewName" value="placeholder"/>
-                                </ui:include>
-                            </p:treeNode>
-                            <p:treeNode rendered="#{itemDomainInventoryController.showOptionalPartsInBom}"
-                                        type="unspecifiedOptional" icon="ui-icon-radio-off" >
-                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
-                                    <ui:param name="viewName" value="unspecifiedOptional"/>
-                                </ui:include>
-                            </p:treeNode>
-                            <p:treeNode>
-                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml"/>
-                            </p:treeNode>
-                        </p:tree>
+                        <p:scrollPanel style="height: 600px;" 
+                                       rendered="#{showTreeInScrollPanel}">
+                            <ui:param name="treeSrc" value="#{showTreeInScrollPanel ? 
+                                                              'itemDomainInventoryBillOfMaterialsEditViewTree.xhtml' 
+                                                              : '../../common/private/commonEmptyPage.xhtml'}" />
+                            
+                            <ui:include src="#{treeSrc}"/> 
+                        </p:scrollPanel>
+                        <p:outputPanel rendered="#{!showTreeInScrollPanel}">
+                            <ui:param name="treeSrc" value="#{!showTreeInScrollPanel ? 
+                                                              'itemDomainInventoryBillOfMaterialsEditViewTree.xhtml' 
+                                                              : '../../common/private/commonEmptyPage.xhtml'}" />
+                            <ui:include src="#{treeSrc}"/> 
+                        </p:outputPanel>
                     </p:panel>
                     <p:commandButton value="#{itemDomainInventoryController.showOptionalPartsInBom ? 'Hide' : 'Show'} Optional"
                                      update="#{fullUpateTarget}"
