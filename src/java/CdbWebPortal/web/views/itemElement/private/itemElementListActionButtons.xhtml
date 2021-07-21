@@ -19,17 +19,31 @@ See LICENSE file.
         <ui:param name="childEntityTypeName" value="#{childEntityController.entityTypeName}"/>
         <ui:param name="onCompleteAddButtonCommand" value="#{showAddButton ? 'showAddNewAssemblyItemDialog()' : null}" /> 
     </ui:define>
-    
+
     <ui:define name="additionalButtons">        
-            <p:commandButton value="Save New Order"
-                             icon="fa fa-floppy-o"
-                             update="@form"
-                             action="#{itemElementController.performReorderSaveOperations()}" 
-                             onclick="PF('loadingDialog').show()"
+        <p:commandButton value="Save New Order"
+                         icon="fa fa-floppy-o"
+                         update="@form"
+                         action="#{itemElementController.performReorderSaveOperations()}" 
+                         onclick="PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide()"
+                         rendered="#{isEntityWriteable and currentItemController.hasElementReorderChangesForCurrent}"/>      
+
+        <p:commandButton id="#{childEntityTypeName}ListReorder" 
+                         onclick="PF('loadingDialog').show()"
+                         oncomplete="onCompletePrepareReorder();" 
+                         action="#{itemElementController.prepareDataTableRowReorder(itemObject)}"
+                         alt="Prepare reorder list" styleClass="actionButtonRight"                         
+                         icon="fa fa-sort"                         
+                         rendered="#{isEntityWriteable 
+                                     and currentItemController.entityHasSortableElements}">
+            <p:tooltip for="#{childEntityTypeName}ListReorder" value="Prepare reorder list."/>
+            <p:remoteCommand name="onCompletePrepareReorder"
                              oncomplete="PF('loadingDialog').hide()"
-                             rendered="#{isEntityWriteable and itemElementController.hasReorderChanges}"/>        
+                             update="@form" /> 
+        </p:commandButton>
     </ui:define>
-    
+
 
     <ui:define name="additionalContent">
         <ui:include src="#{showAddButton ? 'itemElementAddNewAssemblyItemDialog.xhtml' : '../../common/private/commonEmptyPage.xhtml' }" />
