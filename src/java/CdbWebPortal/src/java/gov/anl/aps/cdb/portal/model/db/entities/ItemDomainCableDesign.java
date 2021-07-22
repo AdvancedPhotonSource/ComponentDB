@@ -235,7 +235,8 @@ public class ItemDomainCableDesign extends Item {
             ItemElementRelationship cableRelationship, 
             Item itemEndpoint,
             ItemConnector endpointConnector,
-            ItemConnector cableConnector) {
+            ItemConnector cableConnector,
+            String cableEnd) {
         
         ItemElement origItemElement = cableRelationship.getFirstItemElement();
         ItemElement newItemElement = itemEndpoint.getSelfElement();
@@ -249,6 +250,11 @@ public class ItemDomainCableDesign extends Item {
         cableRelationship.setFirstItemElement(newItemElement);
         cableRelationship.setFirstItemConnector(endpointConnector);
         cableRelationship.setSecondItemConnector(cableConnector);
+        
+        // don't update cable end for primary cable connection
+        if ((cableEnd != null) && (!cableRelationship.isPrimaryCableConnection())) {
+            cableRelationship.setCableEndDesignation(cableEnd);
+        }
     }
     
     public ItemElementRelationship getPrimaryRelationshipForCableEnd(String cableEnd) {
@@ -279,7 +285,7 @@ public class ItemDomainCableDesign extends Item {
         
         ItemElementRelationship cableRelationship = getPrimaryRelationshipForCableEnd(cableEnd);
         if (cableRelationship != null) {
-            updateCableRelationship(cableRelationship, itemEndpoint, endpointConnector, cableConnector);
+            updateCableRelationship(cableRelationship, itemEndpoint, endpointConnector, cableConnector, null);
         } else {
             if (itemEndpoint != null) {
                 this.addCableRelationship(itemEndpoint, endpointConnector, cableConnector, cableEnd, true);

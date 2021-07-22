@@ -134,7 +134,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             // endpoint changed, update cable and save
             if (!selectedItemEndpoint.equals(getItemEndpoint())) {
                 
-                getCurrent().updateCableRelationship(cableRelationship, itemEndpoint, null, null);
+                getCurrent().updateCableRelationship(cableRelationship, itemEndpoint, null, null, null);
 
                 String updateResult = update();
 
@@ -633,12 +633,19 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
 
         public String save(String remoteCommandSuccess) {
+            
+            // make sure we don't change cable end for primary connection
+            String cableEnd = null;
+            if (!getCableRelationship().isPrimaryCableConnection()) {
+                cableEnd = cableEndDesignation;
+            }
 
             getCurrent().updateCableRelationship(
                     getCableRelationship(),
                     selectedMdItem,
                     selectedMdConnector,
-                    getSelectedCableConnector());
+                    getSelectedCableConnector(),
+                    cableEnd);
             
             updateItem(remoteCommandSuccess);
 
