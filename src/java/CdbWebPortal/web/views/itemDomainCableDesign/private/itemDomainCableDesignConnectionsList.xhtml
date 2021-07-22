@@ -19,11 +19,10 @@ See LICENSE file.
         <ui:define name="additionalButtons">
             <p:commandButton value="Add Connection"
                              rendered="#{isEntityWriteable}"
-                             immediate="true"
                              action='#{entityController.prepareAddConnection()}'
                              onstart="PF('loadingDialog').show()"
                              oncomplete="PF('loadingDialog').hide();PF('connectionDialog').show();"
-                             update="@form:dialogConnection"/>
+                             update="@form"/>
         </ui:define>        
     </ui:decorate>
 

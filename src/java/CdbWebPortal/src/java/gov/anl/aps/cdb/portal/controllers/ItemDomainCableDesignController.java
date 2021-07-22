@@ -43,6 +43,7 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.TreeNode;
 
@@ -215,7 +216,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     public class ConnectionEditDialog {
         
-        protected static final String DEFAULT_MESSAGE = "Select endpoint item, and optionally cable and endpoint connectors.";
+        protected static final String DEFAULT_MESSAGE = "Cable end and device or device port are required. Cable connector is optional.";
 
         private ItemElementRelationship cableRelationship;
         private Boolean disableButtonSave = true;
@@ -231,7 +232,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         private List<String> availableCableConnectorNames;
         private String selectedCableConnectorName;
         private String message;
-        protected String cableEndDesignation;
+        private String warningMessage = null;
+        protected String cableEndDesignation = null;
+        boolean selectionMade = false;
         
         public String getMenuValueEnd1() {
             return CdbEntity.VALUE_CABLE_END_1;
@@ -258,6 +261,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
         
         public void selectListenerCableEnd(AjaxBehaviorEvent event) {
+            selectionMade = true;
             updateCableConnectorMenu();
             setEnablement();
         }
@@ -334,10 +338,16 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
          * from oncomplete attribute for this event tag.
          */
         public void selectListenerEndpoint(NodeSelectEvent event) {
+            selectionMade = true;
             setSelectedEndpointAndConnector();
             setEnablement();
         }
-
+        
+        public void selectListenerEndpoint(NodeUnselectEvent event) {
+            setSelectedEndpointAndConnector();
+            setEnablement();
+        }
+        
         public ItemConnector getOrigMdConnector() {
             return origMdConnector;
         }
@@ -365,26 +375,35 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         private void updateCableConnectorMenu() {
             
-            // get list of unmapped connectors, plus connector for this connection if any
-            List<ItemConnector> availableConnectors = getUnmappedConnectorsForCurrent(cableEndDesignation);
-            if (selectedCableConnector != null) {
-                availableConnectors.add(selectedCableConnector);
-            }
-
             availableCableConnectorNames = new ArrayList<>();
             cableConnectorNameMap = new HashMap<>();
-            for (ItemConnector connector : availableConnectors) {
-                String connectorName = connector.getConnector().toString();
-                availableCableConnectorNames.add(connectorName);
-                cableConnectorNameMap.put(connectorName, connector);
-            }
-
-            // set selected item and original item
-            if (selectedCableConnector != null) {
-                String currentConnectorName = selectedCableConnector.getConnector().toString();
-                setSelectedCableConnectorName(currentConnectorName);
+            
+            // null out selection and return empty list of conneectors if cable end not selected
+            if ((cableEndDesignation == null) || cableEndDesignation.isEmpty()) {
+                selectedCableConnector = null;
+                
             } else {
-                setSelectedCableConnectorName("");
+            
+                // get list of unmapped connectors, plus connector for this connection if any
+                List<ItemConnector> availableConnectors = getUnmappedConnectorsForCurrent(cableEndDesignation);
+                if ((origCableConnector != null) && 
+                        (origCableConnector.getConnector().getCableEndDesignation().equals(cableEndDesignation))) {
+                    availableConnectors.add(origCableConnector);
+                }
+
+                for (ItemConnector connector : availableConnectors) {
+                    String connectorName = connector.getConnector().toString();
+                    availableCableConnectorNames.add(connectorName);
+                    cableConnectorNameMap.put(connectorName, connector);
+                }
+
+                // set selected item and original item
+                if (selectedCableConnector != null) {
+                    String currentConnectorName = selectedCableConnector.getConnector().toString();
+                    setSelectedCableConnectorName(currentConnectorName);
+                } else {
+                    setSelectedCableConnectorName("");
+                }
             }
         }
 
@@ -408,6 +427,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
 
         public void selectListenerConnector(SelectEvent event){
+            selectionMade = true;
             if ((selectedCableConnectorName != null) && (!selectedCableConnectorName.isBlank()))  {
                 setSelectedCableConnector(cableConnectorNameMap.get(selectedCableConnectorName));
             } else {
@@ -423,9 +443,34 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         public void setMessage(String message) {
             this.message = message;
         }
+        
+        public String getWarningMessage() {
+            return warningMessage;
+        }
 
         public void setWarningMessage(String message) {
-            this.message = "<span style=\"color:red\">" + message + "</span>";
+            this.warningMessage = "<span style=\"color:red\">" + message + "</span>";
+        }
+        
+        protected void setMessages(List<String> warnings, List<String> messages) {
+            
+            if (selectionMade) {
+                String warningMsg = "";
+                for (String warning : warnings) {
+                    warningMsg = warningMsg + warning + " ";
+                }
+                setWarningMessage(warningMsg);
+            }
+
+            String msg = "";
+            for (String message : messages) {
+                msg = msg + message + " ";
+            }
+            if (msg.isEmpty()) {
+                setMessage(DEFAULT_MESSAGE);
+            } else {
+                setMessage(msg);
+            }
         }
 
         private void setSelectedEndpointAndConnector() {
@@ -456,7 +501,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             availableCableConnectorNames = null;
             cableConnectorNameMap = null;
             setSelectedCableConnectorName(null);
+            cableEndDesignation = null;
             setMessage(DEFAULT_MESSAGE);
+            warningMessage = null;
             setEnablement();            
         }
 
@@ -496,9 +543,20 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
          * Enables save button when a valid selection based on selections.
          */
         protected void setEnablement() {
+            
+            List<String> messages = new ArrayList<>();
+            List<String> warnings = new ArrayList<>();
+            boolean disableSaveButton = false;            
+            
+            // check cable end
+            if (cableEndDesignation == null) {
+                warnings.add("Cable End is required.");
+                disableSaveButton = true;
+            }            
 
+            // check device/port
             if (selectedMdTreeNode == null) {
-
+                warnings.add("Device or device port is required.");
                 setDisableButtonSave((Boolean) true);
 
             } else {
@@ -510,10 +568,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                         && (((selectedCableConnector == null) && (getOrigCableConnector() == null)) || ((selectedCableConnector != null) && (selectedCableConnector.equals(getOrigCableConnector()))))) {
                     
                     setDisableButtonSave((Boolean) true);
-                    setMessage(DEFAULT_MESSAGE);
                     
                 } else {
-                    boolean disableSaveButton = false;
                     if ((selectedMdConnector != null) && (!selectedMdConnector.equals(origMdConnector))) {
                         boolean hasCableRelationships = false;
                         List<ItemElementRelationship> ierList
@@ -535,23 +591,29 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                         }
                         if (hasCableRelationships) {
                             disableSaveButton = true;
-                            setWarningMessage("Selected conector is already in use for cable connection.");
+                            warnings.add("Selected device port is already in use for cable connection.");
                         } else {
-                            setMessage("Selected endpoint item and connector are valid.");
+                            messages.add("Selected device and device port are valid.");
                         }
                     } else if ((selectedMdItem != null) && (!selectedMdItem.equals(origMdItem))) {
-                            setMessage("Selected endpoint item is valid, no endpoint connector selected.");
+                            messages.add("Selected device is valid, optional device port not selected.");
                     } else if (((selectedCableConnector == null) && (getOrigCableConnector() != null)) || ((selectedCableConnector != null) && (!selectedCableConnector.equals(getOrigCableConnector())))) {
-                        setMessage(DEFAULT_MESSAGE);
                         disableSaveButton = false;
                     } else {
-                        setMessage(DEFAULT_MESSAGE);
                         disableSaveButton = true;
                     }
-                    
-                    setDisableButtonSave((Boolean) disableSaveButton);
                 }
             }
+
+            setDisableButtonSave((Boolean) disableSaveButton);
+            setMessages(warnings, messages);
+        }
+        
+        protected void updateItem(String remoteCommandSuccess) {
+            String updateResult = update();
+            refreshConnectionListForCurrent();
+            SessionUtility.executeRemoteCommand(remoteCommandSuccess);
+
         }
 
         public String save(String remoteCommandSuccess) {
@@ -561,12 +623,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     selectedMdItem,
                     selectedMdConnector,
                     getSelectedCableConnector());
-
-            String updateResult = update();
-
-            refreshConnectionListForCurrent();
-
-            SessionUtility.executeRemoteCommand(remoteCommandSuccess);
+            
+            updateItem(remoteCommandSuccess);
 
             return null;
         }
@@ -586,14 +644,23 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         @Override
         protected void setEnablement() {
 
-            if (selectedMdItem == null) {
+            List<String> messages = new ArrayList<>();
+            List<String> warnings = new ArrayList<>();
+            boolean disableSaveButton = false;            
+            
+            // check cable end
+            if (cableEndDesignation == null) {
+                warnings.add("Cable End is required.");
+                disableSaveButton = true;
+            }            
 
+            // check device/port
+            if (selectedMdItem == null) {
+                warnings.add("Device or device port is required.");
                 setDisableButtonSave((Boolean) true);
-                setMessage(DEFAULT_MESSAGE);
 
             } else {
 
-                boolean disableSaveButton = false;
                 if (selectedMdConnector != null) {
                     boolean hasCableRelationships = false;
                     List<ItemElementRelationship> ierList
@@ -615,27 +682,37 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     }
                     if (hasCableRelationships) {
                         disableSaveButton = true;
-                        setWarningMessage("Selected conector is already in use for cable connection.");
+                        warnings.add("Selected device port is already in use for cable connection.");
                     } else {
-                        setMessage("Selected endpoint item and connector are valid.");
+                        messages.add("Selected device and device port are valid.");
                     }
                 } else if (selectedMdItem != null) {
-                    setMessage("Selected endpoint item is valid, no endpoint connector selected.");
+                    messages.add("Selected device is valid, optional device port not selected.");
                 } else {
-                    setMessage(DEFAULT_MESSAGE);
+                    messages.add(DEFAULT_MESSAGE);
                     disableSaveButton = true;
                 }
-
-                setDisableButtonSave((Boolean) disableSaveButton);
             }
+            
+            setDisableButtonSave((Boolean) disableSaveButton);
+            setMessages(warnings, messages);
+
         }
         
         @Override
-        public String save(String remoteCommandSuccess) {            
+        public String save(String remoteCommandSuccess) {  
+            
             ItemElementRelationship ier = 
-                    getCurrent().addCableRelationship(selectedMdItem, null, null, cableEndDesignation, false);
-            setCableRelationship(ier);
-            return super.save(remoteCommandSuccess);
+                    getCurrent().addCableRelationship(
+                            selectedMdItem, 
+                            selectedMdConnector, 
+                            getSelectedCableConnector(), 
+                            cableEndDesignation, 
+                            false);
+            
+            updateItem(remoteCommandSuccess);
+            
+            return null;
         }
 
     }
@@ -927,7 +1004,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     public void prepareAddConnection() {        
-        dialogConnection = new ConnectionCreateDialog();        
+        dialogConnection = new ConnectionCreateDialog();
+        dialogConnection.setCableEndDesignation(null);
         dialogConnection.reset();
     }
     

@@ -23,17 +23,19 @@ See LICENSE file.
                 <p:outputLabel rendered="#{itemDomainCableDesignController.dialogConnection.renderCableEndDesignation}"
                                value="Cable End Designation"
                                for="connectionCableEndMenu"/>
-                <p:selectOneButton id="connectionCableEndMenu"
-                                   value="#{itemDomainCableDesignController.dialogConnection.cableEndDesignation}"
-                                   disabled="#{itemDomainCableDesignController.dialogConnection.disableCableEndDesignation}"
-                                   rendered="#{itemDomainCableDesignController.dialogConnection.renderCableEndDesignation}">
+                <p:selectOneMenu id="connectionCableEndMenu" 
+                                 value="#{itemDomainCableDesignController.dialogConnection.cableEndDesignation}"
+                                 disabled="#{itemDomainCableDesignController.dialogConnection.disableCableEndDesignation}"
+                                 rendered="#{itemDomainCableDesignController.dialogConnection.renderCableEndDesignation}">
+                    <f:selectItem itemLabel="Unspecified" itemValue=""/>
                     <f:selectItem itemValue="#{itemDomainCableDesignController.dialogConnection.menuValueEnd1}" 
                                   itemLabel="#{itemDomainCableDesignController.dialogConnection.menuLabelEnd1}"/>
                     <f:selectItem itemValue="#{itemDomainCableDesignController.dialogConnection.menuValueEnd2}" 
                                   itemLabel="#{itemDomainCableDesignController.dialogConnection.menuLabelEnd2}"/>
-                    <p:ajax listener="#{itemDomainCableDesignController.dialogConnection.selectListenerCableEnd}"
-                            oncomplete="updateCableConnectors();" />        
-                </p:selectOneButton>
+                    <p:ajax event="itemSelect"
+                            listener="#{itemDomainCableDesignController.dialogConnection.selectListenerCableEnd}"
+                            oncomplete="updateCableConnectors(); updateMessageDialogConnection(); updateButtonsDialogConnection();" />        
+                </p:selectOneMenu>
             </p:panel>
             
             <p:panel>
@@ -45,7 +47,7 @@ See LICENSE file.
                                    var="connector"/>
                      <p:ajax event="itemSelect"
                             listener="#{itemDomainCableDesignController.dialogConnection.selectListenerConnector}"
-                            oncomplete="updateButtonsDialogConnection();" />        
+                            oncomplete="updateMessageDialogConnection(); updateButtonsDialogConnection();" />        
                 </p:selectOneMenu>
             </p:panel>
             
@@ -72,6 +74,10 @@ See LICENSE file.
                 
                 <p:panel id="connectionDialogMessagePanel">
                     <h3>
+                        <h:outputText value="#{itemDomainCableDesignController.dialogConnection.warningMessage}" 
+                                      escape="false" />
+                    </h3>
+                    <h3>
                         <h:outputText value="#{itemDomainCableDesignController.dialogConnection.message}" 
                                       escape="false" />
                     </h3>
@@ -84,7 +90,7 @@ See LICENSE file.
                                           id="connectionDialogSaveButton"
                                           value="Save" 
                                           alt="Save" 
-                                          update="dialogConnection"
+                                          update="@form"
                                           disabled="#{entityController.dialogConnection.disableButtonSave}"
                                           icon="ui-icon-check"/>
 
