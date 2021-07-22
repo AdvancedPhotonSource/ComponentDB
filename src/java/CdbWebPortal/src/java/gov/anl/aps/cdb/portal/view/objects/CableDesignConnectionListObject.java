@@ -128,6 +128,7 @@ public class CableDesignConnectionListObject {
                 Comparator
                         .comparing((CableDesignConnectionListObject o) 
                                 -> o.getCableRelationship().getCableEndDesignation())
+                        .thenComparing(o -> o.getCableRelationship().getCableEndPrimarySortValue())
                         .thenComparing(o -> o.getMdItemName().toLowerCase())
                         .thenComparing(o -> o.getMdConnectorName().toLowerCase())
                         .thenComparing(o -> o.getItemConnectorName().toLowerCase());

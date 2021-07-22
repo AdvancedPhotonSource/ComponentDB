@@ -20,8 +20,11 @@ See LICENSE file.
         <p:panel id="dialogConnectionContentPanel">
 
             <p:panel>
-                <p:outputLabel rendered="#{itemDomainCableDesignController.dialogConnection.renderCableEndDesignation}"
+                <p:outputLabel rendered="#{itemDomainCableDesignController.dialogConnection.renderCableEndDesignationLabelDetail}"
                                value="Cable End Designation"
+                               for="connectionCableEndMenu"/>
+                <p:outputLabel rendered="#{itemDomainCableDesignController.dialogConnection.renderCableEndDesignationLabelPrimary}"
+                               value="Cable End Designation (read-only for primary cable end connection)"
                                for="connectionCableEndMenu"/>
                 <p:selectOneMenu id="connectionCableEndMenu" 
                                  value="#{itemDomainCableDesignController.dialogConnection.cableEndDesignation}"

@@ -270,6 +270,22 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             return true;
         }
         
+        public boolean isRenderCableEndDesignationLabelDetail() {
+            if (getCableRelationship() != null) {
+                return (!getCableRelationship().isPrimaryCableConnection());  
+            } else {
+                return true;
+            }
+        }
+        
+        public boolean isRenderCableEndDesignationLabelPrimary() {
+            if (getCableRelationship() != null) {
+                return getCableRelationship().isPrimaryCableConnection();  
+            } else {
+                return false;
+            }
+        }
+        
         public boolean isDisableCableEndDesignation() {
             if (getCableRelationship() != null) {
                 return getCableRelationship().isPrimaryCableConnection();  

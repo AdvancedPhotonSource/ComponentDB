@@ -21,6 +21,8 @@ See LICENSE file.
               value="#{connection.cableRelationship.id}"/> 
     <ui:param name="cableEnd"
               value="#{connection.cableRelationship.cableEndDesignation}"/>
+    <ui:param name="primaryIndicator"
+              value="#{connection.cableRelationship.cableEndPrimaryIndicator}"/>
     
     <p:columnGroup type="header">
         <p:row>
@@ -28,6 +30,12 @@ See LICENSE file.
                 <f:facet name="header">
                     <h:outputText/>
                     Cable End
+                </f:facet>
+            </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText/>
+                    Primary
                 </f:facet>
             </p:column>
             <p:column>
@@ -55,6 +63,11 @@ See LICENSE file.
     <p:column headerText="Cable End"
               exportFunction="#{facesUtility.getToString(cableEnd)}">
         #{cableEnd}
+    </p:column>
+    
+    <p:column headerText="Primary"
+              exportFunction="#{facesUtility.getToString(primaryIndicator)}">
+        #{primaryIndicator}
     </p:column>
     
     <p:column headerText="Device"

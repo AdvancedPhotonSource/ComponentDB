@@ -108,6 +108,7 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     
     public static String VALUE_LABEL_PRIMARY_CABLE_CONN = "PRI";
     public static String VALUE_LABEL_DETAIL_CABLE_CONN = "DET";
+    private static String PRIMARY_CABLE_CONN_INDICATOR = "*";
 
     public ItemElementRelationship() {
     }
@@ -297,6 +298,22 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     // convenience method for cable relationship type
     public boolean isPrimaryCableConnection() {
         return VALUE_LABEL_PRIMARY_CABLE_CONN.equals(getLabel());
+    }
+    
+    public String getCableEndPrimaryIndicator() {
+        if (isPrimaryCableConnection()) {
+            return PRIMARY_CABLE_CONN_INDICATOR;
+        } else {
+            return "";
+        }
+    }
+    
+    public String getCableEndPrimarySortValue() {
+        if (isPrimaryCableConnection()) {
+            return "1";
+        } else {
+            return "2";
+        }
     }
     
 }
