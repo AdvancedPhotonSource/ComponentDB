@@ -12,20 +12,9 @@ See LICENSE file.
     
     <p:panelGrid columns="2" styleClass="#{panelGridStyle}">
 
-        <p:outputLabel value="End1 Device" 
+        <p:outputLabel value="End1 Primary Device" 
                        styleClass="entityDataEmphasizedLabel"/>
         <p:outputPanel styleClass="inlineFlexOutputPanel">
-            <p:commandLink id="endpoint1EditShowButton"
-                           styleClass="fa-link-icon fa-icon fa fa-pencil"
-                           onstart="PF('loadingDialog').show()"
-                           oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
-                           action='#{entityController.prepareEditEndpoint(itemObject.endpoint1, 1)}'
-                           rendered="#{isEntityWriteable}"
-                           update="dialogEndpoint">
-                <p:tooltip for="endpoint1EditShowButton"
-                           value="Edit First Endpoint" />
-            </p:commandLink>
-
             <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
                 <ui:param name="viewName"
                           value="endpoint1"/>
@@ -34,19 +23,9 @@ See LICENSE file.
             </ui:include>
         </p:outputPanel>
 
-        <p:outputLabel value="End2 Device" 
+        <p:outputLabel value="End2 Primary Device" 
                        styleClass="entityDataEmphasizedLabel"/>
         <p:outputPanel styleClass="inlineFlexOutputPanel">
-            <p:commandLink id="endpoint2EditShowButton"
-                           styleClass="fa-link-icon fa-icon fa fa-pencil"
-                           onstart="PF('loadingDialog').show()"
-                           oncomplete="PF('loadingDialog').hide();PF('endpointDialog').show();"
-                           action='#{entityController.prepareEditEndpoint(itemObject.endpoint2, 2)}'
-                           rendered="#{isEntityWriteable}"
-                           update="dialogEndpoint">
-                <p:tooltip for="endpoint2EditShowButton"
-                           value="Edit Second Endpoint" />
-            </p:commandLink>
             <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
                 <ui:param name="viewName"
                           value="endpoint2"/>
