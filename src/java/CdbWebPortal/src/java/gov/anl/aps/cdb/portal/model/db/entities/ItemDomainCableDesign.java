@@ -157,7 +157,7 @@ public class ItemDomainCableDesign extends Item {
      * @return New instance of ItemElementRelationshipo for specified items.
      */
     private ItemElementRelationship createRelationship(
-            Item item, String cableEnd, boolean isPrimary, float sortOrder, UserInfo userInfo) {
+            Item item, String cableEnd, boolean isPrimary, UserInfo userInfo) {
         
         ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
         
@@ -172,7 +172,6 @@ public class ItemDomainCableDesign extends Item {
         } else {
             itemElementRelationship.setLabel(RELATIONSHIP_LABEL_DETAIL);
         }
-        itemElementRelationship.setSecondSortOrder(sortOrder);
 
         RelationshipType cableConnectionRelationshipType = getCableConnectionRelationshipType(userInfo);
         itemElementRelationship.setRelationshipType(cableConnectionRelationshipType);
@@ -199,27 +198,6 @@ public class ItemDomainCableDesign extends Item {
         ierList.add(ier);
     }
 
-    public float getMaxSortOrderForCableEnd(String cableEnd) {
-        float maxSortOrder = 0;
-        ItemElement selfElement = this.getSelfElement();
-        List<ItemElementRelationship> ierList
-                = selfElement.getItemElementRelationshipList1();
-        if (ierList != null) {
-            // find just the cable relationship items
-            RelationshipType cableIerType = getCableConnectionRelationshipType();
-            if (cableIerType != null) {
-                for (ItemElementRelationship rel : ierList) {
-                    if ((rel.getRelationshipType().getName().equals(cableIerType.getName()))
-                            && (rel.getCableEndDesignation().equals(cableEnd))
-                            && (rel.getSecondSortOrder() > maxSortOrder)) {
-                        maxSortOrder = rel.getSecondSortOrder();
-                    }
-                }
-            }
-        }
-        return maxSortOrder;
-    }
-
     public ItemElementRelationship addCableRelationship(
             Item endpoint,
             ItemConnector endpointConnector,
@@ -227,16 +205,12 @@ public class ItemDomainCableDesign extends Item {
             String cableEnd,
             boolean isPrimary) {
         
-        // calculate sortOrder
-        float maxSortOrder = this.getMaxSortOrderForCableEnd(cableEnd);
-        float sortOrder = maxSortOrder + 1;
-        
         EntityInfo entityInfo = this.getEntityInfo();
         UserInfo ownerUser = entityInfo.getOwnerUser();
         
         // create relationships from cable to endpoints
         ItemElementRelationship relationship = 
-                createRelationship(endpoint, cableEnd, isPrimary, sortOrder, ownerUser);
+                createRelationship(endpoint, cableEnd, isPrimary, ownerUser);
 
         // Create list for cable's relationships. 
         ItemElement selfElement = this.getSelfElement();

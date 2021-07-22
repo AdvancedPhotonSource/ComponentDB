@@ -926,7 +926,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * @param cableName
      * @return
      */
-    public boolean createCableUnspecified(Item itemEndpoint1,
+    public String createCableUnspecified(Item itemEndpoint1,
             Item itemEndpoint2,
             String cableName,
             List<ItemProject> projectList,
@@ -938,11 +938,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                 projectList,
                 technicalSystemList);
 
-        if (this.create() == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return this.create();
 
     }
 
@@ -955,7 +951,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * @param cableName
      * @return
      */
-    public boolean createCableCatalog(Item itemEndpoint1,
+    public String createCableCatalog(Item itemEndpoint1,
             Item itemEndpoint2,
             String cableName,
             List<ItemProject> projectList,
@@ -970,11 +966,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         newCable.setCatalogItem(itemCableCatalog);
 
-        if (this.create() == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return this.create();
 
     }
 
