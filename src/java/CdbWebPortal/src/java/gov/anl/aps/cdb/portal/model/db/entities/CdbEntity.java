@@ -262,7 +262,11 @@ public class CdbEntity implements Serializable, Cloneable {
         if (cableEndDesignation == null) {
             cableEndDesignation = getCableEndDesignationPropertyValue().getValue();
         }
-        return cableEndDesignation;
+        if (cableEndDesignation != null) {
+            return cableEndDesignation;
+        } else {
+            return "";
+        }
     }
 
 }

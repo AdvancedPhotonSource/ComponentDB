@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUt
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -438,24 +439,70 @@ public class ItemDomainCableDesign extends Item {
         
         return new ValidInfo(isValid, validString);
     }
-
-    public List<Item> getEndpointList() {
+    
+    public List<Item> getDevicesForCableEnd(String cableEnd) {
+        
+        List<Item> deviceList = new ArrayList<>();
         ItemElement selfElement = this.getSelfElement();
-        List<ItemElementRelationship> ierList
-                = selfElement.getItemElementRelationshipList1();
+        List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
+        
         if (ierList != null) {
+            
             // find just the cable relationship items
             RelationshipType cableIerType = getCableConnectionRelationshipType();
+            
             if (cableIerType != null) {
-                return ierList.stream().
-                        filter(ier -> ier.getRelationshipType().getName().equals(cableIerType.getName())).
-                        sorted((ier1, ier2) -> (ier1.getSecondSortOrder() == null || ier2.getSecondSortOrder() == null) ? 0 : ier1.getSecondSortOrder().compareTo(ier2.getSecondSortOrder())).
-                        map(ier -> ier.getFirstItemElement().getParentItem()).
-                        collect(Collectors.toList());
+
+                Comparator<ItemElementRelationship> comparator
+                        = Comparator
+                                .comparing((ItemElementRelationship o) -> o.getCableEndPrimarySortValue())
+                                .thenComparing(o -> o.getFirstItemElement().getParentItem().getName().toLowerCase());
+
+                List<ItemElementRelationship> sortedIerList
+                        = ierList.stream()
+//                                .filter(ier -> ier.getRelationshipType().getName().equals(cableIerType.getName()))
+                                .filter(ier -> (ier.getRelationshipType().getName().equals(cableIerType.getName())) && (ier.getCableEndDesignation().equals(cableEnd)))
+                                .sorted(comparator)
+                                .collect(Collectors.toList());
+
+                for (ItemElementRelationship rel : sortedIerList) {
+                    Item device = rel.getFirstItemElement().getParentItem();
+                    if (!deviceList.contains(device)) {
+                        deviceList.add(device);
+                    }
+                }
             }
         }
+        return deviceList;
+    }
+    
+    public List<Item> getEnd1Devices() {
+        return getDevicesForCableEnd(VALUE_CABLE_END_1);
+    }
 
-        return null;
+    public List<Item> getEnd2Devices() {
+        return getDevicesForCableEnd(VALUE_CABLE_END_2);
+    }
+
+    public List<Item> getEndpointList() {
+        
+        List<Item> deviceList = new ArrayList<>();
+        
+        List<Item> end1Devices = getEnd1Devices();
+        for (Item device : end1Devices) {
+            if (!deviceList.contains(device)) {
+                deviceList.add(device);
+            }
+        }
+        
+        List<Item> end2Devices = getEnd2Devices();
+        for (Item device : end2Devices) {
+            if (!deviceList.contains(device)) {
+                deviceList.add(device);
+            }
+        }
+        
+        return deviceList;
     }
     
     /**
