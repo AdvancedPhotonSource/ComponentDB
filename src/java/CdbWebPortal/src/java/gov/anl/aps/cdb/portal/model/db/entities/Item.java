@@ -24,12 +24,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -1132,18 +1134,16 @@ public class Item extends CdbDomainEntity implements Serializable {
     
     @JsonIgnore
     public List<ItemConnector> getItemConnectorListSorted() {
-        Collections.sort(itemConnectorList, (c1, c2) -> {
-            String c1Name = "";
-            String c2Name = "";
-            if ((c1.getConnector() != null) && (c1.getConnector().getName() != null)) {
-                c1Name = c1.getConnector().getName();
-            }
-            if ((c2.getConnector() != null) && (c2.getConnector().getName() != null)) {
-                c2Name = c2.getConnector().getName();
-            }
-            return c1Name.compareTo(c2Name);
-        });
-        return itemConnectorList;
+        
+        // return sorted itemConnectorList
+        Comparator<ItemConnector> comparator
+                = Comparator
+                        .comparing((ItemConnector c) -> c.getConnectorCableEndDesignation())
+                        .thenComparing(c -> c.getConnectorName().toLowerCase());
+        return itemConnectorList
+                .stream()
+                .sorted(comparator)
+                .collect(Collectors.toList());        
     }
 
     public void setItemConnectorList(List<ItemConnector> itemConnectorList) {

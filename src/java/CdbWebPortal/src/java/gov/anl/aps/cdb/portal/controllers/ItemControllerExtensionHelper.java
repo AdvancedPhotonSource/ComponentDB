@@ -155,6 +155,11 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     }
 
     @Override
+    public boolean getEntityDisplayConnectorCableEndDesignation() {
+        return getItemController().getEntityDisplayConnectorCableEndDesignation();
+    }
+
+    @Override
     public String getItemIdentifier1Title() {
         return getItemController().getItemIdentifier1Title();
     }

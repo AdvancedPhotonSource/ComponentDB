@@ -36,6 +36,13 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
     public boolean getEntityDisplayItemConnectors(); 
 
     /**
+     * Should cable end designation be displayed in item connectors section. 
+     * 
+     * @return 
+     */
+    public boolean getEntityDisplayConnectorCableEndDesignation(); 
+
+    /**
      * Does item identifier 1 need to be displayed for the item in default
      * domain.
      *

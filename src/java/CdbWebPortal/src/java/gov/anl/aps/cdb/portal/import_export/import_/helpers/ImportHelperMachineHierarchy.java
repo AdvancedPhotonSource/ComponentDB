@@ -129,7 +129,7 @@ public class ImportHelperMachineHierarchy
 
     @Override
     protected void reset_() {
-        super.reset();
+        super.reset_();
         nonTemplateItemCount = 0;
         templateItemCount = 0;
         getMachineImportHelperCommon().reset();

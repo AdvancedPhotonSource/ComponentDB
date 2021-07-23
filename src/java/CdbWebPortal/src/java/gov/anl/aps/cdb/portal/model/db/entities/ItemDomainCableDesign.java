@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.RelationshipTypeControllerUt
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -94,6 +95,11 @@ public class ItemDomainCableDesign extends Item {
     private static RelationshipType cableRelationshipType = null;
     private static PropertyType endPropertyType = null;
     private static PropertyType coreMetadataPropertyType = null;
+    
+    private final static String RELATIONSHIP_LABEL_PRIMARY = 
+            ItemElementRelationship.VALUE_LABEL_PRIMARY_CABLE_CONN;
+    private final static String RELATIONSHIP_LABEL_DETAIL = 
+            ItemElementRelationship.VALUE_LABEL_DETAIL_CABLE_CONN;
 
     @Override
     public Item createInstance() {
@@ -150,7 +156,8 @@ public class ItemDomainCableDesign extends Item {
      * @param item Machine design item for cable endpoint.
      * @return New instance of ItemElementRelationshipo for specified items.
      */
-    private ItemElementRelationship createRelationship(Item item, float sortOrder, UserInfo userInfo) {
+    private ItemElementRelationship createRelationship(
+            Item item, String cableEnd, boolean isPrimary, UserInfo userInfo) {
         
         ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
         
@@ -159,7 +166,12 @@ public class ItemDomainCableDesign extends Item {
         }
         
         itemElementRelationship.setSecondItemElement(this.getSelfElement());
-        itemElementRelationship.setSecondSortOrder(sortOrder);
+        itemElementRelationship.setCableEndDesignation(cableEnd);
+        if (isPrimary) {
+            itemElementRelationship.setLabel(RELATIONSHIP_LABEL_PRIMARY);
+        } else {
+            itemElementRelationship.setLabel(RELATIONSHIP_LABEL_DETAIL);
+        }
 
         RelationshipType cableConnectionRelationshipType = getCableConnectionRelationshipType(userInfo);
         itemElementRelationship.setRelationshipType(cableConnectionRelationshipType);
@@ -190,19 +202,15 @@ public class ItemDomainCableDesign extends Item {
             Item endpoint,
             ItemConnector endpointConnector,
             ItemConnector cableConnector, 
-            Float sortOrder) {
-        
-        // calculate sortOrder if not provided
-        if (sortOrder == null) {
-            float maxSortOrder = this.getMaxRelationshipSortOrder();
-            sortOrder = maxSortOrder + 1;
-        }
+            String cableEnd,
+            boolean isPrimary) {
         
         EntityInfo entityInfo = this.getEntityInfo();
         UserInfo ownerUser = entityInfo.getOwnerUser();
         
         // create relationships from cable to endpoints
-        ItemElementRelationship relationship = createRelationship(endpoint, sortOrder, ownerUser);
+        ItemElementRelationship relationship = 
+                createRelationship(endpoint, cableEnd, isPrimary, ownerUser);
 
         // Create list for cable's relationships. 
         ItemElement selfElement = this.getSelfElement();
@@ -227,7 +235,8 @@ public class ItemDomainCableDesign extends Item {
             ItemElementRelationship cableRelationship, 
             Item itemEndpoint,
             ItemConnector endpointConnector,
-            ItemConnector cableConnector) {
+            ItemConnector cableConnector,
+            String cableEnd) {
         
         ItemElement origItemElement = cableRelationship.getFirstItemElement();
         ItemElement newItemElement = itemEndpoint.getSelfElement();
@@ -241,30 +250,54 @@ public class ItemDomainCableDesign extends Item {
         cableRelationship.setFirstItemElement(newItemElement);
         cableRelationship.setFirstItemConnector(endpointConnector);
         cableRelationship.setSecondItemConnector(cableConnector);
-    }
-
-    public void setEndpoint(
-            Item itemEndpoint,
-            ItemConnector endpointConnector,
-            ItemConnector cableConnector,
-            float sortOrder,
-            boolean isImport) {
-
-        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(sortOrder);
-        if (cableRelationship != null) {
-            updateCableRelationship(cableRelationship, itemEndpoint, endpointConnector, cableConnector);
-        } else {
-            if (itemEndpoint != null) {
-                this.addCableRelationship(itemEndpoint, endpointConnector, cableConnector, sortOrder);
-            }
+        
+        // don't update cable end for primary cable connection
+        if ((cableEnd != null) && (!cableRelationship.isPrimaryCableConnection())) {
+            cableRelationship.setCableEndDesignation(cableEnd);
         }
     }
     
+    public ItemElementRelationship getPrimaryRelationshipForCableEnd(String cableEnd) {
+        ItemElement selfElement = this.getSelfElement();
+        List<ItemElementRelationship> ierList
+                = selfElement.getItemElementRelationshipList1();
+        if (ierList != null) {
+            // find just the cable relationship items
+            RelationshipType cableIerType = getCableConnectionRelationshipType();
+            if (cableIerType != null) {
+                for (ItemElementRelationship rel : ierList) {
+                    if ((rel.getRelationshipType().getName().equals(cableIerType.getName()))
+                            && (rel.getCableEndDesignation().equals(cableEnd))
+                            && (rel.getLabel().equals(RELATIONSHIP_LABEL_PRIMARY))) {
+                        return rel;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private void setPrimaryEndpoint(
+            Item itemEndpoint,
+            ItemConnector endpointConnector,
+            ItemConnector cableConnector,
+            String cableEnd) {
+        
+        ItemElementRelationship cableRelationship = getPrimaryRelationshipForCableEnd(cableEnd);
+        if (cableRelationship != null) {
+            updateCableRelationship(cableRelationship, itemEndpoint, endpointConnector, cableConnector, null);
+        } else {
+            if (itemEndpoint != null) {
+                this.addCableRelationship(itemEndpoint, endpointConnector, cableConnector, cableEnd, true);
+            }
+        }
+    }
+
     public ValidInfo setEndpointImport(
             ItemDomainMachineDesign itemEndpoint,
             String endpointConnectorName,
             String cableConnectorName,
-            float sortOrder) {
+            String cableEnd) {
         
         boolean isValid = true;
         String validString = "";
@@ -287,7 +320,7 @@ public class ItemDomainCableDesign extends Item {
         ItemDomainMachineDesign origItemEndpoint = null;
         ItemConnector origEndpointConnector = null;
         ItemConnector origCableConnector = null;
-        ItemElementRelationship existingRelationship = this.getCableConnectionBySortOrder(sortOrder);
+        ItemElementRelationship existingRelationship = this.getPrimaryRelationshipForCableEnd(cableEnd);
         if (existingRelationship != null) {
             if (existingRelationship.getFirstItemElement() != null) {
                 origItemEndpoint = 
@@ -364,7 +397,7 @@ public class ItemDomainCableDesign extends Item {
         }
         
         if (existingRelationship == null) {
-            this.addCableRelationship(itemEndpoint, endpointConnector, cableConnector, sortOrder);
+            this.addCableRelationship(itemEndpoint, endpointConnector, cableConnector, cableEnd, true);
         } else {
             if (changedEndpoint) {
                 ItemElement origItemElement = origItemEndpoint.getSelfElement();
@@ -379,72 +412,79 @@ public class ItemDomainCableDesign extends Item {
             }
             if (!changedEndpoint && !changedPort && !changedConnector) {
                 if (isValid) {
-                    validString = validString + "No changes for endpoint: " + sortOrder;
+                    validString = validString + "No changes for endpoint: " + cableEnd;
                 }
             }
         }
         
         return new ValidInfo(isValid, validString);
     }
-
-    public List<Item> getEndpointList() {
+    
+    public List<Item> getDevicesForCableEnd(String cableEnd) {
+        
+        List<Item> deviceList = new ArrayList<>();
         ItemElement selfElement = this.getSelfElement();
-        List<ItemElementRelationship> ierList
-                = selfElement.getItemElementRelationshipList1();
+        List<ItemElementRelationship> ierList = selfElement.getItemElementRelationshipList1();
+        
         if (ierList != null) {
+            
             // find just the cable relationship items
             RelationshipType cableIerType = getCableConnectionRelationshipType();
+            
             if (cableIerType != null) {
-                return ierList.stream().
-                        filter(ier -> ier.getRelationshipType().getName().equals(cableIerType.getName())).
-                        sorted((ier1, ier2) -> (ier1.getSecondSortOrder() == null || ier2.getSecondSortOrder() == null) ? 0 : ier1.getSecondSortOrder().compareTo(ier2.getSecondSortOrder())).
-                        map(ier -> ier.getFirstItemElement().getParentItem()).
-                        collect(Collectors.toList());
+
+                Comparator<ItemElementRelationship> comparator
+                        = Comparator
+                                .comparing((ItemElementRelationship o) -> o.getCableEndPrimarySortValue())
+                                .thenComparing(o -> o.getFirstItemElement().getParentItem().getName().toLowerCase());
+
+                List<ItemElementRelationship> sortedIerList
+                        = ierList.stream()
+//                                .filter(ier -> ier.getRelationshipType().getName().equals(cableIerType.getName()))
+                                .filter(ier -> (ier.getRelationshipType().getName().equals(cableIerType.getName())) && (ier.getCableEndDesignation().equals(cableEnd)))
+                                .sorted(comparator)
+                                .collect(Collectors.toList());
+
+                for (ItemElementRelationship rel : sortedIerList) {
+                    Item device = rel.getFirstItemElement().getParentItem();
+                    if (!deviceList.contains(device)) {
+                        deviceList.add(device);
+                    }
+                }
             }
         }
-
-        return null;
+        return deviceList;
     }
     
-    public ItemElementRelationship getCableConnectionBySortOrder(float sortOrder) {
-        ItemElement selfElement = this.getSelfElement();
-        List<ItemElementRelationship> ierList
-                = selfElement.getItemElementRelationshipList1();
-        if (ierList != null) {
-            // find just the cable relationship items
-            RelationshipType cableIerType = getCableConnectionRelationshipType();
-            if (cableIerType != null) {
-                for (ItemElementRelationship rel : ierList) {
-                    if ((rel.getRelationshipType().getName().equals(cableIerType.getName()))
-                            && (rel.getSecondSortOrder() == sortOrder)) {
-                        return rel;
-                    }
-                }
-            }
-        }
-        return null;
+    public List<Item> getEnd1Devices() {
+        return getDevicesForCableEnd(VALUE_CABLE_END_1);
     }
 
-    public float getMaxRelationshipSortOrder() {
-        float maxSortOrder = 0;
-        ItemElement selfElement = this.getSelfElement();
-        List<ItemElementRelationship> ierList
-                = selfElement.getItemElementRelationshipList1();
-        if (ierList != null) {
-            // find just the cable relationship items
-            RelationshipType cableIerType = getCableConnectionRelationshipType();
-            if (cableIerType != null) {
-                for (ItemElementRelationship rel : ierList) {
-                    if ((rel.getRelationshipType().getName().equals(cableIerType.getName()))
-                            && (rel.getSecondSortOrder() > maxSortOrder)) {
-                        maxSortOrder = rel.getSecondSortOrder();
-                    }
-                }
-            }
-        }
-        return maxSortOrder;
+    public List<Item> getEnd2Devices() {
+        return getDevicesForCableEnd(VALUE_CABLE_END_2);
     }
 
+    public List<Item> getEndpointList() {
+        
+        List<Item> deviceList = new ArrayList<>();
+        
+        List<Item> end1Devices = getEnd1Devices();
+        for (Item device : end1Devices) {
+            if (!deviceList.contains(device)) {
+                deviceList.add(device);
+            }
+        }
+        
+        List<Item> end2Devices = getEnd2Devices();
+        for (Item device : end2Devices) {
+            if (!deviceList.contains(device)) {
+                deviceList.add(device);
+            }
+        }
+        
+        return deviceList;
+    }
+    
     /**
      * Returns a string containing the cables endpoints for display.
      */
@@ -462,8 +502,8 @@ public class ItemDomainCableDesign extends Item {
         return result;
     }
 
-    public String getPortForEndpoint(float sortOrder) {
-        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(sortOrder);
+    public String getPortForEndpoint(String cableEnd) {
+        ItemElementRelationship cableRelationship = getPrimaryRelationshipForCableEnd(cableEnd);
         if (cableRelationship != null) {
             ItemConnector connector = cableRelationship.getFirstItemConnector();
             if (connector != null) {
@@ -476,8 +516,8 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
-    public String getConnectorForEndpoint(float sortOrder) {
-        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(sortOrder);
+    public String getConnectorForEndpoint(String cableEnd) {
+        ItemElementRelationship cableRelationship = getPrimaryRelationshipForCableEnd(cableEnd);
         if (cableRelationship != null) {
             ItemConnector connector = cableRelationship.getSecondItemConnector();
             if (connector != null) {
@@ -652,7 +692,10 @@ public class ItemDomainCableDesign extends Item {
     public void setCatalogItem(Item itemCableCatalog) {
         // "assign" catalog item to cable design
         ItemElement selfElement = this.getSelfElement();
-        if (!itemCableCatalog.equals(selfElement.getContainedItem2())) {
+        Item assignedItem = selfElement.getContainedItem2();
+        if (((itemCableCatalog == null) && (assignedItem != null)) 
+                || ((itemCableCatalog != null) && (!itemCableCatalog.equals(assignedItem)))) {
+            
             // if changing catalog item, we need to remove cable connectors since they are inherited from catalog item
             clearCableConnectors();
         }
@@ -692,15 +735,20 @@ public class ItemDomainCableDesign extends Item {
             return null;
         }
     }
-
+    
     @JsonIgnore
-    public Item getEndpoint1() {
-        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(1.0f);
+    public Item getPrimaryEndpoint(String cableEnd) {
+        ItemElementRelationship cableRelationship = getPrimaryRelationshipForCableEnd(cableEnd);
         if (cableRelationship != null) {
             return cableRelationship.getFirstItemElement().getParentItem();
         } else {
             return null;
         }
+    }
+
+    @JsonIgnore
+    public Item getEndpoint1() {
+        return getPrimaryEndpoint(VALUE_CABLE_END_1);
     }
 
     @JsonIgnore
@@ -724,7 +772,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint1(Item itemEndpoint) {
-        setEndpoint(itemEndpoint, null, null, 1.0f, false);
+        setPrimaryEndpoint(itemEndpoint, null, null, VALUE_CABLE_END_1);
     }
 
     public ValidInfo setEndpoint1Import(
@@ -734,27 +782,22 @@ public class ItemDomainCableDesign extends Item {
         
         endpoint1Port = endpointConnectorName;
         endpoint1Connector = cableConnectorName;
-        return setEndpointImport(itemEndpoint, endpointConnectorName, cableConnectorName, 1.0f);
+        return setEndpointImport(itemEndpoint, endpointConnectorName, cableConnectorName, VALUE_CABLE_END_1);
     }
 
     @JsonIgnore
     public String getEndpoint1Port() {
-        return getPortForEndpoint(1.0f);
+        return getPortForEndpoint(VALUE_CABLE_END_1);
     }
 
     @JsonIgnore
     public String getEndpoint1Connector() {
-        return getConnectorForEndpoint(1.0f);
+        return getConnectorForEndpoint(VALUE_CABLE_END_1);
     }
 
     @JsonIgnore
     public Item getEndpoint2() {
-        ItemElementRelationship cableRelationship = getCableConnectionBySortOrder(2.0f);
-        if (cableRelationship != null) {
-            return cableRelationship.getFirstItemElement().getParentItem();
-        } else {
-            return null;
-        }
+        return getPrimaryEndpoint(VALUE_CABLE_END_2);
     }
 
     @JsonIgnore
@@ -778,7 +821,7 @@ public class ItemDomainCableDesign extends Item {
     }
 
     public void setEndpoint2(Item itemEndpoint) {
-        setEndpoint(itemEndpoint, null, null, 2.0f, false);
+        setPrimaryEndpoint(itemEndpoint, null, null, VALUE_CABLE_END_2);
     }
     
     public ValidInfo setEndpoint2Import(
@@ -788,17 +831,17 @@ public class ItemDomainCableDesign extends Item {
         
         endpoint2Port = endpointConnectorName;
         endpoint2Connector = cableConnectorName;
-        return setEndpointImport(itemEndpoint, endpointConnectorName, cableConnectorName, 2.0f);
+        return setEndpointImport(itemEndpoint, endpointConnectorName, cableConnectorName, VALUE_CABLE_END_2);
     }
 
     @JsonIgnore
     public String getEndpoint2Port() {
-        return getPortForEndpoint(2.0f);
+        return getPortForEndpoint(VALUE_CABLE_END_2);
     }
 
     @JsonIgnore
     public String getEndpoint2Connector() {
-        return getConnectorForEndpoint(2.0f);
+        return getConnectorForEndpoint(VALUE_CABLE_END_2);
     }
 
     @JsonIgnore

@@ -10,7 +10,10 @@ import gov.anl.aps.cdb.portal.model.db.beans.ConnectorFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Connector;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  *
@@ -18,6 +21,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
  */
 public class ConnectorControllerUtility extends CdbEntityControllerUtility<Connector, ConnectorFacade> {
         
+    private static final Logger LOGGER = LogManager.getLogger(ConnectorControllerUtility.class.getName());
+
     @Override
     public Connector createEntityInstance(UserInfo sessionUser) {
         return new Connector(); 

@@ -29,7 +29,6 @@ import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.export.wizard.ItemDomainExportWizard;
 import gov.anl.aps.cdb.portal.model.ItemLazyDataModel;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
-import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.utilities.ConfigurationUtility;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import java.io.IOException;
@@ -1765,4 +1764,20 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
         return domainExportInfo;
     }
     
+    public String getMenuValueCableEnd1() {
+        return CdbEntity.VALUE_CABLE_END_1;
+    }
+
+    public String getMenuValueCableEnd2() {
+        return CdbEntity.VALUE_CABLE_END_2;
+    }
+
+    public String getMenuLabelCableEnd1() {
+        return CdbEntity.LABEL_CABLE_END_1;
+    }
+
+    public String getMenuLabelCableEnd2() {
+        return CdbEntity.LABEL_CABLE_END_2;
+    }
+
 }
