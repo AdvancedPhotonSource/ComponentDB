@@ -11,10 +11,10 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">   
 
-    <ui:param name="optionId" value="connectorEndpoint#{endpointNum}Option"/>
-    <ui:param name="optionName" value="End#{endpointNum} Primary Cable Connector"/>            
-    <ui:param name="optionDescription" value="Name of cable connector for primary connection on cable end #{endpointNum}."/>
-    <ui:param name="displaySettingName" value="connectorEndpoint#{endpointNum}Display"/>
+    <ui:param name="optionId" value="connectedDevicesEndpoint#{endpointNum}Option"/>
+    <ui:param name="optionName" value="End#{endpointNum} Connected Devices"/>            
+    <ui:param name="optionDescription" value="List of connected devices for cable end #{endpointNum}."/>
+    <ui:param name="displaySettingName" value="connectedDevicesEndpoint#{endpointNum}Display"/>
 
     <p:selectBooleanCheckbox id="#{optionId}"
                              value="#{entitySettingObject[displaySettingName]}"/>

@@ -12,9 +12,11 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserGroup;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,9 +56,11 @@ public abstract class ItemQueryBuilder {
 
     private Set<String> firstIERNames = null;
     private Set<String> secondIERNames = null; 
+    
+    private Map<String, String> ierPvlNames = null;
 
     private boolean fiel_included_in_where;
-
+    
     protected Domain domain;
     protected Map filterMap;
     protected String sortField;
@@ -76,6 +80,7 @@ public abstract class ItemQueryBuilder {
         this.coreMetadataNames = new HashSet<>(); 
         this.firstIERNames = new HashSet<>(); 
         this.secondIERNames = new HashSet<>(); 
+        this.ierPvlNames = new HashMap<>();
         
         this.fiel_included_in_where = false;
     }
@@ -128,6 +133,10 @@ public abstract class ItemQueryBuilder {
         
         for (String ierName : secondIERNames) {
             joinPart += " JOIN fiel.itemElementRelationshipList1 " + ierName;
+        }
+        
+        for (Entry<String,String> entry : ierPvlNames.entrySet()) {
+            joinPart += " JOIN " + entry.getValue() + ".propertyValueList " + entry.getKey();
         }
         
         for (String cmName : coreMetadataNames) {
@@ -326,6 +335,34 @@ public abstract class ItemQueryBuilder {
         
         String queryName = key + "." + dbFieldName; 
         appendWhere(QUERY_LIKE, queryName, value);
+    }
+    
+    protected void addSecondRelationshipPropertyWhereByTypeName(String propertyTypeName, String key, String relationshipJoinName, String value) {
+        prepareSecondRelationshipPropertyQueryByPropertyTypeName(key, relationshipJoinName, propertyTypeName);
+        addPropertyWhere(key, value);
+    }
+
+    protected String prepareSecondRelationshipPropertyQueryByPropertyTypeName(String fieldName, String relationshipJoinName, String propertyTypeName) {
+        String fullFieldName = fieldName + "-" + propertyTypeName;
+        return prepareSecondRelationshipPropertyQuery(relationshipJoinName, fullFieldName, "name");
+    }
+
+    private String prepareSecondRelationshipPropertyQuery(String relationshipJoinName, String fullFieldName, String byAttribute) {
+        String[] split = fullFieldName.split("-");
+        String key = split[0]; 
+        String propertyTypeByValue = split[1];
+        
+        prepareSecondRelationshipPropertyQuery(key, relationshipJoinName, byAttribute, propertyTypeByValue);
+
+        return key;
+    }
+    
+    private void prepareSecondRelationshipPropertyQuery(String key, String relationshipJoinName, String byAttribute, String propertyTypeByValue) {
+        if (!ierPvlNames.containsKey(key)) {
+            String queryName = key + ".propertyType." + byAttribute;
+            appendWhere("=", queryName, propertyTypeByValue);
+            ierPvlNames.put(key, relationshipJoinName);
+        }
     }
     
     /**

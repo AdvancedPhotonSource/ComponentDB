@@ -459,9 +459,17 @@ public class ItemDomainCableDesign extends Item {
     public List<Item> getEnd1Devices() {
         return getDevicesForCableEnd(VALUE_CABLE_END_1);
     }
+    
+    public String getEnd1DevicesString() {
+        return deviceListToString(getEnd1Devices());
+    }
 
     public List<Item> getEnd2Devices() {
         return getDevicesForCableEnd(VALUE_CABLE_END_2);
+    }
+
+    public String getEnd2DevicesString() {
+        return deviceListToString(getEnd2Devices());
     }
 
     public List<Item> getEndpointList() {
@@ -485,21 +493,24 @@ public class ItemDomainCableDesign extends Item {
         return deviceList;
     }
     
-    /**
-     * Returns a string containing the cables endpoints for display.
-     */
-    public String getEndpointsString() {
+    private String deviceListToString(List<Item> deviceList) {
         String result = "";
         int count = 0;
-        List<Item> iList = this.getEndpointList();
-        for (Item endpoint : iList) {
+        for (Item endpoint : deviceList) {
             count = count + 1;
             result = result + endpoint.getName();
-            if (count != iList.size()) {
+            if (count != deviceList.size()) {
                 result = result + endpointsSeparator;
             }
         }
         return result;
+    }
+    
+    /**
+     * Returns a string containing the cables endpoints for display.
+     */
+    public String getEndpointsString() {
+        return deviceListToString(this.getEndpointList());
     }
 
     public String getPortForEndpoint(String cableEnd) {
