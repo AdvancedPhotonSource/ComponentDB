@@ -51,13 +51,12 @@ public abstract class ItemQueryBuilder {
     boolean include_etl = false;
     boolean include_icl = false;
     boolean include_itl = false;     
-    private Set<String> pvlNames = null;
     private Set<String> coreMetadataNames = null; 
 
     private Set<String> firstIERNames = null;
     private Set<String> secondIERNames = null; 
     
-    private Map<String, String> ierPvlNames = null;
+    private Map<String, String> pvlNames = null;
 
     private boolean fiel_included_in_where;
     
@@ -76,11 +75,10 @@ public abstract class ItemQueryBuilder {
         this.sortField = sortField;
         this.sortOrder = sortOrder;
 
-        this.pvlNames = new HashSet<>();
         this.coreMetadataNames = new HashSet<>(); 
         this.firstIERNames = new HashSet<>(); 
         this.secondIERNames = new HashSet<>(); 
-        this.ierPvlNames = new HashMap<>();
+        this.pvlNames = new HashMap<>();
         
         this.fiel_included_in_where = false;
     }
@@ -123,10 +121,6 @@ public abstract class ItemQueryBuilder {
             joinPart += " JOIN i.itemTypeList " + ITEM_TYPE_LIST_JOIN_NAME; 
         }
 
-        for (String pvlName : pvlNames) {
-            joinPart += " JOIN fiel.propertyValueList " + pvlName;
-        }
-
         for (String ierName : firstIERNames) {
             joinPart += " JOIN fiel.itemElementRelationshipList " + ierName;
         }
@@ -135,7 +129,7 @@ public abstract class ItemQueryBuilder {
             joinPart += " JOIN fiel.itemElementRelationshipList1 " + ierName;
         }
         
-        for (Entry<String,String> entry : ierPvlNames.entrySet()) {
+        for (Entry<String,String> entry : pvlNames.entrySet()) {
             joinPart += " JOIN " + entry.getValue() + ".propertyValueList " + entry.getKey();
         }
         
@@ -190,7 +184,7 @@ public abstract class ItemQueryBuilder {
             return null; 
         }    
         
-        preparePropertyQuery(CORE_METADATA_PROPERTY_JOIN_NAME, "name", coreMetadataPropertyName);
+        preparePropertyQuery(null, CORE_METADATA_PROPERTY_JOIN_NAME, "name", coreMetadataPropertyName);
                 
         String metadataKey = key.split("-")[1];
         
@@ -249,24 +243,30 @@ public abstract class ItemQueryBuilder {
 
     protected void addPropertyWhereByTypeId(String fullFieldName, String value) {
         String key = preparePropertyQuery(fullFieldName, "id");
-
         addPropertyWhere(key, value);
     }
 
     protected void addPropertyWhereByTypeName(String propertyTypeName, String key, String value) {
-        preparePropertyQueryByPropertyTypeName(key, propertyTypeName);
-
-        addPropertyWhere(key, value);
+        addPropertyWhereByTypeName(null, propertyTypeName, key, value);
     }
 
+    protected void addPropertyWhereByTypeName(String pvlParentName, String propertyTypeName, String key, String value) {
+        preparePropertyQueryByPropertyTypeName(pvlParentName, key, propertyTypeName);
+        addPropertyWhere(key, value);
+    }
+    
     private void addPropertyWhere(String key, String value) {
         String queryName = key + ".value";
         appendWhere(QUERY_LIKE, queryName, value);
     }
 
     protected String preparePropertyQueryByPropertyTypeName(String fieldName, String propertyTypeName) {
+        return preparePropertyQueryByPropertyTypeName(null, fieldName, propertyTypeName);
+    }
+    
+    protected String preparePropertyQueryByPropertyTypeName(String pvlParentName, String fieldName, String propertyTypeName) {
         String fullFieldName = fieldName + "-" + propertyTypeName;
-        return preparePropertyQuery(fullFieldName, "name");
+        return preparePropertyQuery(pvlParentName, fullFieldName, "name");
     }
 
     /**
@@ -277,22 +277,34 @@ public abstract class ItemQueryBuilder {
      * @return key of the property
      */
     private String preparePropertyQuery(String fullFieldName, String byAttribute) {
+        return preparePropertyQuery(null, fullFieldName, byAttribute);
+    }
+    
+    private String preparePropertyQuery(String pvlParentName, String fullFieldName, String byAttribute) {
+
         String[] split = fullFieldName.split("-");
         String key = split[0]; 
         String propertyTypeByValue = split[1];
         
-        preparePropertyQuery(key, byAttribute, propertyTypeByValue);
+        preparePropertyQuery(pvlParentName, key, byAttribute, propertyTypeByValue);
 
         return key;
     }
     
-    private void preparePropertyQuery(String key, String byAttribute, String propertyTypeByValue) {
-        if (pvlNames.contains(key) == false) {
+    private void preparePropertyQuery(String pvlParentName, String key, String byAttribute, String propertyTypeByValue) {
+
+        if (!pvlNames.containsKey(key)) {
+            
+            // default value for pvlParentName is "fiel" for full item element list,
+            // otherwise pvlParentName is specified explicitly for relationship property value list etc
+            if (pvlParentName == null) {
+                pvlParentName = "fiel";
+                includeFiel();
+            }
+            
             String queryName = key + ".propertyType." + byAttribute;
             appendWhere("=", queryName, propertyTypeByValue);
-
-            pvlNames.add(key);
-            includeFiel();
+            pvlNames.put(key, pvlParentName);
         }
     }
     
@@ -335,34 +347,6 @@ public abstract class ItemQueryBuilder {
         
         String queryName = key + "." + dbFieldName; 
         appendWhere(QUERY_LIKE, queryName, value);
-    }
-    
-    protected void addSecondRelationshipPropertyWhereByTypeName(String propertyTypeName, String key, String relationshipJoinName, String value) {
-        prepareSecondRelationshipPropertyQueryByPropertyTypeName(key, relationshipJoinName, propertyTypeName);
-        addPropertyWhere(key, value);
-    }
-
-    protected String prepareSecondRelationshipPropertyQueryByPropertyTypeName(String fieldName, String relationshipJoinName, String propertyTypeName) {
-        String fullFieldName = fieldName + "-" + propertyTypeName;
-        return prepareSecondRelationshipPropertyQuery(relationshipJoinName, fullFieldName, "name");
-    }
-
-    private String prepareSecondRelationshipPropertyQuery(String relationshipJoinName, String fullFieldName, String byAttribute) {
-        String[] split = fullFieldName.split("-");
-        String key = split[0]; 
-        String propertyTypeByValue = split[1];
-        
-        prepareSecondRelationshipPropertyQuery(key, relationshipJoinName, byAttribute, propertyTypeByValue);
-
-        return key;
-    }
-    
-    private void prepareSecondRelationshipPropertyQuery(String key, String relationshipJoinName, String byAttribute, String propertyTypeByValue) {
-        if (!ierPvlNames.containsKey(key)) {
-            String queryName = key + ".propertyType." + byAttribute;
-            appendWhere("=", queryName, propertyTypeByValue);
-            ierPvlNames.put(key, relationshipJoinName);
-        }
     }
     
     /**

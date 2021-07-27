@@ -61,7 +61,8 @@ public class ItemDomainCableDesignQueryBuilder extends ItemQueryBuilder {
             if (key.endsWith(END2)) {
                 cableEnd = CdbEntity.VALUE_CABLE_END_2;
             }
-            addSecondRelationshipPropertyWhereByTypeName(CdbEntity.CABLE_END_DESIGNATION_PROPERTY_TYPE, "pvlCableEnd", key, cableEnd);
+            String pvlParentName = key;
+            addPropertyWhereByTypeName(pvlParentName, CdbEntity.CABLE_END_DESIGNATION_PROPERTY_TYPE, "pvlCableEnd", cableEnd);
 
             if (key.startsWith(CONNECTION_CONNECTOR)) {
                 addCableRelationshipCableConnectorWhere(key, value);
