@@ -64,6 +64,7 @@ public class ItemDomainCableDesign extends Item {
     private transient String endpoint2Drawing = null;
 
     private transient List<ItemConnector> deletedConnectorList = null;
+    private transient List<ItemElementRelationship> deletedIerList = null;
     
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type";
     public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName";
@@ -121,6 +122,19 @@ public class ItemDomainCableDesign extends Item {
     public void clearDeletedConnectorList() {
         if (deletedConnectorList != null) {
             deletedConnectorList.clear();
+        }
+    }
+    
+    public List<ItemElementRelationship> getDeletedIerList() {
+        if (deletedIerList == null) {
+            deletedIerList = new ArrayList<>();
+        }
+        return deletedIerList;
+    }
+    
+    public void clearDeletedIerList() {
+        if (deletedIerList != null) {
+            deletedIerList.clear();
         }
     }
     
@@ -197,7 +211,7 @@ public class ItemDomainCableDesign extends Item {
         }
         ierList.add(ier);
     }
-
+    
     public ItemElementRelationship addCableRelationship(
             Item endpoint,
             ItemConnector endpointConnector,
@@ -277,6 +291,18 @@ public class ItemDomainCableDesign extends Item {
         return null;
     }
     
+    public void deleteCableRelationship(ItemElementRelationship cableRelationship) {
+        
+        // remove relationship from cable design
+        getSelfElement().getItemElementRelationshipList1().remove(cableRelationship);
+        
+        // remove relationship from endpoint device
+        cableRelationship.getFirstItemElement().getItemElementRelationshipList().remove(cableRelationship);
+        
+        // add to deleted relationships list for removal in facade.update()
+        getDeletedIerList().add(cableRelationship);
+    }
+
     private void setPrimaryEndpoint(
             Item itemEndpoint,
             ItemConnector endpointConnector,
