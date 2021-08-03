@@ -11,6 +11,7 @@ See LICENSE file.
    
     <p:dataTable value="#{itemList}"
                  paginatorAlwaysVisible="true"
+                 lazy="true"
                  paginator="true"
                  rows="25"
                  var="itemListObject">
@@ -25,6 +26,9 @@ See LICENSE file.
                           value="#{itemListObject}" /> 
             </ui:include>
         </p:column>
+        
+        <ui:include src="../../locatableItem/private/locatableItemListLocationObject.xhtml"/>
+        
         <p:column headerText="QrId"
                   filterBy="#{itemListObject.qrIdFilter}"
                   sortBy="#{itemListObject.qrId}">
