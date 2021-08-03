@@ -577,6 +577,6 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     
     @Override
     public String prepareView(Item item) {
-        return getItemController().prepareView(); 
+        return getItemController().prepareView(item); 
     }
 }
