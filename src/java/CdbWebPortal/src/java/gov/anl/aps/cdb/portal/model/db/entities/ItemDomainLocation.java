@@ -30,7 +30,7 @@ public class ItemDomainLocation extends Item {
 
     private transient ItemElement parentItemElement = null;
     private transient List<Item> locationsLocatedHere = null;
-    private transient List<Item> inventoryLocatedHere = null;
+    private transient List<ItemDomainInventory> inventoryLocatedHere = null;
     private transient List<Item> machinesLocatedHere = null;
 
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
@@ -66,8 +66,6 @@ public class ItemDomainLocation extends Item {
 
     private synchronized void loadItemsLocatedHere() {
         if (inventoryLocatedHere == null) {
-            inventoryLocatedHere = new ArrayList<>();
-            int INVENTORY_ID = ItemDomainName.INVENTORY_ID;
             machinesLocatedHere = new ArrayList<>();
             int MACHINE_DESIGN_ID = ItemDomainName.MACHINE_DESIGN_ID;
 
@@ -82,12 +80,9 @@ public class ItemDomainLocation extends Item {
                     Item parentItem = firstItemElement.getParentItem();
                     if (parentItem != null) {
                         int domainId = parentItem.getDomain().getId();
-                        if (domainId == INVENTORY_ID) {
-                            inventoryLocatedHere.add(parentItem);
-                        } else if (domainId == MACHINE_DESIGN_ID) {
-                            machinesLocatedHere.add(parentItem);  
+                        if (domainId == MACHINE_DESIGN_ID) {
+                            machinesLocatedHere.add(parentItem);
                         }
-                        
                     }
                 }
             }
@@ -111,11 +106,12 @@ public class ItemDomainLocation extends Item {
     }
 
     @JsonIgnore
-    public List<Item> getInventoryLocatedHere() {
-        if (inventoryLocatedHere == null) {
-            loadItemsLocatedHere();
-        }
+    public List<ItemDomainInventory> getInventoryLocatedHere() {        
         return inventoryLocatedHere;
+    }
+
+    public void setInventoryLocatedHere(List<ItemDomainInventory> inventoryLocatedHere) {
+        this.inventoryLocatedHere = inventoryLocatedHere;
     }
 
     @JsonIgnore

@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationController
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperLocation;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
@@ -55,7 +56,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     private FilterViewItemHierarchySelection filterViewLocationSelection = null;
 
     private boolean renderLocationSelectionDialog = false;
-    private boolean renderLocationInplaceEditTieredMenu = false;       
+    private boolean renderLocationInplaceEditTieredMenu = false;
 
     @EJB
     DomainFacade domainFacade;
@@ -65,10 +66,42 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
     public ItemDomainLocationController() {
         super();
-    }   
+    }
 
-    public static ItemDomainLocationController getInstance() {        
-        return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);        
+    public static ItemDomainLocationController getInstance() {
+        return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);
+    }
+
+    public List<ItemDomainInventory> getInventoryLocatatedHere() {        
+        ItemDomainLocation current = getCurrent();
+
+        if (current.getInventoryLocatedHere() == null) {            
+            List<ItemDomainInventory> itemsHere = new ArrayList<>();
+            
+            
+            List<ItemDomainInventory> results = itemDomainLocationFacade.fetchInventoryStoredInLocationHierarchy(current.getId());            
+            for (ItemDomainInventory item : results) {
+                itemsHere.add(item); 
+                
+                if (item.getFullItemElementList().size() > 1) {
+                    // Assembly append any active children.
+                    Integer assemblyId = item.getId();
+                    List<ItemDomainInventory> assemblyHierarchy = itemDomainLocationFacade.fetchInventoryAssignedToAssemblyHierarchy(assemblyId);
+                    itemsHere.addAll(assemblyHierarchy);
+                }
+            }
+            
+            current.setInventoryLocatedHere(itemsHere);
+            
+            List<Item> machinesLocatedHere = current.getMachinesLocatedHere();
+            for (Item machine : machinesLocatedHere) {
+                Integer id = machine.getId();
+                itemsHere.addAll(itemDomainLocationFacade.fetchInventoryAssignedToMachineItemHiearchy(id));
+            }
+        }
+
+        return current.getInventoryLocatedHere();
+
     }
 
     @Override
@@ -100,10 +133,10 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     public boolean entityCanBeCreatedByUsers() {
         return false;
     }
-    
+
     @Override
     public boolean isShowCloneCreateItemElementsPlaceholdersOption() {
-        return false; 
+        return false;
     }
 
     /**
@@ -298,11 +331,11 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
             List<ItemHierarchyCache> locationItemHierarchyCaches = instance.getLocationItemHierarchyCaches();
 
             ItemDomainLocation parentItem = getCurrent().getParentItem();
-            String parentItemName = "Top Level"; 
+            String parentItemName = "Top Level";
             List<Item> activeLocation = new ArrayList<>();
             if (parentItem != null) {
                 ItemDomainLocation ittrParentItem = parentItem;
-                parentItemName = parentItem.getName(); 
+                parentItemName = parentItem.getName();
                 while (ittrParentItem != null) {
                     activeLocation.add(ittrParentItem);
                     ittrParentItem = ittrParentItem.getParentItem();
@@ -325,14 +358,14 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
     public void updateParentForCurrent(Item newParent) {
         updateParentForItem(getCurrent(), newParent);
-        
+
         ItemDomainLocation current = getCurrent();
         DefaultMenuModel parentSelectionMenuModel = current.getParentSelectionMenuModel();
-        
+
         DefaultSubMenu topNode = (DefaultSubMenu) parentSelectionMenuModel.getElements().get(0);
         topNode.setLabel(newParent.getName());
     }
-    
+
     public void updateParentForItem(ItemDomainLocation item, Item newParentItem) {
         UserInfo user = SessionUtility.getUser();
         ItemDomainLocationControllerUtility controllerUtility = getControllerUtility();
@@ -342,7 +375,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
             SessionUtility.addErrorMessage("Error", ex.getMessage());
             logger.error(ex);
         }
-    }    
+    }
 
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
@@ -412,7 +445,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return null;
-    }   
+    }
 
     @Override
     protected ItemDomainLocationFacade getEntityDbFacade() {
@@ -463,6 +496,6 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
     @Override
     protected ItemDomainLocationControllerUtility createControllerUtilityInstance() {
-        return new ItemDomainLocationControllerUtility(); 
+        return new ItemDomainLocationControllerUtility();
     }
 }
