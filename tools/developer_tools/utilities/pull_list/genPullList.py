@@ -5,8 +5,10 @@ import logging
 import os
 import sys
 from abc import ABC, abstractmethod
+from enum import Enum, auto, unique
 
 import openpyxl
+from openpyxl import Workbook
 
 CONFIG_SECTION_DEFAULT = "DEFAULT"
 CONFIG_RES_DEFAULT_INPUT_DIR = "inputDir"
@@ -15,35 +17,132 @@ CONFIG_RES_DEFAULT_OUTPUT_DIR = "outputDir"
 CONFIG_SECTION_LOADER = "LOADER"
 CONFIG_RES_LOADER_INPUT_FILE = "inputFile"
 
-KEY_ROW_VALID = "row valid"
-KEY_ROW_VALID_INFO = "row valid info"
-KEY_CDB_CABLE_NAME = "cdb cable name"
-KEY_CDB_CABLE_TECH_SYSTEM = "cdb cable tech system"
-KEY_CDB_CABLE_DESC = "cdb cable description"
-KEY_CDB_CABLE_ID = "cdb cable id"
-KEY_CDB_CABLE_ENDPOINTS = "cdb cable endpoints"
-KEY_CDB_CABLE_TYPE = "cdb cable type"
-KEY_CDB_CABLE_END1_DEVICE = "cdb cable end1 device"
-KEY_CDB_CABLE_END1_PORT = "cdb cable end1 port"
-KEY_CDB_CABLE_END1_CONNECTOR = "cdb cable end1 connector"
-KEY_CDB_CABLE_END2_DEVICE = "cdb cable end2 device"
-KEY_CDB_CABLE_END2_PORT = "cdb cable end2 port"
-KEY_CDB_CABLE_END2_CONNECTOR = "cdb cable end2 connector"
-KEY_CDB_CABLE_EXT_NAME = "cdb cable kabel name"
-KEY_CDB_CABLE_IMPORT_ID = "cdb cable import id"
-KEY_CDB_CABLE_ALT_ID = "cdb cable legacy id"
-KEY_CDB_CABLE_END1_DESC = "cdb cable end1 description"
-KEY_CDB_CABLE_END2_DESC = "cdb cable end2 description"
+CONFIG_SECTION_GENERATOR = "GENERATOR"
+CONFIG_RES_GENERATOR_OUTPUT_FILE = "outputFile"
 
 
-class ExcelColumnModel:
+@unique
+class Field(Enum):
+    ROW_VALID = auto()
+    ROW_VALID_INFO = auto()
+    CDB_CABLE_NAME = auto()
+    CDB_CABLE_TECH_SYSTEM = auto()
+    CDB_CABLE_DESC = auto()
+    CDB_CABLE_ID = auto()
+    CDB_CABLE_ENDPOINTS = auto()
+    CDB_CABLE_TYPE = auto()
+    CDB_CABLE_END1_DEVICE = auto()
+    CDB_CABLE_END1_PORT = auto()
+    CDB_CABLE_END1_CONNECTOR = auto()
+    CDB_CABLE_END2_DEVICE = auto()
+    CDB_CABLE_END2_PORT = auto()
+    CDB_CABLE_END2_CONNECTOR = auto()
+    CDB_CABLE_EXT_NAME = auto()
+    CDB_CABLE_IMPORT_ID = auto()
+    CDB_CABLE_ALT_ID = auto()
+    CDB_CABLE_END1_DESC = auto()
+    CDB_CABLE_END2_DESC = auto()
+    CDB_CABLE_TYPE_DESC = auto()
+    CABLE_ROUTE = auto()
+    CABLE_NOTES = auto()
+    SRC_LOCATION = auto()
+    SRC_DRAWING = auto()
+    SRC_END_LENGTH = auto()
+    SRC_NOTES = auto()
+    DEST_LOCATION = auto()
+    DEST_DRAWING = auto()
+    DEST_END_LENGTH = auto()
+    DEST_NOTES = auto()
+    CAD_LENGTH = auto()
+    ROUTED_LENGTH = auto()
+
+
+LABEL_ROW_VALID = "row valid"
+LABEL_ROW_VALID_INFO = "row valid info"
+LABEL_CDB_CABLE_NAME = "cdb cable name"
+LABEL_CDB_CABLE_TECH_SYSTEM = "cdb cable tech system"
+LABEL_CDB_CABLE_DESC = "cdb cable description"
+LABEL_CDB_CABLE_ID = "cdb cable id"
+LABEL_CDB_CABLE_ENDPOINTS = "cdb cable endpoints"
+LABEL_CDB_CABLE_TYPE = "cdb cable type"
+LABEL_CDB_CABLE_END1_DEVICE = "src device"
+LABEL_CDB_CABLE_END1_PORT = "src device port"
+LABEL_CDB_CABLE_END1_CONNECTOR = "cdb cable end1 connector"
+LABEL_CDB_CABLE_END2_DEVICE = "dest device"
+LABEL_CDB_CABLE_END2_PORT = "dest device port"
+LABEL_CDB_CABLE_END2_CONNECTOR = "cdb cable end2 connector"
+LABEL_CDB_CABLE_EXT_NAME = "cdb cable kabel name"
+LABEL_CDB_CABLE_IMPORT_ID = "cdb cable import id"
+LABEL_CDB_CABLE_ALT_ID = "cdb cable legacy id"
+LABEL_CDB_CABLE_END1_DESC = "cdb cable end1 description"
+LABEL_CDB_CABLE_END2_DESC = "cdb cable end2 description"
+LABEL_CDB_CABLE_TYPE_DESC = "cdb cable type description"
+LABEL_CABLE_ROUTE = "cable route"
+LABEL_CABLE_NOTES = "cable notes"
+LABEL_SRC_LOCATION = "src location"
+LABEL_SRC_DRAWING = "src drawing"
+LABEL_SRC_END_LENGTH = "src end length"
+LABEL_SRC_NOTES = "src notes"
+LABEL_DEST_LOCATION = "dest location"
+LABEL_DEST_DRAWING = "dest drawing"
+LABEL_DEST_END_LENGTH = "dest end length"
+LABEL_DEST_NOTES = "dest notes"
+LABEL_CAD_LENGTH = "CAD length"
+LABEL_ROUTED_LENGTH = "routed length"
+
+
+class FieldInfo:
+
+    def __init__(self, key, label):
+        self.key = key
+        self.label = label
+
+    def get_label(self):
+        return self.label
+
+
+field_info_map = {
+    Field.ROW_VALID: FieldInfo(Field.ROW_VALID, LABEL_ROW_VALID),
+    Field.ROW_VALID_INFO: FieldInfo(Field.ROW_VALID_INFO, LABEL_ROW_VALID_INFO),
+    Field.CDB_CABLE_NAME: FieldInfo(Field.CDB_CABLE_NAME, LABEL_CDB_CABLE_NAME),
+    Field.CDB_CABLE_TECH_SYSTEM: FieldInfo(Field.CDB_CABLE_TECH_SYSTEM, LABEL_CDB_CABLE_TECH_SYSTEM),
+    Field.CDB_CABLE_DESC: FieldInfo(Field.CDB_CABLE_DESC, LABEL_CDB_CABLE_DESC),
+    Field.CDB_CABLE_ID: FieldInfo(Field.CDB_CABLE_ID, LABEL_CDB_CABLE_ID),
+    Field.CDB_CABLE_ENDPOINTS: FieldInfo(Field.CDB_CABLE_ENDPOINTS, LABEL_CDB_CABLE_ENDPOINTS),
+    Field.CDB_CABLE_TYPE: FieldInfo(Field.CDB_CABLE_TYPE, LABEL_CDB_CABLE_TYPE),
+    Field.CDB_CABLE_END1_DEVICE: FieldInfo(Field.CDB_CABLE_END1_DEVICE, LABEL_CDB_CABLE_END1_DEVICE),
+    Field.CDB_CABLE_END1_PORT: FieldInfo(Field.CDB_CABLE_END1_PORT, LABEL_CDB_CABLE_END1_PORT),
+    Field.CDB_CABLE_END1_CONNECTOR: FieldInfo(Field.CDB_CABLE_END1_CONNECTOR, LABEL_CDB_CABLE_END1_CONNECTOR),
+    Field.CDB_CABLE_END2_DEVICE: FieldInfo(Field.CDB_CABLE_END2_DEVICE, LABEL_CDB_CABLE_END2_DEVICE),
+    Field.CDB_CABLE_END2_PORT: FieldInfo(Field.CDB_CABLE_END2_PORT, LABEL_CDB_CABLE_END2_PORT),
+    Field.CDB_CABLE_END2_CONNECTOR: FieldInfo(Field.CDB_CABLE_END2_CONNECTOR, LABEL_CDB_CABLE_END2_CONNECTOR),
+    Field.CDB_CABLE_EXT_NAME: FieldInfo(Field.CDB_CABLE_EXT_NAME, LABEL_CDB_CABLE_EXT_NAME),
+    Field.CDB_CABLE_IMPORT_ID: FieldInfo(Field.CDB_CABLE_IMPORT_ID, LABEL_CDB_CABLE_IMPORT_ID),
+    Field.CDB_CABLE_ALT_ID: FieldInfo(Field.CDB_CABLE_ALT_ID, LABEL_CDB_CABLE_ALT_ID),
+    Field.CDB_CABLE_TYPE_DESC: FieldInfo(Field.CDB_CABLE_TYPE_DESC, LABEL_CDB_CABLE_TYPE_DESC),
+    Field.CABLE_ROUTE: FieldInfo(Field.CABLE_ROUTE, LABEL_CABLE_ROUTE),
+    Field.CABLE_NOTES: FieldInfo(Field.CABLE_NOTES, LABEL_CABLE_NOTES),
+    Field.SRC_LOCATION: FieldInfo(Field.SRC_LOCATION, LABEL_SRC_LOCATION),
+    Field.SRC_DRAWING: FieldInfo(Field.SRC_DRAWING, LABEL_SRC_DRAWING),
+    Field.SRC_END_LENGTH: FieldInfo(Field.SRC_END_LENGTH, LABEL_SRC_END_LENGTH),
+    Field.SRC_NOTES: FieldInfo(Field.SRC_NOTES, LABEL_SRC_NOTES),
+    Field.DEST_LOCATION: FieldInfo(Field.DEST_LOCATION, LABEL_DEST_LOCATION),
+    Field.DEST_DRAWING: FieldInfo(Field.DEST_DRAWING, LABEL_DEST_DRAWING),
+    Field.DEST_END_LENGTH: FieldInfo(Field.DEST_END_LENGTH, LABEL_DEST_END_LENGTH),
+    Field.DEST_NOTES: FieldInfo(Field.DEST_NOTES, LABEL_DEST_NOTES),
+    Field.CAD_LENGTH: FieldInfo(Field.CAD_LENGTH, LABEL_CAD_LENGTH),
+    Field.ROUTED_LENGTH: FieldInfo(Field.ROUTED_LENGTH, LABEL_ROUTED_LENGTH),
+}
+
+
+class ExcelRowDictColumnInputModel:
 
     def __init__(self, key, required=False):
         self.key = key
         self.required = required
 
 
-class ExcelSheetModel:
+class ExcelRowDictSheetInputModel:
 
     def __init__(self, column_specs):
         self.column_specs = column_specs
@@ -75,7 +174,7 @@ class ExcelSheetModel:
         else:
             return True, ""
 
-    def load_rows(self):
+    def load_data(self):
 
         rows = []
         load_valid = True
@@ -92,15 +191,15 @@ class ExcelSheetModel:
             col_ind = 1
             for spec in self.column_specs:
                 cell_value = self.sheet.cell(row_ind, col_ind).value
-                if cell_value == None:
+                if cell_value is None:
                     cell_value = ""
                 if spec.required and cell_value == "":
                     row_valid = False
                     row_valid_info = row_valid_info + "Row: %d missing value for required column %s. " % (row_ind, spec.key)
                 row_dict[spec.key] = cell_value
                 col_ind = col_ind + 1
-            row_dict[KEY_ROW_VALID] = row_valid
-            row_dict[KEY_ROW_VALID_INFO] = row_valid_info
+            row_dict[Field.ROW_VALID] = row_valid
+            row_dict[Field.ROW_VALID_INFO] = row_valid_info
             rows.append(row_dict)
             logging.debug("row: %d dict: %s" % (row_ind, str(row_dict)))
             if not row_valid:
@@ -109,20 +208,24 @@ class ExcelSheetModel:
 
         return load_valid, load_valid_info, rows
 
-class ExcelWorkbookModel:
 
-    def __init__(self, filename, sheets):
-        self.filename = filename
-        self.sheets = sheets
+class ExcelWorkbookInputModel:
+
+    def __init__(self):
+        self.filename = None
+        self.sheets = None
         self.workbook = None
 
-    def initialize(self):
+    def initialize_for_read(self, filename, sheets):
+
+        self.filename = filename
+        self.sheets = sheets
 
         init_valid = True
         init_valid_info = ""
 
         # create  openpyxl workbook
-        self.workbook = openpyxl.load_workbook(self.filename)
+        self.workbook = openpyxl.load_workbook(self.filename, read_only=True)
 
         # process sheets
         sheet_names = self.workbook.sheetnames
@@ -131,13 +234,104 @@ class ExcelWorkbookModel:
             sheet_name = sheet_names[sheet_index]
             sheet.set_sheet_name(sheet_name)
             sheet.set_sheet(self.workbook[sheet_name])
-            sheet.set_workbook(self.workbook)
+            sheet.set_workbook(self)
             sheet_init_valid, sheet_init_valid_info = sheet.validate_dimensions()
             if not sheet_init_valid:
                 fatal_error(sheet_init_valid_info)
             sheet_index = sheet_index + 1
 
         return init_valid, init_valid_info
+
+
+class ExcelRowDictColumnOutputModel:
+
+    def __init__(self, key):
+        self.key = key
+
+    def get_key(self):
+        return self.key
+
+    def get_label(self):
+        return field_info_map[self.key].get_label()
+
+
+class ExcelRowDictSheetOutputModel:
+
+    def __init__(self, column_specs, sheet_name):
+        self.column_specs = column_specs
+        self.sheet_name = sheet_name
+        self.sheet = None
+        self.workbook = None
+
+    def get_sheet_name(self):
+        return self.sheet_name
+
+    def set_sheet(self, sheet):
+        self.sheet = sheet
+
+    def set_workbook(self, workbook):
+        self.workbook = workbook
+
+    def write_data(self, row_dicts):
+
+        is_valid = True
+        valid_info = ""
+
+        # generate header row
+        row_ind = 1
+        col_ind = 1
+        for spec in self.column_specs:
+            self.sheet.cell(row=row_ind, column=col_ind).value = spec.get_label()
+            col_ind = col_ind + 1
+
+        # generate data rows
+        row_ind = 2
+        for row_dict in row_dicts:
+            col_ind = 1
+            for spec in self.column_specs:
+                if spec.get_key() not in row_dict:
+                    value = ""
+                else:
+                    value = row_dict[spec.get_key()]
+                self.sheet.cell(row=row_ind, column=col_ind).value = value
+                col_ind = col_ind + 1
+            row_ind = row_ind + 1
+
+        self.workbook.save()
+
+        return is_valid, valid_info
+
+
+class ExcelWorkbookOutputModel:
+
+    def __init__(self):
+        self.filename = None
+        self.sheets = None
+        self.workbook = None
+
+    def initialize_for_write(self, filename, sheets):
+
+        init_valid = True
+        init_valid_info = ""
+
+        self.filename = filename
+        self.workbook = Workbook()
+        self.sheets = sheets
+        sheet_index = 0
+        for sheet in self.sheets:
+            if sheet_index != 0:
+                wb_sheet = self.workbook.create_sheet(sheet.get_sheet_name())
+            else:
+                wb_sheet = self.workbook.active
+                wb_sheet.title = sheet.get_sheet_name()
+            sheet.set_sheet(wb_sheet)
+            sheet.set_workbook(self)
+            sheet_index = sheet_index + 1
+
+        return init_valid, init_valid_info
+
+    def save(self):
+        self.workbook.save(self.filename)
 
 
 class CableInfoLoader:
@@ -162,32 +356,32 @@ class CableInfoLoader:
 
         # create column, sheet, workbook models
         specs = [
-            ExcelColumnModel(key=KEY_CDB_CABLE_NAME, required=True),
-            ExcelColumnModel(key=KEY_CDB_CABLE_TECH_SYSTEM, required=True),
-            ExcelColumnModel(key=KEY_CDB_CABLE_DESC, required=False),
-            ExcelColumnModel(key=KEY_CDB_CABLE_ID, required=True),
-            ExcelColumnModel(key=KEY_CDB_CABLE_ENDPOINTS, required=True),
-            ExcelColumnModel(key=KEY_CDB_CABLE_TYPE, required=True),
-            ExcelColumnModel(key=KEY_CDB_CABLE_END1_DEVICE, required=True),
-            ExcelColumnModel(key=KEY_CDB_CABLE_END1_PORT, required=False),
-            ExcelColumnModel(key=KEY_CDB_CABLE_END1_CONNECTOR, required=False),
-            ExcelColumnModel(key=KEY_CDB_CABLE_END2_DEVICE, required=True),
-            ExcelColumnModel(key=KEY_CDB_CABLE_END2_PORT, required=False),
-            ExcelColumnModel(key=KEY_CDB_CABLE_END2_CONNECTOR, required=False),
-            ExcelColumnModel(key=KEY_CDB_CABLE_EXT_NAME, required=True),
-            ExcelColumnModel(key=KEY_CDB_CABLE_IMPORT_ID, required=True),
-            ExcelColumnModel(key=KEY_CDB_CABLE_ALT_ID, required=False),
-            ExcelColumnModel(key=KEY_CDB_CABLE_END1_DESC, required=True),
-            ExcelColumnModel(key=KEY_CDB_CABLE_END2_DESC, required=True),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_NAME, required=True),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_TECH_SYSTEM, required=True),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_DESC, required=False),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_ID, required=True),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_ENDPOINTS, required=True),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_TYPE, required=True),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END1_DEVICE, required=True),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END1_PORT, required=False),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END1_CONNECTOR, required=False),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END2_DEVICE, required=True),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END2_PORT, required=False),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END2_CONNECTOR, required=False),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_EXT_NAME, required=True),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_IMPORT_ID, required=True),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_ALT_ID, required=False),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END1_DESC, required=True),
+            ExcelRowDictColumnInputModel(key=Field.CDB_CABLE_END2_DESC, required=True),
         ]
-        self.sheet = ExcelSheetModel(specs)
-        self.workbook = ExcelWorkbookModel(file_input, [self.sheet])
-        (init_wb_valid, init_wb_valid_info) = self.workbook.initialize()
+        self.sheet = ExcelRowDictSheetInputModel(specs)
+        self.workbook = ExcelWorkbookInputModel()
+        (init_wb_valid, init_wb_valid_info) = self.workbook.initialize_for_read(file_input, [self.sheet])
 
         return init_wb_valid, init_wb_valid_info
 
     def load_records(self):
-        (load_valid, load_valid_info, rows) = self.sheet.load_rows()
+        (load_valid, load_valid_info, rows) = self.sheet.load_data()
         return load_valid, load_valid_info, rows
 
     def finalize(self):
@@ -217,14 +411,55 @@ class TestModule(CableInfoModule):
 
 
 class PullListGenerator:
-    def __init__(self):
-        pass
+
+    def __init__(self, output_dir, config):
+        self.output_dir = output_dir
+        self.config = config
+        self.workbook = None
+        self.sheet = None
 
     def initialize(self):
-        return True, ""
+
+        init_valid = True
+        init_valid_info = ""
+
+        # get output filename from config
+        output_filename = get_config_resource(self.config, CONFIG_SECTION_GENERATOR, CONFIG_RES_GENERATOR_OUTPUT_FILE, True)
+        file_output = self.output_dir + "/" + output_filename
+
+        # create column, sheet, workbook models
+        specs = [
+            ExcelRowDictColumnOutputModel(key=Field.CDB_CABLE_NAME),
+            ExcelRowDictColumnOutputModel(key=Field.CDB_CABLE_EXT_NAME),
+            ExcelRowDictColumnOutputModel(key=Field.CDB_CABLE_TYPE),
+            ExcelRowDictColumnOutputModel(key=Field.CDB_CABLE_TYPE_DESC),
+            ExcelRowDictColumnOutputModel(key=Field.CDB_CABLE_TECH_SYSTEM),
+            ExcelRowDictColumnOutputModel(key=Field.CDB_CABLE_ALT_ID),
+            ExcelRowDictColumnOutputModel(key=Field.CABLE_ROUTE),
+            ExcelRowDictColumnOutputModel(key=Field.CABLE_NOTES),
+            ExcelRowDictColumnOutputModel(key=Field.SRC_LOCATION),
+            ExcelRowDictColumnOutputModel(key=Field.CDB_CABLE_END1_DEVICE),
+            ExcelRowDictColumnOutputModel(key=Field.CDB_CABLE_END1_PORT),
+            ExcelRowDictColumnOutputModel(key=Field.SRC_DRAWING),
+            ExcelRowDictColumnOutputModel(key=Field.SRC_END_LENGTH),
+            ExcelRowDictColumnOutputModel(key=Field.SRC_NOTES),
+            ExcelRowDictColumnOutputModel(key=Field.DEST_LOCATION),
+            ExcelRowDictColumnOutputModel(key=Field.CDB_CABLE_END2_DEVICE),
+            ExcelRowDictColumnOutputModel(key=Field.CDB_CABLE_END2_PORT),
+            ExcelRowDictColumnOutputModel(key=Field.DEST_DRAWING),
+            ExcelRowDictColumnOutputModel(key=Field.DEST_END_LENGTH),
+            ExcelRowDictColumnOutputModel(key=Field.DEST_NOTES),
+            ExcelRowDictColumnOutputModel(key=Field.CAD_LENGTH),
+            ExcelRowDictColumnOutputModel(key=Field.ROUTED_LENGTH),
+        ]
+        self.sheet = ExcelRowDictSheetOutputModel(specs, "pull list")
+        self.workbook = ExcelWorkbookOutputModel()
+        (init_valid, init_valid_info) = self.workbook.initialize_for_write(file_output, [self.sheet])
+
+        return init_valid, init_valid_info
 
     def generate(self, records):
-        return True, ""
+        return self.sheet.write_data(records)
 
 
 def fatal_error(error_msg):
@@ -349,12 +584,24 @@ def main():
         (process_valid, process_valid_info) = module.process_records(cable_records)
         if not process_valid:
             fatal_error("Module processing failed: " + process_valid_info)
+        # run garbage collection after each module
+        module = None
+        unreachable = gc.collect()
+        logging.debug("gc loader unreachable: " + str(unreachable))
+        logging.debug("gc loader stats: " + str(gc.get_stats()))
 
+    #
+    # run garbage collection after all modules
+    #
+    module_list = None
+    unreachable = gc.collect()
+    logging.debug("gc loader unreachable: " + str(unreachable))
+    logging.debug("gc loader stats: " + str(gc.get_stats()))
 
     #
     # Generate pull list output for each cable record.
     #
-    generator = PullListGenerator()
+    generator = PullListGenerator(option_output_dir, config_preimport)
     (generator_init_valid, generator_init_valid_info) = generator.initialize()
     if not generator_init_valid:
         fatal_error("Module initialization failed: " + generator_init_valid_info)
