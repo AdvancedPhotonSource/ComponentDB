@@ -611,4 +611,6 @@ public interface IItemController<ItemDomainEntity extends Item, SettingObject ex
      * @return 
      */
     public ItemEnforcedPropertiesController getItemEnforcedPropertiesController();
+        
+    public String prepareView(Item item);
 }
