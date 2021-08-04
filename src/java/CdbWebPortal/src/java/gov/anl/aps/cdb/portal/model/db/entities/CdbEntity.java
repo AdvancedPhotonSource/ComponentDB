@@ -203,11 +203,13 @@ public class CdbEntity implements Serializable, Cloneable {
     }
     
     // default implementation returns null, subclasses override to customize
+    @JsonIgnore
     public CdbEntityControllerUtility getControllerUtility() {
         LOGGER.error("Override expected for getControllerUtility()? " + getClass().getName());
         return null;
     }
 
+    @JsonIgnore
     public PropertyType getCableEndDesignationPropertyType() {
         
         if (cableEndDesignationPropertyType == null) {

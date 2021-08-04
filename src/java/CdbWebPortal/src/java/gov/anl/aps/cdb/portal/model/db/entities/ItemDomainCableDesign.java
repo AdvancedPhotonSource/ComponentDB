@@ -257,6 +257,7 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
+    @JsonIgnore
     public ItemElementRelationship getPrimaryRelationshipForCableEnd(String cableEnd) {
         ItemElement selfElement = this.getSelfElement();
         List<ItemElementRelationship> ierList
@@ -456,14 +457,17 @@ public class ItemDomainCableDesign extends Item {
         return deviceList;
     }
     
+    @JsonIgnore
     public List<Item> getEnd1Devices() {
         return getDevicesForCableEnd(VALUE_CABLE_END_1);
     }
 
+    @JsonIgnore
     public List<Item> getEnd2Devices() {
         return getDevicesForCableEnd(VALUE_CABLE_END_2);
     }
 
+    @JsonIgnore
     public List<Item> getEndpointList() {
         
         List<Item> deviceList = new ArrayList<>();
@@ -488,6 +492,7 @@ public class ItemDomainCableDesign extends Item {
     /**
      * Returns a string containing the cables endpoints for display.
      */
+    @JsonIgnore
     public String getEndpointsString() {
         String result = "";
         int count = 0;
@@ -502,6 +507,7 @@ public class ItemDomainCableDesign extends Item {
         return result;
     }
 
+    @JsonIgnore
     public String getPortForEndpoint(String cableEnd) {
         ItemElementRelationship cableRelationship = getPrimaryRelationshipForCableEnd(cableEnd);
         if (cableRelationship != null) {
@@ -516,6 +522,7 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
+    @JsonIgnore
     public String getConnectorForEndpoint(String cableEnd) {
         ItemElementRelationship cableRelationship = getPrimaryRelationshipForCableEnd(cableEnd);
         if (cableRelationship != null) {
