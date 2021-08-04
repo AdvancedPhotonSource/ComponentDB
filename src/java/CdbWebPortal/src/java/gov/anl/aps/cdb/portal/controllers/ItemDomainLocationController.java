@@ -12,7 +12,6 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationController
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperLocation;
 import gov.anl.aps.cdb.portal.model.db.beans.DomainFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
@@ -72,32 +71,13 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
         return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);
     }
 
-    public List<ItemDomainInventory> getInventoryLocatatedHere() {        
+    public List<ItemDomainInventory> getInventoryLocatatedHere() {
         ItemDomainLocation current = getCurrent();
 
-        if (current.getInventoryLocatedHere() == null) {            
-            List<ItemDomainInventory> itemsHere = new ArrayList<>();
-            
-            
-            List<ItemDomainInventory> results = itemDomainLocationFacade.fetchInventoryStoredInLocationHierarchy(current.getId());            
-            for (ItemDomainInventory item : results) {
-                itemsHere.add(item); 
-                
-                if (item.getFullItemElementList().size() > 1) {
-                    // Assembly append any active children.
-                    Integer assemblyId = item.getId();
-                    List<ItemDomainInventory> assemblyHierarchy = itemDomainLocationFacade.fetchInventoryAssignedToAssemblyHierarchy(assemblyId);
-                    itemsHere.addAll(assemblyHierarchy);
-                }
-            }
-            
+        if (current.getInventoryLocatedHere() == null) {
+            ItemDomainLocationControllerUtility util = getControllerUtility();
+            List<ItemDomainInventory> itemsHere = util.getInventoryLocatedInLocationHierarchically(current, true); 
             current.setInventoryLocatedHere(itemsHere);
-            
-            List<Item> machinesLocatedHere = current.getMachinesLocatedHere();
-            for (Item machine : machinesLocatedHere) {
-                Integer id = machine.getId();
-                itemsHere.addAll(itemDomainLocationFacade.fetchInventoryAssignedToMachineItemHiearchy(id));
-            }
         }
 
         return current.getInventoryLocatedHere();
@@ -138,46 +118,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     public boolean isShowCloneCreateItemElementsPlaceholdersOption() {
         return false;
     }
-
-    /**
-     * Get a list of items that are located somewhere down the hierarchy of
-     * another item.
-     *
-     * @param locationItem
-     * @return
-     */
-    public static List<ItemDomainInventory> getAllItemsLocatedInHierarchy(ItemDomainLocation locationItem) {
-        List<Item> itemList = new ArrayList<>();
-        return (List<ItemDomainInventory>) (List<?>) getAllItemsLocatedInHierarchy(itemList, locationItem);
-    }
-
-    /**
-     * Recursive helper method for fetching items located somewhere down in the
-     * hierarchy of another item.
-     *
-     * @param itemList
-     * @param locationItem
-     * @return
-     */
-    private static List<Item> getAllItemsLocatedInHierarchy(List<Item> itemList, ItemDomainLocation locationItem) {
-        String relationshipToLocation = ItemElementRelationshipTypeNames.itemLocation.getValue();
-        boolean isLocationItemFirst = false;
-        List<Item> itemsInLocation = ItemUtility.getItemsRelatedToItem(locationItem, relationshipToLocation, isLocationItemFirst);
-        itemList.addAll(itemsInLocation);
-
-        List<ItemElement> itemElementList = locationItem.getItemElementDisplayList();
-        if (itemElementList != null) {
-            for (ItemElement itemElement : itemElementList) {
-                ItemDomainLocation containedItem = (ItemDomainLocation) itemElement.getContainedItem();
-                if (containedItem != null) {
-                    getAllItemsLocatedInHierarchy(itemList, containedItem);
-                }
-            }
-        }
-
-        return itemList;
-    }
-
+    
     public TreeNode getLocationsWithInventoryItemsRootNode() {
         if (locationsWithInventoryItemsRootNode == null) {
             // Location with inventory items is now the same pointer as items with no parents...
