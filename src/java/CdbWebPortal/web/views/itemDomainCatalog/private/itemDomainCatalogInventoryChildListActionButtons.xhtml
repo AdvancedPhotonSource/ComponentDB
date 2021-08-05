@@ -26,12 +26,12 @@ See LICENSE file.
         </p:commandButton>
         
         <p:commandButton id='#{childEntityTypeName}#{viewName}EditAllButton'
-                         value="Edit All"
+                         value="Edit Many"
                          icon="fa fa-object-group"
                          rendered="#{loginController.loggedIn}"
                          action="#{itemMultiEditDomainInventoryController.editAllItemsDerivedFromItem(itemObject)}">
             <p:tooltip for="#{childEntityTypeName}#{viewName}EditAllButton"
-                       value="Edit all #{childEntityTypeName} items for which current user has permissions"/>
+                       value="Edit many #{childEntityTypeName} items for which current user has permissions"/>
         </p:commandButton>
 
         <p:commandButton id="#{childEntityTypeName}#{viewName}TrackSparesButton"

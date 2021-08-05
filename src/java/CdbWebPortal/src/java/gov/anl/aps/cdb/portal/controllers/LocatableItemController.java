@@ -238,7 +238,11 @@ public class LocatableItemController implements Serializable {
      * @param locatableItem
      */
     public void loadLocationStringForItem(LocatableItem locatableItem) {
-        setItemLocationInfo(locatableItem, false, true);
+        if (locatableItem.getOriginalLocationLoaded() == false) {
+            setItemLocationInfo(locatableItem, false, true);
+        } else {
+            updateLocationStringForItem(locatableItem);
+        }
     }
 
     /**
@@ -247,7 +251,11 @@ public class LocatableItemController implements Serializable {
      * @param locatableItem
      */
     public void loadHousingStringForItem(LocatableItem locatableItem) {
-        setItemLocationInfo(locatableItem, false, true);
+        if (locatableItem.getOriginalLocationLoaded() == false) {
+            setItemLocationInfo(locatableItem, false, true);
+        } else {
+            updateHousingStringForItem(locatableItem);
+        }
     }
 
     public void setItemLocationInfo(LocatableItem locatableItem) {
@@ -301,6 +309,7 @@ public class LocatableItemController implements Serializable {
     private void loadItemLocationInfoItemMembership(LocatableItem locatableItem) {
         Item parentItem = getParentLocationItem(locatableItem);
         locatableItem.setMembershipLocation(parentItem);
+        locatableItem.setMembershipLoaded(true);
     }
 
     private Item getParentLocationItem(Item item) {
@@ -318,8 +327,8 @@ public class LocatableItemController implements Serializable {
             }
         } else if (allMembershipList.size() == 1) {
             ItemElement element = allMembershipList.get(0);
-            if (element.getIsHoused()  == false) {
-                return null; 
+            if (element.getIsHoused() == false) {
+                return null;
             }
 
             return getLocationItemFromElementObject(element, item);
@@ -556,6 +565,38 @@ public class LocatableItemController implements Serializable {
 
     }
 
+// TODO: try performance optomized fetching of location for item... 
+//    public ItemDomainLocation getLocationForItem(LocatableItem item) {
+//        while (item != null) {
+//            LocatableItem next = item;
+//            while (next != null) {
+//                List<ItemElement> allMembershipList = new ArrayList<>();
+//                allMembershipList.addAll(next.getItemElementMemberList());
+//                allMembershipList.addAll(next.getItemElementMemberList2());
+//
+//                if (allMembershipList.size() == 1) {// TODO verify isinstalled flag
+//                    ItemElement membershipElement = allMembershipList.get(0);
+//
+//                    LocatableItem parentItem = (LocatableItem) membershipElement.getParentItem();
+//                    if (parentItem instanceof ItemDomainMachineDesign) {
+//                        ItemDomainLocation loc = itemFacade.fetchLocationItemForLocatableItem(parentItem.getId());
+//                        if (loc != null) {
+//                            return loc;
+//                        }
+//                    }
+//
+//                    next = parentItem;
+//                } else {
+//                    item = next;
+//                    next = null;
+//                }
+//            }
+//
+//            return itemFacade.fetchLocationItemForLocatableItem(item.getId());
+//        }
+//        return null;
+//    }
+
     public List<ItemDomainLocation> generateLocationHierarchyList(Item lowestLocationItem) {
         if (lowestLocationItem != null) {
             List<ItemDomainLocation> itemHerarchyList = new ArrayList<>();
@@ -618,6 +659,31 @@ public class LocatableItemController implements Serializable {
             setItemLocationInfo(inventoryItem);
         }
         return inventoryItem.getLocationItem();
+    }
+
+    public Item getHousingOrActiveLocation(LocatableItem inventoryItem) {
+        if (inventoryItem != null) {
+            if (inventoryItem.getOriginalLocationLoaded() == false) {
+                setItemLocationInfo(inventoryItem, false, false);
+            }
+
+            List<ItemDomainLocation> locationHierarchy = getLocationHierarchyListForItem(inventoryItem);
+            if (locationHierarchy != null && locationHierarchy.size() > 0) {
+                int last = locationHierarchy.size() - 1;
+                return locationHierarchy.get(last);
+            }
+        }
+        return null;
+    }
+
+    public Item getHousing(LocatableItem item) {
+        if (item == null) {
+            return null;
+        }
+        if (item.getMembershipLoaded() == false) {
+            loadItemLocationInfoItemMembership(item);
+        }
+        return item.getMembershipLocation();
     }
 
     public DefaultMenuModel getItemLocataionDefaultMenuModel(LocatableItem item) {

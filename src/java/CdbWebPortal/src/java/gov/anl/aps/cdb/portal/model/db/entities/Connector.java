@@ -4,7 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.model.db.entities;
 
+import gov.anl.aps.cdb.portal.controllers.utilities.ConnectorControllerUtility;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -19,11 +21,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.NamedStoredProcedureQueries;
-import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.ParameterMode;
-import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -59,7 +57,7 @@ public class Connector extends CdbEntity implements Serializable {
     @JoinTable(name = "connector_property", joinColumns = {
         @JoinColumn(name = "connector_id", referencedColumnName = "id")}, inverseJoinColumns = {
         @JoinColumn(name = "property_value_id", referencedColumnName = "id")})
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     private List<PropertyValue> propertyValueList;
     @OneToMany(mappedBy = "connector")
     private List<ItemConnector> itemConnectorList; // removed CascadeType.ALL since this circular relationship was causing duplicate ItemConnectors to be created (since create operation cascaded)
@@ -195,5 +193,17 @@ public class Connector extends CdbEntity implements Serializable {
         return result;
 
     }
-
+    
+    @Override
+    public ConnectorControllerUtility getControllerUtility() {
+        return new ConnectorControllerUtility(); 
+    }
+    
+    public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
+        if (propertyValueList == null) {
+            propertyValueList = new ArrayList<>();
+        }
+        propertyValueList.add(0, propertyValue);
+    }
+    
 }

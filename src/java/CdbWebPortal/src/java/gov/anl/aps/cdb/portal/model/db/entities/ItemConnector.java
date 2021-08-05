@@ -9,7 +9,6 @@ import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -309,5 +308,25 @@ public class ItemConnector extends CdbEntity implements Serializable {
         }
         
         this.setConnector(conn);        
+    }
+    
+    // convenience method for comparator sorting
+    @JsonIgnore
+    public String getConnectorCableEndDesignation() {
+        if ((connector != null) && (connector.getCableEndDesignation() != null)) {
+            return connector.getCableEndDesignation();
+        } else {
+            return "";
+        }
+    }
+    
+    // convenience method for comparator sorting
+    @JsonIgnore
+    public String getConnectorName() {
+        if ((connector != null) && (connector.getName() != null)) {
+            return connector.getName();
+        } else {
+            return "";
+        }
     }
 }

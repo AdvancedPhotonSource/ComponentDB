@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:panel header="Locations Located Here">            
+        <ui:include src="itemDomainLocationItemsLocatedHereDataTable.xhtml"> 
+            <ui:param name="itemList"
+                      value="#{itemObject.locationsLocatedHere}" /> 
+            <ui:param name="renderedLocation"
+                      value="#{false}"/>
+            <ui:param name="rendredHousing"
+                      value="#{false}"/>
+        </ui:include>
+    </p:panel>
+
+    <p:panel header="Inventory Located Here"
+             id="inventoryHerePanel">
+        <ui:param name="inventoryHere"
+                  value="#{itemDomainLocationController.getInventoryLocatatedHere()}" />                 
+        <ui:include src="itemDomainLocationItemsLocatedHereDataTable.xhtml"> 
+            <ui:param name="itemList"
+                      value="#{inventoryHere}" /> 
+            <ui:param name="renderedLocation"
+                      value="#{true}"/>
+            <ui:param name="rendredHousing"
+                      value="#{true}"/>
+            <ui:param name="entityController"
+                      value="#{itemDomainInventoryController}"/> 
+        </ui:include>
+    </p:panel>
+
+    <p:panel header="Machines Located Here">            
+        <ui:include src="itemDomainLocationItemsLocatedHereDataTable.xhtml"> 
+            <ui:param name="itemList"
+                      value="#{itemObject.machinesLocatedHere}" /> 
+            <ui:param name="renderedLocation"
+                      value="#{false}"/>
+            <ui:param name="rendredHousing"
+                      value="#{true}"/>
+        </ui:include>
+    </p:panel>
+
+
+</ui:composition>
+
+

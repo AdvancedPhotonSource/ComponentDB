@@ -19,28 +19,16 @@ public abstract class CdbDomainEntity extends CdbEntity {
 
     @JsonIgnore
     private transient List<PropertyValue> imagePropertyList = null;
-    @JsonIgnore
-    protected transient List<PropertyValue> propertyValueDisplayList = null; 
-    @JsonIgnore
-    protected transient List<PropertyValue> propertyValueInternalList = null; 
-    
     private transient final HashMap<Integer, PropertyValueInformation> propertyValueCacheMap = new HashMap<>();
     // Used to map property type id to property value number
     private static transient HashMap<Integer, Integer> propertyTypeIdIndexMap = new HashMap<>();
 
-    public void resetPropertyValueLists() {
-        propertyValueDisplayList = null; 
-        propertyValueInternalList = null; 
-    }
-    
     public static void setPropertyTypeIdIndex(Integer index, Integer propertyTypeId) {
         if (propertyTypeId != null) {
             propertyTypeIdIndexMap.put(index, propertyTypeId);
         }
     }
     
-    public abstract void addPropertyValueToPropertyValueList(PropertyValue propertyValue); 
-
     public List<PropertyValue> getPropertyValueList() {
         return null;
     }

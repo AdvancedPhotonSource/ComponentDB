@@ -39,14 +39,17 @@ See LICENSE file.
 
                         <p:treeTable id="itemFilterViewRowExpansion"
                                      value="#{resultExpansionObject.rootTreeNode}"
-                                     var="itemTreeNode">                                    
-
+                                     var="itemElementTreeNode">
+                            
+                            <ui:param name="itemTreeNode"
+                                      value="#{itemElementTreeNode.containedItem}"/> 
+                            
                             <ui:insert name="partItemElementReference">
                                 <ui:param name="itemElementObject"
-                                          value="#{itemTreeNode.hierarchyItemElement}"/> 
+                                          value="#{itemElementTreeNode}"/> 
                             </ui:insert>
 
-                            <p:column headerText="Part Name" >
+                            <p:column headerText="Part Name" >                                
                                 <h:outputText value="#{itemElementObject.name}" /> 
                             </p:column>
 

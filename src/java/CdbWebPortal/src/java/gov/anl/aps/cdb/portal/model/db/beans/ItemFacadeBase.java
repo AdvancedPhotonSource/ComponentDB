@@ -11,6 +11,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainLocation;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemType;
@@ -311,6 +313,58 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
             List<ItemDomainEntity> itemList = query.getResultList();
 
             return itemList;
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
+    public ItemDomainLocation fetchLocationItemForLocatableItem(Integer locatableItemId) {
+        try {
+            StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchLocationItemForLocatableItem");
+            query.setParameter("locatable_item_id", locatableItemId);
+            
+            List<ItemDomainLocation> resultList = query.getResultList();
+
+            if (resultList.size() > 0) {
+                if (resultList.size() > 1) {
+                    // TODO throw nonunique location exception... 
+                    return null; 
+                }
+                return resultList.get(0); 
+            }
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
+    public List<ItemDomainInventory> fetchInventoryAssignedToMachineItemHiearchy(int machineItemId) {
+        try {
+            StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchInventoryAssignedToMachineItemHiearchy");
+            query.setParameter("machine_item_id", machineItemId);
+            
+            return query.getResultList();           
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
+    public List<ItemDomainInventory> fetchInventoryStoredInLocationHierarchy(int locationItemId) {
+        try {
+            StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchInventoryStoredInLocationHierarchy");
+            query.setParameter("location_item_id_input", locationItemId);
+            
+            return query.getResultList();           
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+    
+     public List<ItemDomainInventory> fetchInventoryAssignedToAssemblyHierarchy(int assemblyItemId) {
+        try {
+            StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchInventoryAssignedToAssemblyHierarchy");
+            query.setParameter("assembly_item_id", assemblyItemId);
+            
+            return query.getResultList();           
         } catch (NoResultException ex) {
         }
         return null;

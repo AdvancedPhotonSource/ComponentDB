@@ -239,7 +239,7 @@ public abstract class ItemFilterViewController extends ItemControllerExtensionHe
         Item item = fvio.getItemObject();
         if (!item.getItemElementDisplayList().isEmpty()) {
             try {
-                TreeNode rootTreeNode = ItemElementUtility.createItemRoot(item);
+                TreeNode rootTreeNode = ItemElementUtility.createItemElementRoot(item);
                 fvio.addFilterViewItemExpansion(rootTreeNode, "Item Assembly");
             } catch (Exception ex) {
                 logger.error(ex);

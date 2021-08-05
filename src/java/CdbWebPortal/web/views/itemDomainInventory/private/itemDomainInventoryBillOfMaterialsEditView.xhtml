@@ -31,41 +31,23 @@ See LICENSE file.
                     <p:column styleClass="panelGridBorderedCell">                
                     -->
                     <p:panel>
-                        <ui:param name="currentItemVOMListTreeValue"
-                                  value="#{itemDomainInventoryController.currentHasPartsToDisplay ? itemDomainInventoryController.currentItemBOMListTree : null}" />
-                        <p:tree value="#{currentItemVOMListTreeValue}"
-                                id="partsTree"
-                                var="inventoryBOM"
-                                selectionMode="single"
-                                selection="#{itemDomainInventoryController.selectedItemBOMTreeNode}"                                    
-                                >
-                            <p:ajax event="select" update="#{fullUpateTarget}"/>
+                        <ui:param name="showTreeInScrollPanel"
+                                  value="#{itemDomainInventoryController.isDisplayBomTreeInScrollpanel}" /> 
 
-                            <p:treeNode type="newItem" icon="fa fa-plus">
-                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
-                                    <ui:param name="viewName" value="newItem"/>
-                                </ui:include>
-                            </p:treeNode>
-                            <p:treeNode type="existingItem" icon="fa fa-check">
-                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
-                                    <ui:param name="viewName" value="existingItem"/>
-                                </ui:include>
-                            </p:treeNode>
-                            <p:treeNode type="placeholder" icon="fa fa-close">
-                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
-                                    <ui:param name="viewName" value="placeholder"/>
-                                </ui:include>
-                            </p:treeNode>
-                            <p:treeNode rendered="#{itemDomainInventoryController.showOptionalPartsInBom}"
-                                        type="unspecifiedOptional" icon="fa fa-circle-o" >
-                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml">
-                                    <ui:param name="viewName" value="unspecifiedOptional"/>
-                                </ui:include>
-                            </p:treeNode>
-                            <p:treeNode>
-                                <ui:include src="itemDomainInventoryBillOfMaterialsTreeNode.xhtml"/>
-                            </p:treeNode>
-                        </p:tree>
+                        <p:scrollPanel style="height: 600px;" 
+                                       rendered="#{showTreeInScrollPanel}">
+                            <ui:param name="treeSrc" value="#{showTreeInScrollPanel ? 
+                                                              'itemDomainInventoryBillOfMaterialsEditViewTree.xhtml' 
+                                                              : '../../common/private/commonEmptyPage.xhtml'}" />
+                            
+                            <ui:include src="#{treeSrc}"/> 
+                        </p:scrollPanel>
+                        <p:outputPanel rendered="#{!showTreeInScrollPanel}">
+                            <ui:param name="treeSrc" value="#{!showTreeInScrollPanel ? 
+                                                              'itemDomainInventoryBillOfMaterialsEditViewTree.xhtml' 
+                                                              : '../../common/private/commonEmptyPage.xhtml'}" />
+                            <ui:include src="#{treeSrc}"/> 
+                        </p:outputPanel>
                     </p:panel>
                     <p:commandButton value="#{itemDomainInventoryController.showOptionalPartsInBom ? 'Hide' : 'Show'} Optional"
                                      update="#{fullUpateTarget}"

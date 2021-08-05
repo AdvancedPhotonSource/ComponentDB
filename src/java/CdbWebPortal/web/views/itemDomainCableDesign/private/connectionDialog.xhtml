@@ -10,66 +10,121 @@ See LICENSE file.
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
                 xmlns:p="http://primefaces.org/ui">
 
-    <p:dialog header="Edit Connection Details (Current Endpoint: #{entityController.dialogConnection.itemEndpointString})" 
+    <p:dialog header="Edit Connection Details (Current Connection: #{entityController.dialogConnection.itemEndpointString})" 
               id="dialogConnection"
-              widgetVar="endpointDialog" 
+              widgetVar="connectionDialog" 
               modal="true"
               closable="false"
               width="500">
-        
+
         <p:panel id="dialogConnectionContentPanel">
 
-            <p:outputLabel for="cableConnectorMenu" value="Optionally select cable connector"/>
+            <p:panel>
+                <column>
+                    <row>
+                        <p:outputLabel rendered="#{itemDomainCableDesignController.dialogConnection.renderCableEndDesignationLabelDetail}"
+                                       value="Cable End Designation"
+                                       for="connectionCableEndMenu"
+                                       styleClass="entityDataLabel"/>
+                    </row>
+                    <row>
+                        <p:outputLabel rendered="#{itemDomainCableDesignController.dialogConnection.renderCableEndDesignationLabelPrimary}"
+                                       value="Cable End Designation (read-only for primary cable end connection)"
+                                       for="connectionCableEndMenu"
+                                       styleClass="entityDataLabel"/>
+                    </row>
+                    <row>
+                        <p:selectOneMenu id="connectionCableEndMenu" 
+                                         value="#{itemDomainCableDesignController.dialogConnection.cableEndDesignation}"
+                                         disabled="#{itemDomainCableDesignController.dialogConnection.disableCableEndDesignation}"
+                                         rendered="#{itemDomainCableDesignController.dialogConnection.renderCableEndDesignation}">
+                            <f:selectItem itemLabel="Unspecified" itemValue=""/>
+                            <f:selectItem itemValue="#{itemDomainCableDesignController.dialogConnection.menuValueEnd1}" 
+                                          itemLabel="#{itemDomainCableDesignController.dialogConnection.menuLabelEnd1}"/>
+                            <f:selectItem itemValue="#{itemDomainCableDesignController.dialogConnection.menuValueEnd2}" 
+                                          itemLabel="#{itemDomainCableDesignController.dialogConnection.menuLabelEnd2}"/>
+                            <p:ajax event="itemSelect"
+                                    listener="#{itemDomainCableDesignController.dialogConnection.selectListenerCableEnd}"
+                                    oncomplete="updateCableConnectors(); updateMessageDialogConnection(); updateButtonsDialogConnection();" />        
+                        </p:selectOneMenu>
+                    </row>
+                </column>
+            </p:panel>
 
-            <p:selectOneMenu id="cableConnectorMenu" 
-                             value="#{itemDomainCableDesignController.dialogConnection.selectedCableConnectorName}">
-                <f:selectItem itemLabel="Unspecified" itemValue=""/>
-                <f:selectItems value="#{itemDomainCableDesignController.dialogConnection.availableCableConnectorNames}"
-                               var="connector"/>
-                <p:ajax event="itemSelect"
-                        listener="#{itemDomainCableDesignController.dialogConnection.selectListenerConnector}"
-                        oncomplete="updateButtonsDialogEndpoint();" />        
-            </p:selectOneMenu>
-        </p:panel>
+            <p:panel>
+                <column>
+                    <row>
+                        <p:outputLabel for="cableConnectorMenu" 
+                                       value="Cable Connector"
+                                       styleClass="entityDataLabel"/>
+                    </row>
+                    <row>
+                        <p:selectOneMenu id="cableConnectorMenu" 
+                                         value="#{itemDomainCableDesignController.dialogConnection.selectedCableConnectorName}">
+                            <f:selectItem itemLabel="Unspecified" itemValue=""/>
+                            <f:selectItems value="#{itemDomainCableDesignController.dialogConnection.availableCableConnectorNames}"
+                                           var="connector"/>
+                            <p:ajax event="itemSelect"
+                                    listener="#{itemDomainCableDesignController.dialogConnection.selectListenerConnector}"
+                                    oncomplete="updateMessageDialogConnection(); updateButtonsDialogConnection();" />        
+                        </p:selectOneMenu>
+                    </row>
+                </column>
+            </p:panel>
 
-        <p:panel>
-            <p:outputLabel for="@next" value="Select endpoint item or optional connector"/>
-            <ui:decorate template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
-                <ui:param name="viewId" value="endpointDialogTree" />
-                <ui:param name="hideOptionalColumns" value="#{false}" />
-                <ui:param name="valueModel" value="#{itemDomainCableDesignController.dialogConnection.mdTree}" />
-                <ui:param name="selectionModel" value="#{itemDomainCableDesignController.dialogConnection.selectedMdTreeNode}" />
-                <ui:param name="rendered" value="#{true}" />
-                <ui:param name="scrollable" value="#{true}" />
-                <ui:define name="treeTableEvents">
-                    <p:ajax event="select"
-                            listener="#{itemDomainCableDesignController.dialogConnection.selectListenerEndpoint}"
-                            oncomplete="updateButtonsDialogEndpoint();updateMessageDialogEndpoint();" />
-                    <p:ajax event="unselect"
-                            listener="#{itemDomainCableDesignController.dialogConnection.selectListenerEndpoint}"
-                            oncomplete="updateButtonsDialogEndpoint();updateMessageDialogEndpoint();" />
-                </ui:define>
-                <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
-            </ui:decorate>
-        </p:panel>
+            <p:panel>
+                <column>
+                    <row>
+                        <p:outputLabel for="itemMachineDesignListDataTableconnectionDialogTree"
+                                       value="Select Device or Device Port (click icon in tree to select)"
+                                       styleClass="entityDataLabel"/>
+                    </row>
+                    <row>
+                        <ui:decorate template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+                            <ui:param name="viewId" value="connectionDialogTree" />
+                            <ui:param name="hideOptionalColumns" value="#{false}" />
+                            <ui:param name="valueModel" value="#{itemDomainCableDesignController.dialogConnection.mdTree}" />
+                            <ui:param name="selectionModel" value="#{itemDomainCableDesignController.dialogConnection.selectedMdTreeNode}" />
+                            <ui:param name="rendered" value="#{true}" />
+                            <ui:param name="scrollable" value="#{true}" />
+                            <ui:define name="treeTableEvents">
+                                <p:ajax event="select"
+                                        listener="#{itemDomainCableDesignController.dialogConnection.selectListenerEndpoint}"
+                                        oncomplete="updateButtonsDialogConnection();updateMessageDialogConnection();" />
+                                <p:ajax event="unselect"
+                                        listener="#{itemDomainCableDesignController.dialogConnection.selectListenerEndpoint}"
+                                        oncomplete="updateButtonsDialogConnection();updateMessageDialogConnection();" />
+                            </ui:define>
+                            <ui:param name="entityController" value="#{itemDomainMachineDesignController}" />
+                        </ui:decorate>
+                    </row>
+                </column>
+            </p:panel>
+            <p:panel>
+                <column>
+                    <row>
+                        <p:panel id="connectionDialogMessagePanel">
+                            <h3>
+                                <h:outputText value="#{itemDomainCableDesignController.dialogConnection.warningMessage}" 
+                                              escape="false" />
+                            </h3>
+                            <h3>
+                                <h:outputText value="#{itemDomainCableDesignController.dialogConnection.message}" 
+                                              escape="false" />
+                            </h3>
+                        </p:panel>
+                    </row>
+                </column>
+            </p:panel>
 
-        <p:panel id="connectionDialogMessagePanel">
-            <div>
-                <h3>
-                    <h:outputText value="#{itemDomainCableDesignController.dialogConnection.message}" 
-                                  escape="false" />
-                </h3>
-            </div>
-        </p:panel>
-
-        <f:facet name="footer" class="dialog">
+            <f:facet name="footer" class="dialog">
 
             <p:outputPanel id="dialogConnectionButtonPanel">
                 <p:commandButton  action="#{entityController.dialogConnection.save('saveEndpointSuccess()')}"
                                   id="endpointDialogSaveButton"
                                   value="Save" 
                                   alt="Save" 
-                                  update="dialogConnection"
+                                  update="@form"
                                   disabled="#{entityController.dialogConnection.disableButtonSave}"
                                   icon="fa fa-save"/>
 
@@ -79,21 +134,23 @@ See LICENSE file.
                                  update="dialogConnection"
                                  icon="fa fa-close" />
 
-                <p:remoteCommand name="saveEndpointSuccess"                             
-                                 actionListener="#{entityController.dialogConnection.actionListenerSaveSuccess}"
-                                 update="@form"
-                                 onstart="PF('endpointDialog').hide()" />
-            </p:outputPanel>
-        </f:facet>
+                    <p:remoteCommand name="saveEndpointSuccess"                             
+                                     actionListener="#{entityController.dialogConnection.actionListenerSaveSuccess}"
+                                     update="@form"
+                                     onstart="PF('connectionDialog').hide()" />
+                </p:outputPanel>
+            </f:facet>
 
-        <p:remoteCommand name="updateButtonsDialogEndpoint" 
-                         update="dialogConnectionButtonPanel"/>
+            <p:remoteCommand name="updateButtonsDialogConnection" 
+                             update="dialogConnectionButtonPanel"/>
 
-        <p:remoteCommand name="updateMessageDialogEndpoint" 
-                         update="connectionDialogMessagePanel"/>
+            <p:remoteCommand name="updateMessageDialogConnection" 
+                             update="connectionDialogMessagePanel"/>
+            
+            <p:remoteCommand name="updateCableConnectors"
+                             update="cableConnectorMenu"/>
 
-        <p:remoteCommand name="updateTreeDialogEndpoint" 
-                         update="itemMachineDesignListDataTableendpointDialogTree"/>
+        </p:panel>
 
     </p:dialog>
 

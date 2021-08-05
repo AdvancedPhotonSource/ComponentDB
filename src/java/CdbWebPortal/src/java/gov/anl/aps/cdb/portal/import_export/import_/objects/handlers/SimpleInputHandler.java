@@ -24,6 +24,10 @@ public abstract class SimpleInputHandler extends SingleColumnInputHandler {
 
     protected String propertyName = null;
     protected String setterMethod = null;
+    
+    public SimpleInputHandler(String columnName) {
+        super(columnName);
+    }
 
     public SimpleInputHandler(
             int columnIndex,
