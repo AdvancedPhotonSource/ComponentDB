@@ -579,4 +579,9 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     public void deleteProperty(PropertyValue cdbDomainEntityProperty) {
         getItemController().deleteProperty(cdbDomainEntityProperty);
     }
+    
+    @Override
+    public String prepareView(Item item) {
+        return getItemController().prepareView(item); 
+    }
 }

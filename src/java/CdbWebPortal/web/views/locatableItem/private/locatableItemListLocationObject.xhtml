@@ -8,13 +8,13 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 xmlns:h="http://xmlns.jcp.org/jsf/html">
-     
+
     <ui:param name="settingObject" value="#{entityController.settingObject}"/>     
     <ui:param name="renderedLocation"
               value="#{renderedLocation != null 
                        ? renderedLocation 
                        : true}"/>
-    
+
     <ui:param name="rendredHousing"
               value="#{rendredHousing != null ? rendredHousing : true}" /> 
     <!-- specify ui:param alternateLocationString to add string when no location string exists. --> 
@@ -43,10 +43,25 @@ See LICENSE file.
               filterMatchMode="contains">
         <ui:include src="templateDefaults/locatableItemLocationDetailsListColumnObject.xhtml"/>
     </p:column>
-    
+
     <p:column headerText="Housing"
               rendered="#{rendredHousing}">
-        <h:outputText value="#{locatableItemController.getHousingStringForItem(itemListObject)}" /> 
+        <ui:param name="housingItem" value="#{locatableItemController.getHousing(itemListObject)}"/> 
+
+        <div class="actionLink">
+            <p:commandLink id="#{entityTypeName}housingLink" 
+                           onclick="PF('loadingDialog').show()"
+                           rendered="#{housingItem != null}"
+                           action="#{entityController.prepareView(housingItem)}" 
+                           styleClass="ui-icon #{housingItem.domain.domainRepIcon} custom-icon-blue" 
+                           title="View housing Item"/>
+        </div>
+
+        <h:outputLabel id="housingOutputText"
+                       value="#{housingItem}"
+                       rendered="#{housingItem != null}" >
+            <p:tooltip for="housingOutputText" value="#{locatableItemController.getHousingStringForItem(itemListObject)}"/>
+        </h:outputLabel>
     </p:column>
 
 </ui:composition>

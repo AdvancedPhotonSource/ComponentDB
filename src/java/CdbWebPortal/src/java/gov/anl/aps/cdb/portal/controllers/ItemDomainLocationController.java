@@ -55,7 +55,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     private FilterViewItemHierarchySelection filterViewLocationSelection = null;
 
     private boolean renderLocationSelectionDialog = false;
-    private boolean renderLocationInplaceEditTieredMenu = false;   
+    private boolean renderLocationInplaceEditTieredMenu = false;
 
     @EJB
     DomainFacade domainFacade;
@@ -65,10 +65,23 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
     public ItemDomainLocationController() {
         super();
-    }   
+    }
 
-    public static ItemDomainLocationController getInstance() {        
-        return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);        
+    public static ItemDomainLocationController getInstance() {
+        return (ItemDomainLocationController) findDomainController(DOMAIN_NAME);
+    }
+
+    public List<ItemDomainInventory> getInventoryLocatatedHere() {
+        ItemDomainLocation current = getCurrent();
+
+        if (current.getInventoryLocatedHere() == null) {
+            ItemDomainLocationControllerUtility util = getControllerUtility();
+            List<ItemDomainInventory> itemsHere = util.getInventoryLocatedInLocationHierarchically(current, true); 
+            current.setInventoryLocatedHere(itemsHere);
+        }
+
+        return current.getInventoryLocatedHere();
+
     }
 
     @Override
@@ -100,51 +113,12 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     public boolean entityCanBeCreatedByUsers() {
         return false;
     }
-    
+
     @Override
     public boolean isShowCloneCreateItemElementsPlaceholdersOption() {
-        return false; 
+        return false;
     }
-
-    /**
-     * Get a list of items that are located somewhere down the hierarchy of
-     * another item.
-     *
-     * @param locationItem
-     * @return
-     */
-    public static List<ItemDomainInventory> getAllItemsLocatedInHierarchy(ItemDomainLocation locationItem) {
-        List<Item> itemList = new ArrayList<>();
-        return (List<ItemDomainInventory>) (List<?>) getAllItemsLocatedInHierarchy(itemList, locationItem);
-    }
-
-    /**
-     * Recursive helper method for fetching items located somewhere down in the
-     * hierarchy of another item.
-     *
-     * @param itemList
-     * @param locationItem
-     * @return
-     */
-    private static List<Item> getAllItemsLocatedInHierarchy(List<Item> itemList, ItemDomainLocation locationItem) {
-        String relationshipToLocation = ItemElementRelationshipTypeNames.itemLocation.getValue();
-        boolean isLocationItemFirst = false;
-        List<Item> itemsInLocation = ItemUtility.getItemsRelatedToItem(locationItem, relationshipToLocation, isLocationItemFirst);
-        itemList.addAll(itemsInLocation);
-
-        List<ItemElement> itemElementList = locationItem.getItemElementDisplayList();
-        if (itemElementList != null) {
-            for (ItemElement itemElement : itemElementList) {
-                ItemDomainLocation containedItem = (ItemDomainLocation) itemElement.getContainedItem();
-                if (containedItem != null) {
-                    getAllItemsLocatedInHierarchy(itemList, containedItem);
-                }
-            }
-        }
-
-        return itemList;
-    }
-
+    
     public TreeNode getLocationsWithInventoryItemsRootNode() {
         if (locationsWithInventoryItemsRootNode == null) {
             // Location with inventory items is now the same pointer as items with no parents...
@@ -298,11 +272,11 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
             List<ItemHierarchyCache> locationItemHierarchyCaches = instance.getLocationItemHierarchyCaches();
 
             ItemDomainLocation parentItem = getCurrent().getParentItem();
-            String parentItemName = "Top Level"; 
+            String parentItemName = "Top Level";
             List<Item> activeLocation = new ArrayList<>();
             if (parentItem != null) {
                 ItemDomainLocation ittrParentItem = parentItem;
-                parentItemName = parentItem.getName(); 
+                parentItemName = parentItem.getName();
                 while (ittrParentItem != null) {
                     activeLocation.add(ittrParentItem);
                     ittrParentItem = ittrParentItem.getParentItem();
@@ -325,14 +299,14 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
     public void updateParentForCurrent(Item newParent) {
         updateParentForItem(getCurrent(), newParent);
-        
+
         ItemDomainLocation current = getCurrent();
         DefaultMenuModel parentSelectionMenuModel = current.getParentSelectionMenuModel();
-        
+
         DefaultSubMenu topNode = (DefaultSubMenu) parentSelectionMenuModel.getElements().get(0);
         topNode.setLabel(newParent.getName());
     }
-    
+
     public void updateParentForItem(ItemDomainLocation item, Item newParentItem) {
         UserInfo user = SessionUtility.getUser();
         ItemDomainLocationControllerUtility controllerUtility = getControllerUtility();
@@ -342,7 +316,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
             SessionUtility.addErrorMessage("Error", ex.getMessage());
             logger.error(ex);
         }
-    }        
+    }
 
     @Override
     public boolean getEntityDisplayDerivedFromItem() {
@@ -412,7 +386,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return null;
-    }   
+    }
 
     @Override
     protected ItemDomainLocationFacade getEntityDbFacade() {
@@ -463,6 +437,6 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
 
     @Override
     protected ItemDomainLocationControllerUtility createControllerUtilityInstance() {
-        return new ItemDomainLocationControllerUtility(); 
+        return new ItemDomainLocationControllerUtility();
     }
 }

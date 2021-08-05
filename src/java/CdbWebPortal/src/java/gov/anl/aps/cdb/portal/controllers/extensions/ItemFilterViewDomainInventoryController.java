@@ -8,6 +8,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainInventoryController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainLocationController;
 import gov.anl.aps.cdb.portal.controllers.ItemProjectController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainLocationControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainLocationFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
@@ -92,36 +93,14 @@ public class ItemFilterViewDomainInventoryController extends ItemFilterViewContr
         ItemDomainLocationController locationController = ItemDomainLocationController.getInstance();
         ItemDomainLocation selection = locationController.getFilterViewLocationLastSelection();
         if (isFilterViewLocationDataModelNeedReloading(selection)) {
-            List<ItemDomainInventory> itemList = new ArrayList<>();
-            ItemProject currentItemProject = ItemProjectController.getSelectedItemProject();
-
-            // Update the location entity             
-            if (selection != null) {
-                selection = itemDomainLocationFacade.find(selection.getId());
-            }
-            if (selection != null) {
-                itemList.addAll(ItemDomainLocationController.getAllItemsLocatedInHierarchy(selection));
-                List<Item> itemsToRemove = new ArrayList<>();
-                for (Item item : itemList) {
-                    if (item instanceof ItemDomainInventory == false) {
-                        itemsToRemove.add(item);
-                        continue;
-                    }
-                    
-                    if (currentItemProject != null) {
-                        if (item.getItemProjectList().contains(currentItemProject)) {
-                            continue;
-                        }
-                        itemsToRemove.add(item);
-                    }
-                }
-                itemList.removeAll(itemsToRemove);
-
-            } else if (currentItemProject != null) {
-                itemList = getItemDbFacade().findByFilterViewItemProjectAttributes(currentItemProject, getDefaultDomainName());
-            }
-            filterViewLocationDataModel = createFilterViewListDataModel((List<Item>) (List<?>) itemList);
             updateFilterViewLocationDataModelLoadedStatus(selection);
+            List<ItemDomainInventory> itemList = new ArrayList<>();
+            
+            if (selection != null) {
+                ItemDomainLocationControllerUtility util = new ItemDomainLocationControllerUtility(); 
+                itemList = util.getInventoryLocatedInLocationHierarchically(selection, false);
+            }
+            filterViewLocationDataModel = createFilterViewListDataModel((List<Item>) (List<?>) itemList);            
         }
 
         return filterViewLocationDataModel;
