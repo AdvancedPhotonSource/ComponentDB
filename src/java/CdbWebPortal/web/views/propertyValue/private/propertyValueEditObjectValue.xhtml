@@ -47,7 +47,7 @@ See LICENSE file.
                     </p:column>
                     <p:commandButton value="Upload Image"
                                      oncomplete="PF('propertyValueImageUploadDialogWidget').show()"
-                                     icon="ui-icon-circle-arrow-n"
+                                     icon="fa fa-upload"
                                      update="@this">
                         <f:setPropertyActionListener target="#{propertyValueController.current}"
                                                      value="#{propertyValueObject}" />
@@ -71,7 +71,7 @@ See LICENSE file.
                 <p:outputPanel rendered="#{propertyValueController.displayDocumentValue(propertyValueObject)}"
                                styleClass="inlineOutputPanel">
                     <p:commandButton value="Upload Document" 
-                                     icon="ui-icon-circle-arrow-n" 
+                                     icon="fa fa-upload" 
                                      oncomplete="PF('propertyValueDocumentUploadDialogWidget').show()"
                                      update="@this">
                         <f:setPropertyActionListener target="#{propertyValueController.current}"

@@ -10,6 +10,8 @@ See LICENSE file.
 
     <p:dataTable id="cableConnectorsListDataTable"
                  value="#{entityController.unmappedConnectorsForCurrent}"
+                 sortMode="single"
+                 stripedRows="true"
                  var="connector">
 
         <ui:include src="itemDomainCableDesignConnectorListObject.xhtml" /> 

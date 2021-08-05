@@ -16,6 +16,8 @@ See LICENSE file.
                  paginator="true" 
                  paginatorPosition="bottom"
                  rows="#{resources.DialogDataTableNumberOfRows}"
+                 stripedRows="true"
+                 sortMode="single"
                  paginatorAlwaysVisible="false"
                  emptyMessage="No drawing revisions found.">
 
@@ -30,7 +32,7 @@ See LICENSE file.
         <p:column sortBy="#{pdmLinkDrawingRevisionObject.iteration}" headerText="Iteration">
             <h:outputText value="#{pdmLinkDrawingRevisionObject.iteration}"/>
         </p:column>
-        
+
         <p:column sortBy="#{pdmLinkDrawingRevisionObject.dateModified}" headerText="Date Last Modified">
             <h:outputText value="#{pdmLinkDrawingRevisionObject.dateModified}"/> 
         </p:column>
@@ -41,6 +43,6 @@ See LICENSE file.
             </h:outputLink> 
         </p:column>
     </p:dataTable>
-    
+
 </ui:composition>
 

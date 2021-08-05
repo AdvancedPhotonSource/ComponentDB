@@ -20,6 +20,8 @@ See LICENSE file.
 
         <p:outputPanel rendered="#{entityController.currentStatusPropertyValue != null}">
             <p:dataTable value="#{propertyValueHistoryController.selectedPropertyValueHistoryList}"
+                         sortMode="single"
+                         stripedRows="true"
                          var="statusHistory" >
                 <p:column headerText="Status">
                     <h:outputText value="#{statusHistory.value}" />

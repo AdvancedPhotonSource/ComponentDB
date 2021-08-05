@@ -41,8 +41,8 @@ See LICENSE file.
                     <ui:include src="../../item/private/itemSelectDataTable.xhtml">
                         <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
                         <ui:param name="selectDataModel" value="#{billOfMaterialItem.existingInventoryItemSelectDataModel}" />
-                        <ui:param name="selectionValue" value="#{billOfMaterialItem.inventoryItem}" />
-                        <ui:param name="selectionTarget" value="#{billOfMaterialItem.inventoryItem}" />
+                        <ui:param name="overrideSelectionValue" value="#{true}" />
+                        <ui:param name="selectionValue" value="#{billOfMaterialItem.inventoryItem}" />                        
                         <ui:param name="selectionController" value="#{itemDomainInventoryController}" />
                         <ui:param name="updateTarget" value="#{fullUpateTarget}" />
                     </ui:include>
@@ -74,11 +74,11 @@ See LICENSE file.
             <p:outputPanel rendered="#{!itemDomainInventoryController.isRenderBomOptionalUnspecified(billOfMaterialItem)}">                
                 <ui:param name="selectedBOMItemElementInDb"
                           value="#{itemDomainInventoryController.isBOMInventoryItemElementInDB(billOfMaterialItem)}" />
-                <p:commandButton value="Remove Optional Part" icon="ui-icon-close"
+                <p:commandButton value="Remove Optional Part" icon="fa fa-close"
                                  onclick="removeOptionalPart()"
                                  rendered="#{!selectedBOMItemElementInDb}"/>
                 
-                <p:commandButton value="Remove Optional Part" icon="ui-icon-trash"
+                <p:commandButton value="Remove Optional Part" icon="fa fa-trash"
                                  onclick="PF('removeOptionalPartConfirmDialogWidget').show()"
                                  rendered="#{selectedBOMItemElementInDb}"/>
                 

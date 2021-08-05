@@ -21,13 +21,13 @@ See LICENSE file.
                              onstart="PF('loadingDialog').show(); PF('#{rootViewId}').back();"
                              oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
                              disabled="#{wizardController.disableButtonPrev}"
-                             icon="ui-icon-arrowthick-1-w"/>
+                             icon="fa fa-arrow-left"/>
 
             <p:commandButton id="#{rootViewId}CancelButton"
                              value="Cancel"
                              alt="Cancel"
                              action="#{wizardController[cancelAction]()}"
-                             icon="fa fa-times-circle-o"
+                             icon="fa fa-close"
                              rendered="true"
                              immediate="true"
                              onstart="PF('loadingDialog').show();"
@@ -46,7 +46,7 @@ See LICENSE file.
                              value="Finish"
                              alt="Finish"
                              action="#{wizardController[finishAction]()}"
-                             icon="ui-icon-check"
+                             icon="fa fa-check"
                              rendered="true"
                              immediate="true"
                              onstart="PF('loadingDialog').show();"
@@ -64,7 +64,7 @@ See LICENSE file.
                              onstart="PF('loadingDialog').show(); PF('#{rootViewId}').next();"
                              oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
                              disabled="#{wizardController.disableButtonNext}"
-                             icon="ui-icon-arrowthick-1-e"
+                             icon="fa fa-arrow-right"
                              iconPos="right"/>
 
         </div>

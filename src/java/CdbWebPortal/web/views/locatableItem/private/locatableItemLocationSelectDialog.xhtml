@@ -19,8 +19,11 @@ See LICENSE file.
               header="Select Location for inventory item."
               modal="true">
         
-        <p:outputPanel rendered="#{itemDomainLocationController.renderLocationSelectionDialog}">
-            <ui:include src="locatableItemLocationSelectTreeSelection.xhtml" /> 
+        <p:outputPanel rendered="#{itemDomainLocationController.renderLocationSelectionDialog}">            
+            <ui:include src="locatableItemLocationSelectTreeSelection.xhtml" > 
+                <ui:param name="locatableItemLocationSelectTreeRendered" 
+                          value="#{itemDomainLocationController.renderLocationSelectionDialog}" /> 
+            </ui:include>
         </p:outputPanel>
 
         <f:facet name="footer">

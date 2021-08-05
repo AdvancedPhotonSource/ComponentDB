@@ -59,7 +59,7 @@ See LICENSE file.
                              id="#{customizeDisplayDialogId}CloseButton"
                              rendered="#{!settingController.displayCurrentSettingOptions}"
                              oncomplete="PF('#{customizeDisplayDialogId}Widget').hide(); #{customizeDisplayOnComplete}" 
-                             icon="ui-icon-arrowreturnthick-1-w"/>
+                             icon="fa fa-close"/>
             <ui:param name="revertToDefaultLabel"
                       value="#{loginController.loggedIn ? 'Back to user view' : 'Revert to default'}" />
             <p:commandButton value="#{revertToDefaultLabel}" alt="#{revertToDefaultLabel}" 
@@ -67,7 +67,7 @@ See LICENSE file.
                              rendered="#{!settingController.displayCurrentSettingOptions}"
                              oncomplete="PF('#{customizeDisplayDialogId}Widget').hide();"
                              action="#{settingController.setUserGroupForSettingsView(null)}"                             
-                             icon="ui-icon-refresh"/>
+                             icon="fa fa-refresh"/>
             <p:commandButton value="Done" alt="Done" 
                              id="#{customizeDisplayDialogId}DoneButton"
                              rendered="#{settingController.displayCurrentSettingOptions

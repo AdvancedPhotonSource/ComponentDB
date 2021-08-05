@@ -11,6 +11,8 @@ See LICENSE file.
     <p:dataTable id="itemCategorySearchDataTable" 
                  var="searchResultObject" 
                  value="#{itemCategoryController.searchResultList}" 
+                 sortMode="single"
+                 stripedRows="true"
                  paginator="true" 
                  paginatorAlwaysVisible="false" 
                  rows="#{searchController.searchSettings.displayNumberOfItemsPerPage}" 

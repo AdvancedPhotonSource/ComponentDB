@@ -18,14 +18,14 @@ See LICENSE file.
             <div class="pageTitle">
                 <h1>System Sessions</h1>
             </div>
-            
+
             <p:poll interval="5"
                     update="@form" /> 
-            
+
             <p:remoteCommand autoRun="true"
                              action="#{sessionController.updateStats()}"
                              update="sessionStats" /> 
-            
+
             <p:panelGrid columns="2"
                          id="sessionStats">
                 <h:outputLabel value="Total Active Sessions:"/>
@@ -37,7 +37,7 @@ See LICENSE file.
                 <h:outputLabel value="Newest Active Session:"/>
                 <h:outputText value="#{sessionController.newestActiveSession}"/>
             </p:panelGrid>
-                                  
+
             <br/>
             <p:commandButton value="Clear Invalidated"
                              action="#{sessionController.clearInvalidated()}"
@@ -46,8 +46,10 @@ See LICENSE file.
             <br/>
 
             <p:dataTable value="#{sessionController.allSessions}"
+                         sortMode="single"
+                         stripedRows="true"
                          var="sessionObject">                
-                
+
                 <p:column headerText="Created Time">
                     <h:outputText value="#{sessionController.getSessionTime(sessionObject)}"/> 
                 </p:column>
@@ -55,11 +57,11 @@ See LICENSE file.
                 <p:column headerText="User">
                     <h:outputText value="#{sessionController.getUsername(sessionObject)}"/> 
                 </p:column>
-                
+
                 <p:column headerText="Browser Last Connected">
                     <h:outputText value="#{sessionController.browserLastConnected(sessionObject)}" />                    
                 </p:column>
-                
+
                 <p:column headerText="Actions">
                     <p:commandLink action="#{sessionController.invalidateSession(sessionObject)}"
                                    styleClass="fa fa-link-icon fa-user-times"

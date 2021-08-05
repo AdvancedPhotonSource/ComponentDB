@@ -27,6 +27,8 @@ See LICENSE file.
                            mode="native"
                            rendered="#{propertyValueController.displayShowMetadataForPropertyValue(propertyValueBaseObject)}">
                 <p:dataTable id="#{entityTypeName}PropertyValueMetadataListDataTable"
+                             sortMode="single"
+                 stripedRows="true"
                              value="#{propertyValueBaseObject.propertyMetadataBaseList}"                     
                              var="metadata">
                     <p:column headerText="Key"

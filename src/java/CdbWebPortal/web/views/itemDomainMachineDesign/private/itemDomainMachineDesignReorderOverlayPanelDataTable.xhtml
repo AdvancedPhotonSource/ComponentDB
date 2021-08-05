@@ -7,9 +7,10 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui">  
 
-   
+
     <p:panel header="Sort elements for machine element: #{currentObject.name}">
-        <p:dataTable
+        <p:dataTable sortMode="single"
+                     stripedRows="true"
                      value="#{elementList}"
                      var="itemElementListObject"
                      styleClass="leftAlignedText"                             

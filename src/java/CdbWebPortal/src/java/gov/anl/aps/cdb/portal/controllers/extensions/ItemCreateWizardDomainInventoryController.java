@@ -86,7 +86,7 @@ public class ItemCreateWizardDomainInventoryController extends ItemCreateWizardC
             String menuItemDisplayValue = getCreateItemWizardMenuItemCustomValue(ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP);
             menuItem = createMenuItemForCreateWizardSteps(menuItemDisplayValue, ITEM_CREATE_WIZARD_ITEM_ELEMENT_CREATE_STEP);
 
-            createItemWizardStepsMenuModel.addElement(menuItem);
+            createItemWizardStepsMenuModel.getElements().add(menuItem);
 
         }
 
