@@ -42,7 +42,7 @@ cd $CDB_SUPPORT_DIR
 echo "Building support in $PWD"
 
 execute $CDB_SUPPORT_DIR/bin/clean_all.sh
-execute $CDB_SUPPORT_DIR/bin/install_all_python.sh
+execute $CDB_SUPPORT_DIR/bin/install_all_portal.sh
 
 if [ ! -d $CDB_DATA_DIR ]; then
     echo "Creating data directories in $CDB_DATA_DIR"
