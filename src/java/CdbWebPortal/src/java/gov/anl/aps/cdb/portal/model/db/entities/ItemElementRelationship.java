@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model.db.entities;
 
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementRelationshipControllerUtility;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +105,10 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     @JoinColumn(name = "resource_type_id", referencedColumnName = "id")
     @ManyToOne
     private ResourceType resourceType;
+    
+    public static String VALUE_LABEL_PRIMARY_CABLE_CONN = "PRI";
+    public static String VALUE_LABEL_DETAIL_CABLE_CONN = "DET";
+    private static String PRIMARY_CABLE_CONN_INDICATOR = "*";
 
     public ItemElementRelationship() {
     }
@@ -283,6 +288,32 @@ public class ItemElementRelationship extends CdbEntity implements Serializable {
     @Override
     public String toString() {
         return "gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship[ id=" + id + " ]";
+    }
+    
+    @Override
+    public ItemElementRelationshipControllerUtility getControllerUtility() {
+        return new ItemElementRelationshipControllerUtility(); 
+    }
+    
+    // convenience method for cable relationship type
+    public boolean isPrimaryCableConnection() {
+        return VALUE_LABEL_PRIMARY_CABLE_CONN.equals(getLabel());
+    }
+    
+    public String getCableEndPrimaryIndicator() {
+        if (isPrimaryCableConnection()) {
+            return PRIMARY_CABLE_CONN_INDICATOR;
+        } else {
+            return "";
+        }
+    }
+    
+    public String getCableEndPrimarySortValue() {
+        if (isPrimaryCableConnection()) {
+            return "1";
+        } else {
+            return "2";
+        }
     }
     
 }

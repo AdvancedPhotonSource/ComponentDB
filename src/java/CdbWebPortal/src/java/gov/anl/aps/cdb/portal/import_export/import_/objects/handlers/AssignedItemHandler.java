@@ -9,7 +9,6 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainCatalogController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.MachineImportHelperCommon;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.RefObjectManager;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
-import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCatalogFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -18,8 +17,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import java.io.IOException;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.poi.ss.usermodel.Row;
 
 /**
@@ -32,7 +29,7 @@ import org.apache.poi.ss.usermodel.Row;
  * a particular controller instance to use for the lookup. The query we need
  * here is on the ItemFacade.
  */
-public class AssignedItemHandler extends SingleColumnInputHandler {
+public class AssignedItemHandler extends RefInputHandler {
 
     public AssignedItemHandler() {
         super(MachineImportHelperCommon.HEADER_ASSIGNED_ITEM);
@@ -72,8 +69,7 @@ public class AssignedItemHandler extends SingleColumnInputHandler {
                     validString = "Exception parsing attribute map for column: " + getColumnName();
                 }
 
-                RefObjectManager mgr = RefInputHandler.getObjectManager(
-                        ItemDomainCatalogController.getInstance(), null);
+                RefObjectManager mgr = getObjectManager(ItemDomainCatalogController.getInstance(), null);
                 CdbEntity entity = null;
                 try {
                     entity = mgr.getObjectWithAttributes(attributeMap);

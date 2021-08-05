@@ -31,6 +31,7 @@ public abstract class LocatableItem extends Item {
 
     // Needed to determine whenever location was removed in edit process. 
     private transient Boolean originalLocationLoaded = false;
+    private transient Boolean membershipLoaded = false; 
     
     public void resetLocationVariables() {
         locationTree = null;
@@ -141,6 +142,14 @@ public abstract class LocatableItem extends Item {
 
     public void setMembershipLocation(Item membershipLocation) {
         this.membershipLocation = membershipLocation;
+    }
+
+    public Boolean getMembershipLoaded() {
+        return membershipLoaded;
+    }
+
+    public void setMembershipLoaded(Boolean membershipLoaded) {
+        this.membershipLoaded = membershipLoaded;
     }
 
     @JsonIgnore

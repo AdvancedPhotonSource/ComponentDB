@@ -31,39 +31,4 @@ public abstract class CdbDomainEntityControllerUtility<EntityType extends CdbDom
         return logEntry; 
     }
 
-    public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity, PropertyType propertyType) {
-        return preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyType.getDefaultValue(), null);
-    }
-
-    public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity,
-            PropertyType propertyType, String propertyValueString, String tag) {
-        UserInfo lastModifiedByUser = (UserInfo) SessionUtility.getUser();
-        return preparePropertyTypeValueAdd(cdbDomainEntity, propertyType, propertyValueString, tag, lastModifiedByUser);
-    }
-
-    public PropertyValue preparePropertyTypeValueAdd(EntityType cdbDomainEntity,
-            PropertyType propertyType, String propertyValueString, String tag,
-            UserInfo updatedByUser) {
-        Date lastModifiedOnDateTime = new Date();
-
-        PropertyValue propertyValue = new PropertyValue();
-        propertyValue.setPropertyType(propertyType);
-        propertyValue.setValue(propertyValueString);
-        propertyValue.setUnits(propertyType.getDefaultUnits());
-        cdbDomainEntity.addPropertyValueToPropertyValueList(propertyValue);
-        propertyValue.setEnteredByUser(updatedByUser);
-        propertyValue.setEnteredOnDateTime(lastModifiedOnDateTime);
-        if (tag != null) {
-            propertyValue.setTag(tag);
-        }
-
-        cdbDomainEntity.resetPropertyValueLists();
-
-        // Get method called by GUI populates metadata
-        // Needed for multi-edit or API to also populate metadata
-        propertyValue.getPropertyValueMetadataList();
-
-        return propertyValue;
-    }
-
 }

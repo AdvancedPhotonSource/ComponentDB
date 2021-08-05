@@ -24,7 +24,7 @@ import org.apache.poi.ss.usermodel.Row;
  * column that otherwise expects location item id's. We could use the standard
  * IdRef handler if we didn't need to worry about "parent".
  */
-public class LocationHandler extends SingleColumnInputHandler {
+public class LocationHandler extends RefInputHandler {
 
     public LocationHandler() {
         super(MachineImportHelperCommon.HEADER_LOCATION);
@@ -54,7 +54,7 @@ public class LocationHandler extends SingleColumnInputHandler {
                     // lookup by name
                     
                     if (parsedValue.length() > 1) {
-                        RefObjectManager mgr = RefInputHandler.getObjectManager(controller, null);
+                        RefObjectManager mgr = getObjectManager(controller, null);
                         CdbEntity entity = null;
                         String name = parsedValue.substring(1);
                         try {

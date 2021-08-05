@@ -17,6 +17,11 @@ See LICENSE file.
         </ui:include>
     </p:column>
 
+    <p:column headerText="Cable End"
+              rendered="#{entityController.entityDisplayConnectorCableEndDesignation}">
+        #{itemConnectorObject.connector.cableEndDesignation}
+    </p:column>
+    
     <p:column headerText="Type"
               exportFunction="#{facesUtility.getToString(itemConnectorObject.connector.connectorType)}">
         #{itemConnectorObject.connector.connectorType}
@@ -29,7 +34,6 @@ See LICENSE file.
               exportFunction="#{facesUtility.getToString(portGender)}">
         #{portGender}
     </p:column>
-
 
 </ui:composition>
 

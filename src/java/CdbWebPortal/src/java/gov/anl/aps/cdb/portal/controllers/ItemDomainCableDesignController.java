@@ -16,6 +16,7 @@ import gov.anl.aps.cdb.portal.model.ItemDomainCableDesignLazyDataModel;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemCategory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
@@ -30,17 +31,19 @@ import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.CableDesignConnectionListObject;
 import gov.anl.aps.cdb.portal.view.objects.DomainImportExportInfo;
 import gov.anl.aps.cdb.portal.view.objects.ImportExportFormatInfo;
-import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
+import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.DataModel;
 import javax.inject.Named;
 import org.primefaces.event.NodeSelectEvent;
+import org.primefaces.event.NodeUnselectEvent;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.TreeNode;
 
@@ -57,9 +60,163 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return new ItemDomainCableDesignControllerUtility(); 
     }
 
+    public class EndpointDialog {
+
+        private Boolean disableButtonSave = true;
+        private ItemElementRelationship cableRelationship = null;
+        private Item itemEndpoint = null;
+        private ItemDomainMachineDesignTreeNode valueModelTree = null;
+        private TreeNode selectionModelEndpoint = null;
+        
+        public Boolean getDisableButtonSave() {
+            return disableButtonSave;
+        }
+
+        public void setDisableButtonSave(Boolean disableButtonSave) {
+            this.disableButtonSave = disableButtonSave;
+        }
+        
+        public ItemElementRelationship getCableRelationship() {
+            return cableRelationship;
+        }
+        
+        public void setCableRelationship(ItemElementRelationship cableRelationship) {
+            this.cableRelationship = cableRelationship;
+            setItemEndpoint(cableRelationship.getFirstItemElement().getParentItem());
+        }
+
+        public Item getItemEndpoint() {
+            return itemEndpoint;
+        }
+
+        public void setItemEndpoint(Item itemEndpoint) {
+            this.itemEndpoint = itemEndpoint;
+            expandToSpecificMachineDesignItem((ItemDomainMachineDesign) itemEndpoint);
+        }
+
+        public String getItemEndpointString() {
+            if (itemEndpoint == null) {
+                return "";
+            } else {
+                return itemEndpoint.getName();
+            }
+        }
+
+        public ItemDomainMachineDesignTreeNode getValueModelTree() {
+            if (valueModelTree == null) {
+                ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
+                valueModelTree = controller.loadMachineDesignRootTreeNode();
+            }
+            return valueModelTree;
+        }
+
+        public void setValueModelTree(ItemDomainMachineDesignTreeNode valueModelTree) {
+            this.valueModelTree = valueModelTree;
+        }
+
+        public TreeNode getSelectionModelEndpoint() {
+            return selectionModelEndpoint;
+        }
+
+        public void setSelectionModelEndpoint(TreeNode selectionModelEndpoint) {
+            this.selectionModelEndpoint = selectionModelEndpoint;
+        }
+
+        /**
+         * Determines whether endpoint changed, and call update if it did to
+         * save the change.
+         */
+        public String save(String remoteCommandSuccess) {
+
+            Item selectedItemEndpoint
+                    = ((ItemElement) (selectionModelEndpoint.getData())).getContainedItem();
+
+            // endpoint changed, update cable and save
+            if (!selectedItemEndpoint.equals(getItemEndpoint())) {
+                
+                getCurrent().updateCableRelationship(cableRelationship, itemEndpoint, null, null, null);
+
+                String updateResult = update();
+
+                // An error occured, reload the page with correct information. 
+                if (updateResult == null) {
+                    reloadCurrent();
+                    return view();
+                }
+
+                refreshConnectionListForCurrent();
+
+                SessionUtility.executeRemoteCommand(remoteCommandSuccess);
+            }
+            return null;
+        }
+
+        public void cancel() {
+        }
+
+        /**
+         * Handles select events generated by the machine design tree table
+         * component. Must call client side remoteCommand to update button state
+         * from oncomplete attribute for this event tag.
+         */
+        public void selectListenerEndpoint(NodeSelectEvent event) {
+            setEnablement();
+        }
+
+        public void actionListenerSaveSuccess() {
+        }
+
+        /**
+         * Resets the dialog components when closing.
+         */
+        public void reset() {
+            setSelectionModelEndpoint(null);
+            valueModelTree = null;
+            setEnablement();
+        }
+
+        /**
+         * Enables save button when a valid selection, different from the
+         * original endpoint, is made.
+         */
+        private void setEnablement() {
+
+            if (selectionModelEndpoint == null) {
+
+                setDisableButtonSave((Boolean) true);
+
+            } else {
+
+                Item selectedItemEndpoint
+                        = ((ItemElement) (selectionModelEndpoint.getData())).getContainedItem();
+
+                if (selectedItemEndpoint.equals(getItemEndpoint())) {
+                    setDisableButtonSave((Boolean) true);
+                } else {
+                    setDisableButtonSave((Boolean) false);
+                }
+            }
+        }
+
+        private void expandToSpecificMachineDesignItem(ItemDomainMachineDesign item) {
+
+            ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode = getValueModelTree();
+
+            if (selectionModelEndpoint != null) {
+                selectionModelEndpoint.setSelected(false);
+                selectionModelEndpoint = null;
+            }
+
+            TreeNode selectedNode = ItemDomainMachineDesignController.
+                    expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, item);
+            selectionModelEndpoint = selectedNode;
+        }
+
+    }
+
     public class ConnectionEditDialog {
         
-        protected static final String DEFAULT_MESSAGE = "Select endpoint item, and optionally cable and endpoint connectors.";
+        protected static final String DEFAULT_MESSAGE = "Cable end and device or device port are required. Cable connector is optional.";
 
         private ItemElementRelationship cableRelationship;
         private Boolean disableButtonSave = true;
@@ -75,6 +232,67 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         private List<String> availableCableConnectorNames;
         private String selectedCableConnectorName;
         private String message;
+        private String warningMessage = null;
+        protected String cableEndDesignation = null;
+        boolean selectionMade = false;
+        
+        public String getMenuValueEnd1() {
+            return CdbEntity.VALUE_CABLE_END_1;
+        }
+
+        public String getMenuValueEnd2() {
+            return CdbEntity.VALUE_CABLE_END_2;
+        }
+        
+        public String getMenuLabelEnd1() {
+            return CdbEntity.LABEL_CABLE_END_1;
+        }
+
+        public String getMenuLabelEnd2() {
+            return CdbEntity.LABEL_CABLE_END_2;
+        }
+        
+        public String getCableEndDesignation() {
+            return cableEndDesignation;
+        }
+        
+        public void setCableEndDesignation(String cableEndDesignation) {
+            this.cableEndDesignation = cableEndDesignation;
+        }
+        
+        public void selectListenerCableEnd(AjaxBehaviorEvent event) {
+            selectionMade = true;
+            updateCableConnectorMenu();
+            setEnablement();
+        }
+
+        public boolean isRenderCableEndDesignation() {
+            return true;
+        }
+        
+        public boolean isRenderCableEndDesignationLabelDetail() {
+            if (getCableRelationship() != null) {
+                return (!getCableRelationship().isPrimaryCableConnection());  
+            } else {
+                return true;
+            }
+        }
+        
+        public boolean isRenderCableEndDesignationLabelPrimary() {
+            if (getCableRelationship() != null) {
+                return getCableRelationship().isPrimaryCableConnection();  
+            } else {
+                return false;
+            }
+        }
+        
+        public boolean isDisableCableEndDesignation() {
+            if (getCableRelationship() != null) {
+                return getCableRelationship().isPrimaryCableConnection();  
+            } else {
+                return false;
+            }
+        }
 
         public ItemElementRelationship getCableRelationship() {
             return cableRelationship;
@@ -136,10 +354,16 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
          * from oncomplete attribute for this event tag.
          */
         public void selectListenerEndpoint(NodeSelectEvent event) {
+            selectionMade = true;
             setSelectedEndpointAndConnector();
             setEnablement();
         }
-
+        
+        public void selectListenerEndpoint(NodeUnselectEvent event) {
+            setSelectedEndpointAndConnector();
+            setEnablement();
+        }
+        
         public ItemConnector getOrigMdConnector() {
             return origMdConnector;
         }
@@ -154,6 +378,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         public void setOrigCableConnector(ItemConnector origCableConnector) {
             this.origCableConnector = origCableConnector;
+            setSelectedCableConnector(origCableConnector);
         }
 
         public ItemConnector getSelectedCableConnector() {
@@ -164,38 +389,48 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             this.selectedCableConnector = selectedCableConnector;
         }
 
-        /**
-         * Prepares list of available cable connectors to use as model for menu,
-         * and map for looking up connector by name when menu selection changes.
-         * This is called in preparing the dialog. This is to work around issue
-         * where newly cloned connector doesn't have an id, which causes an 
-         * exception in the framework code trying to look up connector by id
-         * when the menu selection changes.
-        */
-        public void setAvailableCableConnectors(
-                List<ItemConnector> availableCableConnectors,
-                ItemConnector currentConnector) {
+        private void updateCableConnectorMenu() {
             
             availableCableConnectorNames = new ArrayList<>();
             cableConnectorNameMap = new HashMap<>();
-            for (ItemConnector connector : availableCableConnectors) {
-                String connectorName = connector.getConnector().toString();
-                availableCableConnectorNames.add(connectorName);
-                cableConnectorNameMap.put(connectorName, connector);
-            }
             
-            // set selected item and original item
-            setOrigCableConnector(currentConnector);
-            if (currentConnector != null) {
-                String currentConnectorName = currentConnector.getConnector().toString();
-                setSelectedCableConnectorName(currentConnectorName);
+            // null out selection and return empty list of conneectors if cable end not selected
+            if ((cableEndDesignation == null) || cableEndDesignation.isEmpty()) {
+                selectedCableConnector = null;
+                
             } else {
-                setSelectedCableConnectorName("");
-            }
             
+                // get list of unmapped connectors, plus connector for this connection if any
+                List<ItemConnector> availableConnectors = getUnmappedConnectorsForCurrent(cableEndDesignation);
+                if ((origCableConnector != null) && 
+                        (origCableConnector.getConnector().getCableEndDesignation().equals(cableEndDesignation))) {
+                    availableConnectors.add(origCableConnector);
+                }
+
+                for (ItemConnector connector : availableConnectors) {
+                    String connectorName = connector.getConnector().toString();
+                    availableCableConnectorNames.add(connectorName);
+                    cableConnectorNameMap.put(connectorName, connector);
+                }
+
+                // set selected item and original item
+                if (selectedCableConnector != null) {
+                    String currentConnectorName = selectedCableConnector.getConnector().toString();
+                    setSelectedCableConnectorName(currentConnectorName);
+                } else {
+                    setSelectedCableConnectorName("");
+                }
+            }
         }
 
         public List<String> getAvailableCableConnectorNames() {
+            if (availableCableConnectorNames == null) {
+                if (cableEndDesignation != null) {
+                    updateCableConnectorMenu();
+                } else {
+                    return new ArrayList<>();
+                }
+            }
             return availableCableConnectorNames;
         }
 
@@ -208,6 +443,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         }
 
         public void selectListenerConnector(SelectEvent event){
+            selectionMade = true;
             if ((selectedCableConnectorName != null) && (!selectedCableConnectorName.isBlank()))  {
                 setSelectedCableConnector(cableConnectorNameMap.get(selectedCableConnectorName));
             } else {
@@ -223,9 +459,34 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         public void setMessage(String message) {
             this.message = message;
         }
+        
+        public String getWarningMessage() {
+            return warningMessage;
+        }
 
         public void setWarningMessage(String message) {
-            this.message = "<span style=\"color:red\">" + message + "</span>";
+            this.warningMessage = "<span style=\"color:red\">" + message + "</span>";
+        }
+        
+        protected void setMessages(List<String> warnings, List<String> messages) {
+            
+            if (selectionMade) {
+                String warningMsg = "";
+                for (String warning : warnings) {
+                    warningMsg = warningMsg + warning + " ";
+                }
+                setWarningMessage(warningMsg);
+            }
+
+            String msg = "";
+            for (String message : messages) {
+                msg = msg + message + " ";
+            }
+            if (msg.isEmpty()) {
+                setMessage(DEFAULT_MESSAGE);
+            } else {
+                setMessage(msg);
+            }
         }
 
         private void setSelectedEndpointAndConnector() {
@@ -256,7 +517,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             availableCableConnectorNames = null;
             cableConnectorNameMap = null;
             setSelectedCableConnectorName(null);
+            cableEndDesignation = null;
             setMessage(DEFAULT_MESSAGE);
+            warningMessage = null;
             setEnablement();            
         }
 
@@ -296,9 +559,20 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
          * Enables save button when a valid selection based on selections.
          */
         protected void setEnablement() {
+            
+            List<String> messages = new ArrayList<>();
+            List<String> warnings = new ArrayList<>();
+            boolean disableSaveButton = false;            
+            
+            // check cable end
+            if (cableEndDesignation == null) {
+                warnings.add("Cable End is required.");
+                disableSaveButton = true;
+            }            
 
+            // check device/port
             if (selectedMdTreeNode == null) {
-
+                warnings.add("Device or device port is required.");
                 setDisableButtonSave((Boolean) true);
 
             } else {
@@ -310,10 +584,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                         && (((selectedCableConnector == null) && (getOrigCableConnector() == null)) || ((selectedCableConnector != null) && (selectedCableConnector.equals(getOrigCableConnector()))))) {
                     
                     setDisableButtonSave((Boolean) true);
-                    setMessage(DEFAULT_MESSAGE);
                     
                 } else {
-                    boolean disableSaveButton = false;
                     if ((selectedMdConnector != null) && (!selectedMdConnector.equals(origMdConnector))) {
                         boolean hasCableRelationships = false;
                         List<ItemElementRelationship> ierList
@@ -335,38 +607,47 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                         }
                         if (hasCableRelationships) {
                             disableSaveButton = true;
-                            setWarningMessage("Selected conector is already in use for cable connection.");
+                            warnings.add("Selected device port is already in use for cable connection.");
                         } else {
-                            setMessage("Selected endpoint item and connector are valid.");
+                            messages.add("Selected device and device port are valid.");
                         }
                     } else if ((selectedMdItem != null) && (!selectedMdItem.equals(origMdItem))) {
-                            setMessage("Selected endpoint item is valid, no endpoint connector selected.");
+                            messages.add("Selected device is valid, optional device port not selected.");
                     } else if (((selectedCableConnector == null) && (getOrigCableConnector() != null)) || ((selectedCableConnector != null) && (!selectedCableConnector.equals(getOrigCableConnector())))) {
-                        setMessage(DEFAULT_MESSAGE);
                         disableSaveButton = false;
                     } else {
-                        setMessage(DEFAULT_MESSAGE);
                         disableSaveButton = true;
                     }
-                    
-                    setDisableButtonSave((Boolean) disableSaveButton);
                 }
             }
+
+            setDisableButtonSave((Boolean) disableSaveButton);
+            setMessages(warnings, messages);
+        }
+        
+        protected void updateItem(String remoteCommandSuccess) {
+            String updateResult = update();
+            refreshConnectionListForCurrent();
+            SessionUtility.executeRemoteCommand(remoteCommandSuccess);
+
         }
 
         public String save(String remoteCommandSuccess) {
+            
+            // make sure we don't change cable end for primary connection
+            String cableEnd = null;
+            if (!getCableRelationship().isPrimaryCableConnection()) {
+                cableEnd = cableEndDesignation;
+            }
 
             getCurrent().updateCableRelationship(
                     getCableRelationship(),
                     selectedMdItem,
                     selectedMdConnector,
-                    getSelectedCableConnector());
-
-            String updateResult = update();
-
-            refreshConnectionListForCurrent();
-
-            SessionUtility.executeRemoteCommand(remoteCommandSuccess);
+                    getSelectedCableConnector(),
+                    cableEnd);
+            
+            updateItem(remoteCommandSuccess);
 
             return null;
         }
@@ -386,14 +667,23 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         @Override
         protected void setEnablement() {
 
-            if (selectedMdItem == null) {
+            List<String> messages = new ArrayList<>();
+            List<String> warnings = new ArrayList<>();
+            boolean disableSaveButton = false;            
+            
+            // check cable end
+            if (cableEndDesignation == null) {
+                warnings.add("Cable End is required.");
+                disableSaveButton = true;
+            }            
 
+            // check device/port
+            if (selectedMdItem == null) {
+                warnings.add("Device or device port is required.");
                 setDisableButtonSave((Boolean) true);
-                setMessage(DEFAULT_MESSAGE);
 
             } else {
 
-                boolean disableSaveButton = false;
                 if (selectedMdConnector != null) {
                     boolean hasCableRelationships = false;
                     List<ItemElementRelationship> ierList
@@ -415,26 +705,37 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     }
                     if (hasCableRelationships) {
                         disableSaveButton = true;
-                        setWarningMessage("Selected conector is already in use for cable connection.");
+                        warnings.add("Selected device port is already in use for cable connection.");
                     } else {
-                        setMessage("Selected endpoint item and connector are valid.");
+                        messages.add("Selected device and device port are valid.");
                     }
                 } else if (selectedMdItem != null) {
-                    setMessage("Selected endpoint item is valid, no endpoint connector selected.");
+                    messages.add("Selected device is valid, optional device port not selected.");
                 } else {
-                    setMessage(DEFAULT_MESSAGE);
+                    messages.add(DEFAULT_MESSAGE);
                     disableSaveButton = true;
                 }
-
-                setDisableButtonSave((Boolean) disableSaveButton);
             }
+            
+            setDisableButtonSave((Boolean) disableSaveButton);
+            setMessages(warnings, messages);
+
         }
         
         @Override
-        public String save(String remoteCommandSuccess) {            
-            ItemElementRelationship ier = getCurrent().addCableRelationship(selectedMdItem, null, null, null);
-            setCableRelationship(ier);
-            return super.save(remoteCommandSuccess);
+        public String save(String remoteCommandSuccess) {  
+            
+            ItemElementRelationship ier = 
+                    getCurrent().addCableRelationship(
+                            selectedMdItem, 
+                            selectedMdConnector, 
+                            getSelectedCableConnector(), 
+                            cableEndDesignation, 
+                            false);
+            
+            updateItem(remoteCommandSuccess);
+            
+            return null;
         }
 
     }
@@ -554,6 +855,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     @EJB
     ItemDomainCableDesignFacade itemDomainCableDesignFacade;
 
+    private EndpointDialog dialogEndpoint = null;
     private CatalogDialog dialogCatalog = null;
     private ConnectionEditDialog dialogConnection = null;
     
@@ -563,6 +865,17 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     protected ImportHelperCableDesign importHelper = new ImportHelperCableDesign();
     
+    public EndpointDialog getDialogEndpoint() {
+        if (dialogEndpoint == null) {
+            dialogEndpoint = new EndpointDialog();
+        }
+        return dialogEndpoint;
+    }
+
+    public void setDialogEndpoint(EndpointDialog dialogEndpoint) {
+        this.dialogEndpoint = dialogEndpoint;
+    }
+
     public CatalogDialog getDialogCatalog() {
         if (dialogCatalog == null) {
             dialogCatalog = new CatalogDialog();
@@ -620,7 +933,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * @param cableName
      * @return
      */
-    public boolean createCableUnspecified(Item itemEndpoint1,
+    public String createCableUnspecified(Item itemEndpoint1,
             Item itemEndpoint2,
             String cableName,
             List<ItemProject> projectList,
@@ -632,11 +945,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                 projectList,
                 technicalSystemList);
 
-        if (this.create() == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return this.create();
 
     }
 
@@ -649,7 +958,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
      * @param cableName
      * @return
      */
-    public boolean createCableCatalog(Item itemEndpoint1,
+    public String createCableCatalog(Item itemEndpoint1,
             Item itemEndpoint2,
             String cableName,
             List<ItemProject> projectList,
@@ -664,17 +973,26 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         newCable.setCatalogItem(itemCableCatalog);
 
-        if (this.create() == null) {
-            return false;
-        } else {
-            return true;
-        }
+        return this.create();
 
     }
 
+    public void prepareEditEndpoint(ItemElementRelationship cableRelationship) {
+        dialogEndpoint.reset();
+        dialogEndpoint.setCableRelationship(cableRelationship);
+    }
+    
     /**
      * Prepares endpoint dialog for editing endpoint1.
      */
+    public void prepareDialogEndpoint1() {
+        prepareEditEndpoint(getCurrent().getPrimaryRelationshipForCableEnd(CdbEntity.VALUE_CABLE_END_1));
+    }
+
+    public void prepareDialogEndpoint2() {
+        prepareEditEndpoint(getCurrent().getPrimaryRelationshipForCableEnd(CdbEntity.VALUE_CABLE_END_2));
+    }
+    
     public void prepareDialogCatalog() {
         dialogCatalog.reset();
         dialogCatalog.setItemCatalog(getCurrent().getCatalogItem());
@@ -688,30 +1006,22 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         dialogConnection.setOrigMdItem(connection.getMdItem());
         dialogConnection.setOrigMdConnector(connection.getMdConnector());
         dialogConnection.setCableRelationship(connection.getCableRelationship());
-        
-        // get list of unmapped connectors, plus connector for this connection if any
-        List<ItemConnector> unmappedConnectors = getUnmappedConnectorsForCurrent();
+        String cableEnd = connection.getCableRelationship().getCableEndDesignation();
+        dialogConnection.setCableEndDesignation(cableEnd);
         if (connection.getItemConnector() != null) {
-            unmappedConnectors.add(connection.getItemConnector());
-            dialogConnection.setSelectedCableConnector(connection.getItemConnector());
+            dialogConnection.setOrigCableConnector(connection.getItemConnector());
         }
-        dialogConnection.setAvailableCableConnectors(unmappedConnectors, connection.getItemConnector());
-        
+
         // expand MD tree to specified md item and connector
         dialogConnection.expandTreeAndSelectNode();
         dialogConnection.setSelectedEndpointAndConnector();
         
     }
     
-    public void prepareAddConnection() {
-        
+    public void prepareAddConnection() {        
         dialogConnection = new ConnectionCreateDialog();
-        
+        dialogConnection.setCableEndDesignation(null);
         dialogConnection.reset();
-        
-        // get list of unmapped connectors
-        List<ItemConnector> unmappedConnectors = getUnmappedConnectorsForCurrent();
-        dialogConnection.setAvailableCableConnectors(unmappedConnectors, null);
     }
     
     public Boolean renderEditLinkForConnection(CableDesignConnectionListObject connection) {
@@ -856,12 +1166,30 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     public List<ItemConnector> getUnmappedConnectorsForCurrent() {
+        return getUnmappedConnectorsForCurrent(null);
+    }
+    
+    public List<ItemConnector> getUnmappedConnectorsForCurrent(String cableEnd) {
+        boolean filterCableEnd = (cableEnd != null);
         List<ItemConnector> unmappedConnectors = new ArrayList<>();
         for (ItemConnector connector : getCurrent().getItemConnectorList()) {
             if (!connector.isConnected()) {
+                if ((!filterCableEnd) 
+                        || ((connector.getConnector().getCableEndDesignation() != null) && (connector.getConnector().getCableEndDesignation().equals(cableEnd))))
                 unmappedConnectors.add(connector);
             }
         }
+        
+        // sort by end, device name, device port name, cable connector name
+        Comparator<ItemConnector> comparator
+                = Comparator
+                        .comparing((ItemConnector c) -> c.getConnectorCableEndDesignation())
+                        .thenComparing(c -> c.getConnectorName().toLowerCase());
+        unmappedConnectors
+                = unmappedConnectors.stream()
+                        .sorted(comparator)
+                        .collect(Collectors.toList());
+
         return unmappedConnectors;
     }
 
@@ -883,6 +1211,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         return getUnmappedConnectorsForCurrent().size() > 0;
     }
     
+    @Override
+    public boolean getEntityDisplayConnectorCableEndDesignation() {
+        return true; 
+    }    
+
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
     
     @Override

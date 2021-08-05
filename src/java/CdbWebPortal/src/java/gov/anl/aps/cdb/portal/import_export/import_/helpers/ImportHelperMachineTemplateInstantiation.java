@@ -47,11 +47,11 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
         return machineImportHelperCommon;
     }
     
-    public String getOptionRootItemName() {
+    public String getOptionImportRootItemName() {
         return getMachineImportHelperCommon().getOptionImportRootItemName();
     }
 
-    public void setOptionRootItemName(String optionRootItemName) {
+    public void setOptionImportRootItemName(String optionRootItemName) {
         getMachineImportHelperCommon().setOptionImportRootItemName(optionRootItemName);
     }
     

@@ -98,15 +98,17 @@ See LICENSE file.
                     <ui:insert name="coreMetadataProperty" />
                 </p:panel>           
 
-            <ui:insert name="additonalPluginSections" />
+                <ui:insert name="additonalPluginSections" />
 
-                <p:panel header="#{currentItemController.itemElementsListTitle}"
-                         id="#{entityTypeName}ViewElementsPanel"
-                         rendered="#{entityController.renderItemElementList}"
-                         toggleable="true" 
-                         collapsed="#{!entityController.displayItemElementList}">
-                    <ui:insert name="itemElements" />                    
-                </p:panel>
+                <ui:insert name="itemElementListPanel">
+                    <p:panel header="#{currentItemController.itemElementsListTitle}"
+                             id="#{entityTypeName}ViewElementsPanel"
+                             rendered="#{entityController.renderItemElementList}"
+                             toggleable="true" 
+                             collapsed="#{!entityController.displayItemElementList}">
+                        <ui:insert name="itemElements" />                    
+                    </p:panel>
+                </ui:insert>
 
                 <p:panel header="Sources" 
                          id="#{entityTypeName}ViewSourcesPanel"
@@ -116,7 +118,7 @@ See LICENSE file.
                     <ui:insert name="itemSources" />
                 </p:panel>
 
-                 <p:panel header="#{entityController.itemsDerivedFromItemTitle}" 
+                <p:panel header="#{entityController.itemsDerivedFromItemTitle}" 
                          id="#{entityTypeName}ViewItemsDerviedFromItemPanel"
                          rendered="#{entityController.renderDerivedFromItemList}"
                          toggleable="true" 

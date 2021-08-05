@@ -155,6 +155,11 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     }
 
     @Override
+    public boolean getEntityDisplayConnectorCableEndDesignation() {
+        return getItemController().getEntityDisplayConnectorCableEndDesignation();
+    }
+
+    @Override
     public String getItemIdentifier1Title() {
         return getItemController().getItemIdentifier1Title();
     }
@@ -573,5 +578,10 @@ public abstract class ItemControllerExtensionHelper implements IItemController<I
     
     public void deleteProperty(PropertyValue cdbDomainEntityProperty) {
         getItemController().deleteProperty(cdbDomainEntityProperty);
+    }
+    
+    @Override
+    public String prepareView(Item item) {
+        return getItemController().prepareView(item); 
     }
 }

@@ -5,6 +5,63 @@
 
 delimiter //
 
+DROP PROCEDURE IF EXISTS fetch_location_item_for_item;//
+CREATE PROCEDURE `fetch_location_item_for_locatable_item` (IN locatable_item_id int) 
+BEGIN
+    SET @query = 'SELECT loc_item.* ';
+    SET @query = CONCAT(@query, 'FROM item inner join item_element ie on ie.parent_item_id = item.id inner join item_element_relationship ier on ier.first_item_element_id = ie.id inner join item_element loc_element on loc_element.id = ier.second_item_element_id inner join item loc_item on loc_item.id = loc_element.parent_item_id ');
+    SET @query = CONCAT(@query, 'WHERE ie.Name is NULL AND ie.derived_from_item_element_id is NULL AND ier.relationship_type_id = 1 ');
+    set @query = CONCAT(@query, "AND item.id = ", locatable_item_id);
+
+    PREPARE stmt FROM @query;
+    EXECUTE stmt;
+
+END //
+
+DROP PROCEDURE IF EXISTS fetch_inventory_assigned_to_machine_item_hierarchy;//
+CREATE PROCEDURE `fetch_inventory_assigned_to_machine_item_hierarchy` (IN machine_item_id int) 
+BEGIN
+	WITH RECURSIVE machine as (
+		SELECT * FROM v_machine_element ie WHERE ie.parent_item_id = machine_item_id
+		UNION
+		SELECT me.* FROM v_machine_element me, machine AS m WHERE me.parent_item_id = m.child_machine_id
+	) SELECT item.* from machine inner join item on item.id = machine.assigned_item_id WHERE item.domain_id = 3; 
+END //
+
+DROP PROCEDURE IF EXISTS fetch_inventory_stored_in_location_hierarchy;//
+CREATE PROCEDURE `fetch_inventory_stored_in_location_hierarchy` (IN location_item_id_input int)
+BEGIN
+	WITH RECURSIVE location AS ( 
+		SELECT * 
+		FROM v_item_hierarchy  
+		WHERE parent_item_id = location_item_id_input 
+		UNION 
+		SELECT ih.*  
+		FROM v_item_hierarchy ih, location l  
+		WHERE ih.parent_item_id = l.child_item_id
+	) 
+	SELECT item.* 
+	FROM v_inventory_located_by_relationship ilr 
+	INNER JOIN item on item.id = ilr.inventory_item_id 
+		WHERE location_item_id = location_item_id_input OR location_item_id in (select child_item_id from location);		
+END //
+
+DROP PROCEDURE IF EXISTS fetch_inventory_assigned_to_assembly_hierarchy;//
+CREATE PROCEDURE `fetch_inventory_assigned_to_assembly_hierarchy` (IN assembly_item_id int)
+BEGIN
+	WITH RECURSIVE assembly AS (
+		SELECT *
+		FROM v_item_hierarchy
+		WHERE parent_item_id = assembly_item_id
+		UNION
+		SELECT ih.*
+		FROM v_item_hierarchy ih, assembly a
+		WHERE ih.parent_item_id = a.child_item_id
+	)
+	SELECT item.*
+	FROM assembly inner join item on assembly.child_item_id = item.id; 
+END //
+
 drop procedure if exists items_with_write_permission_for_user;//
 create procedure `items_with_write_permission_for_user` (IN user_id int, IN domain_id int)
 BEGIN

@@ -211,58 +211,49 @@ public class CableWizard extends ItemDomainCableDesignWizardBase implements Seri
 
         ItemDomainCableDesignController controller = ItemDomainCableDesignController.getInstance();
 
-        boolean result = false;
+        String result = "";
 
         switch (selectionCableType) {
 
             case cableTypeUnspecified:
-                if (result = controller.createCableUnspecified(itemEndpoint1,
+                result = controller.createCableUnspecified(itemEndpoint1,
                         itemEndpoint2,
                         inputValueName,
                         selectionProjectList,
-                        selectionTechnicalSystemList)) {
-                } else {
-                }
+                        selectionTechnicalSystemList);
                 break;
 
             case cableTypeCatalog:
+                
                 if (selectionCableCatalogItem == null) {
                     SessionUtility.addErrorMessage(
                             "Could not save cable",
                             "Please select cable catalog item.");
                     return "";
-                } else {
                     
-                    if (result = controller.createCableCatalog(itemEndpoint1,
+                } else {                    
+                    result = controller.createCableCatalog(itemEndpoint1,
                             itemEndpoint2,
                             inputValueName,
                             selectionProjectList,
                             selectionTechnicalSystemList,
-                            selectionCableCatalogItem)) {
-                    } else {
-                    }
+                            selectionCableCatalogItem);
                 }
                 break;
         }
 
-        if (result) {
-            
-            // get redirect before calling cleanup or it will be reset
-            String redirect = "";
-            if (getRedirectSuccess().isEmpty()) {
-                redirect = defaultRedirectSuccess;
-            } else {
-                redirect = getRedirectSuccess();
-            }
-            
-            cleanupClient();
-            
-            this.reset();
-            
-            return redirect;
+        // get redirect before calling cleanup or it will be reset
+        String redirect = "";
+        if (getRedirectSuccess().isEmpty()) {
+            redirect = result;
+        } else {
+            redirect = getRedirectSuccess();
         }
-        else {
-            return "";
-        }
+
+        cleanupClient();
+
+        this.reset();
+
+        return redirect;
     }
 }

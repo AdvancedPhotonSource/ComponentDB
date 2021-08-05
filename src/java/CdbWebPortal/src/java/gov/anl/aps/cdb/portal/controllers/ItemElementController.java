@@ -11,6 +11,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemElementSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemElementFacade;
+import gov.anl.aps.cdb.portal.model.db.entities.CdbEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -331,6 +332,13 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     public Item getSelectedParentItem() {
         return selectedParentItem;
     }
+    
+    public void prepareDataTableRowReorder(Item item) {        
+        SessionUtility.addInfoMessage("Element Reorder", "Simply drag & drop rows to specify desired order of elements. Click Save New Order when done.");
+        
+        currentItemReorderController = ItemController.findDomainControllerForItem(item);
+        currentItemReorderController.setHasElementReorderChangesForCurrent(true);
+    }
 
     public void onListDataTableRowReorder(ReorderEvent event) {
         DataTable dataTable = (DataTable) event.getSource();
@@ -368,14 +376,20 @@ public class ItemElementController extends CdbDomainEntityController<ItemElement
     public void performReorderSaveOperations() {
         if (currentItemReorderController != null) {
             currentItemReorderController.update();
+            currentItemReorderController = null; 
         }
     }
-
-    public boolean getHasReorderChanges() {
+    
+    public Integer getDisplayNumberOfItemsPerPage() {
         if (currentItemReorderController != null) {
-            return currentItemReorderController.getHasElementReorderChangesForCurrent();
+            if (currentItemReorderController.getHasElementReorderChangesForCurrent()) {
+                Item current = (Item) currentItemReorderController.getCurrent();
+                int size = current.getItemElementDisplayList().size();
+                return size; 
+            }
         }
-        return false;
+        ItemElementSettings settingObject = getSettingObject();
+        return settingObject.getDisplayNumberOfItemsPerPage(); 
     }
 
     /**

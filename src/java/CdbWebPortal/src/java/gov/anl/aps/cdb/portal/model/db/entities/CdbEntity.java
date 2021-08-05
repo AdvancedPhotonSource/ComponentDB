@@ -6,23 +6,35 @@ package gov.anl.aps.cdb.portal.model.db.entities;
 
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyTypeFacade;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Base class for all CDB entities.
  */
 public class CdbEntity implements Serializable, Cloneable {
     
+    private static final Logger LOGGER = LogManager.getLogger(CdbEntity.class.getName());
+    
     @JsonIgnore
     private transient String viewUUID;
     
     @JsonIgnore
     private transient String persitanceErrorMessage = null; 
+    
+    @JsonIgnore
+    protected transient List<PropertyValue> propertyValueDisplayList = null; 
+    @JsonIgnore
+    protected transient List<PropertyValue> propertyValueInternalList = null; 
     
     private transient Map<String, String> apiProperties;
     
@@ -35,7 +47,26 @@ public class CdbEntity implements Serializable, Cloneable {
     private transient String importUnchanged;
     private transient Boolean hasImportUpdates;
     
+    // shared code for managing cable end designation property type and value 
+    // so that it is not duplicated in Connector, ItemElementRelationship
+    private static PropertyType cableEndDesignationPropertyType = null;
+    public static final String CABLE_END_DESIGNATION_PROPERTY_TYPE = "cable_end_designation_property_type";
+    private transient String cableEndDesignation = null;
+    private transient PropertyValue cableEndDesignationPropertyValue = null;
+    public static final String CABLE_END_DESIGNATION_PROPERTY_DESCRIPTION = "cable end designation";
+    public final static String VALUE_CABLE_END_1 = "1";
+    public final static String VALUE_CABLE_END_2 = "2";
+    public final static String LABEL_CABLE_END_1 = "End1";
+    public final static String LABEL_CABLE_END_2 = "End2";
+    public static final String DEFAULT_CABLE_END_DESIGNATION = VALUE_CABLE_END_1;
+    
+
     protected static final long serialVersionUID = 1L;
+    
+    public void resetPropertyValueLists() {
+        propertyValueDisplayList = null; 
+        propertyValueInternalList = null; 
+    }
     
     public Object clone(UserInfo currentUser) throws CloneNotSupportedException {
         return super.clone();
@@ -158,6 +189,86 @@ public class CdbEntity implements Serializable, Cloneable {
     @JsonIgnore
     public Boolean getIsItemDeleted() {
         return false;
+    }
+
+    // default implementation is to do nothing
+    public void addPropertyValueToPropertyValueList(PropertyValue propertyValue) {
+        LOGGER.error("Override expected for addPropertyValueToPropertyValueList()? " + getClass().getName());
+    }
+    
+    // default implementation returns null, subclasses override to customize
+    protected List<PropertyValue> getPropertyValueList() {
+        LOGGER.error("Override expected for getPropertyValueList()? " + getClass().getName());
+        return null;
+    }
+    
+    // default implementation returns null, subclasses override to customize
+    @JsonIgnore
+    public CdbEntityControllerUtility getControllerUtility() {
+        LOGGER.error("Override expected for getControllerUtility()? " + getClass().getName());
+        return null;
+    }
+
+    @JsonIgnore
+    public PropertyType getCableEndDesignationPropertyType() {
+        
+        if (cableEndDesignationPropertyType == null) {
+            
+            cableEndDesignationPropertyType =
+                    PropertyTypeFacade.getInstance().findByName(CABLE_END_DESIGNATION_PROPERTY_TYPE);
+            
+            if (cableEndDesignationPropertyType == null) {
+                cableEndDesignationPropertyType = getControllerUtility().prepareCableEndDesignationPropertyType();
+            }
+        }
+        return cableEndDesignationPropertyType;
+    }
+    
+    public PropertyValue prepareCableEndDesignationPropertyValue() {
+        PropertyType propertyType = getCableEndDesignationPropertyType();
+        return getControllerUtility().preparePropertyTypeValueAdd(
+                this, propertyType, propertyType.getDefaultValue(), null);
+    }
+    
+    @JsonIgnore
+    public PropertyValue getCableEndDesignationPropertyValue() {
+
+        if (cableEndDesignationPropertyValue == null) {
+            List<PropertyValue> propertyValueList = getPropertyValueList();
+            if (propertyValueList != null) {
+                for (PropertyValue propertyValue : propertyValueList) {
+                    if (propertyValue.getPropertyType().getName().equals(CABLE_END_DESIGNATION_PROPERTY_TYPE)) {
+                        cableEndDesignationPropertyValue = propertyValue;
+                    }
+                }
+            }
+        }
+        
+        if (cableEndDesignationPropertyValue == null) {
+            cableEndDesignationPropertyValue = prepareCableEndDesignationPropertyValue();
+        }
+
+        return cableEndDesignationPropertyValue;
+    }
+
+    public void setCableEndDesignation(String endDesignation) {
+        PropertyValue propertyValue = getCableEndDesignationPropertyValue();
+        if (propertyValue != null) {
+            cableEndDesignation = endDesignation;
+            propertyValue.setValue(endDesignation);
+        }
+    }
+    
+    @JsonIgnore
+    public String getCableEndDesignation() {        
+        if (cableEndDesignation == null) {
+            cableEndDesignation = getCableEndDesignationPropertyValue().getValue();
+        }
+        if (cableEndDesignation != null) {
+            return cableEndDesignation;
+        } else {
+            return "";
+        }
     }
 
 }
