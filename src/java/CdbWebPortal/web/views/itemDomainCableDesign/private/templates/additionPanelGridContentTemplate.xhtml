@@ -12,6 +12,28 @@ See LICENSE file.
     
     <p:panelGrid columns="2" styleClass="#{panelGridStyle}">
 
+        <p:outputLabel value="End1 Primary Device" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="viewName"
+                          value="endpoint1"/>
+                <ui:param name="itemObject"
+                          value="#{itemObject.endpoint1}"/>
+            </ui:include>
+        </p:outputPanel>
+
+        <p:outputLabel value="End2 Primary Device" 
+                       styleClass="entityDataEmphasizedLabel"/>
+        <p:outputPanel styleClass="inlineFlexOutputPanel">
+            <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
+                <ui:param name="viewName"
+                          value="endpoint2"/>
+                <ui:param name="itemObject"
+                          value="#{itemObject.endpoint2}"/>
+            </ui:include>
+        </p:outputPanel>
+
         <p:outputLabel value="Assigned Catalog Item" 
                        styleClass="entityDataEmphasizedLabel"/>
         <p:outputPanel styleClass="inlineFlexOutputPanel">
@@ -34,6 +56,9 @@ See LICENSE file.
             </ui:include>            
         </p:outputPanel>
 
+
+        <ui:include src="../endpointDialog.xhtml" >
+        </ui:include>
 
         <ui:include src="../catalogDialog.xhtml" >
         </ui:include>

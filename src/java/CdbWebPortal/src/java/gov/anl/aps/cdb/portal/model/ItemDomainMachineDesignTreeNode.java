@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.model;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemDomainMachineDesignQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
@@ -208,6 +209,9 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
                     if (loadCables && !cablesLoaded) {
                         cablesLoaded = true;
                         if (idm != null) {
+                            
+                            // sync connectors and build list of connectors for this md item
+                            getConfig().getMdControllerUtility().syncMachineDesignConnectors(idm);
                             List<MachineDesignConnectorListObject> connList = MachineDesignConnectorListObject.createMachineDesignConnectorList(idm);
 
                             for (MachineDesignConnectorListObject connObj : connList) {
@@ -529,6 +533,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         private boolean loadAllChildren = false;
         private boolean showCables = false;
         private boolean showConnectorsOnly = false;
+        private ItemDomainMachineDesignControllerUtility mdControllerUtility = null;
 
         public MachineTreeConfiguration() {
         }
@@ -560,6 +565,14 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         private boolean cablesNeedLoading() {
             return showConnectorsOnly || showCables;
         }
+        
+        public ItemDomainMachineDesignControllerUtility getMdControllerUtility() {
+            if (mdControllerUtility == null) {
+                mdControllerUtility = new ItemDomainMachineDesignControllerUtility();
+            }
+            return mdControllerUtility;
+        }
+        
     }
 
 }

@@ -41,4 +41,21 @@ See LICENSE file.
         </p:selectOneButton>
     </p:column>
     
+    <p:column>
+        <p:outputLabel rendered="#{entityController.entityDisplayConnectorCableEndDesignation}">
+            Cable End Designation
+        </p:outputLabel>
+    </p:column>   
+    <p:column>
+        <p:selectOneButton value="#{currentItemConnector.connector.cableEndDesignation}"
+                           disabled="#{disabled}"
+                           rendered="#{entityController.entityDisplayConnectorCableEndDesignation}">
+            <p:ajax oncomplete="#{onChangeConnector}" />
+            <f:selectItem itemValue="#{entityController.menuValueCableEnd1}" 
+                          itemLabel="#{entityController.menuLabelCableEnd1}"/>
+            <f:selectItem itemValue="#{entityController.menuValueCableEnd2}" 
+                          itemLabel="#{entityController.menuLabelCableEnd2}"/>
+        </p:selectOneButton>
+    </p:column>
+    
 </ui:composition>
