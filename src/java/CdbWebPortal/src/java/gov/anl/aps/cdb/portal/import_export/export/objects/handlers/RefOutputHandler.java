@@ -29,7 +29,11 @@ public class RefOutputHandler extends SimpleOutputHandler {
     }
     
     @Override
-    protected String formatCellValue(Object value, ExportMode exportMode) throws CdbException {  
+    protected String formatCellValue(Object value, ExportMode exportMode) throws CdbException {
+        
+        if (value instanceof String) {
+            return (String) value;
+        }
         
         // use id's for export mode, but don't for transfer mode
         boolean useIdValues;

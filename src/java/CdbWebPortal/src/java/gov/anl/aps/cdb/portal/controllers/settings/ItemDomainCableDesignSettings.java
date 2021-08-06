@@ -7,7 +7,6 @@ package gov.anl.aps.cdb.portal.controllers.settings;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainCableDesignController;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingEntity;
 import gov.anl.aps.cdb.portal.model.db.entities.SettingType;
-import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import java.util.Map;
 
 /**
@@ -101,6 +100,11 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     private static final String DisplayConnectorEndpoint2SettingTypeKey = "ItemDomainCableDesign.List.Display.ConnectorEndpoint2";
     private static final String FilterConnectorEndpoint2SettingTypeKey = "ItemDomainCableDesign.List.FilterBy.ConnectorEndpoint2";
 
+    private static final String DisplayConnectedDevicesEndpoint1SettingTypeKey = "ItemDomainCableDesign.List.Display.ConnectedDevicesEndpoint1";
+    private static final String FilterConnectedDevicesEndpoint1SettingTypeKey = "ItemDomainCableDesign.List.FilterBy.ConnectedDevicesEndpoint1";
+    private static final String DisplayConnectedDevicesEndpoint2SettingTypeKey = "ItemDomainCableDesign.List.Display.ConnectedDevicesEndpoint2";
+    private static final String FilterConnectedDevicesEndpoint2SettingTypeKey = "ItemDomainCableDesign.List.FilterBy.ConnectedDevicesEndpoint2";
+
     protected Boolean displayEndpoints = null;
     protected Boolean displayCatalogItem = null;
     protected Boolean displayLocation = null;
@@ -173,6 +177,11 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
     protected String portEndpoint2Filter = null;
     protected Boolean connectorEndpoint2Display = null;
     protected String connectorEndpoint2Filter = null;
+
+    protected Boolean connectedDevicesEndpoint1Display = null;
+    protected String connectedDevicesEndpoint1Filter = null;
+    protected Boolean connectedDevicesEndpoint2Display = null;
+    protected String connectedDevicesEndpoint2Filter = null;
 
     public ItemDomainCableDesignSettings(ItemDomainCableDesignController parentController) {
         super(parentController);
@@ -695,6 +704,38 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         this.connectorEndpoint2Filter = connectorEndpoint2Filter;
     }
 
+    public boolean isConnectedDevicesEndpoint1Display() {
+        return connectedDevicesEndpoint1Display;
+    }
+
+    public void setConnectedDevicesEndpoint1Display(boolean connectedDevicesEndpoint1Display) {
+        this.connectedDevicesEndpoint1Display = connectedDevicesEndpoint1Display;
+    }
+
+    public String getConnectedDevicesEndpoint1Filter() {
+        return connectedDevicesEndpoint1Filter;
+    }
+
+    public void setConnectedDevicesEndpoint1Filter(String connectedDevicesEndpoint1Filter) {
+        this.connectedDevicesEndpoint1Filter = connectedDevicesEndpoint1Filter;
+    }
+
+    public boolean isConnectedDevicesEndpoint2Display() {
+        return connectedDevicesEndpoint2Display;
+    }
+
+    public void setConnectedDevicesEndpoint2Display(boolean connectedDevicesEndpoint2Display) {
+        this.connectedDevicesEndpoint2Display = connectedDevicesEndpoint2Display;
+    }
+
+    public String getConnectedDevicesEndpoint2Filter() {
+        return connectedDevicesEndpoint2Filter;
+    }
+
+    public void setConnectedDevicesEndpoint2Filter(String connectedDevicesEndpoint2Filter) {
+        this.connectedDevicesEndpoint2Filter = connectedDevicesEndpoint2Filter;
+    }
+
     @Override
     protected void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
@@ -781,6 +822,11 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         connectorEndpoint2Display = Boolean.parseBoolean(settingTypeMap.get(DisplayConnectorEndpoint2SettingTypeKey).getDefaultValue());
         connectorEndpoint2Filter = settingTypeMap.get(FilterConnectorEndpoint2SettingTypeKey).getDefaultValue();
 
+        connectedDevicesEndpoint1Display = Boolean.parseBoolean(settingTypeMap.get(DisplayConnectedDevicesEndpoint1SettingTypeKey).getDefaultValue());
+        connectedDevicesEndpoint1Filter = settingTypeMap.get(FilterConnectedDevicesEndpoint1SettingTypeKey).getDefaultValue();
+        connectedDevicesEndpoint2Display = Boolean.parseBoolean(settingTypeMap.get(DisplayConnectedDevicesEndpoint2SettingTypeKey).getDefaultValue());
+        connectedDevicesEndpoint2Filter = settingTypeMap.get(FilterConnectedDevicesEndpoint2SettingTypeKey).getDefaultValue();
+
         autoLoadListFilterValues = Boolean.parseBoolean(settingTypeMap.get(AutoLoadListFilterValuesSettingTypeKey).getDefaultValue()); 
     }
 
@@ -857,18 +903,23 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         drawingEndpoint2Filter = settingEntity.getSettingValueAsString(FilterDrawingEndpoint2SettingTypeKey, drawingEndpoint2Filter);
 
         deviceEndpoint1Display = settingEntity.getSettingValueAsBoolean(DisplayDeviceEndpoint1SettingTypeKey, deviceEndpoint1Display);
-        deviceEndpoint1Filter = settingEntity.getSettingValueAsString(FilterDescriptionEndpoint1SettingTypeKey, deviceEndpoint1Filter);
+        deviceEndpoint1Filter = settingEntity.getSettingValueAsString(FilterDeviceEndpoint1SettingTypeKey, deviceEndpoint1Filter);
         portEndpoint1Display = settingEntity.getSettingValueAsBoolean(DisplayPortEndpoint1SettingTypeKey, portEndpoint1Display);
         portEndpoint1Filter = settingEntity.getSettingValueAsString(FilterPortEndpoint1SettingTypeKey, portEndpoint1Filter);
         connectorEndpoint1Display = settingEntity.getSettingValueAsBoolean(DisplayConnectorEndpoint1SettingTypeKey, connectorEndpoint1Display);
         connectorEndpoint1Filter = settingEntity.getSettingValueAsString(FilterConnectorEndpoint1SettingTypeKey, connectorEndpoint1Filter);
 
         deviceEndpoint2Display = settingEntity.getSettingValueAsBoolean(DisplayDeviceEndpoint2SettingTypeKey, deviceEndpoint2Display);
-        deviceEndpoint2Filter = settingEntity.getSettingValueAsString(FilterDescriptionEndpoint2SettingTypeKey, deviceEndpoint2Filter);
+        deviceEndpoint2Filter = settingEntity.getSettingValueAsString(FilterDeviceEndpoint2SettingTypeKey, deviceEndpoint2Filter);
         portEndpoint2Display = settingEntity.getSettingValueAsBoolean(DisplayPortEndpoint2SettingTypeKey, portEndpoint2Display);
         portEndpoint2Filter = settingEntity.getSettingValueAsString(FilterPortEndpoint2SettingTypeKey, portEndpoint2Filter);
         connectorEndpoint2Display = settingEntity.getSettingValueAsBoolean(DisplayConnectorEndpoint2SettingTypeKey, connectorEndpoint2Display);
         connectorEndpoint2Filter = settingEntity.getSettingValueAsString(FilterConnectorEndpoint2SettingTypeKey, connectorEndpoint2Filter);
+
+        connectedDevicesEndpoint1Display = settingEntity.getSettingValueAsBoolean(DisplayConnectedDevicesEndpoint1SettingTypeKey, connectedDevicesEndpoint1Display);
+        connectedDevicesEndpoint1Filter = settingEntity.getSettingValueAsString(FilterConnectedDevicesEndpoint1SettingTypeKey, connectedDevicesEndpoint1Filter);
+        connectedDevicesEndpoint2Display = settingEntity.getSettingValueAsBoolean(DisplayConnectedDevicesEndpoint2SettingTypeKey, connectedDevicesEndpoint2Display);
+        connectedDevicesEndpoint2Filter = settingEntity.getSettingValueAsString(FilterConnectedDevicesEndpoint2SettingTypeKey, connectedDevicesEndpoint2Filter);
 
         autoLoadListFilterValues = settingEntity.getSettingValueAsBoolean(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues); 
     }
@@ -958,6 +1009,11 @@ public class ItemDomainCableDesignSettings extends ItemSettings<ItemDomainCableD
         settingEntity.setSettingValue(FilterPortEndpoint2SettingTypeKey, portEndpoint2Filter);
         settingEntity.setSettingValue(DisplayConnectorEndpoint2SettingTypeKey, connectorEndpoint2Display);
         settingEntity.setSettingValue(FilterConnectorEndpoint2SettingTypeKey, connectorEndpoint2Filter);
+
+        settingEntity.setSettingValue(DisplayConnectedDevicesEndpoint1SettingTypeKey, connectedDevicesEndpoint1Display);
+        settingEntity.setSettingValue(FilterConnectedDevicesEndpoint1SettingTypeKey, connectedDevicesEndpoint1Filter);
+        settingEntity.setSettingValue(DisplayConnectedDevicesEndpoint2SettingTypeKey, connectedDevicesEndpoint2Display);
+        settingEntity.setSettingValue(FilterConnectedDevicesEndpoint2SettingTypeKey, connectedDevicesEndpoint2Filter);
 
         settingEntity.setSettingValue(AutoLoadListFilterValuesSettingTypeKey, autoLoadListFilterValues);
     }

@@ -865,6 +865,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
     protected ImportHelperCableDesign importHelper = new ImportHelperCableDesign();
     
+    private transient CableDesignConnectionListObject connectionToDelete = null;
+    
     public EndpointDialog getDialogEndpoint() {
         if (dialogEndpoint == null) {
             dialogEndpoint = new EndpointDialog();
@@ -1024,8 +1026,20 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         dialogConnection.reset();
     }
     
+    public void prepareDeleteConnection(CableDesignConnectionListObject connection) {
+        connectionToDelete = connection;
+    }
+    
+    public CableDesignConnectionListObject getConnectionToDelete() {
+        return connectionToDelete;
+    }
+    
     public Boolean renderEditLinkForConnection(CableDesignConnectionListObject connection) {
         return (connection.getMdItem() != null);
+    }
+    
+    public Boolean renderDeleteLinkForConnection(CableDesignConnectionListObject connection) {
+        return (!connection.getCableRelationship().isPrimaryCableConnection());
     }
     
     /**
@@ -1172,6 +1186,9 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public List<ItemConnector> getUnmappedConnectorsForCurrent(String cableEnd) {
         boolean filterCableEnd = (cableEnd != null);
         List<ItemConnector> unmappedConnectors = new ArrayList<>();
+        if (getCurrent().getItemConnectorList() == null) {
+            return unmappedConnectors;
+        }
         for (ItemConnector connector : getCurrent().getItemConnectorList()) {
             if (!connector.isConnected()) {
                 if ((!filterCableEnd) 
@@ -1215,6 +1232,24 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     public boolean getEntityDisplayConnectorCableEndDesignation() {
         return true; 
     }    
+    
+    public void deleteConnection(CableDesignConnectionListObject connection) {
+        
+        // can't delete primary connection
+        ItemElementRelationship cableRelationship = connection.getCableRelationship();
+        if (cableRelationship.isPrimaryCableConnection()) {
+            SessionUtility.addErrorMessage("Error", "Primary connection cannot be deleted.");
+            return;
+        }
+
+        getCurrent().deleteCableRelationship(cableRelationship);
+
+        String updateResult = update();
+        refreshConnectionListForCurrent();
+        connectionToDelete = null;
+        
+//        SessionUtility.executeRemoteCommand(remoteCommandSuccess);
+    }
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
     

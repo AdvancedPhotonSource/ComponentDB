@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author craig
  */
-public class ImportHelperMachineItemUpdate extends ImportHelperBase {
+public class ImportHelperMachineItemUpdate extends ImportHelperBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
 
     private MachineImportHelperCommon machineImportHelperCommon = null;
     
@@ -128,6 +128,11 @@ public class ImportHelperMachineItemUpdate extends ImportHelperBase {
     @Override
     public boolean supportsModeDelete() {
         return false;
+    }
+
+    @Override
+    protected ItemDomainMachineDesign newInvalidUpdateInstance() {
+        return getEntityController().createEntityInstance();
     }
 
 }
