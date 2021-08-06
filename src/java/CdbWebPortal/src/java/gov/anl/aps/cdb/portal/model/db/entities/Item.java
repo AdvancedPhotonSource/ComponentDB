@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.common.utilities.StringUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.utilities.CdbEntityControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.EntityTypeControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacade;
@@ -23,7 +24,6 @@ import gov.anl.aps.cdb.portal.view.objects.ItemMetadataPropertyInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -468,8 +468,13 @@ public class Item extends CdbDomainEntity implements Serializable {
 
         return clonedItem;
     }
+
+    @Override
+    public CdbEntityControllerUtility getControllerUtility() {
+        return getItemControllerUtility(); 
+    }
     
-    @JsonIgnore      
+    @JsonIgnore     
     public ItemControllerUtility getItemControllerUtility() {
         return null; 
     }

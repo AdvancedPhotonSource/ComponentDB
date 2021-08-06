@@ -381,6 +381,17 @@ class MyTestCase(unittest.TestCase):
         metadata = self.propertyValueApi.get_property_value_metadata(property_id)
         self.assertNotEqual(metadata, None)
 
+        metadata_dict = {'test': 'updatedTest', 'metadataKey1': '1234', 'metadataKey2': 'abcd'}
+
+        metadataList = self.propertyValueApi.add_or_update_property_value_metadata_by_map(property_id, metadata_dict)
+
+        self.assertEqual(len(metadataList), len(metadata_dict), msg="The metadata list was not saved properly.")
+        for metadata in metadataList:
+            key = metadata.metadata_key
+            value = metadata.metadata_value
+            expected_value = metadata_dict[key]
+            self.assertEqual(value, expected_value, msg='Metadata value does not match expected saved value')
+
     def test_add_log_entry(self):
         now = str(datetime.now())
         log_message = "TEST LOG entered on %s" % now

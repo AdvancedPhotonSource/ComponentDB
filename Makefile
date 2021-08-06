@@ -25,6 +25,9 @@ configuration:
 support:
 	$(TOP)/sbin/cdb_install_support.sh
 
+support-portal:
+	$(TOP)/sbin/cdb_install_support_portal.sh
+
 support-mysql:
 	$(TOP)/sbin/cdb_install_support_mysql.sh && $(TOP)/sbin/cdb_deploy_mysqld.sh
 

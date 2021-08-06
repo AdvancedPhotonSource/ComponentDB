@@ -17,21 +17,21 @@ See LICENSE file.
               header="Inventory Item Status History"
               styleClass="viewTransparentBackgroundDialog"
               dynamic="true">
-        
+
         <p:outputPanel rendered="#{entityController.currentStatusPropertyValue != null}">
             <p:dataTable value="#{propertyValueHistoryController.selectedPropertyValueHistoryList}"
                          var="statusHistory" >
                 <p:column headerText="Status">
                     <h:outputText value="#{statusHistory.value}" />
                 </p:column>
-                <p:column headerText="Entered On">
-                    <h:outputText value="#{statusHistory.enteredOnDateTime}" />
-                </p:column>
                 <p:column headerText="Effective Date">
-                    <h:outputText value="#{statusHistory.effectiveFromDateTime}" />
+                    <h:outputText value="#{statusHistory.effectiveFromDateString}" />
                 </p:column>
                 <p:column headerText="Entered By">
                     <h:outputText value="#{statusHistory.enteredByUser.username}" />
+                </p:column>
+                <p:column headerText="Entered On">
+                    <h:outputText value="#{statusHistory.enteredOnDateTime}" />
                 </p:column>
             </p:dataTable>
         </p:outputPanel>        

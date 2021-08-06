@@ -35,31 +35,5 @@ public abstract class ItemBaseRoute extends BaseRoute {
             throw ex; 
         }
         return findById;
-    }
-    
-    protected UserInfo verifyCurrentUserPermissionForItem(Item item) throws AuthorizationError {
-        UserInfo updatedByUser = getCurrentRequestUserInfo();
-        
-        if (!verifyUserPermissionForItem(updatedByUser, item)) {            
-            AuthorizationError ex = new AuthorizationError("User does not have permission to update the item");
-            LOGGER.error(ex);
-            throw ex; 
-        }
-        
-        return updatedByUser; 
-    }
-    
-    protected boolean verifyUserPermissionForItem(UserInfo user, Item item) {        
-        if (user != null) {
-            if (isUserAdmin(user)) {
-                return true;
-            }
-            if (isUserMaintainer(user)) {
-                return true; 
-            }
-            return AuthorizationUtility.isEntityWriteableByUser(item, user);
-        }
-        return false;
-    }        
-    
+    }                
 }

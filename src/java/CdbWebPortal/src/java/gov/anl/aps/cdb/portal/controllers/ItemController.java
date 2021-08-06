@@ -122,7 +122,7 @@ public abstract class ItemController<
 
     @EJB
     protected PropertyTypeFacade propertyTypeFacade;
-    
+
     @EJB
     protected ItemConnectorFacade itemConnectorFacade;
 
@@ -1081,7 +1081,7 @@ public abstract class ItemController<
     }
 
     public void saveSourceList() {
-        update();        
+        update();
     }
 
     public void deleteSource(ItemSource itemSource) {
@@ -1297,7 +1297,7 @@ public abstract class ItemController<
     }
 
     public void saveItemElementList() {
-        update();        
+        update();
     }
 
     public List<ItemDomainEntity> getSelectItemCandidateList() {
@@ -1484,7 +1484,7 @@ public abstract class ItemController<
     }
 
     public void saveItemDerivedFromItemList() {
-        update();        
+        update();
     }
 
     public void deleteItemDerivedFromItem(ItemDomainEntity itemDerivedFromItem) {
@@ -1597,7 +1597,7 @@ public abstract class ItemController<
         ItemElement newItemElement = new ItemElement();
 
         UserInfo user = SessionUtility.getUser();
-        if (itemElement.getDerivedFromItemElement() != null) {            
+        if (itemElement.getDerivedFromItemElement() != null) {
             newItemElement.init(clonedItem, itemElement.getDerivedFromItemElement(), user);
         } else {
             newItemElement.init(clonedItem, user);
@@ -1737,8 +1737,11 @@ public abstract class ItemController<
 
     public Boolean getHasElementReorderChangesForCurrent() {
         ItemDomainEntity current = getCurrent();
-        Boolean hasElementReorderChangesForCurrent = current.getHasElementReorderChangesForCurrent();
-        return hasElementReorderChangesForCurrent;
+        if (current != null) {
+            Boolean hasElementReorderChangesForCurrent = current.getHasElementReorderChangesForCurrent();
+            return hasElementReorderChangesForCurrent;
+        }
+        return false;
     }
 
     public void setHasElementReorderChangesForCurrent(Boolean hasElementReorderChangesForCurrent) {
@@ -2351,7 +2354,7 @@ public abstract class ItemController<
             }
         }
 
-        String newUrl = desiredViewId + "?" + paramString + "faces-redirect=true";        
+        String newUrl = desiredViewId + "?" + paramString + "faces-redirect=true";
 
         SessionUtility.navigateTo(newUrl);
         return null;
