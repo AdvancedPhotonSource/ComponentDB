@@ -86,8 +86,7 @@ public class ImportHelperMachineHierarchy
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(MachineImportHelperCommon.parentItemColumnSpec(
-                ColumnModeOptions.oCREATE(), getMachineImportHelperCommon()));
+        specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null));
         specs.add(MachineImportHelperCommon.nameHierarchyColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oCREATE()));
@@ -170,7 +169,7 @@ public class ImportHelperMachineHierarchy
             
     @Override
     protected String getKeyParent_() {
-        return MachineImportHelperCommon.KEY_PARENT;
+        return MachineImportHelperCommon.KEY_MD_ITEM;
     }
             
     @Override
