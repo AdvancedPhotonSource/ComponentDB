@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:param name="connection"
+              value="#{entityController.connectionToDelete}"/> 
+    <ui:param name="connectedToItem"
+              value="#{connection.mdItem}"/>
+    <ui:param name="connectedToPort"
+              value="#{connection.mdConnector.connector}"/>
+    <ui:param name="cableEnd"
+              value="#{connection.cableRelationship.cableEndDesignation}"/>
+
+    <p:confirmDialog id="cableDesignDeleteConnectionDialog" 
+                     widgetVar="cableDesignDeleteConnectionDialogWidget" 
+                     message="Destroy connection end: #{cableEnd} device: #{connectedToItem} port: #{connectedToPort}?"
+                     header="Destroy Connection" 
+                     severity="alert" 
+                     styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+        <p:commandButton value="Yes" 
+                         id="cableDesignDeleteConnectionDialogYesConfirmButton"
+                         onstart="PF('cableDesignDeleteConnectionDialogWidget').hide();
+                         PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide()" 
+                         action="#{entityController.deleteConnection(connection)}"
+                         update="@form"/>
+        <p:commandButton value="No" 
+                         onclick="PF('cableDesignDeleteConnectionDialogWidget').hide()" 
+                         type="button"
+                         update="@form"/>
+    </p:confirmDialog>
+
+</ui:composition>

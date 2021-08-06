@@ -59,7 +59,8 @@ needs_download=1
 
 chromedriver_version_start=`google-chrome --version | grep -oP "[^A-Z ][0-9]+.[0-9]+.[0-9]+"`
 chromedriver_version_regex="$chromedriver_version_start.[0-9]+/chromedriver_linux64.zip"
-chromedriver_version=`curl https://chromedriver.storage.googleapis.com/ | grep -oP $chromedriver_version_regex`
+chromedriver_version=(`curl https://chromedriver.storage.googleapis.com/ | grep -oP $chromedriver_version_regex`)
+echo ${chromedriver_version[0]}
 
 count_results=`echo $chromedriver_version | wc -l`
 

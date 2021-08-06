@@ -15,9 +15,11 @@ import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineAssignTemplate;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineHierarchy;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineItemUpdate;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineTemplateInstantiation;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.RelationshipTypeFacade;
@@ -2067,41 +2069,77 @@ public class ItemDomainMachineDesignController
 
     }
 
+    protected ValidInfo assignTemplateToItemCommon(
+            ItemDomainMachineDesign item, 
+            ItemDomainMachineDesign template,
+            ItemElement element) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        if (element == null) {
+            element = item.getParentMachineElement();
+        }
+        
+        setMachineDesginIdentifiersFromTemplateItem(template, item);
+        addCreatedFromTemplateRelationshipToItem(item, template);
+        Item assignedItem = template.getAssignedItem();
+        item.setAssignedItem(assignedItem);
+
+        cloneCreateItemElements(item, template, true, true, true);
+        item.resetItemElementVars();
+
+        try {
+            createMachineDesignFromTemplateHierachically(element);
+        } catch (CdbException | CloneNotSupportedException ex) {
+            isValid = false;
+            validString = ex.getMessage();
+        }
+        
+        return new ValidInfo(isValid, validString);
+    }
+    
     public void assignTemplateToSelectedItem() {
         if (templateToCreateNewItem == null) {
-            SessionUtility.addWarningMessage("No Template Selected", "Please select template and try again.");
+            SessionUtility.addWarningMessage(
+                    "No Template Selected", "Please select template and try again.");
             return;
         }
         TreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
-        ItemDomainMachineDesignTreeNode machineNode = (ItemDomainMachineDesignTreeNode) selectedItemInListTreeTable;
+        ItemDomainMachineDesignTreeNode machineNode = 
+                (ItemDomainMachineDesignTreeNode) selectedItemInListTreeTable;
 
         ItemElement element = machineNode.getElement();
         ItemDomainMachineDesign containedItem = (ItemDomainMachineDesign) element.getContainedItem();
 
-        setMachineDesginIdentifiersFromTemplateItem(templateToCreateNewItem, containedItem);
-        addCreatedFromTemplateRelationshipToItem(containedItem, templateToCreateNewItem);
-        Item assignedItem = templateToCreateNewItem.getAssignedItem();
-        containedItem.setAssignedItem(assignedItem);
-
-        cloneCreateItemElements(containedItem, templateToCreateNewItem, true, true, true);
-        containedItem.resetItemElementVars();
-
-        try {
-            createMachineDesignFromTemplateHierachically(element);
-        } catch (CdbException ex) {
-            SessionUtility.addErrorMessage("Error", ex.getMessage());
-            return;
-        } catch (CloneNotSupportedException ex) {
-            SessionUtility.addErrorMessage("Error", ex.getMessage());
+        ValidInfo assignValidInfo = assignTemplateToItemCommon(
+                containedItem, templateToCreateNewItem, element);
+        if (!assignValidInfo.isValid()) {
+            SessionUtility.addErrorMessage("Error", assignValidInfo.getValidString());
             return;
         }
-
+        
         updateCurrentUsingSelectedItemInTreeTable();
         update();
 
         resetListConfigurationVariables();
         resetListDataModel();
         expandToSelectedTreeNodeAndSelect();
+    }
+    
+    public ValidInfo assignTemplateToItem(
+            ItemDomainMachineDesign item, ItemDomainMachineDesign template) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        ValidInfo assignValidInfo = assignTemplateToItemCommon(item, template, null);
+        if (!assignValidInfo.isValid()) {
+            isValid = false;
+            validString = assignValidInfo.getValidString();
+        }
+        
+        return new ValidInfo(isValid, validString);
     }
 
     private void createMachineDesignFromTemplateForEditItemElement() throws CdbException, CloneNotSupportedException {
@@ -2646,6 +2684,9 @@ public class ItemDomainMachineDesignController
         ));
         formatInfo.add(new ImportExportFormatInfo(
                 "Machine Element Update Format", ImportHelperMachineItemUpdate.class
+        ));
+        formatInfo.add(new ImportExportFormatInfo(
+                "Machine Element Assign Template Format", ImportHelperMachineAssignTemplate.class
         ));
 
         String completionUrl = "/views/itemDomainMachineDesign/list?faces-redirect=true";

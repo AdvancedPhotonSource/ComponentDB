@@ -64,6 +64,7 @@ public class ItemDomainCableDesign extends Item {
     private transient String endpoint2Drawing = null;
 
     private transient List<ItemConnector> deletedConnectorList = null;
+    private transient List<ItemElementRelationship> deletedIerList = null;
     
     public final static String CABLE_DESIGN_INTERNAL_PROPERTY_TYPE = "cable_design_internal_property_type";
     public final static String CABLE_DESIGN_PROPERTY_EXT_CABLE_NAME_KEY = "externalCableName";
@@ -121,6 +122,19 @@ public class ItemDomainCableDesign extends Item {
     public void clearDeletedConnectorList() {
         if (deletedConnectorList != null) {
             deletedConnectorList.clear();
+        }
+    }
+    
+    public List<ItemElementRelationship> getDeletedIerList() {
+        if (deletedIerList == null) {
+            deletedIerList = new ArrayList<>();
+        }
+        return deletedIerList;
+    }
+    
+    public void clearDeletedIerList() {
+        if (deletedIerList != null) {
+            deletedIerList.clear();
         }
     }
     
@@ -197,7 +211,7 @@ public class ItemDomainCableDesign extends Item {
         }
         ierList.add(ier);
     }
-
+    
     public ItemElementRelationship addCableRelationship(
             Item endpoint,
             ItemConnector endpointConnector,
@@ -278,6 +292,18 @@ public class ItemDomainCableDesign extends Item {
         return null;
     }
     
+    public void deleteCableRelationship(ItemElementRelationship cableRelationship) {
+        
+        // remove relationship from cable design
+        getSelfElement().getItemElementRelationshipList1().remove(cableRelationship);
+        
+        // remove relationship from endpoint device
+        cableRelationship.getFirstItemElement().getItemElementRelationshipList().remove(cableRelationship);
+        
+        // add to deleted relationships list for removal in facade.update()
+        getDeletedIerList().add(cableRelationship);
+    }
+
     private void setPrimaryEndpoint(
             Item itemEndpoint,
             ItemConnector endpointConnector,
@@ -461,12 +487,23 @@ public class ItemDomainCableDesign extends Item {
     public List<Item> getEnd1Devices() {
         return getDevicesForCableEnd(VALUE_CABLE_END_1);
     }
+    
+    @JsonIgnore
+    public String getEnd1DevicesString() {
+        return deviceListToString(getEnd1Devices());
+    }
 
     @JsonIgnore
     public List<Item> getEnd2Devices() {
         return getDevicesForCableEnd(VALUE_CABLE_END_2);
     }
 
+
+    @JsonIgnore
+    public String getEnd2DevicesString() {
+        return deviceListToString(getEnd2Devices());
+    }
+    
     @JsonIgnore
     public List<Item> getEndpointList() {
         
@@ -489,22 +526,25 @@ public class ItemDomainCableDesign extends Item {
         return deviceList;
     }
     
+    private String deviceListToString(List<Item> deviceList) {
+        String result = "";
+        int count = 0;
+        for (Item endpoint : deviceList) {
+            count = count + 1;
+            result = result + endpoint.getName();
+            if (count != deviceList.size()) {
+                result = result + endpointsSeparator;
+            }
+        }
+        return result;
+    }
+    
     /**
      * Returns a string containing the cables endpoints for display.
      */
     @JsonIgnore
     public String getEndpointsString() {
-        String result = "";
-        int count = 0;
-        List<Item> iList = this.getEndpointList();
-        for (Item endpoint : iList) {
-            count = count + 1;
-            result = result + endpoint.getName();
-            if (count != iList.size()) {
-                result = result + endpointsSeparator;
-            }
-        }
-        return result;
+        return deviceListToString(this.getEndpointList());
     }
 
     @JsonIgnore
