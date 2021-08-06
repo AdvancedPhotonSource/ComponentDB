@@ -28,17 +28,17 @@ See LICENSE file.
                 <p:column>
                     <p:outputPanel rendered="#{userGroup != null}">
                         <p:outputLabel id="viewAsSettingsUserHasPermissions" 
-                                       styleClass="ui-icon ui-icon-unlocked"
+                                       styleClass="fa fa-link-icon fa-unlock"
                                        rendered="#{settingController.isSessionUserHaveGroupWritePermission(userGroup)}"/>
                         <p:outputLabel id="viewAsSettingsUserMemberOf" 
-                                       styleClass="ui-icon ui-icon-person"
+                                       styleClass="fa fa-link-icon fa-user"
                                        rendered="#{settingController.isSessionUserMemeberOfGroup(userGroup)}"/>
 
                         <b>#{userGroup.name}</b>
                         <br/> #{userGroup.description}
                     </p:outputPanel>
                     <p:outputPanel rendered="#{userGroup == null}">
-                        <p:outputLabel styleClass="ui-icon ui-icon-home" />
+                        <p:outputLabel styleClass="fa fa-link-icon fa-home-user" />
                         <p:outputLabel value="#{settingController.defaultSelectionLabel}"/>
                     </p:outputPanel>
                 </p:column>

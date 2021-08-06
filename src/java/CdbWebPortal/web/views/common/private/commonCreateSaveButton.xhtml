@@ -14,7 +14,7 @@ See LICENSE file.
     <ui:param name="saveButtonRendered" value="#{saveButtonRendered != null ? saveButtonRendered : true}" /> 
 
     <p:commandButton id="#{entityTypeName}CreateSaveButton" action="#{entityController.create()}" 
-                     value="#{saveButtonText}" alt="Save" icon="ui-icon-check" rendered="#{saveButtonRendered}"
+                     value="#{saveButtonText}" alt="Save" icon="fa fa-save" rendered="#{saveButtonRendered}"
                      update="@form">
         <p:tooltip for="#{entityTypeName}CreateSaveButton" value="Save new #{entityController.displayEntityTypeName}."/>
     </p:commandButton>

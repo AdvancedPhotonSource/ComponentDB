@@ -18,6 +18,8 @@ See LICENSE file.
                  paginator="true" 
                  paginatorAlwaysVisible="false"
                  rows="#{userRoleSettingObject.displayNumberOfItemsPerPage}"
+                 sortMode="single"
+                 stripedRows="true"
                  emptyMessage="No roles found.">
 
         <p:column sortBy="#{userRoleObject.roleType.name}" headerText="Role">

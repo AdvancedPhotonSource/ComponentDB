@@ -19,8 +19,8 @@ See LICENSE file.
         <ui:include src="../../item/private/itemSelectDataTable.xhtml">
             <ui:param name="viewName" value="machineDesignSelection" />
             <ui:param name="updateTarget" value="@parent" />
-            <ui:param name="selectionValue" value="#{newItemElement.containedItem}" />
-            <ui:param name="selectionTarget" value="#{newItemElement.containedItem}" />
+            <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
+            <ui:param name="selectionValue" value="#{newItemElement.containedItem}" />            
             <ui:param name="entityController" value="#{entityController}" />
             <ui:param name="overrideSelectionDataModel" value="#{true}" /> 
             <ui:param name="selectDataModel" value="#{entityController.topLevelMachineDesignSelectionList}" />

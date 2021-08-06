@@ -20,6 +20,8 @@ See LICENSE file.
                  var="itemSourceObject" 
                  value="#{itemSourceDataList}" 
                  filteredValue="#{itemSourceController.filteredObjectList}"
+                 sortMode="single"
+                 stripedRows="true"
                  rows="#{itemSourceSettingObject.displayNumberOfItemsPerPage}"
                  paginator="true" 
                  reflow="true"
@@ -37,7 +39,7 @@ See LICENSE file.
                   exportable="false">
             <p:rowEditor />
             <p:commandLink id="#{entityTypeName}SourceDestroyButton"
-                           styleClass="ui-icon ui-icon-trash" title="Delete"
+                           styleClass="fa fa-link-icon fa-trash" title="Delete"
                            onstart="PF('confirmDeleteItemSource#{itemSourceObject.viewUUID}Widget').show();">
                 <p:tooltip for="#{entityTypeName}SourceDestroyButton" value="Delete #{entityTypeName} Source entry."/>
             </p:commandLink>

@@ -40,7 +40,7 @@ See LICENSE file.
             <p:selectBooleanCheckbox id="cableInstanceDisplayLength" value="#{itemDomainCableInventorySettingObject.lengthDisplay}"/>  
             <h:outputLabel for="cableInstanceDisplayLength" value="Display Length" styleClass="dialogDataLabel"/>
 
-            <p:inputText id="cableInstanceDisplayNumberOfItemsPerPage" value="#{itemDomainCableInventorySettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
+            <p:inputText id="cableInstanceDisplayNumberOfItemsPerPage" value="#{itemDomainCableInventorySettingObject.displayNumberOfItemsPerPage}" styleClass="numItemsPerPageInput"/>
             <h:outputLabel for="cableInstanceDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
             <p:selectBooleanCheckbox id="cableInstanceDisplayCreatedByUser" value="#{itemDomainCableInventorySettingObject.displayCreatedByUser}"/>  
@@ -76,14 +76,14 @@ See LICENSE file.
                              action="#{itemDomainCableInventoryController.customizeListDisplay()}"
                              update="#{childEntityTypeName}ListDataTable"
                              oncomplete="PF('cableInstanceListCustomizeDisplayDialogWidget').hide()" 
-                             icon="ui-icon-arrowreturnthick-1-w"/>
+                             icon="fa fa-close"/>
             <p:commandButton value="Save" alt="Save"
                              action="#{userInfoController.saveSettingListForSessionUser()}"
                              actionListener="#{itemDomainCableInventoryController.saveListSettingsForSessionUserActionListener}"
                              oncomplete="PF('cableInstanceListCustomizeDisplayDialogWidget').hide()" 
                              update="#{childEntityTypeName}ListDataTable"
                              rendered="#{loginController.loggedIn}"
-                             icon="ui-icon-check"/>
+                             icon="fa fa-save"/>
         </f:facet>
     </p:dialog>
 

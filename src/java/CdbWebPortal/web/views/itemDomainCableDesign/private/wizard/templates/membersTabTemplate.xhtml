@@ -36,6 +36,8 @@ See LICENSE file.
                 <p:dataTable id="#{viewName}MemberDataTable" 
                              var="member" 
                              value="#{wizardController.members}"
+                             sortMode="single"
+                             stripedRows="true"
                              emptyMessage="No members added.">
 
                     <p:column headerText="Cable name">

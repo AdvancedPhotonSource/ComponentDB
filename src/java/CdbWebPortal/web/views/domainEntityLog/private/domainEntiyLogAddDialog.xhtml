@@ -63,10 +63,10 @@ See LICENSE file.
                                  action="#{entityController.saveLogList()}"
                                  update="@form"
                                  oncomplete="PF('#{entityTypeName}LogAddDialogWidget').hide()"
-                                 icon="ui-icon-disk"/>
+                                 icon="fa fa-save"/>
 
                 <p:commandButton value="Close" 
-                                 icon="ui-icon-arrowreturnthick-1-w"
+                                 icon="fa fa-close"
                                  oncomplete="PF('#{entityTypeName}LogAddDialogWidget').hide()"
                                  action="#{entityController.removeNewLog()}"
                                  update="@form"

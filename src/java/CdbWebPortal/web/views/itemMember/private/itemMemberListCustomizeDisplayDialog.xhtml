@@ -18,7 +18,7 @@ See LICENSE file.
     <ui:define name="customizeDisplayDialogConent">
         <ui:param name="itemMemberViewSettingObject" value="#{itemMemberViewController.settingObject}" />
         <p:panelGrid columns="2">
-                <p:inputText id="designMemberDisplayNumberOfItemsPerPage" value="#{itemMemberViewSettingObject.displayNumberOfItemsPerPage}" style="width:20px"/>
+                <p:inputText id="designMemberDisplayNumberOfItemsPerPage" value="#{itemMemberViewSettingObject.displayNumberOfItemsPerPage}" styleClass="numItemsPerPageInput"/>
                 <h:outputLabel for="designMemberDisplayNumberOfItemsPerPage" value="Display Number Of Items Per Page" styleClass="dialogDataLabel"/>
 
                 <p:selectBooleanCheckbox id="designMemberDisplayCreatedByUser" value="#{itemMemberViewSettingObject.displayCreatedByUser}"/>  
