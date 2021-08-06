@@ -4,6 +4,8 @@
  */
 package gov.anl.aps.cdb.portal.import_export.import_.objects;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.AssignedItemHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.handlers.LocationHandler;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.BooleanColumnSpec;
@@ -15,8 +17,11 @@ import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.NameHierarchyC
 import gov.anl.aps.cdb.portal.import_export.import_.objects.specs.StringColumnSpec;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -26,7 +31,7 @@ public class MachineImportHelperCommon {
     
     public static final String KEY_NAME = "name";
     public static final String KEY_INDENT = "indentLevel";
-    public static final String KEY_PARENT = "importMdItem";
+    public static final String KEY_MD_ITEM = "importMdItem";
     public static final String KEY_SORT_ORDER = "importSortOrder";
     public static final String KEY_ASSIGNED_ITEM = "assignedItem";
     public static final String KEY_LOCATION = "location";
@@ -53,18 +58,30 @@ public class MachineImportHelperCommon {
     
     private String optionExportNumLevels = null;
 
-    public static MachineItemRefColumnSpec parentItemColumnSpec(
-            List<ColumnModeOptions> options,
-            MachineImportHelperCommon helperCommon) {
+    public static MachineItemRefColumnSpec existingMachineItemColumnSpec(
+            List<ColumnModeOptions> options, ItemDomainMachineDesign rootItem, String columnLabel, String getter) {
+        
+        // default to parent item column header but allow override
+        String label;
+        if (columnLabel != null) {
+            label = columnLabel;
+        } else {
+            label = HEADER_PARENT;
+        }
+        
+        String exportGetter = null;
+        if (getter != null) {
+            exportGetter = getter;
+        }
         
         return new MachineItemRefColumnSpec(
-                HEADER_PARENT,
-                KEY_PARENT,
+                label,
+                KEY_MD_ITEM,
                 "setImportMdItem",
                 "CDB ID, name, or path of parent machine design item. Name must be unique and prefixed with '#'. Path must be prefixed with '#', start with a '/', and use '/' as a delimiter. If name includes an embedded '/' character, escape it by preceding with a '\' character.",
-                null,
+                exportGetter,
                 options,
-                helperCommon.getRootItem());
+                rootItem);
     }
     
     public static NameHierarchyColumnSpec nameHierarchyColumnSpec(List<ColumnModeOptions> options) {
@@ -182,7 +199,7 @@ public class MachineImportHelperCommon {
                 KEY_TEMPLATE_INVOCATION,
                 "setImportTemplateAndParameters",
                 "Template to instantiate with required parameters, e.g., 'PS-SR-S{nn}-CAB1(nn=24)'.",
-                null,
+                "getImportTemplateAndParameters",
                 options,
                 0);
     }
@@ -265,6 +282,133 @@ public class MachineImportHelperCommon {
         rootItem = null;
         optionImportRootItemName = null;
         optionExportNumLevels = null;
+    }
+    
+    private ItemDomainMachineDesign newInvalidUpdateInstance() {
+        return ItemDomainMachineDesignController.getInstance().createEntityInstance();
+    }
+    
+    public CreateInfo retrieveEntityInstance(Map<String, Object> rowMap) {
+
+        boolean isValid = true;
+        String validString = "";
+
+        ItemDomainMachineDesign existingItem = (ItemDomainMachineDesign) rowMap.get(KEY_MD_ITEM);
+        if (existingItem == null) {
+            existingItem = newInvalidUpdateInstance();
+            isValid = false;
+            validString = "Unable to find existing machine item with specified ID or name.";
+        }
+
+        return new CreateInfo(existingItem, isValid, validString);
+    }
+
+    public static CreateInfo loadTemplateAndSetParamValues(Map<String, Object> rowMap) {
+        
+        boolean isValid = true;
+        String validString = "";
+        ItemDomainMachineDesign templateItem = null; 
+        
+        String templateName = "";
+        Map<String, String> varNameValueMap = new HashMap<>();
+        ItemDomainMachineDesignController controller = ItemDomainMachineDesignController.getInstance();
+        
+        String templateParams = (String) rowMap.get(MachineImportHelperCommon.KEY_TEMPLATE_INVOCATION);
+        if ((templateParams == null) || (templateParams.isEmpty())) {
+            isValid = false;
+            validString = "No template/parameters specified.";
+        } else {
+
+            // check that cell value matches pattern, basically of the form "*(*)"
+            String templateRegex = "[^\\(]*\\([^\\)]*\\)";
+            if (!templateParams.matches(templateRegex)) {
+                // invalid cell value doesn't match pattern
+                isValid = false;
+                validString = "invalid format for template and parameters: " + templateParams;
+            } else {
+
+                int indexOpenParen = templateParams.indexOf('(');
+                int indexCloseParen = templateParams.indexOf(')');
+
+                // parse and validate template name
+                templateName = templateParams.substring(0, indexOpenParen);
+                if ((templateName == null) || (templateName.isEmpty())) {
+                    // unspecified template name
+                    isValid = false;
+                    validString = "template name not provided: " + templateParams;
+                } else {
+
+                    // parse and validate variable string
+                    String templateVarString = templateParams.substring(indexOpenParen + 1, indexCloseParen);
+                    varNameValueMap = new HashMap<>();
+                    // iterate through comma separated list of "varName=value" pairs
+                    String[] varArray = templateVarString.split(",");
+                    for (String varNameValue : varArray) {
+                        String[] nameValueArray = varNameValue.split("=");
+                        if (nameValueArray.length != 2) {
+                            // invalid format
+                            isValid = false;
+                            validString = "invalid format for template parameters: " + templateVarString;
+                        } else {
+
+                            String varName = nameValueArray[0].strip();
+                            String varValue = nameValueArray[1].strip();
+                            varNameValueMap.put(varName, varValue);
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!isValid) {
+            return new CreateInfo(null, isValid, validString);
+            
+        } else {
+            
+            // retrieve specified template            
+            try {
+                templateItem = ItemDomainMachineDesignFacade.getInstance().findUniqueTemplateByName(templateName);
+            } catch (CdbException ex) {
+                isValid = false;
+                validString
+                        = "exception retrieving specified template, possibly non-unique name: "
+                        + templateName + ": " + ex;
+            }
+
+            if ((isValid) && (templateItem == null)) {
+                isValid = false;
+                validString = "no template found for name: " + templateName;
+                
+            } else {
+
+                // check that it's a template
+                if (!templateItem.getIsItemTemplate()) {
+                    isValid = false;
+                    validString = "specified template name is not a template: " + templateName;
+                    
+                } else {
+                    // generate list of variable name/value pairs
+                    controller.setMachineDesignNameList(new ArrayList<>());
+                    controller.generateMachineDesignTemplateNameVarsRecursivelly(templateItem);
+                    List<KeyValueObject> varNameList = controller.getMachineDesignNameList();
+                    for (KeyValueObject obj : varNameList) {
+                        
+                        // check that all params in template are specified in import params
+                        if (!varNameValueMap.containsKey(obj.getKey())) {
+                            // import params do not include a param specified for template
+                            isValid = false;
+                            validString = "specified template parameters missing required variable: " + obj.getKey();
+                            
+                        } else {
+                            obj.setValue(varNameValueMap.get(obj.getKey()));
+                        }
+                    }
+                }
+            }
+
+        }
+        
+        return new CreateInfo(templateItem, isValid, validString);
     }
     
 }
