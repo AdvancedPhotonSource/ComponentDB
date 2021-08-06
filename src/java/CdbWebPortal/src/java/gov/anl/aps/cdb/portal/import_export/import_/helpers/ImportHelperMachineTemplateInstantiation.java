@@ -30,7 +30,8 @@ import org.apache.logging.log4j.Logger;
  *
  * @author craig
  */
-public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeViewBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
+public class ImportHelperMachineTemplateInstantiation 
+        extends ImportHelperTreeViewBase<ItemDomainMachineDesign, ItemDomainMachineDesignController> {
     
     private static final Logger LOGGER = LogManager.getLogger(ImportHelperMachineTemplateInstantiation.class.getName());
     
@@ -72,8 +73,7 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
         
         List<ColumnSpec> specs = new ArrayList<>();
         
-        specs.add(MachineImportHelperCommon.parentItemColumnSpec(
-                ColumnModeOptions.oCREATE(), getMachineImportHelperCommon()));
+        specs.add(MachineImportHelperCommon.existingMachineItemColumnSpec(ColumnModeOptions.oCREATE(), getMachineImportHelperCommon().getRootItem(), null, null));
         specs.add(MachineImportHelperCommon.templateInvocationColumnSpec(ColumnModeOptions.rCREATE()));
         specs.add(MachineImportHelperCommon.altNameColumnSpec(ColumnModeOptions.oCREATE()));
         specs.add(MachineImportHelperCommon.descriptionColumnSpec(ColumnModeOptions.oCREATE()));
@@ -127,58 +127,8 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
         String validString = "";
         ItemDomainMachineDesign invalidInstance = getEntityController().createEntityInstance();
         
-        String templateParams = (String)rowMap.get(MachineImportHelperCommon.KEY_TEMPLATE_INVOCATION);
-        if ((templateParams == null) || (!templateParams.isEmpty())) {
-            
-        }
-
-        // check that cell value matches pattern, basically of the form "*(*)"
-        String templateRegex = "[^\\(]*\\([^\\)]*\\)";
-        if (!templateParams.matches(templateRegex)) {
-            // invalid cell value doesn't match pattern
-            isValid = false;
-            validString = "invalid format for template and parameters: " + templateParams;
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(invalidInstance, isValid, validString);
-        }
-
-        int indexOpenParen = templateParams.indexOf('(');
-        int indexCloseParen = templateParams.indexOf(')');
-
-        // parse and validate template name
-        String templateName = templateParams.substring(0, indexOpenParen);
-        if ((templateName == null) || (templateName.isEmpty())) {
-            // unspecified template name
-            isValid = false;
-            validString = "template name not provided: " + templateParams;
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(invalidInstance, isValid, validString);
-        }
-
-        // parse and validate variable string
-        String templateVarString = templateParams.substring(indexOpenParen + 1, indexCloseParen);
-        Map<String, String> varNameValueMap = new HashMap<>();
-        // iterate through comma separated list of "varName=value" pairs
-        String[] varArray = templateVarString.split(",");
-        for (String varNameValue : varArray) {
-            String[] nameValueArray = varNameValue.split("=");
-            if (nameValueArray.length != 2) {
-                // invalid format
-                isValid = false;
-                validString = "invalid format for template parameters: " + templateVarString;
-                LOGGER.info(methodLogName + validString);
-                return new CreateInfo(invalidInstance, isValid, validString);
-            }
-
-            String varName = nameValueArray[0].strip();
-            String varValue = nameValueArray[1].strip();
-            varNameValueMap.put(varName, varValue);
-        }
-
-        invalidInstance.setName(templateName);
-        
         // check for and set parent item
-        ItemDomainMachineDesign itemParent = (ItemDomainMachineDesign) rowMap.get(MachineImportHelperCommon.KEY_PARENT);
+        ItemDomainMachineDesign itemParent = (ItemDomainMachineDesign) rowMap.get(MachineImportHelperCommon.KEY_MD_ITEM);
         if (itemParent == null) {
             // must specify parent for template invocation
             isValid = false;
@@ -188,53 +138,14 @@ public class ImportHelperMachineTemplateInstantiation extends ImportHelperTreeVi
         }
         invalidInstance.setImportMdItem(itemParent);
 
-        // retrieve specified template
-        ItemDomainMachineDesign templateItem;
-        try {
-            templateItem = ItemDomainMachineDesignFacade.getInstance().findUniqueTemplateByName(templateName);
-        } catch (CdbException ex) {
-            isValid = false;
-            validString
-                    = "exception retrieving specified template, possibly non-unique name: "
-                    + templateName + ": " + ex;
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(invalidInstance, isValid, validString);
-        }
-
-        if (templateItem == null) {
-            isValid = false;
-            validString = "no template found for name: " + templateName;
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(invalidInstance, isValid, validString);
-        }
-
-        // check that it's a template
-        if (!templateItem.getIsItemTemplate()) {
-            isValid = false;
-            validString = "specified template name is not a template: " + templateName;
-            LOGGER.info(methodLogName + validString);
-            return new CreateInfo(invalidInstance, isValid, validString);
-        }
-
-        // generate list of variable name/value pairs
-        getEntityController().setMachineDesignNameList(new ArrayList<>());
-        getEntityController().generateMachineDesignTemplateNameVarsRecursivelly(templateItem);
-        List<KeyValueObject> varNameList = getEntityController().getMachineDesignNameList();
-        for (KeyValueObject obj : varNameList) {
-            // check that all params in template are specified in import params
-            if (!varNameValueMap.containsKey(obj.getKey())) {
-                // import params do not include a param specified for template
-                isValid = false;
-                validString = "specified template parameters missing required variable: " + obj.getKey();
-                LOGGER.info(methodLogName + validString);
-                return new CreateInfo(invalidInstance, isValid, validString);
-            }
-
-            obj.setValue(varNameValueMap.get(obj.getKey()));
-        }
-        
         UserInfo user = (UserInfo) rowMap.get(KEY_USER);
         UserGroup group = (UserGroup) rowMap.get(KEY_GROUP);
+        
+        CreateInfo loadTemplateInfo = MachineImportHelperCommon.loadTemplateAndSetParamValues(rowMap);
+        ItemDomainMachineDesign templateItem = (ItemDomainMachineDesign) loadTemplateInfo.getEntity();
+        if (templateItem == null) {
+            return loadTemplateInfo;
+        }
 
         ItemDomainMachineDesign item = 
                 ItemDomainMachineDesign.importInstantiateTemplateUnderParent(

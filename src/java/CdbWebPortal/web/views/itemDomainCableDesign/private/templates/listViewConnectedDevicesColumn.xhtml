@@ -11,18 +11,18 @@ See LICENSE file.
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
                 xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">   
 
-    <ui:param name="columnId" value="deviceEndpoint#{endpointNum}Column"/>
-    <ui:param name="propertyName" value="endpoint#{endpointNum}String"/>
-    <ui:param name="columnName" value="End#{endpointNum} Primary Device"/>            
-    <ui:param name="columnDescription" value="Name of primary device for cable end #{endpointNum}."/>
-    <ui:param name="displaySettingName" value="deviceEndpoint#{endpointNum}Display"/>
-    <ui:param name="filterSettingName" value="deviceEndpoint#{endpointNum}Filter"/>
+    <ui:param name="columnId" value="connectedDevicesEnd#{endpointNum}Column"/>
+    <ui:param name="propertyName" value="end#{endpointNum}DevicesString"/>
+    <ui:param name="columnName" value="End#{endpointNum} Connected Devices"/>            
+    <ui:param name="columnDescription" value="List of connected devices for cable end #{endpointNum}."/>
+    <ui:param name="displaySettingName" value="connectedDevicesEndpoint#{endpointNum}Display"/>
+    <ui:param name="filterSettingName" value="connectedDevicesEndpoint#{endpointNum}Filter"/>
 
     <p:column id="#{columnId}"
               rendered="#{entitySettingObject[displaySettingName]}"
               sortBy="#{itemListObject[propertyName]}"
               filterBy="#{itemListObject[propertyName]}"
-              field="ConnectionDeviceEnd#{endpointNum}"
+              field="ConnectionConnectedDevicesEnd#{endpointNum}"
               filterMatchMode="contains"
               filterValue="#{entitySettingObject[filterSettingName]}">
         <f:facet name="header">

@@ -57,6 +57,12 @@ See LICENSE file.
                                for="cableConnectorNameColumn" />
                 </f:facet> 
             </p:column>
+            <p:column>
+                <f:facet name="header">
+                    <h:outputText/>
+                    Actions
+                </f:facet>
+            </p:column>
         </p:row>
     </p:columnGroup>
 
@@ -73,16 +79,6 @@ See LICENSE file.
     <p:column headerText="Device"
               exportFunction="#{facesUtility.getToString(connectedToItem)}">
         <p:outputPanel styleClass="inlineFlexOutputPanel">
-            <p:commandLink id="editEndpointLink"
-                           styleClass="fa-link-icon fa-icon fa fa-pencil"
-                           onstart="PF('loadingDialog').show()"
-                           oncomplete="PF('loadingDialog').hide();PF('connectionDialog').show();"
-                           action='#{entityController.prepareEditConnection(connection)}'
-                           rendered="#{isEntityWriteable and entityController.renderEditLinkForConnection(connection)}"
-                           update="@form">
-                <p:tooltip for="editEndpointLink"
-                           value="Edit Connection"/>
-            </p:commandLink>
             <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemViewLink.xhtml">
                 <ui:param name="itemObject"
                           value="#{connectedToItem}"/>
@@ -108,4 +104,33 @@ See LICENSE file.
         </ui:include>
     </p:column>
 
+    <p:column headerText="Actions"
+              exportable="false">        
+        <div>
+        
+            <p:commandLink id="editEndpointLink"
+                           styleClass="fa-link-icon fa-icon fa fa-pencil"
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();PF('connectionDialog').show();"
+                           action='#{entityController.prepareEditConnection(connection)}'
+                           rendered="#{isEntityWriteable and entityController.renderEditLinkForConnection(connection)}"
+                           update="@form">
+                <p:tooltip for="editEndpointLink"
+                           value="Edit Connection"/>
+            </p:commandLink>
+
+            <p:commandLink id="cableDesignDeleteConnectionLink" 
+                           styleClass="ui-icon ui-icon-trash" 
+                           onstart="PF('loadingDialog').show()"
+                           oncomplete="PF('loadingDialog').hide();PF('cableDesignDeleteConnectionDialogWidget').show()" 
+                           action='#{entityController.prepareDeleteConnection(connection)}'
+                           rendered="#{isEntityWriteable and entityController.renderDeleteLinkForConnection(connection)}" 
+                           update="@form">
+                <p:tooltip for="cableDesignDeleteConnectionLink" 
+                           value="Delete Connection."/>
+            </p:commandLink>
+
+        </div>        
+    </p:column>
+    
 </ui:composition>
