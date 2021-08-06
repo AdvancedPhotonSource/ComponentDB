@@ -488,6 +488,7 @@ public class ItemDomainCableDesign extends Item {
         return getDevicesForCableEnd(VALUE_CABLE_END_1);
     }
     
+    @JsonIgnore
     public String getEnd1DevicesString() {
         return deviceListToString(getEnd1Devices());
     }
