@@ -146,7 +146,7 @@ public class ItemDomainLocationController extends ItemController<ItemDomainLocat
     private void addAssemblyTreeToLocationTree(TreeNode currentNode) throws CdbException {
         List<TreeNode> nodeChildren = currentNode.getChildren();
         if (nodeChildren != null) {
-            for (TreeNode childNode : currentNode.getChildren()) {
+            for (TreeNode childNode : nodeChildren) {
                 addAssemblyTreeToLocationTree(childNode);
             }
         }

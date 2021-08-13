@@ -150,6 +150,11 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
      */
     public static List<ItemElementRelationship> getRelatedMAARCRelationshipsForItem(Item item) {
         List<ItemElementRelationship> relatedMAARCRelationshipsForItem = new ArrayList<>();
+        
+        ItemElement selfElement = item.getSelfElement();
+        if (selfElement == null) {
+            return relatedMAARCRelationshipsForItem; 
+        }
 
         List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
 

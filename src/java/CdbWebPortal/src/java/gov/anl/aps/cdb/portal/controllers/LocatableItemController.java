@@ -531,7 +531,8 @@ public class LocatableItemController implements Serializable {
         // Allow for quick view full location. 
         ItemUtility.setExpandedSelectedOnAllChildren(root, true, false);
         if (root.getChildCount() > 0) {
-            root.getChildren().get(0).setExpanded(false);
+            List<TreeNode> children = root.getChildren();
+            children.get(0).setExpanded(false);
         }
     }
 
