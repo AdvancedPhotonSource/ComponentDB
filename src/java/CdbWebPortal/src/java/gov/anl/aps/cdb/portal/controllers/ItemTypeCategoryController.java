@@ -25,7 +25,7 @@ public abstract class ItemTypeCategoryController<ControllerUtility extends ItemT
     public abstract List<EntityType> getItemTypeCategoryEntityListByDomainName(String domainName);   
 
     @Override
-    protected EntityType createEntityInstance() {
+    public EntityType createEntityInstance() {
         UserInfo user = SessionUtility.getUser();
         return getControllerUtility().createEntityInstance(user, currentViewDomain); 
     }
