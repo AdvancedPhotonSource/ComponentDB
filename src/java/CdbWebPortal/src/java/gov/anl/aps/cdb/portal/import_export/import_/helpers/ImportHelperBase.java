@@ -779,8 +779,8 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                     rowValidInfo = parseRow(row);
                 } catch (CdbException ex) {
                     validInput = false;
-                    validationMessage = "Unexpected exception parsing spreadsheet row: "
-                            + rowNumber + " message: "
+                    validationMessage = "Exception encountered for row: "
+                            + rowNumber + ", message: "
                             + ex.getMessage();
                     summaryMessage
                             = " Press 'Cancel' to terminate the import process."
@@ -1068,7 +1068,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         createInfo = retrieveEntityInstance(rowDict);
         if (createInfo == null) {
             // indicates helper doesn't support delete mode
-            String msg = "Unexpected error, import helper not properly configured for delete operation.";
+            String msg = "Import helper not properly configured to retrieve items for delete operation.";
             throw new CdbException(msg);
         }
         
@@ -1136,7 +1136,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         createInfo = retrieveEntityInstance(rowDict);
         if (createInfo == null) {
             // indicates helper doesn't support update mode
-            String msg = "Unexpected error, import helper not properly configured for update operation.";
+            String msg = "Import helper does not support update operation.";
             throw new CdbException(msg);
         }
         
@@ -1144,7 +1144,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (entity == null) {
             // helper must return an instance for use in the validation table,
             // even if the specified item is not located
-            String msg = "Unexpected error, import helper not properly configured to retrieve items for update operation.";
+            String msg = "Import helper not properly configured to retrieve items for update operation.";
             throw new CdbException(msg);
         }
         
@@ -1284,9 +1284,10 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         createInfo = createEntityInstance(rowDict);
         newEntity = (EntityType) createInfo.getEntity();
         if (newEntity == null) {
-            // helper returns null from createInstance to indicate that it won't create an item for this row
-            isValid = createInfo.getValidInfo().isValid();
-            validString = appendToString(validString, createInfo.getValidInfo().getValidString());
+            // helper must return an instance for use in the validation table,
+            // even if there is an error creating the entity
+            String msg = "Import helper not properly configured to create items for import operation.";
+            throw new CdbException(msg);
         }
             
         ValidInfo createValidInfo = createInfo.getValidInfo();
