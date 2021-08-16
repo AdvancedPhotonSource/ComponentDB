@@ -34,11 +34,10 @@ import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.model.TreeNode;
 
 @Named(ItemDomainMachineDesignInventoryController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignController implements IItemStatusController {
+public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignBaseController implements IItemStatusController {
 
     public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
@@ -343,6 +342,11 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
         } else {
             setCurrent(rootItem);
         }
+    }
+
+    @Override
+    protected ItemDomainMachineDesignInventoryControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainMachineDesignInventoryControllerUtility(); 
     }
     
 }

@@ -9,9 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignDeletedItemSettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
-import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -34,7 +32,7 @@ import org.primefaces.model.TreeNode;
  */
 @Named(ItemDomainMachineDesignDeletedItemsController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMachineDesignController {
+public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMachineDesignBaseController {
 
     public final static String CONTROLLER_NAMED = "itemDomainMachineDesignDeletedItemsController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignDeletedItemsController.class.getName());
@@ -65,10 +63,10 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
             return null;
         }
     }
-
+    
     @Override
-    protected ItemDomainMachineDesignSettings createNewSettingObject() {
-        return new ItemDomainMachineDesignDeletedItemSettings(this);
+    protected ItemDomainMachineDesignSettings createNewSettingObject() {        
+        return new ItemDomainMachineDesignDeletedItemSettings(this);        
     }
 
     @Override
@@ -298,10 +296,10 @@ public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMac
         
         setPermanentlyRemoveConfirmationName(null);
         permanentlyRemoveNode = null;
-    }
+    }   
 
     @Override
-    protected ItemDomainMachineDesignDeletedControllerUtility getControllerUtility() {
+    protected ItemDomainMachineDesignDeletedControllerUtility createControllerUtilityInstance() {
         return new ItemDomainMachineDesignDeletedControllerUtility();
     }
 }
