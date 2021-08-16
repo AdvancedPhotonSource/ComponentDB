@@ -166,7 +166,7 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      *
      * @return created entity instance
      */
-    protected EntityType createEntityInstance() {
+    public EntityType createEntityInstance() {
         UserInfo user = SessionUtility.getUser();
         return getControllerUtility().createEntityInstance(user); 
     }

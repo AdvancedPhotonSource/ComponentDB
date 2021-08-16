@@ -1293,19 +1293,21 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (!createValidInfo.isValid()) {
             validString = appendToString(validString, createValidInfo.getValidString());
             isValid = false;
-        }
+            
+        } else {
 
-        // invoke each input handler to update the entity with row dictionary values
-        ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(newEntity, rowDict);
-        if (!updateValidInfo.isValid()) {
-            validString = appendToString(validString, updateValidInfo.getValidString());
-            isValid = false;
-        }
+            // invoke each input handler to update the entity with row dictionary values
+            ValidInfo updateValidInfo = invokeHandlersToUpdateEntity(newEntity, rowDict);
+            if (!updateValidInfo.isValid()) {
+                validString = appendToString(validString, updateValidInfo.getValidString());
+                isValid = false;
+            }
 
-        ValidInfo uniqueValidInfo = checkEntityUniqueness(newEntity);
-        if (!uniqueValidInfo.isValid()) {
-            isValid = false;
-            validString = appendToString(validString, uniqueValidInfo.getValidString());
+            ValidInfo uniqueValidInfo = checkEntityUniqueness(newEntity);
+            if (!uniqueValidInfo.isValid()) {
+                isValid = false;
+                validString = appendToString(validString, uniqueValidInfo.getValidString());
+            }
         }
 
         return new CreateInfo(newEntity, isValid, validString);
