@@ -8,7 +8,9 @@ public enum ItemElementRelationshipTypeNames {
         itemLocation("Location"),
         itemCableConnection("Cable Connection"),
         maarc("MAARC Connection"),
-        template("Created From Template");
+        template("Created From Template"),
+        control("Controlled By"), 
+        power("Powered By"); 
 
         private String value;
 
