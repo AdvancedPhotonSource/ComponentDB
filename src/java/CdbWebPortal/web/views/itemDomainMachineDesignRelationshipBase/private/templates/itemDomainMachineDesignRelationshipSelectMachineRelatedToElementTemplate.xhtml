@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                
+                xmlns:p="http://primefaces.org/ui">
+    
+    <ui:insert name="selectMachineRelatedToElementParams"> 
+        <!--
+        Define the following ui:params
+        - selectRelationshipPanelHeader - Text to be shown on header of panel 
+        - viewId - appended text to the id of panel. 
+        - selectRelationshipPanelRendered - desribes if panel should be shown. 
+        - selectRelationshipPanelListenerName - tree table listener to select the item. 
+        - selectRelationshipPanelSaveFunctionName - when the user clicks the save button. 
+        -->
+    </ui:insert>
+
+    <p:panel header="#{selectRelationshipPanelHeader}"
+             id="selectMachineRelatedToElementPanel#{viewId}"
+             rendered="#{selectRelationshipPanelRendered}">
+
+        <ui:param name="machineControlledByCurrent"
+                  value="#{entityController.machineControlledByCurrent}" />
+
+        <ui:decorate template="../../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">            
+            <ui:param name="rendered"
+                      value="#{true}" />
+            <ui:param name="valueModel"
+                      value="#{itemDomainMachineDesignController.machineDesignTreeRootTreeNode}" />
+            <ui:param name="scrollable"
+                      value="#{true}"/> 
+            <ui:define name="treeTableEvents">
+                <p:ajax event="select" listener="#{entityController[selectRelationshipPanelListenerName]}"
+                        onstart="PF('loadingDialog').show()"
+                        oncomplete="onCompleteSelectMachineControlledByCurrent()"/>                            
+            </ui:define>
+        </ui:decorate>
+
+        <p:remoteCommand name="onCompleteSelectMachineControlledByCurrent"                             
+                         update="machineDesignDualListViewOutputPanel"                             
+                         oncomplete="PF('loadingDialog').hide()"/>           
+
+        <p:commandButton value="Save"
+                         icon="fa fa-save"       
+                         action="#{entityController[selectRelationshipPanelSaveFunctionName]()}"
+                         update="@form"
+                         onclick="PF('loadingDialog').show()"
+                         oncomplete="PF('loadingDialog').hide()"/> 
+        <ui:include src="../../../itemDomainMachineDesign/private/itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
+    </p:panel>
+
+</ui:composition>
+
+

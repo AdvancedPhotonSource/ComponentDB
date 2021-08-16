@@ -76,17 +76,29 @@ See LICENSE file.
                        id="designMenubarDropdownButton"
                        icon="ui-icon-design"
                        styleClass="#{(fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') 
-                                     or fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list')) ? 'activeSubMenuParentItem' : ''} ">
+                                     or fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list')
+                                     or fn:startsWith(view.viewId, '/views/itemDomainMachineDesignPower/list')
+                                     or fn:startsWith(view.viewId, '/views/itemDomainMachineDesignControl/list')) ? 'activeSubMenuParentItem' : ''} ">
                 <p:menuitem value="Machine"
                             id="machineDesignMenubarButton"
                             icon="ui-icon-machine-design"
                             url="#{request.contextPath}/views/itemDomainMachineDesign/list"
-                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') ? 'activeMenuItem' : ''} "/>
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesign/list') ? 'activeMenuItem' : ''} "/>                
                 <p:menuitem value="Cable"
                             id="cableDesignMenubarButton"
                             icon="ui-icon-cable-design"
                             url="#{request.contextPath}/views/itemDomainCableDesign/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainCableDesign/list') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="Power"
+                            id="machinePowerMenubarButton"
+                            icon="fa fa-bolt"
+                            url="#{request.contextPath}/views/itemDomainMachineDesignPower/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignPower/list') ? 'activeMenuItem' : ''} "/>
+                <p:menuitem value="Control"
+                            id="machineControlMenubarButton"
+                            icon="fa fa-code"
+                            url="#{request.contextPath}/views/itemDomainMachineDesignControl/list"
+                            styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignControl/list') ? 'activeMenuItem' : ''} "/>
             </p:submenu>
 
             <p:menuitem value="MAARC" 

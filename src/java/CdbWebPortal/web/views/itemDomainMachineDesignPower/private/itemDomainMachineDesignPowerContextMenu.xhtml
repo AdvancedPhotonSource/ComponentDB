@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignDualColumnListViewTreeContextMenuTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="contextMenuContents" >
+
+        <p:contextMenu style="width: 250px;"
+                       for="itemMachineDesignListDataTable"
+                       nodeType="MachineDesign"
+                       id="machineDesignDualViewMachineDesignControlContextMenu"
+                       widgetVar="machineDesignDualViewMachineDesignControlContextMenuWidget">
+
+            <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSimpleAddMenuItem.xhtml"/> 
+
+            <ui:include src="../../itemDomainMachineDesign/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
+        </p:contextMenu>
+
+        <p:contextMenu style="width: 250px;"
+                       for="itemMachineDesignListDataTable"
+                       nodeType="MachineDesignMember"
+                       id="machineDesignDualViewMachineDesignControlMemberContextMenu"
+                       widgetVar="machineDesignDualViewMachineDesignControlMemberContextMenuWidget"
+                       event="select contextmenu">
+            <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSimpleAddMenuItem.xhtml"/> 
+
+            <p:menuitem value="Specify powered node" 
+                        icon="ui-icon ui-icon-machine-design"
+                        update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel emphasizedContentBelowTitleOutputPanel"
+                        disabled="#{disabledEditContextMenuItemForSelection}"                
+                        onclick="PF('loadingDialog').show()"
+                        oncomplete="PF('loadingDialog').hide()"
+                        immediate="true"                
+                        action='#{entityController.prepareSelectMachinedPoweredByNode()}'/>
+
+            <ui:include src="../../itemDomainMachineDesign/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
+        </p:contextMenu>
+
+    </ui:define>
+
+</ui:composition>
+
+
