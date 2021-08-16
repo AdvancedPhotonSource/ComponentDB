@@ -9,6 +9,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
@@ -307,7 +308,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
             throw new InvalidArgument("Name must be provided to create a new placeholder.");
         }
         
-        ItemDomainMachineDesignControllerUtility itemControllerUtility = parentItem.getItemControllerUtility();
+        ItemDomainMachineDesignBaseControllerUtility itemControllerUtility = parentItem.getItemControllerUtility();
         
         ItemElement machinePlaceholder = itemControllerUtility.prepareMachinePlaceholder(parentItem, currentUser);
         
@@ -356,7 +357,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         verifyCurrentUserPermissionForItem(newParentMdId);
         
         
-        ItemDomainMachineDesignControllerUtility itemControllerUtility = childMd.getItemControllerUtility();
+        ItemDomainMachineDesignBaseControllerUtility itemControllerUtility = childMd.getItemControllerUtility();
         ItemElement machineElement = itemControllerUtility.performMachineMove(newParentMdId, childMd, currentUser);
 
         return machineElement;

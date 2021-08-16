@@ -14,6 +14,7 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
@@ -183,7 +184,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     @Override
-    public ItemDomainMachineDesignControllerUtility getItemControllerUtility() {
+    public ItemDomainMachineDesignBaseControllerUtility getItemControllerUtility() {
         if (isItemDeleted(this)) {
             return new ItemDomainMachineDesignDeletedControllerUtility();
         }
@@ -331,6 +332,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public Item getAssignedItem() {
         ItemElement selfElement = getSelfElement();
+        if (selfElement == null) {
+            return null; 
+        }
         return selfElement.getContainedItem2();
     }
 
@@ -594,8 +598,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         ItemElement itemElement = new ItemElement();
 
-        ItemDomainMachineDesignControllerUtility controllerUtility;
-        controllerUtility = new ItemDomainMachineDesignControllerUtility();
+        ItemDomainMachineDesignBaseControllerUtility controllerUtility;
+        controllerUtility = parentItem.getItemControllerUtility(); 
 
         String elementName
                 = controllerUtility.generateUniqueElementNameForItem(parentItem);
