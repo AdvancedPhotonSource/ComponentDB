@@ -120,6 +120,8 @@ import org.primefaces.model.TreeNode;
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevel",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY"),
+    @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelExcludeEntityType",
+            query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and (i.id not in (SELECT DISTINCT(i.id) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :excludeEntityTypeName)) and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelOrderByDerivedFromItem",
             query = "SELECT DISTINCT(i) FROM Item i JOIN i.entityTypeList etl WHERE i.domain.name = :domainName and etl.name = :entityTypeName and i.itemElementMemberList IS EMPTY AND i.itemElementMemberList2 IS EMPTY ORDER BY i.derivedFromItem.id DESC"),
     @NamedQuery(name = "Item.findByDomainNameAndEntityTypeAndTopLevelExcludeEntityTypeOrderByDerivedFromItem",
@@ -752,6 +754,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     @Override
     public List<Log> getLogList() {
+        // Useful for mock machines 
+        if (getSelfElement() == null) {
+            return null; 
+        }
         return getSelfElement().getLogList();
     }
 
@@ -1023,6 +1029,10 @@ public class Item extends CdbDomainEntity implements Serializable {
 
     public List<ItemElement> getItemElementDisplayList() {
         if (itemElementDisplayList == null) {
+            if (fullItemElementList == null) {
+                itemElementDisplayList = new ArrayList<>();    
+                return itemElementDisplayList; 
+            }
             itemElementDisplayList = new ArrayList<>(fullItemElementList);
 
             for (ItemElement itemElement : itemElementDisplayList) {
@@ -1310,6 +1320,9 @@ public class Item extends CdbDomainEntity implements Serializable {
     @Override
     @JsonIgnore
     public List<PropertyValue> getPropertyValueList() {
+        if (this.getSelfElement() == null) {
+            return null;
+        }
         return this.getSelfElement().getPropertyValueList();
     }
 

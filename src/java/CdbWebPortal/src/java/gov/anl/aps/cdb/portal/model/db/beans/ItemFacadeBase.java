@@ -165,6 +165,19 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
+    
+    public List<ItemDomainEntity> findByDomainAndEntityTypeAndTopLevelExcludeEntityType(String domainName, String entityTypeName, String excludeEntityTypeName) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndTopLevelExcludeEntityType")
+                    .setParameter("domainName", domainName)
+                    .setParameter("entityTypeName", entityTypeName)
+                    .setParameter("excludeEntityTypeName", excludeEntityTypeName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
 
     public List<ItemDomainEntity> findByDomainAndEntityTypeAndTopLevelOrderByDerivedFromItem(String domainName, String entityTypeName) {
         try {
