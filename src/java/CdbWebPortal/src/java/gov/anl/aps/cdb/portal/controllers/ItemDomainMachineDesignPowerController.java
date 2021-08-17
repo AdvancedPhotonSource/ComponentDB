@@ -143,4 +143,25 @@ public class ItemDomainMachineDesignPowerController extends ItemDomainMachineDes
         machinePoweredByCurrent = getMachineFromNodeSelectEvent(nodeSelection);
     }
 
+    @Override
+    protected ItemDomainMachineDesign performItemRedirection(ItemDomainMachineDesign item, String paramString, boolean forceRedirection) {
+        if (isItemMachineDesignAndPower(item)) {
+            setCurrent(item);
+            prepareView(item);
+            resetListDataModel();
+            return item;
+        }
+
+        // Do default action. 
+        return super.performItemRedirection(item, paramString, forceRedirection); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    protected void prepareEntityView(ItemDomainMachineDesign entity) {
+        processPreRenderList();
+        if (isItemMachineDesignAndPower(entity)) {
+            loadViewModeUrlParameter();
+        }
+    }
+
 }

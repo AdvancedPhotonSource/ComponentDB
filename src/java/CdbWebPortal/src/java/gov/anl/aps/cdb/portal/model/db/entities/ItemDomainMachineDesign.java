@@ -10,9 +10,11 @@ import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignControlController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignPowerController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
@@ -176,9 +178,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public ItemController getItemDomainController() {
         if (isItemDeleted(this)) {
             return ItemDomainMachineDesignDeletedItemsController.getInstance();
-        }
-        if (isItemInventory(this)) {
+        } else if (isItemInventory(this)) {
             return ItemDomainMachineDesignInventoryController.getInstance();
+        } else if (isItemControl(this)) {
+            return ItemDomainMachineDesignControlController.getInstance();
+        } else if (isItemPower(this)) {
+            return ItemDomainMachineDesignPowerController.getInstance();
         }
         return ItemDomainMachineDesignController.getInstance();
     }
@@ -205,6 +210,14 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     @Override
     public String getLocationDetails() {
         return locationDetails;
+    }
+    
+    public static boolean isItemPower(Item item) {
+        return isItemEntityType(item, EntityTypeName.power.getValue());
+    }
+    
+    public static boolean isItemControl(Item item) {
+        return isItemEntityType(item, EntityTypeName.control.getValue());
     }
 
     public static boolean isItemDeleted(Item item) {

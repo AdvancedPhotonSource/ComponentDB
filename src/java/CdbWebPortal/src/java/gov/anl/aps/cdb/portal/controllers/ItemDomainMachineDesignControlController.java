@@ -143,6 +143,26 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     public void machineControlledByCurrentItemSelected(NodeSelectEvent nodeSelection) {
         machineControlledByCurrent = getMachineFromNodeSelectEvent(nodeSelection); 
     }
+    
+    @Override
+    protected ItemDomainMachineDesign performItemRedirection(ItemDomainMachineDesign item, String paramString, boolean forceRedirection) {
+        if (isItemMachineDesignAndControl(item)) {
+            setCurrent(item);
+            prepareView(item);
+            resetListDataModel();
+            return item;
+        }
 
+        // Do default action. 
+        return super.performItemRedirection(item, paramString, forceRedirection); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    protected void prepareEntityView(ItemDomainMachineDesign entity) {
+        processPreRenderList();
+        if (isItemMachineDesignAndControl(entity)) {
+            loadViewModeUrlParameter();
+        }
+    }
     
 }
