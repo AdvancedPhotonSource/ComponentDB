@@ -7,7 +7,7 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"                
                 xmlns:h="http://xmlns.jcp.org/jsf/html"
-                template="../../item/private/templates/itemViewPanelGridTemplate.xhtml">
+                template="../../../item/private/templates/itemViewPanelGridTemplate.xhtml">
 
     <ui:param name="locationObjectSrc"
               value="#{entityController.currentViewIsTemplate 
@@ -15,7 +15,7 @@ See LICENSE file.
                        : '../../locatableItem/private/locatableItemViewPanelGridObject.xhtml'}" />
 
     <ui:define name="itemEntityTypeValue">
-        <ui:include src="../../item/private/templateDefaults/itemFieldViewValues/itemEntityType.xhtml">
+        <ui:include src="../../../item/private/templateDefaults/itemFieldViewValues/itemEntityType.xhtml">
             <!--Prevent future possible inplace edit for entity type.-->
             <ui:param name="isEntityWriteable" value="#{false}" />
         </ui:include>
@@ -32,7 +32,7 @@ See LICENSE file.
     </ui:define>
 
     <ui:define name="additionalItemInformation">
-        <ui:include src="#{locationObjectSrc}" >
+        <ui:include src="../#{locationObjectSrc}" >
             <ui:param name="locataionMenuModelActionName" 
                       value="getMachineDesignLocationMenuModel" /> 
             <ui:param name="locataionMenuModelObjectParam"
@@ -40,7 +40,7 @@ See LICENSE file.
         </ui:include>
 
         <h:outputText value="Assigned Item" />
-        <ui:include src="itemDomainMachineDesignAssignedItemFragment.xhtml">
+        <ui:include src="../itemDomainMachineDesignAssignedItemFragment.xhtml">
             <ui:param name="assignedItem"
                       value="#{itemObject.assignedItem}"/>
         </ui:include>

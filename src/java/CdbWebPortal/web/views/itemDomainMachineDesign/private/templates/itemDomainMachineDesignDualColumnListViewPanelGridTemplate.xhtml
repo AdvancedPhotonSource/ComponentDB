@@ -35,7 +35,9 @@ See LICENSE file.
             <ui:include src="../itemDomainMachineDesignDualColumnListViewAddCatalogPanel.xhtml" />
             <ui:include src="../itemDomainMachineDesignDualColumnListViewAssignCatalogPanel.xhtml" /> 
             <ui:include src="../itemDomainMachineDesignDualColumnListViewAssignInventoryPanel.xhtml" />
-            <ui:include src="../itemDomainMachineDesignDualColumnListViewDetailsPanel.xhtml" /> 
+            <ui:insert name="machineDesignViewDetailsPanel">
+                <ui:include src="../itemDomainMachineDesignDualColumnListViewDetailsPanel.xhtml" /> 
+            </ui:insert>            
             <ui:include src="../itemDomainMachineDesignDualColumnListViewAddCablePanel.xhtml" />
             <ui:include src="../itemDomainMachineDesignDualColumnListViewAddCableCircuitPanel.xhtml" />
             <ui:include src="../itemDomainMachineDesignDualColumnListViewAddCableBundlePanel.xhtml" />
