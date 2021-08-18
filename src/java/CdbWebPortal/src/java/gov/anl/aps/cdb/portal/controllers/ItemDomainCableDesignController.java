@@ -317,6 +317,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         public void setOrigMdItem(Item origMdItem) {
             this.origMdItem = origMdItem;
+            selectedMdItem = origMdItem;
         }
 
         public String getItemEndpointString() {
@@ -371,6 +372,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         public void setOrigMdConnector(ItemConnector origMdConnector) {
             this.origMdConnector = origMdConnector;
+            selectedMdConnector = origMdConnector;
         }
 
         public ItemConnector getOrigCableConnector() {
@@ -537,8 +539,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     machineDesignTreeRootTreeNode, 
                     (ItemDomainMachineDesign)getOrigMdItem());
             
-            selectedMdTreeNode = selectedNode;
-            
             if ((selectedNode != null) && (getOrigMdConnector() != null)) {
                 selectedNode.setSelected(false);
                 selectedNode.setExpanded(true);
@@ -549,10 +549,13 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                                 ((ItemElement) (child.getData())).getMdConnector();
                         if (connectorChild.equals(getOrigMdConnector())) {
                             child.setSelected(true);
+                            selectedMdTreeNode = child;
                             break;
                         }
                     }
                 }
+            } else {
+                selectedMdTreeNode = selectedNode;
             }
         }
         
@@ -578,11 +581,11 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
             } else {
                 
-                ItemConnector selectedCableConnector = getSelectedCableConnector();
+                ItemConnector selCableConnector = getSelectedCableConnector();
                 
                 if ((((selectedMdItem == null) && (getOrigMdItem() == null)) || ((selectedMdItem != null) && (selectedMdItem.equals(getOrigMdItem()))))
-                        && (((selectedMdConnector == null) && (getOrigMdConnector() == null)) || ((selectedMdConnector != null) &&(selectedMdConnector.equals(getOrigMdConnector()))))
-                        && (((selectedCableConnector == null) && (getOrigCableConnector() == null)) || ((selectedCableConnector != null) && (selectedCableConnector.equals(getOrigCableConnector()))))) {
+                        && (((selectedMdConnector == null) && (getOrigMdConnector() == null)) || ((selectedMdConnector != null) && (selectedMdConnector.equals(getOrigMdConnector()))))
+                        && (((selCableConnector == null) && (getOrigCableConnector() == null)) || ((selCableConnector != null) && (selCableConnector.equals(getOrigCableConnector()))))) {
                     
                     setDisableButtonSave((Boolean) true);
                     
@@ -612,9 +615,12 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                         } else {
                             messages.add("Selected device and device port are valid.");
                         }
-                    } else if ((selectedMdItem != null) && (!selectedMdItem.equals(origMdItem))) {
+                    } else if ((selectedMdItem != null) 
+                            && ((!selectedMdItem.equals(origMdItem)) 
+                                || ((selectedMdItem.equals(origMdItem)) && (selectedMdConnector == null)))) {
+                            disableSaveButton = false;
                             messages.add("Selected device is valid, optional device port not selected.");
-                    } else if (((selectedCableConnector == null) && (getOrigCableConnector() != null)) || ((selectedCableConnector != null) && (!selectedCableConnector.equals(getOrigCableConnector())))) {
+                    } else if (((selCableConnector == null) && (getOrigCableConnector() != null)) || ((selCableConnector != null) && (!selCableConnector.equals(getOrigCableConnector())))) {
                         disableSaveButton = false;
                     } else {
                         disableSaveButton = true;
@@ -1017,7 +1023,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
 
         // expand MD tree to specified md item and connector
         dialogConnection.expandTreeAndSelectNode();
-        dialogConnection.setSelectedEndpointAndConnector();
         
     }
     
