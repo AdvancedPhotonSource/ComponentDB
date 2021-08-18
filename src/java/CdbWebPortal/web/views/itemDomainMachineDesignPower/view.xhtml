@@ -33,6 +33,12 @@ See LICENSE file.
     <ui:define name="additionalSupport" >
         <ui:include src="../itemDomainMachineDesign/private/itemDomainMachineDesignViewSupport.xhtml"/> 
     </ui:define>
+    
+    <ui:define name="machineDesignViewDetailsPanel" >
+        <ui:include src="../itemDomainMachineDesignRelationshipBase/private/itemDomainMachineDesignRelationshipBaseDetailsPanel.xhtml" > 
+            <ui:param name="relationshipName" value="Powered" /> 
+        </ui:include>
+    </ui:define>
 
 </ui:composition>
 

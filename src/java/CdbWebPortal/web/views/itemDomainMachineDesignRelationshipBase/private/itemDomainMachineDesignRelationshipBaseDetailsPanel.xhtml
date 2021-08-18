@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignDualColumnListViewDetailsPanelTemplate.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+
+    <!-- 
+    Define relationshipName to label the relationship to the machine element. 
+    -->
+
+    <ui:define name="itemDomainMachineDesignPanelGrid">    
+        <ui:decorate template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignPanelGridTemplate.xhtml">
+            <ui:define name="additionalMdItemInformation" > 
+                <h:outputText value="#{relationshipName} Element" />
+                <p:column>
+                    <ui:repeat value="#{entityController.machineElementsRelatedToCurrent}"
+                               var="relationshipItem">      
+                        <div class="actionLink">
+                            <p:commandLink id="#{entityTypeName}housingLink"                                        
+                                           onclick="PF('loadingDialog').show()"
+                                           rendered="#{relationshipItem != null}"
+                                           action="#{entityController.prepareView(relationshipItem)}" 
+                                           styleClass="ui-icon #{entityController.getItemRepIcon(relationshipItem)} custom-icon-blue" 
+                                           title="View housing Item"/>
+                        </div>
+
+                        <h:outputLabel id="housingOutputText"
+                                       value="#{relationshipItem}"
+                                       rendered="#{relationshipItem != null}" />
+                        <br/>
+                    </ui:repeat>
+                </p:column>
+            </ui:define>
+        </ui:decorate>
+
+    </ui:define>
+
+
+</ui:composition>
+
+

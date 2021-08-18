@@ -22,7 +22,7 @@ import org.primefaces.event.NodeSelectEvent;
 
 @Named(ItemDomainMachineDesignControlController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignControlController extends ItemDomainMachineDesignBaseController {
+public class ItemDomainMachineDesignControlController extends ItemDomainMachineDesignRelationshipBaseController {
 
     public final static String controllerNamed = "itemDomainMachineDesignControlController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignControlController.class.getName());
@@ -163,6 +163,11 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
         if (isItemMachineDesignAndControl(entity)) {
             loadViewModeUrlParameter();
         }
+    }
+    
+    @Override
+    protected String getRelationshipTypeName() {
+        return ItemElementRelationshipTypeNames.control.getValue(); 
     }
     
 }

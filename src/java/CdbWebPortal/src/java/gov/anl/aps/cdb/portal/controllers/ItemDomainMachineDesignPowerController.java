@@ -22,7 +22,7 @@ import org.primefaces.event.NodeSelectEvent;
 
 @Named(ItemDomainMachineDesignPowerController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignPowerController extends ItemDomainMachineDesignBaseController {
+public class ItemDomainMachineDesignPowerController extends ItemDomainMachineDesignRelationshipBaseController {
 
     public final static String controllerNamed = "itemDomainMachineDesignPowerController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignPowerController.class.getName());
@@ -162,6 +162,11 @@ public class ItemDomainMachineDesignPowerController extends ItemDomainMachineDes
         if (isItemMachineDesignAndPower(entity)) {
             loadViewModeUrlParameter();
         }
+    }
+
+    @Override
+    protected String getRelationshipTypeName() {
+        return ItemElementRelationshipTypeNames.power.getValue();
     }
 
 }

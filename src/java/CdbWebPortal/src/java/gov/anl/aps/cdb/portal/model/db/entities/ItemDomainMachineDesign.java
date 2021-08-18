@@ -73,6 +73,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient MachineDesignConnectorCableMapperItem mdccmi;
     private transient List<MachineDesignConnectorListObject> mdConnectorList;
     private transient ItemDomainMachineDesign newMdInventoryItem = null;
+    
+    // Relationship machine elements 
+    private transient List<ItemDomainMachineDesign> machineElementsRelatedToThis = null;     
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private transient Item inventoryForElement = null;
     private transient boolean inventoryIsInstalled = true;    
@@ -794,6 +797,17 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setTopLevelMachineDesignSelectionList(DataModel topLevelMachineDesignSelectionList) {
         this.topLevelMachineDesignSelectionList = topLevelMachineDesignSelectionList;
     }
+    
+    @JsonIgnore
+    public List<ItemDomainMachineDesign> getMachineElementsRelatedToThis() {
+        return machineElementsRelatedToThis;
+    }
+
+    public void setMachineElementsRelatedToThis(List<ItemDomainMachineDesign> machineElementsRelatedToThis) {
+        this.machineElementsRelatedToThis = machineElementsRelatedToThis;
+    }    
 
     // </editor-fold>
+
+
 }
