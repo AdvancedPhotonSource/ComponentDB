@@ -12,9 +12,12 @@ import gov.anl.aps.cdb.portal.controllers.extensions.ItemEnforcedPropertiesDomai
 import gov.anl.aps.cdb.portal.controllers.settings.ItemSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCatalogBaseControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemFacadeBase;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemConnector;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalogBase;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
+import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import gov.anl.aps.cdb.portal.view.objects.CatalogItemElementConstraintInformation;
 import gov.anl.aps.cdb.portal.view.objects.ItemElementConstraintInformation;
 import java.util.ArrayList;
@@ -153,5 +156,32 @@ public abstract class ItemDomainCatalogBaseController<ControllerUtility extends 
     public boolean getEntityDisplayItemConnectors() {
         return true; 
     }    
+
+    /**
+     * Handles save button for itemConnectorListCreateDialog.
+     */
+    public void saveItemConnectorDialog() {
+        
+        // check if new connector name is duplicate to existing
+        ItemConnectorController controller = ItemConnectorController.getInstance();
+        ItemConnector newConnector = controller.getCurrent();
+        Item item = newConnector.getItem();
+        List<ItemConnector> connectorList = item.getItemConnectorList();   
+        boolean isDuplicate = false;
+        for (ItemConnector itemConnector : connectorList) {
+            if ((itemConnector.getId() != null) 
+                    && (itemConnector.getConnector().getName().equals(newConnector.getConnector().getName()))) {
+                isDuplicate = true;
+                break;
+            }
+        }
+        
+        if (isDuplicate) {
+            this.revertItemConnectorListForCurrent();
+            SessionUtility.addErrorMessage("Error", "Unable to create connector. Please use unique name.");
+        } else {
+            controller.createWithoutRedirect();
+        }
+    }
 
 }
