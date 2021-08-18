@@ -687,7 +687,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
             // check device/port
             if (selectedMdItem == null) {
                 warnings.add("Device or device port is required.");
-                setDisableButtonSave((Boolean) true);
+                disableSaveButton = true;
 
             } else {
 
