@@ -197,21 +197,21 @@ public abstract class ItemDomainMachineDesignBaseController
     public static boolean isItemMachineDesignStatic(Item item) {
         return item instanceof ItemDomainMachineDesign;
     }
-
-    public boolean isItemMachineDesignAndPower(Item item) {
+    
+    protected boolean isMachineDesignAndEntityType(Item item, EntityTypeName entityTypeName) {
         if (item instanceof ItemDomainMachineDesign) {
-            return ((ItemDomainMachineDesign) item).isItemEntityType(EntityTypeName.power.getValue());
+            return ((ItemDomainMachineDesign) item).isItemEntityType(entityTypeName.getValue());
         }
 
         return false;
     }
 
-    public boolean isItemMachineDesignAndControl(Item item) {
-        if (item instanceof ItemDomainMachineDesign) {
-            return ((ItemDomainMachineDesign) item).isItemEntityType(EntityTypeName.control.getValue());
-        }
+    public boolean isItemMachineDesignAndPower(Item item) {
+        return isMachineDesignAndEntityType(item, EntityTypeName.power); 
+    }
 
-        return false;
+    public boolean isItemMachineDesignAndControl(Item item) {
+        return isMachineDesignAndEntityType(item, EntityTypeName.control); 
     }
 
     public boolean isItemMachineDesignAndTemplate(Item item) {

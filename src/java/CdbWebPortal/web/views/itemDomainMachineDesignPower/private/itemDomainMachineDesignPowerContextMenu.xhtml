@@ -30,14 +30,10 @@ See LICENSE file.
                        event="select contextmenu">
             <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSimpleAddMenuItem.xhtml"/> 
 
-            <p:menuitem value="Specify powered node" 
-                        icon="ui-icon ui-icon-machine-design"
-                        update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel emphasizedContentBelowTitleOutputPanel"
-                        disabled="#{disabledEditContextMenuItemForSelection}"                
-                        onclick="PF('loadingDialog').show()"
-                        oncomplete="PF('loadingDialog').hide()"
-                        immediate="true"                
-                        action='#{entityController.prepareSelectMachinedPoweredByNode()}'/>
+            <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSpecifyRelatedItemMenuItem.xhtml">
+                <ui:param name="addRelatedItemLabel"
+                          value="Specify powered node"/> 
+            </ui:include>
 
             <ui:include src="../../itemDomainMachineDesign/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
         </p:contextMenu>

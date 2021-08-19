@@ -12,16 +12,13 @@ See LICENSE file.
         <!--
         Define the following ui:params
         - selectRelationshipPanelHeader - Text to be shown on header of panel 
-        - viewId - appended text to the id of panel. 
-        - selectRelationshipPanelRendered - desribes if panel should be shown. 
-        - selectRelationshipPanelListenerName - tree table listener to select the item. 
-        - selectRelationshipPanelSaveFunctionName - when the user clicks the save button. 
+        - viewId - appended text to the id of panel.                         
         -->
     </ui:insert>
 
     <p:panel header="#{selectRelationshipPanelHeader}"
              id="selectMachineRelatedToElementPanel#{viewId}"
-             rendered="#{selectRelationshipPanelRendered}">
+             rendered="#{entityController.displaySelectMachineRelatedByCurrent}">
 
         <ui:param name="machineControlledByCurrent"
                   value="#{entityController.machineControlledByCurrent}" />
@@ -34,7 +31,7 @@ See LICENSE file.
             <ui:param name="scrollable"
                       value="#{true}"/> 
             <ui:define name="treeTableEvents">
-                <p:ajax event="select" listener="#{entityController[selectRelationshipPanelListenerName]}"
+                <p:ajax event="select" listener="#{entityController.machineRelatedByCurrentItemSelected}"
                         onstart="PF('loadingDialog').show()"
                         oncomplete="onCompleteSelectMachineControlledByCurrent()"/>                            
             </ui:define>
@@ -46,7 +43,7 @@ See LICENSE file.
 
         <p:commandButton value="Save"
                          icon="fa fa-save"       
-                         action="#{entityController[selectRelationshipPanelSaveFunctionName]()}"
+                         action="#{entityController.saveSelectedMachineRelatedByCurrent()}"
                          update="@form"
                          onclick="PF('loadingDialog').show()"
                          oncomplete="PF('loadingDialog').hide()"/> 

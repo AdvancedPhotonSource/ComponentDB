@@ -4,12 +4,11 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
-import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
@@ -18,7 +17,6 @@ import javax.faces.model.ListDataModel;
 import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.primefaces.event.NodeSelectEvent;
 
 @Named(ItemDomainMachineDesignControlController.controllerNamed)
 @SessionScoped
@@ -26,9 +24,6 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
 
     public final static String controllerNamed = "itemDomainMachineDesignControlController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignControlController.class.getName());
-    
-    private boolean displaySelectMachineControlledByCurrent; 
-    private ItemDomainMachineDesign machineControlledByCurrent; 
 
     @Override
     protected String getViewPath() {
@@ -80,94 +75,15 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     @Override
     protected ItemDomainMachineDesignSettings createNewSettingObject() {
         return new ItemDomainMachineDesignSettings(this); 
+    }             
+    
+    @Override
+    protected ItemElementRelationshipTypeNames getRelationshipTypeName() {
+        return ItemElementRelationshipTypeNames.control; 
+    }
+
+    @Override
+    protected EntityTypeName getRelationshipMachineEntityType() {
+        return EntityTypeName.control; 
     }    
-
-    @Override
-    public boolean isDisplayFollowInstructionOnRightOnBlockUI() {
-        return super.isDisplayFollowInstructionOnRightOnBlockUI() 
-                || displaySelectMachineControlledByCurrent; 
-    } 
-
-    @Override
-    public void resetListConfigurationVariables() {
-        super.resetListConfigurationVariables(); 
-        displaySelectMachineControlledByCurrent = false; 
-    }
-       
-    public void prepareSelectMachinedControlledByNode() {
-        prepareAddNewMachineDesignListConfiguration();        
-        displaySelectMachineControlledByCurrent = true;
-    }
-    
-    public void saveSelectedMachineControlledByCurrent() {
-        if (machineControlledByCurrent == null) {
-            SessionUtility.addWarningMessage("No machine element selected", "Please select machine and try again.");
-            return;
-        }
-        
-        updateCurrentUsingSelectedItemInTreeTable();
-        
-        applyControlledByRelationship(machineControlledByCurrent, getCurrent());
-        
-        update();
-
-        resetListConfigurationVariables();
-        resetListDataModel();
-        expandToSelectedTreeNodeAndSelect();
-    }
-    
-    public void applyControlledByRelationship(ItemDomainMachineDesign machineElement, ItemDomainMachineDesign controlElement) {
-        RelationshipType templateRelationship
-                = relationshipTypeFacade.findByName(ItemElementRelationshipTypeNames.control.getValue());
-        
-        // Todo check if a control relationship already exists.
-
-        // Create item element relationship between the template and the clone 
-        ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
-        itemElementRelationship.setRelationshipType(templateRelationship);
-        itemElementRelationship.setFirstItemElement(machineElement.getSelfElement());
-        itemElementRelationship.setSecondItemElement(controlElement.getSelfElement());
-        
-        machineElement.getItemElementRelationshipList().add(itemElementRelationship);
-        controlElement.getItemElementRelationshipList().add(itemElementRelationship); 
-    }
-
-    public boolean isDisplaySelectMachineControlledByCurrent() {
-        return displaySelectMachineControlledByCurrent;
-    }
-
-    public ItemDomainMachineDesign getMachineControlledByCurrent() {
-        return machineControlledByCurrent;
-    }
-    
-    public void machineControlledByCurrentItemSelected(NodeSelectEvent nodeSelection) {
-        machineControlledByCurrent = getMachineFromNodeSelectEvent(nodeSelection); 
-    }
-    
-    @Override
-    protected ItemDomainMachineDesign performItemRedirection(ItemDomainMachineDesign item, String paramString, boolean forceRedirection) {
-        if (isItemMachineDesignAndControl(item)) {
-            setCurrent(item);
-            prepareView(item);
-            resetListDataModel();
-            return item;
-        }
-
-        // Do default action. 
-        return super.performItemRedirection(item, paramString, forceRedirection); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    @Override
-    protected void prepareEntityView(ItemDomainMachineDesign entity) {
-        processPreRenderList();
-        if (isItemMachineDesignAndControl(entity)) {
-            loadViewModeUrlParameter();
-        }
-    }
-    
-    @Override
-    protected String getRelationshipTypeName() {
-        return ItemElementRelationshipTypeNames.control.getValue(); 
-    }
-    
 }
