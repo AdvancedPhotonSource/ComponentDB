@@ -37,6 +37,22 @@ See LICENSE file.
 
             <ui:include src="../../itemDomainMachineDesign/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
         </p:contextMenu>
+        
+         <p:contextMenu style="width: 250px;"
+                       for="itemMachineDesignListDataTable"
+                       nodeType="machineDesignRelationshipNode"
+                       id="machineDesignDualViewMachineDesignControlRelationshipContextMenu"
+                       widgetVar="machineDesignDualViewMachineDesignControlRelationshipContextMenuWidget"
+                       event="select contextmenu">
+            <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSpecifyRelatedItemMenuItem.xhtml">
+                <ui:param name="addRelatedItemLabel"
+                          value="Specify controlled node"/> 
+            </ui:include>
+
+            <ui:include src="../../itemDomainMachineDesign/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
+        </p:contextMenu>
+        
+        
 
     </ui:define>
 
