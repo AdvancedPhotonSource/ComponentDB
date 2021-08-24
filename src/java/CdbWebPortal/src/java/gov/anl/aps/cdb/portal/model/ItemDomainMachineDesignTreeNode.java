@@ -49,14 +49,20 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
     boolean cableRelatedNode = false;
 
-    private ItemDomainMachineDesignTreeNode(ItemElement element, MachineTreeConfiguration config, ItemDomainMachineDesignTreeNode parent) {
+    protected ItemDomainMachineDesignTreeNode(ItemElement element, MachineTreeConfiguration config, ItemDomainMachineDesignTreeNode parent, boolean setType) {
         super(element);
         this.config = config;
         setParent(parent);
-        setTreeNodeTypeMachineDesignTreeList();
+        if (setType) {
+            setTreeNodeTypeMachineDesignTreeList();
+        }
     }
 
     public ItemDomainMachineDesignTreeNode(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade) {
+        initFirstLevel(items, domain, facade);
+    }
+
+    protected void initFirstLevel(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade) {
         config = new MachineTreeConfiguration();
         this.domain = domain;
         this.designFacade = facade;
@@ -74,7 +80,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
     private void addTopLevelChildren(List<ItemDomainMachineDesign> topNodes) {
         for (ItemDomainMachineDesign item : topNodes) {
-            ItemElement element = createTopLevelMockItemElement(item);
+            ItemElement element = createMockItemElement(item);
             createChildNode(element);
         }
 
@@ -85,7 +91,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         }
     }
 
-    private ItemElement createTopLevelMockItemElement(ItemDomainMachineDesign item) {
+    protected ItemElement createMockItemElement(ItemDomainMachineDesign item) {
         ItemElement selfElement = item.getSelfElement();
         ItemElement element = new ItemElement();
         Float sortOrder = selfElement.getSortOrder();
@@ -126,12 +132,17 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         return config;
     }
 
-    private ItemDomainMachineDesignTreeNode createChildNode(ItemElement itemElement) {
+    protected ItemDomainMachineDesignTreeNode createTreeNodeObject(ItemElement itemElement) {
+        ItemDomainMachineDesignTreeNode machine = new ItemDomainMachineDesignTreeNode(itemElement, config, this, true);
+        return machine;
+    }
+
+    protected ItemDomainMachineDesignTreeNode createChildNode(ItemElement itemElement) {
         return createChildNode(itemElement, false);
     }
 
     private ItemDomainMachineDesignTreeNode createChildNode(ItemElement itemElement, boolean childrenLoaded) {
-        ItemDomainMachineDesignTreeNode machine = new ItemDomainMachineDesignTreeNode(itemElement, config, this);
+        ItemDomainMachineDesignTreeNode machine = createTreeNodeObject(itemElement);
         if (childrenLoaded) {
             machine.childrenLoaded = childrenLoaded;
         }
@@ -196,20 +207,30 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
                     ItemDomainMachineDesign idm = null;
                     if (containedItem instanceof ItemDomainMachineDesign) {
                         idm = (ItemDomainMachineDesign) containedItem;
-                        itemElementList = idm.getCombinedItemElementList(element);
-                    } else {
-                        itemElementList = containedItem.getItemElementDisplayList();
                     }
+
                     if (!childrenLoaded) {
                         childrenLoaded = true;
-                        for (ItemElement itemElement : itemElementList) {
-                            createChildNode(itemElement);
-                        }
+                        
+                        if (isLoadElementChildren()) {
+                            if (idm != null) {                                
+                                itemElementList = idm.getCombinedItemElementList(element);
+                            } else {
+                                itemElementList = containedItem.getItemElementDisplayList();
+                            }
+
+                            for (ItemElement itemElement : itemElementList) {
+                                createChildNode(itemElement);
+                            }
+                        }                       
                     }
+
+                    loadRelationships();
+
                     if (loadCables && !cablesLoaded) {
                         cablesLoaded = true;
                         if (idm != null) {
-                            
+
                             // sync connectors and build list of connectors for this md item
                             getConfig().getMdControllerUtility().syncMachineDesignConnectors(idm);
                             List<MachineDesignConnectorListObject> connList = MachineDesignConnectorListObject.createMachineDesignConnectorList(idm);
@@ -236,6 +257,14 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
                 }
             }
         }
+    }
+
+    protected void loadRelationships() {
+
+    }
+
+    protected boolean isLoadElementChildren() {
+        return true;
     }
 
     @Override
@@ -400,7 +429,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         if (parentNode == null) {
             if (itemIncludedInSearch(item)) {
                 parentNode = this;
-                childElement = createTopLevelMockItemElement(item);
+                childElement = createMockItemElement(item);
             } else {
                 return null;
             }
@@ -565,14 +594,14 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         private boolean cablesNeedLoading() {
             return showConnectorsOnly || showCables;
         }
-        
+
         public ItemDomainMachineDesignControllerUtility getMdControllerUtility() {
             if (mdControllerUtility == null) {
                 mdControllerUtility = new ItemDomainMachineDesignControllerUtility();
             }
             return mdControllerUtility;
         }
-        
+
     }
 
 }
