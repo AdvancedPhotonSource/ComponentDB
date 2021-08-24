@@ -27,9 +27,11 @@ See LICENSE file.
             <ui:param name="rendered"
                       value="#{true}" />
             <ui:param name="valueModel"
-                      value="#{itemDomainMachineDesignController.machineDesignTreeRootTreeNode}" />
+                      value="#{entityController.standardMachineDesignRootTreeNode}" />
             <ui:param name="scrollable"
                       value="#{true}"/> 
+            <ui:param name="selectionModel" 
+                      value="#{entityController.selectedMachineRelatedByCurrentNode}" />
             <ui:define name="treeTableEvents">
                 <p:ajax event="select" listener="#{entityController.machineRelatedByCurrentItemSelected}"
                         onstart="PF('loadingDialog').show()"
