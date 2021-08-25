@@ -49,11 +49,11 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
     boolean cableRelatedNode = false;
 
-    protected ItemDomainMachineDesignTreeNode(ItemElement element, MachineTreeConfiguration config, ItemDomainMachineDesignTreeNode parent, boolean setType) {
+    protected ItemDomainMachineDesignTreeNode(ItemElement element, MachineTreeConfiguration config, ItemDomainMachineDesignTreeNode parent, boolean setTypeForLevel) {
         super(element);
         this.config = config;
         setParent(parent);
-        if (setType) {
+        if (setTypeForLevel && config.setMachineTreeNodeType) {
             setTreeNodeTypeMachineDesignTreeList();
         }
     }
@@ -61,9 +61,14 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
     public ItemDomainMachineDesignTreeNode(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade) {
         initFirstLevel(items, domain, facade);
     }
+    
+    protected final void initFirstLevel(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade) {
+        MachineTreeConfiguration config = new MachineTreeConfiguration();
+        initFirstLevel(items, domain, facade, config);        
+    }
 
-    protected void initFirstLevel(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade) {
-        config = new MachineTreeConfiguration();
+    protected final void initFirstLevel(List<ItemDomainMachineDesign> items, Domain domain, ItemDomainMachineDesignFacade facade, MachineTreeConfiguration config) {
+        this.config = config; 
         this.domain = domain;
         this.designFacade = facade;
         this.topLevelItems = items;
@@ -559,12 +564,21 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
 
     public class MachineTreeConfiguration {
 
+        private boolean setMachineTreeNodeType = true; 
         private boolean loadAllChildren = false;
         private boolean showCables = false;
         private boolean showConnectorsOnly = false;
         private ItemDomainMachineDesignControllerUtility mdControllerUtility = null;
 
         public MachineTreeConfiguration() {
+        }
+
+        public boolean isSetMachineTreeNodeType() {
+            return setMachineTreeNodeType;
+        }
+
+        public void setSetMachineTreeNodeType(boolean setMachineTreeNodeType) {
+            this.setMachineTreeNodeType = setMachineTreeNodeType;
         }
 
         public boolean isLoadAllChildren() {
