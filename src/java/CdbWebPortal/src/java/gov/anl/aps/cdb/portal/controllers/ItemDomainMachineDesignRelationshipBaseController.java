@@ -4,11 +4,13 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignRelationshipTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
+import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -16,6 +18,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.NodeSelectEvent;
@@ -23,12 +26,14 @@ import org.primefaces.event.NodeSelectEvent;
 public abstract class ItemDomainMachineDesignRelationshipBaseController extends ItemDomainMachineDesignBaseController {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignRelationshipBaseController.class.getName());
-    
+
     private ItemDomainMachineDesign machineRelatedByCurrent;
     private ItemDomainMachineDesignTreeNode selectedMachineRelatedByCurrentNode = null;
     private boolean displaySelectMachineRelatedByCurrent;
 
-    ItemDomainMachineDesignTreeNode standardMachineDesignRootTreeNode;
+    private ItemDomainMachineDesignTreeNode standardMachineDesignRootTreeNode;
+
+    private ItemDomainMachineDesignRelationshipTreeNode removeMachineDesignRootTreeNode;
 
     protected abstract ItemElementRelationshipTypeNames getRelationshipTypeName();
 
@@ -66,11 +71,11 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
             String name = relationshipType.getName();
 
             if (name.equals(relationshipTypeName)) {
-                ItemElement itemElement = null; 
+                ItemElement itemElement = null;
                 if (first) {
                     itemElement = ier.getFirstItemElement();
                 } else {
-                    itemElement = ier.getSecondItemElement(); 
+                    itemElement = ier.getSecondItemElement();
                 }
                 ItemDomainMachineDesign machine = (ItemDomainMachineDesign) itemElement.getParentItem();
                 machineItems.add(machine);
@@ -96,8 +101,76 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
         standardMachineDesignRootTreeNode = null;
     }
 
+    public void prepareRemoveMachinedRelatedRelationship() {
+        updateCurrentUsingSelectedItemInTreeTable();
+        ItemDomainMachineDesign current = getCurrent();
+
+        removeMachineDesignRootTreeNode = new ItemDomainMachineDesignRelationshipTreeNode
+        (current, getDefaultDomain(), getEntityDbFacade(), getRelationshipTypeName(), false, true);
+    }
+
+    public void removeMachinedRelatedRelationship() {
+        List<ItemElementRelationship> relationshipsToDestroy = new ArrayList<>();
+        ItemDomainMachineDesign current = getCurrent();
+
+        removeRelationshipHiearchically(current, relationshipsToDestroy, true);
+        
+        ItemElementRelationshipController instance = ItemElementRelationshipController.getInstance();        
+        
+        try {
+            for (ItemElementRelationship ier : relationshipsToDestroy) {
+                instance.destroy(ier);
+            }
+        } catch (RuntimeException ex) {
+            LOGGER.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getMessage());            
+        }
+                
+        resetListConfigurationVariables();
+        resetListDataModel();
+    }
+
+    private void removeRelationshipHiearchically(ItemDomainMachineDesign machine, List<ItemElementRelationship> relationshipsToDestroy, boolean first) {
+        ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
+        String relationshipName = relationshipTypeName.getValue();
+        if (first) {
+            // When it goes from control element to machine element
+            List<ItemElementRelationship> itemElementRelationshipList = machine.getItemElementRelationshipList();
+
+            for (int i = 0; i < itemElementRelationshipList.size(); i++) {
+                ItemElementRelationship ier = itemElementRelationshipList.get(i);
+                if (ier.getRelationshipType().getName().equals(relationshipName)) {
+                    ItemDomainMachineDesignTreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
+                    ItemElement element = selectedItemInListTreeTable.getParent().getElement();
+                    Item containedItem = element.getContainedItem();
+                    ItemElement parentSelfElement = containedItem.getSelfElement();
+                    ItemElement secondItemElement = ier.getSecondItemElement();
+
+                    if (parentSelfElement.equals(secondItemElement)) {
+                        itemElementRelationshipList.remove(i);
+                        relationshipsToDestroy.add(ier); 
+                        break;
+                    }
+                }
+            }
+        }
+                
+        // When it goes from machine element to machine element (children) 
+        List<ItemElementRelationship> itemElementRelationshipList = machine.getItemElementRelationshipList1();
+        for (int i = 0; i < itemElementRelationshipList.size(); i++) {
+            ItemElementRelationship ier = itemElementRelationshipList.get(i);
+            if (ier.getRelationshipType().getName().equals(relationshipName)) {
+                ItemElement firstItemElement = ier.getFirstItemElement();
+                Item parentItem = firstItemElement.getParentItem();
+                ItemDomainMachineDesign parentMachine = (ItemDomainMachineDesign) parentItem;
+                relationshipsToDestroy.add(ier);
+                itemElementRelationshipList.remove(i);
+                removeRelationshipHiearchically(parentMachine, relationshipsToDestroy, false);
+            }
+        }
+    }
+
     public void prepareSelectMachinedRelatedByNode() {
-        setSelectedItemInListTreeTable(null);
         prepareAddNewMachineDesignListConfiguration();
         displaySelectMachineRelatedByCurrent = true;
     }
@@ -115,7 +188,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
         } catch (InvalidArgument ex) {
             LOGGER.error(ex);
             SessionUtility.addErrorMessage("Error", ex.getMessage());
-            
+
             return;
         }
 
@@ -134,20 +207,20 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
         List<ItemDomainMachineDesign> machineItems = new ArrayList<>();
         List<ItemElementRelationship> itemElementRelationshipList = machineElement.getItemElementRelationshipList();
         loadMachineItemsWithRelationship(itemElementRelationshipList, machineItems, false);
-        
+
         switch (machineItems.size()) {
             case 0:
                 // Perfect to proceed
                 break;
             case 1:
-                ItemDomainMachineDesign relatedItem = machineItems.get(0); 
+                ItemDomainMachineDesign relatedItem = machineItems.get(0);
                 String name = relatedItem.getName();
                 if (relatedItem.equals(relatedElement)) {
                     throw new InvalidArgument("Relationship with " + name + " already exists");
                 }
                 throw new InvalidArgument("The item is already related by: " + name);
-            default:    
-                throw new InvalidArgument("The item already has relationship defined");                          
+            default:
+                throw new InvalidArgument("The item already has relationship defined");
         }
 
         // Todo check if a relationship already exists.
@@ -196,6 +269,10 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
         return rootTreeNode;
     }
 
+    public void machineRelatedByCurrentItemSelected(NodeSelectEvent nodeSelection) {
+        machineRelatedByCurrent = getMachineFromNodeSelectEvent(nodeSelection);
+    }
+
     public ItemDomainMachineDesignTreeNode getStandardMachineDesignRootTreeNode() {
         if (standardMachineDesignRootTreeNode == null) {
             List<ItemDomainMachineDesign> defaultTopLevelMachineList = super.getDefaultTopLevelMachineList();
@@ -216,8 +293,12 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
         this.selectedMachineRelatedByCurrentNode = SelectedMachineRelatedByCurrentNode;
     }
 
-    public void machineRelatedByCurrentItemSelected(NodeSelectEvent nodeSelection) {
-        machineRelatedByCurrent = getMachineFromNodeSelectEvent(nodeSelection);
+    public ItemDomainMachineDesignRelationshipTreeNode getRemoveMachineDesignRootTreeNode() {
+        return removeMachineDesignRootTreeNode;
+    }
+
+    public void setRemoveMachineDesignRootTreeNode(ItemDomainMachineDesignRelationshipTreeNode removeMachineDesignRootTreeNode) {
+        this.removeMachineDesignRootTreeNode = removeMachineDesignRootTreeNode;
     }
 
     public boolean isDisplaySelectMachineRelatedByCurrent() {
