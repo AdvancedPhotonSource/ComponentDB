@@ -7,7 +7,9 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignDualColumnListViewTreeContextMenuTemplate.xhtml"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <ui:define name="contextMenuContents" >
 
@@ -37,8 +39,8 @@ See LICENSE file.
 
             <ui:include src="../../itemDomainMachineDesign/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
         </p:contextMenu>
-        
-         <p:contextMenu style="width: 250px;"
+
+        <p:contextMenu style="width: 250px;"
                        for="itemMachineDesignListDataTable"
                        nodeType="machineDesignRelationshipNode"
                        id="machineDesignDualViewMachineDesignControlRelationshipContextMenu"
@@ -49,11 +51,20 @@ See LICENSE file.
                           value="Specify controlled node"/> 
             </ui:include>
 
-            <ui:include src="../../itemDomainMachineDesign/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
-        </p:contextMenu>
-        
-        
+            <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipRemoveRelatedItemMenuItem.xhtml">
+                <ui:param name="removeRelatedItemLabel"
+                          value="Remove control relationship"/> 
+            </ui:include>
 
+            <ui:include src="../../itemDomainMachineDesign/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
+        </p:contextMenu>                
+    </ui:define>
+
+    <ui:define name="contextMenuSupport">
+        <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/itemDomainMachineDesignRelationshipDestroyRelationshipDialog.xhtml">
+            <ui:param name="relationshipName"
+                      value="control" /> 
+        </ui:include>
     </ui:define>
 
 </ui:composition>
