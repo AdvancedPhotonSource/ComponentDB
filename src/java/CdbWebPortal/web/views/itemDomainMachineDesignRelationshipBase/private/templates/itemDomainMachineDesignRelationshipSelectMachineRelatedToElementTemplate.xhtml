@@ -38,6 +38,8 @@ See LICENSE file.
                         oncomplete="onCompleteSelectMachineControlledByCurrent()"/>                            
             </ui:define>
         </ui:decorate>
+        
+        <ui:insert name="additionalRelationshipInfoPrompt" /> 
 
         <p:remoteCommand name="onCompleteSelectMachineControlledByCurrent"                             
                          update="machineDesignDualListViewOutputPanel"                             

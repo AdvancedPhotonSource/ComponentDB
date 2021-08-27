@@ -20,6 +20,11 @@ See LICENSE file.
                        widgetVar="machineDesignDualViewMachineDesignControlContextMenuWidget">
 
             <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSimpleAddMenuItem.xhtml"/> 
+            
+            <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSpecifyRelatedItemMenuItem.xhtml">
+                <ui:param name="addRelatedItemLabel"
+                          value="Specify controlled node"/> 
+            </ui:include>
 
             <ui:include src="../../itemDomainMachineDesign/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
         </p:contextMenu>
@@ -50,6 +55,15 @@ See LICENSE file.
                 <ui:param name="addRelatedItemLabel"
                           value="Specify controlled node"/> 
             </ui:include>
+            
+            <p:menuitem value="Update interface to parent" 
+                icon="fa fa-link"
+                update="machineDesignDualListViewOutputPanel listActionButtonsOutputPanel emphasizedContentBelowTitleOutputPanel"
+                disabled="#{disabledEditContextMenuItemForSelection}"                
+                onclick="PF('loadingDialog').show()"                
+                oncomplete="PF('loadingDialog').hide();
+                            PF('updateInterfaceToParentDialogWidget').show();"                        
+                action='#{entityController.prepareUpdateInterfaceToParent()}'/>
 
             <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipRemoveRelatedItemMenuItem.xhtml">
                 <ui:param name="removeRelatedItemLabel"
@@ -65,6 +79,8 @@ See LICENSE file.
             <ui:param name="relationshipName"
                       value="control" /> 
         </ui:include>
+        
+        <ui:include src="itemDomainMachineDesignControlUpdateInterfaceToParentDialog.xhtml" />
     </ui:define>
 
 </ui:composition>
