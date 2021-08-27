@@ -3,6 +3,7 @@ import configparser
 import gc
 import logging
 import os
+import re
 import sys
 from abc import ABC, abstractmethod
 from enum import Enum, auto, unique
@@ -17,9 +18,23 @@ CONFIG_RES_DEFAULT_OUTPUT_DIR = "outputDir"
 CONFIG_SECTION_LOADER = "LOADER"
 CONFIG_RES_LOADER_INPUT_FILE = "inputFile"
 
+CONFIG_SECTION_TAGGER = "TAGGING_MODULE"
+CONFIG_RES_TAGGER_IGNORE_ERRORS = "ignoreErrors"
+
 CONFIG_SECTION_GENERATOR = "GENERATOR"
 CONFIG_RES_GENERATOR_OUTPUT_FILE = "outputFile"
 
+MAGNET_REGEX_STR = "S(\d{2})([AB]):(M|Q|S|FC|FH|FV|SQ|H|V)(\d{1})(T?)"
+MAGNET_REGEX = re.compile(MAGNET_REGEX_STR + '$')
+MAGNET_TC_REGEX = re.compile(MAGNET_REGEX_STR + ":TC(\d{1})" + '$')
+MAGNET_KLIXON_REGEX = re.compile(MAGNET_REGEX_STR + ":TS(\d{1})" + '$')
+
+BIPOLAR_MAGNET_POWER_CABLE_TYPE = "#14/2c (corrector)"
+
+SUFFIX_UNIPOLAR_MAGNET_POWER = "UPOW"
+SUFFIX_BIPOLAR_MAGNET_POWER = "BPOW"
+SUFFIX_MAGNET_THERMOCOUPLE = "MAGTC"
+SUFFIX_KLIXON = "KLIX"
 
 @unique
 class Field(Enum):
@@ -53,8 +68,10 @@ class Field(Enum):
     DEST_DRAWING = auto()
     DEST_END_LENGTH = auto()
     DEST_NOTES = auto()
-    CAD_LENGTH = auto()
-    ROUTED_LENGTH = auto()
+    ROUTING_BATCH_ID = auto()
+    ROUTING_CABLE_ID = auto()
+    ROUTING_CAD_LENGTH = auto()
+    ROUTING_ROUTED_LENGTH = auto()
 
 
 LABEL_ROW_VALID = "row valid"
@@ -87,8 +104,10 @@ LABEL_DEST_LOCATION = "dest location"
 LABEL_DEST_DRAWING = "dest drawing"
 LABEL_DEST_END_LENGTH = "dest end length"
 LABEL_DEST_NOTES = "dest notes"
-LABEL_CAD_LENGTH = "CAD length"
-LABEL_ROUTED_LENGTH = "routed length"
+LABEL_ROUTING_BATCH_ID = "routing batch id"
+LABEL_ROUTING_CABLE_ID = "routing cable id"
+LABEL_ROUTING_CAD_LENGTH = "CAD length"
+LABEL_ROUTING_ROUTED_LENGTH = "routed length"
 
 
 class FieldInfo:
@@ -130,8 +149,8 @@ field_info_map = {
     Field.DEST_DRAWING: FieldInfo(Field.DEST_DRAWING, LABEL_DEST_DRAWING),
     Field.DEST_END_LENGTH: FieldInfo(Field.DEST_END_LENGTH, LABEL_DEST_END_LENGTH),
     Field.DEST_NOTES: FieldInfo(Field.DEST_NOTES, LABEL_DEST_NOTES),
-    Field.CAD_LENGTH: FieldInfo(Field.CAD_LENGTH, LABEL_CAD_LENGTH),
-    Field.ROUTED_LENGTH: FieldInfo(Field.ROUTED_LENGTH, LABEL_ROUTED_LENGTH),
+    Field.ROUTING_CAD_LENGTH: FieldInfo(Field.ROUTING_CAD_LENGTH, LABEL_ROUTING_CAD_LENGTH),
+    Field.ROUTING_ROUTED_LENGTH: FieldInfo(Field.ROUTING_ROUTED_LENGTH, LABEL_ROUTING_ROUTED_LENGTH),
 }
 
 
@@ -397,17 +416,259 @@ class CableInfoModule(ABC):
     def __init__(self):
         pass
 
-    def initialize(self):
+    def initialize(self, config):
         return True, ""
 
     def process_records(self, records):
         return True, ""
 
+    def finalize(self):
+        pass
 
-class TestModule(CableInfoModule):
+
+class TaggingModuleHandler(ABC):
 
     def __init__(self):
+        self.handled_record_count = 0
+
+    @abstractmethod
+    def get_batch_id(self):
         pass
+
+    @abstractmethod
+    # returns True if record is successfully handled.
+    def handle(self, record):
+        pass
+
+    def increment_handled_record_count(self):
+        self.handled_record_count = self.handled_record_count + 1
+
+    def get_handled_record_count(self):
+        return self.handled_record_count
+
+
+class MagnetPowerCableHandler(TaggingModuleHandler, ABC):
+
+    def __init__(self):
+        super().__init__()
+
+    def match_regex(self, to_device):
+        # match regex
+        regex_match = MAGNET_REGEX.match(to_device)
+        if regex_match:
+            sector, section, magnet_type, magnet_number, trim = regex_match.groups()
+            cable_id = 'S' + sector + section + '-' + magnet_type + magnet_number + trim + '-' + self.get_batch_id()
+            return True, self.get_batch_id(), cable_id
+        else:
+            return False, None, None
+
+
+class UnipolarMagnetPowerCableHandler(MagnetPowerCableHandler):
+
+    def __init__(self):
+        super().__init__()
+        self.cable_types = {"DLO 444 (pair)", "DLO 535 (pair)", "DLO #2 (pair)", "DLO 4/0 (pair)"}
+
+    def get_batch_id(self):
+        return SUFFIX_UNIPOLAR_MAGNET_POWER
+
+    def handle(self, record):
+
+        cable_type = record.get(Field.CDB_CABLE_TYPE, None)
+        to_device = record.get(Field.CDB_CABLE_END2_DEVICE, None)
+
+        # check cable type
+        if cable_type not in self.cable_types:
+            return False, None, None
+        else:
+            return self.match_regex(to_device)
+
+
+class BipolarMagnetPowerCableHandler(MagnetPowerCableHandler):
+
+    def __init__(self):
+        super().__init__()
+
+    def get_batch_id(self):
+        return SUFFIX_BIPOLAR_MAGNET_POWER
+
+    def handle(self, record):
+
+        cable_type = record.get(Field.CDB_CABLE_TYPE, None)
+        to_device = record.get(Field.CDB_CABLE_END2_DEVICE, None)
+
+        # check cable type
+        if cable_type != BIPOLAR_MAGNET_POWER_CABLE_TYPE:
+            return False, None, None
+        else:
+            return self.match_regex(to_device)
+
+
+class MagnetThermocoupleCableHandler(TaggingModuleHandler):
+
+    def __init__(self):
+        super().__init__()
+
+    def get_batch_id(self):
+        return SUFFIX_MAGNET_THERMOCOUPLE
+
+    def handle(self, record):
+
+        to_device = record.get(Field.CDB_CABLE_END2_DEVICE, None)
+
+        regex_match = MAGNET_TC_REGEX.match(to_device)
+        if regex_match:
+            sector, section, magnet_type, magnet_number, trim, tc_number = regex_match.groups()
+            cable_id = 'S' + sector + section + '-' + magnet_type + magnet_number + trim + '_TC' + tc_number + '-' + self.get_batch_id()
+            return True, self.get_batch_id(), cable_id
+        else:
+            return False, None, None
+
+
+class KlixonCableHandler(TaggingModuleHandler):
+
+    def __init__(self):
+        super().__init__()
+
+    def get_batch_id(self):
+        return SUFFIX_KLIXON
+
+    def handle(self, record):
+
+        to_device = record.get(Field.CDB_CABLE_END2_DEVICE, None)
+
+        regex_match = MAGNET_KLIXON_REGEX.match(to_device)
+        if regex_match:
+            sector, section, magnet_type, magnet_number, trim, klix_number = regex_match.groups()
+            cable_id = 'S' + sector + section + '-' + magnet_type + magnet_number + trim + '_TS' + klix_number + '-' + self.get_batch_id()
+            return True, self.get_batch_id(), cable_id
+        else:
+            return False, None, None
+
+
+class TaggingModule(CableInfoModule):
+
+    def __init__(self):
+        super().__init__()
+        self.handlers = []
+        self.sample_data_dict = {}
+        self.handling_error_count = 0
+        self.unhandled_record_count = 0
+        self.unhandled_cable_types = set()
+        self.handled_record_count = 0
+        self.ignore_tagging_errors = False
+
+    def initialize(self, config):
+
+        print()
+        print("Tagging Module Initialization ====================")
+        print()
+
+        # get config resource for ignoring unhandled items
+        self.ignore_tagging_errors = get_config_resource_bool(config, CONFIG_SECTION_TAGGER, CONFIG_RES_TAGGER_IGNORE_ERRORS, False)
+
+        # initialize list of handlers
+        self.handlers.append(UnipolarMagnetPowerCableHandler())
+        self.handlers.append(BipolarMagnetPowerCableHandler())
+        self.handlers.append(MagnetThermocoupleCableHandler())
+        self.handlers.append(KlixonCableHandler())
+
+        return True, ""
+
+    # Assigns a routing_batch_id and routing_cable_id to each cable.
+    def process_records(self, records):
+
+        for record in records:
+            is_valid = record.get(Field.ROW_VALID, False)
+
+            if is_valid:
+                valid_info = ""
+                handled_record = False
+
+                # check for presence of cable type in record
+                cable_type = None
+                if Field.CDB_CABLE_TYPE not in record:
+                    fatal_error("Tagging module encountered record without '%s' field: %s" % (LABEL_CDB_CABLE_TYPE, record))
+                else:
+                    cable_type = record[Field.CDB_CABLE_TYPE]
+
+                # check for presence of "to device" in record
+                to_device = None
+                if Field.CDB_CABLE_END2_DEVICE not in record:
+                    fatal_error("Tagging module encountered record without '%s' (to device) field: %s" % (LABEL_CDB_CABLE_END2_DEVICE, record))
+                else:
+                    to_device = record[Field.CDB_CABLE_END2_DEVICE]
+
+                for handler in self.handlers:
+                    handler_name = type(handler).__name__
+                    (handled_record, batch_id, cable_id) = handler.handle(record)
+
+                    if handled_record:
+
+                        self.handled_record_count = self.handled_record_count + 1
+
+                        if batch_id is None or len(batch_id) == 0:
+                            is_valid = False
+                            valid_info = valid_info + "Handler: %s failed to set batch id. " % handler_name
+                        elif cable_id is None or len(cable_id) == 0:
+                            is_valid = False
+                            valid_info = valid_info + "Handler: %s failed to set cable id" % handler_name
+
+                        if is_valid:
+                            handler.increment_handled_record_count()
+                            record[Field.ROUTING_BATCH_ID] = batch_id
+                            record[Field.ROUTING_CABLE_ID] = cable_id
+                            if handler_name not in self.sample_data_dict:
+                                self.sample_data_dict[handler_name] = (batch_id, cable_id)
+                        else:
+                            self.handling_error_count = self.handling_error_count + 1
+                            record[Field.ROW_VALID] = False
+                            record[Field.ROW_VALID_INFO] = valid_info
+
+                        break
+
+                if not handled_record:
+                    self.unhandled_record_count = self.unhandled_record_count + 1
+                    self.unhandled_cable_types.add(cable_type)
+                    record[Field.ROW_VALID] = False
+                    record[Field.ROW_VALID_INFO] = "Tagging module failed to handle record."
+
+        is_valid = True
+        valid_info = ""
+
+        if self.unhandled_record_count > 0 or self.handling_error_count > 0:
+            if not self.ignore_tagging_errors:
+                is_valid = False
+                valid_info = "Tagging module unhandled records: %d handling errors: %d" % (self.unhandled_record_count, self.handling_error_count)
+
+        return is_valid, valid_info
+
+    def finalize(self):
+
+        print()
+        print("Tagging Module Stats ====================")
+        print()
+        print("Handled records: %d" % self. handled_record_count)
+        print("Unhandled records: %d" % self.unhandled_record_count)
+        print("Handling errors: %d" % self.handling_error_count)
+
+        for handler in self.handlers:
+            handler_name = type(handler).__name__
+            handled_record_count = handler.get_handled_record_count()
+            print()
+            print("Handler: %s (batch id: %s) records handled: %d " % (handler_name, handler.get_batch_id(), handled_record_count))
+            if handled_record_count > 0:
+                (batch_id, cable_id) = self.sample_data_dict[handler_name]
+                print("sample routing cable id: %s" % cable_id)
+
+        self.handlers = None
+
+        if len(self.unhandled_cable_types) > 0:
+            print()
+            print("Unhandled cable types:")
+            print()
+            for cable_type in self.unhandled_cable_types:
+                print(cable_type)
 
 
 class PullListGenerator:
@@ -419,6 +680,10 @@ class PullListGenerator:
         self.sheet = None
 
     def initialize(self):
+
+        print()
+        print("Pull List Geneator Initialization ====================")
+        print()
 
         init_valid = True
         init_valid_info = ""
@@ -449,8 +714,8 @@ class PullListGenerator:
             ExcelRowDictColumnOutputModel(key=Field.DEST_DRAWING),
             ExcelRowDictColumnOutputModel(key=Field.DEST_END_LENGTH),
             ExcelRowDictColumnOutputModel(key=Field.DEST_NOTES),
-            ExcelRowDictColumnOutputModel(key=Field.CAD_LENGTH),
-            ExcelRowDictColumnOutputModel(key=Field.ROUTED_LENGTH),
+            ExcelRowDictColumnOutputModel(key=Field.ROUTING_CAD_LENGTH),
+            ExcelRowDictColumnOutputModel(key=Field.ROUTING_ROUTED_LENGTH),
         ]
         self.sheet = ExcelRowDictSheetOutputModel(specs, "pull list")
         self.workbook = ExcelWorkbookOutputModel()
@@ -491,6 +756,14 @@ def get_config_resource(config, section, key, is_required, print_value=True, pri
     return value
 
 
+def get_config_resource_bool(config, section, key, is_required):
+    config_value = get_config_resource(config, section, key, is_required)
+    if config_value in ("True", "TRUE", "true", "Yes", "YES", "yes", "On", "ON", "on", "1"):
+        return True
+    else:
+        return False
+
+
 def main():
 
     # parse command line args
@@ -520,20 +793,20 @@ def main():
     #
 
     # read config files
-    config_preimport = configparser.ConfigParser()
-    config_preimport.read(file_config_main)
+    config = configparser.ConfigParser()
+    config.read(file_config_main)
 
     print()
     print("preimport.conf OPTIONS ====================")
     print()
 
     # process inputDir option
-    option_input_dir = get_config_resource(config_preimport, CONFIG_SECTION_DEFAULT, CONFIG_RES_DEFAULT_INPUT_DIR, True)
+    option_input_dir = get_config_resource(config, CONFIG_SECTION_DEFAULT, CONFIG_RES_DEFAULT_INPUT_DIR, True)
     if not os.path.isdir(option_input_dir):
         fatal_error("'[%s] inputDir' directory: %s does not exist, exiting" % ('DEFAULT', option_input_dir))
 
     # process outputDir option
-    option_output_dir = get_config_resource(config_preimport, CONFIG_SECTION_DEFAULT, CONFIG_RES_DEFAULT_OUTPUT_DIR, True)
+    option_output_dir = get_config_resource(config, CONFIG_SECTION_DEFAULT, CONFIG_RES_DEFAULT_OUTPUT_DIR, True)
     if not os.path.isdir(option_output_dir):
         fatal_error("'[%s] outputDir' directory: %s does not exist, exiting" % ('DEFAULT', option_output_dir))
 
@@ -552,7 +825,7 @@ def main():
     # Load cable records.
     #
 
-    loader = CableInfoLoader(option_input_dir, config_preimport)
+    loader = CableInfoLoader(option_input_dir, config)
 
     (loader_init_valid, loader_init_valid_info) = loader.initialize()
     if not loader_init_valid:
@@ -575,15 +848,15 @@ def main():
     #
     # Invoke each CableModule for each cable record.
     #
-    module_list = []
-    module_list.append(TestModule())
+    module_list = [TaggingModule()]
     for module in module_list:
-        (module_init_valid, module_init_valid_info) = module.initialize()
+        (module_init_valid, module_init_valid_info) = module.initialize(config)
         if not module_init_valid:
             fatal_error("Module initialization failed: " + module_init_valid_info)
         (process_valid, process_valid_info) = module.process_records(cable_records)
         if not process_valid:
             fatal_error("Module processing failed: " + process_valid_info)
+        module.finalize()
         # run garbage collection after each module
         module = None
         unreachable = gc.collect()
@@ -601,7 +874,7 @@ def main():
     #
     # Generate pull list output for each cable record.
     #
-    generator = PullListGenerator(option_output_dir, config_preimport)
+    generator = PullListGenerator(option_output_dir, config)
     (generator_init_valid, generator_init_valid_info) = generator.initialize()
     if not generator_init_valid:
         fatal_error("Module initialization failed: " + generator_init_valid_info)
