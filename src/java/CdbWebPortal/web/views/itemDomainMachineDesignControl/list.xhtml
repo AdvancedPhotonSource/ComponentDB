@@ -7,6 +7,7 @@ See LICENSE file.
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
                 template="../itemDomainMachineDesign/private/templates/itemDomainMachineListViewTemplate.xhtml">
 
     <ui:param name="entityController" value="#{itemDomainMachineDesignControlController}" />
@@ -24,6 +25,12 @@ See LICENSE file.
 
     <ui:define name="additionalDualColumnEditPanels">
         <ui:include src="private/itemDomainMachineDesignControlSelectMachineControlledByElement.xhtml" /> 
+    </ui:define>
+    
+    <ui:define name="machineDesignExtraInfoPromotedColumn">
+        <p:column headerText="Interface to parent">
+            #{mdTreeListObject.controlInterfaceToParent.value}
+        </p:column>
     </ui:define>
 
 </ui:composition>
