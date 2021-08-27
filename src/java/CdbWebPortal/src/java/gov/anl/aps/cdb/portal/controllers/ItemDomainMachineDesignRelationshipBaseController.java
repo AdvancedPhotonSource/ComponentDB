@@ -4,7 +4,6 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
-import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
@@ -18,7 +17,6 @@ import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.NodeSelectEvent;
@@ -199,7 +197,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
         expandToSelectedTreeNodeAndSelect();
     }
 
-    public void applyRelationship(ItemDomainMachineDesign machineElement, ItemDomainMachineDesign relatedElement) throws InvalidArgument {
+    public ItemElementRelationship applyRelationship(ItemDomainMachineDesign machineElement, ItemDomainMachineDesign relatedElement) throws InvalidArgument {
         ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
         RelationshipType templateRelationship
                 = relationshipTypeFacade.findByName(relationshipTypeName.getValue());
@@ -232,6 +230,8 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
 
         machineElement.getItemElementRelationshipList().add(itemElementRelationship);
         relatedElement.getItemElementRelationshipList1().add(itemElementRelationship);
+        
+        return itemElementRelationship; 
     }
 
     @Override

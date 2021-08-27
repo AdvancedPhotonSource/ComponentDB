@@ -4,12 +4,20 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
+import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
+import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.DataModel;
@@ -25,65 +33,135 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     public final static String controllerNamed = "itemDomainMachineDesignControlController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignControlController.class.getName());
 
+    private String controlInterfaceSelection = null;
+    private PropertyType controlInterfacePropertyType = null;
+
     @Override
     protected String getViewPath() {
-        return "/views/itemDomainMachineDesignControl/view.xhtml"; 
+        return "/views/itemDomainMachineDesignControl/view.xhtml";
     }
 
     @Override
     public String getItemListPageTitle() {
         return "Control Machine Elements";
-    } 
+    }
 
     @Override
     public String getDisplayEntityTypeName() {
-        return "Control Machine Element"; 
+        return "Control Machine Element";
     }
-    
+
     @Override
-    public DataModel getTopLevelMachineDesignSelectionList() {    
+    public DataModel getTopLevelMachineDesignSelectionList() {
         ItemDomainMachineDesign current = getCurrent();
         DataModel topLevelMachineDesignSelectionList = current.getTopLevelMachineDesignSelectionList();
-        
+
         if (topLevelMachineDesignSelectionList == null) {
             List<ItemDomainMachineDesign> topLevelMachineDesignInventory = itemDomainMachineDesignFacade.getTopLevelMachineDesignControl();
-                        
+
             removeTopLevelParentOfItemFromList(current, topLevelMachineDesignInventory);
-            
+
             topLevelMachineDesignSelectionList = new ListDataModel(topLevelMachineDesignInventory);
             current.setTopLevelMachineDesignSelectionList(topLevelMachineDesignSelectionList);
         }
-        
-        return topLevelMachineDesignSelectionList;         
+
+        return topLevelMachineDesignSelectionList;
     }
 
-    public static ItemDomainMachineDesignControlController getInstance() {        
-        return (ItemDomainMachineDesignControlController) SessionUtility.findBean(controllerNamed);        
+    public static ItemDomainMachineDesignControlController getInstance() {
+        return (ItemDomainMachineDesignControlController) SessionUtility.findBean(controllerNamed);
     }
 
     @Override
-    public List<ItemDomainMachineDesign> getDefaultTopLevelMachineList() {        
+    public List<ItemDomainMachineDesign> getDefaultTopLevelMachineList() {
         return itemDomainMachineDesignFacade.getTopLevelMachineDesignControl();
-    }   
+    }
 
     @Override
     protected ItemDomainMachineDesignControlControllerUtility createControllerUtilityInstance() {
-        return new ItemDomainMachineDesignControlControllerUtility(); 
+        return new ItemDomainMachineDesignControlControllerUtility();
+    }
+
+    public PropertyType getControlInterfacePropertyType() {
+        if (controlInterfacePropertyType == null) {
+            String cotrolInterfacePropertyTypeName = SystemPropertyTypeNames.cotrolInterface.getValue();
+            controlInterfacePropertyType = propertyTypeFacade.findByName(cotrolInterfacePropertyTypeName);
+        }
+        return controlInterfacePropertyType;
+    }
+
+    public String getControlInterfaceSelection() {
+        return controlInterfaceSelection;
+    }
+
+    public void setControlInterfaceSelection(String controlInterfaceSelection) {
+        this.controlInterfaceSelection = controlInterfaceSelection;
+    }
+
+    public void prepareUpdateInterfaceToParent() {
+        updateCurrentUsingSelectedItemInTreeTable();
+
+        ItemDomainMachineDesign current = getCurrent();
+        PropertyValue controlInterfaceToParent = current.getControlInterfaceToParent();
+        if (controlInterfaceToParent.getId() != null) {
+            controlInterfaceSelection = controlInterfaceToParent.getValue();
+        }
+    }
+
+    public void updateInterfaceToParent() {
+        ItemDomainMachineDesign current = getCurrent();
+        PropertyValue controlInterfaceToParent = current.getControlInterfaceToParent();
+        ItemElementRelationship controlRelationshipToParent = current.getControlRelationshipToParent();
+        if (controlInterfaceToParent.getId() == null) {
+            createInterfaceToParentPropertyValue(controlRelationshipToParent);
+        } else {
+            controlInterfaceToParent.setValue(controlInterfaceSelection);
+        }
+        
+        update();
+        expandToSelectedTreeNodeAndSelect();
+    }
+
+    @Override
+    public ItemElementRelationship applyRelationship(ItemDomainMachineDesign machineElement, ItemDomainMachineDesign relatedElement) throws InvalidArgument {
+        ItemElementRelationship relationship = super.applyRelationship(machineElement, relatedElement);
+        
+        createInterfaceToParentPropertyValue(relationship);
+
+        return relationship;
+    }
+
+    private void createInterfaceToParentPropertyValue(ItemElementRelationship relationship) {
+        List<PropertyValue> propertyValueList = relationship.getPropertyValueList();
+        if (propertyValueList == null) {
+            propertyValueList = new ArrayList<>();
+            relationship.setPropertyValueList(propertyValueList);
+        }
+
+        Date enteredOnDateTime = new Date();
+        UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
+
+        PropertyValue pv = new PropertyValue();
+        pv.setPropertyType(getControlInterfacePropertyType());
+        pv.setValue(controlInterfaceSelection);
+        pv.setEnteredByUser(enteredByUser);
+        pv.setEnteredOnDateTime(enteredOnDateTime);
+        propertyValueList.add(pv);
     }
 
     // todo resolve this 
     @Override
     protected ItemDomainMachineDesignSettings createNewSettingObject() {
-        return new ItemDomainMachineDesignSettings(this); 
-    }             
-    
+        return new ItemDomainMachineDesignSettings(this);
+    }
+
     @Override
     protected ItemElementRelationshipTypeNames getRelationshipTypeName() {
-        return ItemElementRelationshipTypeNames.control; 
+        return ItemElementRelationshipTypeNames.control;
     }
 
     @Override
     protected EntityTypeName getRelationshipMachineEntityType() {
-        return EntityTypeName.control; 
-    }    
+        return EntityTypeName.control;
+    }
 }
