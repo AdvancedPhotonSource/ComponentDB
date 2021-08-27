@@ -15,11 +15,7 @@ See LICENSE file.
         <f:viewAction action="#{logController.processPreRender()}"/>        
     </f:metadata>
 
-    <ui:param name="entityController" value="#{itemDomainMachineDesignPowerController}"/>
-    
-    <ui:define name="itemEditPanelGrid">
-        <ui:include src="../itemDomainMachineDesign/private/itemDomainMachineDesignCreatePanelGrid.xhtml" /> 
-    </ui:define>    
+    <ui:param name="entityController" value="#{itemDomainMachineDesignControlController}"/>        
     
 </ui:composition>
 
