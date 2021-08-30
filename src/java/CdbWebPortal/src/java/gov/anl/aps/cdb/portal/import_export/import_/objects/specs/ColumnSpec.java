@@ -45,8 +45,10 @@ public abstract class ColumnSpec {
             List<ColumnModeOptions> options) {
         
         this.description = description;
-        for (ColumnModeOptions option : options) {
-            this.addColumnModeOptions(option);
+        if (options != null) {
+            for (ColumnModeOptions option : options) {
+                this.addColumnModeOptions(option);
+            }
         }
     }
 

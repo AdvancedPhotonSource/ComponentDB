@@ -39,6 +39,11 @@ public class ColumnModeOptions {
         return unchangeable;
     }
     
+    public static List<ColumnModeOptions> empty() {
+        List<ColumnModeOptions> options = new ArrayList<>();
+        return options;
+    }
+    
     public static List<ColumnModeOptions> rCREATE() {
         List<ColumnModeOptions> options = new ArrayList<>();
         options.add(new ColumnModeOptions(ImportMode.CREATE, true));

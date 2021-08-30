@@ -13,6 +13,7 @@ import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDes
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainCableDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainCableDesignControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDesignConnections;
+import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperCableDesignPullList;
 import gov.anl.aps.cdb.portal.model.ItemDomainCableDesignLazyDataModel;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainCableDesignFacade;
@@ -1292,6 +1293,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         List<ImportExportFormatInfo> formatInfo = new ArrayList<>();
         
         formatInfo.add(new ImportExportFormatInfo("Basic Cable Design Create/Update Format", ImportHelperCableDesign.class));
+        formatInfo.add(new ImportExportFormatInfo("Cable Design Pull List Extract Format", ImportHelperCableDesignPullList.class));
         
         String completionUrl = "/views/itemDomainCableDesign/list?faces-redirect=true";
         
