@@ -35,6 +35,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -359,7 +360,9 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
                 return null;
             }
 
-            InputStream stream = contentStream.getStream();
+            Supplier<InputStream> streamSupplier = contentStream.getStream();
+            InputStream stream = streamSupplier.get();
+            
 
             byte[] originalData = IOUtils.toByteArray(stream);
 
