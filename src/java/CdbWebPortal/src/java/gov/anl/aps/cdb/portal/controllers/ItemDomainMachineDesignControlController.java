@@ -6,19 +6,14 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
-import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
-import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignRelationshipBaseControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.DataModel;
@@ -126,7 +121,13 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
         if (controlInterfaceToParent.getId() == null) {
             ItemDomainMachineDesignControlControllerUtility controllerUtility = getControllerUtility();
             UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
-            controllerUtility.createInterfaceToParentPropertyValue(controlRelationshipToParent, controlInterfaceSelection, enteredByUser);
+            try {
+                controllerUtility.createInterfaceToParentPropertyValue(controlRelationshipToParent, controlInterfaceSelection, enteredByUser);
+            } catch (InvalidArgument ex) {
+                LOGGER.error(ex);
+                SessionUtility.addErrorMessage("Error", ex.getErrorMessage());
+                return;
+            }
         } else {
             controlInterfaceToParent.setValue(controlInterfaceSelection);
         }
