@@ -1811,6 +1811,9 @@ public abstract class ItemDomainMachineDesignBaseController
 
     public DataModel getInstalledInventorySelectionForCurrentElement() {
         ItemDomainMachineDesign current = getCurrent();
+        if (current == null) {
+            return null; 
+        }
         DataModel installedInventorySelectionForCurrentElement = current.getInstalledInventorySelectionForCurrentElement();
         if (installedInventorySelectionForCurrentElement == null) {
             Item catalogForElement = getCatalogForElement();
