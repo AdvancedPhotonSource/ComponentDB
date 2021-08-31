@@ -10,17 +10,20 @@ import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemDomanMachineDesignIdListRequest;
+import gov.anl.aps.cdb.rest.entities.NewControlRelationshipInformation;
 import gov.anl.aps.cdb.rest.entities.NewMachinePlaceholderOptions;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -105,25 +108,25 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
             boolean foundContainer = false;
             boolean foundRoot = false;
             while (parentItem != null) {
-                
+
                 // check container match
                 String alternateName = parentItem.getAlternateName();
                 if (alternateName == null) {
                     alternateName = "";
                 }
-                if ((parentItem.getName().equals(containerItemName)) ||
-                        (alternateName.equals(containerItemName))) { 
+                if ((parentItem.getName().equals(containerItemName))
+                        || (alternateName.equals(containerItemName))) {
                     foundContainer = true;
                 }
-                
+
                 // check root match
-                if ((parentItem.getParentMachineDesign() == null) && 
-                        (parentItem.getName().equals(rootItemName))) {
+                if ((parentItem.getParentMachineDesign() == null)
+                        && (parentItem.getName().equals(rootItemName))) {
                     foundRoot = true;
                 }
-                
+
                 parentItem = parentItem.getParentMachineDesign();
-                
+
                 if (foundContainer && foundRoot) {
                     resultList.add(item);
                     break;
@@ -140,64 +143,64 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
      * @param rootItemName
      * @param containerItemName
      * @param itemName
-     * @return 
-     * @throws gov.anl.aps.cdb.common.exceptions.InvalidArgument 
+     * @return
+     * @throws gov.anl.aps.cdb.common.exceptions.InvalidArgument
      */
     @GET
     @Path("/ByHierarchy/{root}/{container}/{name}")
     @Produces(MediaType.APPLICATION_JSON)
     public List<ItemDomainMachineDesign> getMdInHierarchyByName(
-            @PathParam("root") String rootItemName, 
-            @PathParam("container") String containerItemName, 
+            @PathParam("root") String rootItemName,
+            @PathParam("container") String containerItemName,
             @PathParam("name") String itemName) throws InvalidArgument {
-        
+
         LOGGER.debug("Fetching item in hiearchy: " + rootItemName + " in container: " + containerItemName + " named: " + itemName);
-        
+
         if ((rootItemName == null) || (rootItemName.isBlank())) {
             throw new InvalidArgument(("must specify root item name"));
         }
-        
+
         if ((containerItemName == null) || (containerItemName.isBlank())) {
             throw new InvalidArgument(("must specify container item name"));
         }
-        
+
         if ((itemName == null) || (itemName.isBlank())) {
             throw new InvalidArgument(("must specify item name"));
         }
-        
+
         return itemsWithContainerHierarchy(rootItemName, containerItemName, itemName);
     }
-    
+
     @POST
     @Path("/IdList")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     public List<Integer> getHierarchyIdList(@RequestBody(required = true) ItemDomanMachineDesignIdListRequest request) throws InvalidArgument {
-        
+
         Instant start = Instant.now();
-        
+
         List<String> itemNames = request.getItemNames();
         List<String> rackNames = request.getRackNames();
         String rootItemName = request.getRootName();
-        
+
         if ((rootItemName == null) || (rootItemName.isBlank())) {
             throw new InvalidArgument("must specify root item name");
         }
-        
+
         if (itemNames.size() != rackNames.size()) {
             throw new InvalidArgument("list sizes must match for item and rack names");
         }
-        
-        LOGGER.debug("Fetching list of machine item id's by name list size: " 
+
+        LOGGER.debug("Fetching list of machine item id's by name list size: "
                 + itemNames.size());
-        
+
         List<Integer> idList = new ArrayList<>(itemNames.size());
         for (int listIndex = 0; listIndex < itemNames.size(); listIndex++) {
             String itemName = itemNames.get(listIndex);
             String containerItemName = rackNames.get(listIndex);
             if (((itemName != null) && (!itemName.isBlank()))
                     && ((containerItemName != null) && (!containerItemName.isBlank()))) {
-                
+
                 List<ItemDomainMachineDesign> mdItems = itemsWithContainerHierarchy(
                         rootItemName, containerItemName, itemName);
                 switch (mdItems.size()) {
@@ -218,11 +221,11 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
                 idList.add(0);
             }
         }
-        
+
         Instant end = Instant.now();
         Duration elapsed = Duration.between(start, end);
         LOGGER.debug("Duration: " + elapsed.toSeconds());
-        
+
         return idList;
     }
 
@@ -232,7 +235,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     public List<ItemDomainMdSearchResult> getDetailedMdSearchResults(@PathParam("searchText") String searchText) throws ObjectNotFound, InvalidArgument {
         LOGGER.debug("Performing a detailed machine design item search for search query: " + searchText);
 
-        ItemDomainMachineDesignControllerUtility mdInstance = new ItemDomainMachineDesignControllerUtility(); 
+        ItemDomainMachineDesignControllerUtility mdInstance = new ItemDomainMachineDesignControllerUtility();
 
         TreeNode rootNode = mdInstance.getSearchResults(searchText, true);
 
@@ -255,7 +258,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     public ItemDomainMachineDesign updateAssignedItem(@PathParam("mdItemId") int mdItemId, @PathParam("assignedItemId") Integer assignedItemId) throws ObjectNotFound, CdbException {
         Item currentItem = getItemByIdBase(mdItemId);
         Item assignedItem = null;
-        if (assignedItemId != null) { 
+        if (assignedItemId != null) {
             assignedItem = getItemByIdBase(assignedItemId);
         }
 
@@ -265,16 +268,16 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
 
         UserInfo currentUser = verifyCurrentUserPermissionForItem(currentItem);
         ItemDomainMachineDesign mdItem = (ItemDomainMachineDesign) currentItem;
-        
+
         mdItem.setAssignedItem(assignedItem);
-        
+
         ItemControllerUtility itemControllerUtility = mdItem.getItemControllerUtility();
-        
+
         itemControllerUtility.update(mdItem, currentUser);
-        
+
         return getMachineDesignItemById(mdItemId);
     }
-    
+
     @POST
     @Path("/ClearAssignedItem/{mdItemId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -282,65 +285,75 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public ItemDomainMachineDesign clearAssignedItem(@PathParam("mdItemId") int mdItemId) throws CdbException {
-        return updateAssignedItem(mdItemId, null); 
+        return updateAssignedItem(mdItemId, null);
     }
-    
+
     @PUT
     @Path("/createPlaceholder/{parentMdId}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Create machine placeholder item.")    
+    @Operation(summary = "Create machine placeholder item.")
     @SecurityRequirement(name = "cdbAuth")
     @Secured
     public ItemDomainMachineDesign createPlaceholder(
-            @PathParam("parentMdId") int parentMdId, 
+            @PathParam("parentMdId") int parentMdId,
             @RequestBody(required = true) NewMachinePlaceholderOptions newMachinePlaceholderOptions) throws InvalidArgument, AuthorizationError, CdbException {
-        
+
         ItemDomainMachineDesign parentItem = facade.findById(parentMdId);
         if (parentItem instanceof ItemDomainMachineDesign == false) {
             throw new InvalidArgument("parent item id provided is not a machine.");
         }
-        
+
         UserInfo currentUser = verifyCurrentUserPermissionForItem(parentItem);
+
+        ItemDomainMachineDesignBaseControllerUtility itemControllerUtility = parentItem.getItemControllerUtility();
+
+        ItemElement machinePlaceholder = itemControllerUtility.prepareMachinePlaceholder(parentItem, currentUser);
+
+        ItemDomainMachineDesign newMachine = (ItemDomainMachineDesign) machinePlaceholder.getContainedItem();
+
+        assignDataToMachineElement(newMachine, newMachinePlaceholderOptions);
         
-        String name = newMachinePlaceholderOptions.getName();
-        
+        itemControllerUtility.saveNewItemElement(machinePlaceholder, currentUser);
+
+        return newMachine;
+
+    }
+
+    public void assignDataToMachineElement(ItemDomainMachineDesign newMachine, NewMachinePlaceholderOptions options) throws InvalidArgument {
+        String name = options.getName();
+
         if (name == null || name.isEmpty()) {
             throw new InvalidArgument("Name must be provided to create a new placeholder.");
         }
-        
-        ItemDomainMachineDesignBaseControllerUtility itemControllerUtility = parentItem.getItemControllerUtility();
-        
-        ItemElement machinePlaceholder = itemControllerUtility.prepareMachinePlaceholder(parentItem, currentUser);
-        
-        ItemDomainMachineDesign newMachine = (ItemDomainMachineDesign) machinePlaceholder.getContainedItem();
-        
-        // Fetch the rest of the attributes
-        String alternateName = newMachinePlaceholderOptions.getAlternateName();
-        String description = newMachinePlaceholderOptions.getDescription();        
-        
+
+        String alternateName = options.getAlternateName();
+        String description = options.getDescription();
+
         newMachine.setName(name);
         newMachine.setAlternateName(alternateName);
         newMachine.setDescription(description);
-        
-        if (newMachinePlaceholderOptions.getProjectId() != null) {
-            Integer projectId = newMachinePlaceholderOptions.getProjectId();
+
+        if (options.getProjectId() != null) {
+            Integer projectId = options.getProjectId();
             ItemProjectFacade projectFacade = ItemProjectFacade.getInstance();
-            ItemProject project = projectFacade.find(projectId); 
+            ItemProject project = projectFacade.find(projectId);
             
+            List<ItemProject> itemProjectList = newMachine.getItemProjectList();
+            if (itemProjectList == null) {
+                itemProjectList = new ArrayList<>(); 
+                newMachine.setItemProjectList(itemProjectList);
+            }
+
             if (project != null) {
-                newMachine.getItemProjectList().clear();
-                newMachine.getItemProjectList().add(project); 
+                itemProjectList.clear();
+                itemProjectList.add(project);
             } else {
-                throw new InvalidArgument("Project with id: " + projectId + " cannot be found"); 
+                throw new InvalidArgument("Project with id: " + projectId + " cannot be found");
             }
         }
-                
-        itemControllerUtility.saveNewItemElement(machinePlaceholder, currentUser); 
-                
-        return newMachine; 
-        
+
     }
-    
+
     @POST
     @Path("/moveMachine/{mdId}/{newParentId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -349,17 +362,71 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @Secured
     public ItemElement moveMachine(@PathParam("mdId") int childId,
             @PathParam("newParentId") int newParentId) throws AuthorizationError, CdbException {
-        
+
         ItemDomainMachineDesign childMd = facade.find(childId);
         ItemDomainMachineDesign newParentMdId = facade.find(newParentId);
-        
+
         UserInfo currentUser = verifyCurrentUserPermissionForItem(childMd);
         verifyCurrentUserPermissionForItem(newParentMdId);
-        
-        
+
         ItemDomainMachineDesignBaseControllerUtility itemControllerUtility = childMd.getItemControllerUtility();
         ItemElement machineElement = itemControllerUtility.performMachineMove(newParentMdId, childMd, currentUser);
 
         return machineElement;
+    }
+
+    @PUT
+    @Path("/createControlElement")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Create machine control top level item.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemDomainMachineDesign createControlElement(
+            @RequestBody(required = true) NewMachinePlaceholderOptions controlElementOptions) throws InvalidArgument, CdbException {
+
+        ItemDomainMachineDesignControlControllerUtility utility = new ItemDomainMachineDesignControlControllerUtility();
+        UserInfo sessionUser = getCurrentRequestUserInfo();
+
+        ItemDomainMachineDesign newMachine = utility.createEntityInstance(sessionUser);        
+        assignDataToMachineElement(newMachine, controlElementOptions);
+
+        newMachine = utility.create(newMachine, sessionUser);
+        
+        return newMachine;
+    }  
+    
+    @PUT
+    @Path("/createControlRelationship")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(summary = "Create machine control top level item.")
+    @SecurityRequirement(name = "cdbAuth")
+    @Secured
+    public ItemElementRelationship createControlRelationship(
+            @RequestBody(required = true) NewControlRelationshipInformation controlRelationshipInformation) throws InvalidArgument, CdbException {        
+        ItemDomainMachineDesignControlControllerUtility utility = new ItemDomainMachineDesignControlControllerUtility();                 
+        
+        int controllingMachineId = controlRelationshipInformation.getControllingMachineId();
+        int controlledMachineId = controlRelationshipInformation.getControlledMachineId();
+        
+        ItemDomainMachineDesign controllingMachineElement = facade.find(controllingMachineId);         
+        if (controllingMachineElement == null) {
+            throw new InvalidArgument("Invalid controlling machine id entered."); 
+        }
+        UserInfo currentRequestUserInfo = verifyCurrentUserPermissionForItem(controllingMachineElement); 
+        ItemDomainMachineDesign controlledMachineElement = facade.find(controlledMachineId);
+        
+        if (controlledMachineElement == null) {
+            throw new InvalidArgument("Invalid controlled machine id entered."); 
+        }
+        
+        String controlInterfaceToParent = controlRelationshipInformation.getControlInterfaceToParent();
+        
+        ItemElementRelationship relationship = utility.applyRelationship(controlledMachineElement, controllingMachineElement, controlInterfaceToParent, currentRequestUserInfo); 
+        
+        utility.update(controllingMachineElement, currentRequestUserInfo);
+        
+        return relationship; 
+
+        
     }
 }
