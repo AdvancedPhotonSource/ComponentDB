@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers.utilities;
 
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.db.entities.EntityType;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
@@ -18,7 +19,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author darek
  */
-public class ItemDomainMachineDesignPowerControllerUtility extends ItemDomainMachineDesignBaseControllerUtility {
+public class ItemDomainMachineDesignPowerControllerUtility extends ItemDomainMachineDesignRelationshipBaseControllerUtility {
     
     private static final Logger logger = LogManager.getLogger(ItemDomainMachineDesignPowerControllerUtility.class.getName());            
         
@@ -47,6 +48,11 @@ public class ItemDomainMachineDesignPowerControllerUtility extends ItemDomainMac
         assignPowerAttributes(newPower, sessionUser);
         
         return newPower; 
+    }
+
+    @Override
+    public ItemElementRelationshipTypeNames getRelationshipTypeName() {
+        return ItemElementRelationshipTypeNames.power;
     }
     
 }

@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignRelationshipBaseControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -34,7 +35,12 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignControlController.class.getName());
 
     private String controlInterfaceSelection = null;
-    private PropertyType controlInterfacePropertyType = null;
+    private PropertyType controlInterfacePropertyType = null;        
+
+    @Override
+    protected ItemDomainMachineDesignControlControllerUtility getControllerUtility() {
+        return (ItemDomainMachineDesignControlControllerUtility) super.getControllerUtility(); 
+    }
 
     @Override
     protected String getViewPath() {
@@ -54,6 +60,10 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     @Override
     public DataModel getTopLevelMachineDesignSelectionList() {
         ItemDomainMachineDesign current = getCurrent();
+        if (current == null) {
+            return null;
+        }
+        
         DataModel topLevelMachineDesignSelectionList = current.getTopLevelMachineDesignSelectionList();
 
         if (topLevelMachineDesignSelectionList == null) {
@@ -66,6 +76,7 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
         }
 
         return topLevelMachineDesignSelectionList;
+        
     }
 
     public static ItemDomainMachineDesignControlController getInstance() {
@@ -84,8 +95,8 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
 
     public PropertyType getControlInterfacePropertyType() {
         if (controlInterfacePropertyType == null) {
-            String cotrolInterfacePropertyTypeName = SystemPropertyTypeNames.cotrolInterface.getValue();
-            controlInterfacePropertyType = propertyTypeFacade.findByName(cotrolInterfacePropertyTypeName);
+            ItemDomainMachineDesignControlControllerUtility controllerUtility = getControllerUtility();
+            controlInterfacePropertyType = controllerUtility.fetchInterfaceToParentPropertyType();
         }
         return controlInterfacePropertyType;
     }
@@ -113,7 +124,9 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
         PropertyValue controlInterfaceToParent = current.getControlInterfaceToParent();
         ItemElementRelationship controlRelationshipToParent = current.getControlRelationshipToParent();
         if (controlInterfaceToParent.getId() == null) {
-            createInterfaceToParentPropertyValue(controlRelationshipToParent);
+            ItemDomainMachineDesignControlControllerUtility controllerUtility = getControllerUtility();
+            UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
+            controllerUtility.createInterfaceToParentPropertyValue(controlRelationshipToParent, controlInterfaceSelection, enteredByUser);
         } else {
             controlInterfaceToParent.setValue(controlInterfaceSelection);
         }
@@ -123,45 +136,20 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
     }
 
     @Override
-    public ItemElementRelationship applyRelationship(ItemDomainMachineDesign machineElement, ItemDomainMachineDesign relatedElement) throws InvalidArgument {
-        ItemElementRelationship relationship = super.applyRelationship(machineElement, relatedElement);
-        
-        createInterfaceToParentPropertyValue(relationship);
-
-        return relationship;
-    }
-
-    private void createInterfaceToParentPropertyValue(ItemElementRelationship relationship) {
-        List<PropertyValue> propertyValueList = relationship.getPropertyValueList();
-        if (propertyValueList == null) {
-            propertyValueList = new ArrayList<>();
-            relationship.setPropertyValueList(propertyValueList);
-        }
-
-        Date enteredOnDateTime = new Date();
+    protected void performApplyRelationship() throws InvalidArgument {
+        ItemDomainMachineDesignControlControllerUtility controllerUtility = getControllerUtility();
         UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
-
-        PropertyValue pv = new PropertyValue();
-        pv.setPropertyType(getControlInterfacePropertyType());
-        pv.setValue(controlInterfaceSelection);
-        pv.setEnteredByUser(enteredByUser);
-        pv.setEnteredOnDateTime(enteredOnDateTime);
-        propertyValueList.add(pv);
+        controllerUtility.applyRelationship(getMachineRelatedByCurrent(), getCurrent(), controlInterfaceSelection, enteredByUser);
     }
 
     // todo resolve this 
     @Override
     protected ItemDomainMachineDesignSettings createNewSettingObject() {
         return new ItemDomainMachineDesignSettings(this);
-    }
-
-    @Override
-    protected ItemElementRelationshipTypeNames getRelationshipTypeName() {
-        return ItemElementRelationshipTypeNames.control;
-    }
+    }   
 
     @Override
     protected EntityTypeName getRelationshipMachineEntityType() {
         return EntityTypeName.control;
-    }
+    }   
 }

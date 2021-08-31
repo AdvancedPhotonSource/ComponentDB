@@ -9,8 +9,6 @@ import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
-import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
-import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
@@ -77,12 +75,7 @@ public class ItemDomainMachineDesignPowerController extends ItemDomainMachineDes
     @Override
     protected ItemDomainMachineDesignSettings createNewSettingObject() {
         return new ItemDomainMachineDesignSettings(this);
-    }
-      
-    @Override
-    protected ItemElementRelationshipTypeNames getRelationshipTypeName() {
-        return ItemElementRelationshipTypeNames.power;
-    }
+    }          
 
     @Override
     protected EntityTypeName getRelationshipMachineEntityType() {
