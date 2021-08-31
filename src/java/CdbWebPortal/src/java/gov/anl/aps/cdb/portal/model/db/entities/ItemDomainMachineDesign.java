@@ -19,9 +19,11 @@ import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryContro
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignPowerController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
@@ -198,6 +200,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     @Override
     public ItemDomainMachineDesignBaseControllerUtility getItemControllerUtility() {
+        if (isItemControl(this)) {
+            return new ItemDomainMachineDesignControlControllerUtility();
+        } 
+        if (isItemPower(this)) {
+            return new ItemDomainMachineDesignPowerControllerUtility(); 
+        }
         if (isItemDeleted(this)) {
             return new ItemDomainMachineDesignDeletedControllerUtility();
         }
