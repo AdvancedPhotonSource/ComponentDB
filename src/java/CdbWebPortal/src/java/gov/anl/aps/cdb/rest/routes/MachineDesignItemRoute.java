@@ -8,12 +8,15 @@ import gov.anl.aps.cdb.common.exceptions.AuthorizationError;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.common.exceptions.ObjectNotFound;
+import gov.anl.aps.cdb.portal.constants.ItemDomainName;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemProjectFacade;
+import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemDomainMachineDesignQueryBuilder;
+import gov.anl.aps.cdb.portal.model.db.beans.builder.ItemQueryBuilder;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
@@ -32,7 +35,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -92,6 +97,19 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
             LOGGER.error(ex);
             throw ex;
         }
+        return itemList;
+    }
+    
+    @GET
+    @Path("/ByNamePattern/{namePattern}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<ItemDomainMachineDesign> getMachineDesignItemsByNamePattern(@PathParam("namePattern") String namePattern) throws ObjectNotFound {
+        LOGGER.debug("Fetching items with name pattern: " + namePattern);
+        Map<String, String> filterMap = new HashMap<>(); 
+        filterMap.put(ItemQueryBuilder.QueryTranslator.name.getValue(), namePattern); 
+        ItemQueryBuilder queryBuilder = new ItemDomainMachineDesignQueryBuilder(ItemDomainName.MACHINE_DESIGN_ID, filterMap);
+        List<ItemDomainMachineDesign> itemList = facade.findByDataTableFilterQueryBuilder(queryBuilder);
+        
         return itemList;
     }
 

@@ -382,7 +382,7 @@ public class ItemDomainMachineDesignTreeNode extends DefaultTreeNode {
         } else {
             filterMap.put(ItemQueryBuilder.QueryTranslator.name.getValue(), nameFilter);
 
-            ItemDomainMachineDesignQueryBuilder queryBuilder = new ItemDomainMachineDesignQueryBuilder(domain, filterMap);
+            ItemDomainMachineDesignQueryBuilder queryBuilder = new ItemDomainMachineDesignQueryBuilder(domain.getId(), filterMap);
 
             rawFilterResults = designFacade.findByDataTableFilterQueryBuilder(queryBuilder);
 
