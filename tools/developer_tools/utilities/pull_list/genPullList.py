@@ -195,37 +195,53 @@ class ExcelRowDictSheetInputModel:
 
     def load_data(self):
 
-        rows = []
+        print()
+        print("Loader Progress ====================")
+        print()
+
+        records = []
         load_valid = True
         load_valid_info = ""
         first_row_ind = 2
         last_row_ind = self.sheet.max_row
 
+        # get column spec keys
+        keys = [spec.key for spec in self.column_specs]
+        cols_required = [spec.required for spec in self.column_specs]
+
         # iterate sheet rows
-        for row_ind in range(first_row_ind, last_row_ind+1):
-            row_dict = {}
+        rows = self.sheet.rows
+        print("loading %d rows" % (last_row_ind+1))
+        first_row = True
+        row_count = 0
+        for row in rows:
+            row_count = row_count + 1
+            record = {}
             row_valid = True
             row_valid_info = ""
-            # build dictionary of column values for row
-            col_ind = 1
-            for spec in self.column_specs:
-                cell_value = self.sheet.cell(row_ind, col_ind).value
-                if cell_value is None:
-                    cell_value = ""
-                if spec.required and cell_value == "":
+            if first_row:
+                # skip first row
+                first_row = False
+                continue
+            for key, cell, required in zip(keys, row, cols_required):
+                value = cell.value
+                if value is None:
+                    value = ""
+                if required and value == "":
                     row_valid = False
                     row_valid_info = row_valid_info + "Row: %d missing value for required column %s. " % (row_ind, spec.key)
-                row_dict[spec.key] = cell_value
-                col_ind = col_ind + 1
-            row_dict[Field.ROW_VALID] = row_valid
-            row_dict[Field.ROW_VALID_INFO] = row_valid_info
-            rows.append(row_dict)
-            logging.debug("row: %d dict: %s" % (row_ind, str(row_dict)))
+                record[key] = cell.value
+            record[Field.ROW_VALID] = row_valid
+            record[Field.ROW_VALID_INFO] = row_valid_info
+            records.append(record)
+            logging.debug("row: %d dict: %s" % (row_count, str(record)))
             if not row_valid:
                 load_valid = False
                 load_valid_info = "Sheet contains invalid rows."
+            if row_count % 1000 == 0:
+                print("loaded %d rows" % row_count)
 
-        return load_valid, load_valid_info, rows
+        return load_valid, load_valid_info, records
 
 
 class ExcelWorkbookInputModel:
@@ -244,7 +260,7 @@ class ExcelWorkbookInputModel:
         init_valid_info = ""
 
         # create  openpyxl workbook
-        self.workbook = openpyxl.load_workbook(self.filename, read_only=True)
+        self.workbook = openpyxl.load_workbook(self.filename, read_only=True, data_only=True)
 
         # process sheets
         sheet_names = self.workbook.sheetnames
@@ -553,6 +569,8 @@ class TaggingModule(CableInfoModule):
         self.handlers = []
         self.sample_data_dict = {}
         self.handling_error_count = 0
+        self.total_record_count = 0
+        self.invalid_record_count = 0
         self.unhandled_record_count = 0
         self.unhandled_cable_types = set()
         self.handled_record_count = 0
@@ -579,6 +597,7 @@ class TaggingModule(CableInfoModule):
     def process_records(self, records):
 
         for record in records:
+            self.total_record_count = self.total_record_count + 1
             is_valid = record.get(Field.ROW_VALID, False)
 
             if is_valid:
@@ -633,6 +652,9 @@ class TaggingModule(CableInfoModule):
                     record[Field.ROW_VALID] = False
                     record[Field.ROW_VALID_INFO] = "Tagging module failed to handle record."
 
+            else:
+                self.invalid_record_count = self.invalid_record_count + 1
+
         is_valid = True
         valid_info = ""
 
@@ -648,6 +670,7 @@ class TaggingModule(CableInfoModule):
         print()
         print("Tagging Module Stats ====================")
         print()
+        print("Total records: %d" % self.total_record_count)
         print("Handled records: %d" % self. handled_record_count)
         print("Unhandled records: %d" % self.unhandled_record_count)
         print("Handling errors: %d" % self.handling_error_count)
