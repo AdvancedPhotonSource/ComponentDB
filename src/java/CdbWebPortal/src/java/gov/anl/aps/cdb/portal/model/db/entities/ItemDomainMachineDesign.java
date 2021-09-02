@@ -126,6 +126,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         return combinedItemElementList;
     }
 
+    @JsonIgnore
     public ItemElement getCurrentHierarchyItemElement() {
         return currentHierarchyItemElement;
     }
