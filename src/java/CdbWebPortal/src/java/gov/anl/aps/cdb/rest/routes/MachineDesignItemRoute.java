@@ -25,7 +25,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemProject;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.rest.authentication.Secured;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
-import gov.anl.aps.cdb.rest.entities.ItemDomanMachineDesignIdListRequest;
+import gov.anl.aps.cdb.rest.entities.ItemDomainMachineDesignIdListRequest;
 import gov.anl.aps.cdb.rest.entities.NewControlRelationshipInformation;
 import gov.anl.aps.cdb.rest.entities.NewMachinePlaceholderOptions;
 import io.swagger.v3.oas.annotations.Operation;
@@ -193,7 +193,7 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
     @Path("/IdList")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
-    public List<Integer> getHierarchyIdList(@RequestBody(required = true) ItemDomanMachineDesignIdListRequest request) throws InvalidArgument {
+    public List<Integer> getHierarchyIdList(@RequestBody(required = true) ItemDomainMachineDesignIdListRequest request) throws InvalidArgument {
 
         Instant start = Instant.now();
 
