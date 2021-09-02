@@ -76,14 +76,15 @@ See LICENSE file.
                                          rowKey="#{row.viewUUID}"
                                          selectionMode="single"
                                          selection="#{wizardController.selectedTableRow}"
-                                         rowStyleClass="#{row.isValidImport ? null : 'invalidTableData'}">    
+                                         rowStyleClass="#{row.isValidImport ? null : 'invalidTableData'}"
+                                         paginator="true"
+                                         paginatorAlwaysVisible="true"
+                                         rows="#{resources.ImportWizardValidationTableNumberOfRows}">    
 
                                 <p:columns value="#{wizardController.columns}" 
                                            var="column" 
-                                           columnIndexVar="colIndex">
-                                    <f:facet name="header">
-                                        <h:outputText value="#{column.header}" />
-                                    </f:facet>
+                                           columnIndexVar="colIndex"
+                                           headerText="#{column.header}">
                                     <h:outputText value="#{row[column.domainProperty]}" 
                                                   escape="false" />
                                 </p:columns>
