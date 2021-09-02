@@ -61,8 +61,8 @@ See LICENSE file.
             <p:commandButton value="Next Step"
                              process="@this"
                              update="@this"
-                             onstart="PF('loadingDialog').show(); PF('#{rootViewId}').next();"
-                             oncomplete="update#{rootViewId}WizardButtons(); PF('loadingDialog').hide();"
+                             onstart="PF('#{rootViewId}').next();"
+                             oncomplete="update#{rootViewId}WizardButtons();"
                              disabled="#{wizardController.disableButtonNext}"
                              icon="ui-icon-arrowthick-1-e"
                              iconPos="right"/>
