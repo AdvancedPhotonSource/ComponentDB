@@ -4,6 +4,7 @@
  */
 package gov.anl.aps.cdb.portal.model;
 
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode.MachineTreeConfiguration;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
@@ -25,6 +26,8 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
     boolean cablesLoaded = false;
     boolean cableRelatedNode = false;
 
+    boolean runningNodesLoaded = false;
+
     public ItemDomainMachineDesignTreeNode(ItemElement element, MachineTreeConfiguration config, ItemDomainMachineDesignBaseTreeNode parent, boolean setTypeForLevel) {
         super(element, config, parent, setTypeForLevel);
     }
@@ -34,6 +37,11 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
     }
 
     public ItemDomainMachineDesignTreeNode() {
+    }
+
+    @Override
+    protected ItemDomainMachineDesignTreeNode createTreeNodeObject(ItemElement element, MachineTreeConfiguration config, ItemDomainMachineDesignBaseTreeNode parent, boolean setType) {
+        return new ItemDomainMachineDesignTreeNode(element, config, parent, setType);
     }
 
     @Override
@@ -62,8 +70,15 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
 
     @Override
     protected void loadRelationships() {
-        super.loadRelationships();        
-        boolean loadCables = loadCables(); 
+        super.loadRelationships();
+
+        if (!runningNodesLoaded) {
+            String relationshipTypeName = ItemElementRelationshipTypeNames.running.getValue();
+            loadRelationshipsFromRelationshipList(true, relationshipTypeName, "machineRunninOnNode");
+            runningNodesLoaded = true; 
+        }
+
+        boolean loadCables = loadCables();
 
         ItemElement element = getElement();
         Item containedItem = element.getContainedItem();
@@ -103,9 +118,9 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
 
     @Override
     protected void unloadRelationships() {
-        super.unloadRelationships();         
+        super.unloadRelationships();
         boolean unloadCables = cablesLoaded && (!config.cablesNeedLoading());
-        
+
         if (unloadCables) {
             TreeNode parent = getParent();
             if (parent == null || parent.isExpanded()) {
@@ -119,9 +134,9 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
                 }
             }
         }
-        
+
     }
-    
+
     private boolean loadCables() {
         return !cablesLoaded && (config.cablesNeedLoading());
     }
@@ -135,16 +150,16 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
     public MachineTreeConfiguration createTreeNodeConfiguration() {
         return new MachineTreeConfiguration();
     }
-    
+
     public class MachineTreeConfiguration extends MachineTreeBaseConfiguration {
 
         public MachineTreeConfiguration() {
             super();
-        }                        
-        
+        }
+
         private boolean showCables = false;
         private boolean showConnectorsOnly = false;
-        
+
         public boolean isShowCables() {
             return showCables;
         }
@@ -164,7 +179,7 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
         private boolean cablesNeedLoading() {
             return showConnectorsOnly || showCables;
         }
-        
+
     }
 
 }
