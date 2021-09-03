@@ -6,6 +6,7 @@ INSERT INTO `relationship_type` VALUES
 (3,'Created From Template','',NULL),
 (4,'Cable Connection',NULL,NULL),
 (5,'Controlled By','Defines how a machine element is controlled',NULL),
-(6,'Powered By','Defines how a machine element is powered',NULL);
+(6,'Powered By','Defines how a machine element is powered',NULL),
+(7,'Running On','Defines which control node is running on a housing element (VM)', NULL);
 /*!40000 ALTER TABLE `relationship_type` ENABLE KEYS */;
 UNLOCK TABLES;
