@@ -50,31 +50,18 @@ public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachi
     protected ItemDomainMachineDesignRelationshipTreeNode createTreeNodeObject(ItemElement itemElement) {
         return new ItemDomainMachineDesignRelationshipTreeNode(itemElement, config, this, true);
     }
+        
+    @Override
+    protected ItemDomainMachineDesignRelationshipTreeNode createTreeNodeObject(ItemElement element, MachineTreeRelationshipConfiguration config, ItemDomainMachineDesignBaseTreeNode parent, boolean setType) {
+        return new ItemDomainMachineDesignRelationshipTreeNode(element, config, this, setType); 
+    }
 
     @Override
-    protected void loadRelationships() {
-        ItemElement element = this.getElement();
-        Item machineElement = element.getContainedItem();
+    protected void loadRelationships() {        
         ItemElementRelationshipTypeNames relationshipToLoad = getConfig().getRelationshipToLoad();
-
-        List<ItemElementRelationship> itemElementRelationshipList1 = machineElement.getItemElementRelationshipList1();
-        for (ItemElementRelationship ier : itemElementRelationshipList1) {
-            RelationshipType relationshipType = ier.getRelationshipType();            
-            String relationshipTypeName = relationshipToLoad.getValue();
-
-            if (relationshipType.getName().equals(relationshipTypeName)) {
-                ItemElement firstItemElement = ier.getFirstItemElement();
-                Item parentItem = firstItemElement.getParentItem();
-                ItemElement mockElement = createMockItemElement((ItemDomainMachineDesign) parentItem);
-
-                ItemDomainMachineDesignRelationshipTreeNode node = null;
-                node = new ItemDomainMachineDesignRelationshipTreeNode(mockElement, config, this, false);
-                if (config.isSetMachineTreeNodeType()) {
-                    node.setType("machineDesignRelationshipNode");
-                }
-                super.getChildren().add(node);
-            }
-        }
+        String relationshipTypeName = relationshipToLoad.getValue();
+        
+        loadRelationshipsFromRelationshipList(false, relationshipTypeName, "machineDesignRelationshipNode");       
     }
 
     @Override
@@ -91,7 +78,7 @@ public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachi
     @Override
     public MachineTreeRelationshipConfiguration createTreeNodeConfiguration() {
         return new MachineTreeRelationshipConfiguration(); 
-    }
+    }   
     
     public class MachineTreeRelationshipConfiguration extends MachineTreeBaseConfiguration {
         
