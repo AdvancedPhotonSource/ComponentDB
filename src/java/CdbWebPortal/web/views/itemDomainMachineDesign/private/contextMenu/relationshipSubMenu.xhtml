@@ -12,13 +12,14 @@ See LICENSE file.
                label="Relationship"
                disabled="#{disabledEditContextMenuItemForSelection}">
         
-        <ui:include src="cableSubMenu.xhtml" />
+        <ui:include src="cableSubMenu.xhtml" />        
         
-        <p:menuitem value="Powered by"
-                    icon="fa fa-bolt"/> 
-        
-        <p:menuitem value="Controled by"
-                    icon="fa fa-code"/> 
+        <ui:include src="../../../itemDomainMachineDesignBase/private/machineDesignContextMenu/genericMachineMenuItem.xhtml">
+            <ui:param name="value" value="Running Control"/>
+            <ui:param name="icon" value="fa fa-code"/>
+            <ui:param name="action" value="prepareSelectMachinedRunningOnCurrent"/> 
+            <ui:param name="disabled" value="#{disabledEditContextMenuItemForSelection}"/> 
+        </ui:include>        
 
     </p:submenu>
 
