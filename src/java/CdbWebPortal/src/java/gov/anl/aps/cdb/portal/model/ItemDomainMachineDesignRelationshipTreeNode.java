@@ -5,6 +5,7 @@
 package gov.anl.aps.cdb.portal.model;
 
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignRelationshipTreeNode.MachineTreeRelationshipConfiguration;
 import gov.anl.aps.cdb.portal.model.db.beans.ItemDomainMachineDesignFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.Domain;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -19,14 +20,15 @@ import java.util.List;
  *
  * @author Dariusz
  */
-public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachineDesignTreeNode {
+public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachineDesignBaseTreeNode<MachineTreeRelationshipConfiguration> {   
 
-    ItemElementRelationshipTypeNames relationshipToLoad;
+    public ItemDomainMachineDesignRelationshipTreeNode() {
+    }
 
     public ItemDomainMachineDesignRelationshipTreeNode(List<ItemDomainMachineDesign> items, Domain domain,
             ItemDomainMachineDesignFacade facade, ItemElementRelationshipTypeNames relationshipToLoad) {
-        MachineTreeConfiguration config = new MachineTreeConfiguration();
-        initRelationshipTree(items, domain, facade, relationshipToLoad, config);
+        MachineTreeRelationshipConfiguration config = new MachineTreeRelationshipConfiguration(relationshipToLoad);
+        initFirstLevel(items, domain, facade, config);
     }
 
     public ItemDomainMachineDesignRelationshipTreeNode(ItemDomainMachineDesign item, Domain domain,
@@ -34,36 +36,30 @@ public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachi
             boolean setTypes, boolean loadAllChildren) {
         List<ItemDomainMachineDesign> items = new ArrayList<>();
         items.add(item);
-        MachineTreeConfiguration config = new MachineTreeConfiguration();
+        MachineTreeRelationshipConfiguration config = new MachineTreeRelationshipConfiguration(relationshipToLoad);
         config.setLoadAllChildren(loadAllChildren);
         config.setSetMachineTreeNodeType(setTypes);
-        initRelationshipTree(items, domain, facade, relationshipToLoad, config);
-    }
-
-    protected final void initRelationshipTree(List<ItemDomainMachineDesign> items, Domain domain,
-            ItemDomainMachineDesignFacade facade, ItemElementRelationshipTypeNames relationshipToLoad, MachineTreeConfiguration config) {
-        this.relationshipToLoad = relationshipToLoad;
         initFirstLevel(items, domain, facade, config);
-    }
+    }   
 
-    protected ItemDomainMachineDesignRelationshipTreeNode(ItemElement element, MachineTreeConfiguration config, ItemDomainMachineDesignTreeNode parent, boolean setType, ItemElementRelationshipTypeNames relationshipToLoad) {
-        super(element, config, parent, setType);
-        this.relationshipToLoad = relationshipToLoad;
+    protected ItemDomainMachineDesignRelationshipTreeNode(ItemElement element, MachineTreeRelationshipConfiguration config, ItemDomainMachineDesignRelationshipTreeNode parent, boolean setType) {
+        super(element, config, parent, setType);        
     }
 
     @Override
-    protected ItemDomainMachineDesignTreeNode createTreeNodeObject(ItemElement itemElement) {
-        return new ItemDomainMachineDesignRelationshipTreeNode(itemElement, config, this, true, relationshipToLoad);
+    protected ItemDomainMachineDesignRelationshipTreeNode createTreeNodeObject(ItemElement itemElement) {
+        return new ItemDomainMachineDesignRelationshipTreeNode(itemElement, config, this, true);
     }
 
     @Override
     protected void loadRelationships() {
         ItemElement element = this.getElement();
         Item machineElement = element.getContainedItem();
+        ItemElementRelationshipTypeNames relationshipToLoad = getConfig().getRelationshipToLoad();
 
         List<ItemElementRelationship> itemElementRelationshipList1 = machineElement.getItemElementRelationshipList1();
         for (ItemElementRelationship ier : itemElementRelationshipList1) {
-            RelationshipType relationshipType = ier.getRelationshipType();
+            RelationshipType relationshipType = ier.getRelationshipType();            
             String relationshipTypeName = relationshipToLoad.getValue();
 
             if (relationshipType.getName().equals(relationshipTypeName)) {
@@ -72,7 +68,7 @@ public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachi
                 ItemElement mockElement = createMockItemElement((ItemDomainMachineDesign) parentItem);
 
                 ItemDomainMachineDesignRelationshipTreeNode node = null;
-                node = new ItemDomainMachineDesignRelationshipTreeNode(mockElement, config, this, false, relationshipToLoad);
+                node = new ItemDomainMachineDesignRelationshipTreeNode(mockElement, config, this, false);
                 if (config.isSetMachineTreeNodeType()) {
                     node.setType("machineDesignRelationshipNode");
                 }
@@ -90,6 +86,28 @@ public class ItemDomainMachineDesignRelationshipTreeNode extends ItemDomainMachi
         }
 
         return true;
+    }
+
+    @Override
+    public MachineTreeRelationshipConfiguration createTreeNodeConfiguration() {
+        return new MachineTreeRelationshipConfiguration(); 
+    }
+    
+    public class MachineTreeRelationshipConfiguration extends MachineTreeBaseConfiguration {
+        
+        ItemElementRelationshipTypeNames relationshipToLoad;
+
+        public MachineTreeRelationshipConfiguration() {
+        }
+
+        public MachineTreeRelationshipConfiguration(ItemElementRelationshipTypeNames relationshipToLoad) {
+            this.relationshipToLoad = relationshipToLoad;
+        }
+
+        public ItemElementRelationshipTypeNames getRelationshipToLoad() {
+            return relationshipToLoad;
+        }
+        
     }
 
 }
