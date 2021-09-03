@@ -8,6 +8,10 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:p="http://primefaces.org/ui"
                 template="../../../itemDomainMachineDesignBase/private/templates/itemDomainMachineListViewTemplate.xhtml">
+    
+    <ui:define name="mdTreeListContextMenu"> 
+        <ui:include src="../itemDomainMachineDesignContextMenu.xhtml"/> 
+    </ui:define>
 
     <ui:define name="additionalEmphasizedContentBelowTitle">
         <p:selectBooleanButton id="itemDomainMachineToggleShowCables"
