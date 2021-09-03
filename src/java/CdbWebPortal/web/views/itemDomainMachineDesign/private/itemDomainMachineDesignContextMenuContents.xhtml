@@ -6,21 +6,39 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignDualColumnListViewTreeContextMenuContentsTemplate.xhtml">
-    
+                template="../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignDualColumnListViewTreeContextMenuContentsTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui">
+
     <ui:define name="additionalPromotedMenuOptionMachineDesignMember">
         <ui:include src="contextMenu/relationshipSubMenu.xhtml" /> 
     </ui:define>
-    
+
     <ui:define name="additionalPromotedMenuOptionMachineDesignCatalogMember">
         <ui:include src="contextMenu/relationshipSubMenu.xhtml" /> 
     </ui:define>
-    
+
     <ui:define name="additionalPromotedMenuOptionMachineDesignInventoryMember">
         <ui:include src="contextMenu/relationshipSubMenu.xhtml" /> 
     </ui:define>
-        
-    
+
+    <ui:define name="additionalContextMenuTypes">
+        <p:contextMenu for="itemMachineDesignListDataTable" style="width: 170px;"
+                       nodeType="machineRunninOnNode"
+                       id="machineDesignRunningOnNodeMenuItem"
+                       widgetVar="machineDesignRunningOnNodeMenuItemWidget"
+                       event="select contextmenu">
+            <p:menuitem value="Remove relationship" 
+                        icon="fa fa-trash"
+                        update="removeRunningOnRelationshipDialog"
+                        disabled="#{disabledEditContextMenuItemForSelectionParent}"
+                        immediate="true"
+                        onstart="PF('loadingDialog').show();"
+                        oncomplete="PF('loadingDialog').hide(); PF('removeRunningOnRelationshipDialogWidget').show()"
+                        action="#{entityController.prepareRemoveRunningOnRelationship()}"/>
+        </p:contextMenu>
+    </ui:define>
+
+
 </ui:composition>
 
 
