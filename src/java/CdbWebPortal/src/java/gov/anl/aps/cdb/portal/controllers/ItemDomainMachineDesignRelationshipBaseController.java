@@ -7,8 +7,8 @@ package gov.anl.aps.cdb.portal.controllers;
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
-import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignRelationshipBaseControllerUtility;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignBaseTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignRelationshipTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.NodeSelectEvent;
 
-public abstract class ItemDomainMachineDesignRelationshipBaseController extends ItemDomainMachineDesignBaseController {
+public abstract class ItemDomainMachineDesignRelationshipBaseController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignRelationshipTreeNode> {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignRelationshipBaseController.class.getName());
 
@@ -121,7 +121,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
             for (int i = 0; i < itemElementRelationshipList.size(); i++) {
                 ItemElementRelationship ier = itemElementRelationshipList.get(i);
                 if (ier.getRelationshipType().getName().equals(relationshipName)) {
-                    ItemDomainMachineDesignTreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
+                    ItemDomainMachineDesignBaseTreeNode selectedItemInListTreeTable = getSelectedItemInListTreeTable();
                     ItemElement element = selectedItemInListTreeTable.getParent().getElement();
                     Item containedItem = element.getContainedItem();
                     ItemElement parentSelfElement = containedItem.getSelfElement();
@@ -209,7 +209,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
     }
 
     @Override
-    public ItemDomainMachineDesignTreeNode loadMachineDesignRootTreeNode(List<ItemDomainMachineDesign> itemsWithoutParents) {
+    public ItemDomainMachineDesignRelationshipTreeNode loadMachineDesignRootTreeNode(List<ItemDomainMachineDesign> itemsWithoutParents) {
         ItemDomainMachineDesignRelationshipTreeNode rootTreeNode = new ItemDomainMachineDesignRelationshipTreeNode(
                 itemsWithoutParents,
                 getDefaultDomain(),
@@ -218,6 +218,11 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
         );
 
         return rootTreeNode;
+    }
+    
+    @Override
+    public ItemDomainMachineDesignRelationshipTreeNode createMachineTreeNodeInstance() {
+        return new ItemDomainMachineDesignRelationshipTreeNode(); 
     }
 
     public void machineRelatedByCurrentItemSelected(NodeSelectEvent nodeSelection) {
@@ -267,6 +272,6 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
     protected final ItemElementRelationshipTypeNames getRelationshipTypeName() {
         ItemDomainMachineDesignRelationshipBaseControllerUtility controllerUtility = getControllerUtility();
         return controllerUtility.getRelationshipTypeName();
-    }
+    }           
 
 }

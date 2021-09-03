@@ -5,7 +5,6 @@
 package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
-import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -80,6 +79,6 @@ public class ItemDomainMachineDesignPowerController extends ItemDomainMachineDes
     @Override
     protected EntityTypeName getRelationshipMachineEntityType() {
         return EntityTypeName.power; 
-    }
+    }   
 
 }
