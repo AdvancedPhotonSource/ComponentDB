@@ -10,7 +10,8 @@ public enum ItemElementRelationshipTypeNames {
         maarc("MAARC Connection"),
         template("Created From Template"),
         control("Controlled By"), 
-        power("Powered By"); 
+        power("Powered By"),
+        running("Running On"); 
 
         private String value;
 
