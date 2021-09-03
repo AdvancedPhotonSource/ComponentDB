@@ -23,7 +23,7 @@ See LICENSE file.
         <ui:param name="machineControlledByCurrent"
                   value="#{entityController.machineControlledByCurrent}" />
 
-        <ui:decorate template="../../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">            
+        <ui:decorate template="../../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignTreeTableTemplate.xhtml">            
             <ui:param name="rendered"
                       value="#{true}" />
             <ui:param name="valueModel"
@@ -51,7 +51,7 @@ See LICENSE file.
                          update="@form"
                          onclick="PF('loadingDialog').show()"
                          oncomplete="PF('loadingDialog').hide()"/> 
-        <ui:include src="../../../itemDomainMachineDesign/private/itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
+        <ui:include src="../../../itemDomainMachineDesignBase/private/itemDomainMachineDesignDualColumnListViewCancelButton.xhtml" />
     </p:panel>
 
 </ui:composition>

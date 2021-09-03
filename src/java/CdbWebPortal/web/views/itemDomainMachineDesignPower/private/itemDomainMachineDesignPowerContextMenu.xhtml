@@ -6,7 +6,7 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                template="../../itemDomainMachineDesign/private/templates/itemDomainMachineDesignDualColumnListViewTreeContextMenuTemplate.xhtml"
+                template="../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignDualColumnListViewTreeContextMenuTemplate.xhtml"
                 xmlns:p="http://primefaces.org/ui">
 
     <ui:define name="contextMenuContents" >
@@ -19,7 +19,7 @@ See LICENSE file.
 
             <ui:include src="../../itemDomainMachineDesignRelationshipBase/private/contextMenu/itemDomainMachineDesignRelationshipSimpleAddMenuItem.xhtml"/> 
 
-            <ui:include src="../../itemDomainMachineDesign/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
         </p:contextMenu>
 
         <p:contextMenu style="width: 250px;"
@@ -35,7 +35,7 @@ See LICENSE file.
                           value="Specify powered node"/> 
             </ui:include>
 
-            <ui:include src="../../itemDomainMachineDesign/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
+            <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
         </p:contextMenu>
 
     </ui:define>

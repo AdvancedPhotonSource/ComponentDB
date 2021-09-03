@@ -8,8 +8,7 @@ See LICENSE file.
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 template="../../item/private/templates/itemListDataTableRowExpansionObjectTemplate.xhtml"
                 xmlns:f="http://xmlns.jcp.org/jsf/core"
-                xmlns:h="http://xmlns.jcp.org/jsf/html"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
 
     <ui:define name="assemblyRowExpansionTreeObject">
         <ui:decorate template="../../item/private/templates/itemListViewObjectTemplate.xhtml">
@@ -17,7 +16,7 @@ See LICENSE file.
             <ui:param name="isTemplate" value="#{itemListObject.isItemTemplate}" />
             
             <ui:define name="qrIdColumn">                
-                <ui:include src="../../itemDomainMachineDesign/private/templateDefaults/itemListObjectColumns/itemInstalledQrId.xhtml" >
+                <ui:include src="../../itemDomainMachineDesignBase/private/templateDefaults/itemListObjectColumns/itemInstalledQrId.xhtml" >
                     <ui:param name="rendered"
                               value="#{true}" />
                     <ui:param name="itemListObject"
