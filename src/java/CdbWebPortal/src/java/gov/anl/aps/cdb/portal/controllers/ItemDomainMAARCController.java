@@ -51,7 +51,7 @@ import org.primefaces.model.StreamedContent;
 @Named("itemDomainMAARCController")
 @SessionScoped
 public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCControllerUtility, ItemDomainMAARC, ItemDomainMAARCFacade, ItemDomainMAARCSettings> {
-    
+
     public static final String MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME = "MAARC Connection";
     protected final String FILE_PROPERTY_TYPE_NAME = "File";
 
@@ -63,8 +63,8 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
 
     private Integer filePropertyTypeId = null;
     private boolean attemptedFetchFilePropertyType = false;
-    
-    private String currentViewableUUIDToDownload = null;   
+
+    private String currentViewableUUIDToDownload = null;
 
     private ItemDomainMAARCLazyDataModel maarcListDataModel;
 
@@ -75,7 +75,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
     PropertyTypeFacade propertyTypeFacade;
 
     @EJB
-    PropertyMetadataFacade propertyMetadataFacade;   
+    PropertyMetadataFacade propertyMetadataFacade;
 
     @Override
     protected ItemDomainMAARCSettings createNewSettingObject() {
@@ -85,12 +85,12 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
     @Override
     protected ItemDomainMAARCFacade getEntityDbFacade() {
         return itemDomainMAARCFacade;
-    }   
+    }
 
     @Override
     public String getDefaultDomainName() {
         return ItemDomainName.maarc.getValue();
-    }   
+    }
 
     @Override
     public boolean getEntityDisplayItemConnectors() {
@@ -151,17 +151,19 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
      */
     public static List<ItemElementRelationship> getRelatedMAARCRelationshipsForItem(Item item) {
         List<ItemElementRelationship> relatedMAARCRelationshipsForItem = new ArrayList<>();
-        
+
         ItemElement selfElement = item.getSelfElement();
         if (selfElement == null) {
-            return relatedMAARCRelationshipsForItem; 
+            return relatedMAARCRelationshipsForItem;
         }
 
         List<ItemElementRelationship> itemElementRelationshipList = item.getSelfElement().getItemElementRelationshipList();
 
-        for (ItemElementRelationship ier : itemElementRelationshipList) {
-            if (ier.getRelationshipType().getName().equals(MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME)) {
-                relatedMAARCRelationshipsForItem.add(ier);
+        if (itemElementRelationshipList != null) {
+            for (ItemElementRelationship ier : itemElementRelationshipList) {
+                if (ier.getRelationshipType().getName().equals(MAARC_CONNECTION_RELATIONSHIP_TYPE_NAME)) {
+                    relatedMAARCRelationshipsForItem.add(ier);
+                }
             }
         }
 
@@ -175,13 +177,13 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
     public void destroyRelationship(ItemElementRelationship ier) {
         ItemElementRelationshipController ierc = ItemElementRelationshipController.getInstance();
         ierc.destroy(ier);
-        
+
         ItemDomainMAARC current = getCurrent();
         List<ItemElementRelationship> relatedRelationshipsForCurrent = current.getRelatedRelationshipsForCurrent();
 
         relatedRelationshipsForCurrent.remove(ier);
-    }   
-    
+    }
+
     /**
      * Destroys a full file reference from a study
      *
@@ -189,7 +191,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
      */
     public void destroyFile(ItemElement itemElement) {
         UserInfo user = SessionUtility.getUser();
-        
+
         try {
             getControllerUtility().destroyFile(itemElement, user);
         } catch (CdbException ex) {
@@ -232,7 +234,7 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
 
     public boolean isCurrentEntityTypeFile() {
         return getControllerUtility().isEntityTypeFile(getCurrent());
-    }   
+    }
 
     public Integer getFilePropertyTypeId() {
         if (filePropertyTypeId == null && !attemptedFetchFilePropertyType) {
@@ -362,7 +364,6 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
 
             Supplier<InputStream> streamSupplier = contentStream.getStream();
             InputStream stream = streamSupplier.get();
-            
 
             byte[] originalData = IOUtils.toByteArray(stream);
 
@@ -524,13 +525,13 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
     }
 
     public ItemDomainMAARCLazyDataModel getMAARCListDataModel() {
-        if (maarcListDataModel == null) {           
-            maarcListDataModel = new ItemDomainMAARCLazyDataModel(itemDomainMAARCFacade, getDefaultDomain()); 
+        if (maarcListDataModel == null) {
+            maarcListDataModel = new ItemDomainMAARCLazyDataModel(itemDomainMAARCFacade, getDefaultDomain());
         }
 
         return maarcListDataModel;
-    } 
-    
+    }
+
     @Override
     protected Boolean fetchFilterablePropertyValue(Integer propertyTypeId) {
         return true;
@@ -538,8 +539,8 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
 
     @Override
     public void resetListDataModel() {
-        super.resetListDataModel(); 
-        maarcListDataModel = null; 
+        super.resetListDataModel();
+        maarcListDataModel = null;
     }
 
     @Override
@@ -575,11 +576,11 @@ public class ItemDomainMAARCController extends ItemController<ItemDomainMAARCCon
     @Override
     public String getDefaultDomainDerivedToDomainName() {
         return null;
-    }   
+    }
 
     @Override
     protected ItemDomainMAARCControllerUtility createControllerUtilityInstance() {
-        return new ItemDomainMAARCControllerUtility(); 
+        return new ItemDomainMAARCControllerUtility();
     }
 
 }
