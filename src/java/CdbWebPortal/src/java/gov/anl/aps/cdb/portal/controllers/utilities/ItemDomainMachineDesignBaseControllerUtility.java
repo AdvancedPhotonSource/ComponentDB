@@ -19,6 +19,8 @@ import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainCatalog;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
+import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
+import gov.anl.aps.cdb.portal.model.db.entities.RelationshipType;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import java.util.ArrayList;
@@ -207,7 +209,7 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
                 parentSearch:
                 for (int i = parents.size() - 1; i >= 0; i--) {
                     ItemDomainMachineDesign currentParent = parents.get(i);
-                    
+
                     List<TreeNode> children = currentRoot.getChildren();
                     for (TreeNode node : children) {
                         Object data = node.getData();
@@ -308,24 +310,24 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         mdConnector.setItem(mdItem);
 
         return mdConnector;
-    } 
+    }
 
     @Override
     protected ItemElement createItemElement(ItemDomainMachineDesign item, EntityInfo entityInfo) {
-        ItemElement newElement = super.createItemElement(item, entityInfo); 
-        
-        Item parentItem = newElement.getParentItem(); 
-        
+        ItemElement newElement = super.createItemElement(item, entityInfo);
+
+        Item parentItem = newElement.getParentItem();
+
         int elementSize = parentItem.getItemElementDisplayList().size();
-        float sortOrder = elementSize;        
+        float sortOrder = elementSize;
         newElement.setSortOrder(sortOrder);
-                
-        return newElement;        
+
+        return newElement;
     }
-    
+
     public ItemDomainMachineDesign createEntityInstanceBasedOnParent(ItemDomainMachineDesign parentMachine, UserInfo sessionUser) throws CdbException {
         ItemDomainMachineDesign newItem = createEntityInstance(sessionUser);
-        
+
         newItem.setItemProjectList(parentMachine.getItemProjectList());
 
         if (parentMachine.getIsItemTemplate()) {
@@ -334,30 +336,29 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
             entityTypeList.add(templateEntity);
             newItem.setEntityTypeList(entityTypeList);
         }
-        
-        return newItem; 
+
+        return newItem;
     }
-    
 
     public ItemElement prepareMachinePlaceholder(ItemDomainMachineDesign parentMachine, UserInfo sessionUser) throws CdbException {
         ItemDomainMachineDesign newItem = createEntityInstanceBasedOnParent(parentMachine, sessionUser);
-        
+
         ItemElement itemElement = createItemElement(parentMachine, sessionUser);
-        itemElement.setContainedItem(newItem);        
-        
-        return itemElement; 
+        itemElement.setContainedItem(newItem);
+
+        return itemElement;
     }
-    
+
     public ItemElement performMachineMove(ItemDomainMachineDesign newParent, ItemDomainMachineDesign child, UserInfo sessionUser) throws CdbException {
         if ((newParent instanceof ItemDomainMachineDesign && child instanceof ItemDomainMachineDesign) == false) {
-            throw new CdbException("Both items provided must be of type machine design"); 
+            throw new CdbException("Both items provided must be of type machine design");
         }
         if ((newParent.getEntityTypeList().isEmpty() && child.getEntityTypeList().isEmpty()) == false) {
-            throw new CdbException("Moving machines is currently only supported for standard machines."); 
-        }                 
-        
+            throw new CdbException("Moving machines is currently only supported for standard machines.");
+        }
+
         ItemElement currentItemElement = child.getParentMachineElement();
-        
+
         // Continue to reassignment of parent.        
         if (currentItemElement != null) {
             String uniqueName = generateUniqueElementNameForItem(newParent);
@@ -370,10 +371,41 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         }
 
         prepareAddItemElement(newParent, currentItemElement);
-        
-        update(newParent, sessionUser); 
-        
-        return currentItemElement; 
+
+        update(newParent, sessionUser);
+
+        return currentItemElement;
+    }
+
+    public void loadMachineItemsWithRelationship(
+            String relationshipTypeName,
+            ItemDomainMachineDesign machineElement,
+            List<ItemDomainMachineDesign> machineItems,
+            boolean first) {
+
+        List<ItemElementRelationship> itemElementRelationshipList = null;
+
+        if (first) {
+            itemElementRelationshipList = machineElement.getItemElementRelationshipList1(); 
+        } else {
+            itemElementRelationshipList = machineElement.getItemElementRelationshipList();
+        }
+
+        for (ItemElementRelationship ier : itemElementRelationshipList) {
+            RelationshipType relationshipType = ier.getRelationshipType();
+            String name = relationshipType.getName();
+
+            if (name.equals(relationshipTypeName)) {
+                ItemElement itemElement = null;
+                if (first) {
+                    itemElement = ier.getFirstItemElement();
+                } else {
+                    itemElement = ier.getSecondItemElement();
+                }
+                ItemDomainMachineDesign machine = (ItemDomainMachineDesign) itemElement.getParentItem();
+                machineItems.add(machine);
+            }
+        }
     }
 
 }
