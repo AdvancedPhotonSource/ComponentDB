@@ -12,7 +12,6 @@ import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignContr
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemElementRelationshipControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignBaseTreeNode;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
-import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElement;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
@@ -33,7 +32,7 @@ import org.primefaces.event.NodeSelectEvent;
  */
 @Named(ItemDomainMachineDesignController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode> implements ItemDomainCableDesignWizardClient {
+public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignControllerUtility> implements ItemDomainCableDesignWizardClient {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignController.class.getName());
 
@@ -134,30 +133,22 @@ public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBa
         }
 
         updateCurrentUsingSelectedItemInTreeTable();
-
-        performApplyRelationship();
+        
+        ItemDomainMachineDesignControllerUtility controllerUtility = getControllerUtility();
+        ItemDomainMachineDesign current = getCurrent();
+        try {               
+            controllerUtility.applyRunningOnRelationship(current, controlElementRunningOnCurrent);
+        } catch (InvalidArgument ex) {
+            LOGGER.error(ex);
+            SessionUtility.addErrorMessage("Error", ex.getMessage());
+        }
 
         update();
 
         resetListConfigurationVariables();
         resetListDataModel();
         expandToSelectedTreeNodeAndSelect();
-    }
-
-    private void performApplyRelationship() {
-        // TODO add validations.
-        String runningRelationshipTypeName = ItemElementRelationshipTypeNames.running.getValue();
-        RelationshipType runningRelationship = relationshipTypeFacade.findByName(runningRelationshipTypeName);
-
-        ItemDomainMachineDesign current = getCurrent();
-        ItemElementRelationship itemElementRelationship = new ItemElementRelationship();
-        itemElementRelationship.setRelationshipType(runningRelationship);
-        itemElementRelationship.setFirstItemElement(current.getSelfElement());
-        itemElementRelationship.setSecondItemElement(controlElementRunningOnCurrent.getSelfElement());
-
-        current.getItemElementRelationshipList().add(itemElementRelationship);
-        controlElementRunningOnCurrent.getItemElementRelationshipList1().add(itemElementRelationship);
-    }
+    }   
 
     public void machineRunningOnCurrentItemSelected(NodeSelectEvent nodeSelection) {
         controlElementRunningOnCurrent = getMachineFromNodeSelectEvent(nodeSelection);
