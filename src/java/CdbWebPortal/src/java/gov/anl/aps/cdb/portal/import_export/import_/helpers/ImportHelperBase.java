@@ -47,6 +47,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -98,6 +99,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     private static final String PROPERTY_DIFFS = "importDiffs";
     private static final String HEADER_ORIG = "Unchanged";
     private static final String PROPERTY_ORIG = "importUnchanged";
+    private static final String HEADER_CREATE_ATTRIBUTES = "Attributes";
     
     protected static final String KEY_USER = "ownerDisplayName";
     protected static final String KEY_GROUP = "ownerUserGroupName";
@@ -113,11 +115,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
     protected ImportMode importMode;
     protected ExportMode exportMode;
     
+    private List<ColumnSpec> columnSpecs = null;
+    
     protected SortedMap<Integer, InputColumnModel> inputColumnMap = new TreeMap<>();
     
     protected List<InputHandler> inputHandlers = null;
     
     private List<OutputColumnModel> outputColumns = new ArrayList<>();
+    private List<OutputColumnModel> attributeModels = new ArrayList<>();
     
     private List<String> unchangeableProperties = new ArrayList<>();
     
@@ -325,7 +330,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (initValidInfo.isValid()) {
             initializeInputColumns(initInfo.inputColumns);
             initializeInputHandlers(initInfo.inputHandlers);
-            initializeValidationTableColumns(initInfo.outputColumns);
+            initializeOutputColumns(initInfo.outputColumns);
         }
         
         return initValidInfo;
@@ -341,19 +346,33 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         inputHandlers = specs;
     }
     
-    protected void initializeValidationTableColumns(List<OutputColumnModel> columns) {        
-        // these are special columns for displaying validation info for each row
-        columns.add(new OutputColumnModel(HEADER_IS_VALID, PROPERTY_IS_VALID));
-        columns.add(new OutputColumnModel(HEADER_VALID_STRING, PROPERTY_VALID_STRING));
-        if (getImportMode() == ImportMode.COMPARE) {
-            columns.add(new OutputColumnModel(HEADER_ORIG, PROPERTY_ORIG));
+    protected void initializeOutputColumns(List<OutputColumnModel> columns) {
+        
+        // save all entity OutputColumnModels to attributeModels for used in generating attribute value map etc
+        attributeModels.addAll(columns);
+        
+        // check to see if we should use a single column for all attribute values in create mode
+        if (useCreateAttributesColumn()) {
+            outputColumns.add(new OutputColumnModel(HEADER_CREATE_ATTRIBUTES, PROPERTY_DIFFS));
+        } else {
+            outputColumns.addAll(columns);
         }
+        
+        // these are special columns for displaying validation info for each row
+        outputColumns.add(new OutputColumnModel(HEADER_IS_VALID, PROPERTY_IS_VALID));
+        outputColumns.add(new OutputColumnModel(HEADER_VALID_STRING, PROPERTY_VALID_STRING));
+        
+        // add original values column for update mode
+        if (getImportMode() == ImportMode.COMPARE) {
+            outputColumns.add(new OutputColumnModel(HEADER_ORIG, PROPERTY_ORIG));
+        }
+        
+        // add diffs column for update/compare modes
         if ((getImportMode() == ImportMode.UPDATE) 
                 || (getImportMode() == ImportMode.DELETE) 
                 || (getImportMode() == ImportMode.COMPARE)) {
-            columns.add(new OutputColumnModel(HEADER_DIFFS, PROPERTY_DIFFS));
+            outputColumns.add(new OutputColumnModel(HEADER_DIFFS, PROPERTY_DIFFS));
         }
-        outputColumns = columns;
     }
 
     /**
@@ -579,7 +598,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new GenerateExportResult(validInfo, content);
     }
 
-    private FieldValueMapResult getFieldValueMap(EntityType entity) {
+    private FieldValueMapResult getFieldValueMapUpdate(EntityType entity) {
         
         boolean isValid = true;
         String validString = "";
@@ -588,7 +607,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         FieldValueMap valueMap = new FieldValueMap();
         for (ColumnSpec spec : getColumnSpecs()) {
             
-            // skip columns not used for update mode
+            // skip columns not used for specified mode
             if (!spec.isUsedForMode(ImportMode.UPDATE)) {
                 continue;
             }
@@ -605,6 +624,41 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             }
             
             valueMap.put(spec.getHeader(), columnValueResult.getColumnValue());            
+        }
+        
+        ValidInfo validInfo = new ValidInfo(isValid, validString);
+        return new FieldValueMapResult(validInfo, valueMap);
+    }
+    
+    private FieldValueMapResult getFieldValueMapCreate(EntityType entity) {
+        
+        boolean isValid = true;
+        String validString = "";
+        
+        // get field values via reflection for each column
+        FieldValueMap valueMap = new FieldValueMap();
+        for (OutputColumnModel columnModel : attributeModels) {
+            
+            // get column property value using reflection, as is done in validation table
+            String property = columnModel.getDomainProperty();
+            Object returnValue = null;
+            try {
+                String methodName = "get" + property.substring(0,1).toUpperCase() 
+                        + property.substring(1, property.length());
+                Class c = entity.getClass();
+                Method method = c.getMethod(methodName, null);
+                returnValue = method.invoke(entity, null);
+            } catch (Exception e) {
+                ValidInfo validInfo = new ValidInfo(false, "Unexpected error getting attribute value for column: " 
+                        + columnModel.getHeader());
+                return new FieldValueMapResult(validInfo, valueMap);
+            }
+            
+            if (returnValue == null) {
+                returnValue = "";
+            }
+            
+            valueMap.put(columnModel.getHeader(), returnValue.toString());            
         }
         
         ValidInfo validInfo = new ValidInfo(isValid, validString);
@@ -1086,7 +1140,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         
         // capture item field values for display in validation table
-        FieldValueMapResult result = getFieldValueMap(entity);
+        FieldValueMapResult result = getFieldValueMapUpdate(entity);
         if (!result.getValidInfo().isValid()) {
             isValid = false;
             validString = appendToString(
@@ -1154,7 +1208,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         }
         
         // capture item field values for comparison later with updated field values
-        FieldValueMapResult preUpdateValueMapResult = getFieldValueMap(entity);
+        FieldValueMapResult preUpdateValueMapResult = getFieldValueMapUpdate(entity);
         if (!preUpdateValueMapResult.getValidInfo().isValid()) {
             isValid = false;
             validString = appendToString(
@@ -1182,7 +1236,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (isValid) {
 
             // capture item field values for comparison later with original field values
-            FieldValueMapResult postUpdateValueMapResult = getFieldValueMap(entity);
+            FieldValueMapResult postUpdateValueMapResult = getFieldValueMapUpdate(entity);
             if (!postUpdateValueMapResult.getValidInfo().isValid()) {
                 isValid = false;
                 validString = appendToString(
@@ -1308,6 +1362,37 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (!uniqueValidInfo.isValid()) {
             isValid = false;
             validString = appendToString(validString, uniqueValidInfo.getValidString());
+        }
+        
+        // create string for attributes column using map of attribute names and values
+        if (useCreateAttributesColumn()) {
+            
+            // capture attribute field values in map
+            FieldValueMapResult attributeMapResult = getFieldValueMapCreate(newEntity);
+            if (!attributeMapResult.getValidInfo().isValid()) {
+                isValid = false;
+                validString = appendToString(validString,
+                        "Attribute snapshot failed: "
+                        + attributeMapResult.getValidInfo().getValidString());
+            }
+            FieldValueMap attributeMap = attributeMapResult.getValueMap();
+
+            String attribString = "";
+            boolean first = true;
+            for (String key : attributeMap.keySet()) {
+                String attributeValue = attributeMap.get(key);
+                if ((attributeValue != null) && (!attributeValue.isEmpty())) {
+                    if (!first) {
+                        attribString = attribString + "<br>";
+                    } else {
+                        first = false;
+                    }
+                    attribString = attribString + key + ": ";
+                    attribString = attribString + "'" + attributeValue + "'";
+                }
+            }
+
+            newEntity.setImportDiffs(attribString);
         }
             
         return new CreateInfo(newEntity, isValid, validString);
@@ -1435,6 +1520,14 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
      */
     public boolean supportsModeTransfer() {
         return false;
+    }
+    
+    /**
+     * Specifies whether to use a single column for attribute values in create mode,
+     * or one column per attribute if false. Subclasses override to customize.
+     */
+    public boolean useCreateAttributesColumn() {
+        return true;
     }
 
     /**
@@ -1682,8 +1775,15 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
                 null,
                 ColumnModeOptions.rDELETE());
     }
+    
+    private List<ColumnSpec> getColumnSpecs() {
+        if (columnSpecs == null) {
+            columnSpecs = initColumnSpecs();
+        }
+        return columnSpecs;
+    }
 
-    protected abstract List<ColumnSpec> getColumnSpecs();
+    protected abstract List<ColumnSpec> initColumnSpecs();
     
     public abstract EntityControllerType getEntityController();
     

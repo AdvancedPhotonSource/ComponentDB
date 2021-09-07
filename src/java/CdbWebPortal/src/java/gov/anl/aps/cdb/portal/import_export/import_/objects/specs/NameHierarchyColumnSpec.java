@@ -110,8 +110,8 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
             inputHandler = new HierarchyHandler(
                     firstLevelIndex, lastLevelIndex, 128, keyName, keyIndent);
             inputHandlers.add(inputHandler);
-            outputColumns.add(new OutputColumnModel("Parent Level Names Path", "importPath"));
-            outputColumns.add(new OutputColumnModel("Item Level Name", "name"));
+            outputColumns.add(new OutputColumnModel("Parent Path", "importPath"));
+            outputColumns.add(new OutputColumnModel("Name", "name"));
         }
 
         ValidInfo validInfo = new ValidInfo(isValid, validString);

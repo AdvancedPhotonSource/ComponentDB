@@ -60,7 +60,7 @@ public class ImportHelperCableDesignConnections
     }
 
     @Override
-    protected List getColumnSpecs() {
+    protected List initColumnSpecs() {
 
         List<ColumnSpec> specs = new ArrayList<>();
 

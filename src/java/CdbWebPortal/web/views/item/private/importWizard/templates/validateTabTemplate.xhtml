@@ -76,10 +76,7 @@ See LICENSE file.
                                          rowKey="#{row.viewUUID}"
                                          selectionMode="single"
                                          selection="#{wizardController.selectedTableRow}"
-                                         rowStyleClass="#{row.isValidImport ? null : 'invalidTableData'}"
-                                         paginator="true"
-                                         paginatorAlwaysVisible="true"
-                                         rows="#{resources.ImportWizardValidationTableNumberOfRows}">    
+                                         rowStyleClass="#{row.isValidImport ? null : 'invalidTableData'}">    
 
                                 <p:columns value="#{wizardController.columns}" 
                                            var="column" 

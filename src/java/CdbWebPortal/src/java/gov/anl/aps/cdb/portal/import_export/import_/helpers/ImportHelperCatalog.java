@@ -23,7 +23,7 @@ public class ImportHelperCatalog extends ImportHelperCatalogBase<ItemDomainCatal
 
 
     @Override
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         

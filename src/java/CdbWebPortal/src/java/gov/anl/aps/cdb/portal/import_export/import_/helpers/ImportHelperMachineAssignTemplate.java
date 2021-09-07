@@ -54,7 +54,7 @@ public class ImportHelperMachineAssignTemplate extends ImportHelperBase<ItemDoma
     }
     
     @Override
-    protected List getColumnSpecs() {
+    protected List initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
 

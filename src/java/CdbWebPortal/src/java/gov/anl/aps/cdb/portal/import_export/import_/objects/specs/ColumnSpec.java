@@ -133,7 +133,7 @@ public abstract class ColumnSpec {
             int colIndex,
             List<InputColumnModel> inputColumns_io) {
 
-        inputColumns_io.add(getInputColumnModel(colIndex));
+        inputColumns_io.add(createInputColumnModel(colIndex));
         return 1;
     }
     
@@ -180,28 +180,28 @@ public abstract class ColumnSpec {
             validString = "Import spreadsheet is missing expected column: '" 
                     + getHeader() + "', actual column encountered: '" + headerValue + "'.";
         } else {
-            inputColumns.add(getInputColumnModel(colIndex));
+            inputColumns.add(createInputColumnModel(colIndex));
             inputHandlers.add(getInputHandler(colIndex));
-            outputColumns.add(getOutputColumnModel(colIndex));
+            outputColumns.add(createOutputColumnModel(colIndex));
         }
 
         ValidInfo validInfo = new ValidInfo(isValid, validString);
         return new ColumnSpecInitInfo(validInfo, 1, inputColumns, inputHandlers, outputColumns);
     }
     
-    private InputColumnModel getInputColumnModel(int colIndex) {
+    private InputColumnModel createInputColumnModel(int colIndex) {
         return new InputColumnModel(
                 colIndex,
                 getHeader(),
                 getDescription());
     }
     
-    private OutputColumnModel getOutputColumnModel(int colIndex) {
+    private OutputColumnModel createOutputColumnModel(int colIndex) {
         return new OutputColumnModel(
                 getHeader(),
                 getPropertyName());
     }
-
+    
     protected abstract InputHandler getInputHandler(int colIndex);
     
     public OutputHandler getOutputHandler(ExportMode exportMode) {

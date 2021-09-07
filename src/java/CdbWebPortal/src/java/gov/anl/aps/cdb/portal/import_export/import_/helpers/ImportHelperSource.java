@@ -26,7 +26,7 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
     private SourceFacade sourceFacade;
     
     @Override
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
