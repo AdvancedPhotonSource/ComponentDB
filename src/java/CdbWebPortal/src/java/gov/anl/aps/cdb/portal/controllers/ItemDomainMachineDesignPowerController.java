@@ -19,7 +19,7 @@ import org.apache.logging.log4j.Logger;
 
 @Named(ItemDomainMachineDesignPowerController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignPowerController extends ItemDomainMachineDesignRelationshipBaseController {
+public class ItemDomainMachineDesignPowerController extends ItemDomainMachineDesignRelationshipBaseController<ItemDomainMachineDesignPowerControllerUtility> {
 
     public final static String controllerNamed = "itemDomainMachineDesignPowerController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignPowerController.class.getName());

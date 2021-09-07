@@ -33,7 +33,7 @@ import org.primefaces.model.TreeNode;
  */
 @Named(ItemDomainMachineDesignDeletedItemsController.CONTROLLER_NAMED)
 @SessionScoped
-public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode> {
+public class ItemDomainMachineDesignDeletedItemsController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignDeletedControllerUtility> {
 
     public final static String CONTROLLER_NAMED = "itemDomainMachineDesignDeletedItemsController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignDeletedItemsController.class.getName());

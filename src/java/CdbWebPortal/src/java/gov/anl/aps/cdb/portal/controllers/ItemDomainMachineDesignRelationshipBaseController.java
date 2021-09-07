@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.NodeSelectEvent;
 
-public abstract class ItemDomainMachineDesignRelationshipBaseController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignRelationshipTreeNode> {
+public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineRelationshipControllerUtility extends ItemDomainMachineDesignRelationshipBaseControllerUtility> extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignRelationshipTreeNode, MachineRelationshipControllerUtility> {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignRelationshipBaseController.class.getName());
 
@@ -34,15 +34,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
 
     private ItemDomainMachineDesignRelationshipTreeNode removeMachineDesignRootTreeNode;
 
-    protected abstract EntityTypeName getRelationshipMachineEntityType();
-
-    @Override
-    protected abstract ItemDomainMachineDesignRelationshipBaseControllerUtility createControllerUtilityInstance();
-
-    @Override
-    protected ItemDomainMachineDesignRelationshipBaseControllerUtility getControllerUtility() {
-        return (ItemDomainMachineDesignRelationshipBaseControllerUtility) super.getControllerUtility();
-    }
+    protected abstract EntityTypeName getRelationshipMachineEntityType();  
 
     public List<ItemDomainMachineDesign> getMachineElementsRelatedToCurrent() {
         ItemDomainMachineDesign current = getCurrent();
@@ -52,11 +44,11 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController extends 
 
             if (machineElementsRelatedToCurrent == null) {
                 machineElementsRelatedToCurrent = new ArrayList<>();
-
-                List<ItemElementRelationship> itemElementRelationshipList = current.getItemElementRelationshipList1();
-
+                
                 ItemDomainMachineDesignRelationshipBaseControllerUtility controllerUtility = getControllerUtility();
-                controllerUtility.loadMachineItemsWithRelationship(itemElementRelationshipList, machineElementsRelatedToCurrent, true);
+                ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
+                String relName = relationshipTypeName.getValue();
+                controllerUtility.loadMachineItemsWithRelationship(relName, current, machineElementsRelatedToCurrent, true);                
 
                 current.setMachineElementsRelatedToThis(machineElementsRelatedToCurrent);
             }

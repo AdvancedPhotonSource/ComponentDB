@@ -70,8 +70,8 @@ import org.primefaces.model.TreeNode;
  * @author djarosz
  * @param <ItemDomainMachineTreeNode>
  */
-public abstract class ItemDomainMachineDesignBaseController <MachineTreeNode extends ItemDomainMachineDesignBaseTreeNode>
-        extends ItemController<ItemDomainMachineDesignBaseControllerUtility, ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings>
+public abstract class ItemDomainMachineDesignBaseController <MachineTreeNode extends ItemDomainMachineDesignBaseTreeNode, controllerUtility extends ItemDomainMachineDesignBaseControllerUtility>
+        extends ItemController<controllerUtility, ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings>
         implements ItemDomainCableDesignWizardClient {
 
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignBaseController.class.getName());

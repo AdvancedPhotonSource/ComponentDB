@@ -38,7 +38,7 @@ import org.primefaces.event.NodeSelectEvent;
 
 @Named(ItemDomainMachineDesignInventoryController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode> implements IItemStatusController {
+public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignInventoryControllerUtility> implements IItemStatusController {
 
     public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
