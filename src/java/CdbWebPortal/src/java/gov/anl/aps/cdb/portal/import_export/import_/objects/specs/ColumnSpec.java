@@ -139,9 +139,10 @@ public abstract class ColumnSpec {
     
     public ColumnSpecInitInfo initialize(
             int colIndex,
-            Map<Integer, String> headerValueMap) {
+            Map<Integer, String> headerValueMap,
+            ImportMode mode) {
         
-        ColumnSpecInitInfo initInfo = initialize_(colIndex, headerValueMap);
+        ColumnSpecInitInfo initInfo = initialize_(colIndex, headerValueMap, mode);
         
         if (initInfo.getValidInfo().isValid()) {        
             for (InputHandler handler : initInfo.getInputHandlers()) {
@@ -162,7 +163,8 @@ public abstract class ColumnSpec {
      */
     protected ColumnSpecInitInfo initialize_(
             int colIndex,
-            Map<Integer, String> headerValueMap) {
+            Map<Integer, String> headerValueMap,
+            ImportMode mode) {
         
         boolean isValid = true;
         String validString = "";
@@ -170,19 +172,21 @@ public abstract class ColumnSpec {
         List<InputColumnModel> inputColumns = new ArrayList<>();
         List<InputHandler> inputHandlers = new ArrayList<>();
         List<OutputColumnModel> outputColumns = new ArrayList<>();
-
-        String headerValue = headerValueMap.get(colIndex);
-        if (headerValue == null) {
-            headerValue = "";
-        }
-        if ((headerValue.isEmpty()) || (!headerValue.equals(getHeader()))) {
-            isValid = false;
-            validString = "Import spreadsheet is missing expected column: '" 
-                    + getHeader() + "', actual column encountered: '" + headerValue + "'.";
-        } else {
-            inputColumns.add(createInputColumnModel(colIndex));
-            inputHandlers.add(getInputHandler(colIndex));
-            outputColumns.add(createOutputColumnModel(colIndex));
+        
+        if (isUsedForMode(mode)) {
+            String headerValue = headerValueMap.get(colIndex);
+            if (headerValue == null) {
+                headerValue = "";
+            }
+            if ((headerValue.isEmpty()) || (!headerValue.equals(getHeader()))) {
+                isValid = false;
+                validString = "Import spreadsheet is missing expected column: '"
+                        + getHeader() + "', actual column encountered: '" + headerValue + "'.";
+            } else {
+                inputColumns.add(createInputColumnModel(colIndex));
+                inputHandlers.add(getInputHandler(colIndex));
+                outputColumns.add(createOutputColumnModel(colIndex, mode));
+            }
         }
 
         ValidInfo validInfo = new ValidInfo(isValid, validString);
@@ -196,10 +200,11 @@ public abstract class ColumnSpec {
                 getDescription());
     }
     
-    private OutputColumnModel createOutputColumnModel(int colIndex) {
+    private OutputColumnModel createOutputColumnModel(int colIndex, ImportMode mode) {
         return new OutputColumnModel(
                 getHeader(),
-                getPropertyName());
+                getPropertyName(),
+                isDisplayedForMode(mode));
     }
     
     protected abstract InputHandler getInputHandler(int colIndex);
@@ -252,6 +257,14 @@ public abstract class ColumnSpec {
     public boolean isUnchangeable() {
         ColumnModeOptions opts = columnModeOptionsMap.get(ImportMode.UPDATE);
         return (opts != null) && (opts.isUnchangeable());
+    }
+    
+    public boolean isDisplayedForMode(ImportMode mode) {
+        if (!columnModeOptionsMap.containsKey(mode)) {
+            return false;
+        } else {
+            return columnModeOptionsMap.get(mode).isDisplayed();
+        }
     }
 
 }

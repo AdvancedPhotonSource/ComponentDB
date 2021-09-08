@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.portal.import_export.export.objects.handlers.OutputHandle
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnModeOptions;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ColumnSpecInitInfo;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ExportMode;
+import gov.anl.aps.cdb.portal.import_export.import_.objects.ImportMode;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.InputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.OutputColumnModel;
 import gov.anl.aps.cdb.portal.import_export.import_.objects.ValidInfo;
@@ -66,7 +67,8 @@ public class NameHierarchyColumnSpec extends ColumnSpec {
     @Override
     public ColumnSpecInitInfo initialize_(
             int colIndex,
-            Map<Integer, String> headerValueMap) {
+            Map<Integer, String> headerValueMap,
+            ImportMode mode) {
 
         boolean isValid = true;
         String validString = "";

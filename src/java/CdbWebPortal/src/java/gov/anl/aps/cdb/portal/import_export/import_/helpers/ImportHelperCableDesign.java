@@ -54,7 +54,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 "setName", 
                 "Cable name, uniquely identifies cable.", 
                 "getName",
-                ColumnModeOptions.rCREATErUPDATE(), 
+                ColumnModeOptions.rdCREATErUPDATE(), 
                 128));
         
         specs.add(new StringColumnSpec(
