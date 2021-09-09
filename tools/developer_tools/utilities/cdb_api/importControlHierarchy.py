@@ -2,18 +2,17 @@ import csv
 import json
 
 from CdbApiFactory import CdbApiFactory
-from cdbApi import NewMachinePlaceholderOptions, NewControlRelationshipInformation, ApiException, \
-    NewRunningRelationshipInformation
+from cdbApi import NewMachinePlaceholderOptions, NewControlRelationshipInformation, ApiException
 
 INTERFACE_KEY = "Interface"
 LEVEL_PREFIX_KEY = "Level "
-IS_CONTROL_ELEMENT_KEY = "Control Element"
-RUNNING_ON_KEY = "Running on"
+CONTROL_GROUP_NAME_KEY = "Control Group"
+MACHINE_PARENT_NAME_KEY = "Machine Parent"
 ITEM_PROJECT_KEY = "Item Project"
 
 ITEM_REC_NAME_KEY = "name"
-ITEM_REC_IS_CONTROL_KEY = "is_control"
-ITEM_REC_RUNNING_ON_KEY = "running_on"
+ITEM_REC_CONTROL_GROUP_NAME_KEY = "control_group"
+ITEM_REC_MACHINE_PARENT_NAME_KEY = "machine_parent_name"
 
 PRINT_INDENT = "------"
 
@@ -30,14 +29,7 @@ machine_api = cdb_api.getMachineDesignItemApi()
 result_dict = {}
 
 
-def get_id_for_item(item_rec=None, item_name=None):
-    if item_rec is not None:
-        item_name = item_rec[ITEM_REC_NAME_KEY]
-
-    if item_name is None:
-        print("no name provided")
-        return
-
+def get_id_for_item(item_name, create_control_group=False):
     parent_result_id = result_dict.get(item_name)
 
     if parent_result_id is None:
@@ -45,12 +37,7 @@ def get_id_for_item(item_rec=None, item_name=None):
             parent_machine = machine_api.get_machine_design_items_by_name(item_name)
             parent_result_id = parent_machine[0].id
         except Exception:
-            if item_rec is not None:
-                is_control = item_rec[ITEM_REC_IS_CONTROL_KEY]
-            else:
-                is_control = False
-
-            if is_control:
+            if create_control_group:
                 opts = NewMachinePlaceholderOptions(name=item_name, project_id=1)
                 parent_machine = machine_api.create_control_element(opts)
                 parent_result_id = parent_machine.id
@@ -62,20 +49,51 @@ def get_id_for_item(item_rec=None, item_name=None):
     return parent_result_id
 
 
-def add_running_on_relationship(item_rec):
-    if not item_rec[ITEM_REC_IS_CONTROL_KEY]:
-        return
+def process_item_rec(parent_rec, try_index, interface_name, child_rec=None):
+    parent_machine_parent = parent_rec[ITEM_REC_MACHINE_PARENT_NAME_KEY]
+    parent_control_group = parent_rec[ITEM_REC_CONTROL_GROUP_NAME_KEY]
+    parent_name = parent_rec[ITEM_REC_NAME_KEY]
 
-    running_on = item_rec[ITEM_REC_RUNNING_ON_KEY]
-    if running_on != '':
-        running_on_id = get_id_for_item(item_name=running_on)
-        control_id = get_id_for_item(item_rec=item_rec)
+    try:
+        try:
+            parent_id = get_id_for_item(parent_name)
+        except Exception as ex:
+            parent_id = None
 
-    running_relationship = NewRunningRelationshipInformation(
-        machine_design_id=running_on_id,
-        control_type_machine_id=control_id
-    )
-    machine_api.create_running_on_relationship(running_relationship)
+        print(PRINT_INDENT * (try_index - 1) + parent_name)
+
+        if parent_id is None:
+            if parent_machine_parent is None:
+                print("Error with the record for " + item_name)
+                return
+            parent_machine_id = get_id_for_item(parent_machine_parent)
+            control_group_id = get_id_for_item(parent_control_group, create_control_group=True)
+
+            opts = NewMachinePlaceholderOptions(name=parent_name, project_id=1)
+            parent_item = machine_api.create_placeholder(parent_md_id=parent_machine_id, new_machine_placeholder_options=opts)
+            parent_id = parent_item.id
+
+            opts = NewControlRelationshipInformation(controlled_machine_id=parent_id,
+                                                     controlling_machine_id=control_group_id,
+                                                     control_interface_to_parent=interface_name)
+            machine_api.create_control_relationship(opts)
+        if child_rec is not None:
+            child_name = child_rec[ITEM_REC_NAME_KEY]
+
+            print(PRINT_INDENT * try_index + child_name)
+
+            child_id = get_id_for_item(child_name)
+
+            opts = NewControlRelationshipInformation(controlled_machine_id=child_id,
+                                                     controlling_machine_id=parent_id,
+                                                     control_interface_to_parent=interface_name)
+            machine_api.create_control_relationship(opts)
+    except Exception as ex:
+        print(ex)
+    except ApiException as ex:
+        exception_body = ex.body
+        exception_body = json.loads(exception_body)
+        print(exception_body['message'])
 
 
 with open(csv_file_path) as csv_file:
@@ -91,12 +109,10 @@ with open(csv_file_path) as csv_file:
             if next_node_key in row.keys():
                 item_name = row[next_node_key]
             if item_name is not None and item_name != '':
-                item_is_control = row[IS_CONTROL_ELEMENT_KEY] != ''
-                item_rec = {ITEM_REC_NAME_KEY: item_name, ITEM_REC_IS_CONTROL_KEY: item_is_control}
-
-                if item_is_control:
-                    running_on = row[RUNNING_ON_KEY]
-                    item_rec[ITEM_REC_RUNNING_ON_KEY] = running_on
+                control_group_name = row[CONTROL_GROUP_NAME_KEY]
+                machine_parent_name = row[MACHINE_PARENT_NAME_KEY]
+                item_rec = {ITEM_REC_NAME_KEY: item_name, ITEM_REC_CONTROL_GROUP_NAME_KEY: control_group_name,
+                            ITEM_REC_MACHINE_PARENT_NAME_KEY: machine_parent_name}
 
                 parents = parents[:try_index]
                 parents.append(item_rec)
@@ -104,46 +120,17 @@ with open(csv_file_path) as csv_file:
             else:
                 try_index -= 1
 
-        try:
-            if len(parents) < 2:
-                if len(parents) == 1:
-                    parent = parents[0]
-                    get_id_for_item(item_rec=parent)
-                    add_running_on_relationship(parent)
-                continue
+        interface_name = row[INTERFACE_KEY]
 
-            parent = parents[-2]
-            child = parents[-1]
-            parent_name = parent[ITEM_REC_NAME_KEY]
-            child_name = child[ITEM_REC_NAME_KEY]
-
-            print(PRINT_INDENT * (try_index - 1) + parent_name)
-            print(PRINT_INDENT * try_index + child_name)
-
-            interface_name = row[INTERFACE_KEY]
-
-            parent_id = get_id_for_item(item_rec=parent)
-
-            if parent[ITEM_REC_IS_CONTROL_KEY] and child[ITEM_REC_IS_CONTROL_KEY]:
-                opts = NewMachinePlaceholderOptions(name=child_name, project_id=1)
-                machine_api.create_placeholder(parent_id, opts)
-                continue
-            else:
-                child_id = get_id_for_item(item_rec=child)
-
-            add_running_on_relationship(parent)
-            add_running_on_relationship(child)
-        except Exception as ex:
-            print(ex)
+        if len(parents) < 2:
+            if len(parents) == 1:
+                parent = parents[0]
+                process_item_rec(parent, try_index, interface_name)
             continue
 
-        try:
-            opts = NewControlRelationshipInformation(controlled_machine_id=child_id,
-                                                     controlling_machine_id=parent_id,
-                                                     control_interface_to_parent=interface_name)
-            machine_api.create_control_relationship(opts)
-        except ApiException as ex:
-            exception_body = ex.body
-            exception_body = json.loads(exception_body)
-            print(exception_body['message'])
+        parent = parents[-2]
+        child = parents[-1]
+
+        process_item_rec(parent, try_index, interface_name, child)
+
 
