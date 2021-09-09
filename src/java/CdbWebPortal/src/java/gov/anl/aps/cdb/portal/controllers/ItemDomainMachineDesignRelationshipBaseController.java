@@ -198,6 +198,38 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
         if (matchEntityType) {
             loadViewModeUrlParameter();
         }
+    } 
+
+    @Override
+    public void processPreRenderList() {        
+        super.processPreRenderList();
+        
+        String paramValue = SessionUtility.getRequestParameterValue("id");
+        
+        if (paramValue != null) {
+            Integer idParam = Integer.parseInt(paramValue);
+            ItemDomainMachineDesign result = itemDomainMachineDesignFacade.find(idParam);
+            
+            if (result != null) {
+                ItemDomainMachineDesignRelationshipTreeNode machineDesignTreeRootTreeNode = getMachineDesignTreeRootTreeNode();
+                expandToSpecificMachineDesignItemByRelationship(getRelationshipTypeName(), machineDesignTreeRootTreeNode, result);
+            }
+        }
+    }
+    
+    public String showInHousingHierarchyForSelectedTreeNode() {
+        updateCurrentUsingSelectedItemInTreeTable();
+
+        ItemDomainMachineDesign item = getCurrent();
+
+        if (item != null) {
+            String redirect = "/views/itemDomainMachineDesign/list";
+            redirect += "?id=" + item.getId() + "&faces-redirect=true";
+            return redirect;
+        }
+
+        SessionUtility.addErrorMessage("Error", "Cannot load details for a non machine design.");
+        return null;
     }
 
     @Override

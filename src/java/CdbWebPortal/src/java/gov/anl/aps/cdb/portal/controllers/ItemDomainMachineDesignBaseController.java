@@ -10,6 +10,7 @@ import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.common.utilities.ObjectUtility;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.constants.PortalStyles;
 import gov.anl.aps.cdb.portal.controllers.extensions.BundleWizard;
 import gov.anl.aps.cdb.portal.controllers.extensions.CircuitWizard;
@@ -70,7 +71,7 @@ import org.primefaces.model.TreeNode;
  * @author djarosz
  * @param <ItemDomainMachineTreeNode>
  */
-public abstract class ItemDomainMachineDesignBaseController <MachineTreeNode extends ItemDomainMachineDesignBaseTreeNode, controllerUtility extends ItemDomainMachineDesignBaseControllerUtility>
+public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode extends ItemDomainMachineDesignBaseTreeNode, controllerUtility extends ItemDomainMachineDesignBaseControllerUtility>
         extends ItemController<controllerUtility, ItemDomainMachineDesign, ItemDomainMachineDesignFacade, ItemDomainMachineDesignSettings>
         implements ItemDomainCableDesignWizardClient {
 
@@ -198,7 +199,7 @@ public abstract class ItemDomainMachineDesignBaseController <MachineTreeNode ext
     public static boolean isItemMachineDesignStatic(Item item) {
         return item instanceof ItemDomainMachineDesign;
     }
-    
+
     protected boolean isMachineDesignAndEntityType(Item item, EntityTypeName entityTypeName) {
         if (item instanceof ItemDomainMachineDesign) {
             return ((ItemDomainMachineDesign) item).isItemEntityType(entityTypeName.getValue());
@@ -208,11 +209,11 @@ public abstract class ItemDomainMachineDesignBaseController <MachineTreeNode ext
     }
 
     public boolean isItemMachineDesignAndPower(Item item) {
-        return isMachineDesignAndEntityType(item, EntityTypeName.power); 
+        return isMachineDesignAndEntityType(item, EntityTypeName.power);
     }
 
     public boolean isItemMachineDesignAndControl(Item item) {
-        return isMachineDesignAndEntityType(item, EntityTypeName.control); 
+        return isMachineDesignAndEntityType(item, EntityTypeName.control);
     }
 
     public boolean isItemMachineDesignAndTemplate(Item item) {
@@ -339,9 +340,9 @@ public abstract class ItemDomainMachineDesignBaseController <MachineTreeNode ext
         return loadMachineDesignRootTreeNode(defaultTopLevelMachineList);
     }
 
-    public abstract MachineTreeNode loadMachineDesignRootTreeNode(List<ItemDomainMachineDesign> itemsWithoutParents); 
-    
-    public abstract MachineTreeNode createMachineTreeNodeInstance();     
+    public abstract MachineTreeNode loadMachineDesignRootTreeNode(List<ItemDomainMachineDesign> itemsWithoutParents);
+
+    public abstract MachineTreeNode createMachineTreeNodeInstance();
 
     public void searchMachineDesign() {
         Pattern searchPattern = Pattern.compile(Pattern.quote(mdSearchString), Pattern.CASE_INSENSITIVE);
@@ -947,6 +948,53 @@ public abstract class ItemDomainMachineDesignBaseController <MachineTreeNode ext
 
         machineDesingItemStack.push(item);
 
+        updateParentStackForMachineDesignByElements(item, machineDesingItemStack);
+
+        return expandToSpecificTreeNodeFromStack(machineDesingItemStack, machineDesignTreeRootTreeNode);
+    }
+
+    /**
+     * Expands the parent nodes in the supplied tree above the specified machine
+     * design item. Returns the TreeNode for the specified item, so that the
+     * caller can call select to highlight it if appropriate.
+     *
+     * @param machineDesignTreeRootTreeNode Root node of machine design
+     * hierarchy.
+     * @param item Child node to expand the nodes above.
+     * @return
+     */
+    protected ItemDomainMachineDesignBaseTreeNode expandToSpecificMachineDesignItemByRelationship(
+            ItemElementRelationshipTypeNames relationshipConstant,
+            ItemDomainMachineDesignBaseTreeNode machineDesignTreeRootTreeNode,
+            ItemDomainMachineDesign item) {
+
+        Stack<ItemDomainMachineDesign> machineDesingItemStack = new Stack<>();
+
+        machineDesingItemStack.push(item);
+
+        // Find relationship parents
+        controllerUtility controllerUtility = getControllerUtility();
+        String relationshipName = relationshipConstant.getValue();
+        List<ItemDomainMachineDesign> parentRelationshipItems = new ArrayList<>();
+
+        while (parentRelationshipItems != null) {
+            controllerUtility.loadMachineItemsWithRelationship(relationshipName, item, parentRelationshipItems, false);
+
+            if (parentRelationshipItems.size() == 0) {
+                parentRelationshipItems = null;
+            } else {
+                item = parentRelationshipItems.get(0);
+                parentRelationshipItems.clear();
+                machineDesingItemStack.push(item);
+            }
+        }
+
+        updateParentStackForMachineDesignByElements(item, machineDesingItemStack);
+
+        return expandToSpecificTreeNodeFromStack(machineDesingItemStack, machineDesignTreeRootTreeNode);
+    }
+
+    private static void updateParentStackForMachineDesignByElements(ItemDomainMachineDesign item, Stack<ItemDomainMachineDesign> machineDesignItemStack) {
         List<Item> parentItemList = getParentItemList(item);
 
         while (parentItemList != null) {
@@ -960,13 +1008,17 @@ public abstract class ItemDomainMachineDesignBaseController <MachineTreeNode ext
             }
 
             if (parentItem != null) {
-                machineDesingItemStack.push(parentItem);
+                machineDesignItemStack.push(parentItem);
                 parentItemList = getParentItemList(parentItem);
             } else {
                 parentItemList = null;
             }
         }
+    }
 
+    private static ItemDomainMachineDesignBaseTreeNode expandToSpecificTreeNodeFromStack(
+            Stack<ItemDomainMachineDesign> machineDesingItemStack,
+            ItemDomainMachineDesignBaseTreeNode machineDesignTreeRootTreeNode) {
         List<ItemDomainMachineDesignBaseTreeNode> children = machineDesignTreeRootTreeNode.getMachineChildren();
 
         ItemDomainMachineDesignBaseTreeNode result = null;
@@ -1527,7 +1579,7 @@ public abstract class ItemDomainMachineDesignBaseController <MachineTreeNode ext
     public List<ItemElementHistory> getCombinedItemElementHistory(ItemElement ie) {
         List<ItemElementHistory> itemElementHistories = new ArrayList<>();
         if (ie == null) {
-            return itemElementHistories; 
+            return itemElementHistories;
         }
         Item mdItem = ie.getContainedItem();
         ItemElement selfElement = mdItem.getSelfElement();
@@ -1683,7 +1735,7 @@ public abstract class ItemDomainMachineDesignBaseController <MachineTreeNode ext
             List<ItemDomainMachineDesign> favoriteItems = getFavoriteItems();
 
             if (favoriteItems == null) {
-                favoriteMachineDesignTreeRootTreeNode = createMachineTreeNodeInstance(); 
+                favoriteMachineDesignTreeRootTreeNode = createMachineTreeNodeInstance();
             } else {
 
                 List<ItemDomainMachineDesign> parentFavorites = new ArrayList<>();
@@ -1803,7 +1855,7 @@ public abstract class ItemDomainMachineDesignBaseController <MachineTreeNode ext
     public DataModel getInstalledInventorySelectionForCurrentElement() {
         ItemDomainMachineDesign current = getCurrent();
         if (current == null) {
-            return null; 
+            return null;
         }
         DataModel installedInventorySelectionForCurrentElement = current.getInstalledInventorySelectionForCurrentElement();
         if (installedInventorySelectionForCurrentElement == null) {

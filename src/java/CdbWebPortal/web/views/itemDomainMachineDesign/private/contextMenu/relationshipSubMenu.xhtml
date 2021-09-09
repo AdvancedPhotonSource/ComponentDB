@@ -9,17 +9,13 @@ See LICENSE file.
                 xmlns:p="http://primefaces.org/ui">   
 
     <p:submenu icon="fa fa-connectdevelop"
-               label="Relationship"
-               disabled="#{disabledEditContextMenuItemForSelection}">
-        
-        <ui:include src="cableSubMenu.xhtml" />        
-        
-        <ui:include src="../../../itemDomainMachineDesignBase/private/machineDesignContextMenu/genericMachineMenuItem.xhtml">
-            <ui:param name="value" value="Running Control"/>
-            <ui:param name="icon" value="fa fa-code"/>
-            <ui:param name="action" value="prepareSelectMachinedRunningOnCurrent"/> 
-            <ui:param name="disabled" value="#{disabledEditContextMenuItemForSelection}"/> 
-        </ui:include>        
+               label="Relationship">
+
+        <ui:include src="cableSubMenu.xhtml" />     
+
+        <p:menuitem value="Show in control hierarchy" 
+                    icon="fa fa-code" 
+                    action="#{entityController.showInControlHierarchyForSelectedTreeNode()}"/>  
 
     </p:submenu>
 

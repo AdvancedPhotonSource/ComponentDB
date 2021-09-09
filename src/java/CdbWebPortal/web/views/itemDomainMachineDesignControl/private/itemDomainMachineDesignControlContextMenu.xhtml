@@ -63,6 +63,10 @@ See LICENSE file.
                 <ui:param name="removeRelatedItemLabel"
                           value="Remove control relationship"/> 
             </ui:include>
+            
+            <p:menuitem value="Show in housing hierarchy" 
+                    icon="fa fa-code" 
+                    action="#{entityController.showInHousingHierarchyForSelectedTreeNode()}"/> 
 
             <ui:include src="../../itemDomainMachineDesignBase/private/machineDesignContextMenu/viewDetailsContextMenuItem.xhtml" /> 
         </p:contextMenu>                

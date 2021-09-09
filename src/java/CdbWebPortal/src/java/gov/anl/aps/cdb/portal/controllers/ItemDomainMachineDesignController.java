@@ -4,11 +4,13 @@
  */
 package gov.anl.aps.cdb.portal.controllers;
 
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
+import java.util.ArrayList;
 import java.util.List;
 import javax.enterprise.context.SessionScoped;
 import javax.inject.Named;
@@ -44,7 +46,51 @@ public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBa
     public void setCablesShown(boolean cablesShown) {
         ItemDomainMachineDesignTreeNode.MachineTreeConfiguration config = getCurrentMachineDesignListRootTreeNode().getConfig();
         config.setShowCables(cablesShown);
-    }         
+    }  
+    
+    @Override
+    public void processPreRenderList() {        
+        super.processPreRenderList();
+        
+        String paramValue = SessionUtility.getRequestParameterValue("id");
+        
+        if (paramValue != null) {
+            Integer idParam = Integer.parseInt(paramValue);
+            ItemDomainMachineDesign result = itemDomainMachineDesignFacade.find(idParam);
+            
+            if (result != null) {
+                ItemDomainMachineDesignTreeNode machineDesignTreeRootTreeNode = getMachineDesignTreeRootTreeNode();
+                expandToSpecificMachineDesignItem(machineDesignTreeRootTreeNode, result);
+            }
+        }
+    }
+    
+    public String showInControlHierarchyForSelectedTreeNode() {
+        updateCurrentUsingSelectedItemInTreeTable();
+
+        ItemDomainMachineDesign item = getCurrent();
+        
+        // Verify if has control relationship..
+        String relationshipName = ItemElementRelationshipTypeNames.control.getValue();
+        List<ItemDomainMachineDesign> machines = new ArrayList<>(); 
+        ItemDomainMachineDesignControllerUtility util = getControllerUtility();
+        util.loadMachineItemsWithRelationship(relationshipName, item, machines, false);
+        
+        if (machines.size() == 0) {
+            SessionUtility.addErrorMessage("No control relationship", 
+                    "This item does not show up in control hierarchy.");
+            return null;
+        }
+
+        if (item != null) {
+            String redirect = "/views/itemDomainMachineDesignControl/list";
+            redirect += "?id=" + item.getId() + "&faces-redirect=true";
+            return redirect;
+        }
+
+        SessionUtility.addErrorMessage("Error", "Cannot load details for a non machine design.");
+        return null;
+    }
 
     @Override
     protected ItemDomainMachineDesignControllerUtility createControllerUtilityInstance() {
