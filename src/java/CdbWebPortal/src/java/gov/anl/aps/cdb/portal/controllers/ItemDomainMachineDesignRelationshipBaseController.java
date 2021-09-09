@@ -264,6 +264,12 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
     protected final ItemElementRelationshipTypeNames getRelationshipTypeName() {
         ItemDomainMachineDesignRelationshipBaseControllerUtility controllerUtility = getControllerUtility();
         return controllerUtility.getRelationshipTypeName();
-    }           
+    }
+
+    @Override
+    public boolean isCurrentViewIsStandard() {
+        // Disable favorites + drag & drop
+        return false; 
+    }
 
 }

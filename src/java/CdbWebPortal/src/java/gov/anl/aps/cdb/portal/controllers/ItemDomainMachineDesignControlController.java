@@ -44,7 +44,7 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
 
     @Override
     public String getItemListPageTitle() {
-        return "Control Machine Elements";
+        return "Machine: Control Hierarchy";
     }
 
     @Override
