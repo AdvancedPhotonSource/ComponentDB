@@ -28,7 +28,6 @@ import gov.anl.aps.cdb.rest.entities.ItemDomainMdSearchResult;
 import gov.anl.aps.cdb.rest.entities.ItemDomainMachineDesignIdListRequest;
 import gov.anl.aps.cdb.rest.entities.NewControlRelationshipInformation;
 import gov.anl.aps.cdb.rest.entities.NewMachinePlaceholderOptions;
-import gov.anl.aps.cdb.rest.entities.NewRunningRelationshipInformation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -445,37 +444,5 @@ public class MachineDesignItemRoute extends ItemBaseRoute {
         utility.update(controllingMachineElement, currentRequestUserInfo);
         
         return relationship;        
-    }
-    
-    @PUT
-    @Path("/createRunningOnRelationship")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Operation(summary = "Create machine running on relationship.")
-    @SecurityRequirement(name = "cdbAuth")
-    @Secured
-    public ItemElementRelationship createRunningOnRelationship(
-            @RequestBody(required = true) NewRunningRelationshipInformation runningOnRelationshipInformation) throws InvalidArgument, CdbException {        
-        ItemDomainMachineDesignControllerUtility utility = new ItemDomainMachineDesignControllerUtility();
-        
-        int machineDesignId = runningOnRelationshipInformation.getMachineDesignId();
-        int controlTypeMachineId = runningOnRelationshipInformation.getControlTypeMachineId();
-        
-        
-        ItemDomainMachineDesign machineDesign = facade.find(machineDesignId);
-        if (machineDesign == null) {
-            throw new InvalidArgument("Invalid machine id entered."); 
-        }
-        UserInfo currentRequestUserInfo = verifyCurrentUserPermissionForItem(machineDesign); 
-        ItemDomainMachineDesign controlMachine = facade.find(controlTypeMachineId);
-        
-        if (controlMachine == null) {
-            throw new InvalidArgument("Invalid control machine id entered."); 
-        }                
-        
-        ItemElementRelationship relationship = utility.applyRunningOnRelationship(machineDesign, controlMachine);
-        
-        utility.update(machineDesign, currentRequestUserInfo);
-        
-        return relationship;
-    }
+    }        
 }

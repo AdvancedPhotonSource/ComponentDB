@@ -6,7 +6,6 @@ See LICENSE file.
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:p="http://primefaces.org/ui"
                 template="../../itemDomainMachineDesignBase/private/templates/itemDomainMachineDesignDualColumnListViewTreeContextMenuTemplate.xhtml">
 
     <ui:define name="contextMenuContents">            
@@ -15,24 +14,6 @@ See LICENSE file.
 
     <ui:define name="contextMenuSupport">
         <ui:include src="../../itemDomainMachineDesignBase/private/itemDomainMachineDesignDualColumnListViewTreeContextMenuSupport.xhtml"/> 
-
-        <p:confirmDialog id="removeRunningOnRelationshipDialog"
-                         widgetVar="removeRunningOnRelationshipDialogWidget"
-                         header="Remove running on relationship?"
-                         message="Remove running relationship to item: #{itemDomainMachineDesignController.controlElementRunningOnCurrent}?"
-                         severity="alert" 
-                         styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
-
-            <p:commandButton value="Yes" 
-                             onclick="PF('loadingDialog').show()"
-                             onstart="PF('removeRunningOnRelationshipDialogWidget').hide();
-                                      PF('loadingDialog').show()"
-                             oncomplete="PF('loadingDialog').hide()"
-                             update="@form"
-                             action="#{itemDomainMachineDesignController.removeRunningOnRelationship()}"/>
-            <p:commandButton value="No" onclick="PF('removeRunningOnRelationshipDialogWidget').hide()" type="button" />
-
-        </p:confirmDialog>      
     </ui:define>
 
 </ui:composition>

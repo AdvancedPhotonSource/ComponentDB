@@ -26,8 +26,6 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
     boolean cablesLoaded = false;
     boolean cableRelatedNode = false;
 
-    boolean runningNodesLoaded = false;
-
     public ItemDomainMachineDesignTreeNode(ItemElement element, MachineTreeConfiguration config, ItemDomainMachineDesignBaseTreeNode parent, boolean setTypeForLevel) {
         super(element, config, parent, setTypeForLevel);
     }
@@ -71,12 +69,6 @@ public class ItemDomainMachineDesignTreeNode extends ItemDomainMachineDesignBase
     @Override
     protected void loadRelationships() {
         super.loadRelationships();
-
-        if (!runningNodesLoaded) {
-            String relationshipTypeName = ItemElementRelationshipTypeNames.running.getValue();
-            loadRelationshipsFromRelationshipList(true, relationshipTypeName, "machineRunninOnNode");
-            runningNodesLoaded = true; 
-        }
 
         boolean loadCables = loadCables();
 
