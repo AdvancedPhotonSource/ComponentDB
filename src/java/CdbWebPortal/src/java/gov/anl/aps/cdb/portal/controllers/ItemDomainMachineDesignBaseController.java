@@ -973,18 +973,16 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
         machineDesingItemStack.push(item);
 
         // Find relationship parents
-        controllerUtility controllerUtility = getControllerUtility();
-        String relationshipName = relationshipConstant.getValue();
+        int relationshipId = relationshipConstant.getDbId();
         List<ItemDomainMachineDesign> parentRelationshipItems = new ArrayList<>();
 
         while (parentRelationshipItems != null) {
-            controllerUtility.loadMachineItemsWithRelationship(relationshipName, item, parentRelationshipItems, false);
+            parentRelationshipItems = itemDomainMachineDesignFacade.fetchRelationshipParentItems(item.getId(), relationshipId);
 
-            if (parentRelationshipItems.size() == 0) {
+            if (parentRelationshipItems.isEmpty()) {
                 parentRelationshipItems = null;
             } else {
-                item = parentRelationshipItems.get(0);
-                parentRelationshipItems.clear();
+                item = parentRelationshipItems.get(0);                
                 machineDesingItemStack.push(item);
             }
         }

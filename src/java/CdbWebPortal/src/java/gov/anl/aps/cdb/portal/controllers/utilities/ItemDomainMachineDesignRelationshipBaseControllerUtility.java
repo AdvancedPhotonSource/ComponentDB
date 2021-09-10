@@ -45,14 +45,15 @@ public abstract class ItemDomainMachineDesignRelationshipBaseControllerUtility e
         ItemDomainMachineDesign controllingControlTypeItem = relatingElement;
         ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
         String relationshipName = relationshipTypeName.getValue();
+        int relationshipId = relationshipTypeName.getDbId();
 
         while (controllingControlTypeItem != null) {
             if (ItemDomainMachineDesign.isItemControl(controllingControlTypeItem)) {
                 break;
             }
-
-            List<ItemDomainMachineDesign> controllingParents = new ArrayList<>();
-            loadMachineItemsWithRelationship(relationshipName, controllingControlTypeItem, controllingParents, false);
+            
+            Integer itemId = controllingControlTypeItem.getId();
+            List<ItemDomainMachineDesign> controllingParents = itemFacade.fetchRelationshipParentItems(itemId, relationshipId);
 
             if (controllingParents.size() > 1) {
                 throw new InvalidArgument("Invalid data. Item is controlled by multiple items.");
@@ -71,8 +72,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseControllerUtility e
         RelationshipType templateRelationship
                 = relationshipTypeFacade.findByName(relationshipName);
 
-        List<ItemDomainMachineDesign> machineItems = new ArrayList<>();
-        loadMachineItemsWithRelationship(relationshipName, relatedElement, machineItems, false);
+        List<ItemDomainMachineDesign> machineItems = itemFacade.fetchRelationshipParentItems(relatedElement.getId(), relationshipId); 
 
         switch (machineItems.size()) {
             case 0:

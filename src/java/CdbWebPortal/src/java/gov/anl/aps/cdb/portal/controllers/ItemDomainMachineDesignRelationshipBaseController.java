@@ -42,13 +42,10 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
         if (current != null) {
             machineElementsRelatedToCurrent = current.getMachineElementsRelatedToThis();
 
-            if (machineElementsRelatedToCurrent == null) {
-                machineElementsRelatedToCurrent = new ArrayList<>();
-                
-                ItemDomainMachineDesignRelationshipBaseControllerUtility controllerUtility = getControllerUtility();
+            if (machineElementsRelatedToCurrent == null) {                
                 ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
-                String relName = relationshipTypeName.getValue();
-                controllerUtility.loadMachineItemsWithRelationship(relName, current, machineElementsRelatedToCurrent, true);                
+                int relationshipId = relationshipTypeName.getDbId();
+                machineElementsRelatedToCurrent = itemDomainMachineDesignFacade.fetchRelationshipChildrenItems(current.getId(), relationshipId);                 
 
                 current.setMachineElementsRelatedToThis(machineElementsRelatedToCurrent);
             }
@@ -79,7 +76,7 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
         updateCurrentUsingSelectedItemInTreeTable();
         ItemDomainMachineDesign current = getCurrent();
 
-        removeMachineDesignRootTreeNode = new ItemDomainMachineDesignRelationshipTreeNode(current, getDefaultDomain(), getEntityDbFacade(), getRelationshipTypeName(), false, true);
+        removeMachineDesignRootTreeNode = new ItemDomainMachineDesignRelationshipTreeNode(current, getDefaultDomain(), getEntityDbFacade(), getRelationshipTypeName(), getRelationshipMachineEntityType(), false, true);
     }
 
     public void removeMachinedRelatedRelationship() {
@@ -238,7 +235,8 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
                 itemsWithoutParents,
                 getDefaultDomain(),
                 getEntityDbFacade(),
-                getRelationshipTypeName()
+                getRelationshipTypeName(),
+                getRelationshipMachineEntityType()
         );
 
         return rootTreeNode;

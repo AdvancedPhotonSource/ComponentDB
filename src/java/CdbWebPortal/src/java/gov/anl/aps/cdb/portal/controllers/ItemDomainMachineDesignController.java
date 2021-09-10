@@ -71,10 +71,8 @@ public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBa
         ItemDomainMachineDesign item = getCurrent();
         
         // Verify if has control relationship..
-        String relationshipName = ItemElementRelationshipTypeNames.control.getValue();
-        List<ItemDomainMachineDesign> machines = new ArrayList<>(); 
-        ItemDomainMachineDesignControllerUtility util = getControllerUtility();
-        util.loadMachineItemsWithRelationship(relationshipName, item, machines, false);
+        int relationshipId = ItemElementRelationshipTypeNames.control.getDbId();
+        List<ItemDomainMachineDesign> machines = itemDomainMachineDesignFacade.fetchRelationshipParentItems(item.getId(), relationshipId);        
         
         if (machines.size() == 0) {
             SessionUtility.addErrorMessage("No control relationship", 

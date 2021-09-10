@@ -377,35 +377,4 @@ public abstract class ItemDomainMachineDesignBaseControllerUtility extends ItemC
         return currentItemElement;
     }
 
-    public void loadMachineItemsWithRelationship(
-            String relationshipTypeName,
-            ItemDomainMachineDesign machineElement,
-            List<ItemDomainMachineDesign> machineItems,
-            boolean first) {
-
-        List<ItemElementRelationship> itemElementRelationshipList = null;
-
-        if (first) {
-            itemElementRelationshipList = machineElement.getItemElementRelationshipList1(); 
-        } else {
-            itemElementRelationshipList = machineElement.getItemElementRelationshipList();
-        }
-
-        for (ItemElementRelationship ier : itemElementRelationshipList) {
-            RelationshipType relationshipType = ier.getRelationshipType();
-            String name = relationshipType.getName();
-
-            if (name.equals(relationshipTypeName)) {
-                ItemElement itemElement = null;
-                if (first) {
-                    itemElement = ier.getFirstItemElement();
-                } else {
-                    itemElement = ier.getSecondItemElement();
-                }
-                ItemDomainMachineDesign machine = (ItemDomainMachineDesign) itemElement.getParentItem();
-                machineItems.add(machine);
-            }
-        }
-    }
-
 }
