@@ -5,6 +5,43 @@
 
 delimiter //
 
+DROP PROCEDURE IF EXISTS fetch_relationship_children_items;//
+CREATE PROCEDURE `fetch_relationship_children_items` (IN item_id int, IN relationship_type_id int) 
+BEGIN
+	SELECT item.* 
+	FROM item_element_relationship ier
+	INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
+	INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
+	INNER JOIN item on vitem1.item_id = item.id	
+	WHERE ier.relationship_type_id = relationship_type_id and vitem2.item_id = item_id;
+END //
+
+DROP PROCEDURE IF EXISTS fetch_relationship_parent_items;//
+CREATE PROCEDURE `fetch_relationship_parent_items` (IN item_id int, IN relationship_type_id int) 
+BEGIN
+	SELECT item.* 
+	FROM item_element_relationship ier
+	INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id
+	INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id
+	INNER JOIN item on vitem2.item_id = item.id	
+	WHERE ier.relationship_type_id = relationship_type_id and vitem1.item_id = item_id;
+END //
+
+DROP PROCEDURE IF EXISTS fetch_name_filter_for_relationship_hierarchy;//
+CREATE PROCEDURE `fetch_name_filter_for_relationship_hierarchy` (IN domain_id int, IN entity_type_id int, IN relationship_type_id int, in name_pattern varchar(255)) 
+BEGIN
+	SELECT item.*
+	FROM item
+	LEFT OUTER JOIN item_entity_type AS iet ON iet.item_id = item.id
+	WHERE item.domain_id = domain_id AND iet.entity_type_id = entity_type_id AND item.name LIKE name_pattern
+	OR item.id 
+	IN (
+	SELECT DISTINCT vitem.id
+	FROM item_element_relationship ier 
+	INNER JOIN v_item_extras vitem ON ier.first_item_element_id = vitem.self_element_id 
+	WHERE ier.relationship_type_id = relationship_type_id AND vitem.name LIKE name_pattern AND vitem.domain_id = domain_id);
+END //
+
 DROP PROCEDURE IF EXISTS fetch_location_item_for_item;//
 CREATE PROCEDURE `fetch_location_item_for_locatable_item` (IN locatable_item_id int) 
 BEGIN
