@@ -39,7 +39,7 @@ public class ImportHelperSource extends ImportHelperBase<Source, SourceControlle
                 "setName", 
                 "Name of vendor/manufacturer", 
                 "getName", 
-                ColumnModeOptions.rCREATErUPDATE(), 
+                ColumnModeOptions.rdCREATErUPDATE(), 
                 64));
         
         specs.add(new StringColumnSpec(

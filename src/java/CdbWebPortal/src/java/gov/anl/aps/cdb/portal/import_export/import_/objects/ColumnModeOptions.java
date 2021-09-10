@@ -107,6 +107,7 @@ public class ColumnModeOptions {
         options.add(new ColumnModeOptions(ImportMode.CREATE, true, false, true));
         options.add(new ColumnModeOptions(ImportMode.UPDATE, true, false, false));
         options.add(new ColumnModeOptions(ImportMode.COMPARE, true, false, false));
+        options.add(new ColumnModeOptions(ImportMode.DELETE, false, false, false));
         return options;
     }
     

@@ -608,39 +608,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         return new GenerateExportResult(validInfo, content);
     }
 
-    private FieldValueMapResult getFieldValueMapUpdate(EntityType entity) {
-        
-        boolean isValid = true;
-        String validString = "";
-        
-        // get field values via output handlers for each column
-        FieldValueMap valueMap = new FieldValueMap();
-        for (ColumnSpec spec : getColumnSpecs()) {
-            
-            // skip columns not used for specified mode
-            if (!spec.isUsedForMode(ImportMode.UPDATE)) {
-                continue;
-            }
-            
-            OutputHandler handler = spec.getOutputHandler(ExportMode.EXPORT);
-            if (handler == null) {                
-                ValidInfo validInfo = new ValidInfo(false, "Unexpected error, no output handler for column: " + spec.getHeader());
-                return new FieldValueMapResult(validInfo, valueMap);
-            }
-            
-            ColumnValueResult columnValueResult = handler.handleOutput(entity);
-            if (!columnValueResult.getValidInfo().isValid()) {
-                return new FieldValueMapResult(columnValueResult.getValidInfo(), valueMap);
-            }
-            
-            valueMap.put(spec.getHeader(), columnValueResult.getColumnValue());            
-        }
-        
-        ValidInfo validInfo = new ValidInfo(isValid, validString);
-        return new FieldValueMapResult(validInfo, valueMap);
-    }
-    
-    private FieldValueMapResult getFieldValueMapCreate(EntityType entity) {
+    private FieldValueMapResult getFieldValueMap(EntityType entity) {
         
         boolean isValid = true;
         String validString = "";
@@ -1058,7 +1026,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
 
         entity = (EntityType) handleCreateInfo.getEntity();
         if (entity == null) {
-            throw new CdbException("failed to create or retrieve specified item");
+            String msg = validString;
+            if (validString.equals("")) {
+                msg = "failed to create or retrieve specified item";
+            }
+            throw new CdbException(msg);
             
         } else {
             entity.setIsValidImport(isValid);
@@ -1149,8 +1121,12 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return createInfo;
         }
         
+        // set existing item id so it doesn't appear as a diff
+        entity.setImportExistingItemId((Integer) rowDict.get(KEY_EXISTING_ITEM_ID));
+        entity.setImportDeleteExistingItem((Boolean) rowDict.get(KEY_DELETE_EXISTING_ITEM));
+        
         // capture item field values for display in validation table
-        FieldValueMapResult result = getFieldValueMapUpdate(entity);
+        FieldValueMapResult result = getFieldValueMap(entity);
         if (!result.getValidInfo().isValid()) {
             isValid = false;
             validString = appendToString(
@@ -1217,8 +1193,11 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
             return createInfo;
         }
         
+        // set existing item id so it doesn't appear as a diff
+        entity.setImportExistingItemId((Integer) rowDict.get(KEY_EXISTING_ITEM_ID));
+        
         // capture item field values for comparison later with updated field values
-        FieldValueMapResult preUpdateValueMapResult = getFieldValueMapCreate(entity);
+        FieldValueMapResult preUpdateValueMapResult = getFieldValueMap(entity);
         if (!preUpdateValueMapResult.getValidInfo().isValid()) {
             isValid = false;
             validString = appendToString(
@@ -1246,7 +1225,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (isValid) {
 
             // capture item field values for comparison with original field values
-            FieldValueMapResult postUpdateValueMapResult = getFieldValueMapCreate(entity);
+            FieldValueMapResult postUpdateValueMapResult = getFieldValueMap(entity);
             if (!postUpdateValueMapResult.getValidInfo().isValid()) {
                 isValid = false;
                 validString = appendToString(
@@ -1345,6 +1324,9 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         EntityType newEntity = null;
         createInfo = createEntityInstance(rowDict);
         newEntity = (EntityType) createInfo.getEntity();
+        if (!createInfo.getValidInfo().isValid()) {
+            return new CreateInfo(null, false, createInfo.getValidInfo().getValidString());
+        }
         if (newEntity == null) {
             // helper must return an instance for use in the validation table,
             // even if there is an error creating the entity
@@ -1376,7 +1358,7 @@ public abstract class ImportHelperBase<EntityType extends CdbEntity, EntityContr
         if (useCreateAttributesColumn()) {
             
             // capture attribute field values in map
-            FieldValueMapResult attributeMapResult = getFieldValueMapCreate(newEntity);
+            FieldValueMapResult attributeMapResult = getFieldValueMap(newEntity);
             if (!attributeMapResult.getValidInfo().isValid()) {
                 isValid = false;
                 validString = appendToString(validString,

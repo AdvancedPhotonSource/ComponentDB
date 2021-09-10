@@ -34,7 +34,7 @@ public class ImportHelperCableCatalog extends ImportHelperCatalogBase<ItemDomain
                 "setName", 
                 "Cable type name, uniquely identifies cable type.", 
                 "getName",
-                ColumnModeOptions.rCREATErUPDATE(),
+                ColumnModeOptions.rdCREATErUPDATE(),
                 128));
         
         specs.add(new StringColumnSpec(

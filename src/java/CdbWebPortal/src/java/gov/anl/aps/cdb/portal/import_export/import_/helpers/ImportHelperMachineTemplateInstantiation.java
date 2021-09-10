@@ -144,7 +144,7 @@ public class ImportHelperMachineTemplateInstantiation
         CreateInfo loadTemplateInfo = MachineImportHelperCommon.loadTemplateAndSetParamValues(rowMap);
         ItemDomainMachineDesign templateItem = (ItemDomainMachineDesign) loadTemplateInfo.getEntity();
         if (templateItem == null) {
-            return loadTemplateInfo;
+            return new CreateInfo(invalidInstance, loadTemplateInfo.getValidInfo());
         }
 
         ItemDomainMachineDesign item = 
