@@ -6,6 +6,7 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
+import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignControlSettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -142,11 +143,10 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
         UserInfo enteredByUser = (UserInfo) SessionUtility.getUser();
         controllerUtility.applyRelationship(getMachineRelatedByCurrent(), getCurrent(), controlInterfaceSelection, enteredByUser);
     }
-
-    // todo resolve this 
+    
     @Override
     protected ItemDomainMachineDesignSettings createNewSettingObject() {
-        return new ItemDomainMachineDesignSettings(this);
+        return new ItemDomainMachineDesignControlSettings(this); 
     }   
 
     @Override

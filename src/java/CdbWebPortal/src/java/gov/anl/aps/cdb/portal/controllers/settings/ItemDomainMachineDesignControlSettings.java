@@ -13,31 +13,32 @@ import java.util.Map;
  *
  * @author djarosz
  */
-public class ItemDomainMachineDesignInventorySettings extends ItemDomainMachineDesignSettings {
+public class ItemDomainMachineDesignControlSettings extends ItemDomainMachineDesignSettings {
 
-    private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.AlternateName";
-    private static final String DisplayDesignDescriptionSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.Description";
-    private static final String DisplayLocationSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.Location";
-    private static final String DisplayLocationDetailsSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.LocationDetails";
-    private static final String DisplayProjectSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.ItemProject";
-    private static final String DisplayIdSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.Id";
-    private static final String DisplayQrIdSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.QrId";
-    private static final String DisplayOwnerUserSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.OwnerUser";
-    private static final String DisplayOwnerGroupSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.OwnerGroup";
-    private static final String DisplayCreatedByUserSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.CreatedByUser";
-    private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.CreatedOnDateTime";
-    private static final String DisplayLastModifiedByUserSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.LastModifiedByUser";
-    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.LastModifiedOnDateTime";
-    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.NumberOfItemsPerPage";
+    private static final String DisplayAlternateNameSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.AlternateName";
+    private static final String DisplayDesignDescriptionSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.Description";
+    private static final String DisplayLocationSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.Location";
+    private static final String DisplayLocationDetailsSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.LocationDetails";
+    private static final String DisplayHousingSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.Housing";
+    private static final String DisplayProjectSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.ItemProject";
+    private static final String DisplayIdSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.Id";
+    private static final String DisplayQrIdSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.QrId";
+    private static final String DisplayOwnerUserSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.OwnerUser";
+    private static final String DisplayOwnerGroupSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.OwnerGroup";
+    private static final String DisplayCreatedByUserSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.CreatedByUser";
+    private static final String DisplayCreatedOnDateTimeSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.CreatedOnDateTime";
+    private static final String DisplayLastModifiedByUserSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.LastModifiedByUser";
+    private static final String DisplayLastModifiedOnDateTimeSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.LastModifiedOnDateTime";
+    private static final String DisplayNumberOfItemsPerPageSettingTypeKey = "ItemDomainMachineDesignControl.List.Display.NumberOfItemsPerPage";
     
-    private static final String DisplayPropertyTypeId1SettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.PropertyTypeId1";
-    private static final String DisplayPropertyTypeId2SettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.PropertyTypeId2";
-    private static final String DisplayPropertyTypeId3SettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.PropertyTypeId3";
-    private static final String DisplayPropertyTypeId4SettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.PropertyTypeId4";
-    private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainMachineDesignInventory.List.Display.PropertyTypeId5";
+    private static final String DisplayPropertyTypeId1SettingTypeKey = "ItemDomainMachineDesignControl.List.Display.PropertyTypeId1";
+    private static final String DisplayPropertyTypeId2SettingTypeKey = "ItemDomainMachineDesignControl.List.Display.PropertyTypeId2";
+    private static final String DisplayPropertyTypeId3SettingTypeKey = "ItemDomainMachineDesignControl.List.Display.PropertyTypeId3";
+    private static final String DisplayPropertyTypeId4SettingTypeKey = "ItemDomainMachineDesignControl.List.Display.PropertyTypeId4";
+    private static final String DisplayPropertyTypeId5SettingTypeKey = "ItemDomainMachineDesignControl.List.Display.PropertyTypeId5";
 
 
-    public ItemDomainMachineDesignInventorySettings(ItemDomainMachineDesignBaseController parentController) {
+    public ItemDomainMachineDesignControlSettings(ItemDomainMachineDesignBaseController parentController) {
         super(parentController);        
     }  
     
@@ -49,6 +50,7 @@ public class ItemDomainMachineDesignInventorySettings extends ItemDomainMachineD
         displayItemProject = Boolean.parseBoolean(settingTypeMap.get(DisplayProjectSettingTypeKey).getDefaultValue());
         displayLocation = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationSettingTypeKey).getDefaultValue());
         displayLocationDetails = Boolean.parseBoolean(settingTypeMap.get(DisplayLocationDetailsSettingTypeKey).getDefaultValue());
+        displayHousing = Boolean.parseBoolean(settingTypeMap.get(DisplayHousingSettingTypeKey).getDefaultValue()); 
 
         displayId = Boolean.parseBoolean(settingTypeMap.get(DisplayIdSettingTypeKey).getDefaultValue());
         displayQrId = Boolean.parseBoolean(settingTypeMap.get(DisplayQrIdSettingTypeKey).getDefaultValue()); 
@@ -76,6 +78,7 @@ public class ItemDomainMachineDesignInventorySettings extends ItemDomainMachineD
         displayItemProject = settingEntity.getSettingValueAsBoolean(DisplayProjectSettingTypeKey, displayItemProject);
         displayLocation = settingEntity.getSettingValueAsBoolean(DisplayLocationSettingTypeKey, displayLocation);
         displayLocationDetails = settingEntity.getSettingValueAsBoolean(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+        displayHousing = settingEntity.getSettingValueAsBoolean(DisplayHousingSettingTypeKey, displayHousing);
 
         displayId = settingEntity.getSettingValueAsBoolean(DisplayIdSettingTypeKey, displayId);
         displayQrId = settingEntity.getSettingValueAsBoolean(DisplayQrIdSettingTypeKey, displayQrId);
@@ -103,6 +106,7 @@ public class ItemDomainMachineDesignInventorySettings extends ItemDomainMachineD
         settingEntity.setSettingValue(DisplayProjectSettingTypeKey, displayItemProject);
         settingEntity.setSettingValue(DisplayLocationSettingTypeKey, displayLocation);
         settingEntity.setSettingValue(DisplayLocationDetailsSettingTypeKey, displayLocationDetails);
+        settingEntity.setSettingValue(DisplayHousingSettingTypeKey, displayHousing);
 
         settingEntity.setSettingValue(DisplayIdSettingTypeKey, displayId);
         settingEntity.setSettingValue(DisplayQrIdSettingTypeKey, displayQrId);

@@ -41,7 +41,8 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     protected Boolean displayItemElementsSimpleView = false;
 
     protected Boolean displayLocation = null;
-    protected Boolean displayLocationDetails = null;
+    protected Boolean displayLocationDetails = null;    
+    protected Boolean displayHousing = false;
     
     protected Boolean displayInstalledQrId = null; 
 
@@ -56,8 +57,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     @Override
     protected void updateSettingsFromSettingTypeDefaults(Map<String, SettingType> settingTypeMap) {
         super.updateSettingsFromSettingTypeDefaults(settingTypeMap);
-        if (this instanceof ItemDomainMachineDesignInventorySettings ||
-                this instanceof ItemDomainMachineDesignDeletedItemSettings) {
+        if (isDerivedMachineSettingsWithOwnKeys()) {
             return;
         }
         
@@ -88,8 +88,7 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     @Override
     protected void updateSettingsFromSessionSettingEntity(SettingEntity settingEntity) {
         super.updateSettingsFromSessionSettingEntity(settingEntity);
-        if (this instanceof ItemDomainMachineDesignInventorySettings ||
-                this instanceof ItemDomainMachineDesignDeletedItemSettings) {
+        if (isDerivedMachineSettingsWithOwnKeys()) {
             return;
         }
         displayAlternateName = settingEntity.getSettingValueAsBoolean(DisplayAlternateNameSettingTypeKey, displayAlternateName); 
@@ -118,10 +117,9 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     @Override
     protected void saveSettingsForSessionSettingEntity(SettingEntity settingEntity) {
         super.saveSettingsForSessionSettingEntity(settingEntity);
-        if (this instanceof ItemDomainMachineDesignInventorySettings ||
-                this instanceof ItemDomainMachineDesignDeletedItemSettings) {
+        if (isDerivedMachineSettingsWithOwnKeys()) {
             return;
-        }
+        }        
         settingEntity.setSettingValue(DisplayAlternateNameSettingTypeKey, displayAlternateName);
         settingEntity.setSettingValue(DisplayDesignDescriptionSettingTypeKey, displayDescription);
         settingEntity.setSettingValue(DisplayProjectSettingTypeKey, displayItemProject);
@@ -144,6 +142,15 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
         settingEntity.setSettingValue(DisplayPropertyTypeId4SettingTypeKey, displayPropertyTypeId4);
         settingEntity.setSettingValue(DisplayPropertyTypeId5SettingTypeKey, displayPropertyTypeId5);
     }
+    
+    private boolean isDerivedMachineSettingsWithOwnKeys() {
+        if (this instanceof ItemDomainMachineDesignInventorySettings 
+                || this instanceof ItemDomainMachineDesignDeletedItemSettings
+                || this instanceof ItemDomainMachineDesignControlSettings) {
+            return true; 
+        }
+        return false; 
+    }
         
     @Override
     public Boolean getDisplayLocation() {
@@ -154,6 +161,14 @@ public class ItemDomainMachineDesignSettings extends ItemSettings<ItemDomainMach
     public Boolean getDisplayLocationDetails() {
         return displayLocationDetails;
     } 
+
+    public Boolean getDisplayHousing() {
+        return displayHousing;
+    }
+
+    public void setDisplayHousing(Boolean displayHousing) {
+        this.displayHousing = displayHousing;
+    }
 
     @Override
     public Boolean getDisplayItemIdentifier1() {
