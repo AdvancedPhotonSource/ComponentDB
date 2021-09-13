@@ -8,15 +8,22 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.anl.aps.cdb.common.exceptions.CdbException;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
 import gov.anl.aps.cdb.portal.constants.ItemDomainName;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.controllers.EntityTypeController;
 import gov.anl.aps.cdb.portal.controllers.ItemController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignControlController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignDeletedItemsController;
 import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignInventoryController;
+import gov.anl.aps.cdb.portal.controllers.ItemDomainMachineDesignPowerController;
 import gov.anl.aps.cdb.portal.controllers.LocatableItemController;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignBaseControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignDeletedControllerUtility;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
+import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignPowerControllerUtility;
 import gov.anl.aps.cdb.portal.utilities.SearchResult;
 import gov.anl.aps.cdb.portal.view.objects.KeyValueObject;
 import gov.anl.aps.cdb.portal.view.objects.MachineDesignConnectorCableMapperItem;
@@ -65,14 +72,20 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     private transient boolean filterMachineNode = true;
     private transient boolean skipSetfilterMachineNode = false;
 
+    private transient PropertyValue controlInterfaceToParent = null;
+    private transient ItemElementRelationship controlRelationshipToParent = null;
+
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     private transient List<ItemElementRelationship> relatedMAARCRelationshipsForCurrent = null;
     private transient MachineDesignConnectorCableMapperItem mdccmi;
     private transient List<MachineDesignConnectorListObject> mdConnectorList;
     private transient ItemDomainMachineDesign newMdInventoryItem = null;
+
+    // Relationship machine elements 
+    private transient List<ItemDomainMachineDesign> machineElementsRelatedToThis = null;
     // <editor-fold defaultstate="collapsed" desc="Element edit variables ">
     private transient Item inventoryForElement = null;
-    private transient boolean inventoryIsInstalled = true;    
+    private transient boolean inventoryIsInstalled = true;
     private transient Item catalogForElement = null;
     private transient Item originalForElement = null;
     protected transient DataModel installedInventorySelectionForCurrentElement;
@@ -113,6 +126,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         return combinedItemElementList;
     }
 
+    @JsonIgnore
     public ItemElement getCurrentHierarchyItemElement() {
         return currentHierarchyItemElement;
     }
@@ -175,15 +189,24 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public ItemController getItemDomainController() {
         if (isItemDeleted(this)) {
             return ItemDomainMachineDesignDeletedItemsController.getInstance();
-        }
-        if (isItemInventory(this)) {
+        } else if (isItemInventory(this)) {
             return ItemDomainMachineDesignInventoryController.getInstance();
+        } else if (isItemControl(this)) {
+            return ItemDomainMachineDesignControlController.getInstance();
+        } else if (isItemPower(this)) {
+            return ItemDomainMachineDesignPowerController.getInstance();
         }
         return ItemDomainMachineDesignController.getInstance();
     }
 
     @Override
-    public ItemDomainMachineDesignControllerUtility getItemControllerUtility() {
+    public ItemDomainMachineDesignBaseControllerUtility getItemControllerUtility() {
+        if (isItemControl(this)) {
+            return new ItemDomainMachineDesignControlControllerUtility();
+        } 
+        if (isItemPower(this)) {
+            return new ItemDomainMachineDesignPowerControllerUtility(); 
+        }
         if (isItemDeleted(this)) {
             return new ItemDomainMachineDesignDeletedControllerUtility();
         }
@@ -204,6 +227,14 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     @Override
     public String getLocationDetails() {
         return locationDetails;
+    }
+
+    public static boolean isItemPower(Item item) {
+        return isItemEntityType(item, EntityTypeName.power.getValue());
+    }
+
+    public static boolean isItemControl(Item item) {
+        return isItemEntityType(item, EntityTypeName.control.getValue());
     }
 
     public static boolean isItemDeleted(Item item) {
@@ -331,6 +362,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public Item getAssignedItem() {
         ItemElement selfElement = getSelfElement();
+        if (selfElement == null) {
+            return null;
+        }
         return selfElement.getContainedItem2();
     }
 
@@ -338,7 +372,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         ItemElement selfElement = getSelfElement();
         selfElement.setContainedItem2(item);
     }
-    
+
     public boolean isIsHoused() {
         ItemElement selfElement = getSelfElement();
         return selfElement.getIsHoused();
@@ -346,9 +380,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setIsHoused(boolean isHoused) {
         ItemElement selfElement = getSelfElement();
-        selfElement.setIsHoused(isHoused); 
+        selfElement.setIsHoused(isHoused);
     }
-       
+
     @Override
     public SearchResult search(Pattern searchPattern) {
         SearchResult result = super.search(searchPattern);
@@ -391,6 +425,50 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         } else {
             return null;
         }
+    }
+
+    @JsonIgnore
+    public ItemElementRelationship getControlRelationshipToParent() {
+        if (controlRelationshipToParent == null) {
+            List<ItemElementRelationship> itemElementRelationshipList = getItemElementRelationshipList();
+            String controlRelationshipName = ItemElementRelationshipTypeNames.control.getValue();
+            for (ItemElementRelationship ier : itemElementRelationshipList) {
+                RelationshipType relationshipType = ier.getRelationshipType();
+                String relationshipName = relationshipType.getName();
+                if (relationshipName.equals(controlRelationshipName)) {
+                    controlRelationshipToParent = ier;
+                    return controlRelationshipToParent;
+                }
+            }
+        }
+        return controlRelationshipToParent;
+    }
+
+    @JsonIgnore
+    public PropertyValue getControlInterfaceToParent() {
+        if (controlInterfaceToParent == null) {
+            String cotrolInterfacePropertyTypeName = SystemPropertyTypeNames.cotrolInterface.getValue();
+            ItemElementRelationship controlRelationship = getControlRelationshipToParent();
+            if (controlRelationship != null) {
+                List<PropertyValue> propertyValueList = controlRelationship.getPropertyValueList();
+                for (PropertyValue pv : propertyValueList) {
+                    PropertyType propertyType = pv.getPropertyType();
+                    String propertyTypeName = propertyType.getName();
+                    if (propertyTypeName.equals(cotrolInterfacePropertyTypeName)) {
+                        controlInterfaceToParent = pv;
+                        return controlInterfaceToParent;
+                    }
+                }
+            }
+
+            // Prevent reloading if not found.             
+            controlInterfaceToParent = new PropertyValue();
+        }
+        return controlInterfaceToParent;
+    }
+
+    public void setControlInterfaceToParent(PropertyValue controlInterfaceToParent) {
+        this.controlInterfaceToParent = controlInterfaceToParent;
     }
 
     // <editor-fold defaultstate="collapsed" desc="Import functionality">
@@ -487,7 +565,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     public void setImportAssignedItemDescription(String importAssignedItemDescription) {
         this.importAssignedItemDescription = importAssignedItemDescription;
     }
-    
+
     @JsonIgnore
     public ItemDomainCatalog getCatalogItem() {
         Item assignedItem = getAssignedItem();
@@ -499,7 +577,7 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
         }
         return catalogItem;
     }
-    
+
     @JsonIgnore
     public String getCatalogItemName() {
         ItemDomainCatalog catalogItem = getCatalogItem();
@@ -509,12 +587,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return null;
         }
     }
-    
+
     @JsonIgnore
-    public Map<String,String> getCatalogItemAttributeMap() throws CdbException {
+    public Map<String, String> getCatalogItemAttributeMap() throws CdbException {
         ItemDomainCatalog catalogItem = getCatalogItem();
         if (catalogItem != null) {
-            return catalogItem.getAttributeMap();            
+            return catalogItem.getAttributeMap();
         } else {
             return null;
         }
@@ -594,8 +672,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         ItemElement itemElement = new ItemElement();
 
-        ItemDomainMachineDesignControllerUtility controllerUtility;
-        controllerUtility = new ItemDomainMachineDesignControllerUtility();
+        ItemDomainMachineDesignBaseControllerUtility controllerUtility;
+        controllerUtility = parentItem.getItemControllerUtility();
 
         String elementName
                 = controllerUtility.generateUniqueElementNameForItem(parentItem);
@@ -641,20 +719,19 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
         return newItem;
     }
-    
+
     @JsonIgnore
     public String getParentPath() {
         if (this.getParentMachineDesign() == null) {
             return "/";
         } else {
-            return this.getParentMachineDesign().getParentPath() 
-                    + this.getParentMachineDesign().getName() 
+            return this.getParentMachineDesign().getParentPath()
+                    + this.getParentMachineDesign().getName()
                     + "/";
         }
     }
-    
+
 // </editor-fold>
-    
     // <editor-fold defaultstate="collapsed" desc="Controller variables for current.">        
     @JsonIgnore
     public List<ItemElementRelationship> getRelatedMAARCRelationshipsForCurrent() {
@@ -776,6 +853,15 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     public void setTopLevelMachineDesignSelectionList(DataModel topLevelMachineDesignSelectionList) {
         this.topLevelMachineDesignSelectionList = topLevelMachineDesignSelectionList;
+    }
+
+    @JsonIgnore
+    public List<ItemDomainMachineDesign> getMachineElementsRelatedToThis() {
+        return machineElementsRelatedToThis;
+    }
+
+    public void setMachineElementsRelatedToThis(List<ItemDomainMachineDesign> machineElementsRelatedToThis) {
+        this.machineElementsRelatedToThis = machineElementsRelatedToThis;
     }
 
     // </editor-fold>

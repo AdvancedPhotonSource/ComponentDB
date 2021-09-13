@@ -37,7 +37,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     @PersistenceContext(unitName = "CdbWebPortalPU")
     protected EntityManager em;
 
-    List<ItemDomainEntity> itemsToAdd;   
+    List<ItemDomainEntity> itemsToAdd;
 
     /**
      * Returns Item domain for subclass implementation.
@@ -131,8 +131,8 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     public List<ItemDomainEntity> findByDataTableFilterQueryBuilder(ItemQueryBuilder queryBuilder) {
-        String fullQuery = queryBuilder.getQueryForItems(); 
-        
+        String fullQuery = queryBuilder.getQueryForItems();
+
         try {
             return (List<ItemDomainEntity>) em.createQuery(fullQuery).getResultList();
         } catch (NoResultException ex) {
@@ -140,7 +140,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         return null;
 
-    }   
+    }
 
     public List<ItemDomainEntity> findByDomainAndEntityType(String domainName, String entityTypeName) {
         try {
@@ -159,6 +159,19 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndTopLevel")
                     .setParameter("domainName", domainName)
                     .setParameter("entityTypeName", entityTypeName)
+                    .getResultList();
+        } catch (NoResultException ex) {
+
+        }
+        return null;
+    }
+
+    public List<ItemDomainEntity> findByDomainAndEntityTypeAndTopLevelExcludeEntityType(String domainName, String entityTypeName, String excludeEntityTypeName) {
+        try {
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndTopLevelExcludeEntityType")
+                    .setParameter("domainName", domainName)
+                    .setParameter("entityTypeName", entityTypeName)
+                    .setParameter("excludeEntityTypeName", excludeEntityTypeName)
                     .getResultList();
         } catch (NoResultException ex) {
 
@@ -237,7 +250,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
     public List<ItemDomainEntity> findByDomainNameWithNoParentsAndEntityType(String domainName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameWithNoParentsAndEntityType")
@@ -248,7 +261,7 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-        
+
     public List<ItemDomainEntity> findByDomainNameWithNoParentsAndWithEntityType(String domainName, String entityTypeName) {
         try {
             return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameWithNoParentsAndWithEntityType")
@@ -260,7 +273,6 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-
 
     private List<ItemDomainEntity> findByDomain(String domainName, String queryName) {
         try {
@@ -317,54 +329,99 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         }
         return null;
     }
-    
+
     public ItemDomainLocation fetchLocationItemForLocatableItem(Integer locatableItemId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchLocationItemForLocatableItem");
             query.setParameter("locatable_item_id", locatableItemId);
-            
+
             List<ItemDomainLocation> resultList = query.getResultList();
 
             if (resultList.size() > 0) {
                 if (resultList.size() > 1) {
                     // TODO throw nonunique location exception... 
-                    return null; 
+                    return null;
                 }
-                return resultList.get(0); 
+                return resultList.get(0);
             }
         } catch (NoResultException ex) {
         }
         return null;
     }
-    
+
+    public List<ItemDomainEntity> fetchRelationshipChildrenItems(Integer itemId, Integer relationshipTypeId) {
+        try {
+            StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchRelationshipChildrenItems");
+            query.setParameter("item_id", itemId);
+            query.setParameter("relationship_type_id", relationshipTypeId);
+
+            List<ItemDomainEntity> resultList = query.getResultList();
+
+            return resultList;
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
+    public List<ItemDomainEntity> fetchRelationshipParentItems(Integer itemId, Integer relationshipTypeId) {
+        try {
+            StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchRelationshipParentItems");
+            query.setParameter("item_id", itemId);
+            query.setParameter("relationship_type_id", relationshipTypeId);
+
+            List<ItemDomainEntity> resultList = query.getResultList();
+
+            return resultList;
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
+    public List<ItemDomainEntity> fetchNameFilterForRelationshipHierarchy(Integer domainId, Integer entityTypeId, Integer relationshipTypeId, String namePattern) {
+        namePattern = "%" + namePattern + "%"; 
+        try {
+            StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchNameFilterForRelationshipHierarchy");
+            query.setParameter("domain_id", domainId);
+            query.setParameter("entity_type_id", entityTypeId);
+            query.setParameter("relationship_type_id", relationshipTypeId);
+            query.setParameter("name_pattern", namePattern);             
+
+            List<ItemDomainEntity> resultList = query.getResultList();
+
+            return resultList;
+        } catch (NoResultException ex) {
+        }
+        return null;
+    }
+
     public List<ItemDomainInventory> fetchInventoryAssignedToMachineItemHiearchy(int machineItemId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchInventoryAssignedToMachineItemHiearchy");
             query.setParameter("machine_item_id", machineItemId);
-            
-            return query.getResultList();           
+
+            return query.getResultList();
         } catch (NoResultException ex) {
         }
         return null;
     }
-    
+
     public List<ItemDomainInventory> fetchInventoryStoredInLocationHierarchy(int locationItemId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchInventoryStoredInLocationHierarchy");
             query.setParameter("location_item_id_input", locationItemId);
-            
-            return query.getResultList();           
+
+            return query.getResultList();
         } catch (NoResultException ex) {
         }
         return null;
     }
-    
-     public List<ItemDomainInventory> fetchInventoryAssignedToAssemblyHierarchy(int assemblyItemId) {
+
+    public List<ItemDomainInventory> fetchInventoryAssignedToAssemblyHierarchy(int assemblyItemId) {
         try {
             StoredProcedureQuery query = em.createNamedStoredProcedureQuery("item.fetchInventoryAssignedToAssemblyHierarchy");
             query.setParameter("assembly_item_id", assemblyItemId);
-            
-            return query.getResultList();           
+
+            return query.getResultList();
         } catch (NoResultException ex) {
         }
         return null;
@@ -437,10 +494,9 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
     public List<ItemDomainEntity> findByDomainAndEntityTypeAndNameExcludeEntityType(
             String domainName, String entityType, String name, String excludeEntityType) {
-        
+
         try {
-            return (List<ItemDomainEntity>) 
-                    em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndNameExcludeEntityType")
+            return (List<ItemDomainEntity>) em.createNamedQuery("Item.findByDomainNameAndEntityTypeAndNameExcludeEntityType")
                     .setParameter("domainName", domainName)
                     .setParameter("entityTypeName", entityType)
                     .setParameter("name", name)
@@ -453,8 +509,8 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
     }
 
     public ItemDomainEntity findByUniqueAttributes(Item derivedFromItem, Domain domain,
-            String name, String itemIdentifier1, String itemIdentifier2) {        
-        String queryString = ItemQueryBuilder.findByUniqueAttributesQuery(derivedFromItem, domain, name, itemIdentifier1, itemIdentifier2); 
+            String name, String itemIdentifier1, String itemIdentifier2) {
+        String queryString = ItemQueryBuilder.findByUniqueAttributesQuery(derivedFromItem, domain, name, itemIdentifier1, itemIdentifier2);
 
         try {
             return (ItemDomainEntity) em.createQuery(queryString).getSingleResult();
@@ -463,36 +519,36 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
 
         return null;
     }
-    
+
     @Override
-    public ItemDomainEntity findUniqueWithAttributes(Map<String,String> attributeMap) {
-        
+    public ItemDomainEntity findUniqueWithAttributes(Map<String, String> attributeMap) {
+
         Item derivedFromItem = null;
         Domain itemDomain = null;
         String itemIdentifier1 = null;
         String itemIdentifier2 = null;
-        
+
         String domainName = attributeMap.get(Item.ATTRIBUTE_DOMAIN_NAME);
         if (domainName != null) {
-            
+
             itemDomain = DomainFacade.getInstance().findByName(domainName);
             if (itemDomain != null) {
-                
+
                 if (itemDomain.getItemIdentifier1Label() != null) {
                     itemIdentifier1 = attributeMap.get(itemDomain.getItemIdentifier1Label());
                 }
-                
+
                 if (itemDomain.getItemIdentifier2Label() != null) {
                     itemIdentifier2 = attributeMap.get(itemDomain.getItemIdentifier2Label());
                 }
             }
         }
-        
+
         String name = attributeMap.get(Item.ATTRIBUTE_NAME);
 
         return findByUniqueAttributes(derivedFromItem, itemDomain, name, itemIdentifier1, itemIdentifier2);
-    }  
-    
+    }
+
     public List<ItemDomainEntity> findByFilterViewCategoryTypeAttributes(ItemProject itemProject,
             List<ItemCategory> itemCategoryList, ItemType itemType, String itemDomainName) {
         return findByFilterViewAttributes(itemProject, itemCategoryList, itemType, itemDomainName, null, null);
@@ -516,9 +572,9 @@ public abstract class ItemFacadeBase<ItemDomainEntity extends Item> extends CdbE
         String queryString = ItemQueryBuilder.findByFilterViewAttributesQuery(itemProject,
                 itemCategoryList,
                 itemType,
-                itemDomainName, 
+                itemDomainName,
                 ownerUserGroupList,
-                ownerUserName); 
+                ownerUserName);
 
         if (queryString != null) {
             return (List<ItemDomainEntity>) em.createQuery(queryString).getResultList();

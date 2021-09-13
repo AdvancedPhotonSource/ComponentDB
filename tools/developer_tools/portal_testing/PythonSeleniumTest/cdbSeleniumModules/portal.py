@@ -25,5 +25,6 @@ class Portal(CdbSeleniumModuleBase):
 		self._wait_for_id(LOGOUT_BUTTON_ID)
 
 	def logout(self):
+		self._clear_notifications()
 		self._click_on_id(LOGOUT_BUTTON_ID)
 		self._wait_for_id(LOGIN_BUTTON_ID)

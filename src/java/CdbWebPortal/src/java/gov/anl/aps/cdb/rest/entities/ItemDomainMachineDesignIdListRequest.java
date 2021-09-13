@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author craig
  */
-public class ItemDomanMachineDesignIdListRequest {
+public class ItemDomainMachineDesignIdListRequest {
 
     private List<String> itemNames;
     private List<String> rackNames;

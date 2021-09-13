@@ -114,6 +114,11 @@ public abstract class ItemLazyDataModel<Facade extends ItemFacadeBase, QueryBuil
         
         return false;
     }
+        
+    @Override
+    public int count(Map map) {
+        return itemList.size();
+    }
     
     private void copyLastMaps(Map sortOrderMap, Map filterBy) {
         lastFilterMap = new HashMap(); 

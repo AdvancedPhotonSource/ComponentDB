@@ -60,7 +60,7 @@ public abstract class ItemQueryBuilder {
 
     private boolean fiel_included_in_where;
     
-    protected Domain domain;
+    protected Integer domainId;
     protected Map filterMap;
     protected String sortField;
     protected SortOrder sortOrder;
@@ -69,8 +69,8 @@ public abstract class ItemQueryBuilder {
     private String sortPart;
     private String joinPart;
     
-    public ItemQueryBuilder(Domain domain, Map filterMap, String sortField, SortOrder sortOrder) {
-        this.domain = domain;
+    public ItemQueryBuilder(Integer domainId, Map filterMap, String sortField, SortOrder sortOrder) {
+        this.domainId = domainId; 
         this.filterMap = filterMap;
         this.sortField = sortField;
         this.sortOrder = sortOrder;
@@ -143,7 +143,7 @@ public abstract class ItemQueryBuilder {
 
     private void generateWhereString() {
         wherePart = "";
-        appendWhere("=", "i.domain.id", domain.getId());
+        appendWhere("=", "i.domain.id", domainId);
 
         for (Object key : filterMap.keySet()) {
             Object filterValue = filterMap.get(key);

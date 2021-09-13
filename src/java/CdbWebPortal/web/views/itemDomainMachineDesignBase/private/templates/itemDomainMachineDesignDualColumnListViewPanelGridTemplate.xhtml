@@ -24,22 +24,25 @@ See LICENSE file.
         
         <p:outputPanel id="machineDesignTreeTableColumn"
                        styleClass="#{machineDesignDualListViewLeftStyleClass}">
-            <ui:include src="itemDomainMachineDesignDualColumnListViewTreeList.xhtml"/>
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewTreeList.xhtml"/>
         </p:outputPanel>
 
         <p:outputPanel rendered="#{entityController.displayListConfigurationView}"
                        styleClass="#{machineDesignDualListViewRightStyleClass}">            
-            <ui:include src="itemDomainMachineDesignDualColumnListViewAddMDPlaceholderPanel.xhtml" /> 
-            <ui:include src="itemDomainMachineDesignDualColumnListViewAddMDFromTemplatePanel.xhtml"/>
-            <ui:include src="itemDomainMachineDesignDualColumnListViewAddMDMoveExistingPanel.xhtml" /> 
-            <ui:include src="itemDomainMachineDesignDualColumnListViewAddCatalogPanel.xhtml" />
-            <ui:include src="itemDomainMachineDesignDualColumnListViewAssignCatalogPanel.xhtml" /> 
-            <ui:include src="itemDomainMachineDesignDualColumnListViewAssignInventoryPanel.xhtml" />
-            <ui:include src="itemDomainMachineDesignDualColumnListViewDetailsPanel.xhtml" /> 
-            <ui:include src="itemDomainMachineDesignDualColumnListViewAddCablePanel.xhtml" />
-            <ui:include src="itemDomainMachineDesignDualColumnListViewAddCableCircuitPanel.xhtml" />
-            <ui:include src="itemDomainMachineDesignDualColumnListViewAddCableBundlePanel.xhtml" />
-            <ui:include src="itemDomainMachineDesignDualColumnListViewAttachTemplatePanel.xhtml" /> 
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewAddMDPlaceholderPanel.xhtml" /> 
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewAddMDFromTemplatePanel.xhtml"/>
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewAddMDMoveExistingPanel.xhtml" /> 
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewAddCatalogPanel.xhtml" />
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewAssignCatalogPanel.xhtml" /> 
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewAssignInventoryPanel.xhtml" />
+            <ui:insert name="machineDesignViewDetailsPanel">
+                <ui:include src="../itemDomainMachineDesignDualColumnListViewDetailsPanel.xhtml" /> 
+            </ui:insert>            
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewAddCablePanel.xhtml" />
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewAddCableCircuitPanel.xhtml" />
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewAddCableBundlePanel.xhtml" />
+            <ui:include src="../itemDomainMachineDesignDualColumnListViewAttachTemplatePanel.xhtml" /> 
+            <ui:insert name="additionalDualColumnEditPanels" /> 
         </p:outputPanel>
     </p:outputPanel>
 

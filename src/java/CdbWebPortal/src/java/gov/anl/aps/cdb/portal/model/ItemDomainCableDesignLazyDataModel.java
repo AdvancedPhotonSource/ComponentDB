@@ -22,6 +22,6 @@ public class ItemDomainCableDesignLazyDataModel extends ItemLazyDataModel<ItemDo
 
     @Override
     protected ItemDomainCableDesignQueryBuilder getQueryBuilder(Map filterMap, String sortField, SortOrder sortOrder) {
-        return new ItemDomainCableDesignQueryBuilder(itemDomain, filterMap, sortField, sortOrder); 
+        return new ItemDomainCableDesignQueryBuilder(itemDomain.getId(), filterMap, sortField, sortOrder); 
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author darek
  */
-public class ItemDomainMachineDesignDeletedControllerUtility extends ItemDomainMachineDesignControllerUtility {
+public class ItemDomainMachineDesignDeletedControllerUtility extends ItemDomainMachineDesignBaseControllerUtility {
             
     @Override
     public List<ItemDomainMachineDesign> getItemList() {

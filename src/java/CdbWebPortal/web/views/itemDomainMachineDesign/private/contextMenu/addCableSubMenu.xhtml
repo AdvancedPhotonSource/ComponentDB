@@ -12,21 +12,21 @@ See LICENSE file.
                label="Add"
                disabled="#{disabledEditContextMenuItemForSelection}">
         
-        <ui:include src="addCableContextMenuItem.xhtml">
+        <ui:include src="../../../itemDomainMachineDesignBase/private/machineDesignContextMenu/genericMachineMenuItem.xhtml">
             <ui:param name="value" value="Cable"/>
             <ui:param name="icon" value="ui-icon-cable-design"/>
             <ui:param name="action" value="prepareWizardCable"/> 
             <ui:param name="disabled" value="false"/> 
         </ui:include>
         
-        <ui:include src="addCableContextMenuItem.xhtml">
+        <ui:include src="../../../itemDomainMachineDesignBase/private/machineDesignContextMenu/genericMachineMenuItem.xhtml">
             <ui:param name="value" value="Circuit"/>
             <ui:param name="icon" value="ui-icon-cable-design"/>
             <ui:param name="action" value="prepareWizardCircuit"/> 
             <ui:param name="disabled" value="true"/> 
         </ui:include>
 
-        <ui:include src="addCableContextMenuItem.xhtml">
+        <ui:include src="../../../itemDomainMachineDesignBase/private/machineDesignContextMenu/genericMachineMenuItem.xhtml">
             <ui:param name="value" value="Bundle"/>
             <ui:param name="icon" value="ui-icon-cable-design"/>
             <ui:param name="action" value="prepareWizardBundle"/> 

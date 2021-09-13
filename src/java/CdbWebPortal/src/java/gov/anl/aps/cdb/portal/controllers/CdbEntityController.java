@@ -548,7 +548,11 @@ public abstract class CdbEntityController<ControllerUtility extends CdbEntityCon
      */
     public EntityType getSelected() {
         if (getCurrent() == null) {
-            setCurrent(createEntityInstance());
+            UserInfo user = SessionUtility.getUser();
+            // Only when logged in.. 
+            if (user != null) {                
+                setCurrent(createEntityInstance());
+            }
         }
         return getCurrent();
     }

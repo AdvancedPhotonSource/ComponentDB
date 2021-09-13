@@ -22,6 +22,6 @@ public class ItemDomainInventoryLazyDataModel extends ItemLazyDataModel<ItemDoma
 
     @Override
     protected ItemDomainInventoryQueryBuilder getQueryBuilder(Map filterMap, String sortField, SortOrder sortOrder) {
-        return new ItemDomainInventoryQueryBuilder(itemDomain, filterMap, sortField, sortOrder); 
+        return new ItemDomainInventoryQueryBuilder(itemDomain.getId(), filterMap, sortField, sortOrder); 
     }
 }

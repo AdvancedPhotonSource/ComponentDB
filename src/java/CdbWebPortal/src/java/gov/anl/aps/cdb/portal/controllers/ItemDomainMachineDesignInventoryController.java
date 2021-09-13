@@ -12,6 +12,7 @@ import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignInvent
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignInventoryControllerUtility;
 import gov.anl.aps.cdb.portal.import_export.import_.helpers.ImportHelperMachineInventory;
+import gov.anl.aps.cdb.portal.model.ItemDomainMachineDesignTreeNode;
 import gov.anl.aps.cdb.portal.model.db.entities.Item;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainInventory;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
@@ -34,11 +35,10 @@ import javax.inject.Named;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.primefaces.event.NodeSelectEvent;
-import org.primefaces.model.TreeNode;
 
 @Named(ItemDomainMachineDesignInventoryController.controllerNamed)
 @SessionScoped
-public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignController implements IItemStatusController {
+public class ItemDomainMachineDesignInventoryController extends ItemDomainMachineDesignBaseController<ItemDomainMachineDesignTreeNode, ItemDomainMachineDesignInventoryControllerUtility> implements IItemStatusController {
 
     public final static String controllerNamed = "itemDomainMachineDesignInventoryController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignInventoryController.class.getName());
@@ -344,5 +344,21 @@ public class ItemDomainMachineDesignInventoryController extends ItemDomainMachin
             setCurrent(rootItem);
         }
     }
+
+    @Override
+    protected ItemDomainMachineDesignInventoryControllerUtility createControllerUtilityInstance() {
+        return new ItemDomainMachineDesignInventoryControllerUtility(); 
+    }
     
+    @Override
+    public ItemDomainMachineDesignTreeNode loadMachineDesignRootTreeNode(List<ItemDomainMachineDesign> itemsWithoutParents) {
+        ItemDomainMachineDesignTreeNode rootTreeNode = new ItemDomainMachineDesignTreeNode(itemsWithoutParents, getDefaultDomain(), getEntityDbFacade());
+
+        return rootTreeNode;
+    }
+
+    @Override
+    public ItemDomainMachineDesignTreeNode createMachineTreeNodeInstance() {
+        return new ItemDomainMachineDesignTreeNode(); 
+    }
 }

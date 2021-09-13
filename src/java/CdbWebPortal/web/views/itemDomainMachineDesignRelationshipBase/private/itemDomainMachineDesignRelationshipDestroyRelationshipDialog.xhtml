@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+Copyright (c) UChicago Argonne, LLC. All rights reserved.
+See LICENSE file.
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"                
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <!-- 
+    Define relationshipName to label the relationship to the machine element. 
+    -->
+
+    <p:dialog id="removeRelationshipDialog"
+              header="Remove relationship"
+              modal="true"
+              widgetVar="removeRelationshipDialogWidget"
+              styleClass="viewTransparentBackgroundDialog viewTransparentBackgroundDialog-alert">
+
+        Proceed with removal of the following #{relationshipName} relationship branch?
+
+        <p:tree value="#{entityController.removeMachineDesignRootTreeNode}"
+                var="treeNode">                
+            <p:treeNode>
+                <ui:param name="item"
+                          value="#{treeNode.containedItem}" />
+                <h:outputText value="#{item}"/>
+            </p:treeNode>
+        </p:tree>
+
+        <f:facet name="footer">
+            <p:commandButton value="Yes"
+                             update="@form"
+                             action="#{entityController.removeMachinedRelatedRelationship()}"
+                             onclick="PF('loadingDialog').show()"
+                             oncomplete="PF('loadingDialog').hide()"
+                             icon="fa fa-save"/>
+            <p:commandButton value="No"
+                             onclick="PF('removeRelationshipDialogWidget').hide()"
+                             icon="fa fa-close"/>
+
+        </f:facet>
+    </p:dialog>
+
+</ui:composition>
+
+

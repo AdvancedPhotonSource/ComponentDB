@@ -24,9 +24,9 @@ See LICENSE file.
               update="itemMachineDesignListDataTable#{viewId}"
               onstart="PF('loadingDialog').show();"
               oncomplete="PF('loadingDialog').hide();
-                          scrollToSelectedNode();"/>
+              scrollToSelectedNode();"/>
 
-    <ui:decorate template="templates/itemDomainMachineDesignTreeTableTemplate.xhtml">
+    <ui:decorate template="itemDomainMachineDesignTreeTableTemplate.xhtml">
 
         <ui:param name="hideOptionalColumns" value="#{!dualConfigurationViewEnabled}" /> 
         <ui:param name="hideSearchColumns" value="#{true}" /> 
@@ -48,9 +48,12 @@ See LICENSE file.
 
     </ui:decorate>
 
-    <ui:include src="itemDomainMachineDesignDualColumnListViewTreeBlockUI.xhtml" />
+    <ui:include src="../itemDomainMachineDesignDualColumnListViewTreeBlockUI.xhtml" />
 
-    <ui:include src="itemDomainMachineDesignDualColumnListViewTreeContextMenu.xhtml"/>
+
+    <ui:insert name="mdTreeListContextMenu">
+        <ui:include src="../itemDomainMachineDesignDualColumnListViewTreeContextMenu.xhtml"/>
+    </ui:insert>
 
 </ui:composition>
 

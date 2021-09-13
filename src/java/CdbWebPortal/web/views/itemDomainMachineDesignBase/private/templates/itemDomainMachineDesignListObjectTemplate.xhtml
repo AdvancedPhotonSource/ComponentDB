@@ -150,7 +150,7 @@ See LICENSE file.
         
         <p:selectBooleanCheckbox value="#{mdTreeListObject.filterMachineNode}"                                                                       
                                  rendered="#{topLevelItem and mdTreeListObject != null}"/> 
-    </p:column>
+    </p:column>        
 
     <ui:include src="../../../item/private/templateDefaults/itemListObjectColumns/itemItemIdentifier1.xhtml" >
         <ui:param name="rendered"
@@ -171,6 +171,8 @@ See LICENSE file.
         <ui:param name="primaryImageValueForItem"
                   value="#{entityController.getPrimaryImageValueForMachineDesignItem(itemElementListObject)}" /> 
     </ui:include>
+    
+    <ui:insert name="machineDesignExtraInfoPromotedColumn"/>
 
     <ui:insert name="qrIdColumn">
         <ui:include src="../../../item/private/templateDefaults/itemListObjectColumns/itemQrId.xhtml">

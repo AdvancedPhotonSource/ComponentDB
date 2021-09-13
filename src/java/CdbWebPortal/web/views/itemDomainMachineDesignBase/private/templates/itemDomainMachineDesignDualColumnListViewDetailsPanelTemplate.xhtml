@@ -19,28 +19,30 @@ See LICENSE file.
                  id="machineDesignDetailsPanel"
                  styleClass="detailsPanelViewDetailsPanel">
 
-            <ui:include src="itemDomainMachineDesignPanelGrid.xhtml" /> 
+            <ui:insert name="itemDomainMachineDesignPanelGrid">
+                <ui:include src="../itemDomainMachineDesignPanelGrid.xhtml" /> 
+            </ui:insert>
 
-            <ui:include src="../../common/private/commonViewInfoActionButton.xhtml"> 
+            <ui:include src="../../../common/private/commonViewInfoActionButton.xhtml"> 
                 <ui:param name="renderMoreInfo"
                           value="#{true}" /> 
             </ui:include>
-            <ui:include src="../../common/private/commonViewPermalinkActionButton.xhtml"/> 
+            <ui:include src="../../../common/private/commonViewPermalinkActionButton.xhtml"/> 
 
         </p:panel>
 
 
         <p:panel header="Gallery"
                  styleClass="detailsPanelViewGalleryPanel">
-            <ui:include src="../../propertyValue/private/propertyValueImageGalleria.xhtml"/>
+            <ui:include src="../../../propertyValue/private/propertyValueImageGalleria.xhtml"/>
         </p:panel>
 
         <p:panel header="Log Entries">
-            <ui:include src="../../domainEntityLog/private/domainEntityLogList.xhtml"/>            
+            <ui:include src="../../../domainEntityLog/private/domainEntityLogList.xhtml"/>            
         </p:panel>
 
         <p:panel header="Properties">
-            <ui:include src="../../item/private/itemPropertyList.xhtml">
+            <ui:include src="../../../item/private/itemPropertyList.xhtml">
                 <ui:param name="loadPropertyListDialogs" value="#{false}" />
             </ui:include>
         </p:panel>
@@ -49,7 +51,7 @@ See LICENSE file.
                  rendered="#{entityController.displayCreatedFromCurrentItemList}"
                  toggleable="true"
                  collapsed="#{entityController.displayContentsOfCreatedFromTemplateItem}">
-            <ui:include src="../../item/private/itemListCreatedFromTemplateDataTable.xhtml" /> 
+            <ui:include src="../../../item/private/itemListCreatedFromTemplateDataTable.xhtml" /> 
         </p:panel>
 
         <p:panel header="Inventory"
@@ -57,7 +59,7 @@ See LICENSE file.
                  collapsed="#{entityController.collapseContentsOfInventoryItem}"                 
                  toggleable="true">
 
-            <ui:include src="../../common/private/commonChildListActionButtons.xhtml">
+            <ui:include src="../../../common/private/commonChildListActionButtons.xhtml">
                 <ui:param name="childEntityTypeName" value="machineDesingInventory" />
                 <ui:param name="displayAddButton" value="#{loginController.loggedIn}" />
                 <ui:param name="onCompleteAddButtonCommand" value="addMachineDesingInventoryCommand()" /> 
@@ -84,7 +86,7 @@ See LICENSE file.
                          rows="10"
                          paginator="true"
                          paginatorAlwaysVisible="false">
-                <ui:include src="../../item/private/itemListObject.xhtml" >
+                <ui:include src="../../../item/private/itemListObject.xhtml" >
                     <ui:param name="itemListObject"
                               value="#{inventoryObject}"/>
                     <ui:param name="filterable"
@@ -95,21 +97,21 @@ See LICENSE file.
             </p:dataTable>
         </p:panel>
 
-        <ui:include src="../../plugins/private/#{entityController.pluginItemMachineDesignSectionsName}.xhtml"/> 
+        <ui:include src="../../../plugins/private/#{entityController.pluginItemMachineDesignSectionsName}.xhtml"/> 
 
         <p:panel header="Cable Connections"
                  toggleable="true"
                  rendered="#{entityController.entityDisplayItemConnectors and resources.EnabledConnectorAndConnectionsFunctionality}"
                  collapsed="#{!entityController.displayMdConnectorList}">
 
-            <ui:include src="itemDomainMachineDesignConnectionList.xhtml" />
+            <ui:include src="../itemDomainMachineDesignConnectionList.xhtml" />
 
         </p:panel>
 
         <p:panel header="Related MAARC Items"
                  toggleable="true"
                  collapsed="#{entityController.collapsedRelatedMAARCItemsForCurrent}">
-            <ui:include src="../../itemDomainMAARC/private/itemRelatedMAARCItemList.xhtml"/> 
+            <ui:include src="../../../itemDomainMAARC/private/itemRelatedMAARCItemList.xhtml"/> 
         </p:panel>
 
     </p:outputPanel>
