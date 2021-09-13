@@ -34,7 +34,7 @@ See LICENSE file.
                              oncomplete="PF('#{entityTypeName}#{itemConnectorEntityTypeName}AddDialogWidget').hide()"
                              icon="fa fa-save"
                              update="#{itemConnectorEntityTypeName}ListDataTable"
-                             action="#{itemConnectorController.createWithoutRedirect()}"/>
+                             action="#{entityController.saveItemConnectorDialog()}"/>
             <p:commandButton label="Cancel" icon="fa fa-close"
                              value="Cancel"
                              update="#{itemConnectorEntityTypeName}ListDataTable"

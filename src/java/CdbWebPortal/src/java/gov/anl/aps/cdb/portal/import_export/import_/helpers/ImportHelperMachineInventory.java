@@ -35,7 +35,7 @@ public class ImportHelperMachineInventory extends ImportHelperBase<ItemDomainMac
     private static final String AUTO_VALUE = "auto";
     
     @Override
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
