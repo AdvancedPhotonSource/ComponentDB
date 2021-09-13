@@ -2308,6 +2308,9 @@ public abstract class ItemController<
     }
 
     public List<Item> getItemsCreatedFromTemplateItem(Item templateItem) {
+        if (templateItem == null) {
+            return null; 
+        }
         return templateItem.getItemsCreatedFromThisTemplateItem();
     }
 
