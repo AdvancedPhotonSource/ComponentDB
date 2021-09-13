@@ -1561,6 +1561,7 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
             //Generate connector list
             ItemDomainMachineDesign item = getCurrent();
             current.setMdConnectorList(getMdConnectorListForItem(item));
+            mdConnectorList = current.getMdConnectorList();
         }
         return mdConnectorList;
     }

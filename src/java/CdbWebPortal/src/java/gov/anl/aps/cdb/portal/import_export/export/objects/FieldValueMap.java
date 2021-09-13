@@ -4,9 +4,9 @@
  */
 package gov.anl.aps.cdb.portal.import_export.export.objects;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  *
@@ -15,7 +15,7 @@ import java.util.TreeMap;
 public class FieldValueMap {
     
     // use sorted map to simplify comparison
-    private Map<String, String> valueMap = new TreeMap<>();
+    private Map<String, String> valueMap = new LinkedHashMap<>();
 
     public Set<String> keySet() {
         return valueMap.keySet();

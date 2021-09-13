@@ -474,6 +474,9 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     // <editor-fold defaultstate="collapsed" desc="Import functionality">
     @JsonIgnore
     public Float getImportSortOrder() {
+        if ((importSortOrder == null) && (getId() != null)) {
+            return getExportSortOrder();
+        }
         return importSortOrder;
     }
 
@@ -552,6 +555,8 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
             return importAssignedInventoryItem.getName();
         } else if (importAssignedCatalogItem != null) {
             return importAssignedCatalogItem.getName();
+        } else if ((getId() != null) && (getAssignedItem() != null)) {
+            return this.getAssignedItem().getName();
         } else {
             return "";
         }
@@ -615,6 +620,11 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
 
     @JsonIgnore
     public String getImportLocationItemString() {
+        if ((importLocationItemString == null) 
+                && (getId() != null) 
+                && (this.getExportLocation() != null)) {
+            return this.getExportLocation().getName();
+        }
         return importLocationItemString;
     }
 

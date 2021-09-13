@@ -41,7 +41,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
     private static final String KEY_ENDPOINT2_CONNECTOR = "endpoint2Connector";
 
     @Override
-    protected List<ColumnSpec> getColumnSpecs() {
+    protected List<ColumnSpec> initColumnSpecs() {
         
         List<ColumnSpec> specs = new ArrayList<>();
         
@@ -54,7 +54,7 @@ public class ImportHelperCableDesign extends ImportHelperBase<ItemDomainCableDes
                 "setName", 
                 "Cable name, uniquely identifies cable.", 
                 "getName",
-                ColumnModeOptions.rCREATErUPDATE(), 
+                ColumnModeOptions.rdCREATErUPDATE(), 
                 128));
         
         specs.add(new StringColumnSpec(
