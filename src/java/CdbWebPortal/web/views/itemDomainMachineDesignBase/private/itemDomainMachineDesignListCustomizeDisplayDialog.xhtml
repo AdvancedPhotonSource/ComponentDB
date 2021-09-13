@@ -22,13 +22,20 @@ See LICENSE file.
         <ui:include src="#{locationObjectSrc}">
             <ui:param name="settingObject" value="#{entityController.settingObject}" /> 
         </ui:include>
+        
+        <p:selectBooleanCheckbox id="#{entityTypeName}DisplayHousing" 
+                                 rendered="#{entityController.machineHasHousingColumn}"
+                                 value="#{entityController.settingObject.displayHousing}"/>  
+        <h:outputLabel for="#{entityTypeName}DisplayHousing" 
+                       rendered="#{entityController.machineHasHousingColumn}"
+                       value="Display Housing " styleClass="dialogDataLabel"/>
 
         <p:selectBooleanCheckbox id="#{entityTypeName}DisplayInstalledQrId" 
                                  rendered="#{includeDisplayInstalledQrId}"
-                                 value="#{entityController.settingObject.displayInstalledQrId}"/>  
+                                 value="#{entityController.settingObject.displayInstalledQrId}"/>
         <h:outputLabel for="#{entityTypeName}DisplayInstalledQrId" 
                        rendered="#{includeDisplayInstalledQrId}"
-                       value="Display Installed QrId " styleClass="dialogDataLabel"/>        
+                       value="Display Installed QrId " styleClass="dialogDataLabel"/>
     </ui:define>
 
     <ui:define name="rowExpansionCustomizeOptionsTab" /> 

@@ -1880,6 +1880,9 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
     public DataModel getTopLevelMachineDesignSelectionList() {
         ItemDomainMachineDesign current = getCurrent();
+        if (current == null) {
+            return null; 
+        }
         DataModel topLevelMachineDesignSelectionList = current.getTopLevelMachineDesignSelectionList();
         if (topLevelMachineDesignSelectionList == null) {
             List<ItemDomainMachineDesign> itemsWithoutParents = getItemsWithoutParents();
@@ -2407,6 +2410,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     @Override
     public boolean getEntityHasSortableElements() {
         return true;
+    }
+        
+    public boolean getMachineHasHousingColumn() {
+        return false;
     }
 
     @Override

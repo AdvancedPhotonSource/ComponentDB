@@ -302,4 +302,9 @@ public abstract class ItemDomainMachineDesignRelationshipBaseController<MachineR
         return false; 
     }
 
+    @Override
+    public boolean getMachineHasHousingColumn() {
+        return true; 
+    }
+
 }
