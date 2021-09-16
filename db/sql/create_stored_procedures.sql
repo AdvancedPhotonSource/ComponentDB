@@ -27,6 +27,18 @@ BEGIN
 	WHERE ier.relationship_type_id = relationship_type_id and vitem1.item_id = item_id;
 END //
 
+DROP PROCEDURE IF EXISTS fetch_relationship_parent_property_values;//
+CREATE PROCEDURE `fetch_relationship_parent_property_values` (IN item_id int, IN parent_item_id int, IN relationship_type_id int) 
+BEGIN
+	SELECT pv.*
+	FROM item_element_relationship ier 
+	INNER JOIN v_item_self_element vitem1 on ier.first_item_element_id = vitem1.self_element_id 
+	INNER JOIN v_item_self_element vitem2 on ier.second_item_element_id = vitem2.self_element_id 
+	LEFT OUTER JOIN item_element_relationship_property ierp on ier.id = ierp.item_element_relationship_id
+	INNER JOIN property_value pv on pv.id = ierp.property_value_id 
+	WHERE ier.relationship_type_id = relationship_type_id and vitem1.item_id = item_id and vitem2.item_id = parent_item_id;
+END //
+
 DROP PROCEDURE IF EXISTS fetch_name_filter_for_relationship_hierarchy;//
 CREATE PROCEDURE `fetch_name_filter_for_relationship_hierarchy` (IN domain_id int, IN entity_type_id int, IN relationship_type_id int, in name_pattern varchar(255)) 
 BEGIN

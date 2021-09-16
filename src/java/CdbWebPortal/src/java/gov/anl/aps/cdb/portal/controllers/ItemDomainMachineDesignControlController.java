@@ -6,9 +6,12 @@ package gov.anl.aps.cdb.portal.controllers;
 
 import gov.anl.aps.cdb.common.exceptions.InvalidArgument;
 import gov.anl.aps.cdb.portal.constants.EntityTypeName;
+import gov.anl.aps.cdb.portal.constants.ItemElementRelationshipTypeNames;
+import gov.anl.aps.cdb.portal.constants.SystemPropertyTypeNames;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignControlSettings;
 import gov.anl.aps.cdb.portal.controllers.settings.ItemDomainMachineDesignSettings;
 import gov.anl.aps.cdb.portal.controllers.utilities.ItemDomainMachineDesignControlControllerUtility;
+import gov.anl.aps.cdb.portal.model.db.beans.PropertyValueFacade;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemDomainMachineDesign;
 import gov.anl.aps.cdb.portal.model.db.entities.ItemElementRelationship;
 import gov.anl.aps.cdb.portal.model.db.entities.PropertyType;
@@ -16,6 +19,7 @@ import gov.anl.aps.cdb.portal.model.db.entities.PropertyValue;
 import gov.anl.aps.cdb.portal.model.db.entities.UserInfo;
 import gov.anl.aps.cdb.portal.utilities.SessionUtility;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.enterprise.context.SessionScoped;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
@@ -29,6 +33,9 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
 
     public final static String controllerNamed = "itemDomainMachineDesignControlController";
     private static final Logger LOGGER = LogManager.getLogger(ItemDomainMachineDesignControlController.class.getName());
+    
+    @EJB
+    protected PropertyValueFacade propertyValueFacade; 
 
     private String controlInterfaceSelection = null;
     private PropertyType controlInterfacePropertyType = null;        
@@ -135,6 +142,35 @@ public class ItemDomainMachineDesignControlController extends ItemDomainMachineD
         
         update();
         expandToSelectedTreeNodeAndSelect();
+    }
+    
+    public PropertyValue getControlInterfaceToParentForItem(ItemDomainMachineDesign mdItem) {
+        PropertyValue controlInterfaceToParent = mdItem.getControlInterfaceToParent();
+        if (controlInterfaceToParent == null) {
+            ItemElementRelationshipTypeNames relationshipTypeName = getRelationshipTypeName();
+            int relationshipId = relationshipTypeName.getDbId();
+            
+            List<ItemDomainMachineDesign> parentItems = itemDomainMachineDesignFacade.fetchRelationshipParentItems(mdItem.getId(), relationshipId);
+            if (parentItems.size() == 1) {
+                Integer parentId = parentItems.get(0).getId();
+                List<PropertyValue> pvs = propertyValueFacade.fetchRelationshipParentPropertyValues(mdItem.getId(), parentId, relationshipId); 
+                
+                String controlInterfacePvName = SystemPropertyTypeNames.cotrolInterface.getValue();
+                for (PropertyValue pv : pvs) {
+                    PropertyType propertyType = pv.getPropertyType();
+                    if (propertyType.getName().equals(controlInterfacePvName)) {
+                        mdItem.setControlInterfaceToParent(pv);
+                        return pv; 
+                    }
+                    
+                }
+            }            
+            
+            // Prevent reloading non existent property. 
+            mdItem.setControlInterfaceToParent(new PropertyValue());            
+        }
+        
+        return controlInterfaceToParent;                 
     }
 
     @Override
