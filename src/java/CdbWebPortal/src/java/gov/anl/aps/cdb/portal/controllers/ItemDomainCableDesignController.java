@@ -146,7 +146,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     return view();
                 }
 
-                refreshConnectionListForCurrent();
+                refreshConnectionListForCurrent(true);
 
                 SessionUtility.executeRemoteCommand(remoteCommandSuccess);
             }
@@ -635,7 +635,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         
         protected void updateItem(String remoteCommandSuccess) {
             String updateResult = update();
-            refreshConnectionListForCurrent();
+            refreshConnectionListForCurrent(true);
             SessionUtility.executeRemoteCommand(remoteCommandSuccess);
 
         }
@@ -1223,6 +1223,13 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
     
     private void refreshConnectionListForCurrent() {
+        refreshConnectionListForCurrent(false);
+    }
+
+    private void refreshConnectionListForCurrent(boolean reload) {
+        if (reload) {
+            reloadCurrent();
+        }
         ItemDomainCableDesign item = getCurrent();
         connectionListForCurrent = getConnectionListForItem(item);
     }
@@ -1252,10 +1259,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         getCurrent().deleteCableRelationship(cableRelationship);
 
         String updateResult = update();
-        refreshConnectionListForCurrent();
+        refreshConnectionListForCurrent(true);
         connectionToDelete = null;
-        
-//        SessionUtility.executeRemoteCommand(remoteCommandSuccess);
     }
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   
