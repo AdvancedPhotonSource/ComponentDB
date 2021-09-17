@@ -800,11 +800,10 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
     }
 
     public void prepareAssignInventoryMachineDesignListConfiguration() {
+        updateCurrentUsingSelectedItemInTreeTable();
         setCurrentEditItemElement((ItemElement) selectedItemInListTreeTable.getData());
         ItemElement currentEditItemElement = getCurrentEditItemElement();
-        setCatalogForElement(currentEditItemElement.getCatalogItem());
-
-        prepareUpdateInstalledInventoryItem();
+        setCatalogForElement(currentEditItemElement.getCatalogItem());        
 
         displayAssignInventoryItemListConfigurationPanel = true;
         displayListConfigurationView = true;
@@ -1842,12 +1841,6 @@ public abstract class ItemDomainMachineDesignBaseController<MachineTreeNode exte
 
         return true;
 
-    }
-
-    public void prepareUpdateInstalledInventoryItem() {
-        ItemElement currentEditItemElement = getCurrentEditItemElement();
-
-        setCatalogForElement(currentEditItemElement.getCatalogItem());
     }
 
     public DataModel getInstalledInventorySelectionForCurrentElement() {
