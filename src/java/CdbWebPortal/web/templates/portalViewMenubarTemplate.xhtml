@@ -97,6 +97,7 @@ See LICENSE file.
                 <p:menuitem value="Power"
                             id="machinePowerMenubarButton"
                             icon="fa fa-bolt"
+                            rendered="#{false}"
                             url="#{request.contextPath}/views/itemDomainMachineDesignPower/list"
                             styleClass="#{fn:startsWith(view.viewId, '/views/itemDomainMachineDesignPower/list') ? 'activeMenuItem' : ''} "/>
             </p:submenu>
