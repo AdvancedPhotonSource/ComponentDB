@@ -1192,17 +1192,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     
     public List<ItemConnector> getUnmappedConnectorsForCurrent(String cableEnd) {
         boolean filterCableEnd = (cableEnd != null);
-        List<ItemConnector> unmappedConnectors = new ArrayList<>();
-        if (getCurrent().getItemConnectorList() == null) {
-            return unmappedConnectors;
-        }
-        for (ItemConnector connector : getCurrent().getItemConnectorList()) {
-            if (!connector.isConnected()) {
-                if ((!filterCableEnd) 
-                        || ((connector.getConnector().getCableEndDesignation() != null) && (connector.getConnector().getCableEndDesignation().equals(cableEnd))))
-                unmappedConnectors.add(connector);
-            }
-        }
+        ItemDomainCableDesign current = getCurrent();
+        List<ItemConnector> unmappedConnectors = current.getSyncedConnectorList();
         
         // sort by end, device name, device port name, cable connector name
         Comparator<ItemConnector> comparator
@@ -1218,7 +1209,6 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
 
     public List<CableDesignConnectionListObject> getConnectionListForItem(ItemDomainCableDesign item) {
-        this.getControllerUtility().syncConnectors(item);
         return CableDesignConnectionListObject.getConnectionList(item);
     }
     

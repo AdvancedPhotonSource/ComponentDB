@@ -172,6 +172,12 @@ public class ItemDomainMachineDesign extends LocatableStatusItem {
     }
 
     @Override
+    @JsonIgnore
+    protected Item getInheritedItemConnectorParent() {
+        return getAssignedItem();
+    }
+
+    @Override
     public ItemController getItemDomainController() {
         if (isItemDeleted(this)) {
             return ItemDomainMachineDesignDeletedItemsController.getInstance();
