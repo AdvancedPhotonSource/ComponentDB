@@ -105,6 +105,5 @@ public class ItemDomainMachineDesignController extends ItemDomainMachineDesignBa
     @Override
     public ItemDomainMachineDesignTreeNode createMachineTreeNodeInstance() {
         return new ItemDomainMachineDesignTreeNode();
-    }
-    
+    }    
 }
