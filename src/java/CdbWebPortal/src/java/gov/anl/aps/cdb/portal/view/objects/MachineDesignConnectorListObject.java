@@ -24,7 +24,8 @@ public class MachineDesignConnectorListObject {
 
     private ItemConnector itemConnector;
     private ItemDomainCableDesign cableItem;
-    private ItemDomainMachineDesign connectedToMachineDesign;
+    private List<ItemDomainMachineDesign> connectedToItemsList = new ArrayList<>();
+    private String connectedToItemsString;
     private ItemElementRelationship cableRelationship;
 
     public MachineDesignConnectorListObject() {
@@ -74,25 +75,33 @@ public class MachineDesignConnectorListObject {
         this.cableRelationship = cablRelationship;
         ItemConnector firstItemConnector = cablRelationship.getFirstItemConnector();
         this.itemConnector = firstItemConnector;
+        String itemNames = "";
 
         ItemElement cableElement = cablRelationship.getSecondItemElement();
         if (cableElement != null) {
             ItemDomainCableDesign parentItem = (ItemDomainCableDesign) cableElement.getParentItem();
             this.cableItem = parentItem;
 
+            // create list of endpoint items and string of item names for use in connections table
             List<Item> endpointList = this.cableItem.getEndpointList();
+            boolean first = true;
             for (Item endpoint : endpointList) {
                 if (endpoint != null) {
                     if (endpoint.equals(currentItem)) {
                         continue;
                     } else {
-                        // Other item
-                        this.connectedToMachineDesign = (ItemDomainMachineDesign) endpoint;
-                        break;
+                        if (first) {
+                            first = false;
+                        } else {
+                            itemNames = itemNames + " | ";
+                        }
+                        this.connectedToItemsList.add((ItemDomainMachineDesign) endpoint);
+                        itemNames = itemNames + endpoint.getName();
                     }
                 }
             }
         }
+        this.connectedToItemsString = itemNames;
     }
 
     public ItemConnector getItemConnector() {
@@ -102,9 +111,13 @@ public class MachineDesignConnectorListObject {
     public ItemDomainCableDesign getCableItem() {
         return cableItem;
     }
+    
+    public List<ItemDomainMachineDesign> getConnectedToItemsList() {
+        return connectedToItemsList;
+    }
 
-    public ItemDomainMachineDesign getConnectedToMachineDesign() {
-        return connectedToMachineDesign;
+    public String getConnectedToItemsString() {
+        return connectedToItemsString;
     }
 
     public ItemElementRelationship getCableRelationship() {

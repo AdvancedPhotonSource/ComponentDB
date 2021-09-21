@@ -146,7 +146,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
                     return view();
                 }
 
-                refreshConnectionListForCurrent();
+                refreshConnectionListForCurrent(true);
 
                 SessionUtility.executeRemoteCommand(remoteCommandSuccess);
             }
@@ -635,7 +635,7 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         
         protected void updateItem(String remoteCommandSuccess) {
             String updateResult = update();
-            refreshConnectionListForCurrent();
+            refreshConnectionListForCurrent(true);
             SessionUtility.executeRemoteCommand(remoteCommandSuccess);
 
         }
@@ -1192,17 +1192,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     
     public List<ItemConnector> getUnmappedConnectorsForCurrent(String cableEnd) {
         boolean filterCableEnd = (cableEnd != null);
-        List<ItemConnector> unmappedConnectors = new ArrayList<>();
-        if (getCurrent().getItemConnectorList() == null) {
-            return unmappedConnectors;
-        }
-        for (ItemConnector connector : getCurrent().getItemConnectorList()) {
-            if (!connector.isConnected()) {
-                if ((!filterCableEnd) 
-                        || ((connector.getConnector().getCableEndDesignation() != null) && (connector.getConnector().getCableEndDesignation().equals(cableEnd))))
-                unmappedConnectors.add(connector);
-            }
-        }
+        ItemDomainCableDesign current = getCurrent();
+        List<ItemConnector> unmappedConnectors = current.getSyncedConnectorList();
         
         // sort by end, device name, device port name, cable connector name
         Comparator<ItemConnector> comparator
@@ -1218,11 +1209,17 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
     }
 
     public List<CableDesignConnectionListObject> getConnectionListForItem(ItemDomainCableDesign item) {
-        this.getControllerUtility().syncConnectors(item);
         return CableDesignConnectionListObject.getConnectionList(item);
     }
     
     private void refreshConnectionListForCurrent() {
+        refreshConnectionListForCurrent(false);
+    }
+
+    private void refreshConnectionListForCurrent(boolean reload) {
+        if (reload) {
+            reloadCurrent();
+        }
         ItemDomainCableDesign item = getCurrent();
         connectionListForCurrent = getConnectionListForItem(item);
     }
@@ -1252,10 +1249,8 @@ public class ItemDomainCableDesignController extends ItemController<ItemDomainCa
         getCurrent().deleteCableRelationship(cableRelationship);
 
         String updateResult = update();
-        refreshConnectionListForCurrent();
+        refreshConnectionListForCurrent(true);
         connectionToDelete = null;
-        
-//        SessionUtility.executeRemoteCommand(remoteCommandSuccess);
     }
 
     // <editor-fold defaultstate="collapsed" desc="import/export support">   

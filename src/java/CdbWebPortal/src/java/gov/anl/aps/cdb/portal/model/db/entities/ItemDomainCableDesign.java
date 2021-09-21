@@ -110,10 +110,12 @@ public class ItemDomainCableDesign extends Item {
     } 
 
     @Override
+    @JsonIgnore
     public ItemDomainCableDesignControllerUtility getItemControllerUtility() {
         return new ItemDomainCableDesignControllerUtility();
     }
     
+    @JsonIgnore
     public List<ItemConnector> getDeletedConnectorList() {
         if (deletedConnectorList == null) {
             deletedConnectorList = new ArrayList<>();
@@ -127,6 +129,7 @@ public class ItemDomainCableDesign extends Item {
         }
     }
     
+    @JsonIgnore
     public List<ItemElementRelationship> getDeletedIerList() {
         if (deletedIerList == null) {
             deletedIerList = new ArrayList<>();
@@ -144,6 +147,11 @@ public class ItemDomainCableDesign extends Item {
         EntityInfo entityInfo = this.getEntityInfo();
         UserInfo ownerUser = entityInfo.getOwnerUser();
         return getCableConnectionRelationshipType(ownerUser);
+    }
+
+    @Override
+    protected Item getInheritedItemConnectorParent() {
+        return getCatalogItem();
     }
 
     private RelationshipType getCableConnectionRelationshipType(UserInfo userInfo) {
@@ -246,9 +254,6 @@ public class ItemDomainCableDesign extends Item {
                 
                 // validate and retrieve port
                 if (machineItemPortName != null) {
-                    ItemDomainMachineDesignControllerUtility mdUtility
-                            = new ItemDomainMachineDesignControllerUtility();
-                    mdUtility.syncMachineDesignConnectors((ItemDomainMachineDesign) machineItem);
                     machineItemPort = machineItem.getConnectorNamed(machineItemPortName);
                     if (machineItemPort == null) {
                         isValid = false;
@@ -261,7 +266,6 @@ public class ItemDomainCableDesign extends Item {
                 
                 if (cableConnectorName != null) {
                     // validate and retrieve connector
-                    getItemControllerUtility().syncConnectors(this);
                     cableConnector = getConnectorNamed(cableConnectorName);
                     if (cableConnector == null) {
                         isValid = false;
@@ -450,9 +454,6 @@ public class ItemDomainCableDesign extends Item {
                     if (origEndpointConnector != null) {
                         getDeletedConnectorList().add(origEndpointConnector);
                     }
-                    ItemDomainMachineDesignControllerUtility mdUtility = 
-                            new ItemDomainMachineDesignControllerUtility();
-                    mdUtility.syncMachineDesignConnectors(itemEndpoint);
                     endpointConnector = itemEndpoint.getConnectorNamed(endpointConnectorName);
                     if (endpointConnector == null) {
                         isValid = false;
@@ -482,7 +483,6 @@ public class ItemDomainCableDesign extends Item {
                     if (origCableConnector != null) {
                         getDeletedConnectorList().add(origCableConnector);
                     }
-                    getItemControllerUtility().syncConnectors(this);
                     cableConnector = this.getConnectorNamed(cableConnectorName);
                     if (cableConnector == null) {
                         isValid = false;
