@@ -52,7 +52,7 @@ public class LogFacade extends CdbEntityFacade<Log> {
         
         Query query = em.createQuery(queryString);
         if (sinceEnteredDate != null) {
-            query.setParameter("sinceDate", sinceEnteredDate, TemporalType.DATE); 
+            query.setParameter("sinceDate", sinceEnteredDate, TemporalType.TIMESTAMP); 
         }
         
         return (List<Log>) query.getResultList();        
